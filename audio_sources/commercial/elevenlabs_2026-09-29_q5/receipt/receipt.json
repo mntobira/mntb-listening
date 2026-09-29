@@ -1,0 +1,107 @@
+{
+  "batch": "elevenlabs_2026-09-29_q5",
+  "kind": "commercial",
+  "provider": "ElevenLabs（利用者が直接生成・eleven_v4）",
+  "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-29。領収書 audio_sources/commercial/license_evidence/）",
+  "note": "第5問 第8回の取り直し（問32 を含む全体）。問32だけ使う",
+  "files": [
+    {
+      "originalFilename": "Q5_1-3.mp3",
+      "sha256": "9d2abd437a18fede56e6ad2c6d1ad0eec0a92cc337517555417a7262404ef974",
+      "bytes": 6250927,
+      "durationSeconds": 389.642438,
+      "receivedAtUtc": "2026-09-29T00:57:20.303Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_02_18_Hope - upbeat and clear_pvc_sp96_s50_sb75_v4.mp3",
+      "sha256": "d821889ece80139d140325ede907a5d54cad7497b6bc188e5c2f715f04910417",
+      "bytes": 2258581,
+      "durationSeconds": 140.120813,
+      "receivedAtUtc": "2026-09-29T00:57:20.584Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_09_27_Jack John - Conversational and Upbeat_pvc_sp100_s50_sb75_v4.mp3",
+      "sha256": "a91aa74ec6c86d0c0024f540899d6bf2d20dcebbeb6471a8abbbfc250fa6cdcd",
+      "bytes": 2039570,
+      "durationSeconds": 126.432625,
+      "receivedAtUtc": "2026-09-29T00:57:20.902Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_12_02_Brian - Relatable Everyman_pvc_sp92_s44_sb46_v4.mp3",
+      "sha256": "b067517b59fee9c6d36e551de3d16046c8290845b5401a2510be72ec2cddfcca",
+      "bytes": 2113967,
+      "durationSeconds": 131.082438,
+      "receivedAtUtc": "2026-09-29T00:57:21.246Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_14_18_Flint - Deep, Raspy, and Warm_pvc_sp100_s94_sb90_v4.mp3",
+      "sha256": "f8936613b1814c26784210bfa82281d4532187fe34dd40b837ddb8a7baaa6ccc",
+      "bytes": 2222636,
+      "durationSeconds": 137.87425,
+      "receivedAtUtc": "2026-09-29T00:57:21.527Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_16_29_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v4.mp3",
+      "sha256": "4b27681b4f54b7bc2feb27326d670a590fa8c720a10ffb4f91870f702f457d95",
+      "bytes": 2207172,
+      "durationSeconds": 136.90775,
+      "receivedAtUtc": "2026-09-29T00:57:21.884Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_19_46_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v4.mp3",
+      "sha256": "19792bbb49427bc8d52ec926227f4ae85b6b2974c56bb1519815426326b5e8c8",
+      "bytes": 2071753,
+      "durationSeconds": 128.444063,
+      "receivedAtUtc": "2026-09-29T00:57:22.238Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_21_58_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v4.mp3",
+      "sha256": "15969c841c7289fcb6a0559d95dc06dd42120c2b14c379a777f53a1f979ee7b5",
+      "bytes": 2111459,
+      "durationSeconds": 130.925688,
+      "receivedAtUtc": "2026-09-29T00:57:22.563Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_24_56_Adam - American, Dark and Tough_pvc_sp100_s50_sb75_v4.mp3",
+      "sha256": "f45a784be4ef81a9c77d201a5f5f8d0c615832d8aaa3551360c7105ae7633f28",
+      "bytes": 2193379,
+      "durationSeconds": 136.045688,
+      "receivedAtUtc": "2026-09-29T00:57:22.859Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_27_08_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v4.mp3",
+      "sha256": "ce148827727d38b8b72c557f21407813faf8a8617b553550818e1e81d128b311",
+      "bytes": 2116474,
+      "durationSeconds": 131.239125,
+      "receivedAtUtc": "2026-09-29T00:57:23.229Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_31_04_Lily - Warm British Audiobook Narrator_pvc_sp100_s50_sb75_v4.mp3",
+      "sha256": "b33cdadda1bf418f7395c4d632665cb07c06abc9e9c46d24523599d70926e757",
+      "bytes": 2169137,
+      "durationSeconds": 134.530563,
+      "receivedAtUtc": "2026-09-29T00:57:23.576Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_33_32_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v4.mp3",
+      "sha256": "7ef4e7ee26a4202a8407d861d9cd1ad53ecdbcd6992ebde23cbc9b3bf833d5be",
+      "bytes": 2081784,
+      "durationSeconds": 129.071,
+      "receivedAtUtc": "2026-09-29T00:57:23.898Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T00_36_09_Guy - Serious TV Radio Announcer_pvc_sp100_s50_sb75_v4.mp3",
+      "sha256": "0989d44fc12a4d70243e6207858e4a07d02d0e1300be14e991bdad2fc5ecb921",
+      "bytes": 2081784,
+      "durationSeconds": 129.071,
+      "receivedAtUtc": "2026-09-29T00:57:24.188Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-29T02_21_38_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v4.mp3",
+      "sha256": "55601a5e49c09a69344f3f7d43bdd0d65e59fe30b65f72a5f526219c3d455d2c",
+      "bytes": 2315005,
+      "durationSeconds": 143.647313,
+      "receivedAtUtc": "2026-09-29T02:45:36.569Z"
+    }
+  ]
+}

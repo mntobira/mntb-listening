@@ -1,0 +1,114 @@
+{
+ "batch": "elevenlabs_2026-09-28_q6a",
+ "kind": "commercial",
+ "provider": "ElevenLabs（利用者が直接生成・eleven_v3）",
+ "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-28。契約画面の証拠は未確認）",
+ "note": "第6問A 15本（1回＝1ファイル）。17_38_05 は9.4〜16.1秒に第3回の1文が混入していたため、前後の無音で無劣化カットして使用",
+ "files": [
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_28_31_Hale - Expressive, Deep and Emotive_pvc_sp100_s65_sb75_v3.mp3",
+   "sha256": "784ac80a450d5019692391e9066547fa03a5f56e6315fcf4a49db1dfdb0b821b",
+   "bytes": 1313993,
+   "durationSeconds": 81.084063,
+   "receivedAtUtc": "2026-09-28T18:50:46.482Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_31_37_Lily - Warm British Audiobook Narrator_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "addfb82a9236c366ec2446671c8ad6fffca2b30c2916f6c13cabaf30919c689b",
+   "bytes": 1175648,
+   "durationSeconds": 72.4375,
+   "receivedAtUtc": "2026-09-28T18:50:46.803Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_35_08_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v3.mp3",
+   "sha256": "6a4b38ce95372f12071147bbeef293fbad8d634a2b6f26451ff24cfb5e804f6a",
+   "bytes": 1227057,
+   "durationSeconds": 75.650563,
+   "receivedAtUtc": "2026-09-28T18:50:47.101Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_38_05_Jane - Professional Audiobook Reader_pvc_sp100_s40_sb40_v3.mp3",
+   "sha256": "4a8d9cc38dbbc4ec15b3fc49c62983777e41e72e0e949c4ed484e8a7944e5e2e",
+   "bytes": 1353699,
+   "durationSeconds": 83.565688,
+   "receivedAtUtc": "2026-09-28T18:50:47.413Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_41_35_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v3.mp3",
+   "sha256": "a8bf5bfc3e4756222327bce8d4e54dbe3324e595b286aa0ce99a2bcebb2a3e72",
+   "bytes": 1194874,
+   "durationSeconds": 73.639125,
+   "receivedAtUtc": "2026-09-28T18:50:47.743Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_44_05_Jane - Professional Audiobook Reader_pvc_sp100_s40_sb40_v3.mp3",
+   "sha256": "4077ea5b2d7ed7e746e84fdbc80f73a9bb14ec32ec66c3ac2cf50660daf2bb94",
+   "bytes": 1211593,
+   "durationSeconds": 74.684063,
+   "receivedAtUtc": "2026-09-28T18:50:47.997Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_46_56_Ellen - Serious, Direct and Confident_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "0f20a88183e7026963ba3ddeb5d10f1b63eb4bdba01c005d27f7958730cd45a9",
+   "bytes": 1261330,
+   "durationSeconds": 77.792625,
+   "receivedAtUtc": "2026-09-28T18:50:48.340Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_51_37_Jay Johnson - Bubbly, Fun and Positive_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "6f1d84b868729974fbed4677e35098face0c60d7227a2cd265ed90dd3e71dec3",
+   "bytes": 1244612,
+   "durationSeconds": 76.74775,
+   "receivedAtUtc": "2026-09-28T18:50:48.642Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_54_53_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v3.mp3",
+   "sha256": "4a1160aebd8b8fd8f5a97ce655b0eebf859e1625726d1f330eec1e28508fa19a",
+   "bytes": 1311485,
+   "durationSeconds": 80.927313,
+   "receivedAtUtc": "2026-09-28T18:50:48.896Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T17_57_56_Arabella - Mysterious and Emotive_pvc_sp100_s63_sb100_v3.mp3",
+   "sha256": "d65e0872a40843286774944cfcdebc2d459759effca209b264247ded84319ef4",
+   "bytes": 1194874,
+   "durationSeconds": 73.639125,
+   "receivedAtUtc": "2026-09-28T18:50:49.194Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T18_04_18_Jessica - Playful, Bright, Warm_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "a6b6c823e8e4f8998a9cbceadb8d23f929eb431af8392b7494f40e69446ce07f",
+   "bytes": 1173141,
+   "durationSeconds": 72.280813,
+   "receivedAtUtc": "2026-09-28T18:50:49.537Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T18_07_37_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+   "sha256": "38ae94d0cd70f573b5cfbdc471ce3400d164fc6d9cac0bc47bc28d33a0b9e4cf",
+   "bytes": 1104177,
+   "durationSeconds": 67.970563,
+   "receivedAtUtc": "2026-09-28T18:50:49.804Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T18_10_47_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v3.mp3",
+   "sha256": "e7eef4485297fe29c1c27d21773d13b7252bec3516978a428a224998c04a9e0b",
+   "bytes": 1402182,
+   "durationSeconds": 86.595875,
+   "receivedAtUtc": "2026-09-28T18:50:50.098Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T18_13_17_Jessica - Playful, Bright, Warm_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "9d3fbb29c960cef1f3d818d5d846f82dc7fb9bc99f1c23b552812ceaa60e2dc7",
+   "bytes": 1304798,
+   "durationSeconds": 80.509375,
+   "receivedAtUtc": "2026-09-28T18:50:50.394Z"
+  },
+  {
+   "originalFilename": "ElevenLabs_2026-09-28T18_17_37_Ivanna - Sassy, Condescending and Clear_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "9b8033702f578be5dbf8db04754f42655c5e0fe329db06c71bf807ab7a5c2f6b",
+   "bytes": 1163945,
+   "durationSeconds": 71.706063,
+   "receivedAtUtc": "2026-09-28T18:50:50.739Z"
+  }
+ ]
+}

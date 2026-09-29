@@ -1,0 +1,8 @@
+{
+ "q6set04_A": {
+  "source": "ElevenLabs_2026-09-28T17_38_05_Jane - Professional Audiobook Reader_pvc_sp100_s40_sb40_v3.mp3",
+  "edit": "0〜9.418秒 ＋ 16.059秒〜最後 をストリームコピーで連結（再エンコードなし）",
+  "reason": "9.4〜16.1秒に台本にない1文（第3回6A の \"No, I still want a proper audience sitting down and listening to the whole argument from start to finish.\"）が混入。前後は無音の中央で切断。カット後の全文を small.en で台本と照合済み",
+  "durationBeforeSec": 83.566, "durationAfterSec": 76.957
+ }
+}

@@ -1,0 +1,219 @@
+{
+  "batch": "elevenlabs_2026-09-28_q3",
+  "kind": "commercial",
+  "provider": "ElevenLabs（利用者が直接生成・eleven_v3）",
+  "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-28「商用権があるやつ」。契約画面の証拠は未確認）",
+  "note": "第3問 全15回×6問＝90本（1ファイル3問のまとめ録り30本）。",
+  "files": [
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T10_53_14_Brian - Relatable Everyman_pvc_sp92_s44_sb46_v3.mp3",
+      "sha256": "d92a467420a189ff3574fdd2c58dd83a4ca25644a3e38a51e82d5a87afe95d21",
+      "bytes": 865941,
+      "durationSeconds": 53.080813,
+      "receivedAtUtc": "2026-09-28T15:46:21.041Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T11_01_13_Amy - Natural and Sweet_pvc_sp82_s25_sb75_v3.mp3",
+      "sha256": "4faa66dca5140d6497aef2a929dca524e7077eb0df1c321407b9eca85f5a650f",
+      "bytes": 897705,
+      "durationSeconds": 55.066063,
+      "receivedAtUtc": "2026-09-28T15:46:21.404Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T11_09_34_Ellen - Serious, Direct and Confident_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "839126f4f085f4c3dae59fdf8ef910fb1e3e5d9d0d7eea70512b4370475576f0",
+      "bytes": 1043991,
+      "durationSeconds": 64.208938,
+      "receivedAtUtc": "2026-09-28T15:46:21.766Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T11_17_58_Adam - Articulate Engineering Professor_pvc_sp104_s50_sb50_v3.mp3",
+      "sha256": "2993fc09aced67d6a82f597315dcb6253eb4e526f7a0b422378318e801173a85",
+      "bytes": 952876,
+      "durationSeconds": 58.51425,
+      "receivedAtUtc": "2026-09-28T15:46:22.022Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T11_24_27_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v3.mp3",
+      "sha256": "72740624869b9a74a15b42248f9f59cfcf53e8547b73dd0fe4b7d355398bb877",
+      "bytes": 926127,
+      "durationSeconds": 56.842438,
+      "receivedAtUtc": "2026-09-28T15:46:22.382Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T11_30_57_Arabella - Mysterious and Emotive_pvc_sp100_s63_sb100_v3.mp3",
+      "sha256": "af62669d0fb4d1326c925bfb0028eeccd31748bd0601102b2f6bfe38bf7deb1e",
+      "bytes": 955384,
+      "durationSeconds": 58.671,
+      "receivedAtUtc": "2026-09-28T15:46:22.737Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T11_39_28_Arabella - Mysterious and Emotive_pvc_sp100_s63_sb100_v3.mp3",
+      "sha256": "4185d011ac7536fb30715d0d110ec687937e2c3546d5ce603f52b91df101fa65",
+      "bytes": 1135942,
+      "durationSeconds": 69.955875,
+      "receivedAtUtc": "2026-09-28T15:46:23.036Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T11_45_53_Monika Sogam - Interactive and Modern_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "80637193429efec737240dae556d224f949a370d19d0307bbeff6e0be92b4694",
+      "bytes": 1116716,
+      "durationSeconds": 68.75425,
+      "receivedAtUtc": "2026-09-28T15:46:23.327Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T11_55_13_Savvy - Warm, Grounded & Natural_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "58f2f6d62af30fa4f9b93122d712a51bf8f7c68979d42150e0911d6ef9c20fe0",
+      "bytes": 1161438,
+      "durationSeconds": 71.549375,
+      "receivedAtUtc": "2026-09-28T15:46:23.650Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T12_01_13_James - Husky, Engaging and Bold_pvc_sp100_s50_sb50_v3.mp3",
+      "sha256": "bf501dc4f53ef5559fad49b7a3ecbe082add94150cf11401135201f58e2afe32",
+      "bytes": 1041065,
+      "durationSeconds": 64.026063,
+      "receivedAtUtc": "2026-09-28T15:46:23.899Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T12_44_15_Hope - upbeat and clear_pvc_sp96_s50_sb75_v3.mp3",
+      "sha256": "154415c6d5c0381a25daac7e2c35477dd5a5701cfe90b125aabf2f65819f70ea",
+      "bytes": 1268017,
+      "durationSeconds": 78.210563,
+      "receivedAtUtc": "2026-09-28T15:46:24.229Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T12_50_45_Hale - Expressive, Deep and Emotive_pvc_sp100_s65_sb75_v3.mp3",
+      "sha256": "270f2eec9edaf7ac32c6e3514b45310f86029299286116f1c06cacfb565c294e",
+      "bytes": 1334473,
+      "durationSeconds": 82.364063,
+      "receivedAtUtc": "2026-09-28T15:46:24.534Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T13_00_57_Lily - Warm British Audiobook Narrator_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "1975decb7e2f62959707a9c64a78d9e79e96ea35b9ff2a08d4da14d71e28418c",
+      "bytes": 1099998,
+      "durationSeconds": 67.709375,
+      "receivedAtUtc": "2026-09-28T15:46:24.823Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T13_27_20_James - Husky, Engaging and Bold_pvc_sp100_s50_sb50_v3.mp3",
+      "sha256": "a4d5c572867c84998682b2507cd144c01e3a5e9b59f4c824a2edf2e84f91d863",
+      "bytes": 1417647,
+      "durationSeconds": 87.562438,
+      "receivedAtUtc": "2026-09-28T15:46:25.094Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T13_35_57_Dan - Warm, Conversational and Polite_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "374ba9cbef70194248dc08cfedc162ef55f5ac331f8737816d421ff92a21fb36",
+      "bytes": 1160184,
+      "durationSeconds": 71.471,
+      "receivedAtUtc": "2026-09-28T15:46:25.332Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T13_43_01_Mark - Natural Conversations_pvc_sp100_s44_sb75_v3.mp3",
+      "sha256": "3388b3676c49f730a53338cae9a8327f7d3fb25d6913b7f38fd4bd666a182fc8",
+      "bytes": 1224132,
+      "durationSeconds": 75.46775,
+      "receivedAtUtc": "2026-09-28T15:46:25.657Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T13_48_40_Ellen - Serious, Direct and Confident_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "c89bde293c48dbdd93db3b9db2f8a40a7c9c00fb7fb792a4330f911fa346169d",
+      "bytes": 1256314,
+      "durationSeconds": 77.479125,
+      "receivedAtUtc": "2026-09-28T15:46:26.000Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T13_55_28_George - Warm Documentary Narrator_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "0a21a8c80847d0e4bb0e05fa7bf827693ff5099d8583ce01ce47fe2293cc73a5",
+      "bytes": 1268017,
+      "durationSeconds": 78.210563,
+      "receivedAtUtc": "2026-09-28T15:46:26.326Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T14_00_57_Ellen - Serious, Direct and Confident_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "8e533d6c5058feae2b53e3c6eb258d2bab4ececdbc8d55791d5d1605d817017a",
+      "bytes": 1286825,
+      "durationSeconds": 79.386063,
+      "receivedAtUtc": "2026-09-28T15:46:26.618Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T14_07_56_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v3.mp3",
+      "sha256": "a15f562117cc1f808bc57dd42c046889894f90e9c7f946c11319de8cd849c5bd",
+      "bytes": 1569784,
+      "durationSeconds": 97.071,
+      "receivedAtUtc": "2026-09-28T15:46:26.897Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T14_34_22_James - Husky, Engaging and Bold_pvc_sp100_s50_sb50_v3.mp3",
+      "sha256": "4e4726db23107a94eba5b4d03563669c4c261ed28b148863973e467370378c22",
+      "bytes": 1321516,
+      "durationSeconds": 81.55425,
+      "receivedAtUtc": "2026-09-28T15:46:27.223Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T14_40_10_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v3.mp3",
+      "sha256": "de856f3e88b4e41664bf5b01261b4fd9437b632e8b2623a4fa7c927f3a1545a2",
+      "bytes": 1238342,
+      "durationSeconds": 76.355875,
+      "receivedAtUtc": "2026-09-28T15:46:27.527Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T14_46_56_Mark - Natural Conversations_pvc_sp100_s44_sb75_v3.mp3",
+      "sha256": "6e13cb3372f2be7f1c8fb04d8be0b4bb02c2a8ed8effe751103805e0a074c355",
+      "bytes": 1475325,
+      "durationSeconds": 91.167313,
+      "receivedAtUtc": "2026-09-28T15:46:27.861Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T14_55_15_Ivanna - Sassy, Condescending and Clear_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "daf1185af5bcffe47a37884ba9a5c5c201f2d680734d09c1c37033ddca7c54f9",
+      "bytes": 1740311,
+      "durationSeconds": 107.728938,
+      "receivedAtUtc": "2026-09-28T15:46:28.196Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T15_01_29_Hope - upbeat and clear_pvc_sp96_s50_sb75_v3.mp3",
+      "sha256": "ee66070297e35c5a0f1908b54646a25eb2aee149d2c4e37b50b816c9e226bc1f",
+      "bytes": 1356207,
+      "durationSeconds": 83.722438,
+      "receivedAtUtc": "2026-09-28T15:46:28.498Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T15_06_45_Guy - Serious TV Radio Announcer_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "b5873267c02245a096a507b0ec5e9b0b38d8a2a5ae0f48fe271e1bb779d92a4f",
+      "bytes": 1539273,
+      "durationSeconds": 95.164063,
+      "receivedAtUtc": "2026-09-28T15:46:28.816Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T15_12_18_Hale - Expressive, Deep and Emotive_pvc_sp100_s65_sb75_v3.mp3",
+      "sha256": "48adfe2daf37b9fe08e93a6aef5f11317f05e6f2eec5e86c28d7b5c0b87aebd8",
+      "bytes": 1403436,
+      "durationSeconds": 86.67425,
+      "receivedAtUtc": "2026-09-28T15:46:29.099Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T15_17_20_Misa - Sweet & Calm Conversations_pvc_sp95_s50_sb51_v3.mp3",
+      "sha256": "0d7eb882c2b7bd81e43808654b62763317e04c6d49b69c3a659c020e1a502dd7",
+      "bytes": 1333219,
+      "durationSeconds": 82.285688,
+      "receivedAtUtc": "2026-09-28T15:46:29.441Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T15_28_15_Lily - Warm British Audiobook Narrator_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "1a935bf9c434750ed75ef5509add75083d89a6297813509933b2d987964e9cf7",
+      "bytes": 1098744,
+      "durationSeconds": 67.631,
+      "receivedAtUtc": "2026-09-28T15:46:29.717Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T15_33_16_Ivanna - Sassy, Condescending and Clear_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "9ebd57e72ad232f1fd7c5e41e7ab278d621b6de79b6d3bb963f735f40b86b43e",
+      "bytes": 1140958,
+      "durationSeconds": 70.269375,
+      "receivedAtUtc": "2026-09-28T15:46:29.954Z"
+    }
+  ]
+}

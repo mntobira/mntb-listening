@@ -31,22 +31,17 @@ describe('リスニング音源台帳（商用音源と旧音源の分離）', (
     expect(new Set(ledger.map(r => r.audioUrl)).size).toBe(374);
   });
 
-  it('差し替え済みの配信音は台帳のハッシュと一致し、生成元・商用根拠・元ファイルの記録がある', () => {
+  it('差し替え済みの音は台帳のハッシュと一致し、生成元・商用根拠・元ファイルが記録されている', () => {
     for (const r of replaced) {
       const file = path.join(ROOT, 'public', r.audioUrl);
       expect(fs.existsSync(file), r.audioUrl).toBe(true);
       expect(sha(file), `${r.audioUrl} が台帳と違う（旧音源で上書き？）`).toBe(r.sha256);
       expect(r.provider && r.license, r.audioUrl).toBeTruthy();
       expect(r.masterFiles?.length, r.audioUrl).toBeGreaterThan(0);
-      for (const m of r.masterFiles ?? []) expect(m.startsWith('audio_sources/commercial/'), m).toBe(true);
-    }
-  });
-
-  // The raw-master archive is delivered separately; the app ZIP contains only
-  // distributable MP3s. Never claim raw-file verification without that archive.
-  it.skipIf(!fs.existsSync(path.join(ROOT, 'audio_sources/commercial')))('別送の原本ZIPがある場合、全元ファイルが存在する', () => {
-    for (const r of replaced) for (const m of r.masterFiles ?? []) {
-      expect(fs.existsSync(path.join(ROOT, m)), m).toBe(true);
+      for (const m of r.masterFiles ?? []) {
+        expect(m.startsWith('audio_sources/commercial/'), m).toBe(true);
+        expect(fs.existsSync(path.join(ROOT, m)), m).toBe(true);
+      }
     }
   });
 
@@ -96,7 +91,7 @@ describe('全音源が商用の新音源（2026-09-29 完了）', () => {
   });
   it('ElevenLabs 有料契約の領収書が同梱されている', () => {
     for (const f of ['README.md', 'elevenlabs_receipt_creator_2026-09-20.png', 'elevenlabs_receipt_starter_2026-09-28.png', 'elevenlabs_receipt_usage_2026-09-29.png'])
-      expect(fs.existsSync(path.join(ROOT, 'license_evidence', f)), f).toBe(true);
+      expect(fs.existsSync(path.join(ROOT, 'audio_sources/commercial/license_evidence', f)), f).toBe(true);
   });
 });
 

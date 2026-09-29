@@ -1,0 +1,93 @@
+{
+  "batch": "elevenlabs_2026-09-28_q4",
+  "kind": "commercial",
+  "provider": "ElevenLabs（利用者が直接生成・eleven_v3）",
+  "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-28「商用権があるやつ」。契約画面の証拠は未確認）",
+  "note": "第4問A 全15回・第4問B 全15回。17_11_22 は利用者が「怪しいところ」を取り直したもの（第4問A 第7回 前半・後半、第4問B 第14回）で、元の版より優先して使う。",
+  "files": [
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T15_46_16_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "b2d161134ad79f2bac8dce0a587ae34429d01355e203b2ef7d93cd983d5695f9",
+      "bytes": 5088582,
+      "durationSeconds": 316.995875,
+      "receivedAtUtc": "2026-09-28T16:56:45.261Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T15_50_42_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "ca278eeee469fec9a0e03948995efe71ad4865b90209fb51e85aaedb83a47ab0",
+      "bytes": 5073118,
+      "durationSeconds": 316.029375,
+      "receivedAtUtc": "2026-09-28T16:56:45.619Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T15_53_59_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "a3fb786a606ccb17b8a8ce0d32cc3642d1fe7085322aa5bfdb6a00a0b5ad42fb",
+      "bytes": 5167994,
+      "durationSeconds": 321.959125,
+      "receivedAtUtc": "2026-09-28T16:56:45.930Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T16_03_55_Daniel - Radio news host_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "4ff4d4f077d21876e066939165ad83ce58afb170c4749ba189f612dc01d7a213",
+      "bytes": 1928393,
+      "durationSeconds": 119.484063,
+      "receivedAtUtc": "2026-09-28T16:56:46.241Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T16_07_37_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "470a33332bcd1f2797ece5753c4db3d3e9c605e1160a87f5539ac17077af4ec2",
+      "bytes": 1965591,
+      "durationSeconds": 121.808938,
+      "receivedAtUtc": "2026-09-28T16:56:46.589Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T16_11_57_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "6007b1fa31ae9cab42b0dd39cdc0fd7eb56f35d7306f5b9640e832331978abd8",
+      "bytes": 1914182,
+      "durationSeconds": 118.595875,
+      "receivedAtUtc": "2026-09-28T16:56:46.941Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T16_18_32_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v3.mp3",
+      "sha256": "cc442e828dfc17170d546e79e5a995170bca1a38f98559e4b5d5792eccfe6a95",
+      "bytes": 1970607,
+      "durationSeconds": 122.122438,
+      "receivedAtUtc": "2026-09-28T16:56:47.261Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T16_27_22_Daniel - Radio news host_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "78688df36810eb10b5984f695d478336ff203324ee5b91fbf48cde3a16940e23",
+      "bytes": 1882417,
+      "durationSeconds": 116.610563,
+      "receivedAtUtc": "2026-09-28T16:56:47.492Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T16_33_10_Daniel - Radio news host_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "0a566ad540ba87511853d2c9d5341a87de1c74c272eda6777916707afe6ca6be",
+      "bytes": 1950127,
+      "durationSeconds": 120.842438,
+      "receivedAtUtc": "2026-09-28T16:56:47.829Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T16_38_49_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v3.mp3",
+      "sha256": "919f5aea9842584e3d012e9d85dde4f82ad06e948bccf9e81364573eaf0a1646",
+      "bytes": 1832262,
+      "durationSeconds": 113.475875,
+      "receivedAtUtc": "2026-09-28T16:56:48.188Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T16_40_37_Jay Johnson - Bubbly, Fun and Positive_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "221bd43ca9aeec4f87dfd60cf380bc2d356a4c00c3eb0d495eb26a5892e32566",
+      "bytes": 941591,
+      "durationSeconds": 57.808938,
+      "receivedAtUtc": "2026-09-28T16:56:48.494Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T17_11_22_Jay Johnson - Bubbly, Fun and Positive_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "5d515136bc899316f5a6b7379fd08d0eb078d91e194850e29dd00aa7afb48a8f",
+      "bytes": 1994848,
+      "durationSeconds": 123.6375,
+      "receivedAtUtc": "2026-09-28T17:16:39.336Z"
+    }
+  ]
+}

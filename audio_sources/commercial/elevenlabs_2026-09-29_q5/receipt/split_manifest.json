@@ -1,0 +1,666 @@
+{
+ "batch": "elevenlabs_2026-09-29_q5",
+ "createdAtUtc": "2026-09-29T02:45:38.980631+00:00",
+ "method": "台本と音声認識の単語を突き合わせ、文間の無音の中央で切断。速度・音程は無変更。mp3 はストリームコピー。",
+ "sources": [
+  {
+   "file": "Q5_1-3.mp3",
+   "sha256": "9d2abd437a18fede56e6ad2c6d1ad0eec0a92cc337517555417a7262404ef974",
+   "durationSec": 389.642,
+   "tracks": [
+    {
+     "stem": "q5set01_lecture",
+     "cover": 0.974,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 99.54,
+     "silence": [
+      99.853,
+      100.445
+     ],
+     "start": 0.0,
+     "end": 100.149,
+     "output": "q5set01_lecture.mp3"
+    },
+    {
+     "stem": "q5set01_q32",
+     "cover": 1.0,
+     "firstWordStart": 100.28,
+     "lastWordEnd": 109.32,
+     "silence": [
+      109.791,
+      110.223
+     ],
+     "start": 100.149,
+     "end": 110.007,
+     "output": "q5set01_q32.mp3"
+    },
+    {
+     "stem": "q5set01_q33",
+     "cover": 1.0,
+     "firstWordStart": 110.02,
+     "lastWordEnd": 133.32,
+     "silence": [
+      133.534,
+      134.032
+     ],
+     "start": 110.007,
+     "end": 133.783,
+     "output": "q5set01_q33.mp3"
+    },
+    {
+     "stem": "q5set02_lecture",
+     "cover": 0.978,
+     "firstWordStart": 133.74,
+     "lastWordEnd": 232.0,
+     "silence": [
+      232.231,
+      232.758
+     ],
+     "start": 133.783,
+     "end": 232.495,
+     "output": "q5set02_lecture.mp3"
+    },
+    {
+     "stem": "q5set02_q32",
+     "cover": 1.0,
+     "firstWordStart": 232.68,
+     "lastWordEnd": 240.44,
+     "silence": [
+      240.756,
+      241.106
+     ],
+     "start": 232.495,
+     "end": 240.931,
+     "output": "q5set02_q32.mp3"
+    },
+    {
+     "stem": "q5set02_q33",
+     "cover": 1.0,
+     "firstWordStart": 241.0,
+     "lastWordEnd": 262.36,
+     "silence": [
+      262.472,
+      262.847
+     ],
+     "start": 240.931,
+     "end": 262.66,
+     "output": "q5set02_q33.mp3"
+    },
+    {
+     "stem": "q5set03_lecture",
+     "cover": 0.971,
+     "firstWordStart": 262.78,
+     "lastWordEnd": 355.56,
+     "silence": [
+      355.702,
+      356.191
+     ],
+     "start": 262.66,
+     "end": 355.947,
+     "output": "q5set03_lecture.mp3"
+    },
+    {
+     "stem": "q5set03_q32",
+     "cover": 0.885,
+     "firstWordStart": 356.16,
+     "lastWordEnd": 365.18,
+     "silence": [
+      365.368,
+      365.722
+     ],
+     "start": 355.947,
+     "end": 365.545,
+     "output": "q5set03_q32.mp3"
+    },
+    {
+     "stem": "q5set03_q33",
+     "cover": 0.932,
+     "firstWordStart": 365.66,
+     "lastWordEnd": 388.96,
+     "start": 365.545,
+     "end": 389.642438,
+     "output": "q5set03_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_27_08_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v4.mp3",
+   "sha256": "ce148827727d38b8b72c557f21407813faf8a8617b553550818e1e81d128b311",
+   "durationSec": 131.239,
+   "tracks": [
+    {
+     "stem": "q5set06_lecture",
+     "cover": 0.986,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 100.42,
+     "silence": [
+      100.736,
+      101.253
+     ],
+     "start": 0.0,
+     "end": 100.994,
+     "output": "q5set06_lecture.mp3"
+    },
+    {
+     "stem": "q5set06_q32",
+     "cover": 0.913,
+     "firstWordStart": 101.02,
+     "lastWordEnd": 109.76,
+     "silence": [
+      109.885,
+      110.415
+     ],
+     "start": 100.994,
+     "end": 110.15,
+     "output": "q5set06_q32.mp3"
+    },
+    {
+     "stem": "q5set06_q33",
+     "cover": 0.965,
+     "firstWordStart": 109.76,
+     "lastWordEnd": 130.62,
+     "start": 110.15,
+     "end": 131.239125,
+     "output": "q5set06_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_09_27_Jack John - Conversational and Upbeat_pvc_sp100_s50_sb75_v4.mp3",
+   "sha256": "a91aa74ec6c86d0c0024f540899d6bf2d20dcebbeb6471a8abbbfc250fa6cdcd",
+   "durationSec": 126.433,
+   "tracks": [
+    {
+     "stem": "q5set12_lecture",
+     "cover": 0.993,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 98.18,
+     "silence": [
+      98.361,
+      98.773
+     ],
+     "start": 0.0,
+     "end": 98.567,
+     "output": "q5set12_lecture.mp3"
+    },
+    {
+     "stem": "q5set12_q32",
+     "cover": 1.0,
+     "firstWordStart": 98.62,
+     "lastWordEnd": 105.68,
+     "silence": [
+      105.814,
+      106.296
+     ],
+     "start": 98.567,
+     "end": 106.055,
+     "output": "q5set12_q32.mp3"
+    },
+    {
+     "stem": "q5set12_q33",
+     "cover": 0.966,
+     "firstWordStart": 106.24,
+     "lastWordEnd": 125.84,
+     "start": 106.055,
+     "end": 126.432625,
+     "output": "q5set12_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_12_02_Brian - Relatable Everyman_pvc_sp92_s44_sb46_v4.mp3",
+   "sha256": "b067517b59fee9c6d36e551de3d16046c8290845b5401a2510be72ec2cddfcca",
+   "durationSec": 131.082,
+   "tracks": [
+    {
+     "stem": "q5set13_lecture",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 100.44,
+     "silence": [
+      100.745,
+      101.216
+     ],
+     "start": 0.0,
+     "end": 100.981,
+     "output": "q5set13_lecture.mp3"
+    },
+    {
+     "stem": "q5set13_q32",
+     "cover": 1.0,
+     "firstWordStart": 101.04,
+     "lastWordEnd": 108.36,
+     "silence": [
+      108.536,
+      109.054
+     ],
+     "start": 100.981,
+     "end": 108.795,
+     "output": "q5set13_q32.mp3"
+    },
+    {
+     "stem": "q5set13_q33",
+     "cover": 1.0,
+     "firstWordStart": 108.9,
+     "lastWordEnd": 130.56,
+     "start": 108.795,
+     "end": 131.082438,
+     "output": "q5set13_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_16_29_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v4.mp3",
+   "sha256": "4b27681b4f54b7bc2feb27326d670a590fa8c720a10ffb4f91870f702f457d95",
+   "durationSec": 136.908,
+   "tracks": [
+    {
+     "stem": "q5set15_lecture",
+     "cover": 0.993,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 104.36,
+     "silence": [
+      104.773,
+      105.392
+     ],
+     "start": 0.0,
+     "end": 105.083,
+     "output": "q5set15_lecture.mp3"
+    },
+    {
+     "stem": "q5set15_q32",
+     "cover": 1.0,
+     "firstWordStart": 105.28,
+     "lastWordEnd": 113.16,
+     "silence": [
+      113.323,
+      113.954
+     ],
+     "start": 105.083,
+     "end": 113.639,
+     "output": "q5set15_q32.mp3"
+    },
+    {
+     "stem": "q5set15_q33",
+     "cover": 0.939,
+     "firstWordStart": 113.88,
+     "lastWordEnd": 136.26,
+     "start": 113.639,
+     "end": 136.90775,
+     "output": "q5set15_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_36_09_Guy - Serious TV Radio Announcer_pvc_sp100_s50_sb75_v4.mp3",
+   "sha256": "0989d44fc12a4d70243e6207858e4a07d02d0e1300be14e991bdad2fc5ecb921",
+   "durationSec": 129.071,
+   "tracks": [
+    {
+     "stem": "q5set05_lecture",
+     "cover": 0.989,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 95.0,
+     "silence": [
+      95.163,
+      95.728
+     ],
+     "start": 0.0,
+     "end": 95.446,
+     "output": "q5set05_lecture.mp3"
+    },
+    {
+     "stem": "q5set05_q32",
+     "cover": 1.0,
+     "firstWordStart": 95.68,
+     "lastWordEnd": 104.2,
+     "silence": [
+      104.563,
+      104.923
+     ],
+     "start": 95.446,
+     "end": 104.743,
+     "output": "q5set05_q32.mp3"
+    },
+    {
+     "stem": "q5set05_q33",
+     "cover": 0.938,
+     "firstWordStart": 104.83,
+     "lastWordEnd": 128.54,
+     "start": 104.743,
+     "end": 129.071,
+     "output": "q5set05_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_31_04_Lily - Warm British Audiobook Narrator_pvc_sp100_s50_sb75_v4.mp3",
+   "sha256": "b33cdadda1bf418f7395c4d632665cb07c06abc9e9c46d24523599d70926e757",
+   "durationSec": 134.531,
+   "tracks": [
+    {
+     "stem": "q5set07_lecture",
+     "cover": 0.962,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 99.78,
+     "silence": [
+      100.081,
+      100.564
+     ],
+     "start": 0.0,
+     "end": 100.323,
+     "output": "q5set07_lecture.mp3"
+    },
+    {
+     "stem": "q5set07_q32",
+     "cover": 1.0,
+     "firstWordStart": 100.42,
+     "lastWordEnd": 107.62,
+     "silence": [
+      108.403,
+      108.873
+     ],
+     "start": 100.323,
+     "end": 108.638,
+     "output": "q5set07_q32.mp3"
+    },
+    {
+     "stem": "q5set07_q33",
+     "cover": 0.941,
+     "firstWordStart": 109.1,
+     "lastWordEnd": 133.86,
+     "start": 108.638,
+     "end": 134.530563,
+     "output": "q5set07_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_21_58_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v4.mp3",
+   "sha256": "15969c841c7289fcb6a0559d95dc06dd42120c2b14c379a777f53a1f979ee7b5",
+   "durationSec": 130.926,
+   "tracks": [
+    {
+     "stem": "q5set09_lecture",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 98.12,
+     "silence": [
+      98.451,
+      98.99
+     ],
+     "start": 0.0,
+     "end": 98.72,
+     "output": "q5set09_lecture.mp3"
+    },
+    {
+     "stem": "q5set09_q32",
+     "cover": 1.0,
+     "firstWordStart": 98.78,
+     "lastWordEnd": 107.7,
+     "silence": [
+      108.043,
+      108.52
+     ],
+     "start": 98.72,
+     "end": 108.282,
+     "output": "q5set09_q32.mp3"
+    },
+    {
+     "stem": "q5set09_q33",
+     "cover": 0.967,
+     "firstWordStart": 108.38,
+     "lastWordEnd": 130.52,
+     "start": 108.282,
+     "end": 130.925688,
+     "output": "q5set09_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_02_18_Hope - upbeat and clear_pvc_sp96_s50_sb75_v4.mp3",
+   "sha256": "d821889ece80139d140325ede907a5d54cad7497b6bc188e5c2f715f04910417",
+   "durationSec": 140.121,
+   "tracks": [
+    {
+     "stem": "q5set11_lecture",
+     "cover": 0.986,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 107.18,
+     "silence": [
+      107.312,
+      107.82
+     ],
+     "start": 0.0,
+     "end": 107.566,
+     "output": "q5set11_lecture.mp3"
+    },
+    {
+     "stem": "q5set11_q32",
+     "cover": 1.0,
+     "firstWordStart": 107.72,
+     "lastWordEnd": 115.82,
+     "silence": [
+      116.034,
+      116.389
+     ],
+     "start": 107.566,
+     "end": 116.211,
+     "output": "q5set11_q32.mp3"
+    },
+    {
+     "stem": "q5set11_q33",
+     "cover": 0.967,
+     "firstWordStart": 116.34,
+     "lastWordEnd": 139.66,
+     "start": 116.211,
+     "end": 140.120813,
+     "output": "q5set11_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_14_18_Flint - Deep, Raspy, and Warm_pvc_sp100_s94_sb90_v4.mp3",
+   "sha256": "f8936613b1814c26784210bfa82281d4532187fe34dd40b837ddb8a7baaa6ccc",
+   "durationSec": 137.874,
+   "tracks": [
+    {
+     "stem": "q5set14_lecture",
+     "cover": 0.975,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 101.82,
+     "silence": [
+      102.045,
+      102.648
+     ],
+     "start": 0.0,
+     "end": 102.347,
+     "output": "q5set14_lecture.mp3"
+    },
+    {
+     "stem": "q5set14_q32",
+     "cover": 0.913,
+     "firstWordStart": 102.58,
+     "lastWordEnd": 110.8,
+     "silence": [
+      110.954,
+      111.372
+     ],
+     "start": 102.347,
+     "end": 111.163,
+     "output": "q5set14_q32.mp3"
+    },
+    {
+     "stem": "q5set14_q33",
+     "cover": 0.97,
+     "firstWordStart": 111.3,
+     "lastWordEnd": 137.46,
+     "start": 111.163,
+     "end": 137.87425,
+     "output": "q5set14_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_24_56_Adam - American, Dark and Tough_pvc_sp100_s50_sb75_v4.mp3",
+   "sha256": "f45a784be4ef81a9c77d201a5f5f8d0c615832d8aaa3551360c7105ae7633f28",
+   "durationSec": 136.046,
+   "tracks": [
+    {
+     "stem": "q5set10_lecture",
+     "cover": 0.996,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 100.3,
+     "silence": [
+      100.56,
+      101.222
+     ],
+     "start": 0.0,
+     "end": 100.891,
+     "output": "q5set10_lecture.mp3"
+    },
+    {
+     "stem": "q5set10_q32",
+     "cover": 1.0,
+     "firstWordStart": 101.08,
+     "lastWordEnd": 110.46,
+     "silence": [
+      110.767,
+      111.126
+     ],
+     "start": 100.891,
+     "end": 110.947,
+     "output": "q5set10_q32.mp3"
+    },
+    {
+     "stem": "q5set10_q33",
+     "cover": 0.897,
+     "firstWordStart": 110.46,
+     "lastWordEnd": 135.64,
+     "start": 110.947,
+     "end": 136.045688,
+     "output": "q5set10_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T00_19_46_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v4.mp3",
+   "sha256": "19792bbb49427bc8d52ec926227f4ae85b6b2974c56bb1519815426326b5e8c8",
+   "durationSec": 128.444,
+   "tracks": [
+    {
+     "stem": "q5set08_lecture",
+     "cover": 0.978,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 104.1,
+     "silence": [
+      104.325,
+      104.884
+     ],
+     "start": 0.0,
+     "end": 104.604,
+     "output": "q5set08_lecture.mp3",
+     "supersededBy": "ElevenLabs_2026-09-29T02_21_38_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v4.mp3"
+    },
+    {
+     "stem": "q5set08_q33",
+     "cover": 0.935,
+     "firstWordStart": 104.8,
+     "lastWordEnd": 128.04,
+     "start": 104.604,
+     "end": 128.444063,
+     "output": "q5set08_q33.mp3",
+     "supersededBy": "ElevenLabs_2026-09-29T02_21_38_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "edited_set04_from_00_33_32.mp3",
+   "sha256": "61ca1e9f08cad05c68adf9e16bd79856fe6d8462e3b98369ed40d000bef2fb35",
+   "durationSec": 124.238,
+   "tracks": [
+    {
+     "stem": "q5set04_lecture",
+     "cover": 0.978,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 90.24,
+     "silence": [
+      90.353,
+      91.086
+     ],
+     "start": 0.0,
+     "end": 90.719,
+     "output": "q5set04_lecture.mp3"
+    },
+    {
+     "stem": "q5set04_q32",
+     "cover": 1.0,
+     "firstWordStart": 90.92,
+     "lastWordEnd": 98.64,
+     "silence": [
+      98.844,
+      99.276
+     ],
+     "start": 90.719,
+     "end": 99.06,
+     "output": "q5set04_q32.mp3"
+    },
+    {
+     "stem": "q5set04_q33",
+     "cover": 0.972,
+     "firstWordStart": 99.28,
+     "lastWordEnd": 123.82,
+     "start": 99.06,
+     "end": 124.238367,
+     "output": "q5set04_q33.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-29T02_21_38_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v4.mp3",
+   "sha256": "55601a5e49c09a69344f3f7d43bdd0d65e59fe30b65f72a5f526219c3d455d2c",
+   "durationSec": 143.647,
+   "tracks": [
+    {
+     "stem": "q5set08_lecture",
+     "cover": 0.971,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 111.24,
+     "silence": [
+      111.485,
+      112.1
+     ],
+     "start": 0.0,
+     "end": 111.792,
+     "output": "q5set08_lecture.mp3"
+    },
+    {
+     "stem": "q5set08_q32",
+     "cover": 1.0,
+     "firstWordStart": 112.04,
+     "lastWordEnd": 121.2,
+     "silence": [
+      121.429,
+      121.983
+     ],
+     "start": 111.792,
+     "end": 121.706,
+     "output": "q5set08_q32.mp3"
+    },
+    {
+     "stem": "q5set08_q33",
+     "cover": 0.919,
+     "firstWordStart": 121.84,
+     "lastWordEnd": 143.3,
+     "start": 121.706,
+     "end": 143.647313,
+     "output": "q5set08_q33.mp3"
+    }
+   ]
+  }
+ ],
+ "history": [
+  "2026-09-29T00:57:26.680598+00:00",
+  "2026-09-29T00:58:26.912834+00:00"
+ ]
+}

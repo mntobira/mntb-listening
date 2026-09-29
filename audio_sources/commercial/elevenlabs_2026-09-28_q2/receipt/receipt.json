@@ -1,0 +1,44 @@
+{
+  "batch": "elevenlabs_2026-09-28_q2",
+  "kind": "commercial",
+  "provider": "ElevenLabs（利用者が直接生成・eleven_v3）",
+  "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-28。契約画面の証拠は未確認）",
+  "note": "第2問48問（16回×3問）を5ファイルに分けて録音。設問文 Question. … も読み上げ",
+  "files": [
+    {
+      "originalFilename": "Q2_1.mp3",
+      "sha256": "b4ae138cb7890ab2d28f2fbd5659912d398938a130cf568e5862d40006d81999",
+      "bytes": 2477591,
+      "durationSeconds": 153.808938,
+      "receivedAtUtc": "2026-09-28T18:23:17.304Z"
+    },
+    {
+      "originalFilename": "Q2_2.mp3",
+      "sha256": "5a8e46beac067a4b662aacd90db06a484bcd6a9439228079dc3fdd914177b596",
+      "bytes": 3090737,
+      "durationSeconds": 192.130563,
+      "receivedAtUtc": "2026-09-28T18:23:17.652Z"
+    },
+    {
+      "originalFilename": "Q2_3.mp3",
+      "sha256": "1b8137a80ed92cb58e351e92606f0000e012d39eee57a769499cb9b381f086f8",
+      "bytes": 2966185,
+      "durationSeconds": 184.346063,
+      "receivedAtUtc": "2026-09-28T18:23:17.979Z"
+    },
+    {
+      "originalFilename": "Q2_4.mp3",
+      "sha256": "ed768fcf6a3b9849a77b7c6863aac187a7449c776cfaa061c31fbb5d69e65b72",
+      "bytes": 2943198,
+      "durationSeconds": 182.909375,
+      "receivedAtUtc": "2026-09-28T18:23:18.347Z"
+    },
+    {
+      "originalFilename": "Q2_5.mp3",
+      "sha256": "c85f1905db1f54f9c914196f568fe07e5682523c8d59a643d9a598a76ecd16af",
+      "bytes": 2510610,
+      "durationSeconds": 155.872625,
+      "receivedAtUtc": "2026-09-28T18:23:18.645Z"
+    }
+  ]
+}

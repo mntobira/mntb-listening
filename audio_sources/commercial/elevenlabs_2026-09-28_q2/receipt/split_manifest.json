@@ -1,0 +1,646 @@
+{
+ "batch": "elevenlabs_2026-09-28_q2",
+ "createdAtUtc": "2026-09-28T18:25:10.911011+00:00",
+ "method": "台本と音声認識の単語を突き合わせ、文間の無音の中央で切断。速度・音程は無変更。mp3 はストリームコピー。",
+ "sources": [
+  {
+   "file": "Q2_1.mp3",
+   "sha256": "b4ae138cb7890ab2d28f2fbd5659912d398938a130cf568e5862d40006d81999",
+   "durationSec": 153.809,
+   "tracks": [
+    {
+     "stem": "el2_set1_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 12.9,
+     "silence": [
+      13.194,
+      14.256
+     ],
+     "start": 0.0,
+     "end": 13.725,
+     "output": "el2_set1_q1.mp3"
+    },
+    {
+     "stem": "el2_set1_q2",
+     "cover": 0.97,
+     "firstWordStart": 14.1,
+     "lastWordEnd": 26.58,
+     "silence": [
+      26.958,
+      28.045
+     ],
+     "start": 13.725,
+     "end": 27.502,
+     "output": "el2_set1_q2.mp3"
+    },
+    {
+     "stem": "el2_set1_q3",
+     "cover": 1.0,
+     "firstWordStart": 27.64,
+     "lastWordEnd": 44.38,
+     "silence": [
+      44.587,
+      45.508
+     ],
+     "start": 27.502,
+     "end": 45.048,
+     "output": "el2_set1_q3.mp3"
+    },
+    {
+     "stem": "el2_set2_q1",
+     "cover": 0.971,
+     "firstWordStart": 45.14,
+     "lastWordEnd": 59.38,
+     "silence": [
+      59.592,
+      60.783
+     ],
+     "start": 45.048,
+     "end": 60.188,
+     "output": "el2_set2_q1.mp3"
+    },
+    {
+     "stem": "el2_set2_q2",
+     "cover": 0.977,
+     "firstWordStart": 60.32000000000001,
+     "lastWordEnd": 77.6,
+     "silence": [
+      77.82,
+      78.618
+     ],
+     "start": 60.188,
+     "end": 78.219,
+     "output": "el2_set2_q2.mp3"
+    },
+    {
+     "stem": "el2_set2_q3",
+     "cover": 1.0,
+     "firstWordStart": 78.4,
+     "lastWordEnd": 91.36,
+     "silence": [
+      91.539,
+      92.733
+     ],
+     "start": 78.219,
+     "end": 92.136,
+     "output": "el2_set2_q3.mp3"
+    },
+    {
+     "stem": "el2_set3_q1",
+     "cover": 1.0,
+     "firstWordStart": 92.26,
+     "lastWordEnd": 108.06,
+     "silence": [
+      108.378,
+      109.5
+     ],
+     "start": 92.136,
+     "end": 108.939,
+     "output": "el2_set3_q1.mp3"
+    },
+    {
+     "stem": "el2_set3_q2",
+     "cover": 1.0,
+     "firstWordStart": 109.12,
+     "lastWordEnd": 122.28,
+     "silence": [
+      122.613,
+      123.857
+     ],
+     "start": 108.939,
+     "end": 123.235,
+     "output": "el2_set3_q2.mp3"
+    },
+    {
+     "stem": "el2_set3_q3",
+     "cover": 0.973,
+     "firstWordStart": 123.48,
+     "lastWordEnd": 138.8,
+     "silence": [
+      139.023,
+      139.831
+     ],
+     "start": 123.235,
+     "end": 139.427,
+     "output": "el2_set3_q3.mp3"
+    },
+    {
+     "stem": "el2_set4_q1",
+     "cover": 1.0,
+     "firstWordStart": 139.72,
+     "lastWordEnd": 153.52,
+     "start": 139.427,
+     "end": 153.808938,
+     "output": "el2_set4_q1.mp3"
+    }
+   ]
+  },
+  {
+   "file": "Q2_2.mp3",
+   "sha256": "5a8e46beac067a4b662aacd90db06a484bcd6a9439228079dc3fdd914177b596",
+   "durationSec": 192.131,
+   "tracks": [
+    {
+     "stem": "el2_set4_q2",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 17.78,
+     "silence": [
+      18.058,
+      19.145
+     ],
+     "start": 0.0,
+     "end": 18.602,
+     "output": "el2_set4_q2.mp3"
+    },
+    {
+     "stem": "el2_set4_q3",
+     "cover": 0.978,
+     "firstWordStart": 18.8,
+     "lastWordEnd": 35.36,
+     "silence": [
+      35.574,
+      37.023
+     ],
+     "start": 18.602,
+     "end": 36.298,
+     "output": "el2_set4_q3.mp3"
+    },
+    {
+     "stem": "el2_set5_q1",
+     "cover": 1.0,
+     "firstWordStart": 36.540000000000006,
+     "lastWordEnd": 56.32,
+     "silence": [
+      56.538,
+      58.215
+     ],
+     "start": 36.298,
+     "end": 57.377,
+     "output": "el2_set5_q1.mp3"
+    },
+    {
+     "stem": "el2_set5_q2",
+     "cover": 0.973,
+     "firstWordStart": 58.02,
+     "lastWordEnd": 72.76,
+     "silence": [
+      73.12,
+      74.533
+     ],
+     "start": 57.377,
+     "end": 73.827,
+     "output": "el2_set5_q2.mp3"
+    },
+    {
+     "stem": "el2_set5_q3",
+     "cover": 1.0,
+     "firstWordStart": 74.16000000000001,
+     "lastWordEnd": 94.38,
+     "silence": [
+      94.766,
+      96.222
+     ],
+     "start": 73.827,
+     "end": 95.494,
+     "output": "el2_set5_q3.mp3"
+    },
+    {
+     "stem": "el2_set6_q1",
+     "cover": 1.0,
+     "firstWordStart": 95.78,
+     "lastWordEnd": 109.2,
+     "silence": [
+      109.542,
+      110.719
+     ],
+     "start": 95.494,
+     "end": 110.13,
+     "output": "el2_set6_q1.mp3"
+    },
+    {
+     "stem": "el2_set6_q2",
+     "cover": 0.976,
+     "firstWordStart": 110.32,
+     "lastWordEnd": 129.34,
+     "silence": [
+      129.554,
+      130.801
+     ],
+     "start": 110.13,
+     "end": 130.177,
+     "output": "el2_set6_q2.mp3"
+    },
+    {
+     "stem": "el2_set6_q3",
+     "cover": 1.0,
+     "firstWordStart": 130.3,
+     "lastWordEnd": 148.3,
+     "silence": [
+      148.803,
+      149.987
+     ],
+     "start": 130.177,
+     "end": 149.395,
+     "output": "el2_set6_q3.mp3"
+    },
+    {
+     "stem": "el2_set7_q1",
+     "cover": 0.976,
+     "firstWordStart": 149.54000000000002,
+     "lastWordEnd": 168.0,
+     "silence": [
+      168.412,
+      169.468
+     ],
+     "start": 149.395,
+     "end": 168.94,
+     "output": "el2_set7_q1.mp3"
+    },
+    {
+     "stem": "el2_set7_q2",
+     "cover": 0.978,
+     "firstWordStart": 168.98000000000002,
+     "lastWordEnd": 191.88,
+     "start": 168.94,
+     "end": 192.130563,
+     "output": "el2_set7_q2.mp3"
+    }
+   ]
+  },
+  {
+   "file": "Q2_3.mp3",
+   "sha256": "1b8137a80ed92cb58e351e92606f0000e012d39eee57a769499cb9b381f086f8",
+   "durationSec": 184.346,
+   "tracks": [
+    {
+     "stem": "el2_set7_q3",
+     "cover": 0.981,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 17.48,
+     "silence": [
+      17.764,
+      19.322
+     ],
+     "start": 0.0,
+     "end": 18.543,
+     "output": "el2_set7_q3.mp3"
+    },
+    {
+     "stem": "el2_set8_q1",
+     "cover": 0.974,
+     "firstWordStart": 18.92,
+     "lastWordEnd": 35.4,
+     "silence": [
+      35.743,
+      36.978
+     ],
+     "start": 18.543,
+     "end": 36.36,
+     "output": "el2_set8_q1.mp3"
+    },
+    {
+     "stem": "el2_set8_q2",
+     "cover": 1.0,
+     "firstWordStart": 36.68,
+     "lastWordEnd": 54.6,
+     "silence": [
+      54.929,
+      56.18
+     ],
+     "start": 36.36,
+     "end": 55.555,
+     "output": "el2_set8_q2.mp3"
+    },
+    {
+     "stem": "el2_set8_q3",
+     "cover": 1.0,
+     "firstWordStart": 55.74,
+     "lastWordEnd": 78.08,
+     "silence": [
+      78.583,
+      79.851
+     ],
+     "start": 55.555,
+     "end": 79.217,
+     "output": "el2_set8_q3.mp3"
+    },
+    {
+     "stem": "el2_set9_q1",
+     "cover": 1.0,
+     "firstWordStart": 79.30000000000001,
+     "lastWordEnd": 95.98,
+     "silence": [
+      96.244,
+      97.516
+     ],
+     "start": 79.217,
+     "end": 96.88,
+     "output": "el2_set9_q1.mp3"
+    },
+    {
+     "stem": "el2_set9_q2",
+     "cover": 0.943,
+     "firstWordStart": 98.28,
+     "lastWordEnd": 111.86,
+     "silence": [
+      112.142,
+      113.487
+     ],
+     "start": 96.88,
+     "end": 112.815,
+     "output": "el2_set9_q2.mp3"
+    },
+    {
+     "stem": "el2_set9_q3",
+     "cover": 0.974,
+     "firstWordStart": 113.12,
+     "lastWordEnd": 130.36,
+     "silence": [
+      130.685,
+      131.912
+     ],
+     "start": 112.815,
+     "end": 131.298,
+     "output": "el2_set9_q3.mp3"
+    },
+    {
+     "stem": "el2_set10_q1",
+     "cover": 1.0,
+     "firstWordStart": 131.52,
+     "lastWordEnd": 147.7,
+     "silence": [
+      147.977,
+      149.118
+     ],
+     "start": 131.298,
+     "end": 148.548,
+     "output": "el2_set10_q1.mp3"
+    },
+    {
+     "stem": "el2_set10_q2",
+     "cover": 0.828,
+     "firstWordStart": 148.98,
+     "lastWordEnd": 162.12,
+     "silence": [
+      162.541,
+      163.812
+     ],
+     "start": 148.548,
+     "end": 163.177,
+     "output": "el2_set10_q2.mp3"
+    },
+    {
+     "stem": "el2_set10_q3",
+     "cover": 1.0,
+     "firstWordStart": 163.3,
+     "lastWordEnd": 184.06,
+     "start": 163.177,
+     "end": 184.346063,
+     "output": "el2_set10_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "Q2_4.mp3",
+   "sha256": "ed768fcf6a3b9849a77b7c6863aac187a7449c776cfaa061c31fbb5d69e65b72",
+   "durationSec": 182.909,
+   "tracks": [
+    {
+     "stem": "el2_set11_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 17.28,
+     "silence": [
+      17.511,
+      18.794
+     ],
+     "start": 0.0,
+     "end": 18.153,
+     "output": "el2_set11_q1.mp3"
+    },
+    {
+     "stem": "el2_set11_q2",
+     "cover": 1.0,
+     "firstWordStart": 18.4,
+     "lastWordEnd": 35.28,
+     "silence": [
+      35.755,
+      37.048
+     ],
+     "start": 18.153,
+     "end": 36.401,
+     "output": "el2_set11_q2.mp3"
+    },
+    {
+     "stem": "el2_set11_q3",
+     "cover": 0.974,
+     "firstWordStart": 36.48,
+     "lastWordEnd": 53.14,
+     "silence": [
+      53.508,
+      54.777
+     ],
+     "start": 36.401,
+     "end": 54.143,
+     "output": "el2_set11_q3.mp3"
+    },
+    {
+     "stem": "el2_set12_q1",
+     "cover": 0.971,
+     "firstWordStart": 54.26,
+     "lastWordEnd": 70.14,
+     "silence": [
+      70.381,
+      72.057
+     ],
+     "start": 54.143,
+     "end": 71.219,
+     "output": "el2_set12_q1.mp3"
+    },
+    {
+     "stem": "el2_set12_q2",
+     "cover": 0.972,
+     "firstWordStart": 71.6,
+     "lastWordEnd": 86.88,
+     "silence": [
+      87.107,
+      88.342
+     ],
+     "start": 71.219,
+     "end": 87.725,
+     "output": "el2_set12_q2.mp3"
+    },
+    {
+     "stem": "el2_set12_q3",
+     "cover": 1.0,
+     "firstWordStart": 88.06,
+     "lastWordEnd": 108.64,
+     "silence": [
+      108.894,
+      109.842
+     ],
+     "start": 87.725,
+     "end": 109.368,
+     "output": "el2_set12_q3.mp3"
+    },
+    {
+     "stem": "el2_set13_q1",
+     "cover": 1.0,
+     "firstWordStart": 109.48,
+     "lastWordEnd": 127.42,
+     "silence": [
+      127.778,
+      129.292
+     ],
+     "start": 109.368,
+     "end": 128.535,
+     "output": "el2_set13_q1.mp3"
+    },
+    {
+     "stem": "el2_set13_q2",
+     "cover": 1.0,
+     "firstWordStart": 128.82,
+     "lastWordEnd": 145.5,
+     "silence": [
+      145.868,
+      147.455
+     ],
+     "start": 128.535,
+     "end": 146.661,
+     "output": "el2_set13_q2.mp3"
+    },
+    {
+     "stem": "el2_set13_q3",
+     "cover": 1.0,
+     "firstWordStart": 146.94,
+     "lastWordEnd": 163.06,
+     "silence": [
+      163.366,
+      164.652
+     ],
+     "start": 146.661,
+     "end": 164.009,
+     "output": "el2_set13_q3.mp3"
+    },
+    {
+     "stem": "el2_set14_q1",
+     "cover": 1.0,
+     "firstWordStart": 164.10000000000002,
+     "lastWordEnd": 182.56,
+     "start": 164.009,
+     "end": 182.909375,
+     "output": "el2_set14_q1.mp3"
+    }
+   ]
+  },
+  {
+   "file": "Q2_5.mp3",
+   "sha256": "c85f1905db1f54f9c914196f568fe07e5682523c8d59a643d9a598a76ecd16af",
+   "durationSec": 155.873,
+   "tracks": [
+    {
+     "stem": "el2_set14_q2",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 18.7,
+     "silence": [
+      18.88,
+      20.414
+     ],
+     "start": 0.0,
+     "end": 19.647,
+     "output": "el2_set14_q2.mp3"
+    },
+    {
+     "stem": "el2_set14_q3",
+     "cover": 0.912,
+     "firstWordStart": 20.22,
+     "lastWordEnd": 38.54,
+     "silence": [
+      38.824,
+      40.753
+     ],
+     "start": 19.647,
+     "end": 39.789,
+     "output": "el2_set14_q3.mp3"
+    },
+    {
+     "stem": "el2_set15_q1",
+     "cover": 0.923,
+     "firstWordStart": 40.2,
+     "lastWordEnd": 59.44,
+     "silence": [
+      59.643,
+      60.827
+     ],
+     "start": 39.789,
+     "end": 60.235,
+     "output": "el2_set15_q1.mp3"
+    },
+    {
+     "stem": "el2_set15_q2",
+     "cover": 1.0,
+     "firstWordStart": 60.42,
+     "lastWordEnd": 75.46,
+     "silence": [
+      75.635,
+      77.379
+     ],
+     "start": 60.235,
+     "end": 76.507,
+     "output": "el2_set15_q2.mp3"
+    },
+    {
+     "stem": "el2_set15_q3",
+     "cover": 0.975,
+     "firstWordStart": 76.94,
+     "lastWordEnd": 95.58,
+     "silence": [
+      95.744,
+      97.669
+     ],
+     "start": 76.507,
+     "end": 96.706,
+     "output": "el2_set15_q3.mp3"
+    },
+    {
+     "stem": "el2_set16_q1",
+     "cover": 1.0,
+     "firstWordStart": 97.08,
+     "lastWordEnd": 115.46,
+     "silence": [
+      115.645,
+      117.2
+     ],
+     "start": 96.706,
+     "end": 116.422,
+     "output": "el2_set16_q1.mp3"
+    },
+    {
+     "stem": "el2_set16_q2",
+     "cover": 0.957,
+     "firstWordStart": 116.74,
+     "lastWordEnd": 137.18,
+     "silence": [
+      137.274,
+      138.944
+     ],
+     "start": 116.422,
+     "end": 138.109,
+     "output": "el2_set16_q2.mp3"
+    },
+    {
+     "stem": "el2_set16_q3",
+     "cover": 0.881,
+     "firstWordStart": 138.57999999999998,
+     "lastWordEnd": 155.5,
+     "start": 138.109,
+     "end": 155.872625,
+     "output": "el2_set16_q3.mp3"
+    }
+   ]
+  }
+ ]
+}

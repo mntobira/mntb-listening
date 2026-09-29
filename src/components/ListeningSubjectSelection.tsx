@@ -3,7 +3,7 @@ import { ArrowRight, BookOpen, ChevronLeft, Headphones, PenLine, Swords } from '
 import type { SubjectId } from './SubjectSelection';
 import { getSubjectStats } from '../data/chapterIndex.generated';
 import { VOCABULARY_COUNT } from '../data/listeningVocabularyMeta.generated';
-import { auth, FIREBASE_CONFIGURED } from '../firebase';
+import { auth } from '../firebase';
 import './listening-home.css';
 
 /**
@@ -72,7 +72,7 @@ export function ListeningSubjectSelection({ onSelectSubject, currentSubject, onB
         </div>
         {onBattle && <button className="ls-foundation-battle" onClick={onBattle}>
           <span className="lh-battle-icon"><Swords size={22} /></span>
-          <span><strong>対戦で固める</strong><small>{FIREBASE_CONFIGURED ? '英文法・英単語もAI・友だち・全国対戦で選べます' : 'ゲストではAI対戦を楽しめます'}</small></span><ArrowRight size={18} />
+          <span><strong>対戦で固める</strong><small>英文法・英単語もAI・友だち・全国対戦で選べます</small></span><ArrowRight size={18} />
         </button>}
       </section>
 

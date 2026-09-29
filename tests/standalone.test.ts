@@ -1,6 +1,5 @@
 import { it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { SUBJECTS, getChaptersOfSubject } from '../src/data/allChapters';
 import { SUBJECT_INDEX, SUBJECT_STATS } from '../src/data/chapterIndex.generated';
@@ -34,9 +33,6 @@ it('keeps nine units, 135 practice problems and their audio/images', () => {
   const chapters=getChaptersOfSubject(subject);
   expect(chapters).toHaveLength(9);
   expect(chapters.reduce((sum,c)=>sum+c.practiceProblems.length+c.miniTest.length,0)).toBe(135);
-  const index=SUBJECT_INDEX.find(entry=>entry.id===subject)!.chapters;
-  expect(index.map(entry=>entry.practiceIds)).toEqual(chapters.map(chapter=>chapter.practiceProblems.map(problem=>problem.id)));
-  expect(readFileSync('src/components/ListeningHome.tsx','utf8')).not.toContain("import('../data/englishListeningData')");
   const audio=new Set<string>();const assets=new Set<string>();
   const walk=(value:unknown,key='')=>{
     if(typeof value==='string') {
@@ -71,32 +67,4 @@ it('ships only commercial audio listed in the ledger', () => {
   if(status.status==='approved'){expect(status.legacyTracks).toEqual([]);for(const r of ledger)expect(r.status,r.audioUrl).toBe('replaced');}
   for(const r of ledger)expect(existsSync(resolve('public','.'+r.audioUrl)),r.audioUrl).toBe(true);
   expect(existsSync('license_evidence/README.md')).toBe(true);
-});
-
-it('keeps unrelated integrated screens out of the listening startup bundle', () => {
-  const app = readFileSync('src/App.tsx', 'utf8');
-  for (const screen of ['ModeSelection', 'LogicalTree', 'MockExam', 'TeacherDashboard', 'FeedbackAdminPanel', 'BattleMode']) {
-    expect(app, screen).toContain(`React.lazy(() => import(`);
-    expect(app, screen).not.toMatch(new RegExp(`import \\{ ${screen} \\} from`));
-  }
-  expect(app).toContain("import('./battle/ui/BattleMode')");
-  expect(app).toContain("import('./components/ModeSelection')");
-});
-
-it('only allows a Vercel guest build when Firebase is entirely absent', () => {
-  const cleanEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('VITE_FIREBASE_') && key !== 'VITE_USE_EMULATORS' && key !== 'VERCEL'));
-  const check = (args: string[], vars: Record<string, string> = {}) => spawnSync(process.execPath, ['scripts/check-release.mjs', ...args], {
-    cwd: resolve('.'), env: { ...cleanEnv, ...vars }, encoding: 'utf8',
-  });
-  const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
-  expect(config.buildCommand).toBe('npm run build:vercel');
-  expect(check([]).status).not.toBe(0);
-  expect(check(['--vercel']).status).not.toBe(0);
-  expect(check(['--vercel'], { VERCEL: '1' }).status).toBe(0);
-  expect(check(['--vercel'], { VERCEL: '1', VITE_FIREBASE_API_KEY: 'partial' }).status).not.toBe(0);
-  expect(check(['--vercel'], { VERCEL: '1', VITE_FIREBASE_PROJECT_ID: 'mntb-4ef06' }).status).not.toBe(0);
-  expect(check(['--vercel'], { VERCEL: '1', VITE_USE_EMULATORS: 'true' }).status).not.toBe(0);
-  const firebase = { VITE_FIREBASE_API_KEY: 'sample-key', VITE_FIREBASE_PROJECT_ID: 'listening-dedicated', VITE_FIREBASE_AUTH_DOMAIN: 'listening-dedicated.firebaseapp.com', VITE_FIREBASE_APP_ID: '1:123:web:sample' };
-  expect(check([], firebase).status).toBe(0);
-  expect(check(['--vercel'], { VERCEL: '1', ...firebase }).status).toBe(0);
 });

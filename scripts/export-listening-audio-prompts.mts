@@ -29,7 +29,7 @@ for (const chapter of getAllListeningChapters()) for (const problem of chapter.p
   assert(t.script?.trim(), 'Missing script: ' + t.subId);
   const turns = t.turns?.length ? t.turns : [{who: 'solo', text: t.script}];
   const reference = extended.get(basename(t.audioUrl));
-  const roles: string[] = Array.from(new Set<string>(turns.map(x => String(x.who))));
+  const roles = [...new Set(turns.map(x => x.who))];
   const voicePlan = roles.map((who, index) => {
     const declared = reference?.speakers?.find((s: any) => s.name === who) || prior.get(t.audioUrl)?.speakers?.[who];
     // Only descriptive metadata is exported; old provider-specific voice IDs are not transferable.

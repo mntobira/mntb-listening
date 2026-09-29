@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { BookOpen, ChevronRight, Edit3, ArrowRight, BarChart3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Microscope, Flame, Sparkles, Gift, Store, Shirt, Award, Target, Zap } from 'lucide-react';
+import { BookOpen, ChevronRight, Edit3, ArrowRight, BarChart3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Microscope, Flame, Sparkles, Gift, Store, Shirt, Award, Target, Zap, Headphones, PenLine } from 'lucide-react';
 import { auth } from '../firebase';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc, equippedFrameColor, equippedFramePattern, levelOf, equippedTitleLabel } from '../battle/core/growth';
@@ -391,10 +391,10 @@ export function Home({ onPickSubject, onStudyMode, onGrowth, onStart, onIntro, o
           {onBattle && <button type="button" onClick={onBattle} className="home-battle-button game-main-action" aria-label="オンライン対戦を開く" data-home-battle><span className="home-battle-emblem" aria-hidden="true"><Swords /></span><strong>対戦する</strong><small>全国・フレンド・AI</small></button>}
           <button type="button" className="game-side-action game-review" aria-label="学習ノートを開く" onClick={onNoteList}><Repeat2 /><small>苦手をなくす</small><strong>復習ノート</strong>{reviewDueCount > 0 && <b>{reviewDueCount}</b>}</button>
         </section>
-        <section className="game-study-bar" aria-label="科目とまとめプリント" data-home-study>
+        <section className="game-study-bar" aria-label="科目と英文法・英単語" data-home-study>
           {onPickSubject ? <label><BookOpen size={17} /><select aria-label="学習する科目" value={subject} onChange={e => onPickSubject(e.target.value)}>{SUBJECT_INDEX.filter(s => isSubjectEnabled(s.id)).map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
-            : <button type="button" onClick={onChangeSubject}>{subjectLabel}・変更</button>}
-          <button type="button" onClick={() => onStudyMode ? onStudyMode('practice') : onStart()}><BookOpen size={16} />大問を選ぶ</button>
+            : <button type="button" onClick={onChangeSubject} aria-label={`科目をえらぶ（いまは${subjectLabel}）`}><Headphones size={16} />{subjectLabel}<small>・科目</small></button>}
+          <button type="button" onClick={onChangeSubject} data-home-foundation><PenLine size={16} />英文法・英単語を固める</button>
         </section>
         <div className={`game-home-utility arena-home-bottom ${onGrowth ? 'has-rush' : ''}`}>
           {onGrowth && <button type="button" className="game-rush-entry" onClick={() => onGrowth('rush')} aria-label="マナラッシュ（60秒チャレンジ）を開く" data-home-rush><Zap size={17} />ラッシュ</button>}

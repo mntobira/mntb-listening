@@ -6,11 +6,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Smartphone, Home as HomeIcon, BookOpen, Settings, Trophy, Swords, UserRound, Gift } from 'lucide-react';
 import { ListeningHome as Home } from './components/ListeningHome';
+import { ListeningSubjectSelection } from './components/ListeningSubjectSelection';
 import { LaunchScreen } from './components/LaunchScreen';
-// Keep the entry and listening home small. Screens from the integrated edition
-// are loaded only when visited, not with every listening session.
-const ProfileModal = React.lazy(() => import('./components/ProfileModal').then(m => ({ default: m.ProfileModal })));
-const ModeSelection = React.lazy(() => import('./components/ModeSelection').then(m => ({ default: m.ModeSelection })));
+import { ProfileModal } from './components/ProfileModal';
+import { ModeSelection } from './components/ModeSelection';
 /*
  * ★単元選択画面も「開いたときに読む」（遅延読み込み）★
  *
@@ -98,22 +97,20 @@ const QuizScreens = React.lazy(() =>
 const LearningViewer = React.lazy(() =>
   import('./components/LearningViewer').then((m) => ({ default: m.LearningViewer })),
 );
-const Leaderboard = React.lazy(() => import('./components/Leaderboard').then(m => ({ default: m.Leaderboard })));
+import { Leaderboard } from './components/Leaderboard';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth, FIREBASE_CONFIGURED } from './firebase';
-const Intro = React.lazy(() => import('./components/Intro').then(m => ({ default: m.Intro })));
-const LogicalTree = React.lazy(() => import('./components/LogicalTree').then(m => ({ default: m.LogicalTree })));
-const NoteDetail = React.lazy(() => import('./components/NoteDetail').then(m => ({ default: m.NoteDetail })));
-const StudyHub = React.lazy(() => import('./components/StudyHub').then(m => ({ default: m.StudyHub })));
-import type { StudyHubView } from './components/StudyHub';
+import { auth } from './firebase';
+import { Intro } from './components/Intro';
+import { LogicalTree } from './components/LogicalTree';
+import { NoteDetail } from './components/NoteDetail';
+import { StudyHub, type StudyHubView } from './components/StudyHub';
 import { ScreenLoading, ScreenUnavailable } from './components/ScreenStatus';
-import { studyEntry, isLearningScreen } from './utils/studyNavigation';
+import { studyEntry, isLearningScreen, safeStudyResume } from './utils/studyNavigation';
 import { setFormatMathContext } from './utils/textFormatter';
 import { resolveReviewTarget } from './utils/reviewTarget';
 import { Onboarding } from './components/Onboarding';
-const MockExam = React.lazy(() => import('./components/MockExam').then(m => ({ default: m.MockExam })));
-import { getSubjectLabel, isSubjectId, type SubjectId } from './components/SubjectSelection';
-const ListeningSubjectSelection = React.lazy(() => import('./components/ListeningSubjectSelection').then(m => ({ default: m.ListeningSubjectSelection })));
+import { MockExam } from './components/MockExam';
+import { SubjectSelection, getSubjectLabel, isSubjectId, type SubjectId } from './components/SubjectSelection';
 /*
  * 本体に教科データを持たない教科（高校入試 理科など）の登録簿。
  * ★何も import しない葉ファイルなので、ここから読んでも問題データは付いてこない★
@@ -245,11 +242,11 @@ import {
   quizStepKey,
 } from './utils/quizStorageKeys';
 import { pullStudyData, installStudySyncFlush, resetStudySyncState } from './utils/studySync';
-const TeacherDashboard = React.lazy(() => import('./components/TeacherDashboard').then(m => ({ default: m.TeacherDashboard })));
-const FeedbackAdminPanel = React.lazy(() => import('./components/FeedbackAdminPanel').then(m => ({ default: m.FeedbackAdminPanel })));
+import { TeacherDashboard } from './components/TeacherDashboard';
+import { FeedbackAdminPanel } from './components/FeedbackAdminPanel';
 import { battleAudio } from './battle/audio/battleAudio';
 import { installFriendPresence } from './utils/friendPresence';
-const BattleMode = React.lazy(() => import('./battle/ui/BattleMode').then(m => ({ default: m.BattleMode })));
+import { BattleMode } from './battle/ui/BattleMode';
 import type { GrowthPage } from './components/GrowthHub';
 const GrowthHub = React.lazy(() => import('./components/GrowthHub').then(m => ({ default: m.GrowthHub })));
 const MissionToast = React.lazy(() => import('./components/MissionToast').then(m => ({ default: m.MissionToast })));
@@ -332,7 +329,7 @@ export default function App() {
 
   const [appState, setAppState] = useState<AppState>(() => {
     const saved = localStorage.getItem('savedAppState');
-    return isAppState(saved) && (saved !== 'leaderboard' || FIREBASE_CONFIGURED) ? saved : 'onboarding';
+    return isAppState(saved) ? saved : 'onboarding';
   });
   const [appMode, setAppMode] = useState<AppMode>(() => {
     const saved = localStorage.getItem('savedAppMode');
@@ -1496,7 +1493,6 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            <React.Suspense fallback={<ScreenLoading />}>
             {appState === 'settings' && <ProfileModal onClose={() => setAppState(prevAppState)} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} />}
             {/* 先生ダッシュボード。戻る先を設定にしているのは、入ってきた経路と揃えるため。 */}
             {appState === 'teacher_dashboard' && <TeacherDashboard onBack={() => setAppState('settings')} />}
@@ -1523,7 +1519,7 @@ export default function App() {
                 onBattle={FEATURES.battle ? () => setAppState('battle') : undefined}
               />
             )}
-            {appState === 'home' && <Home onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLogicalTree={() => setAppState('logical_tree')} onLeaderboard={FIREBASE_CONFIGURED && FEATURES.ranking ? () => setAppState('leaderboard') : undefined} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onRika={FEATURES.rika ? () => { setRikaTab('practice'); setAppState('rika'); } : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
+            {appState === 'home' && <Home onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLogicalTree={() => setAppState('logical_tree')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onRika={FEATURES.rika ? () => { setRikaTab('practice'); setAppState('rika'); } : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
             {/* ★ルーティング側の門（4箇所のうちの3番目）★
                 ナビのボタンを隠すだけでは、Home の「ランキングを見る」など
                 別の導線からこの状態になれてしまう。
@@ -1534,7 +1530,7 @@ export default function App() {
                 onBattle={FEATURES.battle ? () => navigateMain('battle') : undefined}
                 onReview={() => { setStudyHubView({ tab: 'today', subjectTab: 'all' }); navigateMain('study_hub'); }} />
             </React.Suspense>}
-            {appState === 'leaderboard' && FEATURES.ranking && FIREBASE_CONFIGURED && <Leaderboard onBack={() => setAppState('home')} isGuest={isGuest} initialChapterId={selectedChapterId} initialSubject={selectedSubject} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
+            {appState === 'leaderboard' && FEATURES.ranking && <Leaderboard onBack={() => setAppState('home')} isGuest={isGuest} initialChapterId={selectedChapterId} initialSubject={selectedSubject} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
             {/* ★対戦モード（ルーティング側の門）★
                 ホームのボタンを隠すだけでは、localStorage に残った
                 appState='battle' から復元して入れてしまう。
@@ -1683,7 +1679,6 @@ export default function App() {
             {appState === 'note_detail' && (selectedNote
               ? <NoteDetail note={selectedNote} onBack={() => setAppState('study_hub')} onReview={handleReviewNote} />
               : <ScreenUnavailable message="ノートを一覧から選び直してください。保存したノートは削除されていません。" onBack={() => setAppState('study_hub')} backLabel="学習ノートへ戻る" />)}
-            </React.Suspense>
 
             {/* Global Bottom Navigation Footer
                 日本語ラベル化（ホーム／学習／設定）＋aria-labelをaria-currentで現在地を明示
@@ -1727,10 +1722,7 @@ export default function App() {
                 <button 
                   onClick={() => {
                     if (!isLearningScreen(appState)) {
-                      // 専用版では「学習」からモード選択を挟まず、直接リスニングの大問へ。
-                      setSelectedSubject('english_listening');
-                      setAppMode('practice');
-                      navigateMain('chapters');
+                      navigateMain(safeStudyResume(selectedSubject, lastLearnState, selectedChapterId) as AppState);
                     }
                   }}
                   aria-label="学習画面へ移動"
@@ -1764,12 +1756,12 @@ export default function App() {
                 {FEATURES.battle && (
                 <button
                   onClick={() => navigateMain('battle')}
-                  aria-label={FIREBASE_CONFIGURED ? 'オンライン対戦へ移動' : 'AI対戦へ移動'}
+                  aria-label="オンライン対戦へ移動"
                   aria-current={appState === 'battle' ? 'page' : undefined}
                   className={`flex flex-col items-center justify-center min-w-0 flex-1 gap-1.5 min-h-[44px] transition-colors ${appState === 'battle' ? 'text-[#2E86C1] font-bold' : 'text-[#4B5563]/60 hover:text-[#2E86C1]/80'}`}
                 >
                   <Swords className="w-5 h-5 stroke-[2.2]" aria-hidden="true" />
-                  <span className="text-[10px] tracking-wider font-modern">{FIREBASE_CONFIGURED ? '対戦' : 'AI対戦'}</span>
+                  <span className="text-[10px] tracking-wider font-modern">対戦</span>
                 </button>
                 )}
 
@@ -1785,7 +1777,7 @@ export default function App() {
                   className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5 min-h-[44px] ${appState === 'growth' ? 'text-amber-800 font-bold' : 'text-slate-500'}`}>
                   <Gift className="w-5 h-5" aria-hidden="true" /><span className="text-[10px]">ガチャ</span>
                 </button>
-                {FEATURES.ranking && FIREBASE_CONFIGURED && (
+                {FEATURES.ranking && (
                 <button 
                   onClick={() => navigateMain('leaderboard')}
                   aria-label="ランキング画面へ移動"

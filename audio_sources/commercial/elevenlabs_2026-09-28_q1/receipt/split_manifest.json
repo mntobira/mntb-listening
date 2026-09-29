@@ -1,0 +1,1493 @@
+{
+ "batch": "elevenlabs_2026-09-28_q1",
+ "createdAtUtc": "2026-09-28T07:40:14.247683+00:00",
+ "method": "台本と音声認識の単語を突き合わせ、文間の無音の中央で切断。速度・音程は無変更。mp3 はストリームコピー。",
+ "sources": [
+  {
+   "file": "q_el1_A_set2.mp3",
+   "sha256": "b377fc4ad20b2aa4318f8c6d328aac5908f717dde7f1cbf7398695b9d05b28d1",
+   "durationSec": 22.439,
+   "tracks": [
+    {
+     "stem": "el1A_set2_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.26,
+     "lastWordEnd": 4.34,
+     "silence": [
+      4.369,
+      5.905
+     ],
+     "start": 0.0,
+     "end": 5.137,
+     "output": "el1A_set2_q1.mp3"
+    },
+    {
+     "stem": "el1A_set2_q2",
+     "cover": 1.0,
+     "firstWordStart": 5.92,
+     "lastWordEnd": 11.72,
+     "silence": [
+      11.825,
+      13.277
+     ],
+     "start": 5.137,
+     "end": 12.551,
+     "output": "el1A_set2_q2.mp3"
+    },
+    {
+     "stem": "el1A_set2_q3",
+     "cover": 0.9,
+     "firstWordStart": 13.34,
+     "lastWordEnd": 16.8,
+     "silence": [
+      16.845,
+      18.227
+     ],
+     "start": 12.551,
+     "end": 17.536,
+     "output": "el1A_set2_q3.mp3"
+    },
+    {
+     "stem": "el1A_set2_q4",
+     "cover": 1.0,
+     "firstWordStart": 18.26,
+     "lastWordEnd": 22.4,
+     "start": 17.536,
+     "end": 22.439125,
+     "output": "el1A_set2_q4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T06_40_38_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+   "sha256": "8b51567e8ee3f44e56736513eac87720c261bb0efd88d3b9677df42dea1bbc0d",
+   "durationSec": 67.004,
+   "tracks": [
+    {
+     "stem": "el1B_set4_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.12,
+     "lastWordEnd": 5.56,
+     "silence": [
+      5.59,
+      6.663
+     ],
+     "start": 0.0,
+     "end": 6.126,
+     "output": "el1B_set4_q1.mp3"
+    },
+    {
+     "stem": "el1B_set4_q2",
+     "cover": 1.0,
+     "firstWordStart": 6.76,
+     "lastWordEnd": 10.56,
+     "silence": [
+      10.536,
+      11.871
+     ],
+     "start": 6.126,
+     "end": 11.203,
+     "output": "el1B_set4_q2.mp3"
+    },
+    {
+     "stem": "el1B_set4_q3",
+     "cover": 1.0,
+     "firstWordStart": 11.9,
+     "lastWordEnd": 16.08,
+     "silence": [
+      16.069,
+      17.466
+     ],
+     "start": 11.203,
+     "end": 16.767,
+     "output": "el1B_set4_q3.mp3"
+    },
+    {
+     "stem": "el1B_set4_q4",
+     "cover": 1.0,
+     "firstWordStart": 17.54,
+     "lastWordEnd": 22.8,
+     "silence": [
+      22.798,
+      23.936
+     ],
+     "start": 16.767,
+     "end": 23.367,
+     "output": "el1B_set4_q4.mp3"
+    },
+    {
+     "stem": "el1B_set5_q1",
+     "cover": 1.0,
+     "firstWordStart": 23.98,
+     "lastWordEnd": 27.62,
+     "silence": [
+      27.665,
+      29.0
+     ],
+     "start": 23.367,
+     "end": 28.333,
+     "output": "el1B_set5_q1.mp3"
+    },
+    {
+     "stem": "el1B_set5_q2",
+     "cover": 1.0,
+     "firstWordStart": 29.12,
+     "lastWordEnd": 32.58,
+     "silence": [
+      32.627,
+      34.031
+     ],
+     "start": 28.333,
+     "end": 33.329,
+     "output": "el1B_set5_q2.mp3"
+    },
+    {
+     "stem": "el1B_set5_q3",
+     "cover": 1.0,
+     "firstWordStart": 34.14,
+     "lastWordEnd": 38.18,
+     "silence": [
+      38.231,
+      39.406
+     ],
+     "start": 33.329,
+     "end": 38.818,
+     "output": "el1B_set5_q3.mp3"
+    },
+    {
+     "stem": "el1B_set5_q4",
+     "cover": 1.0,
+     "firstWordStart": 39.46,
+     "lastWordEnd": 43.72,
+     "silence": [
+      43.721,
+      45.022
+     ],
+     "start": 38.818,
+     "end": 44.371,
+     "output": "el1B_set5_q4.mp3"
+    },
+    {
+     "stem": "el1B_set6_q1",
+     "cover": 1.0,
+     "firstWordStart": 45.0,
+     "lastWordEnd": 50.36,
+     "silence": [
+      50.378,
+      51.686
+     ],
+     "start": 44.371,
+     "end": 51.032,
+     "output": "el1B_set6_q1.mp3"
+    },
+    {
+     "stem": "el1B_set6_q2",
+     "cover": 1.0,
+     "firstWordStart": 51.76,
+     "lastWordEnd": 55.56,
+     "silence": [
+      56.097,
+      57.272
+     ],
+     "start": 51.032,
+     "end": 56.685,
+     "output": "el1B_set6_q2.mp3"
+    },
+    {
+     "stem": "el1B_set6_q3",
+     "cover": 1.0,
+     "firstWordStart": 57.32,
+     "lastWordEnd": 61.08,
+     "silence": [
+      61.109,
+      62.192
+     ],
+     "start": 56.685,
+     "end": 61.65,
+     "output": "el1B_set6_q3.mp3"
+    },
+    {
+     "stem": "el1B_set6_q4",
+     "cover": 1.0,
+     "firstWordStart": 62.28,
+     "lastWordEnd": 66.94,
+     "start": 61.65,
+     "end": 67.004063,
+     "output": "el1B_set6_q4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T06_12_05_Juniper - Grounded and Professional_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "725045d0816767fd83a42aa40b39e2eefb19491bb589425de9eac917ebd6e85e",
+   "durationSec": 56.346,
+   "tracks": [
+    {
+     "stem": "el1A_set6_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.14,
+     "lastWordEnd": 3.42,
+     "silence": [
+      3.415,
+      4.114
+     ],
+     "start": 0.0,
+     "end": 3.765,
+     "output": "el1A_set6_q1.mp3"
+    },
+    {
+     "stem": "el1A_set6_q2",
+     "cover": 1.0,
+     "firstWordStart": 4.1,
+     "lastWordEnd": 8.12,
+     "silence": [
+      8.133,
+      9.118
+     ],
+     "start": 3.765,
+     "end": 8.625,
+     "output": "el1A_set6_q2.mp3"
+    },
+    {
+     "stem": "el1A_set6_q3",
+     "cover": 1.0,
+     "firstWordStart": 9.2,
+     "lastWordEnd": 13.78,
+     "silence": [
+      13.945,
+      14.621
+     ],
+     "start": 8.625,
+     "end": 14.283,
+     "output": "el1A_set6_q3.mp3"
+    },
+    {
+     "stem": "el1A_set6_q4",
+     "cover": 1.0,
+     "firstWordStart": 14.72,
+     "lastWordEnd": 18.64,
+     "silence": [
+      18.647,
+      19.502
+     ],
+     "start": 14.283,
+     "end": 19.074,
+     "output": "el1A_set6_q4.mp3"
+    },
+    {
+     "stem": "el1A_set7_q1",
+     "cover": 1.0,
+     "firstWordStart": 19.56,
+     "lastWordEnd": 24.58,
+     "silence": [
+      24.624,
+      25.507
+     ],
+     "start": 19.074,
+     "end": 25.065,
+     "output": "el1A_set7_q1.mp3"
+    },
+    {
+     "stem": "el1A_set7_q2",
+     "cover": 1.0,
+     "firstWordStart": 25.58,
+     "lastWordEnd": 28.02,
+     "silence": [
+      28.074,
+      28.574
+     ],
+     "start": 25.065,
+     "end": 28.324,
+     "output": "el1A_set7_q2.mp3"
+    },
+    {
+     "stem": "el1A_set7_q3",
+     "cover": 1.0,
+     "firstWordStart": 28.6,
+     "lastWordEnd": 32.76,
+     "silence": [
+      32.817,
+      33.651
+     ],
+     "start": 28.324,
+     "end": 33.234,
+     "output": "el1A_set7_q3.mp3"
+    },
+    {
+     "stem": "el1A_set7_q4",
+     "cover": 1.0,
+     "firstWordStart": 33.72,
+     "lastWordEnd": 37.9,
+     "silence": [
+      37.977,
+      38.673
+     ],
+     "start": 33.234,
+     "end": 38.325,
+     "output": "el1A_set7_q4.mp3"
+    },
+    {
+     "stem": "el1A_set8_q1",
+     "cover": 1.0,
+     "firstWordStart": 38.66,
+     "lastWordEnd": 42.28,
+     "silence": [
+      42.329,
+      43.099
+     ],
+     "start": 38.325,
+     "end": 42.714,
+     "output": "el1A_set8_q1.mp3"
+    },
+    {
+     "stem": "el1A_set8_q2",
+     "cover": 1.0,
+     "firstWordStart": 43.18,
+     "lastWordEnd": 47.58,
+     "silence": [
+      47.663,
+      48.396
+     ],
+     "start": 42.714,
+     "end": 48.03,
+     "output": "el1A_set8_q2.mp3"
+    },
+    {
+     "stem": "el1A_set8_q3",
+     "cover": 1.0,
+     "firstWordStart": 48.46,
+     "lastWordEnd": 51.32,
+     "silence": [
+      51.337,
+      52.143
+     ],
+     "start": 48.03,
+     "end": 51.74,
+     "output": "el1A_set8_q3.mp3"
+    },
+    {
+     "stem": "el1A_set8_q4",
+     "cover": 1.0,
+     "firstWordStart": 52.16,
+     "lastWordEnd": 56.26,
+     "start": 51.74,
+     "end": 56.346063,
+     "output": "el1A_set8_q4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T06_18_21_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v3.mp3",
+   "sha256": "35e1470886b22775d783911fd89a12c1e4efdfb3deacd4abb819227528c30162",
+   "durationSec": 62.433,
+   "tracks": [
+    {
+     "stem": "el1A_set9_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.12,
+     "lastWordEnd": 4.26,
+     "silence": [
+      4.305,
+      5.496
+     ],
+     "start": 0.0,
+     "end": 4.9,
+     "output": "el1A_set9_q1.mp3"
+    },
+    {
+     "stem": "el1A_set9_q2",
+     "cover": 1.0,
+     "firstWordStart": 5.58,
+     "lastWordEnd": 10.46,
+     "silence": [
+      10.505,
+      11.612
+     ],
+     "start": 4.9,
+     "end": 11.058,
+     "output": "el1A_set9_q2.mp3"
+    },
+    {
+     "stem": "el1A_set9_q3",
+     "cover": 1.0,
+     "firstWordStart": 11.66,
+     "lastWordEnd": 15.54,
+     "silence": [
+      15.558,
+      16.695
+     ],
+     "start": 11.058,
+     "end": 16.127,
+     "output": "el1A_set9_q3.mp3"
+    },
+    {
+     "stem": "el1A_set9_q4",
+     "cover": 1.0,
+     "firstWordStart": 16.78,
+     "lastWordEnd": 21.82,
+     "silence": [
+      21.824,
+      23.104
+     ],
+     "start": 16.127,
+     "end": 22.464,
+     "output": "el1A_set9_q4.mp3"
+    },
+    {
+     "stem": "el1A_set10_q1",
+     "cover": 1.0,
+     "firstWordStart": 23.12,
+     "lastWordEnd": 26.62,
+     "silence": [
+      26.691,
+      28.062
+     ],
+     "start": 22.464,
+     "end": 27.376,
+     "output": "el1A_set10_q1.mp3"
+    },
+    {
+     "stem": "el1A_set10_q2",
+     "cover": 1.0,
+     "firstWordStart": 28.1,
+     "lastWordEnd": 33.28,
+     "silence": [
+      33.344,
+      34.194
+     ],
+     "start": 27.376,
+     "end": 33.769,
+     "output": "el1A_set10_q2.mp3"
+    },
+    {
+     "stem": "el1A_set10_q3",
+     "cover": 1.0,
+     "firstWordStart": 34.22,
+     "lastWordEnd": 37.82,
+     "silence": [
+      37.844,
+      39.02
+     ],
+     "start": 33.769,
+     "end": 38.432,
+     "output": "el1A_set10_q3.mp3"
+    },
+    {
+     "stem": "el1A_set10_q4",
+     "cover": 1.0,
+     "firstWordStart": 39.04,
+     "lastWordEnd": 41.88,
+     "silence": [
+      41.918,
+      42.946
+     ],
+     "start": 38.432,
+     "end": 42.432,
+     "output": "el1A_set10_q4.mp3"
+    },
+    {
+     "stem": "el1A_set11_q1",
+     "cover": 1.0,
+     "firstWordStart": 43.02,
+     "lastWordEnd": 47.34,
+     "silence": [
+      47.411,
+      48.433
+     ],
+     "start": 42.432,
+     "end": 47.922,
+     "output": "el1A_set11_q1.mp3"
+    },
+    {
+     "stem": "el1A_set11_q2",
+     "cover": 1.0,
+     "firstWordStart": 48.52,
+     "lastWordEnd": 52.66,
+     "silence": [
+      52.691,
+      53.76
+     ],
+     "start": 47.922,
+     "end": 53.225,
+     "output": "el1A_set11_q2.mp3"
+    },
+    {
+     "stem": "el1A_set11_q3",
+     "cover": 1.0,
+     "firstWordStart": 53.74,
+     "lastWordEnd": 57.36,
+     "silence": [
+      57.375,
+      58.54
+     ],
+     "start": 53.225,
+     "end": 57.958,
+     "output": "el1A_set11_q3.mp3"
+    },
+    {
+     "stem": "el1A_set11_q4",
+     "cover": 1.0,
+     "firstWordStart": 58.58,
+     "lastWordEnd": 62.36,
+     "start": 57.958,
+     "end": 62.432625,
+     "output": "el1A_set11_q4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T06_49_01_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+   "sha256": "25375be2e1bbfb74ed74da6ccc0452bea23626dbc871dacd5b103921e3fd7ec4",
+   "durationSec": 64.679,
+   "tracks": [
+    {
+     "stem": "el1B_set10_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.16,
+     "lastWordEnd": 4.34,
+     "silence": [
+      4.373,
+      5.764
+     ],
+     "start": 0.0,
+     "end": 5.069,
+     "output": "el1B_set10_q1.mp3"
+    },
+    {
+     "stem": "el1B_set10_q2",
+     "cover": 1.0,
+     "firstWordStart": 5.84,
+     "lastWordEnd": 10.16,
+     "silence": [
+      10.121,
+      11.487
+     ],
+     "start": 5.069,
+     "end": 10.804,
+     "output": "el1B_set10_q2.mp3"
+    },
+    {
+     "stem": "el1B_set10_q3",
+     "cover": 1.0,
+     "firstWordStart": 11.5,
+     "lastWordEnd": 17.08,
+     "silence": [
+      17.108,
+      18.76
+     ],
+     "start": 10.804,
+     "end": 17.934,
+     "output": "el1B_set10_q3.mp3"
+    },
+    {
+     "stem": "el1B_set10_q4",
+     "cover": 1.0,
+     "firstWordStart": 18.84,
+     "lastWordEnd": 22.44,
+     "silence": [
+      22.433,
+      24.353
+     ],
+     "start": 17.934,
+     "end": 23.393,
+     "output": "el1B_set10_q4.mp3"
+    },
+    {
+     "stem": "el1B_set11_q1",
+     "cover": 1.0,
+     "firstWordStart": 24.42,
+     "lastWordEnd": 27.88,
+     "silence": [
+      27.887,
+      29.422
+     ],
+     "start": 23.393,
+     "end": 28.655,
+     "output": "el1B_set11_q1.mp3"
+    },
+    {
+     "stem": "el1B_set11_q2",
+     "cover": 1.0,
+     "firstWordStart": 29.52,
+     "lastWordEnd": 33.46,
+     "silence": [
+      33.492,
+      34.878
+     ],
+     "start": 28.655,
+     "end": 34.185,
+     "output": "el1B_set11_q2.mp3"
+    },
+    {
+     "stem": "el1B_set11_q3",
+     "cover": 1.0,
+     "firstWordStart": 34.96,
+     "lastWordEnd": 39.92,
+     "silence": [
+      39.977,
+      41.426
+     ],
+     "start": 34.185,
+     "end": 40.702,
+     "output": "el1B_set11_q3.mp3"
+    },
+    {
+     "stem": "el1B_set11_q4",
+     "cover": 1.0,
+     "firstWordStart": 41.44,
+     "lastWordEnd": 44.94,
+     "silence": [
+      44.989,
+      46.401
+     ],
+     "start": 40.702,
+     "end": 45.695,
+     "output": "el1B_set11_q4.mp3"
+    },
+    {
+     "stem": "el1B_set12_q1",
+     "cover": 1.0,
+     "firstWordStart": 46.44,
+     "lastWordEnd": 49.24,
+     "silence": [
+      49.283,
+      50.547
+     ],
+     "start": 45.695,
+     "end": 49.915,
+     "output": "el1B_set12_q1.mp3"
+    },
+    {
+     "stem": "el1B_set12_q2",
+     "cover": 1.0,
+     "firstWordStart": 50.64,
+     "lastWordEnd": 55.0,
+     "silence": [
+      55.06,
+      56.361
+     ],
+     "start": 49.915,
+     "end": 55.71,
+     "output": "el1B_set12_q2.mp3"
+    },
+    {
+     "stem": "el1B_set12_q3",
+     "cover": 1.0,
+     "firstWordStart": 56.36,
+     "lastWordEnd": 59.64,
+     "silence": [
+      59.685,
+      61.016
+     ],
+     "start": 55.71,
+     "end": 60.351,
+     "output": "el1B_set12_q3.mp3"
+    },
+    {
+     "stem": "el1B_set12_q4",
+     "cover": 1.0,
+     "firstWordStart": 61.02,
+     "lastWordEnd": 64.64,
+     "start": 60.351,
+     "end": 64.679125,
+     "output": "el1B_set12_q4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T06_32_10_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+   "sha256": "bd811a39863a3a8cdf143835727301f36d0ecda01269dfaea0be9eb03e86cc51",
+   "durationSec": 65.306,
+   "tracks": [
+    {
+     "stem": "el1A_set12_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.16,
+     "lastWordEnd": 4.28,
+     "silence": [
+      4.337,
+      5.346
+     ],
+     "start": 0.0,
+     "end": 4.842,
+     "output": "el1A_set12_q1.mp3"
+    },
+    {
+     "stem": "el1A_set12_q2",
+     "cover": 1.0,
+     "firstWordStart": 5.38,
+     "lastWordEnd": 9.52,
+     "silence": [
+      9.575,
+      10.707
+     ],
+     "start": 4.842,
+     "end": 10.141,
+     "output": "el1A_set12_q2.mp3"
+    },
+    {
+     "stem": "el1A_set12_q3",
+     "cover": 1.0,
+     "firstWordStart": 10.76,
+     "lastWordEnd": 14.7,
+     "silence": [
+      14.716,
+      16.129
+     ],
+     "start": 10.141,
+     "end": 15.422,
+     "output": "el1A_set12_q3.mp3"
+    },
+    {
+     "stem": "el1A_set12_q4",
+     "cover": 1.0,
+     "firstWordStart": 16.26,
+     "lastWordEnd": 22.38,
+     "silence": [
+      22.397,
+      23.756
+     ],
+     "start": 15.422,
+     "end": 23.077,
+     "output": "el1A_set12_q4.mp3"
+    },
+    {
+     "stem": "el1A_set13_q1",
+     "cover": 1.0,
+     "firstWordStart": 23.78,
+     "lastWordEnd": 27.54,
+     "silence": [
+      27.612,
+      28.83
+     ],
+     "start": 23.077,
+     "end": 28.221,
+     "output": "el1A_set13_q1.mp3"
+    },
+    {
+     "stem": "el1A_set13_q2",
+     "cover": 1.0,
+     "firstWordStart": 28.92,
+     "lastWordEnd": 33.1,
+     "silence": [
+      33.189,
+      34.278
+     ],
+     "start": 28.221,
+     "end": 33.733,
+     "output": "el1A_set13_q2.mp3"
+    },
+    {
+     "stem": "el1A_set13_q3",
+     "cover": 1.0,
+     "firstWordStart": 34.44,
+     "lastWordEnd": 38.64,
+     "silence": [
+      38.758,
+      39.954
+     ],
+     "start": 33.733,
+     "end": 39.356,
+     "output": "el1A_set13_q3.mp3"
+    },
+    {
+     "stem": "el1A_set13_q4",
+     "cover": 1.0,
+     "firstWordStart": 40.06,
+     "lastWordEnd": 45.22,
+     "silence": [
+      45.266,
+      46.566
+     ],
+     "start": 39.356,
+     "end": 45.916,
+     "output": "el1A_set13_q4.mp3"
+    },
+    {
+     "stem": "el1A_set14_q1",
+     "cover": 1.0,
+     "firstWordStart": 46.62,
+     "lastWordEnd": 49.6,
+     "silence": [
+      49.633,
+      50.837
+     ],
+     "start": 45.916,
+     "end": 50.235,
+     "output": "el1A_set14_q1.mp3"
+    },
+    {
+     "stem": "el1A_set14_q2",
+     "cover": 1.0,
+     "firstWordStart": 50.94,
+     "lastWordEnd": 54.82,
+     "silence": [
+      54.878,
+      56.117
+     ],
+     "start": 50.235,
+     "end": 55.498,
+     "output": "el1A_set14_q2.mp3"
+    },
+    {
+     "stem": "el1A_set14_q3",
+     "cover": 1.0,
+     "firstWordStart": 56.14,
+     "lastWordEnd": 60.26,
+     "silence": [
+      60.294,
+      61.473
+     ],
+     "start": 55.498,
+     "end": 60.884,
+     "output": "el1A_set14_q3.mp3"
+    },
+    {
+     "stem": "el1A_set14_q4",
+     "cover": 1.0,
+     "firstWordStart": 61.52,
+     "lastWordEnd": 65.16,
+     "start": 60.884,
+     "end": 65.306063,
+     "output": "el1A_set14_q4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T06_52_34_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+   "sha256": "ddf9674e6dfea517bf5633b4baaa433ce96dda016400baba72924d468aec0aa4",
+   "durationSec": 78.028,
+   "tracks": [
+    {
+     "stem": "el1B_set13_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.14,
+     "lastWordEnd": 4.5,
+     "silence": [
+      4.459,
+      5.926
+     ],
+     "start": 0.0,
+     "end": 5.192,
+     "output": "el1B_set13_q1.mp3"
+    },
+    {
+     "stem": "el1B_set13_q2",
+     "cover": 1.0,
+     "firstWordStart": 5.96,
+     "lastWordEnd": 10.26,
+     "silence": [
+      10.283,
+      11.678
+     ],
+     "start": 5.192,
+     "end": 10.98,
+     "output": "el1B_set13_q2.mp3"
+    },
+    {
+     "stem": "el1B_set13_q3",
+     "cover": 1.0,
+     "firstWordStart": 11.7,
+     "lastWordEnd": 17.04,
+     "silence": [
+      17.551,
+      19.405
+     ],
+     "start": 10.98,
+     "end": 18.478,
+     "output": "el1B_set13_q3.mp3"
+    },
+    {
+     "stem": "el1B_set13_q4",
+     "cover": 1.0,
+     "firstWordStart": 19.52,
+     "lastWordEnd": 25.16,
+     "silence": [
+      25.174,
+      26.765
+     ],
+     "start": 18.478,
+     "end": 25.969,
+     "output": "el1B_set13_q4.mp3"
+    },
+    {
+     "stem": "el1B_set14_q1",
+     "cover": 1.0,
+     "firstWordStart": 26.78,
+     "lastWordEnd": 33.66,
+     "silence": [
+      33.666,
+      35.693
+     ],
+     "start": 25.969,
+     "end": 34.68,
+     "output": "el1B_set14_q1.mp3"
+    },
+    {
+     "stem": "el1B_set14_q2",
+     "cover": 1.0,
+     "firstWordStart": 35.78,
+     "lastWordEnd": 40.68,
+     "silence": [
+      40.709,
+      42.271
+     ],
+     "start": 34.68,
+     "end": 41.49,
+     "output": "el1B_set14_q2.mp3"
+    },
+    {
+     "stem": "el1B_set14_q3",
+     "cover": 1.0,
+     "firstWordStart": 42.36,
+     "lastWordEnd": 48.12,
+     "silence": [
+      48.146,
+      49.838
+     ],
+     "start": 41.49,
+     "end": 48.992,
+     "output": "el1B_set14_q3.mp3"
+    },
+    {
+     "stem": "el1B_set14_q4",
+     "cover": 1.0,
+     "firstWordStart": 49.88,
+     "lastWordEnd": 53.28,
+     "silence": [
+      53.326,
+      54.939
+     ],
+     "start": 48.992,
+     "end": 54.132,
+     "output": "el1B_set14_q4.mp3"
+    },
+    {
+     "stem": "el1B_set15_q1",
+     "cover": 1.0,
+     "firstWordStart": 54.98,
+     "lastWordEnd": 60.72,
+     "silence": [
+      60.75,
+      62.302
+     ],
+     "start": 54.132,
+     "end": 61.526,
+     "output": "el1B_set15_q1.mp3"
+    },
+    {
+     "stem": "el1B_set15_q2",
+     "cover": 1.0,
+     "firstWordStart": 62.38,
+     "lastWordEnd": 65.98,
+     "silence": [
+      66.07,
+      67.636
+     ],
+     "start": 61.526,
+     "end": 66.853,
+     "output": "el1B_set15_q2.mp3"
+    },
+    {
+     "stem": "el1B_set15_q3",
+     "cover": 1.0,
+     "firstWordStart": 67.74,
+     "lastWordEnd": 72.1,
+     "silence": [
+      72.133,
+      73.605
+     ],
+     "start": 66.853,
+     "end": 72.869,
+     "output": "el1B_set15_q3.mp3"
+    },
+    {
+     "stem": "el1B_set15_q4",
+     "cover": 1.0,
+     "firstWordStart": 73.7,
+     "lastWordEnd": 77.96,
+     "start": 72.869,
+     "end": 78.02775,
+     "output": "el1B_set15_q4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T06_45_23_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+   "sha256": "33ab176818d45c67fc1a2d0b4b8ee51001425073d18f41f4ca1089035dfb24c1",
+   "durationSec": 72.124,
+   "tracks": [
+    {
+     "stem": "el1B_set7_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.2,
+     "lastWordEnd": 6.4,
+     "silence": [
+      6.455,
+      7.507
+     ],
+     "start": 0.0,
+     "end": 6.981,
+     "output": "el1B_set7_q1.mp3"
+    },
+    {
+     "stem": "el1B_set7_q2",
+     "cover": 1.0,
+     "firstWordStart": 7.6,
+     "lastWordEnd": 13.18,
+     "silence": [
+      13.2,
+      14.336
+     ],
+     "start": 6.981,
+     "end": 13.768,
+     "output": "el1B_set7_q2.mp3"
+    },
+    {
+     "stem": "el1B_set7_q3",
+     "cover": 1.0,
+     "firstWordStart": 14.36,
+     "lastWordEnd": 19.48,
+     "silence": [
+      19.492,
+      20.809
+     ],
+     "start": 13.768,
+     "end": 20.15,
+     "output": "el1B_set7_q3.mp3"
+    },
+    {
+     "stem": "el1B_set7_q4",
+     "cover": 1.0,
+     "firstWordStart": 20.92,
+     "lastWordEnd": 27.54,
+     "silence": [
+      27.609,
+      28.796
+     ],
+     "start": 20.15,
+     "end": 28.202,
+     "output": "el1B_set7_q4.mp3"
+    },
+    {
+     "stem": "el1B_set8_q1",
+     "cover": 1.0,
+     "firstWordStart": 28.82,
+     "lastWordEnd": 33.26,
+     "silence": [
+      33.275,
+      34.592
+     ],
+     "start": 28.202,
+     "end": 33.934,
+     "output": "el1B_set8_q1.mp3"
+    },
+    {
+     "stem": "el1B_set8_q2",
+     "cover": 1.0,
+     "firstWordStart": 34.66,
+     "lastWordEnd": 41.52,
+     "silence": [
+      41.552,
+      42.646
+     ],
+     "start": 33.934,
+     "end": 42.099,
+     "output": "el1B_set8_q2.mp3"
+    },
+    {
+     "stem": "el1B_set8_q3",
+     "cover": 1.0,
+     "firstWordStart": 42.68,
+     "lastWordEnd": 48.18,
+     "silence": [
+      48.233,
+      49.418
+     ],
+     "start": 42.099,
+     "end": 48.826,
+     "output": "el1B_set8_q3.mp3"
+    },
+    {
+     "stem": "el1B_set8_q4",
+     "cover": 1.0,
+     "firstWordStart": 49.44,
+     "lastWordEnd": 54.46,
+     "silence": [
+      54.477,
+      55.794
+     ],
+     "start": 48.826,
+     "end": 55.136,
+     "output": "el1B_set8_q4.mp3"
+    },
+    {
+     "stem": "el1B_set9_q1",
+     "cover": 1.0,
+     "firstWordStart": 55.82,
+     "lastWordEnd": 59.16,
+     "silence": [
+      59.25,
+      59.883
+     ],
+     "start": 55.136,
+     "end": 59.566,
+     "output": "el1B_set9_q1.mp3"
+    },
+    {
+     "stem": "el1B_set9_q2",
+     "cover": 1.0,
+     "firstWordStart": 59.94,
+     "lastWordEnd": 63.8,
+     "silence": [
+      63.886,
+      64.848
+     ],
+     "start": 59.566,
+     "end": 64.367,
+     "output": "el1B_set9_q2.mp3"
+    },
+    {
+     "stem": "el1B_set9_q3",
+     "cover": 1.0,
+     "firstWordStart": 64.9,
+     "lastWordEnd": 67.9,
+     "silence": [
+      67.914,
+      69.008
+     ],
+     "start": 64.367,
+     "end": 68.461,
+     "output": "el1B_set9_q3.mp3"
+    },
+    {
+     "stem": "el1B_set9_q4",
+     "cover": 1.0,
+     "firstWordStart": 68.98,
+     "lastWordEnd": 72.06,
+     "start": 68.461,
+     "end": 72.124063,
+     "output": "el1B_set9_q4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T06_36_03_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+   "sha256": "8b1ce44b57dac617b6621b189b8eaec5dce92cb857d61f6e4b29e57d412f1fd1",
+   "durationSec": 57.887,
+   "tracks": [
+    {
+     "stem": "el1B_set1_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.22,
+     "lastWordEnd": 2.82,
+     "silence": [
+      2.86,
+      3.827
+     ],
+     "start": 0.0,
+     "end": 3.344,
+     "output": "el1B_set1_q1.mp3"
+    },
+    {
+     "stem": "el1B_set1_q2",
+     "cover": 1.0,
+     "firstWordStart": 3.86,
+     "lastWordEnd": 6.6,
+     "silence": [
+      6.624,
+      7.876
+     ],
+     "start": 3.344,
+     "end": 7.25,
+     "output": "el1B_set1_q2.mp3"
+    },
+    {
+     "stem": "el1B_set1_q3",
+     "cover": 1.0,
+     "firstWordStart": 7.94,
+     "lastWordEnd": 10.94,
+     "silence": [
+      10.962,
+      12.478
+     ],
+     "start": 7.25,
+     "end": 11.72,
+     "output": "el1B_set1_q3.mp3"
+    },
+    {
+     "stem": "el1B_set1_q4",
+     "cover": 1.0,
+     "firstWordStart": 12.5,
+     "lastWordEnd": 16.46,
+     "silence": [
+      16.483,
+      17.978
+     ],
+     "start": 11.72,
+     "end": 17.231,
+     "output": "el1B_set1_q4.mp3"
+    },
+    {
+     "stem": "el1B_set2_q1",
+     "cover": 1.0,
+     "firstWordStart": 18.04,
+     "lastWordEnd": 21.82,
+     "silence": [
+      21.853,
+      23.071
+     ],
+     "start": 17.231,
+     "end": 22.462,
+     "output": "el1B_set2_q1.mp3"
+    },
+    {
+     "stem": "el1B_set2_q2",
+     "cover": 1.0,
+     "firstWordStart": 23.18,
+     "lastWordEnd": 27.14,
+     "silence": [
+      27.203,
+      28.186
+     ],
+     "start": 22.462,
+     "end": 27.694,
+     "output": "el1B_set2_q2.mp3"
+    },
+    {
+     "stem": "el1B_set2_q3",
+     "cover": 1.0,
+     "firstWordStart": 28.24,
+     "lastWordEnd": 31.48,
+     "silence": [
+      31.505,
+      32.784
+     ],
+     "start": 27.694,
+     "end": 32.144,
+     "output": "el1B_set2_q3.mp3"
+    },
+    {
+     "stem": "el1B_set2_q4",
+     "cover": 1.0,
+     "firstWordStart": 32.82,
+     "lastWordEnd": 36.28,
+     "silence": [
+      36.335,
+      37.623
+     ],
+     "start": 32.144,
+     "end": 36.979,
+     "output": "el1B_set2_q4.mp3"
+    },
+    {
+     "stem": "el1B_set3_q1",
+     "cover": 1.0,
+     "firstWordStart": 37.64,
+     "lastWordEnd": 40.62,
+     "silence": [
+      40.659,
+      41.759
+     ],
+     "start": 36.979,
+     "end": 41.209,
+     "output": "el1B_set3_q1.mp3"
+    },
+    {
+     "stem": "el1B_set3_q2",
+     "cover": 1.0,
+     "firstWordStart": 41.82,
+     "lastWordEnd": 45.08,
+     "silence": [
+      45.124,
+      46.318
+     ],
+     "start": 41.209,
+     "end": 45.721,
+     "output": "el1B_set3_q2.mp3"
+    },
+    {
+     "stem": "el1B_set3_q3",
+     "cover": 1.0,
+     "firstWordStart": 46.36,
+     "lastWordEnd": 51.12,
+     "silence": [
+      51.116,
+      52.293
+     ],
+     "start": 45.721,
+     "end": 51.705,
+     "output": "el1B_set3_q3.mp3"
+    },
+    {
+     "stem": "el1B_set3_q4",
+     "cover": 1.0,
+     "firstWordStart": 52.32,
+     "lastWordEnd": 57.78,
+     "start": 51.705,
+     "end": 57.887313,
+     "output": "el1B_set3_q4.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T06_05_56_Juniper - Grounded and Professional_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "4a9b1ebdbdfb43c68629d1da27cbdd8b4308efe5dfce77614b4b29a774c94da3",
+   "durationSec": 62.668,
+   "tracks": [
+    {
+     "stem": "el1A_set3_q1",
+     "cover": 0.889,
+     "firstWordStart": 0.82,
+     "lastWordEnd": 2.92,
+     "silence": [
+      2.973,
+      3.825
+     ],
+     "start": 0.0,
+     "end": 3.399,
+     "output": "el1A_set3_q1.mp3"
+    },
+    {
+     "stem": "el1A_set3_q2",
+     "cover": 1.0,
+     "firstWordStart": 3.88,
+     "lastWordEnd": 8.18,
+     "silence": [
+      8.215,
+      9.202
+     ],
+     "start": 3.399,
+     "end": 8.708,
+     "output": "el1A_set3_q2.mp3"
+    },
+    {
+     "stem": "el1A_set3_q3",
+     "cover": 1.0,
+     "firstWordStart": 9.36,
+     "lastWordEnd": 14.76,
+     "silence": [
+      14.858,
+      15.943
+     ],
+     "start": 8.708,
+     "end": 15.401,
+     "output": "el1A_set3_q3.mp3"
+    },
+    {
+     "stem": "el1A_set3_q4",
+     "cover": 1.0,
+     "firstWordStart": 16.02,
+     "lastWordEnd": 20.38,
+     "silence": [
+      20.434,
+      21.663
+     ],
+     "start": 15.401,
+     "end": 21.049,
+     "output": "el1A_set3_q4.mp3"
+    },
+    {
+     "stem": "el1A_set4_q1",
+     "cover": 1.0,
+     "firstWordStart": 21.68,
+     "lastWordEnd": 24.1,
+     "silence": [
+      24.155,
+      25.506
+     ],
+     "start": 21.049,
+     "end": 24.831,
+     "output": "el1A_set4_q1.mp3"
+    },
+    {
+     "stem": "el1A_set4_q2",
+     "cover": 1.0,
+     "firstWordStart": 25.6,
+     "lastWordEnd": 28.82,
+     "silence": [
+      28.857,
+      29.578
+     ],
+     "start": 24.831,
+     "end": 29.218,
+     "output": "el1A_set4_q2.mp3"
+    },
+    {
+     "stem": "el1A_set4_q3",
+     "cover": 1.0,
+     "firstWordStart": 29.66,
+     "lastWordEnd": 33.38,
+     "silence": [
+      33.328,
+      34.544
+     ],
+     "start": 29.218,
+     "end": 33.936,
+     "output": "el1A_set4_q3.mp3"
+    },
+    {
+     "stem": "el1A_set4_q4",
+     "cover": 1.0,
+     "firstWordStart": 34.56,
+     "lastWordEnd": 39.08,
+     "silence": [
+      39.152,
+      40.255
+     ],
+     "start": 33.936,
+     "end": 39.703,
+     "output": "el1A_set4_q4.mp3"
+    },
+    {
+     "stem": "el1A_set5_q1",
+     "cover": 1.0,
+     "firstWordStart": 40.3,
+     "lastWordEnd": 44.92,
+     "silence": [
+      44.965,
+      46.136
+     ],
+     "start": 39.703,
+     "end": 45.551,
+     "output": "el1A_set5_q1.mp3"
+    },
+    {
+     "stem": "el1A_set5_q2",
+     "cover": 1.0,
+     "firstWordStart": 46.24,
+     "lastWordEnd": 51.12,
+     "silence": [
+      51.177,
+      52.318
+     ],
+     "start": 45.551,
+     "end": 51.748,
+     "output": "el1A_set5_q2.mp3"
+    },
+    {
+     "stem": "el1A_set5_q3",
+     "cover": 1.0,
+     "firstWordStart": 52.38,
+     "lastWordEnd": 56.76,
+     "silence": [
+      56.823,
+      57.875
+     ],
+     "start": 51.748,
+     "end": 57.349,
+     "output": "el1A_set5_q3.mp3"
+    },
+    {
+     "stem": "el1A_set5_q4",
+     "cover": 1.0,
+     "firstWordStart": 57.94,
+     "lastWordEnd": 62.62,
+     "start": 57.349,
+     "end": 62.66775,
+     "output": "el1A_set5_q4.mp3"
+    }
+   ]
+  }
+ ]
+}

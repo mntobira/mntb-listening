@@ -1,0 +1,7 @@
+{
+ "q5set04": "ElevenLabs_2026-09-29T00_33_32（Mark Dou）に台本にない断片が2つ入っていた：冒頭の『Public chart.』（0〜1.3秒）と、講義末尾と問32のあいだの『Public chargers matter most in the one place they are hardest to install.』（第7回 問33 の1文・91.84〜95.4秒）。無音位置でストリームコピーのまま除き edited_set04_from_00_33_32.mp3 を作って分割。small.en で全文照合済み",
+ "q5set08_q32": "ElevenLabs_2026-09-29T00_19_46（第8回）には講義と問33しか入っていない。問32（『The two wards admitted a different type of patient…』）は未収録のため旧音源のまま。取り直し待ち",
+ "q5set01-03": "Q5_1-3.mp3 に第1〜3回がまとめて入っていたので分割",
+ "00_36_09": "中身は第5回（Guy の声）。00_33_32 と長さが同じだが別の音声（sha256 が違う）",
+ "verification": "44本すべてを faster-whisper small.en で文字起こしし台本と照合。違いは per cent/percent・数字表記・英米綴り・固有名の聞き取り差のみ"
+}

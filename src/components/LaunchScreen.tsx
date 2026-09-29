@@ -59,7 +59,7 @@ export function LaunchScreen({ onStart, soundEnabled, onToggleSound }: {
             onActiveChange={active => { if (active) setPlayed(true); }} onComplete={finishIntro} />}
         </div>
       </div>
-      <p className="launch-caption">聞く。確かめる。身につける。<br />あなたのリスニング学習を、ここから。</p>
+      <p className="launch-caption">聞く力を、対戦する力に。<br />演習・復習・オンライン対戦</p>
       <button type="button" className="launch-start" onClick={onStart}>はじめる<ArrowRight size={21} /></button>
       <p className="launch-note">タップして学習のつづきへ</p>
     </div>

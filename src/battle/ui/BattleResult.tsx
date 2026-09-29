@@ -314,7 +314,7 @@ export function BattleResult({
       }
     >
       <OutcomeHero outcome={result.outcome} byForfeit={byForfeit} />
-      {result.outcome === 'win' && <div className="victory-cinema"><CinematicClip src={CINEMATIC_CLIPS.victory.src} label="とびら君の勝利動画" /></div>}
+      {result.outcome === 'win' && <div className="victory-cinema"><CinematicClip src={CINEMATIC_CLIPS.victory.src} poster={CINEMATIC_CLIPS.victory.poster} label="とびら君の勝利動画" /></div>}
       {growthMatchId && growthOwnerUid && <BattleGrowthReward matchId={growthMatchId} ownerUid={growthOwnerUid}
         eligible={growthEligible} subject={subject} subjectLabel={theme.label} result={result} rating={rating}
         onProfile={onOpenProfile} onMissions={onOpenMissions} />}
