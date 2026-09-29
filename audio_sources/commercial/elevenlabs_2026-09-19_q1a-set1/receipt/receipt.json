@@ -1,0 +1,34 @@
+{
+  "receiptId": "q1a-set1_68525ac02029",
+  "receivedAtUtc": "2026-09-19T16:26:05.872005+00:00",
+  "originalFilename": "q_el1_A_set1.mp3",
+  "sourceUrl": "https://www.genspark.ai/api/files/s/pg4OkbdP",
+  "userDeclaredMaterial": "第1問 A 1セット目",
+  "provider": "ElevenLabs",
+  "generationRoute": "user_direct_generation",
+  "userDeclaration": "これはElevenLabs有料契約中に新規生成した音声です。",
+  "licenseBasis": "user_attestation_paid_subscription_new_generation",
+  "generationDate": null,
+  "paidPlanName": null,
+  "modelId": null,
+  "voiceIds": [],
+  "contractEvidenceReviewed": false,
+  "commercialReleaseApproved": false,
+  "sha256": "68525ac020298d567f0cc6cdfb62ae79ea6df1c8f52e034014389436fb916570",
+  "bytes": 338476,
+  "durationSeconds": 20.11425,
+  "audioStreams": [
+    {
+      "codec_name": "mp3",
+      "sample_rate": "44100",
+      "channels": 1,
+      "bit_rate": "128000"
+    }
+  ],
+  "receiptStatus": "received",
+  "contentReviewStatus": "pending",
+  "exactTrackMappingStatus": "pending",
+  "replacementStatus": "not_replaced",
+  "existingAssetsModified": false,
+  "listeningHandoffStatus": "not_sent_destination_unregistered"
+}

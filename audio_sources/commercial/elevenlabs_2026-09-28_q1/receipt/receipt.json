@@ -1,0 +1,79 @@
+{
+  "batch": "elevenlabs_2026-09-28_q1",
+  "kind": "commercial",
+  "provider": "ElevenLabs（利用者が直接生成・eleven_v3）",
+  "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-28「商用権があるやつ」。契約画面の証拠は未確認）",
+  "note": "第1問A 第2〜14回・第1問B 第1〜15回。q_el1_A_set1.mp3 も同時に受領したが、2026-09-19 受領分と sha256 同一のため再保存せず。",
+  "files": [
+    {
+      "originalFilename": "q_el1_A_set2.mp3",
+      "sha256": "b377fc4ad20b2aa4318f8c6d328aac5908f717dde7f1cbf7398695b9d05b28d1",
+      "bytes": 375674,
+      "durationSeconds": 22.439125,
+      "receivedAtUtc": "2026-09-28T07:39:32.233Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T06_05_56_Juniper - Grounded and Professional_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "4a9b1ebdbdfb43c68629d1da27cbdd8b4308efe5dfce77614b4b29a774c94da3",
+      "bytes": 1019332,
+      "durationSeconds": 62.66775,
+      "receivedAtUtc": "2026-09-28T07:39:32.679Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T06_12_05_Juniper - Grounded and Professional_pvc_sp100_s50_sb75_v3.mp3",
+      "sha256": "725045d0816767fd83a42aa40b39e2eefb19491bb589425de9eac917ebd6e85e",
+      "bytes": 918185,
+      "durationSeconds": 56.346063,
+      "receivedAtUtc": "2026-09-28T07:39:32.954Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T06_18_21_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v3.mp3",
+      "sha256": "35e1470886b22775d783911fd89a12c1e4efdfb3deacd4abb819227528c30162",
+      "bytes": 1015570,
+      "durationSeconds": 62.432625,
+      "receivedAtUtc": "2026-09-28T07:39:33.331Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T06_32_10_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+      "sha256": "bd811a39863a3a8cdf143835727301f36d0ecda01269dfaea0be9eb03e86cc51",
+      "bytes": 1061545,
+      "durationSeconds": 65.306063,
+      "receivedAtUtc": "2026-09-28T07:39:33.647Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T06_36_03_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+      "sha256": "8b1ce44b57dac617b6621b189b8eaec5dce92cb857d61f6e4b29e57d412f1fd1",
+      "bytes": 942845,
+      "durationSeconds": 57.887313,
+      "receivedAtUtc": "2026-09-28T07:39:33.900Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T06_40_38_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+      "sha256": "8b51567e8ee3f44e56736513eac87720c261bb0efd88d3b9677df42dea1bbc0d",
+      "bytes": 1088713,
+      "durationSeconds": 67.004063,
+      "receivedAtUtc": "2026-09-28T07:39:34.158Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T06_45_23_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+      "sha256": "33ab176818d45c67fc1a2d0b4b8ee51001425073d18f41f4ca1089035dfb24c1",
+      "bytes": 1170633,
+      "durationSeconds": 72.124063,
+      "receivedAtUtc": "2026-09-28T07:39:34.391Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T06_49_01_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+      "sha256": "25375be2e1bbfb74ed74da6ccc0452bea23626dbc871dacd5b103921e3fd7ec4",
+      "bytes": 1051514,
+      "durationSeconds": 64.679125,
+      "receivedAtUtc": "2026-09-28T07:39:34.607Z"
+    },
+    {
+      "originalFilename": "ElevenLabs_2026-09-28T06_52_34_Mark Dou - Global Modern Narrator_pvc_sp92_s50_sb75_v3.mp3",
+      "sha256": "ddf9674e6dfea517bf5633b4baaa433ce96dda016400baba72924d468aec0aa4",
+      "bytes": 1265092,
+      "durationSeconds": 78.02775,
+      "receivedAtUtc": "2026-09-28T07:39:34.944Z"
+    }
+  ]
+}

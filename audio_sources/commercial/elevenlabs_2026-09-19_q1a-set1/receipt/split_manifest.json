@@ -1,0 +1,53 @@
+{
+  "sourceSha256": "68525ac020298d567f0cc6cdfb62ae79ea6df1c8f52e034014389436fb916570",
+  "method": "Transcript-aligned boundaries at centers of detected silence; no speed/pitch changes. FLAC preserves decoded source samples; MP3 re-encoded at 192kbps.",
+  "commercialBasis": "User attests newly generated during ElevenLabs paid subscription; contract evidence not reviewed.",
+  "replacementStatus": "not_replaced",
+  "contentQC": "ASR identifies all four questions. Q2 ASR says a computer whereas source says the computer; listening review pending. ASR is not final pronunciation approval.",
+  "tracks": [
+    {
+      "id": "q_el1_A_set1_1",
+      "expectedText": "I was going to bring my umbrella, but I forgot it on the train this morning.",
+      "targetRelativePath": "listening_audio/el1A_set1_q1.mp3",
+      "startSeconds": 0,
+      "endSeconds": 3.7066,
+      "durationSeconds": 3.73551,
+      "mp3": "el1A_set1_q1.mp3",
+      "flac": "el1A_set1_q1.flac",
+      "sha256": "49dd9e5334e3cfa95f768748e8262ff3eae2dadbaf25723b3c5e4c498792e1d5"
+    },
+    {
+      "id": "q_el1_A_set1_2",
+      "expectedText": "Mike, don't turn off the computer yet. I haven't saved my report.",
+      "targetRelativePath": "listening_audio/el1A_set1_q2.mp3",
+      "startSeconds": 3.7066,
+      "endSeconds": 8.5096,
+      "durationSeconds": 4.832653,
+      "mp3": "el1A_set1_q2.mp3",
+      "flac": "el1A_set1_q2.flac",
+      "sha256": "ff237df73ee07eb719d2da09d06523bcdcc4eb21fb22bcbe6b2ed70d4a98662f"
+    },
+    {
+      "id": "q_el1_A_set1_3",
+      "expectedText": "Emma usually takes the bus to school, but today she rode her bike because the buses are on strike.",
+      "targetRelativePath": "listening_audio/el1A_set1_q3.mp3",
+      "startSeconds": 8.5096,
+      "endSeconds": 14.2468,
+      "durationSeconds": 5.773061,
+      "mp3": "el1A_set1_q3.mp3",
+      "flac": "el1A_set1_q3.flac",
+      "sha256": "eaf9ebdee0ffb205cc137dcc8d5e6cfc73eb6b4e71ec5b1599933341de1dc807"
+    },
+    {
+      "id": "q_el1_A_set1_4",
+      "expectedText": "There are eight cookies on the plate. If you eat three, I'll bake five more for tomorrow.",
+      "targetRelativePath": "listening_audio/el1A_set1_q4.mp3",
+      "startSeconds": 14.2468,
+      "endSeconds": 20.11425,
+      "durationSeconds": 5.903673,
+      "mp3": "el1A_set1_q4.mp3",
+      "flac": "el1A_set1_q4.flac",
+      "sha256": "12225e814ac9b4a606b63f1cc833f38581174f744787eba2d2751e3923a1914e"
+    }
+  ]
+}

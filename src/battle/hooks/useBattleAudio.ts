@@ -11,7 +11,7 @@
  *   play('correct') のような呼び出しは副作用なので useEffect の中から行う。
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   BATTLE_AUDIO_STORAGE_KEY,
@@ -64,12 +64,15 @@ export function useBattleAudioSettings(): [
  *
  * @param track いま鳴らすべき BGM（null で止める）。局面から呼び出し側が決める。
  */
-export function useBattleAudio(track: BattleBgmTrack) {
+export function useBattleAudio(track: BattleBgmTrack, startInMs?: number) {
   const [settings] = useBattleAudioSettings();
   const engine = useMemo(() => battleAudio(), []);
+  // startInMs は曲を始める瞬間の値だけ使う（毎フレーム変わる値で effect を回さない）
+  const startRef = useRef<number | undefined>(startInMs);
+  startRef.current = startInMs;
 
   useEffect(() => {
-    engine.playBgm(track);
+    engine.playBgm(track, { startInMs: startRef.current });
   }, [engine, track, settings.bgm]);
 
   // 画面を離れたら止める

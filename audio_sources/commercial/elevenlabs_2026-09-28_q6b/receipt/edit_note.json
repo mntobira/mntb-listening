@@ -1,0 +1,7 @@
+{
+ "method": "split_manifest.json の切り出しのあと、次のとおり組み立てた（すべてストリームコピー・再エンコードなし）",
+ "q6set10_B": "Q6B_2or3.mp3 の最後（q6set10_B__p1・前半）と Q6B_3or2.mp3 の最初（q6set10_B__p2・後半）をつないで1本にした。前半は『…equipment faults were rare.』まで、後半は『One hundred and forty out of how many…』から。ファイル名の 2or3 / 3or2 はこの境目のこと",
+ "q6set12_B": "3回録られていた（Q6B_3or2 末尾近く・Q6B_4 単独・Q6B_5 冒頭）。3本とも台本と一致。単独ファイルの Q6B_4 版（q6set12_B__b）を採用",
+ "q6set13_B": "2回録られていた。Q6B_3or2 版（q6set13_B__a）は『Posters came second, at about two thousand three hundred. Exam revision packs were much lower, and society newsletters barely registered.』の2文が抜けていたので不採用。全文そろっている Q6B_5 版（q6set13_B__b）を採用",
+ "verification": "全15本を faster-whisper small.en で文字起こしし、台本と照合。違いは数字の書き方・固有名の綴り・and/one などの聞き取り差のみ"
+}

@@ -6,11 +6,12 @@ import './index.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppWallpaper } from './components/AppWallpaper';
 
-// Register the supplied offline shell only for production builds.
+// PWA Service Worker 登録（パート8で sw.js を用意）
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .catch((error) => console.warn('[SW] registration failed:', error));
+    navigator.serviceWorker
+      .register('/sw.js')
+      .catch((err) => console.warn('[SW] registration failed:', err));
   });
 }
 

@@ -1,0 +1,272 @@
+{
+ "batch": "elevenlabs_2026-09-28_q6b",
+ "createdAtUtc": "2026-09-28T23:46:42.496732+00:00",
+ "method": "台本と音声認識の単語を突き合わせ、文間の無音の中央で切断。速度・音程は無変更。mp3 はストリームコピー。",
+ "sources": [
+  {
+   "file": "Q6B_1.mp3",
+   "sha256": "3519be5aac9db21bc57874cc1fe92759abdb16e987f0f86f48d9bf54065262e0",
+   "durationSec": 284.186,
+   "tracks": [
+    {
+     "stem": "q6set01_B",
+     "cover": 0.985,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 95.5,
+     "silence": [
+      95.809,
+      96.987
+     ],
+     "start": 0.0,
+     "end": 96.398,
+     "output": "q6set01_B.mp3"
+    },
+    {
+     "stem": "q6set02_B",
+     "cover": 0.94,
+     "firstWordStart": 96.56,
+     "lastWordEnd": 193.58,
+     "silence": [
+      193.879,
+      194.881
+     ],
+     "start": 96.398,
+     "end": 194.38,
+     "output": "q6set02_B.mp3"
+    },
+    {
+     "stem": "q6set03_B",
+     "cover": 0.996,
+     "firstWordStart": 194.48,
+     "lastWordEnd": 283.92,
+     "start": 194.38,
+     "end": 284.186063,
+     "output": "q6set03_B.mp3"
+    }
+   ]
+  },
+  {
+   "file": "Q6B_2.mp3",
+   "sha256": "44313828cebb7d77e7dc3bb6761ead81b2fcb4b46f9b0215c9c300c0292473b6",
+   "durationSec": 305.554,
+   "tracks": [
+    {
+     "stem": "q6set04_B",
+     "cover": 0.975,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 88.0,
+     "silence": [
+      88.152,
+      89.934
+     ],
+     "start": 0.0,
+     "end": 89.043,
+     "output": "q6set04_B.mp3"
+    },
+    {
+     "stem": "q6set05_B",
+     "cover": 0.967,
+     "firstWordStart": 89.8,
+     "lastWordEnd": 188.12,
+     "silence": [
+      188.292,
+      189.902
+     ],
+     "start": 89.043,
+     "end": 189.097,
+     "output": "q6set05_B.mp3"
+    },
+    {
+     "stem": "q6set06_B",
+     "cover": 0.996,
+     "firstWordStart": 188.12,
+     "lastWordEnd": 305.12,
+     "start": 189.097,
+     "end": 305.55425,
+     "output": "q6set06_B.mp3"
+    }
+   ]
+  },
+  {
+   "file": "Q6B_2or3.mp3",
+   "sha256": "884c418e3c838df3d10f75a73017f721d860622b7de40992b6891a3a87006285",
+   "durationSec": 306.913,
+   "tracks": [
+    {
+     "stem": "q6set07_B",
+     "cover": 0.988,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 83.64,
+     "silence": [
+      83.787,
+      84.277
+     ],
+     "start": 0.0,
+     "end": 84.032,
+     "output": "q6set07_B.mp3"
+    },
+    {
+     "stem": "q6set08_B",
+     "cover": 0.966,
+     "firstWordStart": 84.7,
+     "lastWordEnd": 182.78,
+     "silence": [
+      183.031,
+      183.586
+     ],
+     "start": 84.032,
+     "end": 183.308,
+     "output": "q6set08_B.mp3"
+    },
+    {
+     "stem": "q6set09_B",
+     "cover": 0.996,
+     "firstWordStart": 183.54,
+     "lastWordEnd": 264.46,
+     "silence": [
+      264.733,
+      265.151
+     ],
+     "start": 183.308,
+     "end": 264.942,
+     "output": "q6set09_B.mp3"
+    },
+    {
+     "stem": "q6set10_B__p1",
+     "cover": 0.966,
+     "firstWordStart": 265.08,
+     "lastWordEnd": 306.4,
+     "start": 264.942,
+     "end": 306.912625,
+     "output": "q6set10_B__p1.mp3"
+    }
+   ]
+  },
+  {
+   "file": "Q6B_3or2.mp3",
+   "sha256": "ff4d6e985d3fbc446913c6a62acf60067d10f7439868df1d76398284458cfbcd",
+   "durationSec": 289.306,
+   "tracks": [
+    {
+     "stem": "q6set10_B__p2",
+     "cover": 0.986,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 45.72,
+     "silence": [
+      45.945,
+      46.294
+     ],
+     "start": 0.0,
+     "end": 46.119,
+     "output": "q6set10_B__p2.mp3"
+    },
+    {
+     "stem": "q6set11_B",
+     "cover": 0.947,
+     "firstWordStart": 46.26,
+     "lastWordEnd": 124.42,
+     "silence": [
+      124.554,
+      124.869
+     ],
+     "start": 46.119,
+     "end": 124.712,
+     "output": "q6set11_B.mp3"
+    },
+    {
+     "stem": "q6set12_B__a",
+     "cover": 0.97,
+     "firstWordStart": 124.84,
+     "lastWordEnd": 207.6,
+     "silence": [
+      207.757,
+      208.165
+     ],
+     "start": 124.712,
+     "end": 207.961,
+     "output": "q6set12_B__a.mp3"
+    },
+    {
+     "stem": "q6set13_B__a",
+     "cover": 0.9,
+     "firstWordStart": 208.08,
+     "lastWordEnd": 288.86,
+     "start": 207.961,
+     "end": 289.306063,
+     "output": "q6set13_B__a.mp3"
+    }
+   ]
+  },
+  {
+   "file": "Q6B_4.mp3",
+   "sha256": "4f9ea2adaeaaf3494c6f6abad3542d2b15abf45fc96bfee899159fbda0ca59d8",
+   "durationSec": 84.114,
+   "tracks": [
+    {
+     "stem": "q6set12_B__b",
+     "cover": 0.977,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 83.86,
+     "start": 0.0,
+     "end": 84.11425,
+     "output": "q6set12_B__b.mp3"
+    }
+   ]
+  },
+  {
+   "file": "Q6B_5.mp3",
+   "sha256": "1d48576e8ba022f6d7ad637cf609453ed1125705b54c539a751c51f7d97bf6bd",
+   "durationSec": 345.234,
+   "tracks": [
+    {
+     "stem": "q6set12_B__c",
+     "cover": 0.974,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 84.76,
+     "silence": [
+      84.741,
+      85.3
+     ],
+     "start": 0.0,
+     "end": 85.02,
+     "output": "q6set12_B__c.mp3"
+    },
+    {
+     "stem": "q6set13_B__b",
+     "cover": 0.972,
+     "firstWordStart": 85.24,
+     "lastWordEnd": 168.12,
+     "silence": [
+      168.343,
+      168.685
+     ],
+     "start": 85.02,
+     "end": 168.514,
+     "output": "q6set13_B__b.mp3"
+    },
+    {
+     "stem": "q6set14_B",
+     "cover": 0.985,
+     "firstWordStart": 168.66,
+     "lastWordEnd": 256.48,
+     "silence": [
+      256.845,
+      257.196
+     ],
+     "start": 168.514,
+     "end": 257.02,
+     "output": "q6set14_B.mp3"
+    },
+    {
+     "stem": "q6set15_B",
+     "cover": 0.989,
+     "firstWordStart": 257.12,
+     "lastWordEnd": 344.66,
+     "start": 257.02,
+     "end": 345.23425,
+     "output": "q6set15_B.mp3"
+    }
+   ]
+  }
+ ]
+}

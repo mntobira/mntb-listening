@@ -3,9 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 /** Locally hosted generated clips; no paid API or session-cookie URLs at runtime. */
 export const CINEMATIC_CLIPS = {
   title: { src: '/cinematics/title.mp4', poster: '/cinematics/title-poster.webp' },
-  special: { src: '/cinematics/attack.mp4' },
+  // 2026-09-29 差し替え：コンボ攻撃（3.1秒・構えて斬撃→元の立ち姿に戻る）。対戦の答え合わせ 3.5 秒に収まる長さに切った
+  special: { src: '/cinematics/attack.mp4', playbackRate: 1.15 },
   gacha: { src: '/cinematics/gacha.mp4' },
-  victory: { src: '/cinematics/victory.mp4' },
+  // 2026-09-29 差し替え：勝利（5秒・ジャンプ→紙吹雪とスポットライト→くるっと回って決めポーズ）
+  victory: { src: '/cinematics/victory.mp4', poster: '/cinematics/victory-poster.webp' },
 };
 type Props = {
   src: string; label: string; onActiveChange?: (active: boolean) => void; onComplete?: () => void; playbackRate?: number;

@@ -30,7 +30,7 @@ import {
 import { ensureBattleRankingEntry } from '../data/battleRanking';
 import { battleAudio } from '../audio/battleAudio';
 import { useBattleAudioSettings } from '../hooks/useBattleAudio';
-import { auth, FIREBASE_CONFIGURED } from '../../firebase';
+import { auth } from '../../firebase';
 import type { AiLevel } from '../core/aiOpponent';
 import { BattleAiRoomScreen } from './BattleAiRoomScreen';
 import { BattleAiSelect } from './BattleAiSelect';
@@ -177,11 +177,6 @@ export function BattleMode({
   // 入口の選択
   // ------------------------------------------------------------
   const handleHomeChoice = useCallback((choice: BattleHomeChoice) => {
-    if (!FIREBASE_CONFIGURED && ['friend-create', 'friend-join', 'national', 'ranking', 'history'].includes(choice)) {
-      setNotice('オンライン機能にはリスニング専用Firebaseの設定が必要です。AI対戦をお試しください。');
-      setScreen('home');
-      return;
-    }
     setNotice(null);
     setError(null);
     switch (choice) {

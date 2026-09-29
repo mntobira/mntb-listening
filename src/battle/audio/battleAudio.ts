@@ -30,6 +30,7 @@
 import type { BattleAudioSettings, BattleBgmTrack } from '../core/audioSettings';
 import { DEFAULT_BATTLE_AUDIO } from '../core/audioSettings';
 import { playSample, preloadSamples } from './sfxSamples';
+import { BGM_FILES, bgmFileKeyOf, introDelaySec, introOffsetSec, type BgmFileKey } from './bgmFiles';
 
 /** 効果音ファイルの再生音量（ファイルはピーク約 -1dB で作ってあるので下げて合成音と揃える） */
 const SAMPLE_GAIN = 0.5;
@@ -132,6 +133,7 @@ export class BattleAudioEngine {
     const ctx = this.ensure();
     if (ctx && ctx.state === 'suspended') void ctx.resume().catch(() => {});
     if (ctx) preloadSamples(ctx);
+    if (ctx) this.preloadBgmFiles();
   }
 
   setSettings(next: BattleAudioSettings): void {
@@ -153,14 +155,24 @@ export class BattleAudioEngine {
    * 切り替え時は前の音を止めて即座に次を始める（ループ位置は引き継ぐので
    * 「途中から違う曲」ではなく「同じ曲のテンポと調が変わった」ように聞こえる）。
    */
-  playBgm(track: BattleBgmTrack): void {
+  playBgm(track: BattleBgmTrack, opts: { startInMs?: number } = {}): void {
     if (!this.settings.bgm) track = null;
     if (track === this.track) return;
+    const prev = this.track;
     this.track = track;
+    // ★音源ファイル（bgmFiles.ts に登録があるとき）★
+    //   normal→closing→final は同じ battle 曲を流しっぱなしにする（曲を切らない）。
+    const fileKey = track ? bgmFileKeyOf(track) : null;
+    if (fileKey && BGM_FILES[fileKey] && prev && this.fileKey === fileKey && this.fileSource) return;
     this.clearBgmTimer();
+    this.stopFile();
     if (!track) return;
     const ctx = this.ensure();
     if (!ctx) return;
+    if (fileKey && BGM_FILES[fileKey]) {
+      this.playFile(fileKey, opts.startInMs);
+      return;
+    }
     this.nextNoteAt = ctx.currentTime + 0.05;
     this.schedule();
   }
@@ -168,6 +180,93 @@ export class BattleAudioEngine {
   stopBgm(): void {
     this.track = null;
     this.clearBgmTimer();
+    this.stopFile();
+  }
+
+  // ------------------------------------------------------------
+  // 音源ファイルのBGM（bgmFiles.ts）
+  // ------------------------------------------------------------
+  private fileKey: BgmFileKey | null = null;
+  private fileSource: AudioBufferSourceNode | null = null;
+  private fileEnv: GainNode | null = null;
+  private fileBuffers = new Map<BgmFileKey, Promise<AudioBuffer | null>>();
+  private fileRequest = 0;
+
+  private loadFile(key: BgmFileKey): Promise<AudioBuffer | null> {
+    const ctx = this.ctx;
+    const spec = BGM_FILES[key];
+    if (!ctx || !spec || typeof fetch !== 'function') return Promise.resolve(null);
+    let p = this.fileBuffers.get(key);
+    if (!p) {
+      p = fetch(spec.url)
+        .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+        .then((b) => ctx.decodeAudioData(b))
+        .catch(() => { this.fileBuffers.delete(key); return null; });
+      this.fileBuffers.set(key, p);
+    }
+    return p;
+  }
+
+  /** 待合室にいるあいだに battle 曲を先読みしておく（カウントダウン頭で待たせない） */
+  preloadBgmFiles(): void {
+    if (!this.ensure()) return;
+    (Object.keys(BGM_FILES) as BgmFileKey[]).forEach((k) => void this.loadFile(k));
+  }
+
+  private playFile(key: BgmFileKey, startInMs?: number): void {
+    const spec = BGM_FILES[key]!;
+    const req = ++this.fileRequest;
+    this.fileKey = key;
+    const requestedAt = this.ctx?.currentTime ?? 0;
+    void this.loadFile(key).then((buffer) => {
+      const ctx = this.ctx;
+      if (req !== this.fileRequest || !ctx || !this.bgmGain || !this.track) return;
+      if (!buffer) {
+        // 読めなかった → 従来の合成音で鳴らす（無音にしない）
+        this.fileKey = null;
+        this.nextNoteAt = ctx.currentTime + 0.05;
+        this.schedule();
+        return;
+      }
+      // 読み込みにかかった時間ぶん、カウントダウンは進んでいる
+      const waited = (ctx.currentTime - requestedAt) * 1000;
+      const remainMs = startInMs == null ? null : startInMs - waited;
+      const offset = remainMs == null ? 0 : introOffsetSec(spec.dropSec, remainMs);
+      const delay = remainMs == null ? 0 : introDelaySec(spec.dropSec, remainMs);
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.loop = true;
+      src.loopStart = spec.loopStartSec;
+      src.loopEnd = spec.loopEndSec ?? buffer.duration;
+      const env = ctx.createGain();
+      const at = ctx.currentTime + 0.03 + delay;
+      env.gain.setValueAtTime(0.0001, at);
+      env.gain.exponentialRampToValueAtTime(Math.max(0.0002, spec.gain), at + 0.6);
+      src.connect(env);
+      env.connect(this.bgmGain);
+      src.start(at, Math.min(offset, Math.max(0, buffer.duration - 0.05)));
+      this.fileSource = src;
+      this.fileEnv = env;
+    });
+  }
+
+  private stopFile(): void {
+    this.fileRequest += 1;
+    this.fileKey = null;
+    const ctx = this.ctx;
+    const src = this.fileSource;
+    const env = this.fileEnv;
+    this.fileSource = null;
+    this.fileEnv = null;
+    if (!ctx || !src || !env) return;
+    try {
+      // ぷつっと切れないよう 0.4 秒で絞ってから止める
+      const t = ctx.currentTime;
+      env.gain.cancelScheduledValues(t);
+      env.gain.setValueAtTime(Math.max(0.0002, env.gain.value), t);
+      env.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+      src.stop(t + 0.45);
+    } catch { /* 止められなくても次の曲は鳴る */ }
   }
 
   private clearBgmTimer(): void {

@@ -86,10 +86,10 @@ npm test
 npm run build
 ```
 
-通常の公開ビルド (`npm run build`) はFirebase設定不足・エミュレータ設定・統合版への接続先を検出すると停止します。
+公開ビルドはFirebase設定不足・エミュレータ設定・統合版への接続先を検出すると停止します。
 成果物は `dist/`。音源・画像・動画を削らず配信してください。
 
-- Vercel：新しいプロジェクトとして登録。Install `npm ci` / Build `npm run build:vercel`（`vercel.json`で指定済み）/ Output `dist`。環境変数が**すべて未設定**ならゲスト体験版として公開されます。端末内の演習・音源・AI対戦は動きますが、Googleログイン・全国／フレンド対戦・クラウドランキングは利用できません。専用Firebaseの必須4変数をすべて登録して再ビルドするとオンライン機能が有効になります。部分的な設定、エミュレータ設定、統合版のプロジェクトIDはビルドエラーとして拒否します。`npm run build` 自体の厳格なチェックは変更していません。
+- Vercel：新しいプロジェクトとして登録。Install `npm ci` / Build `npm run build` / Output `dist`。環境変数を設定して再ビルドします。
 - Firebase Hosting：`npx firebase deploy --only hosting --project YOUR_LISTENING_PROJECT_ID`。ルール・インデックスは前の手順で反映します。
 - その他：全distを配信しSPA fallbackを設定。音源・画像の実ファイルをHTMLに書き換えないでください。
 

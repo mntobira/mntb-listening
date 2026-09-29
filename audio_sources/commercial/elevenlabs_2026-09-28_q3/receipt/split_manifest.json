@@ -1,0 +1,1267 @@
+{
+ "batch": "elevenlabs_2026-09-28_q3",
+ "createdAtUtc": "2026-09-28T15:48:15.613866+00:00",
+ "method": "台本と音声認識の単語を突き合わせ、文間の無音の中央で切断。速度・音程は無変更。mp3 はストリームコピー。",
+ "sources": [
+  {
+   "file": "ElevenLabs_2026-09-28T10_53_14_Brian - Relatable Everyman_pvc_sp92_s44_sb46_v3.mp3",
+   "sha256": "d92a467420a189ff3574fdd2c58dd83a4ca25644a3e38a51e82d5a87afe95d21",
+   "durationSec": 53.081,
+   "tracks": [
+    {
+     "stem": "el3_set1_q1",
+     "cover": 0.979,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 15.78,
+     "silence": [
+      15.966,
+      16.75
+     ],
+     "start": 0.0,
+     "end": 16.358,
+     "output": "el3_set1_q1.mp3"
+    },
+    {
+     "stem": "el3_set1_q2",
+     "cover": 1.0,
+     "firstWordStart": 16.56,
+     "lastWordEnd": 32.46,
+     "silence": [
+      32.611,
+      33.57
+     ],
+     "start": 16.358,
+     "end": 33.09,
+     "output": "el3_set1_q2.mp3"
+    },
+    {
+     "stem": "el3_set1_q3",
+     "cover": 1.0,
+     "firstWordStart": 33.34,
+     "lastWordEnd": 52.74,
+     "start": 33.09,
+     "end": 53.080813,
+     "output": "el3_set1_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T11_01_13_Amy - Natural and Sweet_pvc_sp82_s25_sb75_v3.mp3",
+   "sha256": "4faa66dca5140d6497aef2a929dca524e7077eb0df1c321407b9eca85f5a650f",
+   "durationSec": 55.066,
+   "tracks": [
+    {
+     "stem": "el3_set1_q4",
+     "cover": 0.975,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 17.34,
+     "silence": [
+      17.542,
+      18.574
+     ],
+     "start": 0.0,
+     "end": 18.058,
+     "output": "el3_set1_q4.mp3"
+    },
+    {
+     "stem": "el3_set1_q5",
+     "cover": 0.978,
+     "firstWordStart": 18.22,
+     "lastWordEnd": 34.42,
+     "silence": [
+      34.899,
+      36.413
+     ],
+     "start": 18.058,
+     "end": 35.656,
+     "output": "el3_set1_q5.mp3"
+    },
+    {
+     "stem": "el3_set1_q6",
+     "cover": 0.8,
+     "firstWordStart": 35.9,
+     "lastWordEnd": 53.68,
+     "start": 35.656,
+     "end": 55.066063,
+     "output": "el3_set1_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T11_09_34_Ellen - Serious, Direct and Confident_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "839126f4f085f4c3dae59fdf8ef910fb1e3e5d9d0d7eea70512b4370475576f0",
+   "durationSec": 64.209,
+   "tracks": [
+    {
+     "stem": "el3_set2_q1",
+     "cover": 0.978,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 21.48,
+     "silence": [
+      21.596,
+      22.659
+     ],
+     "start": 0.0,
+     "end": 22.128,
+     "output": "el3_set2_q1.mp3"
+    },
+    {
+     "stem": "el3_set2_q2",
+     "cover": 1.0,
+     "firstWordStart": 22.46,
+     "lastWordEnd": 41.16,
+     "silence": [
+      41.38,
+      42.35
+     ],
+     "start": 22.128,
+     "end": 41.865,
+     "output": "el3_set2_q2.mp3"
+    },
+    {
+     "stem": "el3_set2_q3",
+     "cover": 0.982,
+     "firstWordStart": 41.94,
+     "lastWordEnd": 63.78,
+     "start": 41.865,
+     "end": 64.208938,
+     "output": "el3_set2_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T11_17_58_Adam - Articulate Engineering Professor_pvc_sp104_s50_sb50_v3.mp3",
+   "sha256": "2993fc09aced67d6a82f597315dcb6253eb4e526f7a0b422378318e801173a85",
+   "durationSec": 58.514,
+   "tracks": [
+    {
+     "stem": "el3_set2_q4",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 18.9,
+     "silence": [
+      19.161,
+      20.513
+     ],
+     "start": 0.0,
+     "end": 19.837,
+     "output": "el3_set2_q4.mp3"
+    },
+    {
+     "stem": "el3_set2_q5",
+     "cover": 0.917,
+     "firstWordStart": 20.060000000000002,
+     "lastWordEnd": 41.64,
+     "silence": [
+      41.791,
+      43.208
+     ],
+     "start": 19.837,
+     "end": 42.499,
+     "output": "el3_set2_q5.mp3"
+    },
+    {
+     "stem": "el3_set2_q6",
+     "cover": 1.0,
+     "firstWordStart": 42.76,
+     "lastWordEnd": 58.22,
+     "start": 42.499,
+     "end": 58.51425,
+     "output": "el3_set2_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T11_24_27_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v3.mp3",
+   "sha256": "72740624869b9a74a15b42248f9f59cfcf53e8547b73dd0fe4b7d355398bb877",
+   "durationSec": 56.842,
+   "tracks": [
+    {
+     "stem": "el3_set3_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 16.28,
+     "silence": [
+      16.513,
+      17.876
+     ],
+     "start": 0.0,
+     "end": 17.195,
+     "output": "el3_set3_q1.mp3"
+    },
+    {
+     "stem": "el3_set3_q2",
+     "cover": 0.98,
+     "firstWordStart": 17.66,
+     "lastWordEnd": 36.42,
+     "silence": [
+      36.684,
+      39.285
+     ],
+     "start": 17.195,
+     "end": 37.984,
+     "output": "el3_set3_q2.mp3"
+    },
+    {
+     "stem": "el3_set3_q3",
+     "cover": 1.0,
+     "firstWordStart": 38.92,
+     "lastWordEnd": 56.64,
+     "start": 37.984,
+     "end": 56.842438,
+     "output": "el3_set3_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T11_30_57_Arabella - Mysterious and Emotive_pvc_sp100_s63_sb100_v3.mp3",
+   "sha256": "af62669d0fb4d1326c925bfb0028eeccd31748bd0601102b2f6bfe38bf7deb1e",
+   "durationSec": 58.671,
+   "tracks": [
+    {
+     "stem": "el3_set3_q4",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 17.7,
+     "silence": [
+      18.035,
+      19.068
+     ],
+     "start": 0.0,
+     "end": 18.551,
+     "output": "el3_set3_q4.mp3"
+    },
+    {
+     "stem": "el3_set3_q5",
+     "cover": 0.982,
+     "firstWordStart": 18.98,
+     "lastWordEnd": 39.14,
+     "silence": [
+      39.295,
+      40.02
+     ],
+     "start": 18.551,
+     "end": 39.658,
+     "output": "el3_set3_q5.mp3"
+    },
+    {
+     "stem": "el3_set3_q6",
+     "cover": 0.98,
+     "firstWordStart": 39.84,
+     "lastWordEnd": 58.0,
+     "start": 39.658,
+     "end": 58.671,
+     "output": "el3_set3_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T11_39_28_Arabella - Mysterious and Emotive_pvc_sp100_s63_sb100_v3.mp3",
+   "sha256": "4185d011ac7536fb30715d0d110ec687937e2c3546d5ce603f52b91df101fa65",
+   "durationSec": 69.956,
+   "tracks": [
+    {
+     "stem": "el3_set4_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 18.52,
+     "silence": [
+      18.781,
+      20.047
+     ],
+     "start": 0.0,
+     "end": 19.414,
+     "output": "el3_set4_q1.mp3"
+    },
+    {
+     "stem": "el3_set4_q2",
+     "cover": 1.0,
+     "firstWordStart": 19.8,
+     "lastWordEnd": 45.74,
+     "silence": [
+      46.314,
+      47.825
+     ],
+     "start": 19.414,
+     "end": 47.07,
+     "output": "el3_set4_q2.mp3"
+    },
+    {
+     "stem": "el3_set4_q3",
+     "cover": 1.0,
+     "firstWordStart": 47.26,
+     "lastWordEnd": 69.74,
+     "start": 47.07,
+     "end": 69.955875,
+     "output": "el3_set4_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T11_45_53_Monika Sogam - Interactive and Modern_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "80637193429efec737240dae556d224f949a370d19d0307bbeff6e0be92b4694",
+   "durationSec": 68.754,
+   "tracks": [
+    {
+     "stem": "el3_set4_q4",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 22.78,
+     "silence": [
+      23.14,
+      24.084
+     ],
+     "start": 0.0,
+     "end": 23.612,
+     "output": "el3_set4_q4.mp3"
+    },
+    {
+     "stem": "el3_set4_q5",
+     "cover": 0.943,
+     "firstWordStart": 23.72,
+     "lastWordEnd": 44.1,
+     "silence": [
+      44.325,
+      45.627
+     ],
+     "start": 23.612,
+     "end": 44.976,
+     "output": "el3_set4_q5.mp3"
+    },
+    {
+     "stem": "el3_set4_q6",
+     "cover": 0.984,
+     "firstWordStart": 45.16,
+     "lastWordEnd": 68.42,
+     "start": 44.976,
+     "end": 68.75425,
+     "output": "el3_set4_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T11_55_13_Savvy - Warm, Grounded & Natural_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "58f2f6d62af30fa4f9b93122d712a51bf8f7c68979d42150e0911d6ef9c20fe0",
+   "durationSec": 71.549,
+   "tracks": [
+    {
+     "stem": "el3_set5_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 21.14,
+     "silence": [
+      21.681,
+      25.417
+     ],
+     "start": 0.0,
+     "end": 23.549,
+     "output": "el3_set5_q1.mp3"
+    },
+    {
+     "stem": "el3_set5_q2",
+     "cover": 0.964,
+     "firstWordStart": 25.12,
+     "lastWordEnd": 48.58,
+     "silence": [
+      49.492,
+      51.135
+     ],
+     "start": 23.549,
+     "end": 50.314,
+     "output": "el3_set5_q2.mp3"
+    },
+    {
+     "stem": "el3_set5_q3",
+     "cover": 1.0,
+     "firstWordStart": 50.64,
+     "lastWordEnd": 71.16,
+     "start": 50.314,
+     "end": 71.549375,
+     "output": "el3_set5_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T12_01_13_James - Husky, Engaging and Bold_pvc_sp100_s50_sb50_v3.mp3",
+   "sha256": "bf501dc4f53ef5559fad49b7a3ecbe082add94150cf11401135201f58e2afe32",
+   "durationSec": 64.026,
+   "tracks": [
+    {
+     "stem": "el3_set5_q4",
+     "cover": 0.98,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 19.54,
+     "silence": [
+      19.894,
+      21.281
+     ],
+     "start": 0.0,
+     "end": 20.588,
+     "output": "el3_set5_q4.mp3"
+    },
+    {
+     "stem": "el3_set5_q5",
+     "cover": 1.0,
+     "firstWordStart": 20.86,
+     "lastWordEnd": 40.58,
+     "silence": [
+      40.902,
+      42.353
+     ],
+     "start": 20.588,
+     "end": 41.627,
+     "output": "el3_set5_q5.mp3"
+    },
+    {
+     "stem": "el3_set5_q6",
+     "cover": 1.0,
+     "firstWordStart": 41.98,
+     "lastWordEnd": 63.86,
+     "start": 41.627,
+     "end": 64.026063,
+     "output": "el3_set5_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T12_44_15_Hope - upbeat and clear_pvc_sp96_s50_sb75_v3.mp3",
+   "sha256": "154415c6d5c0381a25daac7e2c35477dd5a5701cfe90b125aabf2f65819f70ea",
+   "durationSec": 78.211,
+   "tracks": [
+    {
+     "stem": "el3_set6_q1",
+     "cover": 0.984,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 29.04,
+     "silence": [
+      29.083,
+      30.469
+     ],
+     "start": 0.0,
+     "end": 29.776,
+     "output": "el3_set6_q1.mp3"
+    },
+    {
+     "stem": "el3_set6_q2",
+     "cover": 0.983,
+     "firstWordStart": 30.199999999999996,
+     "lastWordEnd": 54.18,
+     "silence": [
+      54.475,
+      56.214
+     ],
+     "start": 29.776,
+     "end": 55.344,
+     "output": "el3_set6_q2.mp3"
+    },
+    {
+     "stem": "el3_set6_q3",
+     "cover": 0.965,
+     "firstWordStart": 55.84,
+     "lastWordEnd": 78.04,
+     "start": 55.344,
+     "end": 78.210563,
+     "output": "el3_set6_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T12_50_45_Hale - Expressive, Deep and Emotive_pvc_sp100_s65_sb75_v3.mp3",
+   "sha256": "270f2eec9edaf7ac32c6e3514b45310f86029299286116f1c06cacfb565c294e",
+   "durationSec": 82.364,
+   "tracks": [
+    {
+     "stem": "el3_set6_q4",
+     "cover": 0.987,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 26.9,
+     "silence": [
+      27.089,
+      28.108
+     ],
+     "start": 0.0,
+     "end": 27.598,
+     "output": "el3_set6_q4.mp3"
+    },
+    {
+     "stem": "el3_set6_q5",
+     "cover": 0.971,
+     "firstWordStart": 27.619999999999997,
+     "lastWordEnd": 51.38,
+     "silence": [
+      51.591,
+      53.216
+     ],
+     "start": 27.598,
+     "end": 52.403,
+     "output": "el3_set6_q5.mp3"
+    },
+    {
+     "stem": "el3_set6_q6",
+     "cover": 1.0,
+     "firstWordStart": 52.74,
+     "lastWordEnd": 82.06,
+     "start": 52.403,
+     "end": 82.364063,
+     "output": "el3_set6_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T13_00_57_Lily - Warm British Audiobook Narrator_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "1975decb7e2f62959707a9c64a78d9e79e96ea35b9ff2a08d4da14d71e28418c",
+   "durationSec": 67.709,
+   "tracks": [
+    {
+     "stem": "el3_set7_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 19.06,
+     "silence": [
+      19.412,
+      20.464
+     ],
+     "start": 0.0,
+     "end": 19.938,
+     "output": "el3_set7_q1.mp3"
+    },
+    {
+     "stem": "el3_set7_q2",
+     "cover": 1.0,
+     "firstWordStart": 20.4,
+     "lastWordEnd": 40.68,
+     "silence": [
+      40.95,
+      42.106
+     ],
+     "start": 19.938,
+     "end": 41.528,
+     "output": "el3_set7_q2.mp3"
+    },
+    {
+     "stem": "el3_set7_q3",
+     "cover": 0.966,
+     "firstWordStart": 41.72,
+     "lastWordEnd": 67.42,
+     "start": 41.528,
+     "end": 67.709375,
+     "output": "el3_set7_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T13_27_20_James - Husky, Engaging and Bold_pvc_sp100_s50_sb50_v3.mp3",
+   "sha256": "a4d5c572867c84998682b2507cd144c01e3a5e9b59f4c824a2edf2e84f91d863",
+   "durationSec": 87.562,
+   "tracks": [
+    {
+     "stem": "el3_set7_q4",
+     "cover": 0.955,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 28.82,
+     "silence": [
+      28.932,
+      30.065
+     ],
+     "start": 0.0,
+     "end": 29.498,
+     "output": "el3_set7_q4.mp3"
+    },
+    {
+     "stem": "el3_set7_q5",
+     "cover": 1.0,
+     "firstWordStart": 30.0,
+     "lastWordEnd": 54.86,
+     "silence": [
+      55.213,
+      56.789
+     ],
+     "start": 29.498,
+     "end": 56.001,
+     "output": "el3_set7_q5.mp3"
+    },
+    {
+     "stem": "el3_set7_q6",
+     "cover": 0.986,
+     "firstWordStart": 56.4,
+     "lastWordEnd": 87.08,
+     "start": 56.001,
+     "end": 87.562438,
+     "output": "el3_set7_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T13_35_57_Dan - Warm, Conversational and Polite_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "374ba9cbef70194248dc08cfedc162ef55f5ac331f8737816d421ff92a21fb36",
+   "durationSec": 71.471,
+   "tracks": [
+    {
+     "stem": "el3_set8_q1",
+     "cover": 0.981,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 21.58,
+     "silence": [
+      21.838,
+      23.299
+     ],
+     "start": 0.0,
+     "end": 22.569,
+     "output": "el3_set8_q1.mp3"
+    },
+    {
+     "stem": "el3_set8_q2",
+     "cover": 0.963,
+     "firstWordStart": 22.84,
+     "lastWordEnd": 46.92,
+     "silence": [
+      47.299,
+      48.937
+     ],
+     "start": 22.569,
+     "end": 48.118,
+     "output": "el3_set8_q2.mp3"
+    },
+    {
+     "stem": "el3_set8_q3",
+     "cover": 0.984,
+     "firstWordStart": 48.56,
+     "lastWordEnd": 70.84,
+     "start": 48.118,
+     "end": 71.471,
+     "output": "el3_set8_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T13_43_01_Mark - Natural Conversations_pvc_sp100_s44_sb75_v3.mp3",
+   "sha256": "3388b3676c49f730a53338cae9a8327f7d3fb25d6913b7f38fd4bd666a182fc8",
+   "durationSec": 75.468,
+   "tracks": [
+    {
+     "stem": "el3_set8_q4",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 24.42,
+     "silence": [
+      24.824,
+      25.66
+     ],
+     "start": 0.0,
+     "end": 25.242,
+     "output": "el3_set8_q4.mp3"
+    },
+    {
+     "stem": "el3_set8_q5",
+     "cover": 0.971,
+     "firstWordStart": 25.64,
+     "lastWordEnd": 49.86,
+     "silence": [
+      50.111,
+      51.602
+     ],
+     "start": 25.242,
+     "end": 50.856,
+     "output": "el3_set8_q5.mp3"
+    },
+    {
+     "stem": "el3_set8_q6",
+     "cover": 0.968,
+     "firstWordStart": 51.120000000000005,
+     "lastWordEnd": 75.38,
+     "start": 50.856,
+     "end": 75.46775,
+     "output": "el3_set8_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T13_48_40_Ellen - Serious, Direct and Confident_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "c89bde293c48dbdd93db3b9db2f8a40a7c9c00fb7fb792a4330f911fa346169d",
+   "durationSec": 77.479,
+   "tracks": [
+    {
+     "stem": "el3_set9_q1",
+     "cover": 0.987,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 26.66,
+     "silence": [
+      26.95,
+      28.204
+     ],
+     "start": 0.0,
+     "end": 27.577,
+     "output": "el3_set9_q1.mp3"
+    },
+    {
+     "stem": "el3_set9_q2",
+     "cover": 1.0,
+     "firstWordStart": 27.8,
+     "lastWordEnd": 52.18,
+     "silence": [
+      52.446,
+      53.645
+     ],
+     "start": 27.577,
+     "end": 53.045,
+     "output": "el3_set9_q2.mp3"
+    },
+    {
+     "stem": "el3_set9_q3",
+     "cover": 1.0,
+     "firstWordStart": 53.160000000000004,
+     "lastWordEnd": 77.3,
+     "start": 53.045,
+     "end": 77.479125,
+     "output": "el3_set9_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T13_55_28_George - Warm Documentary Narrator_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "0a21a8c80847d0e4bb0e05fa7bf827693ff5099d8583ce01ce47fe2293cc73a5",
+   "durationSec": 78.211,
+   "tracks": [
+    {
+     "stem": "el3_set9_q4",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 22.42,
+     "silence": [
+      22.759,
+      23.39
+     ],
+     "start": 0.0,
+     "end": 23.075,
+     "output": "el3_set9_q4.mp3"
+    },
+    {
+     "stem": "el3_set9_q5",
+     "cover": 0.988,
+     "firstWordStart": 23.48,
+     "lastWordEnd": 52.54,
+     "silence": [
+      52.839,
+      53.274
+     ],
+     "start": 23.075,
+     "end": 53.056,
+     "output": "el3_set9_q5.mp3"
+    },
+    {
+     "stem": "el3_set9_q6",
+     "cover": 1.0,
+     "firstWordStart": 53.07,
+     "lastWordEnd": 77.9,
+     "start": 53.056,
+     "end": 78.210563,
+     "output": "el3_set9_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T14_00_57_Ellen - Serious, Direct and Confident_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "8e533d6c5058feae2b53e3c6eb258d2bab4ececdbc8d55791d5d1605d817017a",
+   "durationSec": 79.386,
+   "tracks": [
+    {
+     "stem": "el3_set10_q1",
+     "cover": 0.915,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 27.4,
+     "silence": [
+      27.62,
+      28.386
+     ],
+     "start": 0.0,
+     "end": 28.003,
+     "output": "el3_set10_q1.mp3"
+    },
+    {
+     "stem": "el3_set10_q2",
+     "cover": 1.0,
+     "firstWordStart": 27.98,
+     "lastWordEnd": 53.02,
+     "silence": [
+      53.316,
+      53.95
+     ],
+     "start": 28.003,
+     "end": 53.633,
+     "output": "el3_set10_q2.mp3"
+    },
+    {
+     "stem": "el3_set10_q3",
+     "cover": 1.0,
+     "firstWordStart": 53.72,
+     "lastWordEnd": 79.16,
+     "start": 53.633,
+     "end": 79.386063,
+     "output": "el3_set10_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T14_07_56_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v3.mp3",
+   "sha256": "a15f562117cc1f808bc57dd42c046889894f90e9c7f946c11319de8cd849c5bd",
+   "durationSec": 97.071,
+   "tracks": [
+    {
+     "stem": "el3_set10_q4",
+     "cover": 0.985,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 28.78,
+     "silence": [
+      29.181,
+      30.64
+     ],
+     "start": 0.0,
+     "end": 29.91,
+     "output": "el3_set10_q4.mp3"
+    },
+    {
+     "stem": "el3_set10_q5",
+     "cover": 0.96,
+     "firstWordStart": 30.46,
+     "lastWordEnd": 59.62,
+     "silence": [
+      59.794,
+      61.088
+     ],
+     "start": 29.91,
+     "end": 60.441,
+     "output": "el3_set10_q5.mp3"
+    },
+    {
+     "stem": "el3_set10_q6",
+     "cover": 0.988,
+     "firstWordStart": 60.68,
+     "lastWordEnd": 96.8,
+     "start": 60.441,
+     "end": 97.071,
+     "output": "el3_set10_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T14_34_22_James - Husky, Engaging and Bold_pvc_sp100_s50_sb50_v3.mp3",
+   "sha256": "4e4726db23107a94eba5b4d03563669c4c261ed28b148863973e467370378c22",
+   "durationSec": 81.554,
+   "tracks": [
+    {
+     "stem": "el3_set11_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 26.28,
+     "silence": [
+      26.467,
+      27.265
+     ],
+     "start": 0.0,
+     "end": 26.866,
+     "output": "el3_set11_q1.mp3"
+    },
+    {
+     "stem": "el3_set11_q2",
+     "cover": 1.0,
+     "firstWordStart": 26.28,
+     "lastWordEnd": 51.58,
+     "silence": [
+      51.794,
+      52.683
+     ],
+     "start": 26.866,
+     "end": 52.238,
+     "output": "el3_set11_q2.mp3"
+    },
+    {
+     "stem": "el3_set11_q3",
+     "cover": 0.987,
+     "firstWordStart": 52.48,
+     "lastWordEnd": 81.38,
+     "start": 52.238,
+     "end": 81.55425,
+     "output": "el3_set11_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T14_40_10_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v3.mp3",
+   "sha256": "de856f3e88b4e41664bf5b01261b4fd9437b632e8b2623a4fa7c927f3a1545a2",
+   "durationSec": 76.356,
+   "tracks": [
+    {
+     "stem": "el3_set11_q4",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 26.2,
+     "silence": [
+      26.231,
+      27.566
+     ],
+     "start": 0.0,
+     "end": 26.899,
+     "output": "el3_set11_q4.mp3"
+    },
+    {
+     "stem": "el3_set11_q5",
+     "cover": 1.0,
+     "firstWordStart": 27.419999999999998,
+     "lastWordEnd": 49.6,
+     "silence": [
+      49.915,
+      51.537
+     ],
+     "start": 26.899,
+     "end": 50.726,
+     "output": "el3_set11_q5.mp3"
+    },
+    {
+     "stem": "el3_set11_q6",
+     "cover": 0.902,
+     "firstWordStart": 51.18,
+     "lastWordEnd": 76.0,
+     "start": 50.726,
+     "end": 76.355875,
+     "output": "el3_set11_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T14_46_56_Mark - Natural Conversations_pvc_sp100_s44_sb75_v3.mp3",
+   "sha256": "6e13cb3372f2be7f1c8fb04d8be0b4bb02c2a8ed8effe751103805e0a074c355",
+   "durationSec": 91.167,
+   "tracks": [
+    {
+     "stem": "el3_set12_q1",
+     "cover": 0.985,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 27.58,
+     "silence": [
+      27.866,
+      29.205
+     ],
+     "start": 0.0,
+     "end": 28.536,
+     "output": "el3_set12_q1.mp3"
+    },
+    {
+     "stem": "el3_set12_q2",
+     "cover": 1.0,
+     "firstWordStart": 28.6,
+     "lastWordEnd": 61.64,
+     "silence": [
+      61.684,
+      62.806
+     ],
+     "start": 28.536,
+     "end": 62.245,
+     "output": "el3_set12_q2.mp3"
+    },
+    {
+     "stem": "el3_set12_q3",
+     "cover": 0.958,
+     "firstWordStart": 62.62,
+     "lastWordEnd": 90.94,
+     "start": 62.245,
+     "end": 91.167313,
+     "output": "el3_set12_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T14_55_15_Ivanna - Sassy, Condescending and Clear_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "daf1185af5bcffe47a37884ba9a5c5c201f2d680734d09c1c37033ddca7c54f9",
+   "durationSec": 107.729,
+   "tracks": [
+    {
+     "stem": "el3_set12_q4",
+     "cover": 0.907,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 33.32,
+     "silence": [
+      33.432,
+      34.212
+     ],
+     "start": 0.0,
+     "end": 33.822,
+     "output": "el3_set12_q4.mp3"
+    },
+    {
+     "stem": "el3_set12_q5",
+     "cover": 0.963,
+     "firstWordStart": 34.1,
+     "lastWordEnd": 71.94,
+     "silence": [
+      72.066,
+      72.991
+     ],
+     "start": 33.822,
+     "end": 72.528,
+     "output": "el3_set12_q5.mp3"
+    },
+    {
+     "stem": "el3_set12_q6",
+     "cover": 0.989,
+     "firstWordStart": 72.8,
+     "lastWordEnd": 107.46,
+     "start": 72.528,
+     "end": 107.728938,
+     "output": "el3_set12_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T15_01_29_Hope - upbeat and clear_pvc_sp96_s50_sb75_v3.mp3",
+   "sha256": "ee66070297e35c5a0f1908b54646a25eb2aee149d2c4e37b50b816c9e226bc1f",
+   "durationSec": 83.722,
+   "tracks": [
+    {
+     "stem": "el3_set13_q1",
+     "cover": 0.966,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 28.46,
+     "silence": [
+      28.74,
+      29.572
+     ],
+     "start": 0.0,
+     "end": 29.156,
+     "output": "el3_set13_q1.mp3"
+    },
+    {
+     "stem": "el3_set13_q2",
+     "cover": 0.971,
+     "firstWordStart": 29.120000000000005,
+     "lastWordEnd": 55.68,
+     "silence": [
+      55.822,
+      56.412
+     ],
+     "start": 29.156,
+     "end": 56.117,
+     "output": "el3_set13_q2.mp3"
+    },
+    {
+     "stem": "el3_set13_q3",
+     "cover": 0.959,
+     "firstWordStart": 55.68,
+     "lastWordEnd": 83.7,
+     "start": 56.117,
+     "end": 83.722438,
+     "output": "el3_set13_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T15_06_45_Guy - Serious TV Radio Announcer_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "b5873267c02245a096a507b0ec5e9b0b38d8a2a5ae0f48fe271e1bb779d92a4f",
+   "durationSec": 95.164,
+   "tracks": [
+    {
+     "stem": "el3_set13_q4",
+     "cover": 0.987,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 30.14,
+     "silence": [
+      30.416,
+      31.214
+     ],
+     "start": 0.0,
+     "end": 30.815,
+     "output": "el3_set13_q4.mp3"
+    },
+    {
+     "stem": "el3_set13_q5",
+     "cover": 0.976,
+     "firstWordStart": 30.96,
+     "lastWordEnd": 62.18,
+     "silence": [
+      62.345,
+      63.651
+     ],
+     "start": 30.815,
+     "end": 62.998,
+     "output": "el3_set13_q5.mp3"
+    },
+    {
+     "stem": "el3_set13_q6",
+     "cover": 0.974,
+     "firstWordStart": 63.14000000000001,
+     "lastWordEnd": 94.84,
+     "start": 62.998,
+     "end": 95.164063,
+     "output": "el3_set13_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T15_12_18_Hale - Expressive, Deep and Emotive_pvc_sp100_s65_sb75_v3.mp3",
+   "sha256": "48adfe2daf37b9fe08e93a6aef5f11317f05e6f2eec5e86c28d7b5c0b87aebd8",
+   "durationSec": 86.674,
+   "tracks": [
+    {
+     "stem": "el3_set14_q1",
+     "cover": 0.986,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 26.2,
+     "silence": [
+      26.497,
+      27.735
+     ],
+     "start": 0.0,
+     "end": 27.116,
+     "output": "el3_set14_q1.mp3"
+    },
+    {
+     "stem": "el3_set14_q2",
+     "cover": 0.962,
+     "firstWordStart": 27.339999999999996,
+     "lastWordEnd": 56.8,
+     "silence": [
+      57.123,
+      58.342
+     ],
+     "start": 27.116,
+     "end": 57.732,
+     "output": "el3_set14_q2.mp3"
+    },
+    {
+     "stem": "el3_set14_q3",
+     "cover": 1.0,
+     "firstWordStart": 57.92,
+     "lastWordEnd": 86.38,
+     "start": 57.732,
+     "end": 86.67425,
+     "output": "el3_set14_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T15_17_20_Misa - Sweet & Calm Conversations_pvc_sp95_s50_sb51_v3.mp3",
+   "sha256": "0d7eb882c2b7bd81e43808654b62763317e04c6d49b69c3a659c020e1a502dd7",
+   "durationSec": 82.286,
+   "tracks": [
+    {
+     "stem": "el3_set14_q4",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 26.42,
+     "silence": [
+      26.65,
+      26.972
+     ],
+     "start": 0.0,
+     "end": 26.811,
+     "output": "el3_set14_q4.mp3"
+    },
+    {
+     "stem": "el3_set14_q5",
+     "cover": 0.985,
+     "firstWordStart": 26.42,
+     "lastWordEnd": 52.52,
+     "silence": [
+      52.801,
+      53.248
+     ],
+     "start": 26.811,
+     "end": 53.025,
+     "output": "el3_set14_q5.mp3"
+    },
+    {
+     "stem": "el3_set14_q6",
+     "cover": 0.962,
+     "firstWordStart": 53.22,
+     "lastWordEnd": 81.94,
+     "start": 53.025,
+     "end": 82.285688,
+     "output": "el3_set14_q6.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T15_28_15_Lily - Warm British Audiobook Narrator_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "1a935bf9c434750ed75ef5509add75083d89a6297813509933b2d987964e9cf7",
+   "durationSec": 67.631,
+   "tracks": [
+    {
+     "stem": "el3_set15_q1",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 15.58,
+     "silence": [
+      15.75,
+      16.641
+     ],
+     "start": 0.0,
+     "end": 16.195,
+     "output": "el3_set15_q1.mp3"
+    },
+    {
+     "stem": "el3_set15_q2",
+     "cover": 0.944,
+     "firstWordStart": 16.52,
+     "lastWordEnd": 41.2,
+     "silence": [
+      41.642,
+      42.702
+     ],
+     "start": 16.195,
+     "end": 42.172,
+     "output": "el3_set15_q2.mp3"
+    },
+    {
+     "stem": "el3_set15_q3",
+     "cover": 1.0,
+     "firstWordStart": 42.44,
+     "lastWordEnd": 67.28,
+     "start": 42.172,
+     "end": 67.631,
+     "output": "el3_set15_q3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T15_33_16_Ivanna - Sassy, Condescending and Clear_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "9ebd57e72ad232f1fd7c5e41e7ab278d621b6de79b6d3bb963f735f40b86b43e",
+   "durationSec": 70.269,
+   "tracks": [
+    {
+     "stem": "el3_set15_q4",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 21.32,
+     "silence": [
+      21.634,
+      22.86
+     ],
+     "start": 0.0,
+     "end": 22.247,
+     "output": "el3_set15_q4.mp3"
+    },
+    {
+     "stem": "el3_set15_q5",
+     "cover": 0.967,
+     "firstWordStart": 22.44,
+     "lastWordEnd": 45.92,
+     "silence": [
+      46.099,
+      48.356
+     ],
+     "start": 22.247,
+     "end": 47.228,
+     "output": "el3_set15_q5.mp3"
+    },
+    {
+     "stem": "el3_set15_q6",
+     "cover": 1.0,
+     "firstWordStart": 48.14,
+     "lastWordEnd": 70.12,
+     "start": 47.228,
+     "end": 70.269375,
+     "output": "el3_set15_q6.mp3"
+    }
+   ]
+  }
+ ]
+}

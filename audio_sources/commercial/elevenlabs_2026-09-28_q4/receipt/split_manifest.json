@@ -1,0 +1,673 @@
+{
+ "batch": "elevenlabs_2026-09-28_q4",
+ "createdAtUtc": "2026-09-28T17:17:36.808731+00:00",
+ "method": "台本と音声認識の単語を突き合わせ、文間の無音の中央で切断。速度・音程は無変更。mp3 はストリームコピー。",
+ "sources": [
+  {
+   "file": "ElevenLabs_2026-09-28T15_46_16_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "b2d161134ad79f2bac8dce0a587ae34429d01355e203b2ef7d93cd983d5695f9",
+   "durationSec": 316.996,
+   "tracks": [
+    {
+     "stem": "set01_4A_front",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 26.16,
+     "silence": [
+      26.394,
+      27.578
+     ],
+     "start": 0.0,
+     "end": 26.986,
+     "output": "set01_4A_front.mp3"
+    },
+    {
+     "stem": "set01_4A_back",
+     "cover": 1.0,
+     "firstWordStart": 27.38,
+     "lastWordEnd": 55.52,
+     "silence": [
+      55.771,
+      57.426
+     ],
+     "start": 26.986,
+     "end": 56.599,
+     "output": "set01_4A_back.mp3"
+    },
+    {
+     "stem": "set02_4A_front",
+     "cover": 0.976,
+     "firstWordStart": 56.98,
+     "lastWordEnd": 81.82,
+     "silence": [
+      82.826,
+      84.081
+     ],
+     "start": 56.599,
+     "end": 83.453,
+     "output": "set02_4A_front.mp3"
+    },
+    {
+     "stem": "set02_4A_back",
+     "cover": 0.988,
+     "firstWordStart": 83.88,
+     "lastWordEnd": 112.16,
+     "silence": [
+      112.407,
+      114.092
+     ],
+     "start": 83.453,
+     "end": 113.25,
+     "output": "set02_4A_back.mp3"
+    },
+    {
+     "stem": "set03_4A_front",
+     "cover": 1.0,
+     "firstWordStart": 113.76,
+     "lastWordEnd": 144.48,
+     "silence": [
+      144.933,
+      146.775
+     ],
+     "start": 113.25,
+     "end": 145.854,
+     "output": "set03_4A_front.mp3"
+    },
+    {
+     "stem": "set03_4A_back",
+     "cover": 1.0,
+     "firstWordStart": 146.44,
+     "lastWordEnd": 180.54,
+     "silence": [
+      180.783,
+      182.775
+     ],
+     "start": 145.854,
+     "end": 181.779,
+     "output": "set03_4A_back.mp3"
+    },
+    {
+     "stem": "set04_4A_front",
+     "cover": 0.977,
+     "firstWordStart": 182.34,
+     "lastWordEnd": 215.76,
+     "silence": [
+      215.952,
+      217.788
+     ],
+     "start": 181.779,
+     "end": 216.87,
+     "output": "set04_4A_front.mp3"
+    },
+    {
+     "stem": "set04_4A_back",
+     "cover": 1.0,
+     "firstWordStart": 217.42,
+     "lastWordEnd": 252.28,
+     "silence": [
+      252.619,
+      253.979
+     ],
+     "start": 216.87,
+     "end": 253.299,
+     "output": "set04_4A_back.mp3"
+    },
+    {
+     "stem": "set05_4A_front",
+     "cover": 0.989,
+     "firstWordStart": 253.56,
+     "lastWordEnd": 283.36,
+     "silence": [
+      283.491,
+      285.555
+     ],
+     "start": 253.299,
+     "end": 284.523,
+     "output": "set05_4A_front.mp3"
+    },
+    {
+     "stem": "set05_4A_back",
+     "cover": 0.99,
+     "firstWordStart": 285.14,
+     "lastWordEnd": 316.6,
+     "start": 284.523,
+     "end": 316.995875,
+     "output": "set05_4A_back.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T15_50_42_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "ca278eeee469fec9a0e03948995efe71ad4865b90209fb51e85aaedb83a47ab0",
+   "durationSec": 316.029,
+   "tracks": [
+    {
+     "stem": "set06_4A_front",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 24.42,
+     "silence": [
+      24.64,
+      25.978
+     ],
+     "start": 0.0,
+     "end": 25.309,
+     "output": "set06_4A_front.mp3"
+    },
+    {
+     "stem": "set06_4A_back",
+     "cover": 0.989,
+     "firstWordStart": 25.599999999999998,
+     "lastWordEnd": 56.74,
+     "silence": [
+      56.884,
+      57.933
+     ],
+     "start": 25.309,
+     "end": 57.409,
+     "output": "set06_4A_back.mp3"
+    },
+    {
+     "stem": "set07_4A_front",
+     "cover": 0.966,
+     "firstWordStart": 57.88,
+     "lastWordEnd": 86.8,
+     "silence": [
+      87.09,
+      88.496
+     ],
+     "start": 57.409,
+     "end": 87.793,
+     "output": "set07_4A_front.mp3",
+     "supersededBy": "ElevenLabs_2026-09-28T17_11_22_Jay Johnson - Bubbly, Fun and Positive_pvc_sp100_s50_sb75_v3.mp3"
+    },
+    {
+     "stem": "set07_4A_back",
+     "cover": 0.837,
+     "firstWordStart": 88.16,
+     "lastWordEnd": 116.3,
+     "silence": [
+      116.396,
+      117.931
+     ],
+     "start": 87.793,
+     "end": 117.163,
+     "output": "set07_4A_back.mp3",
+     "supersededBy": "ElevenLabs_2026-09-28T17_11_22_Jay Johnson - Bubbly, Fun and Positive_pvc_sp100_s50_sb75_v3.mp3"
+    },
+    {
+     "stem": "set08_4A_front",
+     "cover": 0.977,
+     "firstWordStart": 117.54,
+     "lastWordEnd": 149.62,
+     "silence": [
+      149.799,
+      151.471
+     ],
+     "start": 117.163,
+     "end": 150.635,
+     "output": "set08_4A_front.mp3"
+    },
+    {
+     "stem": "set08_4A_back",
+     "cover": 0.976,
+     "firstWordStart": 151.0,
+     "lastWordEnd": 181.1,
+     "silence": [
+      181.442,
+      183.269
+     ],
+     "start": 150.635,
+     "end": 182.355,
+     "output": "set08_4A_back.mp3"
+    },
+    {
+     "stem": "set09_4A_front",
+     "cover": 1.0,
+     "firstWordStart": 182.9,
+     "lastWordEnd": 217.78,
+     "silence": [
+      218.135,
+      219.75
+     ],
+     "start": 182.355,
+     "end": 218.943,
+     "output": "set09_4A_front.mp3"
+    },
+    {
+     "stem": "set09_4A_back",
+     "cover": 1.0,
+     "firstWordStart": 219.32,
+     "lastWordEnd": 256.4,
+     "silence": [
+      256.901,
+      258.606
+     ],
+     "start": 218.943,
+     "end": 257.754,
+     "output": "set09_4A_back.mp3"
+    },
+    {
+     "stem": "set10_4A_front",
+     "cover": 0.989,
+     "firstWordStart": 258.14,
+     "lastWordEnd": 287.9,
+     "silence": [
+      288.05,
+      289.963
+     ],
+     "start": 257.754,
+     "end": 289.006,
+     "output": "set10_4A_front.mp3"
+    },
+    {
+     "stem": "set10_4A_back",
+     "cover": 0.976,
+     "firstWordStart": 290.1,
+     "lastWordEnd": 315.68,
+     "start": 289.006,
+     "end": 316.029375,
+     "output": "set10_4A_back.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T15_53_59_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "a3fb786a606ccb17b8a8ce0d32cc3642d1fe7085322aa5bfdb6a00a0b5ad42fb",
+   "durationSec": 321.959,
+   "tracks": [
+    {
+     "stem": "set11_4A_front",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 22.62,
+     "silence": [
+      22.934,
+      24.561
+     ],
+     "start": 0.0,
+     "end": 23.747,
+     "output": "set11_4A_front.mp3"
+    },
+    {
+     "stem": "set11_4A_back",
+     "cover": 1.0,
+     "firstWordStart": 24.28,
+     "lastWordEnd": 54.76,
+     "silence": [
+      54.944,
+      56.581
+     ],
+     "start": 23.747,
+     "end": 55.762,
+     "output": "set11_4A_back.mp3"
+    },
+    {
+     "stem": "set12_4A_front",
+     "cover": 1.0,
+     "firstWordStart": 56.38,
+     "lastWordEnd": 83.94,
+     "silence": [
+      84.165,
+      85.863
+     ],
+     "start": 55.762,
+     "end": 85.014,
+     "output": "set12_4A_front.mp3"
+    },
+    {
+     "stem": "set12_4A_back",
+     "cover": 1.0,
+     "firstWordStart": 85.42,
+     "lastWordEnd": 119.78,
+     "silence": [
+      120.194,
+      121.92
+     ],
+     "start": 85.014,
+     "end": 121.057,
+     "output": "set12_4A_back.mp3"
+    },
+    {
+     "stem": "set13_4A_front",
+     "cover": 0.99,
+     "firstWordStart": 121.42,
+     "lastWordEnd": 152.62,
+     "silence": [
+      152.951,
+      154.874
+     ],
+     "start": 121.057,
+     "end": 153.912,
+     "output": "set13_4A_front.mp3"
+    },
+    {
+     "stem": "set13_4A_back",
+     "cover": 1.0,
+     "firstWordStart": 154.66000000000003,
+     "lastWordEnd": 190.56,
+     "silence": [
+      190.814,
+      192.722
+     ],
+     "start": 153.912,
+     "end": 191.768,
+     "output": "set13_4A_back.mp3"
+    },
+    {
+     "stem": "set14_4A_front",
+     "cover": 1.0,
+     "firstWordStart": 192.08,
+     "lastWordEnd": 225.0,
+     "silence": [
+      225.313,
+      227.033
+     ],
+     "start": 191.768,
+     "end": 226.173,
+     "output": "set14_4A_front.mp3"
+    },
+    {
+     "stem": "set14_4A_back",
+     "cover": 0.978,
+     "firstWordStart": 227.36,
+     "lastWordEnd": 256.56,
+     "silence": [
+      256.982,
+      258.869
+     ],
+     "start": 226.173,
+     "end": 257.925,
+     "output": "set14_4A_back.mp3"
+    },
+    {
+     "stem": "set15_4A_front",
+     "cover": 0.968,
+     "firstWordStart": 258.54,
+     "lastWordEnd": 289.24,
+     "silence": [
+      289.581,
+      291.72
+     ],
+     "start": 257.925,
+     "end": 290.65,
+     "output": "set15_4A_front.mp3"
+    },
+    {
+     "stem": "set15_4A_back",
+     "cover": 0.978,
+     "firstWordStart": 291.3,
+     "lastWordEnd": 321.6,
+     "start": 290.65,
+     "end": 321.959125,
+     "output": "set15_4A_back.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T16_03_55_Daniel - Radio news host_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "4ff4d4f077d21876e066939165ad83ce58afb170c4749ba189f612dc01d7a213",
+   "durationSec": 119.484,
+   "tracks": [
+    {
+     "stem": "set01_4B",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 54.7,
+     "silence": [
+      54.961,
+      55.773
+     ],
+     "start": 0.0,
+     "end": 55.367,
+     "output": "set01_4B.mp3"
+    },
+    {
+     "stem": "set02_4B",
+     "cover": 0.967,
+     "firstWordStart": 55.300000000000004,
+     "lastWordEnd": 119.24,
+     "start": 55.367,
+     "end": 119.484063,
+     "output": "set02_4B.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T16_07_37_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "470a33332bcd1f2797ece5753c4db3d3e9c605e1160a87f5539ac17077af4ec2",
+   "durationSec": 121.809,
+   "tracks": [
+    {
+     "stem": "set03_4B",
+     "cover": 0.955,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 61.28,
+     "silence": [
+      61.484,
+      62.955
+     ],
+     "start": 0.0,
+     "end": 62.219,
+     "output": "set03_4B.mp3"
+    },
+    {
+     "stem": "set04_4B",
+     "cover": 0.988,
+     "firstWordStart": 62.63999999999999,
+     "lastWordEnd": 121.56,
+     "start": 62.219,
+     "end": 121.808938,
+     "output": "set04_4B.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T16_11_57_Jeremy - Friendly Guy Next Door_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "6007b1fa31ae9cab42b0dd39cdc0fd7eb56f35d7306f5b9640e832331978abd8",
+   "durationSec": 118.596,
+   "tracks": [
+    {
+     "stem": "set05_4B",
+     "cover": 0.994,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 57.66,
+     "silence": [
+      57.915,
+      60.712
+     ],
+     "start": 0.0,
+     "end": 59.314,
+     "output": "set05_4B.mp3"
+    },
+    {
+     "stem": "set06_4B",
+     "cover": 0.975,
+     "firstWordStart": 60.22,
+     "lastWordEnd": 118.44,
+     "start": 59.314,
+     "end": 118.595875,
+     "output": "set06_4B.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T16_18_32_Bunty - Warm and Clear_pvc_sp100_s99_sb75_v3.mp3",
+   "sha256": "cc442e828dfc17170d546e79e5a995170bca1a38f98559e4b5d5792eccfe6a95",
+   "durationSec": 122.122,
+   "tracks": [
+    {
+     "stem": "set07_4B",
+     "cover": 0.994,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 59.32,
+     "silence": [
+      59.606,
+      61.197
+     ],
+     "start": 0.0,
+     "end": 60.402,
+     "output": "set07_4B.mp3"
+    },
+    {
+     "stem": "set08_4B",
+     "cover": 1.0,
+     "firstWordStart": 60.74,
+     "lastWordEnd": 121.86,
+     "start": 60.402,
+     "end": 122.122438,
+     "output": "set08_4B.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T16_27_22_Daniel - Radio news host_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "78688df36810eb10b5984f695d478336ff203324ee5b91fbf48cde3a16940e23",
+   "durationSec": 116.611,
+   "tracks": [
+    {
+     "stem": "set09_4B",
+     "cover": 0.969,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 52.7,
+     "silence": [
+      52.893,
+      53.887
+     ],
+     "start": 0.0,
+     "end": 53.39,
+     "output": "set09_4B.mp3"
+    },
+    {
+     "stem": "set10_4B",
+     "cover": 0.988,
+     "firstWordStart": 53.620000000000005,
+     "lastWordEnd": 116.2,
+     "start": 53.39,
+     "end": 116.610563,
+     "output": "set10_4B.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T16_33_10_Daniel - Radio news host_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "0a566ad540ba87511853d2c9d5341a87de1c74c272eda6777916707afe6ca6be",
+   "durationSec": 120.842,
+   "tracks": [
+    {
+     "stem": "set11_4B",
+     "cover": 0.982,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 61.92,
+     "silence": [
+      62.225,
+      63.744
+     ],
+     "start": 0.0,
+     "end": 62.985,
+     "output": "set11_4B.mp3"
+    },
+    {
+     "stem": "set12_4B",
+     "cover": 0.994,
+     "firstWordStart": 63.44,
+     "lastWordEnd": 120.54,
+     "start": 62.985,
+     "end": 120.842438,
+     "output": "set12_4B.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T16_38_49_Oliver Silk - Deep Gravel Narrative_pvc_sp100_s30_sb80_v3.mp3",
+   "sha256": "919f5aea9842584e3d012e9d85dde4f82ad06e948bccf9e81364573eaf0a1646",
+   "durationSec": 113.476,
+   "tracks": [
+    {
+     "stem": "set13_4B",
+     "cover": 0.994,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 54.96,
+     "silence": [
+      55.214,
+      57.049
+     ],
+     "start": 0.0,
+     "end": 56.132,
+     "output": "set13_4B.mp3"
+    },
+    {
+     "stem": "set14_4B",
+     "cover": 0.894,
+     "firstWordStart": 54.96,
+     "lastWordEnd": 113.14,
+     "start": 56.132,
+     "end": 113.475875,
+     "output": "set14_4B.mp3",
+     "supersededBy": "ElevenLabs_2026-09-28T17_11_22_Jay Johnson - Bubbly, Fun and Positive_pvc_sp100_s50_sb75_v3.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T16_40_37_Jay Johnson - Bubbly, Fun and Positive_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "221bd43ca9aeec4f87dfd60cf380bc2d356a4c00c3eb0d495eb26a5892e32566",
+   "durationSec": 57.809,
+   "tracks": [
+    {
+     "stem": "set15_4B",
+     "cover": 1.0,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 57.42,
+     "start": 0.0,
+     "end": 57.808938,
+     "output": "set15_4B.mp3"
+    }
+   ]
+  },
+  {
+   "file": "ElevenLabs_2026-09-28T17_11_22_Jay Johnson - Bubbly, Fun and Positive_pvc_sp100_s50_sb75_v3.mp3",
+   "sha256": "5d515136bc899316f5a6b7379fd08d0eb078d91e194850e29dd00aa7afb48a8f",
+   "durationSec": 123.638,
+   "tracks": [
+    {
+     "stem": "set07_4A_front",
+     "cover": 0.966,
+     "firstWordStart": 0.0,
+     "lastWordEnd": 34.72,
+     "silence": [
+      35.056,
+      36.328
+     ],
+     "start": 0.0,
+     "end": 35.692,
+     "output": "set07_4A_front.mp3"
+    },
+    {
+     "stem": "set07_4A_back",
+     "cover": 1.0,
+     "firstWordStart": 36.0,
+     "lastWordEnd": 62.54,
+     "silence": [
+      62.755,
+      63.998
+     ],
+     "start": 35.692,
+     "end": 63.376,
+     "output": "set07_4A_back.mp3"
+    },
+    {
+     "stem": "set14_4B",
+     "cover": 0.975,
+     "firstWordStart": 63.58,
+     "lastWordEnd": 123.2,
+     "start": 63.376,
+     "end": 123.6375,
+     "output": "set14_4B.mp3"
+    }
+   ]
+  }
+ ],
+ "history": [
+  "2026-09-28T17:17:07.142672+00:00"
+ ]
+}
