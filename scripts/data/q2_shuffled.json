@@ -1,0 +1,1900 @@
+[
+  {
+    "set": 1,
+    "difficulty": "易しめ",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女がカフェで注文について話している。",
+        "speakers": "女性(店員) / 男性(客)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "ミルクなし・砂糖入りのホットコーヒー",
+          "ミルク入り・砂糖なしのホットコーヒー",
+          "ミルク入り・砂糖なしのアイスコーヒー",
+          "ミルクなし・砂糖なしのホットティー"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "Would you like anything to drink with your sandwich?"
+          },
+          {
+            "who": "M",
+            "text": "I'll have coffee, please. No sugar, but with milk."
+          },
+          {
+            "who": "W",
+            "text": "Ice or hot?"
+          },
+          {
+            "who": "M",
+            "text": "Hot, please."
+          }
+        ],
+        "question": "What will the man drink?",
+        "answerMark": "②",
+        "answerText": "ミルク入り・砂糖なしのホットコーヒー",
+        "explanation": "No sugar, but with milk（砂糖なし・ミルクあり）と Hot の3条件を統合。①は砂糖・ミルクの逆転、③は温度違い。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a coffee/tea cup with clear icons indicating temperature and additions. Panel 1: hot coffee (steam rising) with a sugar cube icon next to it, no milk. Panel 2: hot coffee (steam rising) with a small milk pitcher icon, no sugar cube. Panel 3: iced coffee (glass with ice cubes and a straw) with a small milk pitcher icon. Panel 4: hot tea (teacup with steam and a teabag tag) with nothing beside it.",
+        "answerIndex": 2
+      },
+      {
+        "q": 2,
+        "scene": "母と息子が息子の部屋の片付けについて話している。",
+        "speakers": "母親 / 息子(高校生)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "一番上の棚",
+          "真ん中の棚",
+          "一番下の棚",
+          "机の上"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Ken, please put your books on the shelf."
+          },
+          {
+            "who": "K",
+            "text": "OK. On the top shelf?"
+          },
+          {
+            "who": "M",
+            "text": "No, the middle one. The top is for the photo albums."
+          },
+          {
+            "who": "K",
+            "text": "Got it."
+          }
+        ],
+        "question": "Where will Ken put the books?",
+        "answerMark": "②",
+        "answerText": "真ん中の棚",
+        "explanation": "最初 top shelf と言われるが No, the middle one. で訂正される。訂正のパターンは第2問の典型。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a three-shelf bookcase and books being placed. Panel 1: books being placed on the TOP shelf. Panel 2: books being placed on the MIDDLE shelf. Panel 3: books being placed on the BOTTOM shelf. Panel 4: books being placed on a desk beside the bookcase.",
+        "answerIndex": 2
+      },
+      {
+        "q": 3,
+        "scene": "店員と客が服のサイズについて話している。",
+        "speakers": "女性(客) / 男性(店員)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "青のSサイズのシャツ",
+          "青のXSサイズのシャツ",
+          "白のSサイズのシャツ",
+          "青のMサイズのシャツ"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "Do you have this shirt in a smaller size?"
+          },
+          {
+            "who": "M",
+            "text": "We have small and extra-small. Which would you like?"
+          },
+          {
+            "who": "W",
+            "text": "Small, please. And in blue if possible."
+          },
+          {
+            "who": "M",
+            "text": "Sure, here's a small blue one."
+          }
+        ],
+        "question": "Which shirt did the woman get?",
+        "answerMark": "①",
+        "answerText": "青のSサイズのシャツ",
+        "explanation": "色（blue）・サイズ（small）の2条件。XSと迷わせるが Small, please で確定。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a folded shirt with a size tag. Panel 1: a shirt with diagonal hatch pattern (representing blue) and a tag labeled 'S'. Panel 2: a similar hatched shirt with tag 'XS'. Panel 3: a plain outlined shirt (white) with tag 'S'. Panel 4: a hatched shirt with tag 'M'.",
+        "answerIndex": 1
+      }
+    ]
+  },
+  {
+    "set": 2,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女が友人へのプレゼントを選んでいる。",
+        "speakers": "男性(大学生) / 女性(大学生)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "猫柄のマグ(箱なし)",
+          "犬柄のマグ(箱入り)",
+          "猫柄のマグ(箱入り)",
+          "犬柄のマグ(箱なし)"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "How about this mug with cats on it?"
+          },
+          {
+            "who": "W",
+            "text": "She likes dogs, not cats."
+          },
+          {
+            "who": "M",
+            "text": "Then this mug with a dog?"
+          },
+          {
+            "who": "W",
+            "text": "Perfect. And it comes in a gift box, right?"
+          }
+        ],
+        "question": "Which item will they buy?",
+        "answerMark": "②",
+        "answerText": "犬柄のマグ(箱入り)",
+        "explanation": "cats→dogs への訂正＋gift box の確認。柄と包装の2軸で選ぶ。2023年問9型（否定→訂正）。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a mug and possibly a gift box. Panel 1: a mug with a cat drawing on its side, no gift box. Panel 2: a mug with a dog drawing on its side, sitting inside an opened gift box with a ribbon. Panel 3: a mug with a cat drawing, sitting inside a gift box. Panel 4: a mug with a dog drawing, no gift box.",
+        "answerIndex": 2
+      },
+      {
+        "q": 2,
+        "scene": "レストランで店員が客にテーブルを案内している。",
+        "speakers": "女性(店員) / 男性(客)",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "窓際の2人席",
+          "奥のボックス席(4人)",
+          "中央の丸テーブル",
+          "カウンター席"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "We have a table by the window for two or a booth at the back for four."
+          },
+          {
+            "who": "M",
+            "text": "We're a group of three actually."
+          },
+          {
+            "who": "W",
+            "text": "Then how about this round table in the center?"
+          },
+          {
+            "who": "M",
+            "text": "Great, we'll take it."
+          }
+        ],
+        "question": "Which table will the man's group take?",
+        "answerMark": "③",
+        "answerText": "中央の丸テーブル",
+        "explanation": "人数（three）が2でも4でもないため、中央の丸テーブルが正解。人数条件で候補を絞る。2024年問1 1型。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single drawing showing a three-shelf bookcase with photo albums on the top shelf and a boy holding books. FOUR circled numbers 1, 2, 3, 4 placed INSIDE the picture at four candidate spots: 1 on the top shelf, 2 on the middle shelf, 3 on the bottom shelf, 4 on the desk beside the bookcase. Plain white background, grayscale cartoon, no color, no other text.",
+        "answerIndex": 3,
+        "shuffled": true,
+        "shufflePerm": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "q": 3,
+        "scene": "男女がクラス写真の中で友人を探している。",
+        "speakers": "男性 / 女性",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "後列で眼鏡をかけている背の高い男子",
+          "後列で縞シャツを着た背の高い男子",
+          "前列で縞シャツを着た男子",
+          "後列で無地シャツを着た背の高い男子"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Which one is your brother?"
+          },
+          {
+            "who": "W",
+            "text": "He's the tallest one in the back row."
+          },
+          {
+            "who": "M",
+            "text": "The one with glasses?"
+          },
+          {
+            "who": "W",
+            "text": "No, next to him. He's wearing a striped shirt."
+          }
+        ],
+        "question": "Which boy is the woman's brother?",
+        "answerMark": "②",
+        "answerText": "後列で縞シャツを着た背の高い男子",
+        "explanation": "位置（back row）・身長（tallest）・服装（striped shirt）・眼鏡なし の4条件。2023年問8アバター型。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single class photo drawing with a front row and back row of students. FOUR circled numbers 1-4 placed INSIDE the picture pointing to four different boys: 1 to a tall boy with glasses and plain shirt in the back row, 2 to a tall boy without glasses in a striped shirt in the back row, 3 to a boy in a striped shirt in the front row, 4 to a tall boy without glasses in a plain shirt in the back row. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "set": 3,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女が来週の予定表を見ながら話している。",
+        "speakers": "女性 / 男性",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "火曜午後",
+          "水曜午前",
+          "木曜午前",
+          "木曜午後"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "Are you free on Tuesday afternoon?"
+          },
+          {
+            "who": "M",
+            "text": "No, I have tennis practice then. Wednesday morning is open."
+          },
+          {
+            "who": "W",
+            "text": "I have a class then. What about Thursday?"
+          },
+          {
+            "who": "M",
+            "text": "Thursday afternoon works."
+          }
+        ],
+        "question": "When will they meet?",
+        "answerMark": "④",
+        "answerText": "木曜午後",
+        "explanation": "3つの候補が否定され、最後の Thursday afternoon works で確定。第2問の典型的な消去法。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single top-down park map with FOUR circled numbers 1-4 placed INSIDE the map at four locations: 1 at a fountain, 2 at a bench near playground equipment, 3 under a large tree beside a pond, 4 in a parking lot. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 4,
+        "shuffled": true,
+        "shufflePerm": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "q": 2,
+        "scene": "男女がホテルの部屋を選んでいる。",
+        "speakers": "男性 / 女性",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "海が見える部屋",
+          "山が見える部屋",
+          "街が見える部屋",
+          "中庭が見える部屋"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "There's a room with a mountain view and one with a sea view."
+          },
+          {
+            "who": "W",
+            "text": "The sea view sounds nice."
+          },
+          {
+            "who": "M",
+            "text": "But it's twice the price."
+          },
+          {
+            "who": "W",
+            "text": "Then let's go with the mountain view."
+          }
+        ],
+        "question": "Which room will they choose?",
+        "answerMark": "②",
+        "answerText": "山が見える部屋",
+        "explanation": "sea view→But it's twice the price→mountain view の値段による決定。2025年問11の cheaper 型。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single drawing of a recycling corner with FOUR bins standing in a row, each bin marked with a circled number 1-4 above it: 1 bin with a PET bottle symbol, 2 bin with a wine glass symbol, 3 bin with a paper symbol, 4 bin with a can symbol. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 2
+      },
+      {
+        "q": 3,
+        "scene": "男女がベーカリーでパンを選んでいる。",
+        "speakers": "女性(客) / 男性(店員)",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "ゴマ付きの小さな丸パン",
+          "ポピーシード付きの大きな丸パン",
+          "ポピーシード付きの小さな丸パン",
+          "ゴマ付きの大きな丸パン"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I'd like the round bread with sesame seeds on top."
+          },
+          {
+            "who": "M",
+            "text": "The one with poppy seeds? Or the one with sesame?"
+          },
+          {
+            "who": "W",
+            "text": "Sesame, please. And the smaller one."
+          },
+          {
+            "who": "M",
+            "text": "OK, here you go."
+          }
+        ],
+        "question": "Which bread did the woman buy?",
+        "answerMark": "①",
+        "answerText": "ゴマ付きの小さな丸パン",
+        "explanation": "種類（sesame）とサイズ（smaller）の2条件。poppy と sesame の音の聞き分けが鍵。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single aquarium floor map with two floors shown, Dolphin tank on 1F, Penguin area on 2F, and a Shark tank. FOUR different visitor routes drawn with arrows, each labeled with a circled number 1-4: route 1 goes Dolphin to Penguin to Shark, route 2 goes Dolphin to Penguin only (Shark crossed out), route 3 goes Penguin then Dolphin, route 4 goes Penguin to Dolphin to Shark. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 1,
+        "shuffled": true,
+        "shufflePerm": [
+          3,
+          0,
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  {
+    "set": 4,
+    "difficulty": "やや難",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女が公園の案内図を見ながら待ち合わせ場所を決めている。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "噴水",
+          "遊具そばのベンチ",
+          "池のそばの大きな木の下",
+          "駐車場"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Should we meet at the fountain?"
+          },
+          {
+            "who": "W",
+            "text": "It's too crowded there on Sundays."
+          },
+          {
+            "who": "M",
+            "text": "The bench near the playground, then?"
+          },
+          {
+            "who": "W",
+            "text": "How about under the big tree by the pond? It's quiet."
+          }
+        ],
+        "question": "Where will they meet?",
+        "answerMark": "③",
+        "answerText": "池のそばの大きな木の下",
+        "explanation": "提案→却下を2回繰り返し、女性の How about〜 で確定。2023年問11型の場所選択。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a park landmark viewed from above or side. Panel 1: a fountain with water splashing. Panel 2: a wooden bench next to playground equipment (slide/swings). Panel 3: a large tree beside a small pond, its shade covering part of the pond. Panel 4: a parking lot with several parked cars.",
+        "answerIndex": 3
+      },
+      {
+        "q": 2,
+        "scene": "男女がリサイクル用のごみを分別している。",
+        "speakers": "女性 / 男性",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "ペットボトルマークの箱",
+          "ワイングラスマークの箱",
+          "紙マークの箱",
+          "缶マークの箱"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "This empty juice bottle goes in the plastic bin, right?"
+          },
+          {
+            "who": "M",
+            "text": "Actually, that's a glass bottle. It has a different bin."
+          },
+          {
+            "who": "W",
+            "text": "Oh, so where does it go?"
+          },
+          {
+            "who": "M",
+            "text": "See the one with the wine glass symbol on it? Over there."
+          }
+        ],
+        "question": "Which bin will the woman use?",
+        "answerMark": "②",
+        "answerText": "ワイングラスマークの箱",
+        "explanation": "最初 plastic bin と誤解→It's a glass bottle→wine glass symbol の分別マーク確定。2023年問9型。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single drawing of a hotel room with a large window. FOUR circled numbers 1-4 placed INSIDE the picture at four different possible views drawn as four small window sketches along the bottom: 1 ocean view, 2 mountain view, 3 city skyline view, 4 garden courtyard view. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 2
+      },
+      {
+        "q": 3,
+        "scene": "男女が水族館の館内図を見ている。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "1階イルカ→2階ペンギン→サメ",
+          "1階イルカ→2階ペンギン(サメなし)",
+          "1階ペンギン→2階イルカ",
+          "2階ペンギン→1階イルカ→サメ"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Let's see the penguins first."
+          },
+          {
+            "who": "W",
+            "text": "They're on the second floor. The dolphins are on the first floor."
+          },
+          {
+            "who": "M",
+            "text": "Then let's start with dolphins and then go up to penguins."
+          },
+          {
+            "who": "W",
+            "text": "OK, but let's skip the shark tank. We saw it last time."
+          }
+        ],
+        "question": "Which route will they take?",
+        "answerMark": "②",
+        "answerText": "1階イルカ→2階ペンギン(サメなし)",
+        "explanation": "順序（dolphins→penguins）＋サメを飛ばす、の2条件。動線と除外の複合。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a two-floor aquarium diagram with arrows indicating a route. Panel 1: arrow from Dolphin (1F) to Penguin (2F) to Shark tank. Panel 2: arrow from Dolphin (1F) to Penguin (2F), Shark tank marked with an X. Panel 3: arrow from Penguin (1F) to Dolphin (2F). Panel 4: arrow from Penguin (2F) to Dolphin (1F) to Shark tank.",
+        "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "set": 5,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女が本屋で本を探している。",
+        "speakers": "女性(客) / 男性(店員)",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "初心者向けイタリア料理本",
+          "上級者向けイタリア料理本",
+          "初心者向けフランス料理本",
+          "初心者向け日本料理本"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I'm looking for a cookbook, especially Italian food."
+          },
+          {
+            "who": "M",
+            "text": "We have Italian, French, and Japanese cookbooks. All 20% off this week."
+          },
+          {
+            "who": "W",
+            "text": "Great. Is there one for beginners?"
+          },
+          {
+            "who": "M",
+            "text": "Yes, this one has step-by-step photos."
+          }
+        ],
+        "question": "Which cookbook will the woman probably buy?",
+        "answerMark": "①",
+        "answerText": "初心者向けイタリア料理本",
+        "explanation": "料理の種類（Italian）＋レベル（for beginners）の2条件。ダミー情報（20% off、French、Japanese）を排除。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single park map seen from above with FOUR circled numbers 1-4 marking four spots INSIDE the map: 1 at the fountain, 2 at a bench beside the playground, 3 under a big tree by the pond, 4 at the parking area. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 1,
+        "shuffled": true,
+        "shufflePerm": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "q": 2,
+        "scene": "父と娘が娘の自転車のパンクについて話している。",
+        "speakers": "父親 / 娘(中学生)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "前タイヤ・後タイヤともパンク、ライトOK",
+          "後タイヤがパンク、前ライトが壊れている",
+          "前タイヤがパンク、後ライトが壊れている",
+          "前タイヤがパンク、ライトOK"
+        ],
+        "turns": [
+          {
+            "who": "F",
+            "text": "Which tire is flat, the front or the back?"
+          },
+          {
+            "who": "D",
+            "text": "The back one. And the light on the front is broken too."
+          },
+          {
+            "who": "F",
+            "text": "OK, I'll fix both this weekend."
+          },
+          {
+            "who": "D",
+            "text": "Thanks, Dad."
+          }
+        ],
+        "question": "What is the condition of the bicycle?",
+        "answerMark": "②",
+        "answerText": "後タイヤがパンク、前ライトが壊れている",
+        "explanation": "パンク（back tire）＋ライト故障（front light）の2箇所。front/back の入れ替えに注意。2024年問8型の詳細記述。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a bicycle with clear indicators (X marks or zigzag lines) on damaged parts. Panel 1: bicycle with BOTH tires deflated (zigzag lines), light intact. Panel 2: bicycle with the BACK tire deflated and the FRONT light shown broken (X mark on the headlight). Panel 3: bicycle with the FRONT tire deflated and the BACK light broken. Panel 4: bicycle with the FRONT tire deflated only, light intact.",
+        "answerIndex": 2
+      },
+      {
+        "q": 3,
+        "scene": "女性が写真の中の子供を紹介している。",
+        "speakers": "女性 / 男性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "パーティー帽子をかぶり、ろうそくを吹き消す男の子",
+          "パーティー帽子をかぶり、ケーキを見ている男の子",
+          "帽子なしで、ろうそくを吹き消す男の子",
+          "帽子なしで、プレゼントを持つ男の子"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "This is my nephew's birthday party. Can you guess which is my nephew?"
+          },
+          {
+            "who": "M",
+            "text": "The boy with the party hat?"
+          },
+          {
+            "who": "W",
+            "text": "No, he's my nephew's friend. My nephew is the one blowing out the candles."
+          },
+          {
+            "who": "M",
+            "text": "Oh, the one without a hat!"
+          }
+        ],
+        "question": "Which boy is the woman's nephew?",
+        "answerMark": "③",
+        "answerText": "帽子なしで、ろうそくを吹き消す男の子",
+        "explanation": "帽子なし＋ろうそくを吹き消す の2条件。第一候補（帽子の子）を否定→訂正の型。2024年問9型。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a birthday party scene with one boy circled. Panel 1: a boy wearing a cone-shaped party hat blowing out candles on a cake. Panel 2: a boy wearing a party hat just looking at the cake. Panel 3: a boy WITHOUT a hat blowing out candles on the cake. Panel 4: a boy without a hat holding a wrapped gift.",
+        "answerIndex": 3
+      }
+    ]
+  },
+  {
+    "set": 6,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女が旅行先の天気予報を見ている。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "雨",
+          "晴れ",
+          "曇り(雨なし)",
+          "雪"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "It's going to rain on Saturday, our first day."
+          },
+          {
+            "who": "W",
+            "text": "And Sunday?"
+          },
+          {
+            "who": "M",
+            "text": "Cloudy, but no rain."
+          },
+          {
+            "who": "W",
+            "text": "Good, we can go hiking on Sunday, then."
+          }
+        ],
+        "question": "What will the weather be on Sunday?",
+        "answerMark": "③",
+        "answerText": "曇り(雨なし)",
+        "explanation": "Saturday（雨）は誤答誘導。Sunday の情報 Cloudy, but no rain を正確に。2つの日の混同がひっかけ。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a weather forecast card labeled 'SUN' with a large weather icon. Panel 1: rain drops falling from a cloud. Panel 2: bright sun with rays. Panel 3: a plain cloud with no rain drops. Panel 4: snowflakes falling from a cloud.",
+        "answerIndex": 3
+      },
+      {
+        "q": 2,
+        "scene": "文房具店で客が定規を買っている。",
+        "speakers": "女性(客) / 男性(店員)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "プラスチック製30cmで、cm目盛のみ",
+          "金属製30cmで、cm目盛のみ",
+          "金属製30cmで、cmとmm両方の目盛",
+          "プラスチック製30cmで、cmとmm両方"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "Do you have a 30-centimeter ruler?"
+          },
+          {
+            "who": "M",
+            "text": "We have plastic ones and metal ones. Which do you prefer?"
+          },
+          {
+            "who": "W",
+            "text": "Metal, please. And I need one with millimeter markings."
+          },
+          {
+            "who": "M",
+            "text": "OK, this one has both centimeters and millimeters."
+          }
+        ],
+        "question": "Which ruler will the woman buy?",
+        "answerMark": "③",
+        "answerText": "金属製30cmで、cmとmm両方の目盛",
+        "explanation": "材質（metal）・長さ（30cm）・目盛（cm+mm）の3条件。2024年問10型の詳細指定。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a straight ruler with markings. Panel 1: a plastic-looking ruler with only large centimeter tick marks (few, thick lines). Panel 2: a metallic-shaded ruler with only cm tick marks. Panel 3: a metallic-shaded ruler with both large cm and small mm tick marks (very dense). Panel 4: a plastic ruler with both cm and mm markings.",
+        "answerIndex": 3
+      },
+      {
+        "q": 3,
+        "scene": "男女がホームパーティーの飾り付けをしている。",
+        "speakers": "男性 / 女性",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "ソファの上の壁（三角旗のところ）",
+          "ダイニングテーブルのそば",
+          "ドアの上（花のアーチのところ）",
+          "ソファの肘掛け"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "I brought the balloons. Should I put them over the door?"
+          },
+          {
+            "who": "W",
+            "text": "The flower arch is already there. Leave the door alone."
+          },
+          {
+            "who": "M",
+            "text": "Then next to the dining table?"
+          },
+          {
+            "who": "W",
+            "text": "Yes, that corner still looks empty. Put them there."
+          }
+        ],
+        "question": "Where will the man put the balloons?",
+        "answerMark": "②",
+        "answerText": "ダイニングテーブルのそば",
+        "explanation": "over the door という提案を The flower arch is already there. Leave the door alone. で否定し、next to the dining table? → Yes, that corner still looks empty. で場所が確定する。③はすでに花のアーチがある場所なので風船は置かない。①は旗の場所、④は話題に出ていない。提案→否定→再提案→承認の流れを追う。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single drawing of a birthday party table with a cake and several children. FOUR circled numbers 1-4 placed INSIDE the picture pointing to four boys: 1 a boy wearing a party hat blowing candles, 2 a boy with a party hat just looking at the cake, 3 a boy WITHOUT a hat blowing out candles, 4 a boy without a hat holding a gift. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "set": 7,
+    "difficulty": "やや難",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女がスマートフォンの新機種を比較している。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "画面が大きく軽いModel A",
+          "カメラが良く重いModel B",
+          "カメラが良く軽いModel C",
+          "画面が大きく重いModel D"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Model A has a bigger screen, but Model B has a better camera."
+          },
+          {
+            "who": "W",
+            "text": "I take a lot of photos, so the camera matters."
+          },
+          {
+            "who": "M",
+            "text": "But Model B is heavier."
+          },
+          {
+            "who": "W",
+            "text": "That's OK. Photos are the priority."
+          }
+        ],
+        "question": "Which model will the woman probably choose?",
+        "answerMark": "②",
+        "answerText": "カメラが良く重いModel B",
+        "explanation": "優先順位（Photos are the priority）で重さの欠点を許容。2025年問10型（比較→優先条件で確定）。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a smartphone with three feature icons beside it (screen size icon, camera icon, weight icon) each rated with 1 or 2 star-marks. Panel 1: phone labeled 'A' - big screen (2 stars), small camera (1 star), light weight (2 stars). Panel 2: phone labeled 'B' - small screen (1 star), big camera (2 stars), heavy weight (1 star). Panel 3: phone 'C' - small screen, big camera, light. Panel 4: phone 'D' - big screen, small camera, heavy.",
+        "answerIndex": 2
+      },
+      {
+        "q": 2,
+        "scene": "男女が科学館の展示ゾーンについて話している。",
+        "speakers": "女性 / 男性",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "宇宙→海→恐竜→ロボット",
+          "海→宇宙→恐竜(ロボットなし)",
+          "恐竜→海→宇宙→ロボット",
+          "海→ロボット→宇宙→恐竜"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "There are four zones: space, ocean, dinosaurs, and robots."
+          },
+          {
+            "who": "M",
+            "text": "I'm really into dinosaurs, but let's save that for last."
+          },
+          {
+            "who": "W",
+            "text": "Then let's start with the ocean, because I love it."
+          },
+          {
+            "who": "M",
+            "text": "OK. After that, space, then dinosaurs. We can skip the robots."
+          }
+        ],
+        "question": "Which order will they follow?",
+        "answerMark": "②",
+        "answerText": "海→宇宙→恐竜(ロボットなし)",
+        "explanation": "順序と除外（skip the robots）を統合。3つ以上の要素を並べる高難度型。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single living room drawing with a sofa, a dining table, and decorations. FOUR circled numbers 1-4 placed INSIDE the picture at four decoration spots: 1 banner position on the wall above the sofa, 2 balloon position at the corner of the dining table, 3 a spot above the door, 4 a spot at the corner of the sofa. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 2,
+        "shuffled": true,
+        "shufflePerm": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "q": 3,
+        "scene": "男女が飛行機の座席表を見ながら席を選んでいる。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "窓のすぐ隣の窓側の席",
+          "真ん中の席（足元はふつうの広さ）",
+          "真ん中の席（足元がやや広い）",
+          "非常口の扉の隣の席（足元が最も広い）"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "We can still change our seats. Do you want the window?"
+          },
+          {
+            "who": "W",
+            "text": "I'd like to see outside, but my legs really need more room."
+          },
+          {
+            "who": "M",
+            "text": "Then the exit row has the most legroom on this plane."
+          },
+          {
+            "who": "W",
+            "text": "That settles it. I'll take the seat next to the exit door."
+          }
+        ],
+        "question": "Which seat will the woman choose?",
+        "answerMark": "④",
+        "answerText": "非常口の扉の隣の席（足元が最も広い）",
+        "explanation": "window に惹かれつつ my legs really need more room で条件が増え、the exit row has the most legroom → the seat next to the exit door で確定。①は景色の条件は満たすが足元の条件を満たさない。②③はどちらも真ん中の席で、足元の広さが違うだけなので most legroom には届かない。前半の Do you want the window? に引かれて①を選ばないこと。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows an airplane cabin cross-section with three seats in a row and one seat circled. Panel 1: the WINDOW seat is circled. Panel 2: the AISLE seat is circled. Panel 3: the MIDDLE seat is circled. Panel 4: an emergency exit row with the seat next to the exit door circled.",
+        "answerIndex": 4
+      }
+    ]
+  },
+  {
+    "set": 8,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "母と息子が誕生日ケーキのデザインを決めている。",
+        "speakers": "母親 / 息子",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "苺・チョコ文字・側面プレーンクリーム",
+          "ブルーベリー・チョコ文字・側面プレーン",
+          "苺・チョコ文字・側面チョコフレーク",
+          "苺のみ、文字なし、側面プレーン"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Do you want strawberries or blueberries on top?"
+          },
+          {
+            "who": "S",
+            "text": "Strawberries! And chocolate letters that say 'Happy Birthday'."
+          },
+          {
+            "who": "M",
+            "text": "How about chocolate flakes on the side, too?"
+          },
+          {
+            "who": "S",
+            "text": "No, just plain cream on the side."
+          }
+        ],
+        "question": "Which cake matches the boy's request?",
+        "answerMark": "①",
+        "answerText": "苺・チョコ文字・側面プレーンクリーム",
+        "explanation": "苺＋チョコ文字＋側面プレーンの3条件。side はチョコを断る点に注意。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a birthday cake. Panel 1: cake with strawberries on top, 'Happy Birthday' letters, plain smooth cream sides. Panel 2: cake with blueberries on top, 'Happy Birthday' letters, plain cream sides. Panel 3: cake with strawberries on top, 'Happy Birthday' letters, chocolate flake sprinkles on the sides. Panel 4: cake with only strawberries on top, no letters, plain cream sides.",
+        "answerIndex": 1
+      },
+      {
+        "q": 2,
+        "scene": "男女が本のカバーを選んでいる。",
+        "speakers": "女性 / 男性(店員)",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "バラ柄・しおりリボンなし",
+          "ヒマワリ柄・しおりリボンなし",
+          "ユリ柄・しおりリボンあり",
+          "ヒマワリ柄・しおりリボンあり"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I'd like a book cover, please. Do you have any with flowers?"
+          },
+          {
+            "who": "M",
+            "text": "Yes, we have roses, sunflowers, and lilies."
+          },
+          {
+            "who": "W",
+            "text": "Sunflowers, please. And do you have one with a bookmark ribbon?"
+          },
+          {
+            "who": "M",
+            "text": "This one has a ribbon."
+          }
+        ],
+        "question": "Which book cover did the woman choose?",
+        "answerMark": "④",
+        "answerText": "ヒマワリ柄・しおりリボンあり",
+        "explanation": "柄（sunflowers）＋機能（ribbon）の2条件。花の種類の聞き分けが要点。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single event hall seating chart seen from above with rows of seats. FOUR circled numbers 1-4 placed INSIDE the chart on four seat blocks: 1 the front row, 2 the left side of the middle rows, 3 the back rows, 4 the right side of the middle rows. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 4,
+        "shuffled": true,
+        "shufflePerm": [
+          0,
+          2,
+          3,
+          1
+        ]
+      },
+      {
+        "q": 3,
+        "scene": "男女が引越しの荷物をどの部屋へ運ぶか相談している。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "本→寝室、服→クローゼット、台所用品→台所（1箱1部屋）",
+          "同じ3組だが、矢印が斜めに描かれている図",
+          "本→寝室、服はクローゼットと台所の2部屋に分ける",
+          "服だけを寝室・クローゼット・台所の3部屋に分ける"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Three boxes left: books, clothes, and kitchen things."
+          },
+          {
+            "who": "W",
+            "text": "Books go to the bedroom, and the kitchen things stay in the kitchen."
+          },
+          {
+            "who": "M",
+            "text": "Should I split the clothes between the closet and the kitchen?"
+          },
+          {
+            "who": "W",
+            "text": "No, all the clothes go in the closet. One box, one room."
+          }
+        ],
+        "question": "Which arrangement matches the woman's instructions?",
+        "answerMark": "①",
+        "answerText": "本→寝室、服→クローゼット、台所用品→台所（1箱1部屋）",
+        "explanation": "Should I split the clothes …? に対する No, all the clothes go in the closet. One box, one room. が決め手。③は服を2部屋、④は服を3部屋に分けており、split を否定した内容に反する。②は同じ対応を斜めの矢印で描いただけなので、One box, one room を最も素直に表した図を選ぶ。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a house floor plan with three rooms labeled 'BEDROOM', 'CLOSET', 'KITCHEN' and three boxes labeled 'BOOKS', 'CLOTHES', 'KITCHEN'. Panel 1: Books arrow to Bedroom, Clothes arrow to Closet, Kitchen box arrow to Kitchen. Panel 2: Books to Closet, Clothes to Bedroom, Kitchen to Kitchen. Panel 3: Books to Bedroom, Clothes to Kitchen, Kitchen to Closet. Panel 4: Books to Kitchen, Clothes to Closet, Kitchen to Bedroom.",
+        "answerIndex": 1
+      }
+    ]
+  },
+  {
+    "set": 9,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "女性がジムのインストラクターと運動プランを相談している。",
+        "speakers": "女性 / 男性(インストラクター)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "ランニング",
+          "水泳",
+          "サイクリング",
+          "ヨガ"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I want to start running, but my knees are not strong."
+          },
+          {
+            "who": "M",
+            "text": "Then swimming or cycling would be better."
+          },
+          {
+            "who": "W",
+            "text": "I can't swim well, so cycling it is."
+          },
+          {
+            "who": "M",
+            "text": "Great. Let's start with 20 minutes a day."
+          }
+        ],
+        "question": "Which exercise will she start?",
+        "answerMark": "③",
+        "answerText": "サイクリング",
+        "explanation": "3段階の候補絞り込み（running不可→swimming不可→cycling）。除外の連鎖。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows an exercise icon. Panel 1: a person running. Panel 2: a person swimming in a pool lane. Panel 3: a person cycling on a stationary bike. Panel 4: a person doing a yoga pose on a mat.",
+        "answerIndex": 3
+      },
+      {
+        "q": 2,
+        "scene": "男女がイベントの席割りを決めている。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "前列VIP・中央左メディア・後列学生",
+          "前列学生・中央メディア・後列VIP",
+          "前列VIP・後列メディア・中央学生",
+          "前列メディア・中央VIP・後列学生"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "VIP guests should be in the front row."
+          },
+          {
+            "who": "W",
+            "text": "Yes, and the media people on the left side of the middle rows."
+          },
+          {
+            "who": "M",
+            "text": "What about students?"
+          },
+          {
+            "who": "W",
+            "text": "Students in the back rows."
+          }
+        ],
+        "question": "Which seating chart is correct?",
+        "answerMark": "①",
+        "answerText": "前列VIP・中央左メディア・後列学生",
+        "explanation": "3グループ×3位置の対応関係の把握。会場図と英語表現（front/middle/back rows, left side）の整合。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows an event hall seating chart with rows labeled and shaded groups. Panel 1: front row labeled VIP, middle-left labeled MEDIA, back rows labeled STUDENTS. Panel 2: front row STUDENTS, middle MEDIA, back VIP. Panel 3: front VIP, back MEDIA, middle STUDENTS. Panel 4: front MEDIA, middle VIP, back STUDENTS.",
+        "answerIndex": 1
+      },
+      {
+        "q": 3,
+        "scene": "男女がテーマパークで乗り物を選んでいる。",
+        "speakers": "女性 / 男性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "ジェットコースター",
+          "観覧車",
+          "お化け屋敷",
+          "メリーゴーラウンド"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "How about the roller coaster?"
+          },
+          {
+            "who": "M",
+            "text": "I feel sick on those. Let's try the Ferris wheel."
+          },
+          {
+            "who": "W",
+            "text": "Too slow. What about the haunted house?"
+          },
+          {
+            "who": "M",
+            "text": "OK, but let's do the merry-go-round first."
+          }
+        ],
+        "question": "Which ride will they go on first?",
+        "answerMark": "④",
+        "answerText": "メリーゴーラウンド",
+        "explanation": "最終的に let's do the merry-go-round first で確定。first の語が正解の決め手。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a theme park ride icon. Panel 1: a roller coaster with loops. Panel 2: a Ferris wheel with cabins. Panel 3: a haunted house with a ghost above it. Panel 4: a merry-go-round (carousel) with horses.",
+        "answerIndex": 4
+      }
+    ]
+  },
+  {
+    "set": 10,
+    "difficulty": "やや難",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女がバス路線図を見ながら行き方を相談している。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "バス8で直行",
+          "バス5→バス12",
+          "バス12→バス5",
+          "バス5のみ"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "How do we get to the museum?"
+          },
+          {
+            "who": "W",
+            "text": "Take bus 5 to City Hall, then transfer to bus 12."
+          },
+          {
+            "who": "M",
+            "text": "Isn't bus 8 direct?"
+          },
+          {
+            "who": "W",
+            "text": "Yes, but it only runs on weekends. Today is Wednesday."
+          }
+        ],
+        "question": "Which route will they take today?",
+        "answerMark": "②",
+        "answerText": "バス5→バス12",
+        "explanation": "直行便が週末限定→今日は水曜→乗換ルート。曜日条件の把握が鍵。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a simplified bus route diagram with numbered buses and named stops. Panel 1: single line 'Bus 8' direct from origin to Museum. Panel 2: 'Bus 5' from origin to City Hall stop, transfer arrow to 'Bus 12' to Museum. Panel 3: 'Bus 12' first then 'Bus 5' to Museum. Panel 4: 'Bus 5' only reaching City Hall, not Museum.",
+        "answerIndex": 2
+      },
+      {
+        "q": 2,
+        "scene": "母と息子が新学期の時間割を見ている。",
+        "speakers": "母親 / 息子",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "月曜:体育、水:英語なし",
+          "火曜と金曜:体育、水:英語なし",
+          "月曜と木曜:体育、毎日英語",
+          "火曜と金曜:体育、毎日英語"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "You have PE on Monday and Thursday, right?"
+          },
+          {
+            "who": "S",
+            "text": "No, Tuesday and Friday. Monday I have music."
+          },
+          {
+            "who": "M",
+            "text": "And when's your English class?"
+          },
+          {
+            "who": "S",
+            "text": "Every day except Wednesday."
+          }
+        ],
+        "question": "Which timetable matches?",
+        "answerMark": "②",
+        "answerText": "火曜と金曜:体育、水:英語なし",
+        "explanation": "母の推測（月・木体育）→息子の訂正（火・金）＋英語は水以外。訂正と例外の同時処理。2026年 問9型。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single family photo drawing with five people and a baby. FOUR circled numbers 1-4 placed INSIDE the picture pointing to four people: 1 the woman on the far left, 2 the woman second from left holding a baby, 3 a tall man standing behind, 4 a woman standing behind the leftmost woman. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 2,
+        "shuffled": true,
+        "shufflePerm": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "q": 3,
+        "scene": "男女がフリーマーケットで買い物をしている。",
+        "speakers": "女性 / 男性(店主)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "500円",
+          "800円",
+          "1000円",
+          "1200円"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "How much for this vase and this teapot?"
+          },
+          {
+            "who": "M",
+            "text": "The vase is 500 yen, the teapot 800. Both together, 1200 yen."
+          },
+          {
+            "who": "W",
+            "text": "I'll take just the teapot."
+          },
+          {
+            "who": "M",
+            "text": "Actually, if you take both, I'll make it 1000."
+          }
+        ],
+        "question": "How much will the woman pay?",
+        "answerMark": "③",
+        "answerText": "1000円",
+        "explanation": "最初は teapot 単体（800）→ 店主の提案（両方で1000）を受け入れる流れ。値段変化を追う。2022年問9型。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows items with a price total displayed on a receipt or price tag. Panel 1: only a vase with tag '500 yen'. Panel 2: only a teapot with tag '800 yen'. Panel 3: both vase and teapot together with a receipt showing '1000 yen'. Panel 4: both vase and teapot with a receipt showing '1200 yen'.",
+        "answerIndex": 3
+      }
+    ]
+  },
+  {
+    "set": 11,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女がホームパーティーの飲み物を数えている。",
+        "speakers": "女性 / 男性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "ジュース6本だけ",
+          "水6本だけ",
+          "ジュース6本＋水7本＝13本",
+          "ジュース12本＋水12本＝24本"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I bought six bottles of juice. Is that enough?"
+          },
+          {
+            "who": "M",
+            "text": "For ten guests, yes. But we need water too."
+          },
+          {
+            "who": "W",
+            "text": "The same six, then?"
+          },
+          {
+            "who": "M",
+            "text": "Make it one more than the juice, just in case."
+          }
+        ],
+        "question": "How many bottles are there in total?",
+        "answerMark": "③",
+        "answerText": "ジュース6本＋水7本＝13本",
+        "explanation": "Make it one more than the juice が決め手で、水は 6+1=7 本。合計は 6+7=13 本になる。The same six, then? をそのまま受け取ると12 本と数え違える。①②は片方の飲み物しか無く、④は本数が倍以上で合わない。ゲスト数 ten はダミー。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows bottles on a counter with clear labels. Panel 1: six juice bottles only. Panel 2: six water bottles only. Panel 3: six juice bottles plus six water bottles, total 12. Panel 4: ten juice bottles plus ten water bottles, total 20.",
+        "answerIndex": 3
+      },
+      {
+        "q": 2,
+        "scene": "男女が壁掛け写真の位置を決めている。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "TV上:風景、ソファ上:家族、棚:結婚式",
+          "TV上:家族、ソファ上:風景、棚:結婚式",
+          "TV上:結婚式、ソファ上:家族、棚:風景",
+          "TV上:風景、ソファ上:結婚式、棚:家族"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Should the landscape photo go above the sofa or above the TV?"
+          },
+          {
+            "who": "W",
+            "text": "Above the TV. And the family photo above the sofa."
+          },
+          {
+            "who": "M",
+            "text": "Where's the wedding photo, then?"
+          },
+          {
+            "who": "W",
+            "text": "On the shelf, not on the wall."
+          }
+        ],
+        "question": "Which arrangement matches?",
+        "answerMark": "①",
+        "answerText": "TV上:風景、ソファ上:家族、棚:結婚式",
+        "explanation": "3枚の写真（風景／家族／結婚式）と3か所（TV上／ソファ上／棚）の対応。位置指定の連続。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a living room with a TV, a sofa, and a shelf, plus three photo frames placed as labels indicate. Panel 1: mountain landscape above TV, family group above sofa, wedding photo on the shelf. Panel 2: family above TV, landscape above sofa, wedding on shelf. Panel 3: wedding above TV, family above sofa, landscape on shelf. Panel 4: landscape above TV, wedding above sofa, family on shelf.",
+        "answerIndex": 1
+      },
+      {
+        "q": 3,
+        "scene": "男女が学校の掲示板の告知を見ている。",
+        "speakers": "女性 / 男性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "金曜4時 音楽室",
+          "木曜4時30分 音楽室",
+          "木曜4時30分 体育館",
+          "金曜4時 体育館"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "The music club meeting is on Friday at 4."
+          },
+          {
+            "who": "M",
+            "text": "No, the poster says Thursday at 4:30."
+          },
+          {
+            "who": "W",
+            "text": "Oh, I read the old one. Where does it meet?"
+          },
+          {
+            "who": "M",
+            "text": "In the music room, not the gym."
+          }
+        ],
+        "question": "Which notice is correct?",
+        "answerMark": "②",
+        "answerText": "木曜4時30分 音楽室",
+        "explanation": "曜日・時刻・場所の3つが訂正される連鎖型。古い掲示と新しい掲示のひっかけ。2026年問9型。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a school notice board poster with 'MUSIC CLUB' header and three lines: day, time, place. Panel 1: 'FRI / 4:00 / MUSIC ROOM'. Panel 2: 'THU / 4:30 / MUSIC ROOM'. Panel 3: 'THU / 4:30 / GYM'. Panel 4: 'FRI / 4:00 / GYM'.",
+        "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "set": 12,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女がイヤホンを試している。",
+        "speakers": "女性(店員) / 男性(客)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "有線・ノイズキャンセルなし",
+          "無線・ノイズキャンセル＋マイク",
+          "無線・ノイズキャンセルなし",
+          "有線・ノイズキャンセルあり"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "We have wired earphones and wireless ones."
+          },
+          {
+            "who": "M",
+            "text": "Wireless, please. With noise cancelling if possible."
+          },
+          {
+            "who": "W",
+            "text": "Yes, this one has it. It also has a microphone."
+          },
+          {
+            "who": "M",
+            "text": "Great, I'll take it."
+          }
+        ],
+        "question": "Which earphones will the man buy?",
+        "answerMark": "②",
+        "answerText": "無線・ノイズキャンセル＋マイク",
+        "explanation": "接続（wireless）・機能（noise cancelling）・付属（microphone）の3属性。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a pair of earphones with feature icons underneath. Panel 1: earphones with a WIRE, icon set: no NC, no mic. Panel 2: WIRELESS earbuds (no wire visible), icon set showing 'NC' (noise cancelling) and a microphone. Panel 3: WIRELESS earbuds, no NC, no mic. Panel 4: WIRED earphones with an NC icon only.",
+        "answerIndex": 2
+      },
+      {
+        "q": 2,
+        "scene": "男女がカフェのメニューを見ている。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "3点セット、900円",
+          "サラダとサンドイッチ、700円",
+          "スープとサンドイッチ、700円",
+          "サンドイッチのみ、500円"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "The set menu with soup, salad, and sandwich is 900 yen."
+          },
+          {
+            "who": "W",
+            "text": "I don't want the soup."
+          },
+          {
+            "who": "M",
+            "text": "Then it's 700 without the soup."
+          },
+          {
+            "who": "W",
+            "text": "OK, I'll take that."
+          }
+        ],
+        "question": "What will the woman order and pay?",
+        "answerMark": "②",
+        "answerText": "サラダとサンドイッチ、700円",
+        "explanation": "減算型（900−200＝700）＋メニュー内容の変更（スープ抜き）の同時把握。2022年問11型（条件付 き）。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a tray with food and a price tag. Panel 1: tray with soup bowl + salad + sandwich, price tag '900 yen'. Panel 2: tray with salad + sandwich only (no soup), price tag '700 yen'. Panel 3: tray with soup + sandwich (no salad), price tag '700 yen'. Panel 4: tray with sandwich only, price tag '500 yen'.",
+        "answerIndex": 2
+      },
+      {
+        "q": 3,
+        "scene": "男女がおもちゃ屋で人形を選んでいる。",
+        "speakers": "女性(客) / 男性(店員)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "長髪・赤いドレス",
+          "長髪・ピンクドレス",
+          "短髪・赤いドレス",
+          "短髪・ピンクドレス"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I'd like a doll with long hair and a red dress."
+          },
+          {
+            "who": "M",
+            "text": "We have long hair with pink dress or short hair with red dress."
+          },
+          {
+            "who": "W",
+            "text": "Any long hair with red dress?"
+          },
+          {
+            "who": "M",
+            "text": "Not now. How about long hair, pink dress? It's the closest."
+          }
+        ],
+        "question": "Which doll will the woman likely take?",
+        "answerMark": "②",
+        "answerText": "長髪・ピンクドレス",
+        "explanation": "希望条件が揃わず、closest（一番近い）で妥協する型。優先順位の判断。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a doll standing upright. Panel 1: doll with LONG hair and a dress with dense hatch pattern (representing red). Panel 2: doll with LONG hair and a dress with light dot pattern (representing pink). Panel 3: doll with SHORT hair and dense hatched (red) dress. Panel 4: doll with SHORT hair and light-dot (pink) dress.",
+        "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "set": 13,
+    "difficulty": "やや難",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女が地図を見ながらキャンプ場での待ち合わせ場所を決めている。",
+        "speakers": "男性 / 女性",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "地図の左上にある家",
+          "左側の池のそば",
+          "橋を渡った先、キャンプ場に入る道",
+          "左下の行き止まりの道"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "I'll drive from the house. You're coming on foot, right?"
+          },
+          {
+            "who": "W",
+            "text": "Yes. Shall we meet by the lake on the way?"
+          },
+          {
+            "who": "M",
+            "text": "The road there is a dead end for cars. Let me pick you up after the bridge."
+          },
+          {
+            "who": "W",
+            "text": "All right, right where the road turns into the campsite."
+          }
+        ],
+        "question": "Where will they meet?",
+        "answerMark": "③",
+        "answerText": "橋を渡った先、キャンプ場に入る道",
+        "explanation": "by the lake（②）という提案を The road there is a dead end for cars で否定し、after the bridge → right where the road turns into the campsite で橋の先に確定する。①は男性の出発地であって待ち合わせ場所ではなく、④は行き止まりなので車で迎えに行けない。提案→否定→言い換えの3手を追う。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single top-down map showing roads, a crossroads, a bridge, a lake, and a campsite. FOUR different walking routes drawn as lines with arrows, each labeled with a circled number 1-4 INSIDE the map: route 1 turns left then crosses the bridge straight, route 2 turns left then right before the bridge passing the lake, route 3 turns right passing the lake then the bridge, route 4 turns left passing the lake then crossing the bridge. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 3
+      },
+      {
+        "q": 2,
+        "scene": "男女が科学実験のグラフを見ている。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "急上昇→横ばい→ゆるやかに下降→横ばい",
+          "急上昇→ゆるやかに下降→急上昇",
+          "一定の上昇→急下降→横ばい",
+          "横ばい→急上昇→急下降"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "The temperature rose sharply for the first 10 minutes."
+          },
+          {
+            "who": "W",
+            "text": "Yes, then it stayed the same for a while."
+          },
+          {
+            "who": "M",
+            "text": "And after 20 minutes, it dropped slightly."
+          },
+          {
+            "who": "W",
+            "text": "Right, and then it stayed flat again."
+          }
+        ],
+        "question": "Which graph matches?",
+        "answerMark": "①",
+        "answerText": "急上昇→横ばい→ゆるやかに下降→横ばい",
+        "explanation": "グラフの4段階変化（rose sharply → stayed the same → dropped slightly → stayed flat）を順番通り。2026年問11型のグラフ・段階選択。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows an XY line graph with 'Time' x-axis and 'Temp' y-axis. Panel 1: line rises steeply, then flat plateau, then slight downward slope, then flat again. Panel 2: line rises steeply, then a gentle downward slope, then rises steeply again. Panel 3: line rises gradually and steadily, then drops sharply, then flat. Panel 4: line flat, then rises sharply, then drops sharply.",
+        "answerIndex": 1
+      },
+      {
+        "q": 3,
+        "scene": "男女がスポーツクラブで週間スケジュールを組んでいる。",
+        "speakers": "女性 / 男性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "月・水:ヨガ、金:水泳",
+          "月・水・金:ヨガ",
+          "火・木:水泳",
+          "月・水:水泳、金:ヨガ"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I'll do yoga on Mondays and Wednesdays."
+          },
+          {
+            "who": "M",
+            "text": "Both days? That's a lot."
+          },
+          {
+            "who": "W",
+            "text": "And swimming on Fridays. What about you?"
+          },
+          {
+            "who": "M",
+            "text": "I'll swim on Tuesdays and Thursdays."
+          }
+        ],
+        "question": "Which schedule shows the woman's plan?",
+        "answerMark": "①",
+        "answerText": "月・水:ヨガ、金:水泳",
+        "explanation": "男性のスケジュール（火・木）と混同させる。「女性の予定」を問う設問文の把握。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a weekly planner (Mon-Fri) with icons on some days. Panel 1: yoga icon on Mon and Wed, swim icon on Fri. Panel 2: yoga icon on Mon, Wed, and Fri. Panel 3: swim icon on Tue and Thu. Panel 4: swim icon on Mon and Wed, yoga icon on Fri.",
+        "answerIndex": 1
+      }
+    ]
+  },
+  {
+    "set": 14,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女が学校祭のポスターを作成中。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "上部にタイトル・その下に日付・下部に場所・隅にロゴ",
+          "上部に日付・中央にタイトル・下部にロゴ",
+          "上部にロゴ・中央にタイトル・下部に日付",
+          "上部に場所・中央にタイトル・下部に日付"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "The title 'School Festival' should be at the top."
+          },
+          {
+            "who": "W",
+            "text": "In big letters, right? And the date underneath."
+          },
+          {
+            "who": "M",
+            "text": "Yes. And put the location at the bottom."
+          },
+          {
+            "who": "W",
+            "text": "How about a small logo in the corner?"
+          }
+        ],
+        "question": "Which poster layout matches?",
+        "answerMark": "①",
+        "answerText": "上部にタイトル・その下に日付・下部に場所・隅にロゴ",
+        "explanation": "4要素（タイトル／日付／場所／ロゴ）の位置指定。上→下、隅の位置関係を統合。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a poster layout mockup with placeholder blocks labeled TITLE, DATE, PLACE, LOGO. Panel 1: TITLE at top (big), DATE just below title, PLACE at bottom, small LOGO in a corner. Panel 2: DATE at top, TITLE in middle, LOGO at bottom. Panel 3: LOGO at top, TITLE in middle, DATE at bottom. Panel 4: PLACE at top, TITLE in middle, DATE at bottom.",
+        "answerIndex": 1
+      },
+      {
+        "q": 2,
+        "scene": "男女がペットショップで犬を選んでいる。",
+        "speakers": "女性 / 男性(店員)",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "巻き毛の小型プードル(オス)",
+          "巻き毛の小型プードル(メス)",
+          "長毛ストレートの小型テリア(オス)",
+          "長毛ストレートの小型テリア(メス)"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I like small dogs with long fur."
+          },
+          {
+            "who": "M",
+            "text": "We have a small poodle with curly fur, and a small terrier with straight long fur."
+          },
+          {
+            "who": "W",
+            "text": "The terrier sounds good. Is it a male or female?"
+          },
+          {
+            "who": "M",
+            "text": "This one's female."
+          }
+        ],
+        "question": "Which dog will the woman take?",
+        "answerMark": "④",
+        "answerText": "長毛ストレートの小型テリア(メス)",
+        "explanation": "種類（terrier）＋毛（straight long）＋性別（female）の3条件。プードルと迷わせる。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single family photo drawing with several relatives. FOUR circled numbers 1-4 placed INSIDE the picture pointing to four people: 1 the leftmost woman, 2 the woman holding a baby next to her, 3 a tall man behind them, 4 a woman behind the aunt. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 4,
+        "shuffled": true,
+        "shufflePerm": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "q": 3,
+        "scene": "男女が旅行の持ち物を確認している。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "パスポート・カメラ・サングラス・ガイドブック・地図",
+          "パスポート・カメラ・サングラス・ガイドブック(地図・傘なし)",
+          "パスポート・カメラ・地図・傘",
+          "カメラ・サングラス・地図・傘"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Passport, camera, and sunglasses. What else?"
+          },
+          {
+            "who": "W",
+            "text": "We need the guidebook, not the map. My phone has the map."
+          },
+          {
+            "who": "M",
+            "text": "OK. And an umbrella?"
+          },
+          {
+            "who": "W",
+            "text": "No, it won't rain there."
+          }
+        ],
+        "question": "Which set matches their packing list?",
+        "answerMark": "②",
+        "answerText": "パスポート・カメラ・サングラス・ガイドブック(地図・傘なし)",
+        "explanation": "含む物と除外物の複合。not the map と no umbrella の2つの否定を正確に。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows an open suitcase with items inside. Panel 1: passport, camera, sunglasses, guidebook, and a folded paper map inside. Panel 2: passport, camera, sunglasses, guidebook only (no map, no umbrella). Panel 3: passport, camera, folded paper map, umbrella. Panel 4: camera, sunglasses, paper map, umbrella.",
+        "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "set": 15,
+    "difficulty": "やや難",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女が電車の遅延情報を確認している。",
+        "speakers": "男性(駅員) / 女性(乗客)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "10時15分発の各駅停車",
+          "10時30分発の急行",
+          "10時45分発の急行",
+          "10時45分発の各駅停車"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "The 10:15 train is delayed by 30 minutes."
+          },
+          {
+            "who": "W",
+            "text": "So it leaves at 10:45?"
+          },
+          {
+            "who": "M",
+            "text": "Yes. But the 10:30 express is on time and stops at your station."
+          },
+          {
+            "who": "W",
+            "text": "Great, I'll take the express."
+          }
+        ],
+        "question": "Which train will the woman take?",
+        "answerMark": "②",
+        "answerText": "10時30分発の急行",
+        "explanation": "時刻と列車種別の複合。遅延した10:15各駅と、定時の10:30急行の比較で急行を選ぶ。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a train departure board entry with time and train type. Panel 1: '10:15 LOCAL' with a delay indicator. Panel 2: '10:30 EXPRESS' with 'ON TIME' label. Panel 3: '10:45 EXPRESS'. Panel 4: '10:45 LOCAL'.",
+        "answerIndex": 2
+      },
+      {
+        "q": 2,
+        "scene": "男女が写真を見ながら誰が誰かを話している。",
+        "speakers": "女性 / 男性",
+        "figureType": "1枚の図の中に①〜④",
+        "options": [
+          "左端の女性",
+          "赤ちゃんを抱いている女性(左から2番目)",
+          "背が高い男性",
+          "叔母の後ろの女性"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Is that your mother on the left?"
+          },
+          {
+            "who": "W",
+            "text": "No, that's my aunt. My mother is next to her, holding the baby."
+          },
+          {
+            "who": "M",
+            "text": "And the tall man behind them?"
+          },
+          {
+            "who": "W",
+            "text": "That's my father."
+          }
+        ],
+        "question": "Which person is the woman's mother?",
+        "answerMark": "②",
+        "answerText": "赤ちゃんを抱いている女性(左から2番目)",
+        "explanation": "左端の第一印象を否定→次に→赤ちゃんを抱いている人と特定。2024年問9型（写真の中の人物特定 ）。",
+        "imagePrompt": "Black and white line-art illustration for a listening test. ONE single drawing of a school shoe-locker wall with columns labeled A, B, C and numbered rows. FOUR circled numbers 1-4 placed INSIDE the picture on four different lockers: 1 column B second row from top left side, 2 column B third row from top left side, 3 column B third row from top right side, 4 column A third row from top right side. Grayscale cartoon, no color, no other text.",
+        "answerIndex": 2
+      },
+      {
+        "q": 3,
+        "scene": "男女が空港で荷物を預ける手続きをしている。",
+        "speakers": "女性(客) / 男性(係員)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "大きなスーツケース1つ",
+          "大きなスーツケースとリュックの2つ",
+          "キャリーオンとリュック",
+          "3つとも預ける"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I have one large suitcase and this small carry-on."
+          },
+          {
+            "who": "M",
+            "text": "Only the large one goes to check-in. The carry-on stays with you."
+          },
+          {
+            "who": "W",
+            "text": "And this backpack?"
+          },
+          {
+            "who": "M",
+            "text": "Backpack too, if it fits under the seat."
+          }
+        ],
+        "question": "Which is checked in (預け入れ) ?",
+        "answerMark": "①",
+        "answerText": "大きなスーツケース1つ",
+        "explanation": "預け入れ／機内持ち込みの区別。large one goes to check-in が核心。他は機内持ち込み。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows an airport check-in counter with a conveyor belt receiving specific bags. Panel 1: only a LARGE suitcase on the belt going to check-in, a small carry-on and a backpack stay with the passenger. Panel 2: a large suitcase AND a backpack on the belt. Panel 3: a carry-on AND a backpack on the belt. Panel 4: all three items (large suitcase, carry-on, backpack) on the belt.",
+        "answerIndex": 1
+      }
+    ]
+  },
+  {
+    "set": 16,
+    "difficulty": "標準",
+    "questions": [
+      {
+        "q": 1,
+        "scene": "男女がケーキ屋でギフト用のケーキを選んでいる。",
+        "speakers": "女性(店員) / 男性(客)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "チョコレートケーキ",
+          "苺のショートケーキ",
+          "チーズケーキ",
+          "桃のケーキ"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "We have chocolate, strawberry, and cheesecake."
+          },
+          {
+            "who": "M",
+            "text": "She loves fruits, but not strawberries. Actually, she's allergic to them."
+          },
+          {
+            "who": "W",
+            "text": "How about our peach cake, then?"
+          },
+          {
+            "who": "M",
+            "text": "Perfect. I'll take that."
+          }
+        ],
+        "question": "Which cake will the man buy?",
+        "answerMark": "④",
+        "answerText": "桃のケーキ",
+        "explanation": "「フルーツは好きだが苺はアレルギー」の情報から桃を新たに提案。3択→アレルギー→新提案の流 れ。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a whole cake on a plate with fruit/topping identifiable. Panel 1: chocolate cake with chocolate curls on top. Panel 2: strawberry shortcake with whole strawberries on top. Panel 3: cheesecake (plain, smooth top). Panel 4: cake topped with peach slices.",
+        "answerIndex": 4,
+        "shuffled": true,
+        "shufflePerm": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "q": 2,
+        "scene": "男女が学校の靴箱の位置を確認している。",
+        "speakers": "男性 / 女性",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "B列 上から2段目",
+          "B列 上から3段目",
+          "C列 上から3段目",
+          "A列 上から3段目"
+        ],
+        "turns": [
+          {
+            "who": "M",
+            "text": "Could you put my gym bag in my shoe locker?"
+          },
+          {
+            "who": "W",
+            "text": "Sure. It's in row B, second from the top, isn't it?"
+          },
+          {
+            "who": "M",
+            "text": "It used to be, but they moved me to row C."
+          },
+          {
+            "who": "W",
+            "text": "Row C. Which one?"
+          },
+          {
+            "who": "M",
+            "text": "Third from the top."
+          }
+        ],
+        "question": "Which locker is the man's?",
+        "answerMark": "③",
+        "answerText": "C列 上から3段目",
+        "explanation": "女性の思い込み（row B, second from the top）を they moved me to row C が訂正し、Third from the top で段が確定する。列の訂正と段の指定を2段階で追う。①は訂正される前の位置、②は段だけ合っていて列が古い、④は列が違う。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a grid of shoe lockers labeled A, B, C columns and numbered rows, with one specific locker highlighted. Panel 1: column B, second row from top, left-side locker highlighted. Panel 2: column B, third row from top, left-side locker highlighted. Panel 3: column B, third row from top, right-side locker highlighted. Panel 4: column A, third row from top, right-side locker highlighted.",
+        "answerIndex": 3
+      },
+      {
+        "q": 3,
+        "scene": "男女がスポーツ用品店でテニスラケットを選んでいる。",
+        "speakers": "女性(客) / 男性(店員)",
+        "figureType": "2×2の4枚から選択",
+        "options": [
+          "重量級・ヘッド大きめ",
+          "軽量・ヘッド小さめ",
+          "軽量・ヘッド大きめ",
+          "重量級・ヘッド小さめ"
+        ],
+        "turns": [
+          {
+            "who": "W",
+            "text": "I'm a beginner. Which racket do you recommend?"
+          },
+          {
+            "who": "M",
+            "text": "This lightweight one is good for beginners. It has a larger head."
+          },
+          {
+            "who": "W",
+            "text": "And the color?"
+          },
+          {
+            "who": "M",
+            "text": "Available in blue, black, or white."
+          }
+        ],
+        "question": "Which racket will the woman likely choose (based on the recommended features)?",
+        "answerMark": "③",
+        "answerText": "軽量・ヘッド大きめ",
+        "explanation": "色は「どれでもよい」ため無関係。lightweight + larger head の2条件で決定。属性の掛け合わせ。",
+        "imagePrompt": "Black and white line-art illustration sheet for a listening test. A 2x2 grid of four equal square panels, thin gray borders, large circled numbers 1 2 3 4 at top-left of each panel, plain white background, grayscale only, clean cartoon line drawing, no color, no other text. Each panel shows a tennis racket with a small label for weight and head size. Panel 1: racket with a large head, label 'HEAVY'. Panel 2: racket with a SMALL head, label 'LIGHT'. Panel 3: racket with a LARGE oval head, label 'LIGHT'. Panel 4: racket with a small head, label 'HEAVY'.",
+        "answerIndex": 3,
+        "shuffled": true,
+        "shufflePerm": [
+          1,
+          2,
+          0,
+          3
+        ]
+      }
+    ]
+  }
+]

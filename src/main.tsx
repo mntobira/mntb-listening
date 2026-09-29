@@ -6,6 +6,13 @@ import './index.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppWallpaper } from './components/AppWallpaper';
 
+// Register the supplied offline shell only for production builds.
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .catch((error) => console.warn('[SW] registration failed:', error));
+  });
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

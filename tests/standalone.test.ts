@@ -34,6 +34,9 @@ it('keeps nine units, 135 practice problems and their audio/images', () => {
   const chapters=getChaptersOfSubject(subject);
   expect(chapters).toHaveLength(9);
   expect(chapters.reduce((sum,c)=>sum+c.practiceProblems.length+c.miniTest.length,0)).toBe(135);
+  const index=SUBJECT_INDEX.find(entry=>entry.id===subject)!.chapters;
+  expect(index.map(entry=>entry.practiceIds)).toEqual(chapters.map(chapter=>chapter.practiceProblems.map(problem=>problem.id)));
+  expect(readFileSync('src/components/ListeningHome.tsx','utf8')).not.toContain("import('../data/englishListeningData')");
   const audio=new Set<string>();const assets=new Set<string>();
   const walk=(value:unknown,key='')=>{
     if(typeof value==='string') {
@@ -68,6 +71,16 @@ it('ships only commercial audio listed in the ledger', () => {
   if(status.status==='approved'){expect(status.legacyTracks).toEqual([]);for(const r of ledger)expect(r.status,r.audioUrl).toBe('replaced');}
   for(const r of ledger)expect(existsSync(resolve('public','.'+r.audioUrl)),r.audioUrl).toBe(true);
   expect(existsSync('license_evidence/README.md')).toBe(true);
+});
+
+it('keeps unrelated integrated screens out of the listening startup bundle', () => {
+  const app = readFileSync('src/App.tsx', 'utf8');
+  for (const screen of ['ModeSelection', 'LogicalTree', 'MockExam', 'TeacherDashboard', 'FeedbackAdminPanel', 'BattleMode']) {
+    expect(app, screen).toContain(`React.lazy(() => import(`);
+    expect(app, screen).not.toMatch(new RegExp(`import \\{ ${screen} \\} from`));
+  }
+  expect(app).toContain("import('./battle/ui/BattleMode')");
+  expect(app).toContain("import('./components/ModeSelection')");
 });
 
 it('only allows a Vercel guest build when Firebase is entirely absent', () => {

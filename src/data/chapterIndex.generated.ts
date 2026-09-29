@@ -56,6 +56,8 @@ export interface ChapterIndexEntry {
   realTitle?: string;
   /** この章の大問数（miniTest ＋ practiceProblems） */
   problemCount: number;
+  /** リスニングの大問ID。ホームの進捗・次の1回のために必要な軽量索引。 */
+  practiceIds?: readonly string[];
 }
 
 /** 教科1つぶんの索引。並び順・表示名も持たせて、画面が SUBJECTS を見ずに済むようにしている。 */
@@ -82,55 +84,208 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "id": "el1_A",
         "problemCount": 14,
         "abstractTitle": "第1問 A",
-        "realTitle": "第1問 A"
+        "realTitle": "第1問 A",
+        "practiceIds": [
+          "q_el1_A_set1",
+          "q_el1_A_set2",
+          "q_el1_A_set3",
+          "q_el1_A_set4",
+          "q_el1_A_set5",
+          "q_el1_A_set6",
+          "q_el1_A_set7",
+          "q_el1_A_set8",
+          "q_el1_A_set9",
+          "q_el1_A_set10",
+          "q_el1_A_set11",
+          "q_el1_A_set12",
+          "q_el1_A_set13",
+          "q_el1_A_set14"
+        ]
       },
       {
         "id": "el1_B",
         "problemCount": 15,
         "abstractTitle": "第1問 B",
-        "realTitle": "第1問 B"
+        "realTitle": "第1問 B",
+        "practiceIds": [
+          "q_el1_B_set1",
+          "q_el1_B_set2",
+          "q_el1_B_set3",
+          "q_el1_B_set4",
+          "q_el1_B_set5",
+          "q_el1_B_set6",
+          "q_el1_B_set7",
+          "q_el1_B_set8",
+          "q_el1_B_set9",
+          "q_el1_B_set10",
+          "q_el1_B_set11",
+          "q_el1_B_set12",
+          "q_el1_B_set13",
+          "q_el1_B_set14",
+          "q_el1_B_set15"
+        ]
       },
       {
         "id": "el2",
         "problemCount": 16,
         "abstractTitle": "第2問",
-        "realTitle": "第2問"
+        "realTitle": "第2問",
+        "practiceIds": [
+          "q_el2_set1",
+          "q_el2_set2",
+          "q_el2_set3",
+          "q_el2_set4",
+          "q_el2_set5",
+          "q_el2_set6",
+          "q_el2_set7",
+          "q_el2_set8",
+          "q_el2_set9",
+          "q_el2_set10",
+          "q_el2_set11",
+          "q_el2_set12",
+          "q_el2_set13",
+          "q_el2_set14",
+          "q_el2_set15",
+          "q_el2_set16"
+        ]
       },
       {
         "id": "el3",
         "problemCount": 15,
         "abstractTitle": "第3問",
-        "realTitle": "第3問"
+        "realTitle": "第3問",
+        "practiceIds": [
+          "q_el3_set1",
+          "q_el3_set2",
+          "q_el3_set3",
+          "q_el3_set4",
+          "q_el3_set5",
+          "q_el3_set6",
+          "q_el3_set7",
+          "q_el3_set8",
+          "q_el3_set9",
+          "q_el3_set10",
+          "q_el3_set11",
+          "q_el3_set12",
+          "q_el3_set13",
+          "q_el3_set14",
+          "q_el3_set15"
+        ]
       },
       {
         "id": "el4_A",
         "problemCount": 15,
         "abstractTitle": "第4問 A",
-        "realTitle": "第4問 A"
+        "realTitle": "第4問 A",
+        "practiceIds": [
+          "q_el4_A_set1",
+          "q_el4_A_set2",
+          "q_el4_A_set3",
+          "q_el4_A_set4",
+          "q_el4_A_set5",
+          "q_el4_A_set6",
+          "q_el4_A_set7",
+          "q_el4_A_set8",
+          "q_el4_A_set9",
+          "q_el4_A_set10",
+          "q_el4_A_set11",
+          "q_el4_A_set12",
+          "q_el4_A_set13",
+          "q_el4_A_set14",
+          "q_el4_A_set15"
+        ]
       },
       {
         "id": "el4_B",
         "problemCount": 15,
         "abstractTitle": "第4問 B",
-        "realTitle": "第4問 B"
+        "realTitle": "第4問 B",
+        "practiceIds": [
+          "q_el4_B_set1",
+          "q_el4_B_set2",
+          "q_el4_B_set3",
+          "q_el4_B_set4",
+          "q_el4_B_set5",
+          "q_el4_B_set6",
+          "q_el4_B_set7",
+          "q_el4_B_set8",
+          "q_el4_B_set9",
+          "q_el4_B_set10",
+          "q_el4_B_set11",
+          "q_el4_B_set12",
+          "q_el4_B_set13",
+          "q_el4_B_set14",
+          "q_el4_B_set15"
+        ]
       },
       {
         "id": "el5",
         "problemCount": 15,
         "abstractTitle": "第5問",
-        "realTitle": "第5問"
+        "realTitle": "第5問",
+        "practiceIds": [
+          "q_el5_set1",
+          "q_el5_set2",
+          "q_el5_set3",
+          "q_el5_set4",
+          "q_el5_set5",
+          "q_el5_set6",
+          "q_el5_set7",
+          "q_el5_set8",
+          "q_el5_set9",
+          "q_el5_set10",
+          "q_el5_set11",
+          "q_el5_set12",
+          "q_el5_set13",
+          "q_el5_set14",
+          "q_el5_set15"
+        ]
       },
       {
         "id": "el6_A",
         "problemCount": 15,
         "abstractTitle": "第6問 A",
-        "realTitle": "第6問 A"
+        "realTitle": "第6問 A",
+        "practiceIds": [
+          "q_el6_A_set1",
+          "q_el6_A_set2",
+          "q_el6_A_set3",
+          "q_el6_A_set4",
+          "q_el6_A_set5",
+          "q_el6_A_set6",
+          "q_el6_A_set7",
+          "q_el6_A_set8",
+          "q_el6_A_set9",
+          "q_el6_A_set10",
+          "q_el6_A_set11",
+          "q_el6_A_set12",
+          "q_el6_A_set13",
+          "q_el6_A_set14",
+          "q_el6_A_set15"
+        ]
       },
       {
         "id": "el6_B",
         "problemCount": 15,
         "abstractTitle": "第6問 B",
-        "realTitle": "第6問 B"
+        "realTitle": "第6問 B",
+        "practiceIds": [
+          "q_el6_B_set1",
+          "q_el6_B_set2",
+          "q_el6_B_set3",
+          "q_el6_B_set4",
+          "q_el6_B_set5",
+          "q_el6_B_set6",
+          "q_el6_B_set7",
+          "q_el6_B_set8",
+          "q_el6_B_set9",
+          "q_el6_B_set10",
+          "q_el6_B_set11",
+          "q_el6_B_set12",
+          "q_el6_B_set13",
+          "q_el6_B_set14",
+          "q_el6_B_set15"
+        ]
       }
     ]
   },

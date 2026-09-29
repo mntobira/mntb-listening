@@ -1,0 +1,10 @@
+音声分割は完了していますが、ASRと台本の差は人手試聴を代替するものではありません。
+優先的に試聴してほしい箇所：
+q5set13_q32_B.mp3
+台本: The lost capacity returns as soon as the phone is moved away.
+認識結果: The loss capacity returns as soon as the phone is moved away.
+2種のローカルASRモデルがlostをlossと認識。前後の語と語数は一致し、A/B間の無音も確認できたため分割は実施。lostの語末tの聞こえ方は試聴で確認してほしい。本文・音声は改変していない。
+q5set15_q33.mp3
+台本: so autumn is the worse peak here
+認識結果: so autumn is the worst peak here
+worse/worstの認識差。主要数値640・480・210・300は同じ。既存の完成済み会話音源をバイト単位で保持して同梱。公開前に試聴確認を推奨。

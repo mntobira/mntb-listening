@@ -1,0 +1,49 @@
+# このファイルを .github/workflows/deploy-firestore-rules.yml へコピーすると
+# main の firestore.rules 変更時に本番へ自動デプロイされます。
+# （Bot の権限では workflows を直接 push できないため docs/ に同梱しています。
+#   GitHub の Web UI から「Add file」で作成するのが簡単です。）
+# 事前に GitHub Secrets へ FIREBASE_SERVICE_ACCOUNT を登録すること。
+# 手順: docs/DEPLOY_FIRESTORE_RULES.md 方法3 を参照。
+name: Deploy Firestore Rules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'firestore.rules'
+      - 'firestore.indexes.json'
+      - 'firebase.json'
+  workflow_dispatch: {}
+
+jobs:
+  deploy-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check secret is configured
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::GitHub Secret 'FIREBASE_SERVICE_ACCOUNT' が未設定です。docs/DEPLOY_FIRESTORE_RULES.md の方法3に従って設定してください。"
+            exit 1
+          fi
+
+      - name: Write service account key
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+
+      - name: Deploy firestore rules
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+        run: npx firebase-tools deploy --only firestore:rules --project mntb-4ef06 --non-interactive --force
+
+      - name: Cleanup key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"

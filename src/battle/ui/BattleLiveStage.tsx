@@ -101,6 +101,11 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
     if (!quiet) playSound(sound);
   }, [playSound, quiet]);
 
+  const questionAreaRef = useRef<HTMLDivElement>(null);
+  // The scrollable area survives between questions. Always show the new diagram
+  // from its top rather than preserving the previous question's answer position.
+  useEffect(() => { questionAreaRef.current?.scrollTo({ top: 0 }); }, [p.question.id]);
+
   const live = useBattleLive({
     playing: playing && !counting,
     index: p.index,
@@ -183,7 +188,7 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
     <div className="battle-ready-footer">{p.footer}</div>
   </div>;
   return (
-    <div className={`arena-live-stage ${phase === 'final' ? 'arena-final' : ''}`}>
+    <div className={`arena-live-stage ${listening ? 'arena-listening-stage' : ''} ${phase === 'final' ? 'arena-final' : ''}`}>
       <div className="arena-background-fx" aria-hidden="true"><i/><i/><i/></div>
       <ArenaFighters roundKey={p.index} streak={live.myStreak} opponentCorrect={p.reveal && !!theirAnswer?.correct} offline={p.offline} answered={p.answered} opponentAnswered={p.opponentAnswered} reveal={p.reveal} correct={!!p.myScore?.perQuestion.find(q=>q.index===p.index)?.correct}/>
 
@@ -219,7 +224,7 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
       {p.notices}
 
       {/* ★最終問題は枠を少しだけ特別に★ 問題文・選択肢の中身は変えない */}
-      <div className={`arena-question-area ${phase === 'final' && !counting ? 'battle-live-final-frame rounded-2xl' : ''}`}>
+      <div ref={questionAreaRef} className={`arena-question-area ${phase === 'final' && !counting ? 'battle-live-final-frame rounded-2xl' : ''}`}>
         <BattleQuestionView
           question={p.question}
           index={p.index}

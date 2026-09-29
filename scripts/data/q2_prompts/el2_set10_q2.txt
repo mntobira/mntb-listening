@@ -1,0 +1,2 @@
+2x2 grid of weekly timetables MON-FRI, rows PE (ball) / ENGLISH (book). 1: PE Mon, English not Wed. 2: PE Tue+Fri, English not Wed. 3: PE Mon+Thu, English every day. 4: PE Tue+Fri, English every day.
+画像生成（nano-banana-2-flash-lite・2026-09-28）。正解 ②

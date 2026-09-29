@@ -1,0 +1,2 @@
+2x2 grid, one row of picture cards per panel, no text. 1 rocket,whale,dinosaur,robot / 2 whale,rocket,dinosaur / 3 dinosaur,whale,rocket,robot / 4 whale,robot,rocket,dinosaur.
+画像生成（nano-banana-2-flash-lite・2026-09-29・3回目で採用。1・2回目は絵とラベルが食い違い不採用）。正解 ②

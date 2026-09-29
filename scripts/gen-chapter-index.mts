@@ -126,6 +126,8 @@ interface ChapterIndexEntry {
   realTitle?: string;
   /** この章の大問数（miniTest ＋ practiceProblems）。数え方は data/problemCount.ts と同じ。 */
   problemCount: number;
+  /** リスニングのホームで使う大問ID。本文や解説は含めない。 */
+  practiceIds?: string[];
 }
 
 /** 教科1つぶんの索引（並び順・表示名も索引側に持たせる） */
@@ -204,6 +206,9 @@ function buildIndex(): SubjectIndexEntry[] {
       if (typeof chapter.realTitle === 'string' && chapter.realTitle) {
         entry.realTitle = chapter.realTitle;
       }
+      if (subject.id === 'english_listening') {
+        entry.practiceIds = (chapter.practiceProblems || []).map((problem: { id: string }) => String(problem.id));
+      }
       return entry;
     });
 
@@ -271,6 +276,8 @@ export interface ChapterIndexEntry {
   realTitle?: string;
   /** この章の大問数（miniTest ＋ practiceProblems） */
   problemCount: number;
+  /** リスニングの大問ID。ホームの進捗・次の1回のために必要な軽量索引。 */
+  practiceIds?: readonly string[];
 }
 
 /** 教科1つぶんの索引。並び順・表示名も持たせて、画面が SUBJECTS を見ずに済むようにしている。 */

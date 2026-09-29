@@ -1,11 +1,12 @@
-import React, { useEffect, useState, type ComponentProps } from 'react';
+import React, { useMemo, useState, type ComponentProps } from 'react';
 import { ArrowRight, BookOpen, Check, ChevronRight, Coins, Gift, Headphones, HelpCircle, ListMusic, Pause, Play, Repeat2, Swords, Volume2, VolumeX, Waves } from 'lucide-react';
 import type { Home as IntegratedHome } from './Home';
 import type { GrowthProgress } from '../battle/core/growth';
 import { equippedPoseSrc, levelOf } from '../battle/core/growth';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { GrowthHomeStrip } from '../battle/ui/GrowthHomeStrip';
-import { countSolvedProblemsIn, isProblemSolved } from '../utils/progress';
+import { problemKey, readSolvedMap } from '../utils/progress';
+import { SUBJECT_INDEX } from '../data/chapterIndex.generated';
 import { getDueCount } from '../utils/reviewList';
 import { VOCABULARY_COUNT } from '../data/listeningVocabularyMeta.generated';
 import { FIREBASE_CONFIGURED } from '../firebase';
@@ -22,34 +23,31 @@ export function ListeningHome(props: Props) {
   return <ListeningHomeContent key={uid} {...props} owner={uid} growth={progress} />;
 }
 
-function ListeningHomeContent({ owner, growth, onPickSubject, onStart, onStudyMode, onNoteList, onIntro, onBattle, onGrowth, onLeaderboard, onListeningStart, isBgmEnabled, onToggleBgm }: Props & { owner: string; growth: GrowthProgress | null; key?: string }) {
+function ListeningHomeContent({ owner, growth, onPickSubject, onChangeSubject, onStart, onStudyMode, onNoteList, onIntro, onBattle, onGrowth, onLeaderboard, onListeningStart, isBgmEnabled, onToggleBgm }: Props & { owner: string; growth: GrowthProgress | null; key?: string }) {
   const [support, setSupport] = useState<'words' | 'grammar' | null>(null);
-  const [next, setNext] = useState<{ chapter: string; index: number; label: string } | null>(null);
-  const [units, setUnits] = useState<Unit[]>([]);
-  const [solved, setSolved] = useState(0);
-  const [retry, setRetry] = useState(0);
-  const [error, setError] = useState('');
   const [previewPlaying, setPreviewPlaying] = useState(false);
   const due = getDueCount(owner);
-
-  useEffect(() => {
-    let alive = true;
-    setError('');
-    import('../data/englishListeningData').then(({ getAllListeningChapters }) => {
-      if (!alive) return;
-      const chapters = getAllListeningChapters();
-      const rounds = chapters.flatMap(c => c.practiceProblems.map((p: { id: string }, index: number) => ({ chapter: c.id, index, label: `${c.abstractTitle} · 第${index + 1}回`, problem: p.id })));
-      const first = rounds.find(r => !isProblemSolved(owner, r.chapter, r.problem)) || rounds[0];
-      setNext(first || null);
-      setSolved(countSolvedProblemsIn(owner, chapters.map(c => c.id)));
-      setUnits(chapters.map((c, i) => ({
-        id: c.id, title: c.abstractTitle, count: c.practiceProblems.length,
-        completed: c.practiceProblems.filter((p: { id: string }) => isProblemSolved(owner, c.id, p.id)).length,
-        description: UNIT_DESCRIPTIONS[i] || '英語を聞いて理解する',
-      })));
-    }).catch(() => { if (alive) setError('教材を読み込めませんでした。通信状況を確認してください。'); });
-    return () => { alive = false; };
-  }, [owner, retry]);
+  // The home needs IDs and counts, not scripts, audio metadata or explanations.
+  // Read the generated index and saved answers once; download question data only
+  // when the learner actually opens a practice round.
+  const { units, next, solved } = useMemo(() => {
+    const chapters = SUBJECT_INDEX.find(subject => subject.id === 'english_listening')?.chapters || [];
+    const saved = readSolvedMap(owner);
+    const rounds = chapters.flatMap(chapter => (chapter.practiceIds || []).map((id, index) => ({
+      chapter: chapter.id, index, label: `${chapter.abstractTitle} · 第${index + 1}回`, id,
+    })));
+    const units: Unit[] = chapters.map((chapter, index) => ({
+      id: chapter.id, title: chapter.abstractTitle || chapter.id,
+      count: chapter.practiceIds?.length || 0,
+      completed: (chapter.practiceIds || []).filter(id => saved[problemKey(chapter.id, id)]).length,
+      description: UNIT_DESCRIPTIONS[index] || '英語を聞いて理解する',
+    }));
+    return {
+      units,
+      next: rounds.find(round => !saved[problemKey(round.chapter, round.id)]) || rounds[0] || null,
+      solved: units.reduce((sum, unit) => sum + unit.completed, 0),
+    };
+  }, [owner]);
 
   const study = () => { onPickSubject?.('english_listening'); onStudyMode ? onStudyMode('practice') : onStart(); };
   const listenAt = (chapter: string, index: number) => { onPickSubject?.('english_listening'); onListeningStart ? onListeningStart(chapter, index) : study(); };
@@ -62,6 +60,7 @@ function ListeningHomeContent({ owner, growth, onPickSubject, onStart, onStudyMo
       <header className="lh-header">
         <div className="lh-brand"><img src="/manatobi-logo.jpg" alt="マナトビ" width={1024} height={367} /><span className="lh-brand-divider" /><span className="lh-brand-name">LISTENING <small>音から、学びをひらく。</small></span></div>
         <div className="lh-header-tools">
+          {onChangeSubject && <button className="lh-subject-chip" onClick={onChangeSubject} aria-label="科目をえらぶ（英文法・英単語もここから）"><BookOpen size={16} /> 科目</button>}
           {onGrowth && <button className="lh-wallet" onClick={() => onGrowth('overview')} aria-label="マナコインの使い道を開く"><Coins size={17} /> {growth ? growth.coins.toLocaleString() : '—'}</button>}
           <button className="lh-sound" aria-label={isBgmEnabled ? 'BGMをオフにする' : 'BGMをオンにする'} onClick={() => onToggleBgm?.(!isBgmEnabled)}>{isBgmEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}<span> BGM {isBgmEnabled ? 'ON' : 'OFF'}</span></button>
         </div>
@@ -75,12 +74,11 @@ function ListeningHomeContent({ owner, growth, onPickSubject, onStart, onStudyMo
             <div className="lh-hero-noise" aria-hidden="true" />
             <div className="lh-hero-content"><div className="lh-hero-top"><span className="lh-hero-tag"><span /> TODAY'S SESSION</span><span className="lh-hero-index">01 / 03</span></div>
               <div className="lh-hero-copy"><p className="lh-hero-overline">耳を澄ませば、わかることが増える。</p><h2 id="listening-home-title">まずは、<br /><em>ひとつ</em>聞いてみよう。</h2><p>聞く → 答える → 確かめる。<br />短い1回から、確かな力に。</p></div>
-              <button className="lh-main" aria-label="おすすめのリスニングを始める" disabled={!next && !error} onClick={() => next ? listenAt(next.chapter, next.index) : study()}><span><Play size={17} fill="currentColor" /> 学習を再開する</span><ArrowRight size={19} /></button>
-              <div className="lh-hero-bottom"><span><Waves size={15} /> NEXT UP</span><strong>{next?.label || (error ? '大問一覧から選ぶ' : 'おすすめを読み込み中…')}</strong></div>
+              <button className="lh-main" aria-label="おすすめのリスニングを始める" onClick={() => next ? listenAt(next.chapter, next.index) : study()}><span><Play size={17} fill="currentColor" /> 学習を再開する</span><ArrowRight size={19} /></button>
+              <div className="lh-hero-bottom"><span><Waves size={15} /> NEXT UP</span><strong>{next?.label || '大問一覧から選ぶ'}</strong></div>
             </div>
             <div className="lh-hero-art" aria-hidden="true"><div className="lh-orbit lh-orbit-one" /><div className="lh-orbit lh-orbit-two" /><div className="lh-sound-rings"><span /><span /><span /><span /><span /><span /><span /><span /><span /><span /><span /></div><div className="lh-hero-mascot"><img src={growth ? equippedPoseSrc(growth) : '/mascots/listening.webp'} alt="" /></div><span className="lh-float-note lh-note-one">LISTEN</span><span className="lh-float-note lh-note-two">♪</span></div>
           </section>
-          {error && <p className="lh-error" role="alert">{error} <button onClick={() => setRetry(n => n + 1)}>再読み込み</button></p>}
 
           <section className="lh-path" aria-labelledby="lh-path-title"><div className="lh-section-heading"><div><p className="lh-kicker">THE LEARNING PATH</p><h2 id="lh-path-title">あなたの学び方で、進もう。</h2></div><span>3つのステップ</span></div>
             <div className="lh-path-grid">
@@ -91,7 +89,7 @@ function ListeningHomeContent({ owner, growth, onPickSubject, onStart, onStudyMo
           </section>
 
           <section className="lh-units" aria-labelledby="lh-units-title"><div className="lh-section-heading"><div><p className="lh-kicker">EXPLORE THE LIBRARY</p><h2 id="lh-units-title">大問から探す</h2></div><button onClick={study}>すべて見る <ArrowRight size={16} /></button></div><p className="lh-units-intro">短い会話から、長い講義まで。いまの自分に合った音を選ぼう。</p>
-            <div className="lh-unit-grid">{units.length ? units.map((unit, i) => <button key={unit.id} className="lh-unit" onClick={() => listenAt(unit.id, 0)}><span className="lh-unit-num">{String(i + 1).padStart(2, '0')}</span><span className="lh-unit-info"><strong>{unit.title}</strong><small>{unit.description}</small></span><span className="lh-unit-end">{unit.completed}/{unit.count} <ChevronRight size={16} /></span></button>) : <div className="lh-unit-loading" role="status">{error ? '読み込みに失敗しました。再読み込みしてください。' : '大問を読み込んでいます…'}</div>}</div>
+            <div className="lh-unit-grid">{units.length ? units.map((unit, i) => <button key={unit.id} className="lh-unit" onClick={() => listenAt(unit.id, 0)}><span className="lh-unit-num">{String(i + 1).padStart(2, '0')}</span><span className="lh-unit-info"><strong>{unit.title}</strong><small>{unit.description}</small></span><span className="lh-unit-end">{unit.completed}/{unit.count} <ChevronRight size={16} /></span></button>) : <div className="lh-unit-loading" role="status">大問一覧から学習を始められます。</div>}</div>
           </section>
         </div>
 

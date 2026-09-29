@@ -1,0 +1,2 @@
+Clean illustration sheet, 2x2 grid, EXACTLY ONE tennis racket per panel, same length. Panel 1: LARGE head, dark gray, dumbbell tag "320 g". Panel 2: SMALL head, light blue, feather tag "230 g". Panel 3: LARGE head, light blue, feather tag "230 g". Panel 4: SMALL head, dark gray, dumbbell tag "320 g".
+画像生成（nano-banana-2-flash-lite・2026-09-28・3回目で採用）。①重量級・大 / ②軽量・小 / ③軽量・大（正解） / ④重量級・小

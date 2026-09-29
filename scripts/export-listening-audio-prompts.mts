@@ -1,0 +1,97 @@
+import {mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync} from 'node:fs';
+import {resolve, dirname, basename, relative} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import assert from 'node:assert/strict';
+import {getAllListeningChapters} from '../src/data/englishListeningData';
+
+// Export instructions only: never calls a paid API or modifies runtime assets.
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+assert.equal(process.cwd(), root, 'Run from the project root');
+const out = resolve(root, process.argv[2] || '.delivery/listening-audio-prompts-2026-09-18');
+assert.equal(dirname(out), resolve(root, '.delivery'), 'Use a direct child of .delivery');
+assert(!existsSync(out), 'Output already exists; use a new directory');
+const hash = (s: string | Buffer) => createHash('sha256').update(s).digest('hex');
+const pretty = (x: unknown) => JSON.stringify(x, null, 2) + '\n';
+const old = JSON.parse(readFileSync(resolve(root, 'scripts/data/listening_premium_manifest.json'), 'utf8'));
+const prior = new Map<string, any>(old.map((r: any) => [r.audioUrl, r]));
+const q6 = JSON.parse(readFileSync(resolve(root, 'src/data/listeningSets/listening-q6.json'), 'utf8'));
+const extended = new Map<string, any>();
+for (const set of q6.sets) for (const part of [set.partA, set.partB]) extended.set(part.audio, part);
+const sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim();
+const direction = `Create a clean English listening-exam recording. Speak only the supplied spoken text, exactly once. Do not read filenames, speaker labels, directions, Japanese context, or JSON keys. Do not paraphrase, correct grammar, translate, add introductions, repeat, or add closing words. Preserve contractions, negation, numbers, names, and paragraph order. Use clear natural connected speech, restrained emotion and natural sentence stress, not theatrical acting or exaggerated emphasis on answer clues. Use distinct approved stock voices for different speakers and keep each speaker consistent within a conversation. Follow each speaker's documented accent; do not replace all accents with American English. Aim for a dry close-microphone sound, without added reverberation, music, sound effects, whispering or vocal fry. This is a production target, not a guarantee from a prompt. Generate lossless mono audio if available. Start with a moderately slow natural pace; verify intelligibility before scaling up. Never speed up or truncate a recording just to fit a battle timer.`;
+const jobs: any[] = [], requests: any[] = [], speakers: any[] = [], files = new Map<string, string>();
+const put = (p: string, text: string) => { assert(!files.has(p), 'Duplicate file: ' + p); files.set(p, text); };
+const counts: Record<string, number> = {};
+for (const chapter of getAllListeningChapters()) for (const problem of chapter.practiceProblems) for (const t of problem.audioTracks || []) {
+  assert(t.audioUrl && /^\/(listening_audio|listening_q[456])\/[A-Za-z0-9_\-]+\.mp3$/.test(t.audioUrl));
+  assert(t.script?.trim(), 'Missing script: ' + t.subId);
+  const turns = t.turns?.length ? t.turns : [{who: 'solo', text: t.script}];
+  const reference = extended.get(basename(t.audioUrl));
+  const roles: string[] = Array.from(new Set<string>(turns.map(x => String(x.who))));
+  const voicePlan = roles.map((who, index) => {
+    const declared = reference?.speakers?.find((s: any) => s.name === who) || prior.get(t.audioUrl)?.speakers?.[who];
+    // Only descriptive metadata is exported; old provider-specific voice IDs are not transferable.
+    const description = declared?.description || '';
+    const sex = declared?.sex || (/女性|女の子|少女|\bfemale\b/i.test(description) || /^(W|Woman|Girl)$/i.test(who) ? 'female' : /男性|男の子|少年|\bmale\b/i.test(description) || /^(M|Man|Boy)$/i.test(who) ? 'male' : null);
+    const accent = declared?.accent || null;
+    const review = !sex && who !== 'solo';
+    const row = {trackId: t.subId, voiceKey: `${t.subId}:${who}`, speaker: who, label: `Speaker${index + 1}`, sex, accent, age: declared?.age || null, role: declared?.role || description || null, tone: declared?.tone || 'restrained, natural', evidence: declared ? 'source speaker metadata' : sex ? 'explicit W/M label' : 'unspecified in speaker metadata', proposedDefault: {sex: sex || (index % 2 ? 'male' : 'female'), accent: accent || 'American'}, sourceRoleReviewRequired: review, providerVoiceId: '', providerVoiceApproved: false, notes: 'Defaults are editorial proposals, not source facts. Check scene context. Use licensed stock voices; never clone a real person without authorization. Named accents must not be silently approximated.'};
+    speakers.push(row); return row;
+  });
+  const stem = basename(t.audioUrl, '.mp3');
+  const directory = `tracks/${chapter.id}/${stem}`;
+  const segments = turns.map((turn, index) => {
+    assert(turn.text.trim(), 'Empty turn');
+    const role = voicePlan.find(v => v.speaker === turn.who)!;
+    const n = String(index + 1).padStart(3, '0');
+    const textFile = `${directory}/spoken/${n}.txt`;
+    put(textFile, turn.text); // Byte-exact text, no labels or trailing additions.
+    const output = `segments/${chapter.id}/${stem}/${n}.flac`;
+    const segment = {index: index + 1, speaker: turn.who, voiceKey: role.voiceKey, text: turn.text, textSha256: hash(turn.text), textFile, outputFile: output, suggestedGapAfterSec: index === turns.length - 1 ? 0 : chapter.id === 'el4_B' ? 0.65 : 0.28};
+    requests.push({trackId: t.subId, segmentIndex: index + 1, voiceKey: role.voiceKey, outputFile: output, templateOnly: true, endpoint: 'fal-ai/minimax/speech-2.8-hd', inputTemplate: {prompt: turn.text, voice_setting: {voice_id: 'REPLACE_WITH_APPROVED_STOCK_VOICE_ID', speed: 0.85, vol: 1, pitch: 0, emotion: 'neutral'}, audio_setting: {sample_rate: '44100', format: 'flac', channel: '1'}, language_boost: 'English', output_format: 'url'}});
+    return segment;
+  });
+  const job = {id: t.subId, relatedQuestionIds: t.subIds || [t.subId], chapterId: chapter.id, problemId: problem.id, label: t.label, contextNotSpoken: t.hint || '', referenceScriptNotForTTS: t.script, targetAudioUrl: t.audioUrl, targetRelativePath: t.audioUrl.slice(1), losslessMasterPath: `masters/${t.audioUrl.slice(1).replace(/\.mp3$/, '.flac')}`, repetitionsInFile: 1, sourceSha256: hash(JSON.stringify(turns)), status: 'not_generated', commercialRightsStatus: 'not_verified', sourceRoleReviewRequired: voicePlan.some(v => v.sourceRoleReviewRequired), speakerPlan: voicePlan, segments};
+  jobs.push(job); counts[chapter.id] = (counts[chapter.id] || 0) + 1;
+  put(`${directory}/job.json`, pretty(job));
+  put(`${directory}/PRODUCTION_PROMPT.txt`, `${direction}\n\nOUTPUT: ${job.targetRelativePath}\nThis is a job for an operator or audio-capable agent, NOT text to paste into a plain TTS input.\nCONTEXT (not spoken): ${job.contextNotSpoken}\nSPEAKERS (not spoken):\n${pretty(voicePlan)}\nGenerate segments in the exact order below. The plain files in spoken/ contain only the words to read.\n${segments.map(s => `SEGMENT ${s.index} | ${s.speaker} | ${s.outputFile}\n${s.text}\nEND SEGMENT`).join('\n\n')}\n`);
+  put(`${directory}/GEMINI_PROMPT.txt`, `${direction}\n\nUse a Gemini speech-generation interface with separate style instructions and speaker-to-voice mapping. These Speaker labels are control labels, not spoken words.\nSpeaker configuration:\n${pretty(voicePlan.map(v => ({label: v.label, sourceSpeaker: v.speaker, sex: v.sex, accent: v.accent, proposedDefault: v.proposedDefault, role: v.role, tone: v.tone})))}\nTRANSCRIPT:\n${segments.map(s => `${voicePlan.find(v => v.speaker === s.speaker)!.label}: ${s.text}`).join('\n')}\n\nIf the selected Gemini endpoint cannot support this many speakers, render each spoken/ file separately using a fixed voice mapping and concatenate. Do not silently collapse four speakers into two.\n`);
+}
+assert.equal(jobs.length, 364);
+assert.equal(new Set(jobs.map(j => j.id)).size, jobs.length);
+assert.equal(new Set(jobs.map(j => j.targetRelativePath)).size, jobs.length);
+assert.equal(requests.length, 1309);
+const chars = requests.reduce((n, r) => n + r.inputTemplate.prompt.length, 0);
+const reviewJobs = jobs.filter(j => j.sourceRoleReviewRequired).length;
+put('jobs.json', pretty(jobs));
+put('voice_plan.json', pretty(speakers));
+put('minimax_request_templates.jsonl', requests.map(r => JSON.stringify(r)).join('\n') + '\n');
+put('ALL_SCRIPTS.txt', jobs.map(j => `=== ${j.id} | ${j.targetRelativePath} ===\nREFERENCE ONLY: speaker headings below must NOT be read.\n${j.segments.map((s: any) => `[${s.index}] ${s.speaker}\n${s.text}`).join('\n\n')}`).join('\n\n') + '\n');
+const csv = (rows: unknown[][]) => '\ufeff' + rows.map(row => row.map(v => '"' + String(v ?? '').replaceAll('"', '""') + '"').join(',')).join('\r\n') + '\r\n';
+put('track_inventory.csv', csv([['track_id','chapter','problem_id','target_file','segments','source_role_review'], ...jobs.map(j => [j.id,j.chapterId,j.problemId,j.targetRelativePath,j.segments.length,j.sourceRoleReviewRequired])]));
+put('speaker_review.csv', csv([['track_id','speaker','source_description','source_sex','source_accent','proposed_sex','proposed_accent','role_review_required','approved_voice_id'], ...speakers.map(s => [s.trackId,s.speaker,s.role,s.sex,s.accent,s.proposedDefault.sex,s.proposedDefault.accent,s.sourceRoleReviewRequired,''])]));
+const sampleIds = ['q_el1_A_set1_1','q_el2_set1_1','q_el3_set1_1','q_el4_A_set1_18','q_el4_B_set1_26','q_el5_set1_27','q_el6_A_set1_34','q_el6_B_set1_36'];
+assert(sampleIds.every(id => jobs.some(j => j.id === id)));
+put('sample_plan.json', pretty({first: sampleIds.slice(0,3),then: sampleIds.slice(3),rule: 'Do not batch all 364 tracks until commercial route, voices, and these samples are approved.'}));
+put('return_manifest_template.json', pretty({version: 1, purpose: 'Operator fills actual results; blank fields are NOT approval', tracks: jobs.map(j => ({id:j.id,targetRelativePath:j.targetRelativePath,sourceSha256:j.sourceSha256,status:'not_generated',provider:'',model:'',generatedAt:'',requestIds:[],speakerVoiceIds:{},generationSettings:{},commercialEvidenceReference:'',sha256:'',durationSeconds:null,qualityReview:'pending',notes:[]}))}));
+put('01_MASTER_PROMPT.txt', `You are producing English listening material for the Manatobi learning app. The attached pack contains exactly 364 final audio tracks and 1309 spoken turns.\n\nFIRST read 00_START_HERE.md and 02_COMMERCIAL_CHECK.md. Use MiniMax Speech 2.8 HD via the customer's own external paid fal account as first choice. Gemini is a fallback only after verifying its specific endpoint and output terms; do not switch silently. Genspark-generated samples are references only, not licensed production assets. Do not spend credits or claim commercial approval until the customer confirms the generation account/terms and voice plan. Never ask the customer to paste secret API keys into chat.\n\n${direction}\n\nTreat jobs.json as the canonical ordered manifest. Use each segment.text or matching spoken/*.txt verbatim. The MiniMax prompt parameter is SPOKEN TEXT ONLY: do not append these instructions to it. In MiniMax use actual voice_setting/audio_setting controls; arbitrary prose is not a reliable reverb-control mechanism. Requests in minimax_request_templates.jsonl are envelopes containing inputTemplate, not directly executable requests; replace each voice placeholder using the approved mapping before submitting only inputTemplate. Stop on unresolved voice IDs or constraints.\n\nResolve sourceRoleReviewRequired rows with the customer; do not pretend inferred sex/age/accent is source fact. All provider voices require stock-voice licensing/quality checks. Preserve non-US accents explicitly specified by source. A default American accent applies only where no accent is specified. Use one consistent voice per voiceKey across all turns of a track. Different speakers in a conversation must be distinguishable. Do not clone real children or imitate named people; suitable licensed stock acting voices may portray fictional roles.\n\nGenerate sample_plan.json first. Check dry sound, clarity, negation/numbers/names, voice consistency, and naturalness at matched playback loudness. If a required accent/voice cannot be delivered, pause that track and report it. Then generate in chapter-sized batches with checkpoints. Record request IDs immediately; check existing request status after errors rather than blindly paying twice. Reject malformed, truncated, repeated or silent results.\n\nReturn lossless segment files named by outputFile, completed return_manifest_template.json, and commercial-evidence references. If you can assemble them, also return masters/ and final MP3s under targetRelativePath. Preserve order, use suggested gaps as starting points rather than stacking them on existing silence, and export each final track only once. The app controls repeat playback. Do not trim internal pauses or alter text to shorten a long recording. Flag long durations for battle-timer review.\n\nDo not modify the app, Firebase, existing public assets or release approval flags. Return a ZIP; pending/incomplete tracks must remain visibly pending. Never include credentials, billing addresses, or payment-card data.\n`);
+put('00_START_HERE.md', `# マナトビ：外部音声生成用一式\n\nこれは音声制作の台本・指示書です。アプリ本体や生成済み音源、APIキーは入っていません。統合版の教材・旧音源は変更していません。\n\n## 最短の使い方\n1. まず 02_COMMERCIAL_CHECK.md を確認。推奨は自分のfal有料アカウントでMiniMax Speech 2.8 HDを使う経路です。\n2. 外部の作業担当者・音声生成可能なエージェントには、このZIP全体と 01_MASTER_PROMPT.txt を渡してください。一般的なチャットAIに渡すだけでは音声生成されません。契約や音声APIへアクセスできる環境が必要です。\n3. 手作業なら https://fal.ai/models/fal-ai/minimax/speech-2.8-hd を開き、tracks内の spoken/001.txt の中身だけをPrompt欄へ貼ります。PRODUCTION_PROMPT.txt やJSON全体をTTS欄へ貼らないでください。\n4. Additional Settingsのvoice設定は voice_plan.json と場面説明を見て決めます。最初の女性US短文では試聴に使った English_Graceful_Lady が候補ですが、現在その経路で利用可能か確認してください。全役へ同じ声を割り当てないでください。男性・別アクセントのIDは未確定で、名前を作っていません。\n5. 速度0.85、感情neutral、音量1、ピッチ0は初期案。44.1kHz・mono・FLACを優先。まず sample_plan.json の最初の3本、その後の長文・複数話者5本で確認。反響が残る場合は別の標準声を試し、強い後処理で子音を削らないでください。\n6. 全量はサンプルと商用条件の確認後。会話はspokenファイルを番号順に生成し、同一話者の声を固定。完成形は364音源ですが発話分割すると1309ファイルです。\n7. 03_RETURN_AND_QC.md に従ってZIPでこの部屋へ返してください。結合が難しければ発話ごとのファイルだけで構いません。こちらで結合・教材への接続を検証します。\n\n## 同梱物\n- jobs.json：全音源・問題ID・元URL・発話順・原文ハッシュ\n- tracks/：364件それぞれの制作指示、Gemini用代替プロンプト、ラベルなしの発話テキスト\n- ALL_SCRIPTS.txt：人が確認する全台本（話者ラベル付き、TTSへ一括貼付不可）\n- minimax_request_templates.jsonl：1309発話のAPI入力案。voice_idは未確定のプレースホルダーで、実行プログラムではありません\n- voice_plan.json / speaker_review.csv：話者の性別・役柄・元のアクセント・確認欄。原本の話者情報不足を含む${reviewJobs}音源は要確認\n- track_inventory.csv / return_manifest_template.json：生成管理・返却台帳\n- sample_plan.json：先に試す8音源\n\n## 範囲と費用目安\n全9単元・364音源・1309発話・読み上げ文字数${chars.toLocaleString('en-US')}文字。章別件数：${JSON.stringify(counts)}。\n対象は既存リスニング教材の全録音です。補助単語5713語の新規録音、動画、BGM、効果音は含みません。\nfal公開単価 $0.10/1000文字を単純に当てると約$${(chars / 1000 * 0.1).toFixed(2)}（一巡分のみ）。実請求額ではなく、再生成・試聴・最低課金単位・税等は別、発注時の表示を優先してください。大量生成の実行や課金はこのZIPでは行いません。\n\n## 注意\n第6問のBritish/Canadian/Australian/Irish等のアクセント指定は保持しました。英語台本だから全員USへ置換、という扱いはしません。未指定部分の提案は事実ではなく制作方針です。\n元台本に文法上気になる箇所があっても勝手に直さず報告してください。教材の解答根拠に影響します。\n`);
+put('02_COMMERCIAL_CHECK.md', `# 商用利用の確認（制作前）\n\nGenspark Plus/Pro未加入との申告を受け、外部生成用に準備しました。未加入だけで過去音声すべてを法的に不可と確定したのではなく、権利を確認できる経路で作り直す方針です。\n\n## 第一候補：falでMiniMax Speech 2.8 HD\n- モデル https://fal.ai/models/fal-ai/minimax/speech-2.8-hd にはCommercial use表示あり（2026-09-18確認）。\n- 規約 https://fal.ai/terms と https://fal.ai/legal/api-services 、モデル固有条件・標準ボイス条件を生成時に再確認。表示だけであらゆる第三者権利を保証するものではありません。\n- 顧客自身の契約・支払いで運営側が事前生成し、学習アプリは完成済み録音を配信する設計です。学習者がfal APIへアクセスする構成にはしません。falのAPI統合にはエンドユーザー年齢条件があるためです。\n- 未成年も使う収益化アプリへの静的な録音配布、標準声の利用範囲、契約終了後の継続配信、必要な帰属表示は、条件が明確でなければ書面確認後に全量発注してください。回答はまだ取得していません。\n- 顧客アカウントのプラン名、生成日、endpoint/model、voice_id、request_id、規約URL/版/確認日、支払い・権利の証跡参照を残してください。秘密鍵やカード情報は渡さないでください。\n\n## サポートへの問い合わせ文（英語）\nWe plan to use MiniMax Speech 2.8 HD through our own paid fal account with licensed stock voices to pre-generate 364 English listening recordings. We will distribute the completed audio files inside our monetized educational app, whose listeners may include minors. Listeners will not access fal or any generation API. Please confirm: (1) this static-file commercial distribution is permitted, (2) any stock-voice-specific restrictions, (3) whether generated recordings may remain distributed after our account/subscription ends, (4) required attribution or AI disclosure, and (5) whether end-user age restrictions apply to listeners of these pre-generated static files. We will not clone real people or resell access to your API.\n\n## Geminiへ変更する場合\nGemini用プロンプトも全件同梱していますが、Google AI Studio、Gemini API、Google Cloud TTS、第三者サービスを同一条件とみなしません。https://ai.google.dev/gemini-api/terms を参照し、使用する正確なTTS endpointの商用出力・preview条件を確認してください。APIの未成年向けクライアント制限を、録音配布と混同しないよう不明点は書面確認してください。変更は顧客承認後のみ。\n\n## 共通\n台本・ボイス・画像等の権利は別問題です。無断クローンは使わず、AI生成音声の表示等の要件を満たします。試聴の成功やASR一致は商用ライセンスの証明ではありません。旧Gensparkサンプルを本番ファイルへ混ぜないでください。\n`);
+put('03_RETURN_AND_QC.md', `# 返却と品質確認\n\n1. 各発話をjobs.jsonのoutputFileどおりに保存（segments/<章>/<音源名>/001.flac等）。FLACが無理なら同名WAV/MP3でも可、その場合台帳に実ファイル名と形式を記録。拡張子だけ変えない。\n2. return_manifest_template.jsonをコピーし、実際の生成日・経路・モデル・話者とvoice_idの対応・設定・request ID・権利証跡参照・品質確認・未完了理由を記録。空欄をapprovedに見せない。\n3. 結合できる場合、発話順に並べてmasters/へFLAC、targetRelativePathへMP3を保存。発話内の間は保持し、既存の前後無音と提案ギャップを二重に足さない。正規化は話者間の自然な差を維持しつつ過大音量/クリッピングを防ぐ。\n4. ファイル自体は1回読み。2回読みや問題番号アナウンス、日本語訳、正解解説は追加しない。\n5. 試聴では特に否定(not/never)、数値、単位、固有名詞、発話順、話者/アクセント、先頭末尾切れ、重複、残響、ノイズ、極端な音量差を確認。ASRだけで自然さを合格にしない。\n6. 完成時間を実測して記録。長い録音を55秒へ押し込めない。アプリの録音durationと対戦制限は返却後に別途確認する。\n7. segments/、可能ならmasters/と完成MP3、記入済み台帳、権利確認の要点・証跡参照をZIPにまとめてこの部屋へアップロード。音声ごとのライセンス判断が追える形にする。APIキー・契約者住所・カード情報等は含めない。\n8. 原本のコード・教材・Firebaseを上書きしない。ここでファイル照合・音質/回帰検証後に安全に差し替える。COMMERCIAL_AUDIO_STATUSを手作業でapprovedへ変更しない。\n\n## 途中でも返却可\n発話の結合が難しければバラの音声で返してください。未生成の一覧と途中状態も一緒に返せば再開できます。\n`);
+// Validate generated texts and payloads against canonical turns before touching output.
+let k = 0;
+for (const j of jobs) for (const s of j.segments) {
+  assert.equal(files.get(s.textFile), s.text);
+  assert.equal(requests[k++].inputTemplate.prompt, s.text);
+  assert.equal(hash(s.text), s.textSha256);
+}
+const summary = {version: 1, sourceCommit, tracks: jobs.length, turns: requests.length, spokenCharacters: chars, chapterCounts: counts, sourceRoleReviewTracks: reviewJobs, providerVoiceIdsApproved: 0, allAudioGenerated: false, commercialReleaseApproved: false, validation: ['canonical IDs and paths unique', '364 tracks and 1309 turns', 'every spoken file and payload exactly equals canonical turn', 'all required accents copied without Kokoro substitutions'], artifactType: 'external_generation_prompt_pack_not_app_release'};
+put('PACK_STATUS.json', pretty(summary));
+mkdirSync(out, {recursive: true});
+for (const [p, text] of files) { const dest = resolve(out, p); assert(dest.startsWith(out + '/')); mkdirSync(dirname(dest), {recursive: true}); writeFileSync(dest, text); }
+writeFileSync(resolve(out, 'FILES.sha256'), [...files.keys()].sort().map(p => `${hash(readFileSync(resolve(out, p)))}  ${p}`).join('\n') + '\n');
+assert.equal(JSON.parse(readFileSync(resolve(out, 'jobs.json'), 'utf8')).length, 364);
+console.log(pretty(summary));
+console.log(`Exported ${files.size + 1} files to ${relative(root, out)}. No generation API called.`);
