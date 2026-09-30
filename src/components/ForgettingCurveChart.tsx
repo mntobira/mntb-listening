@@ -78,10 +78,10 @@ export const ForgettingCurveChart: React.FC<ForgettingCurveChartProps> = ({
   // X軸ラベルの行を確保するため padB を少し広げている。
   const W = 320;
   const H = 150;
-  const padL = 30;
+  const padL = 36;
   const padR = 12;
   const padT = 12;
-  const padB = 28;
+  const padB = 30;
   const plotW = W - padL - padR;
   const plotH = H - padT - padB;
 
@@ -118,14 +118,14 @@ export const ForgettingCurveChart: React.FC<ForgettingCurveChartProps> = ({
   /**
    * X軸ラベル。
    *
-   * 描画自体は常に fontSize=8（viewBox 座標）で行う。
+   * 描画自体は常に fontSize=12（viewBox 座標）で行う。
    * ただし SVG は幅いっぱいに縮小表示されるため、
    * スマホの狭い画面では 8 単位の文字が「実寸では相対的に大きい」ことになる。
    * そこで間引きの判定だけは太めの見積り（11）で行い、
    * 文字サイズを小さくせずに重なりを解消する。
    */
-  const axisFontSize = 8;
-  const tickFontSizeForLayout = isMobile ? 11 : axisFontSize;
+  const axisFontSize = 12;
+  const tickFontSizeForLayout = isMobile ? 15 : axisFontSize;
   const ticks = useMemo(
     () => pickAxisTicks(REVIEW_INTERVALS_DAYS, xForDays, tickFontSizeForLayout, 4),
     [maxDays, tickFontSizeForLayout]
@@ -145,7 +145,7 @@ export const ForgettingCurveChart: React.FC<ForgettingCurveChartProps> = ({
             <h3 className="text-sm sm:text-base font-bold text-[#2C3E50] font-handwriting leading-tight truncate">
               {subjectLabel ? `${subjectLabel}の忘却曲線と定着度` : '忘却曲線と定着度'}
             </h3>
-            <p className="text-[10px] sm:text-[11px] text-gray-400">
+            <p className="text-xs text-[#5a6573]">
               解答日時をもとに、復習で記憶がどれだけ定着したかを可視化します
             </p>
           </div>
@@ -154,7 +154,7 @@ export const ForgettingCurveChart: React.FC<ForgettingCurveChartProps> = ({
           <div className="text-lg sm:text-xl font-bold text-[#2C6187] tabular-nums leading-none">
             {avgRetention}<span className="text-xs ml-0.5">%</span>
           </div>
-          <div className="text-[10px] text-gray-400">平均定着度</div>
+          <div className="text-xs text-[#5a6573]">平均定着度</div>
         </div>
       </div>
 
@@ -184,7 +184,7 @@ export const ForgettingCurveChart: React.FC<ForgettingCurveChartProps> = ({
                   stroke="#EEE"
                   strokeWidth={1}
                 />
-                <text x={padL - 4} y={yForRet(r) + 3} textAnchor="end" fontSize="8" fill="#B0B0B0">
+                <text x={padL - 4} y={yForRet(r) + 3} textAnchor="end" fontSize="12" fill="#5a6573">
                   {Math.round(r * 100)}
                 </text>
               </g>
@@ -202,7 +202,7 @@ export const ForgettingCurveChart: React.FC<ForgettingCurveChartProps> = ({
                 y={H - padB + 14}
                 textAnchor="middle"
                 fontSize={axisFontSize}
-                fill="#B0B0B0"
+                fill="#5a6573"
               >
                 {t.label}
               </text>
@@ -238,7 +238,7 @@ export const ForgettingCurveChart: React.FC<ForgettingCurveChartProps> = ({
             スマホでは2〜3行に折り返してグラフ本体を圧迫していた。
             アイコン＋短縮ラベルにし、正式名称は title に持たせる。
           */}
-          <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] sm:text-[11px] text-gray-500">
+          <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#3e4c5b]">
             <li className="flex items-center gap-1" title="復習しなかった場合の忘却曲線（理論値）">
               <span className="inline-block w-3.5 h-0 border-t-2 border-dashed border-[#E8A0A0] shrink-0" aria-hidden="true" />
               <span>復習なし</span>
@@ -258,7 +258,7 @@ export const ForgettingCurveChart: React.FC<ForgettingCurveChartProps> = ({
           </ul>
 
           {dueCount > 0 && (
-            <div className="mt-3 flex items-center gap-2 text-[11px] sm:text-xs text-[#C0392B] bg-[#FDF0F3] rounded-lg px-3 py-2">
+            <div className="mt-3 flex items-center gap-2 text-xs text-[#b3261e] bg-[#FDF0F3] rounded-lg px-3 py-2">
               <Calendar size={14} className="shrink-0" />
               <span>
                 いま復習すべき問題が <b className="font-bold">{dueCount}</b> 件あります。忘却曲線が下がりきる前に復習しましょう。

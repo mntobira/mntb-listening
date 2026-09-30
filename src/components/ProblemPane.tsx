@@ -166,7 +166,7 @@ export function ProblemPane({
             PC（isDesktop）は従来の2段のまま。
           */
           <div className="flex shrink-0 items-center gap-1.5 border-b bg-white px-2 py-1">
-            <span className="max-w-[4.5rem] shrink-0 truncate text-[11px] font-bold leading-tight text-[#2C3E50]">
+            <span className="max-w-[4.5rem] shrink-0 truncate text-xs font-bold leading-tight text-[#2C3E50]">
               {String(materialTrack.label).replace(/^講義（([^）]+)）$/u, '$1')}
             </span>
             <div data-listening-audio className="min-w-0 flex-1">
@@ -177,7 +177,7 @@ export function ProblemPane({
             <button type="button"
               onClick={() => { setIsProblemExpanded(!isProblemExpanded); setIsProblemCollapsed(false); }}
               aria-label={isProblemExpanded ? '選択肢に戻る' : '全画面で読む'}
-              className="min-h-9 shrink-0 rounded-lg border border-gray-200 bg-white px-1.5 text-[11px] font-bold text-gray-600">
+              className="min-h-11 min-w-11 shrink-0 rounded-lg border border-gray-200 bg-white px-1.5 text-xs font-bold text-gray-600">
               {isProblemExpanded ? '選択肢へ' : '全画面'}
             </button>
           </div>
@@ -302,11 +302,11 @@ export function ProblemPane({
             Q1 の表示も読む必要がない。浮いた高さは問題文と解答欄に回る。
             「完了」でキーボードが閉じれば元に戻るので、機能は失われない。
             PC（isDesktop）は対象外。 */}
-      <div className={`flex items-center justify-between p-2 md:p-4 border-b border-gray-100 bg-blue-50/30 ${
+      <div className={`flex items-center justify-between px-2 py-0 md:p-4 border-b border-gray-100 bg-blue-50/30 ${
         !isDesktop && keyboardVisible ? 'hidden' : ''
       }`}>
         <div className="flex items-center gap-2 md:gap-3">
-          <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-[#A9CCE3]/20 text-[#A9CCE3] font-bold flex items-center justify-center text-[10px] md:text-sm border-2 border-[#A9CCE3]">
+          <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-[#A9CCE3]/20 text-[#5d8fb0] font-bold flex items-center justify-center text-xs md:text-sm border-2 border-[#A9CCE3]">
             Q{currentQuestionIndex + 1}
           </div>
           <span className="font-bold text-[#2C3E50] text-sm md:text-base">問題文</span>
@@ -314,7 +314,7 @@ export function ProblemPane({
           {highlights.length > 0 && (
             <button 
               onClick={() => setHighlights([])} 
-              className="text-[10px] md:text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-200 hover:bg-amber-100 transition-colors whitespace-nowrap"
+              className="min-h-11 text-xs text-amber-700 bg-amber-50 px-2 rounded border border-amber-200 hover:bg-amber-100 transition-colors whitespace-nowrap"
             >
               ハイライト消去
             </button>
@@ -328,7 +328,8 @@ export function ProblemPane({
             {!isProblemExpanded && (
               <button
                 onClick={() => setIsProblemCollapsed(!isProblemCollapsed)}
-                className="flex items-center gap-0.5 rounded-md border border-gray-200 bg-white px-2 py-1 text-[11px] font-bold text-gray-600 hover:bg-gray-50 whitespace-nowrap"
+                aria-expanded={!isProblemCollapsed}
+                className="flex min-h-11 items-center gap-0.5 rounded-md px-2 text-xs font-bold text-gray-600 hover:bg-gray-50 whitespace-nowrap"
               >
                 {isProblemCollapsed ? (
                   <>問題文を表示<ChevronDown size={12} /></>
@@ -342,7 +343,7 @@ export function ProblemPane({
                 setIsProblemExpanded(!isProblemExpanded);
                 setIsProblemCollapsed(false);
               }}
-              className="flex items-center rounded-md border border-gray-200 bg-white px-2 py-1 text-[11px] font-bold text-gray-600 hover:bg-gray-50 whitespace-nowrap"
+              className="flex min-h-11 items-center rounded-md px-2 text-xs font-bold text-gray-600 hover:bg-gray-50 whitespace-nowrap"
             >
               {isProblemExpanded ? '閉じる' : '全画面で読む'}
             </button>
@@ -528,7 +529,7 @@ export function ProblemPane({
                     {formatText(stepMarker)}
                   </span>
                   {listeningSteps.length > 1 && (
-                    <span className="text-[11px] font-bold text-gray-400 shrink-0">
+                    <span className="text-xs font-bold text-gray-500 shrink-0">
                       （全{listeningSteps.length}問中 {safeStepIndex + 1}問目）
                     </span>
                   )}
@@ -754,7 +755,7 @@ export function ProblemPane({
             if (sqList.length === 0) return null;
             return (
               <div className="mt-4 pt-3 border-t border-dashed border-gray-300">
-                <div className="text-[11px] font-bold mb-2 text-gray-500">設問一覧</div>
+                <div className="text-xs font-bold mb-2 text-gray-500">設問一覧</div>
                 <ol className="space-y-2">
                   {sqList.map((item, sIdx) => (
                     <li key={sIdx} className="flex items-start gap-2">

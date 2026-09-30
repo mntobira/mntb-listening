@@ -8,7 +8,8 @@ import { auth } from '../firebase';
 import { ChapterRankingPanel } from './ChapterRankingPanel';
 import { FeedbackButton } from './FeedbackButton';
 import { QuestionFigure } from './QuestionFigure';
-import { ListeningAudioPlayer } from './ListeningAudioPlayer';
+import { ListeningAudioPlayer, ListeningEvidenceScript } from './ListeningAudioPlayer';
+import './listening-explanation.css';
 import { buildFigureNumberMap, getFigureNumber } from '../utils/figureNumbering';
 import { isAnswerCorrect } from '../utils/answerJudge';
 import { gradingCriteriaProgress, resolveGradingCriteria } from '../utils/gradingCriteria';
@@ -1192,7 +1193,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
               {reorderMobile ? (
                 <div className="font-handwriting font-bold text-xs tabular-nums leading-none">
                   {displayTotalScore}
-                  <span className="text-[9px] ml-0.5 opacity-70">pt</span>
+                  <span className="text-xs ml-0.5 opacity-70">pt</span>
                 </div>
               ) : (
                 <div className="leading-none">
@@ -1583,14 +1584,15 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
               : `space-y-6 pb-8 min-w-0 ${isResultView ? 'lg:pr-4' : 'lg:overflow-y-auto lg:h-full lg:pr-4'}`}>
               {/* スマホ：問題文ペインのヘッダー（演習画面と同じ「たたむ」付き） */}
               {reorderMobile && (
-                <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-blue-50/30">
+                <div className="lx-problem-head flex items-center justify-between px-3 py-1 border-b border-gray-100 bg-blue-50/30">
                   <span className="font-bold text-[#2C3E50] text-sm flex items-center gap-2">
                     <BookOpen size={15} className="text-[#A9CCE3]" />
                     問題文
                   </span>
                   <button
                     onClick={() => setMobileProblemCollapsed(v => !v)}
-                    className="flex items-center gap-0.5 rounded-md border border-gray-200 bg-white px-2 py-1 text-[11px] font-bold text-gray-600 active:bg-gray-50 whitespace-nowrap"
+                    aria-expanded={!mobileProblemCollapsed}
+                    className="flex min-h-[44px] items-center gap-0.5 rounded-md px-2 text-xs font-bold text-gray-600 active:bg-gray-50 whitespace-nowrap"
                   >
                     {mobileProblemCollapsed ? (
                       <>問題文を表示<ChevronDown size={12} /></>
@@ -1909,8 +1911,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
               {questions.length > 0 ? (
                 questions.map((question: any, qIndex: number) => {
                 return (
-                  <div key={`right-${question.id}`} className="space-y-6">
-                    <div className="space-y-6 md:space-y-8">
+                  <div key={`right-${question.id}`} className={reorderMobile ? 'space-y-2' : 'space-y-6'}>
+                    <div className={reorderMobile ? 'space-y-2' : 'space-y-6 md:space-y-8'}>
                       {(() => {
                         const selfGradeSqs = question.subQuestions.filter((sq: any) => sq.type === 'descriptive');
                         // 客観問題は「元の並び順（ア→イ→ウ…）」のまま表示する。
@@ -1920,6 +1922,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                         /* ★B-2：音源・スクリプトを変数に束ねる（描く場所を出し分けるため）★
                            スマホでは正誤ボタンの後、PC では従来位置で描く。
                            中身はそのまま。詳しくは下の使用箇所のコメントを参照。 */
+                        const listeningTracks: any[] = Array.isArray((question as any).audioTracks) ? (question as any).audioTracks : [];
                         const audioPlayerBlock = Array.isArray((question as any).audioTracks) &&
                                   (question as any).audioTracks.length > 0 && (
                                     <ListeningAudioPlayer
@@ -2292,7 +2295,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                             )}
 
                             {objectiveSqs.length > 0 && (
-                              <div className={`${reorderMobile ? 'space-y-2' : 'space-y-3 md:space-y-4'} mt-6`}>
+                              <div className={`${reorderMobile ? 'space-y-2' : 'space-y-3 md:space-y-4'} ${reorderMobile && Array.isArray((question as any).audioTracks) && (question as any).audioTracks.length > 0 ? 'mt-0' : 'mt-6'}`}>
                                 {/*
                                   見出し：採点結果（正誤の内訳を小さく併記）
 
@@ -2310,13 +2313,14 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                   として高さを詰める。項目は1つも消さない。
                                   PC（!reorderMobile）は従来のクラスをそのまま使う。
                                 */}
-                                <div className={`flex items-center justify-between gap-2 ${reorderMobile ? '' : 'flex-wrap'}`}>
+                                <div data-score-head className={`flex items-center justify-between gap-2 ${reorderMobile ? '' : 'flex-wrap'}`} data-lx-single={(reorderMobile && listeningTracks.length > 0 && objectiveSqs.length <= 1) || undefined}>
                                   <h4 className={`font-bold flex items-center ${reorderMobile ? 'min-w-0 gap-1.5 text-[13px]' : 'gap-2'} ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]'}`}>
                                     <CheckCircle2 size={reorderMobile ? 15 : 18} className={`${reorderMobile ? 'shrink-0 ' : ''}${mode === 'mini_test' ? 'text-emerald-600' : 'text-[#5BC0BE]'}`} />
                                     <span className={reorderMobile ? 'truncate' : ''}>採点結果</span>
                                   </h4>
                                   <div className={`flex items-center ${reorderMobile ? 'shrink-0 gap-1.5' : 'gap-2'}`}>
-                                    <span className={`font-bold ${reorderMobile ? 'whitespace-nowrap text-[10px]' : 'text-xs'} ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>
+                                    {/* 問が1つだけのリスニングでは、下の「問1 不正解 ①→②」と同じ内容になるので出さない（同じものを2つ置かない） */}
+                                    {!(reorderMobile && listeningTracks.length > 0 && objectiveSqs.length <= 1) && <span className={`font-bold ${reorderMobile ? 'whitespace-nowrap text-xs' : 'text-xs'} ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>
                                       <span className={mode === 'mini_test' ? 'text-emerald-600' : 'text-[#5BC0BE]'}>正解 {correctSqs.length}</span>
                                       <span className="mx-1 opacity-50">/</span>
                                       <span className={mode === 'mini_test' ? 'text-red-500' : 'text-[#D9A0A0]'}>不正解 {incorrectSqs.length}</span>
@@ -2326,7 +2330,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                           <span className={mode === 'mini_test' ? 'text-gray-400' : 'text-[#7A8B99]'}>未解答 {unansweredSqs.length}</span>
                                         </>
                                       )}
-                                    </span>
+                                    </span>}
                                     {/* ★スマホ：学習フローチャートの切り替えボタン。
                                         「フローチャートは消したくない＋邪魔にならない位置に
                                           切り替えのボタンを設置」（ご要望）。
@@ -2416,7 +2420,69 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                     灰＝未解答のチップを一覧で並べ、タップした問だけ
                                     詳細カード（解答・解説）を下に表示する。
                                     一覧は常に見えるので「どこを間違えたか」がひと目で分かる。 */}
-                                {reorderMobile ? (
+                                {reorderMobile && listeningTracks.length > 0 ? (
+                                  /* ★リスニングの解説（スマホ）：1画面で完結させる（2026-09-30 利用者の要望）★
+                                     「上に再生があるのに下にもう一度再生ボタンは要らない。
+                                       この1画面に解説とスクリプトを持ってきたい。詳細解説はボタンで伸びればいい」
+                                     ・再生は上の帯だけ（下の2つ目のプレーヤーは出さない）
+                                     ・問ごとに「○×・あなたの答え→正解」を1行で出す
+                                     ・その下にスクリプトと和訳を直接出す（押さなくても読める）
+                                     ・解説／思考手順／押さえたい表現はタップで開く */
+                                  <div className="lx-compact" data-listening-explanation>
+                                    {objectiveSqs.map((sq: any) => {
+                                      const ok = isAnswerCorrect(sq, answers[sq.id]);
+                                      const attempted = isAttempted(answers[sq.id]);
+                                      const sqIdx = ((question?.subQuestions || []) as any[]).indexOf(sq);
+                                      const marker = answerCardMarker(sq, sqIdx < 0 ? 0 : sqIdx, question);
+                                      const status = !attempted ? 'none' : ok ? 'ok' : 'ng';
+                                      return (
+                                        <div key={`lx-${sq.id}`} className="lx-result" data-status={status}>
+                                          <span className="lx-result-mark" aria-hidden="true">{status === 'none' ? <Circle size={18} /> : ok ? <CheckCircle2 size={18} /> : <XCircle size={18} />}</span>
+                                          <span className="lx-result-label">{formatText(marker)}</span>
+                                          <span className="lx-result-verdict">{status === 'none' ? '未解答' : ok ? '正解' : '不正解'}</span>
+                                          <span className="lx-result-answers">
+                                            {attempted && !ok && <><span className="lx-yours">{formatText(String(answers[sq.id]))}</span><span aria-hidden="true">→</span></>}
+                                            <span className="lx-right" aria-label={`正解 ${String(sq.correctAnswer)}`}>{formatText(sq.correctAnswer)}</span>
+                                          </span>
+                                        </div>
+                                      );
+                                    })}
+                                    {listeningTracks.map((track: any) => (
+                                      <section key={`lx-script-${track.subId}`} className="lx-script" aria-label={`${track.label} のスクリプト`}>
+                                        {listeningTracks.length > 1 && <h5>{track.label}</h5>}
+                                        <ListeningEvidenceScript track={track} collapsiblePhrases showHint={false} />
+                                      </section>
+                                    ))}
+                                    {objectiveSqs.map((sq: any) => {
+                                      const slice = sliceForSq(sq);
+                                      const open = openExplanationBySq[sq.id] || false;
+                                      const sqIdx = ((question?.subQuestions || []) as any[]).indexOf(sq);
+                                      const marker = answerCardMarker(sq, sqIdx < 0 ? 0 : sqIdx, question);
+                                      const theme = sq.detailedExplanation?.theme;
+                                      const steps: string[] = sq.detailedExplanation?.steps || [];
+                                      return (
+                                        <div key={`lx-ex-${sq.id}`} className="lx-fold">
+                                          <button type="button" onClick={() => setOpenExplanationBySq(prev => ({ ...prev, [sq.id]: !open }))} aria-expanded={open}>
+                                            <BookOpen size={16} aria-hidden="true" />
+                                            <span>{objectiveSqs.length > 1 ? <>{formatText(marker)} の</> : null}詳しい解説</span>
+                                            <ChevronDown size={18} aria-hidden="true" className={open ? 'rotate-180' : ''} />
+                                          </button>
+                                          {open && (
+                                            <div className={`lx-fold-body ${explBodyBaseClass}`}>
+                                              {theme && <p className="lx-core"><KeyRound size={14} aria-hidden="true" />{formatText(theme)}</p>}
+                                              {slice.trim()
+                                                ? <ExplanationBody text={slice} tone="light" prose={isEnglishChapter} className={`${explBodyFontClass} text-gray-700`} />
+                                                : !theme && <p className="text-xs text-gray-500">この問の解説は下の「共通ポイント」にまとめています。</p>}
+                                              {steps.length > 0 && isPracticeMode && (
+                                                <ol className="lx-steps">{steps.map((step, i) => <li key={i}><b>{i + 1}</b><span>{formatText(step)}</span></li>)}</ol>
+                                              )}
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                ) : reorderMobile ? (
                                   <>
                                     <div className="grid grid-cols-4 gap-2">
                                       {objectiveSqs.map((sq: any) => {
@@ -2490,7 +2556,15 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                               </div>
                             )}
 
-                            {sharedExplanation.trim() && (
+                            {sharedExplanation.trim() && reorderMobile && listeningTracks.length > 0 && (
+                              <details className="lx-fold lx-fold-shared">
+                                <summary><Lightbulb size={16} aria-hidden="true" /><span className="lx-lbl-long">大問全体の流れ・共通ポイント</span><span className="lx-lbl-short">大問の流れ</span><ChevronDown size={18} aria-hidden="true" /></summary>
+                                <div className={`lx-fold-body ${explBodyBaseClass}`}>
+                                  <ExplanationBody text={sharedExplanation} tone="light" prose={isEnglishChapter} className={`${explBodyFontClass} text-gray-700`} />
+                                </div>
+                              </details>
+                            )}
+                            {sharedExplanation.trim() && !(reorderMobile && listeningTracks.length > 0) && (
                               <div className={`mt-6 rounded-xl border p-4 md:p-5 ${explBodyBaseClass} ${mode === 'mini_test' ? 'bg-gray-50 border-gray-200' : 'bg-[#0B132B]/80 border-[#3A506B]/50'}`}>
                                 <h4 className={`text-sm md:text-base mb-3 flex items-center gap-2 border-b-2 pb-2 ${mode === 'mini_test' ? 'text-emerald-700 border-emerald-200' : 'text-[#5BC0BE] border-[#3A506B]/50'}`}>
                                   <Lightbulb className={`w-4 h-4 ${mode === 'mini_test' ? 'text-amber-500' : 'text-[#F9E79F]'}`} />
@@ -2555,15 +2629,21 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           )}
 
           {/* Surrounding Knowledge / Deep Dive (from all questions) */}
-          <div className="p-4 sm:p-6 md:p-8 space-y-8">
+          <div className={reorderMobile ? 'lx-extra-wrap pb-3 space-y-2' : 'p-4 sm:p-6 md:p-8 space-y-8'}>
             {questions.map((question: any, qIndex: number) => {
               const hasKnowledge = question.surroundingKnowledge && question.surroundingKnowledge.length > 0;
               const hasDeepDive = question.deepDiveTopics && question.deepDiveTopics.length > 0;
               
               if (!hasKnowledge && !hasDeepDive) return null;
 
+              // ★スマホのリスニング解説：周辺知識・深掘りも「押したら開く」（1画面で完結させる）
+              const foldExtras = reorderMobile && Array.isArray((question as any).audioTracks) && (question as any).audioTracks.length > 0;
+              const ExtraWrap: any = foldExtras ? 'details' : 'div';
+              const ExtraInner: any = foldExtras ? 'div' : React.Fragment;
               return (
-                <div key={`extra-${question.id}`} className="space-y-6">
+                <ExtraWrap key={`extra-${question.id}`} className={foldExtras ? 'lx-fold lx-fold-extra' : 'space-y-6'}>
+                  {foldExtras && <summary><BookOpen size={16} aria-hidden="true" /><span className="lx-lbl-long">周辺知識・深掘り</span><span className="lx-lbl-short">周辺知識</span><ChevronDown size={18} aria-hidden="true" /></summary>}
+                  <ExtraInner {...(foldExtras ? { className: 'lx-fold-body space-y-6' } : {})}>
                   <div className={`flex items-center gap-3 border-b pb-2 ${mode === 'mini_test' ? 'border-gray-200' : 'border-[#3A506B]/30'}`}>
                     <div className={`font-bold px-2 py-0.5 rounded text-xs shadow-sm border ${mode === 'mini_test' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'}`}>
                       Q{(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + qIndex) + 1}
@@ -2650,7 +2730,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                       </div>
                     </div>
                   )}
-                  </div>
+                  </ExtraInner>
+                  </ExtraWrap>
                 );
               })
             }

@@ -36,7 +36,7 @@ export function BattleGrowthReward({ matchId, ownerUid, eligible, subject, subje
         <strong>＋{reward.delta.xp.total} XP</strong><p>残高 {reward.progress.coins - (reward.delta.coins?.total ?? 0)} → {reward.progress.coins} 枚</p></>}
       <small>50枚で装飾ガチャ1回。ホームと同じおさいふです。</small>
     </section>
-    <p className="mb-2 text-[11px] text-gray-600">このブラウザ・アカウントだけの成長記録です。端末間同期・公開はありません。</p>
+    <p className="mb-2 text-xs text-gray-600">このブラウザ・アカウントだけの成長記録です。端末間同期・公開はありません。</p>
     <BattleGrowthCard progress={reward.progress} delta={reward.delta} onOpenProfile={onProfile} onOpenMissions={onMissions} />
     <ShareButton text={shareTextForMatch({ outcome: result.outcome, subjectLabel,
       myScore: result.me.score, theirScore: result.opponent?.score || 0, rating,

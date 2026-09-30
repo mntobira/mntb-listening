@@ -61,7 +61,7 @@ export function OutcomeHero({ outcome, byForfeit }: { outcome: 'win' | 'lose' | 
         {conf.small}
       </p>
       {byForfeit && (
-        <p className="mt-1 text-[10px] font-bold" style={{ color: INK_SUB }}>
+        <p className="mt-1 text-xs font-bold" style={{ color: INK_SUB }}>
           {outcome === 'win' ? '相手が途中で離脱したため、不戦勝です' : '途中離脱のため、この試合は負けとして記録されます'}
         </p>
       )}
@@ -100,7 +100,7 @@ export function ResultStats({
 
       {/* ★どこで差がついたか★ 問題ごとの ○× を両者並べる（試合後なので出してよい） */}
       <div className="col-span-2 rounded-2xl px-3 py-2" style={{ background: '#FDFBF7' }}>
-        <p className="mb-1 text-[10px] font-black" style={{ color: INK_SUB }}>1問ごとのながれ</p>
+        <p className="mb-1 text-xs font-black" style={{ color: INK_SUB }}>1問ごとのながれ</p>
         <QuestionTimeline result={result} />
       </div>
     </section>
@@ -119,7 +119,7 @@ function QuestionTimeline({ result }: { result: BattleResultSummary }) {
   const cols = Array.from({ length: n }, (_, i) => i);
   const cell = (ok: boolean | undefined, color: string, hot: boolean) => (
     <span
-      className="flex h-5 flex-1 items-center justify-center rounded text-[10px] font-black"
+      className="flex h-5 flex-1 items-center justify-center rounded text-xs font-black"
       style={{
         background: ok ? `${color}22` : '#F4F1EA',
         color: ok ? color : INK_SUB,
@@ -132,7 +132,7 @@ function QuestionTimeline({ result }: { result: BattleResultSummary }) {
   return (
     <div className="grid gap-1" role="table" aria-label="1問ごとの両者の正誤">
       <div className="flex items-center gap-1" role="row">
-        <span className="w-4 text-[10px]" aria-hidden>🔵</span>
+        <span className="w-4 text-xs" aria-hidden>🔵</span>
         {cols.map((i) => {
           const m = mine.get(i)?.correct;
           const t = theirs.get(i)?.correct;
@@ -140,7 +140,7 @@ function QuestionTimeline({ result }: { result: BattleResultSummary }) {
         })}
       </div>
       <div className="flex items-center gap-1" role="row">
-        <span className="w-4 text-[10px]" aria-hidden>🔴</span>
+        <span className="w-4 text-xs" aria-hidden>🔴</span>
         {cols.map((i) => (
           <span key={`o${i}`} className="flex flex-1" role="cell">{cell(theirs.get(i)?.correct, OPP_RED, false)}</span>
         ))}
@@ -148,7 +148,7 @@ function QuestionTimeline({ result }: { result: BattleResultSummary }) {
       <div className="flex items-center gap-1" aria-hidden>
         <span className="w-4" />
         {cols.map((i) => (
-          <span key={`n${i}`} className="flex-1 text-center text-[8px] font-bold tabular-nums" style={{ color: INK_SUB }}>{i + 1}</span>
+          <span key={`n${i}`} className="flex-1 text-center text-xs font-bold tabular-nums" style={{ color: INK_SUB }}>{i + 1}</span>
         ))}
       </div>
     </div>
@@ -172,7 +172,7 @@ function Stat({
 }) {
   return (
     <div className="rounded-2xl px-3 py-2" style={{ background: '#FDFBF7' }}>
-      <p className="flex items-center gap-1 text-[10px] font-black" style={{ color: INK_SUB }}>
+      <p className="flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
         <span style={{ color }}>{icon}</span>
         {label}
       </p>
@@ -180,7 +180,7 @@ function Stat({
         {value}
       </p>
       {sub && (
-        <p className="text-[9px] font-bold" style={{ color: INK_SUB }}>
+        <p className="text-xs font-bold" style={{ color: INK_SUB }}>
           {sub}
         </p>
       )}
@@ -225,7 +225,7 @@ export function ReviewPicks({
         <BookOpenCheck size={14} style={{ color: AMBER }} />
         今回まちがえた問題（{picks.length}問）
         {oppRight.length > 0 && (
-          <span className="ml-1 rounded-full px-1.5 py-px text-[9px]" style={{ background: `${OPP_RED}14`, color: OPP_RED }}>
+          <span className="ml-1 rounded-full px-1.5 py-px text-xs" style={{ background: `${OPP_RED}14`, color: OPP_RED }}>
             相手は正解 {oppRight.length}
           </span>
         )}
@@ -240,7 +240,7 @@ export function ReviewPicks({
               background: p.reason === 'opponent-right' ? `${OPP_RED}08` : '#FFFFFF',
             }}
           >
-            <p className="flex items-center gap-1.5 text-[10px] font-black" style={{ color: INK_SUB }}>
+            <p className="flex items-center gap-1.5 text-xs font-black" style={{ color: INK_SUB }}>
               <span className="tabular-nums">第{p.index + 1}問</span>
               {p.reason === 'opponent-right' && (
                 <span style={{ color: OPP_RED }}>🔴 相手は正解していた</span>
@@ -252,12 +252,12 @@ export function ReviewPicks({
                 <span className="ml-1 font-black" style={{ color: INK_SUB }}>{p.question.label}</span>
               )}
             </p>
-            <p className="mt-0.5 text-[11px] font-black" style={{ color: GREEN }}>
+            <p className="mt-0.5 text-xs font-black" style={{ color: GREEN }}>
               こたえ: <BattleText text={p.correctText} subject={subject} />
             </p>
             {opponentScore && <p className="arena-review-answer">相手の回答 {answerNumber(p.question, opponentScore.perQuestion.find(q=>q.index===p.index)?.submittedAnswer)}：<BattleText subject={subject} text={opponentScore.perQuestion.find(q=>q.index===p.index)?.submittedAnswer || '無回答'}/></p>}
             {oneLines?.get(p.question.id) && (
-              <p className="mt-1 rounded-lg px-2 py-1 text-[10px] font-bold leading-relaxed" style={{ background: `${AMBER}12`, color: INK, border: `1px solid ${AMBER}44` }}>
+              <p className="mt-1 rounded-lg px-2 py-1 text-xs font-bold leading-relaxed" style={{ background: `${AMBER}12`, color: INK, border: `1px solid ${AMBER}44` }}>
                 <BattleText text={oneLines.get(p.question.id)!} subject={subject} />
               </p>
             )}
@@ -265,7 +265,7 @@ export function ReviewPicks({
               <button
                 type="button"
                 onClick={() => onPractice(subject, p.question.chapterId, p.question.problemId, p.question.subQuestionId)}
-                className="mt-1.5 flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-black transition active:scale-[0.97]"
+                className="mt-1.5 flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-black transition active:scale-[0.97]"
                 style={{ borderColor: `${AMBER}66`, background: '#FFFFFF', color: AMBER }}
               >
                 <BookOpenCheck size={12} />
@@ -339,7 +339,7 @@ export function ResultActions({
       )}
       {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
       {saved && (
-        <p className="text-center text-[10px] font-bold" style={{ color: GREEN }}>
+        <p className="text-center text-xs font-bold" style={{ color: GREEN }}>
           復習リストに登録しました
         </p>
       )}

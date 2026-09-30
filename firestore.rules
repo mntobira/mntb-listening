@@ -878,6 +878,17 @@ service cloud.firestore {
     //   コンソール（管理画面）はルールの制限を受けないので、
     //   ここは write:false にしておけばよい。
     // ===============================================================
+    // ===============================================================
+    // app_notices/{noticeId}
+    //   運営からのお知らせ（ホームのベル）。誰でも読めるが、アプリからは書けない。
+    //   書き込みは Firebase コンソール（管理者）だけ。形式は src/utils/updateNotices.ts の
+    //   parseRemoteNotice が検査し、壊れた値は表示しない。
+    // ===============================================================
+    match /app_notices/{noticeId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /battle_rules/{subject} {
       allow read: if true;
       allow write: if false;

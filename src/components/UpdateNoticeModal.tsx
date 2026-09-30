@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bell, X, Sparkles } from 'lucide-react';
 import { NOTICE_KIND_META } from '../data/updateNotices';
@@ -8,6 +8,7 @@ import {
   markAllNoticesRead,
   relativeNoticeLabel,
   sortedNotices,
+  refreshRemoteNotices,
 } from '../utils/updateNotices';
 
 /**
@@ -35,13 +36,17 @@ export interface UpdateNoticeModalProps {
 }
 
 export function UpdateNoticeModal({ onClose }: UpdateNoticeModalProps) {
-  const notices = useMemo(() => sortedNotices(), []);
+  const [notices, setNotices] = useState(() => sortedNotices());
+  // 運営のお知らせ（Firestore）を重ねる。届いた分も開いている間に既読にする。
+  useEffect(() => { let alive = true; void refreshRemoteNotices().then(list => { if (alive) { setNotices(list); markAllNoticesRead(); } }); return () => { alive = false; }; }, []);
 
   // 開いた時点の未読IDを固定して保持する（この画面の中では NEW を残すため）。
-  const unreadAtOpen = useMemo(() => {
-    const read = loadReadIds();
-    return new Set(notices.filter((n) => !read.has(n.id)).map((n) => n.id));
-  }, [notices]);
+  //   既読の集合は開いた瞬間のものを1度だけ取る（あとから届いた Firestore 分も NEW と判定できるように）。
+  const [readAtOpen] = useState(() => loadReadIds());
+  const unreadAtOpen = useMemo(
+    () => new Set(notices.filter((n) => !readAtOpen.has(n.id)).map((n) => n.id)),
+    [notices, readAtOpen],
+  );
 
   // 開いたら既読にする（バッジを消す）。
   useEffect(() => {
@@ -85,7 +90,7 @@ export function UpdateNoticeModal({ onClose }: UpdateNoticeModalProps) {
               </span>
               <div className="min-w-0">
                 <h2 className="text-base font-bold leading-tight text-[#2C3E50]">お知らせ</h2>
-                <p className="text-[11px] font-bold leading-snug text-gray-500">
+                <p className="text-xs font-bold leading-snug text-gray-500">
                   アプリの更新内容と日時をまとめています
                 </p>
               </div>
@@ -94,7 +99,7 @@ export function UpdateNoticeModal({ onClose }: UpdateNoticeModalProps) {
               type="button"
               onClick={onClose}
               aria-label="お知らせを閉じる"
-              className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-50"
+              className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-50"
             >
               <X size={18} />
             </button>
@@ -122,19 +127,19 @@ export function UpdateNoticeModal({ onClose }: UpdateNoticeModalProps) {
                     >
                       <div className="mb-2 flex flex-wrap items-center gap-2">
                         <span
-                          className={`rounded-lg border px-2 py-0.5 text-[10px] font-bold ${meta.className}`}
+                          className={`rounded-lg border px-2 py-0.5 text-xs font-bold ${meta.className}`}
                         >
                           {meta.label}
                         </span>
                         {isNew && (
-                          <span className="flex items-center gap-1 rounded-lg border border-[#E8A87C] bg-[#E8A87C] px-2 py-0.5 text-[10px] font-bold text-white">
+                          <span className="flex items-center gap-1 rounded-lg border border-[#E8A87C] bg-[#E8A87C] px-2 py-0.5 text-xs font-bold text-white">
                             <Sparkles size={10} />
                             NEW
                           </span>
                         )}
                         {/* 日時：相対表記（今日/きのう）と絶対日時を両方見せる。
                             相対だけでは記録として残らず、絶対だけでは勢いが伝わらない。 */}
-                        <span className="text-[11px] font-bold text-gray-500">
+                        <span className="text-xs font-bold text-gray-500">
                           {relativeNoticeLabel(notice)}・{formatNoticeDateTime(notice)}
                         </span>
                       </div>

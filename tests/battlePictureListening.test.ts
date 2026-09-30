@@ -6,7 +6,10 @@ import { preloadTargets } from '../src/battle/core/preload';
 describe('対戦の絵と先読み', () => {
   it('対戦画面は問題の絵（imageUrl）を描き、読み込み失敗時は読み直せる', () => {
     const src = readFileSync('src/battle/ui/BattleQuestionView.tsx', 'utf8');
-    expect(src).toMatch(/question\.imageUrl && \(\s*<BattleFigure/);
+    // 2×2 に分けられない絵（地図・部屋など）は従来どおり1枚で描く
+    expect(src).toMatch(/question\.imageUrl && !pictureGrid && \(\s*<BattleFigure/);
+    // A11: 2×2 の絵は絵そのものを押して答える
+    expect(src).toContain('<PictureGridAnswer');
     expect(src).toContain('タップしてもう一度読み込む');
     expect(src).toContain("'絵を大きく表示する'");
   });

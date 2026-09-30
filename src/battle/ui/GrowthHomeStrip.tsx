@@ -33,8 +33,8 @@ export function GrowthHomeStrip({ onProfile, onMissions, onShop, onBadges, onWal
   const claimable = allMissionsForDate(today).filter(m => canClaimMission(progress, m.id, today)).length;
   if (homeLayout) return <section className="mana-dashboard game-home-hud" aria-label="マナコインととびら君の成長" data-mana-dashboard>
     <div className="game-hud-top">
-      <button type="button" className="game-hud-wallet" onClick={onWallet || onShop || onProfile} aria-label="マナコインの使い道を開く" data-mana-coins><Coins /><span>マナコイン<strong>{progress.coins.toLocaleString('ja-JP')}<small>枚</small></strong></span><ChevronRight size={14} /></button>
-      <button type="button" className="game-hud-bonus" aria-label={received ? '今日のボーナス受取済み' : 'デイリーボーナスを受け取る'} disabled={busy || received} onClick={() => void claim()}><Gift /><span>{received ? '受取済み' : '今日のボーナス'}<strong>{received ? 'また明日' : `+${nextBonus?.coins ?? 0}枚`}</strong></span></button>
+      <button type="button" className="game-hud-wallet" onClick={onWallet || onShop || onProfile} aria-label="マナコインの使い道を開く" data-mana-coins><Coins /><span><i className="game-hud-label">マナコイン</i><strong>{progress.coins.toLocaleString('ja-JP')}<small>枚</small></strong></span><ChevronRight size={14} /></button>
+      <button type="button" className="game-hud-bonus" aria-label={received ? '今日のボーナス受取済み' : 'デイリーボーナスを受け取る'} disabled={busy || received} onClick={() => void claim()}><Gift /><span><i className="game-hud-label">{received ? '受取済み' : '今日のボーナス'}</i><strong>{received ? 'また明日' : `+${nextBonus?.coins ?? 0}枚`}</strong></span></button>
     </div>
     <div className="game-hud-xp"><LevelBar xp={progress.xp} compact /></div>
     {error && <p role="alert">{error}</p>}
@@ -75,10 +75,10 @@ export function GrowthHomeStrip({ onProfile, onMissions, onShop, onBadges, onWal
         <GrowthAvatar progress={progress} size={40} />
       </button>
       <div className="min-w-0 flex-1"><LevelBar xp={progress.xp} compact />
-        <p className="mt-1 text-[10px] text-gray-600">端末保存 · {progress.coins} コイン · {progress.loginStreak}日連続</p>
+        <p className="mt-1 text-xs text-gray-600">端末保存 · {progress.coins} コイン · {progress.loginStreak}日連続</p>
       </div>
     </div>
-    <div className="mt-2 grid grid-cols-3 gap-1 text-[11px] font-bold">
+    <div className="mt-2 grid grid-cols-3 gap-1 text-xs font-bold">
       <button type="button" onClick={onProfile} className="min-h-11 rounded-xl bg-blue-50">称号・きせかえ</button>
       <button type="button" onClick={onMissions} className="min-h-11 rounded-xl bg-blue-50">ミッション</button>
       <button type="button" disabled={busy || progress.lastLoginDate >= today}

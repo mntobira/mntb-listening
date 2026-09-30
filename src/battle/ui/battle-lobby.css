@@ -1,0 +1,89 @@
+/*
+ * 対戦ロビー（BattleHome）2026-09-30。
+ * ★ホーム画面と同じ見た目★ クリーム紙・金の枠・パステルの札・水色の大きな丸（ホームの「対戦する」と同じ）。
+ * 文字は 12px 以上。1画面に収める。
+ */
+.arena-menu .notebook-paper { background: #fffaf0 !important; border: 1.5px solid #ead9b9; box-shadow: 0 3px 0 #e3d3b4; }
+.arena-menu-header button, .arena-menu-header span { font-size: 12px !important; }
+.arena-menu-player small, .arena-menu-player p { font-size: 12px !important; }
+.arena-menu-player { padding: 10px 12px; border-radius: 18px; background: linear-gradient(#fbefcf, #f6e2ae); box-shadow: inset 0 0 0 1.5px #e3c77f, 0 2px 0 #d9bb6e; }
+
+.arena-lobby-deck { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; margin: 4px 0; }
+.arena-lobby-side { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; padding: 10px 6px; border-radius: 20px; text-align: center; box-shadow: 0 3px 0 var(--side-shadow), inset 0 0 0 1.5px var(--side-line); background: var(--side-bg); }
+.arena-lobby-friend { --side-bg: linear-gradient(#fdf4de, #f7e6bb); --side-line: #e3c77f; --side-shadow: #d7b865; }
+.arena-lobby-national { --side-bg: linear-gradient(#f7eaf3, #eed7e7); --side-line: #d9b5cd; --side-shadow: #c89ab8; }
+.arena-lobby-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #fffaf0; color: #7a5b2a; }
+.arena-lobby-national .arena-lobby-icon { color: #8a4f74; }
+.arena-lobby-side strong { font-size: 15px; font-weight: 900; color: #3d3222; }
+.arena-lobby-side small { font-size: 12px; font-weight: 700; color: #6b5a43; }
+.arena-lobby-side button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%; min-height: 44px; margin-top: 2px; border-radius: 12px; background: #fffdf6; box-shadow: inset 0 0 0 1.5px var(--side-line); color: #3d3222; font-size: 12px; font-weight: 800; white-space: nowrap; }
+.arena-lobby-side button:active { transform: translateY(1px); }
+.arena-lobby-main { --size: 128px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: var(--size); height: var(--size); border-radius: 50%; background: radial-gradient(circle at 50% 35%, #e9f7fd, #bfe5f4 70%, #9fd3ea); box-shadow: 0 0 0 5px #fff, 0 0 0 7px #bfe0ee, 0 6px 14px rgba(59, 135, 168, .25); color: #2d5b75; }
+.arena-lobby-main svg { width: 30px; height: 30px; }
+.arena-lobby-main strong { font-family: var(--font-handwriting, inherit); font-size: 20px; font-weight: 900; line-height: 1.1; }
+.arena-lobby-main small { font-size: 12px; font-weight: 700; }
+.arena-lobby-main:active { transform: scale(.97); }
+.arena-lobby-deck button:focus-visible { outline: none; box-shadow: 0 0 0 3px #fff, 0 0 0 5px #2458a6; }
+
+.arena-login-note { font-size: 12px !important; }
+.arena-menu-links button { font-size: 12px !important; min-height: 44px; border-radius: 14px !important; background: #fffdf4 !important; border-color: #e4d9c4 !important; }
+.arena-rules-help summary { font-size: 12px !important; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.arena-rank-strip small { font-size: 12px !important; }
+
+@media (max-width: 360px) {
+  .arena-lobby-main { --size: 104px; }
+  .arena-lobby-main strong { font-size: 17px; }
+  .arena-lobby-side button { font-size: 12px; letter-spacing: -.03em; padding-inline: 2px; }
+}
+@media (prefers-reduced-motion: reduce) { .arena-lobby-main:active, .arena-lobby-side button:active { transform: none; } }
+/* 低い画面でもプレイヤー札を出す（モードを1段にまとめて空いた分） */
+@media (max-height: 760px) { .arena-menu .arena-menu-player { display: flex !important; padding: 6px 10px; } .arena-menu-player .relative { transform: scale(.8); } }
+@media (max-height: 600px) { .arena-menu .arena-menu-player small { display: none; } }
+.arena-menu .arena-friends, .arena-menu .arena-friends *, .arena-rules-help p, .arena-menu-player .relative span { font-size: 12px !important; }
+.arena-lobby-side small { overflow-wrap: anywhere; }
+@media (max-width: 340px) { .arena-lobby-friend small { display: none; } }
+/* 320×568：ロビーを1画面に。札の上下余白と説明の行間を詰める（ボタンは44pxのまま） */
+@media (max-height: 640px) {
+  .arena-lobby-side { padding: 6px 5px; gap: 2px; }
+  .arena-lobby-icon { width: 30px; height: 30px; }
+  .arena-lobby-icon svg { width: 18px; height: 18px; }
+  .arena-lobby-deck { margin: 0; }
+  .arena-login-note { line-height: 1.35 !important; margin-block: 2px !important; }
+  .arena-menu-links { margin-top: 4px !important; }
+}
+
+/* ★対戦の前後の画面（科目・単元・準備）も1画面に★
+   BattleShell は min-h-[100dvh] だが、外側の #battle-screen-scroll には下ナビ分の余白があるため、
+   どの端末でも常に「下ナビの高さぶん」スクロールが出ていた。外枠の高さに合わせる。 */
+#battle-screen-scroll > #battle-shell, #battle-screen-scroll #battle-shell:not(.arena-menu) { min-height: 100%; }
+#battle-screen-scroll:has(#battle-shell) { padding-bottom: 0; height: calc(100% - var(--app-nav-h, 72px)); }
+@media (max-height: 700px) {
+  #battle-shell:not(.arena-menu) > main { padding-top: 6px; padding-bottom: 6px; }
+  #battle-shell:not(.arena-menu) .notebook-paper { padding-top: 8px; padding-bottom: 8px; }
+  #battle-shell > footer .grid { gap: 6px; }
+}
+/* 320×568 クラス：対戦モードの見出しを1行に詰め、科目カードの余白を減らす */
+@media (max-height: 640px) {
+  #battle-shell:not(.arena-menu) #battle-title { margin-bottom: 6px; }
+  #battle-shell:not(.arena-menu) #battle-title h1 { font-size: 20px; }
+  #battle-shell:not(.arena-menu) #battle-title > div { display: none; }
+  #battle-shell:not(.arena-menu) #battle-title p { margin-top: 2px; }
+  #battle-shell:not(.arena-menu) [id^="battle-subject-"] { padding-top: 6px; padding-bottom: 6px; }
+  #battle-shell:not(.arena-menu) .battle-card-in { margin-bottom: 8px; padding: 10px; }
+}
+@media (max-height: 640px) {
+  #battle-shell:not(.arena-menu) > footer { padding-bottom: 6px; }
+  #battle-shell:not(.arena-menu) section[aria-label="問題数"] { margin-bottom: 4px; }
+}
+@media (max-height: 700px) {
+  #battle-shell:not(.arena-menu) #battle-title { margin-bottom: 8px; }
+  #battle-shell:not(.arena-menu) #battle-title p { margin-top: 4px; }
+  #battle-shell:not(.arena-menu) > footer { padding-bottom: 8px; }
+}
+@media (max-height: 640px) {
+  #battle-shell:not(.arena-menu) #battle-title h1 { font-size: 18px; }
+  #battle-shell:not(.arena-menu) #battle-title h1 svg { width: 18px; height: 18px; }
+  #battle-shell:not(.arena-menu) details > summary { min-height: 44px; }
+  #battle-shell:not(.arena-menu) [id^="battle-subject-"] p { margin-top: 0; }
+  #battle-shell:not(.arena-menu) .grid.gap-2\.5 { gap: 6px; }
+}

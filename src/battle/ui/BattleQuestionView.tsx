@@ -36,7 +36,9 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { BattleText } from './BattleText';
-import { Check, CircleCheck, CircleX, Hourglass, RotateCcw } from 'lucide-react';
+import { Check, CircleCheck, CircleX, Hourglass, RotateCcw, Play, Pause, Info } from 'lucide-react';
+import { PICTURE_GRID_SPLITS } from '../data/pictureGrid.generated';
+import './battle-question.css';
 
 import { subjectTheme } from '../../data/subjectTheme';
 import type { SubjectKey } from '../../data/allChapters';
@@ -126,6 +128,19 @@ export function BattleQuestionView({
     : question.format === 'panel' ? panel.map(i => question.options[i] || '').join('')
     : question.options[choice] || '';
   const feedbackColor = correct ? CORRECT : hasAnswer ? WRONG : INK_SUB;
+  // 2×2 の絵で答える問題か（区切り位置が分かっている絵だけ）
+  const pictureGrid = question.imageUrl && question.options.length === 4 && question.format !== 'kana' && question.format !== 'panel'
+    ? PICTURE_GRID_SPLITS[question.imageUrl] : undefined;
+  const isListening = question.subject === 'english_listening';
+  // 「（話者：女性（管理人））」のように、問題文の中身がすでに設問（label）に含まれているときは出さない（重複をなくす）
+  const promptCore = (question.prompt || '').trim().replace(/^[（(]/, '').replace(/[）)]$/, '').replace(/^話者[:：]\s*/, '');
+  const promptDuplicatesLabel = isListening && promptCore.length > 0 && (question.label || '').includes(promptCore);
+  // 逆向きの重複：問題文の末尾に「Question: 〜」として設問と同じ英文が入っていることがある（太字の設問と2回出る）。
+  //   その部分だけ落として、場面の説明（話者・場面）は残す。
+  const labelText = (question.label || '').trim();
+  const promptShown = isListening && labelText.length > 8 && (question.prompt || '').includes(labelText)
+    ? (question.prompt || '').replace(labelText, '').replace(/\s*Question[:：]\s*$/i, '').trim()
+    : (question.prompt || '');
 
   return (
     <section id="battle-question" className="flex min-w-0 flex-1 flex-col">
@@ -140,7 +155,7 @@ export function BattleQuestionView({
             {total}もん
           </p>
           <span
-            className="rounded-full px-2 py-0.5 text-[10px] font-black"
+            className="rounded-full px-2 py-0.5 text-xs font-black"
             style={{ background: `${theme.accent}26`, color: theme.accent }}
           >
             {formatLabel(question.format, question.options.length)}
@@ -156,26 +171,32 @@ export function BattleQuestionView({
       <article
         tabIndex={0}
         aria-label="問題文（長い場合はスクロール）"
-        className="arena-question-prompt mb-3 rounded-2xl border-2 px-4 py-3.5"
+        className={`arena-question-prompt rounded-2xl border-2 ${pictureGrid ? 'mb-2 px-3 py-2' : 'mb-3 px-4 py-3.5'}`}
+        data-picture-grid={pictureGrid ? '' : undefined}
         style={{
           borderColor: `${theme.accent}44`,
           background: theme.surface,
         }}
       >
-        {question.prompt && (
+        {promptShown && !(isListening && pictureGrid) && !promptDuplicatesLabel && (
           <p
-            className="mb-2 whitespace-pre-wrap text-[13px] leading-relaxed"
+            className="bq-scene mb-2 whitespace-pre-wrap text-[13px] leading-relaxed"
             style={{ color: INK_SUB }}
+            data-long={isListening && promptShown.length > 24 ? '' : undefined}
+            onClick={(e) => e.currentTarget.toggleAttribute('data-open')}
           >
-            {renderWithBlank(question.prompt, question.subject)}
+            {/* 低い画面ではたたんだとき1行で読めるよう、改行をつめた版も持っておく */}
+            <span className="bq-scene-full">{renderWithBlank(promptShown, question.subject)}</span>
+            <span className="bq-scene-line" aria-hidden="true">{promptShown.replace(/\s+/g, ' ')}</span>
           </p>
         )}
         <p className="text-[15px] font-bold leading-relaxed" style={{ color: INK }}>
           <BattleText text={question.label} subject={question.subject} />
         </p>
         {/* ★図・絵★（リスニング第1問B・第2問の「絵を選ぶ」問題、図つきの問題）
-            以前は対戦画面が画像を描かなかったため、絵を選ぶ問題は対戦に入れられなかった。 */}
-        {question.imageUrl && (
+            以前は対戦画面が画像を描かなかったため、絵を選ぶ問題は対戦に入れられなかった。
+            ★A11：2×2 に並んだ絵は、絵そのものを押して答える（下の①〜④ボタンは出さない）★ */}
+        {question.imageUrl && !pictureGrid && (
           <BattleFigure key={question.id} src={question.imageUrl} picture={question.subject === 'english_listening'} />
         )}
       </article>
@@ -219,6 +240,16 @@ export function BattleQuestionView({
           reveal={reveal}
           onPush={onPushPanel}
           onPop={onPopPanel}
+        />
+      ) : pictureGrid ? (
+        <PictureGridAnswer
+          question={question}
+          split={pictureGrid}
+          answered={answered}
+          locked={locked || reveal}
+          myChoice={myChoice}
+          reveal={reveal}
+          onChoose={onChoose}
         />
       ) : (
         <ChoiceAnswer
@@ -647,7 +678,7 @@ function KanaAnswer({
             </button>
           </div>
 
-          <p className="text-center text-[10px] font-bold leading-snug" style={{ color: INK_SUB }}>
+          <p className="text-center text-xs font-bold leading-snug" style={{ color: INK_SUB }}>
             だくてん・はんだくてん・ちいさい もじ は
             <span style={{ color: AMBER }}> ゛゜小 </span>
             で つけます
@@ -701,39 +732,96 @@ function renderWithBlank(text: string, subject: string): ReactNode {
   ) : <BattleText key={`part-${i}`} text={part} subject={subject} />);
 }
 
-/** Audio-only battle player. No script or scene hint enters the answering DOM. */
+/**
+ * Audio-only battle player. No script or scene hint enters the answering DOM.
+ *
+ * ★A10：高さ約40pxの自前プレーヤー（2026-09-30）★
+ *   ブラウザ標準の <audio controls> は端末ごとに大きさが違い、注意書きと合わせて約110pxあった。
+ *   ［▶／❚❚］＋進み具合のバー＋状態1語、の1行にする。注意書きは (i) を押したときだけ出す。
+ */
 function BattleListeningAudio({ src, stopped }: { key?: string; src?: string; stopped: boolean }) {
   const audio = useRef<HTMLAudioElement>(null);
-  const [status, setStatus] = useState('音源を読み込み中…');
+  const [status, setStatus] = useState('読み込み中');
   const [failed, setFailed] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [info, setInfo] = useState(false);
   useEffect(() => {
     const el = audio.current;
     if (!el) return;
     let disposed = false;
     if (stopped) el.pause();
     else el.play().catch(() => {
-      if (!disposed) setStatus('再生ボタンを押して音源を聞いてください');
+      if (!disposed) setStatus('▶を押して再生');
     });
     return () => { disposed = true; el.pause(); };
   }, [src, stopped]);
   if (!src) return <p role="alert">この問題の音源を読み込めませんでした。</p>;
-  return <section className="battle-listening-audio mb-2 rounded-xl border border-sky-200 bg-sky-50 p-2" aria-label="対戦の音源">
-    <div className="flex items-center justify-between gap-2 text-xs text-slate-600">
-      <strong>音源を聞く</strong><span role="status">{stopped ? '解答終了' : status}</span>
-    </div>
-    <audio ref={audio} src={src} controls preload="auto" className="h-10 w-full"
-      onPlaying={() => { setFailed(false); setStatus('再生中'); }}
-      onPause={() => setStatus('停止中・再生ボタンで再開')}
-      onEnded={() => setStatus('再生終了・答えを選んでください')}
-      onError={() => { setFailed(true); setStatus('音源を読み込めませんでした'); }} />
-    {failed && !stopped && <button type="button" className="min-h-11 px-3 text-sm underline" onClick={() => {
-      const el = audio.current;
-      if (!el) return;
-      el.load();
-      el.play().catch(() => setStatus('通信と端末の音量を確認して、もう一度再生してください'));
-    }}>音源を再読み込み</button>}
-    <p className="text-[10px] text-slate-500">音量を確認してください。音源の再生中・停止中も制限時間は進みます。</p>
+  const toggle = () => {
+    const el = audio.current;
+    if (!el || stopped) return;
+    if (failed) { el.load(); }
+    if (el.paused) el.play().catch(() => setStatus('音量を確認して再生'));
+    else el.pause();
+  };
+  return <section className="battle-listening-audio bqa" aria-label="対戦の音源">
+    <button type="button" className="bqa-play" onClick={toggle} disabled={stopped}
+      aria-label={playing ? '音源を一時停止' : failed ? '音源を再読み込みして再生' : '音源を再生'}>
+      {playing ? <Pause size={18} aria-hidden="true" /> : failed ? <RotateCcw size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
+    </button>
+    <span className="bqa-track" aria-hidden="true"><i style={{ width: `${progress}%` }} /></span>
+    <span className="bqa-status" role="status">{stopped ? '解答終了' : status}</span>
+    <button type="button" className="bqa-info" onClick={() => setInfo(v => !v)} aria-expanded={info} aria-label="音源の注意を表示"><Info size={16} aria-hidden="true" /></button>
+    {info && <p className="bqa-note">音源の再生中・停止中も制限時間は進みます。聞こえないときは端末の音量を確認してください。</p>}
+    <audio ref={audio} src={src} preload="auto"
+      onPlaying={() => { setFailed(false); setPlaying(true); setStatus('再生中'); }}
+      onPause={() => { setPlaying(false); setStatus('一時停止'); }}
+      onEnded={() => { setPlaying(false); setProgress(100); setStatus('再生終了'); }}
+      onTimeUpdate={(e) => { const el = e.currentTarget; if (el.duration > 0) setProgress(Math.min(100, el.currentTime / el.duration * 100)); }}
+      onError={() => { setFailed(true); setPlaying(false); setStatus('読み込み失敗・↻で再試行'); }} />
   </section>;
+}
+
+/**
+ * ★A11：2×2 の絵を、そのまま4つのボタンにする★
+ *   1枚の画像を CSS で4分割して表示（画像ファイルは1つのまま＝通信量は同じ）。
+ *   左上に ①〜④ の札。押した絵がそのまま答えになる。
+ */
+function PictureGridAnswer({ question, split, answered, locked, myChoice, reveal, onChoose }: {
+  question: BattleQuestion; split: readonly [number, number]; answered: boolean; locked: boolean;
+  myChoice: number; reveal: boolean; onChoose: (index: number) => void;
+}) {
+  const [cx, cy] = split;
+  const cells = [
+    { x0: 0, y0: 0, x1: cx, y1: cy }, { x0: cx, y0: 0, x1: 1, y1: cy },
+    { x0: 0, y0: cy, x1: cx, y1: 1 }, { x0: cx, y0: cy, x1: 1, y1: 1 },
+  ];
+  return (
+    <div className="bq-picture-grid" role="group" aria-label="絵を選んで答える">
+      {cells.map((c, i) => {
+        const w = c.x1 - c.x0, h = c.y1 - c.y0;
+        const picked = myChoice === i;
+        const right = reveal && i === question.answerIndex;
+        const wrongPick = reveal && picked && i !== question.answerIndex;
+        return (
+          <button key={`${question.id}-pic-${i}`} type="button" disabled={answered || locked} onClick={() => onChoose(i)}
+            className="bq-picture" data-picked={picked || undefined} data-right={right || undefined} data-wrong={wrongPick || undefined}
+            aria-label={`絵 ${question.options[i] || i + 1} を選ぶ`} aria-pressed={picked}
+            style={{ opacity: locked && !answered ? 0.45 : 1 }}>
+            <span className="bq-picture-img" aria-hidden="true" style={{
+              backgroundImage: `url("${question.imageUrl}")`,
+              backgroundSize: `${100 / w}% ${100 / h}%`,
+              backgroundPosition: `${w >= 1 ? 0 : (c.x0 / (1 - w)) * 100}% ${h >= 1 ? 0 : (c.y0 / (1 - h)) * 100}%`,
+              aspectRatio: `${w} / ${h}`,
+            }} />
+            <b className="bq-picture-badge">{question.options[i] || ['①', '②', '③', '④'][i]}</b>
+            {right && <span className="bq-picture-tag" data-kind="right"><Check size={14} aria-hidden="true" />正解</span>}
+            {wrongPick && <span className="bq-picture-tag" data-kind="wrong">あなた</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 /**

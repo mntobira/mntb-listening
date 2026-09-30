@@ -24,9 +24,15 @@ try {
   }
   await page.setViewportSize({width:390,height:844});
   assert.equal(await page.getByRole('button',{name:'まとめプリント',exact:true}).count(),0);
+  // 「英文法・英単語を固める」は下のナビを残した1画面のページ（ダイアログではない）。
   await page.locator('[data-home-foundation]').click();
-  await page.locator('[data-listening-subjects]').waitFor();
-  await page.locator('[data-subject-id="english_listening"]').click();
+  await page.locator('[data-foundation]').waitFor();
+  assert.equal(await page.locator('.app-bottom-nav').isVisible(),true,'foundation page keeps the bottom nav');
+  assert.deepEqual(await page.locator('.fd-tabs [role=tab]').allTextContents(),['単語・熟語','英文法','その他']);
+  await page.locator('.fd-word').nth(2).waitFor();
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+2),'foundation fits one screen');
+  await page.getByRole('tab',{name:'その他'}).click();
+  await page.getByRole('button',{name:/リスニングへ/}).click();
   await page.getByRole('button',{name:/第1回演習/}).first().waitFor();
   await page.getByRole('button',{name:/第1回演習/}).first().click();
   await page.waitForTimeout(500);
@@ -39,7 +45,11 @@ try {
   await page.getByRole('button',{name:'AIと対戦する',exact:true}).click();
   const listening=page.getByRole('button',{name:/英語リスニング/});
   await listening.waitFor();
-  assert.equal(await page.getByRole('button',{name:/英単語・英熟語|化学基礎|地理総合/}).count(),0);
+  // 対戦の科目は英語3つ（リスニング・英文法・英単語／英熟語）。英単語は対戦で残す（2026-09-30 決定）。
+  // 統合版の科目（化学基礎・地理など）は出さない。
+  assert.equal(await page.getByRole('button',{name:/化学基礎|地理総合|生物基礎|数学/}).count(),0);
+  assert.ok(await page.getByRole('button',{name:/英単語・英熟語/}).count()>=1,'英単語・英熟語 is kept as a battle subject');
+  assert.ok(await page.getByRole('button',{name:/英文法/}).count()>=1,'英文法 is a battle subject');
   await listening.click();await page.locator('[data-battle-unit="all"]').click();
   await page.locator('#battle-ai-easy').click();
   await page.getByRole('button',{name:'はじめる',exact:true}).click();

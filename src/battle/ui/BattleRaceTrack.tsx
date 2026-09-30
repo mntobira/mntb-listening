@@ -196,7 +196,7 @@ export function BattleRaceTrack({
         <Lane cells={myLane} accent={meAccent} label="あなたの進み" align="left" />
         <Lane cells={theirLane} accent={opponentAccent} label="あいての進み" align="left" />
       </div>
-      <p className="mt-1 text-right text-[10px] font-bold tabular-nums" style={{ color: INK_SUB }}>
+      <p className="mt-1 text-right text-xs font-bold tabular-nums" style={{ color: INK_SUB }}>
         {Math.min(current + 1, total)} / {total} 問目
       </p>
     </section>
@@ -207,7 +207,7 @@ function Streak({ n, align }: { n: number; align: 'left' | 'right' }) {
   // 3 連続未満は場所だけ確保して空にする（点差の位置が動かないように）
   return (
     <span
-      className={`flex min-w-[4.5rem] items-center gap-1 text-[10px] font-black ${align === 'right' ? 'justify-end' : ''}`}
+      className={`flex min-w-[4.5rem] items-center gap-1 text-xs font-black ${align === 'right' ? 'justify-end' : ''}`}
       style={{ color: n >= STREAK_FLAME_AT ? '#E67E22' : 'transparent' }}
       aria-hidden={n < STREAK_FLAME_AT}
       data-battle-streak={n}

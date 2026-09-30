@@ -682,7 +682,7 @@ export function AnswerPane({
               disabled={!canGoPrevious}
               title="前の問題へ（←キー）"
               aria-label="前の問題へ"
-              className={`flex items-center justify-center p-2.5 rounded-xl font-bold transition-all duration-200 border-2 shrink-0 cursor-pointer
+              className={`flex h-11 w-11 items-center justify-center rounded-xl font-bold transition-all duration-200 border-2 shrink-0 cursor-pointer
                 ${!canGoPrevious 
                   ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50/50' 
                   : 'border-[#A9CCE3] text-[#A9CCE3] hover:bg-[#A9CCE3] hover:text-white bg-white shadow-sm'}`}
@@ -692,7 +692,7 @@ export function AnswerPane({
 
             <button
               onClick={handleNext}
-              className="flex shadow-md hover:shadow-lg hover:-translate-y-0.5 items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl font-bold tracking-wider transition-all duration-300 text-xs md:text-sm bg-[#2C3E50] text-white hover:bg-[#1B2631] flex-1 sm:flex-none sm:w-[180px] cursor-pointer"
+              className="flex shadow-md hover:shadow-lg hover:-translate-y-0.5 items-center justify-center gap-1.5 px-5 min-h-11 rounded-xl font-bold tracking-wider transition-all duration-300 text-xs md:text-sm bg-[#2C3E50] text-white hover:bg-[#1B2631] flex-1 sm:flex-none sm:w-[180px] cursor-pointer"
             >
               <span>解答と解説を見る</span>
               <ChevronRight size={14} className="stroke-[2.5]" />

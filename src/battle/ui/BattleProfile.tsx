@@ -163,7 +163,7 @@ export function BattleProfile({ onBack, initialTab = 'outfit', standalone = fals
             type="button"
             onClick={() => setTab(id)}
             aria-current={tab === id ? 'page' : undefined}
-            className="flex min-h-11 items-center justify-center gap-1 rounded-xl border-2 text-[11px] font-black transition active:scale-[0.98]"
+            className="flex min-h-11 items-center justify-center gap-1 rounded-xl border-2 text-xs font-black transition active:scale-[0.98]"
             style={{
               borderColor: tab === id ? AMBER : LINE,
               background: tab === id ? `${GOLD}22` : '#FFFFFF',
@@ -191,7 +191,7 @@ export function BattleProfile({ onBack, initialTab = 'outfit', standalone = fals
           <p className="text-xs font-black" style={{ color: INK }}>
             対戦の効果音・振動
           </p>
-          <p className="text-[10px] font-bold" style={{ color: INK_SUB }}>
+          <p className="text-xs font-bold" style={{ color: INK_SUB }}>
             勝敗・レベルアップ・報酬のときだけ短く鳴ります
           </p>
         </div>
@@ -200,7 +200,7 @@ export function BattleProfile({ onBack, initialTab = 'outfit', standalone = fals
           role="switch"
           aria-checked={sfxOn}
           onClick={toggleSfx}
-          className="flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-[11px] font-black transition active:scale-95"
+          className="flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-xs font-black transition active:scale-95"
           style={{
             borderColor: sfxOn ? AMBER : LINE,
             background: sfxOn ? `${GOLD}22` : '#FFFFFF',
@@ -233,12 +233,12 @@ function ProfileHeader({ progress, rating }: { progress: GrowthProgress; rating:
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex flex-wrap items-center gap-1.5">
             <TitleChip progress={progress} rating={rating} size="md" />
-            <span className="text-[10px] font-bold" style={{ color: INK_SUB }}>
+            <span className="text-xs font-bold" style={{ color: INK_SUB }}>
               レート {rating}（{ratingTitle(rating).label}）
             </span>
           </div>
           <LevelBar xp={progress.xp} />
-          <p className="mt-1 flex items-center gap-3 text-[10px] font-bold" style={{ color: INK_SUB }}>
+          <p className="mt-1 flex items-center gap-3 text-xs font-bold" style={{ color: INK_SUB }}>
             <span className="tabular-nums">累計 {progress.xp.toLocaleString()} XP</span>
             <span className="inline-flex items-center gap-0.5 tabular-nums">
               <Coins size={11} style={{ color: AMBER }} /> {progress.coins}
@@ -333,10 +333,10 @@ function OutfitTab({ progress, busy, run, setNotice, shop = false }: { shop?: bo
         ) : (
           <span data-frame-pattern={item.pattern} className="h-14 w-14 rounded-2xl border-[4px]" style={{ borderColor: item.value, background: `${item.value}22`, filter: owned ? undefined : 'grayscale(0.8)' }} />
         )}
-        <span className="text-[11px] font-black" style={{ color: INK }}>
+        <span className="text-xs font-black" style={{ color: INK }}>
           {item.label}
         </span>
-        <span className="flex items-center gap-0.5 text-[9px] font-bold" style={{ color: equipped ? AMBER : owned ? INK_SUB : canBuy ? AMBER : INK_SUB }}>
+        <span className="flex items-center gap-0.5 text-xs font-bold" style={{ color: equipped ? AMBER : owned ? INK_SUB : canBuy ? AMBER : INK_SUB }}>
           {confirmId === item.id ? 'もう一度タップで交換' : equipped ? '装備中' : owned ? 'タップで装備' : (
             <>
               {'coins' in item.unlock ? <Coins size={10} /> : <Lock size={10} />}
@@ -356,13 +356,13 @@ function OutfitTab({ progress, busy, run, setNotice, shop = false }: { shop?: bo
         <p className="mt-2 font-bold">所持マナコイン：{progress.coins.toLocaleString()} 枚</p>
       </div>}
       <section>
-        <h3 className="mb-2 flex items-center gap-1 text-[11px] font-black" style={{ color: INK_SUB }}>
+        <h3 className="mb-2 flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
           <Sparkles size={12} style={{ color: AMBER }} /> ポーズ（Lv.{level}）
         </h3>
         <div className="grid grid-cols-3 gap-2">{poses.map(renderItem)}</div>
       </section>
       <section>
-        <h3 className="mb-2 flex items-center gap-1 text-[11px] font-black" style={{ color: INK_SUB }}>
+        <h3 className="mb-2 flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
           <Sparkles size={12} style={{ color: AMBER }} /> わく
         </h3>
         <div className="grid grid-cols-3 gap-2">{frames.map(renderItem)}</div>
@@ -373,21 +373,21 @@ function OutfitTab({ progress, busy, run, setNotice, shop = false }: { shop?: bo
         return (
           <section key={kind} data-outfit-part={kind}>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="flex items-center gap-1 text-[11px] font-black" style={{ color: INK_SUB }}>
+              <h3 className="flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
                 <Sparkles size={12} style={{ color: AMBER }} /> {SLOT_LABELS[kind as keyof typeof SLOT_LABELS]}（{list.length}）
               </h3>
               {current && (
                 <button type="button" disabled={busy} onClick={() => void run(() => unequip(kind), `${SLOT_LABELS[kind as keyof typeof SLOT_LABELS]}を外しました`)}
-                  className="min-h-[32px] rounded-full border px-3 text-[10px] font-bold" style={{ borderColor: LINE, color: INK_SUB }}>外す</button>
+                  className="min-h-[32px] rounded-full border px-3 text-xs font-bold" style={{ borderColor: LINE, color: INK_SUB }}>外す</button>
               )}
             </div>
             {list.length === 0
-              ? <p className="rounded-2xl border px-3 py-3 text-center text-[11px] font-bold" style={{ borderColor: LINE, color: INK_SUB }}>まだありません。ガチャで出ます。</p>
+              ? <p className="rounded-2xl border px-3 py-3 text-center text-xs font-bold" style={{ borderColor: LINE, color: INK_SUB }}>まだありません。ガチャで出ます。</p>
               : <div className="grid grid-cols-3 gap-2">{list.map(renderItem)}</div>}
           </section>
         );
       })}
-      <p className="text-[10px] font-bold leading-relaxed" style={{ color: INK_SUB }}>
+      <p className="text-xs font-bold leading-relaxed" style={{ color: INK_SUB }}>
         マナコインは対戦・日替わりボーナス・ミッションで手に入ります（課金はありません）。装備は見た目だけで、対戦の強さには影響しません。
       </p>
     </div>
@@ -412,7 +412,7 @@ function BadgesTab({ progress, busy, run }: { progress: GrowthProgress; busy: bo
     <div className="grid gap-4">
       <section>
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="flex items-center gap-1 text-[11px] font-black" style={{ color: INK_SUB }}>
+          <h3 className="flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
             <Trophy size={12} style={{ color: AMBER }} /> もっている称号（{earned.length}/{BADGES.length}）
           </h3>
           {current !== '' && (
@@ -420,7 +420,7 @@ function BadgesTab({ progress, busy, run }: { progress: GrowthProgress; busy: bo
               type="button"
               disabled={busy}
               onClick={() => void run(() => equipBadgeTitle(''), 'レートの称号にもどしました')}
-              className="rounded-full border px-2 py-0.5 text-[10px] font-bold"
+              className="rounded-full border px-2 py-0.5 text-xs font-bold"
               style={{ borderColor: LINE, color: INK_SUB }}
             >
               レート称号にもどす
@@ -428,7 +428,7 @@ function BadgesTab({ progress, busy, run }: { progress: GrowthProgress; busy: bo
           )}
         </div>
         {earned.length === 0 ? (
-          <p className="rounded-2xl border px-3 py-3 text-center text-[11px] font-bold" style={{ borderColor: LINE, color: INK_SUB }}>
+          <p className="rounded-2xl border px-3 py-3 text-center text-xs font-bold" style={{ borderColor: LINE, color: INK_SUB }}>
             まだ称号がありません。1回対戦すると最初の称号がもらえます。
           </p>
         ) : (
@@ -447,13 +447,13 @@ function BadgesTab({ progress, busy, run }: { progress: GrowthProgress; busy: bo
             ))}
           </div>
         )}
-        <p className="mt-1.5 text-[10px] font-bold" style={{ color: INK_SUB }}>
+        <p className="mt-1.5 text-xs font-bold" style={{ color: INK_SUB }}>
           選んだ称号は、この端末の自分のプロフィールに表示されます（他の人には公開されません）。
         </p>
       </section>
 
       <section>
-        <h3 className="mb-2 flex items-center gap-1 text-[11px] font-black" style={{ color: INK_SUB }}>
+        <h3 className="mb-2 flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
           <Lock size={12} /> まだの称号
         </h3>
         <div className="grid gap-1.5">
@@ -474,7 +474,7 @@ function StatsTab({ progress }: { progress: GrowthProgress }) {
   const rows = rankSubjects(progress);
   if (rows.length === 0) {
     return (
-      <p className="rounded-2xl border px-3 py-4 text-center text-[11px] font-bold" style={{ borderColor: LINE, color: INK_SUB }}>
+      <p className="rounded-2xl border px-3 py-4 text-center text-xs font-bold" style={{ borderColor: LINE, color: INK_SUB }}>
         まだ対戦の記録がありません。
       </p>
     );
@@ -488,7 +488,7 @@ function StatsTab({ progress }: { progress: GrowthProgress }) {
           <div key={r.subject} className="rounded-2xl border px-3 py-2.5" style={{ borderColor: LINE, background: '#FFFFFF' }}>
             <div className="flex items-center justify-between gap-2">
               <p className="flex items-center gap-1.5 text-[12px] font-black" style={{ color: INK }}>
-                <span className="w-4 text-center text-[10px] tabular-nums" style={{ color: INK_SUB }}>
+                <span className="w-4 text-center text-xs tabular-nums" style={{ color: INK_SUB }}>
                   {i + 1}
                 </span>
                 {labelOfSubject(r.subject)}
@@ -500,13 +500,13 @@ function StatsTab({ progress }: { progress: GrowthProgress }) {
             <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#E8E2D6' }}>
               <div className="h-full rounded-full" style={{ width: `${acc}%`, background: color }} />
             </div>
-            <p className="mt-1 text-[10px] font-bold tabular-nums" style={{ color: INK_SUB }}>
+            <p className="mt-1 text-xs font-bold tabular-nums" style={{ color: INK_SUB }}>
               {r.stats.matches}試合 ／ {r.stats.wins}勝 ／ {r.stats.correct}/{r.stats.answered}問せいかい
             </p>
           </div>
         );
       })}
-      <p className="text-[10px] font-bold leading-relaxed" style={{ color: INK_SUB }}>
+      <p className="text-xs font-bold leading-relaxed" style={{ color: INK_SUB }}>
         正答率がいちばん低い教科が「苦手」です。その教科の穴（対戦で落とした問題）を学習でうめると、次の対戦で正答率が上がります。
       </p>
     </div>

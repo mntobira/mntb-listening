@@ -170,26 +170,26 @@ export function BattleLobby({
           <button type="button" className="flex w-full items-center justify-between text-sm font-black" style={{ color: INK }}
             aria-expanded={showSettings} onClick={() => setShowSettings((v) => !v)}>
             <span className="flex items-center gap-1.5"><Settings2 size={16} /> 対戦の設定（科目・モード・問題数）</span>
-            <span className="text-[11px]" style={{ color: INK_SUB }}>{showSettings ? 'とじる' : 'かえる'}</span>
+            <span className="text-xs" style={{ color: INK_SUB }}>{showSettings ? 'とじる' : 'かえる'}</span>
           </button>
           {showSettings && <div className="mt-3 grid gap-3">
-            <label className="grid gap-1 text-[11px] font-black" style={{ color: INK_SUB }}>科目
+            <label className="grid gap-1 text-xs font-black" style={{ color: INK_SUB }}>科目
               <select className="min-h-11 rounded-xl border-2 bg-white px-2 text-sm font-bold" style={{ borderColor: LINE, color: INK }}
                 value={draft.subject} onChange={(e) => setDraft((d) => ({ ...d, subject: e.target.value }))}>
                 {subjects.map((s) => <option key={s} value={s}>{subjectTheme(s as SubjectKey).label}</option>)}
               </select>
             </label>
             <div className="grid gap-1" role="radiogroup" aria-label="モード">
-              <span className="text-[11px] font-black" style={{ color: INK_SUB }}>モード</span>
+              <span className="text-xs font-black" style={{ color: INK_SUB }}>モード</span>
               {FRIEND_MODES.map((m) => <button key={m.id} type="button" role="radio" aria-checked={draft.mode === m.id}
                 onClick={() => setDraft((d) => ({ ...d, mode: m.id }))}
                 className="rounded-2xl border-2 px-3 py-2 text-left" style={{ borderColor: draft.mode === m.id ? AMBER : LINE, background: draft.mode === m.id ? `${GOLD}22` : '#FFFFFF' }}>
                 <span className="block text-sm font-black" style={{ color: INK }}>{m.label}</span>
-                <span className="block text-[11px] font-bold" style={{ color: INK_SUB }}>{m.desc}{draft.subject === 'english_listening' && m.rules.timeLimitOverride ? '（リスニングは音源のため時間は55秒のまま）' : ''}</span>
+                <span className="block text-xs font-bold" style={{ color: INK_SUB }}>{m.desc}{draft.subject === 'english_listening' && m.rules.timeLimitOverride ? '（リスニングは音源のため時間は55秒のまま）' : ''}</span>
               </button>)}
             </div>
             <div className="grid gap-1" role="radiogroup" aria-label="問題数">
-              <span className="text-[11px] font-black" style={{ color: INK_SUB }}>問題数</span>
+              <span className="text-xs font-black" style={{ color: INK_SUB }}>問題数</span>
               <div className="grid grid-cols-3 gap-2">{QUESTION_COUNT_CHOICES.map((n) => <button key={n} type="button" role="radio" aria-checked={draft.questionCount === n}
                 onClick={() => setDraft((d) => ({ ...d, questionCount: n }))}
                 className="min-h-11 rounded-xl border-2 text-sm font-black" style={{ borderColor: draft.questionCount === n ? AMBER : LINE, background: draft.questionCount === n ? `${GOLD}22` : '#FFFFFF', color: INK }}>{n}問</button>)}</div>
@@ -201,7 +201,7 @@ export function BattleLobby({
         </section>
       )}
       {!isNational && !isHost && (
-        <p className="mb-3 text-center text-[11px] font-bold" style={{ color: INK_SUB }}>
+        <p className="mb-3 text-center text-xs font-bold" style={{ color: INK_SUB }}>
           設定は部屋を作った人が選びます。変わったときは自動で新しい設定の部屋へ移ります。
         </p>
       )}
@@ -218,7 +218,7 @@ export function BattleLobby({
           }}
         >
           <p
-            className="relative z-[2] text-[10px] font-black tracking-widest"
+            className="relative z-[2] text-xs font-black tracking-widest"
             style={{ color: INK_SUB }}
           >
             あいことば
@@ -235,14 +235,14 @@ export function BattleLobby({
           >
             {room.joinCode}
           </p>
-          <p className="relative z-[2] mb-3 text-[11px] font-bold" style={{ color: INK_SUB }}>
+          <p className="relative z-[2] mb-3 text-xs font-bold" style={{ color: INK_SUB }}>
             相手に伝えて「合言葉で参加する」から入ってもらってください
           </p>
           <div className="relative z-[2] flex justify-center gap-2">
             <button
               type="button"
               onClick={() => void copyCode()}
-              className="flex items-center gap-1.5 rounded-xl border-2 px-3 py-2 text-[11px] font-black transition active:translate-y-[2px] active:scale-95"
+              className="flex items-center gap-1.5 rounded-xl border-2 px-3 py-2 text-xs font-black transition active:translate-y-[2px] active:scale-95"
               style={{ borderColor: LINE, background: '#FFFFFF', color: INK }}
             >
               {copied ? <Check size={13} /> : <Copy size={13} />}
@@ -252,7 +252,7 @@ export function BattleLobby({
               <button
                 type="button"
                 onClick={() => void share()}
-                className="flex items-center gap-1.5 rounded-xl border-2 px-3 py-2 text-[11px] font-black transition active:translate-y-[2px] active:scale-95"
+                className="flex items-center gap-1.5 rounded-xl border-2 px-3 py-2 text-xs font-black transition active:translate-y-[2px] active:scale-95"
                 style={{ background: GOLD, borderColor: '#E5B93C', color: INK }}
               >
                 <Share2 size={13} />
@@ -272,7 +272,7 @@ export function BattleLobby({
           }}
         >
           <p
-            className="relative z-[2] text-[10px] font-black tracking-widest"
+            className="relative z-[2] text-xs font-black tracking-widest"
             style={{ color: INK_SUB }}
           >
             ぜんこく対戦
@@ -280,7 +280,7 @@ export function BattleLobby({
           <p className="relative z-[2] my-1 text-2xl font-black" style={{ color: INK }}>
             相手が見つかりました！
           </p>
-          <p className="relative z-[2] text-[11px] font-bold" style={{ color: INK_SUB }}>
+          <p className="relative z-[2] text-xs font-bold" style={{ color: INK_SUB }}>
             最初の問題は自動で出ます。準備してください。
           </p>
         </section>
@@ -335,7 +335,7 @@ export function BattleLobby({
                   ))}
                 </p>
                 {!isNational && (
-                  <p className="text-[10px] font-bold" style={{ color: INK_SUB }}>
+                  <p className="text-xs font-bold" style={{ color: INK_SUB }}>
                     合言葉を伝えましたか？
                   </p>
                 )}
@@ -346,14 +346,14 @@ export function BattleLobby({
       </section>
 
       {room.rules.note && (
-        <p className="mt-4 text-center text-[11px] font-bold leading-relaxed" style={{ color: AMBER }}>
+        <p className="mt-4 text-center text-xs font-bold leading-relaxed" style={{ color: AMBER }}>
           {room.rules.note}
         </p>
       )}
 
       <div className="mt-auto pt-6">
         <p
-          className="text-center text-[10px] font-bold leading-relaxed"
+          className="text-center text-xs font-bold leading-relaxed"
           style={{ color: INK_SUB }}
         >
           先に押した方が勝ちではありません。

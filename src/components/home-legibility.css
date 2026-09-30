@@ -1,0 +1,32 @@
+/*
+ * ホームの読みやすさの上書き（2026-09-30）。
+ * ★色と配置は変えない★（利用者：「ホームの色の感じが好き。色のバランスは変えないで」）
+ * 変えるのは文字の大きさ（12px 以上）と、MY TOBIRA の札が足元に埋もれないことだけ。
+ */
+.game-home .game-hud-wallet > span, .game-home .game-hud-wallet small,
+.game-home .game-hud-bonus span, .game-home .game-side-action small,
+.game-home .home-battle-button small, .game-home .game-study-bar small,
+.game-home .game-stage-shortcuts button, .game-home .game-home-utility button,
+.game-home .game-home-header p, .game-home .arena-friends, .game-home .arena-friends * { font-size: 12px !important; }
+.game-home .game-hud-xp div { font-size: 12px !important; }
+.game-home .game-mascot-button > span { bottom: -26px; padding: 3px 10px; border-radius: 999px; background: #fffaf0e6; box-shadow: 0 1px 0 #e3d3b4; color: #7e6a4c; font-size: 12px !important; letter-spacing: .06em; }
+.game-home .game-mascot-button b { font-size: 13px !important; }
+.game-home .game-stage-caption { font-size: 12px !important; }
+.desktop-study-summary > p, .desktop-study-summary > div > span, .desktop-study-summary label, .desktop-study-summary strong small { font-size: 12px !important; }
+@media (max-width: 360px), (max-height: 700px) {
+  .game-home .game-stage-shortcuts button { width: 60px; }
+  .game-home .home-battle-button small { display: none; }
+  .game-home .game-study-bar small { display: none; }
+  .game-home .game-home-utility button svg { width: 15px; height: 15px; }
+}
+.game-home .game-study-bar button, .game-home .game-study-bar label { font-size: 12px !important; }
+@media (max-width: 340px) { .game-home .game-study-bar button { font-size: 12px !important; letter-spacing: -.02em; } }
+/* 幅 340px 以下：折り返しをなくして1画面に収める（色・配置は同じ） */
+@media (max-width: 340px) {
+  .game-home .game-hud-label { display: none; }
+  .game-home .game-hud-bonus strong { margin-top: 0; }
+  .game-home .game-study-bar button, .game-home .game-home-utility button { white-space: nowrap; }
+  .game-home .game-study-bar button svg, .game-home .game-home-utility button svg { display: none; }
+  .game-home .game-home-viewport > .arena-friends { display: none; }
+}
+.game-home .game-hud-label { font-style: normal; }

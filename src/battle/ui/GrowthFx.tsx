@@ -151,7 +151,7 @@ export function RatingTierBar({ before, after }: { before: number; after: number
   const remain = tierNow.next ? tierNow.next - after : 0;
   return (
     <div>
-      <div className="mb-1 flex items-center justify-between text-[10px] font-black" style={{ color: INK_SUB }}>
+      <div className="mb-1 flex items-center justify-between text-xs font-black" style={{ color: INK_SUB }}>
         <span style={{ color }}>{tierNow.label}</span>
         {tierNow.next ? (
           <span>
@@ -262,7 +262,7 @@ export function LoginBonusSheet({
                   opacity: done ? 0.8 : 1,
                 }}
               >
-                <span className="text-[9px] font-black" style={{ color: INK_SUB }}>
+                <span className="text-xs font-black" style={{ color: INK_SUB }}>
                   {d}日
                 </span>
                 {done ? (
@@ -270,7 +270,7 @@ export function LoginBonusSheet({
                 ) : (
                   <Coins size={14} style={{ color: d === 7 ? '#E67E22' : AMBER }} />
                 )}
-                <span className="text-[10px] font-black tabular-nums" style={{ color: INK }}>
+                <span className="text-xs font-black tabular-nums" style={{ color: INK }}>
                   {b.coins}
                 </span>
               </li>
@@ -289,7 +289,7 @@ export function LoginBonusSheet({
             <Sparkles size={18} style={{ color: AMBER }} />+{bonus.xp} XP
           </span>
         </div>
-        <p className="mt-2 text-center text-[10px] font-bold" style={{ color: INK_SUB }}>
+        <p className="mt-2 text-center text-xs font-bold" style={{ color: INK_SUB }}>
           {bonus.milestone ? 'あしたから また1日目。毎日つづけると7日目が大きい' : `7日目で 50コイン。あと${7 - dayInCycle}日`}
         </p>
 

@@ -1,0 +1,138 @@
+/*
+ *
+ * ★UIの決まり（CLAUDE.md「UI principles」）★
+ *   1画面でスクロールせずに完結させる／同じ操作を2つ置かない／ホームの色の感じに合わせる／文字12px以上・タップ44px以上。
+ * マナトビ デザイントークン（2026-09-30）
+ *
+ * ここだけを見れば色・文字・角丸・影・余白が決まるようにする。
+ * 作り直した画面（タイトル／ホーム／英単語・英文法／設定／対戦の問題画面）は
+ * この変数だけを使う。古い画面にも少しずつ広げる。
+ *
+ * ■ 色の決まり
+ *   - ブランド色は「扉の青」1色。強調（主ボタン・数字の上昇）は「扉のオレンジ」1色だけ。
+ *   - 広い面は紙色（--mt-paper）と白（--mt-surface）の2つだけ。パステルを面いっぱいに使わない。
+ *   - 文字は濃／中／淡の3段。淡でも紙色・白の上で WCAG AA（4.5:1）以上を実測済み：
+ *       ink 13.5 : 1 / ink-2 8.1 : 1 / ink-3 4.6 : 1（紙色 #FCF5E9 に対して）
+ *   - 状態色（成功／学習中／未着手）は進捗表示にだけ使う。
+ *
+ * ■ 形の決まり
+ *   - 角丸は3段（sm 8 / md 14 / lg 22）＋丸（pill）。
+ *   - 影は2段（1 = 置いてある、2 = 浮いている）。
+ *   - 線は 1px の1種類（--mt-line）。
+ *   - 余白は 8px 格子（--mt-s1 … s6）。
+ *
+ * ■ 文字の決まり
+ *   - 見出し・数字：M PLUS Rounded 1c（800）。ロゴとマスコットの丸みに合わせる。
+ *   - 本文：システムのゴシック（可読性優先）。
+ *   - いちばん小さい文字は 12px（スマホ）／13px（PC）。これより小さくしない。
+ */
+:root {
+  /* ブランド */
+  --mt-brand: #2458a6;          /* 扉の青（ロゴの m・n・b） */
+  --mt-brand-strong: #1c4687;   /* 押したとき */
+  --mt-brand-soft: #e7eef8;     /* 選択中の面 */
+  --mt-accent: #f29a1f;         /* 扉のオレンジ（ロゴの t）。面にだけ使い、文字は濃紺を載せる */
+  --mt-accent-strong: #d97e06;
+  --mt-accent-ink: #8a4b00;     /* オレンジ系の文字（紙色の上で 5.9:1） */
+  --mt-accent-soft: #fdf0db;
+
+  /* 面 */
+  --mt-paper: #fcf5e9;          /* 画面の地 */
+  --mt-surface: #ffffff;        /* カード */
+  --mt-surface-2: #f6efe2;      /* くぼんだ面（入力欄・トラック） */
+
+  /* 文字 */
+  --mt-ink: #1c2a39;
+  --mt-ink-2: #3e4c5b;
+  --mt-ink-3: #5a6573;
+  --mt-on-brand: #ffffff;
+
+  /* 線 */
+  --mt-line: #e3d9c8;
+  --mt-line-strong: #cbbda6;
+
+  /* 状態（進捗バッジ） */
+  --mt-done: #1f7a4d;           /* 完了（緑） */
+  --mt-done-soft: #e3f3ea;
+  --mt-doing: #b35c00;          /* 学習中（オレンジ） */
+  --mt-doing-soft: #fdeedb;
+  --mt-todo: #5a6573;           /* 未着手（グレー） */
+  --mt-todo-soft: #eef0f2;
+  --mt-danger: #b3261e;
+
+  /* 文字 */
+  --mt-font-display: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  --mt-font-body: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', 'Inter', sans-serif;
+  --mt-fs-xs: 12px;             /* 最小。これより小さくしない */
+  --mt-fs-sm: 13px;
+  --mt-fs-md: 15px;
+  --mt-fs-lg: 18px;
+  --mt-fs-xl: 22px;
+  --mt-fs-2xl: 28px;
+  --mt-fs-num: 32px;            /* 大きな数字 */
+
+  /* 形 */
+  --mt-r-sm: 8px;
+  --mt-r-md: 14px;
+  --mt-r-lg: 22px;
+  --mt-r-pill: 999px;
+  --mt-shadow-1: 0 1px 2px rgba(28, 42, 57, .06), 0 2px 6px rgba(28, 42, 57, .05);
+  --mt-shadow-2: 0 6px 18px rgba(28, 42, 57, .12);
+  --mt-focus: 0 0 0 3px #ffffff, 0 0 0 5px var(--mt-brand);
+
+  /* 余白（8px 格子） */
+  --mt-s1: 4px;
+  --mt-s2: 8px;
+  --mt-s3: 12px;
+  --mt-s4: 16px;
+  --mt-s5: 24px;
+  --mt-s6: 32px;
+
+  /* タップ領域 */
+  --mt-tap: 44px;
+}
+@media (min-width: 1100px) {
+  :root { --mt-fs-xs: 13px; }
+}
+
+/* 共通の部品。作り直した画面で使う。 */
+.mt-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--mt-s2);
+  min-height: var(--mt-tap); padding: 0 var(--mt-s4);
+  border-radius: var(--mt-r-md); border: 1px solid transparent;
+  font: 700 var(--mt-fs-md)/1.2 var(--mt-font-body); white-space: nowrap;
+  transition: background-color .15s, border-color .15s, transform .1s;
+}
+.mt-btn:focus-visible { outline: none; box-shadow: var(--mt-focus); }
+.mt-btn:active:not(:disabled) { transform: translateY(1px); }
+.mt-btn:disabled { opacity: .55; cursor: not-allowed; }
+/* 主（塗り）＝ 1画面に1つ */
+.mt-btn-primary { background: var(--mt-brand); color: var(--mt-on-brand); }
+.mt-btn-primary:hover:not(:disabled) { background: var(--mt-brand-strong); }
+/* 強調（オレンジの塗り＋濃紺の文字）＝ タイトルの「はじめる」とホームの主行動だけ */
+.mt-btn-accent { background: var(--mt-accent); color: var(--mt-ink); }
+.mt-btn-accent:hover:not(:disabled) { background: var(--mt-accent-strong); }
+/* 副（枠線） */
+.mt-btn-secondary { background: var(--mt-surface); color: var(--mt-brand); border-color: var(--mt-line-strong); }
+.mt-btn-secondary:hover:not(:disabled) { border-color: var(--mt-brand); background: var(--mt-brand-soft); }
+/* 文字だけ */
+.mt-btn-text { background: transparent; color: var(--mt-brand); padding-inline: var(--mt-s2); text-decoration: underline; text-underline-offset: 3px; }
+
+/* 進捗バッジ（未着手／学習中／完了） */
+.mt-status { display: inline-flex; align-items: center; gap: 4px; min-height: 22px; padding: 1px 8px; border-radius: var(--mt-r-pill); font: 700 var(--mt-fs-xs)/1.4 var(--mt-font-body); white-space: nowrap; }
+.mt-status[data-status=todo] { color: var(--mt-todo); background: var(--mt-todo-soft); }
+.mt-status[data-status=doing] { color: var(--mt-doing); background: var(--mt-doing-soft); }
+.mt-status[data-status=done] { color: var(--mt-done); background: var(--mt-done-soft); }
+
+/* 進捗メーター。0% でも枠と目盛りが見える（非活性の灰色帯にしない） */
+.mt-meter { position: relative; height: 8px; border-radius: var(--mt-r-pill); background: var(--mt-surface); box-shadow: inset 0 0 0 1px var(--mt-line-strong); overflow: hidden; }
+.mt-meter::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), var(--mt-line) calc(25% - 1px) 25%); }
+.mt-meter > i { position: relative; display: block; height: 100%; min-width: 0; border-radius: inherit; background: var(--mt-accent); transition: width .4s ease; }
+.mt-meter[data-status=done] > i { background: var(--mt-done); }
+@media (prefers-reduced-motion: reduce) { .mt-meter > i { transition: none; } }
+
+/* セグメンテッドコントロール（画面最上部の切替タブ） */
+.mt-segment { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 2px; padding: 3px; border-radius: var(--mt-r-md); background: var(--mt-surface-2); box-shadow: inset 0 0 0 1px var(--mt-line); }
+.mt-segment > button, .mt-segment > a { min-height: 44px; min-width: 0; padding: 0 var(--mt-s2); border-radius: calc(var(--mt-r-md) - 3px); color: var(--mt-ink-2); font: 700 var(--mt-fs-sm)/1.2 var(--mt-font-body); white-space: nowrap; }
+.mt-segment > [aria-current=page], .mt-segment > [aria-selected=true] { background: var(--mt-surface); color: var(--mt-brand); box-shadow: var(--mt-shadow-1); }
+.mt-segment > button:focus-visible { outline: none; box-shadow: var(--mt-focus); }

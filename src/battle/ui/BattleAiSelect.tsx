@@ -86,17 +86,17 @@ export function BattleAiSelect({
                   </span>
                   {recommended && (
                     <span
-                      className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black"
+                      className="shrink-0 rounded-full px-2 py-0.5 text-xs font-black"
                       style={{ background: GOLD, color: INK }}
                     >
                       おすすめ
                     </span>
                   )}
                 </span>
-                <span className="mt-0.5 block text-[11px] font-bold" style={{ color: INK_SUB }}>
+                <span className="mt-0.5 block text-xs font-bold" style={{ color: INK_SUB }}>
                   {p.tagline}
                 </span>
-                <span className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-black">
+                <span className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs font-black">
                   <span className="flex items-center gap-1" style={{ color: p.color }}>
                     <Target size={12} />
                     正解率 {Math.round(p.accuracy * 100)}%

@@ -8,3 +8,4 @@ dist/
 .tmpwork/
 coverage/
 /core
+.delivery/
