@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { auth } from '../firebase';
-import { ChevronLeft, User, LogOut, Flame, BookOpen, GraduationCap, Compass, Settings, Volume2, VolumeX, LogIn, Users, Save, Check, Loader2, AlertTriangle, School, ClipboardList, Swords } from 'lucide-react';
+import { ChevronLeft, ChevronDown, Pencil, User, LogOut, Flame, BookOpen, Clock, GraduationCap, Compass, Settings, Volume2, VolumeX, LogIn, Users, Save, Check, Loader2, AlertTriangle, School, ClipboardList, Swords, Shirt } from 'lucide-react';
 // ★対戦の音（BGM / 効果音 / 音量）★ 通常 BGM とは別の設定（src/battle/core/audioSettings.ts の説明を参照）
 import { useBattleAudioSettings } from '../battle/hooks/useBattleAudio';
 import { battleAudio } from '../battle/audio/battleAudio';
@@ -17,6 +17,12 @@ import { profileKey, streakKey, completedKey } from '../utils/userStorageKeys';
 import { checkNickname, NICKNAME_MAX } from '../features/safety/nicknameFilter';
 import { AccountSafetySection } from '../features/account/AccountSafetySection';
 import { AppleSignInButton } from '../features/auth/AppleSignInButton';
+import { useGrowthProgress } from '../hooks/useGrowthProgress';
+import { BADGES, levelOf } from '../battle/core/growth';
+import { GrowthAvatar, TitleChip } from '../battle/ui/GrowthParts';
+import { fetchMyRankingRow } from '../battle/data/battleRanking';
+import { readStudyTime, formatStudyTime } from '../utils/studyTime';
+import './profile-settings.css';
 
 interface ProfileModalProps {
   onClose: () => void;
@@ -40,11 +46,18 @@ interface ProfileModalProps {
    * （万一開いても Firestore ルールが読み取りを拒否する）
    */
   onOpenFeedbackAdmin?: () => void;
+  /** アバター（とびら君）を着せかえる画面を開く */
+  onOpenOutfit?: () => void;
 }
 
 type SettingsTab = 'general' | 'friends' | 'class';
 
-export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenTeacherDashboard, onOpenFeedbackAdmin }: ProfileModalProps) {
+export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenTeacherDashboard, onOpenFeedbackAdmin, onOpenOutfit }: ProfileModalProps) {
+  const { progress: growth } = useGrowthProgress();
+  const [rating, setRating] = useState(1500);
+  useEffect(() => { let alive = true; if (auth.currentUser) void fetchMyRankingRow().then(r => { if (alive && r) setRating(r.rating); }).catch(() => {}); return () => { alive = false; }; }, []);
+  const [studySeconds] = useState(() => readStudyTime(auth.currentUser?.uid || 'guest').total);
+  const earnedBadges = BADGES.filter(b => b.id in growth.badges);
   const [tab, setTab] = useState<SettingsTab>('general');
   const [battleAudioSettings, updateBattleAudio] = useBattleAudioSettings();
   const [name, setName] = useState('');
@@ -181,94 +194,92 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
           ) : (
             <div className="profile-workspace h-full grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 overflow-y-auto md:overflow-hidden no-scrollbar">
               <div className="space-y-2 sm:space-y-3">
-                <section className="bg-white border border-gray-150 p-3 rounded-2xl shadow-sm">
-                  <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">学習状況</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Stat icon={<Flame size={15} />} label="継続" value={`${streak}日`} color="text-[#D35400]" bg="bg-[#F9E79F]/20" />
-                    <Stat icon={<BookOpen size={15} />} label="修了" value={`${completedCount}章`} color="text-[#27AE60]" bg="bg-[#A4D4AE]/15" />
+                {/* ★プロフィールカード（A14）★ アバター・レベル/称号・連続日数・学習時間・バッジを1枚に。
+                    「学習状況」と「プロフィール」の2枚に分かれていたものをまとめ、縦を詰める。 */}
+                <section className="ps-card" aria-label="プロフィール">
+                  <div className="ps-card-top">
+                    <div className="ps-avatar">
+                      <GrowthAvatar progress={growth} size={72} />
+                      {onOpenOutfit && <button type="button" className="ps-avatar-edit" onClick={onOpenOutfit} aria-label="アバターを変更（きせかえ）"><Shirt size={15} aria-hidden="true" /><span>変更</span></button>}
+                    </div>
+                    <div className="ps-id">
+                      <label className="ps-name">
+                        <span className="sr-only">ニックネーム</span>
+                        <input value={name} maxLength={NICKNAME_MAX} onChange={(event) => setName(event.target.value)} placeholder="ニックネーム" aria-invalid={!!name.trim() && !nameCheck.ok} aria-describedby="nickname-help" />
+                        <Pencil size={16} aria-hidden="true" />
+                      </label>
+                      <div className="ps-rank"><TitleChip progress={growth} rating={rating} size="md" /><span>Lv.{levelOf(growth.xp).level}</span></div>
+                    </div>
+                  </div>
+                  {/* 注意書きは名前に問題があるときだけ出す（普段は入力欄の説明＝aria で伝える） */}
+                  <p id="nickname-help" role={name.trim() && !nameCheck.ok ? 'alert' : undefined} className="ps-help" data-error={(name.trim() && !nameCheck.ok) || undefined}>
+                    {name.trim() && !nameCheck.ok ? nameCheck.message : '名前は対戦・ランキングで表示されます（本名・連絡先は不可）'}
+                  </p>
+                  <dl className="ps-stats">
+                    <div><dt><Flame size={15} aria-hidden="true" />連続</dt><dd>{streak}<small>日</small></dd></div>
+                    <div><dt><Clock size={15} aria-hidden="true" />学習時間</dt><dd>{formatStudyTime(studySeconds)}</dd></div>
+                    <div><dt><BookOpen size={15} aria-hidden="true" />修了</dt><dd>{completedCount}<small>章</small></dd></div>
+                  </dl>
+                  <div className="ps-badges" aria-label={`獲得バッジ ${earnedBadges.length}個`}>
+                    <span>バッジ {earnedBadges.length}/{BADGES.length}</span>
+                    {earnedBadges.length === 0 ? <small>対戦や復習で集まります</small> : earnedBadges.slice(0, 4).map(b => <i key={b.id} title={b.desc}>{b.label}</i>)}
+                    {earnedBadges.length > 4 && <small>ほか{earnedBadges.length - 4}個</small>}
+                  </div>
+                  <div className="ps-fields">
+                    <label className="ps-select"><GraduationCap size={15} aria-hidden="true" /><span className="sr-only">学年</span>
+                      <input value={grade} onChange={(event) => setGrade(event.target.value)} placeholder="学年（例：高校1年）" /><Pencil size={15} aria-hidden="true" />
+                    </label>
+                    <label className="ps-select"><Compass size={15} aria-hidden="true" /><span className="sr-only">文理</span>
+                      <select value={stream} onChange={(event) => setStream(event.target.value)}>
+                        <option value="science">理系</option>
+                        <option value="humanities">文系</option>
+                        <option value="other">その他</option>
+                      </select><ChevronDown size={16} aria-hidden="true" />
+                    </label>
                   </div>
                 </section>
 
-                <section className="bg-white border border-gray-150 p-3 rounded-2xl shadow-sm space-y-2">
-                  <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">プロフィール</h3>
-                  <CompactField icon={<User size={15} />}><input value={name} maxLength={NICKNAME_MAX} onChange={(event) => setName(event.target.value)} placeholder="ニックネーム" aria-invalid={!!name.trim() && !nameCheck.ok} aria-describedby="nickname-help" className="compact-input" /></CompactField>
-                  <p id="nickname-help" role={name.trim() && !nameCheck.ok ? 'alert' : undefined} className={`px-1 text-[10px] leading-snug ${name.trim() && !nameCheck.ok ? 'text-[#C0392B] font-bold' : 'text-gray-400'}`}>
-                    {name.trim() && !nameCheck.ok ? nameCheck.message : 'ランキングや対戦で他の人にも表示されます。本名や連絡先は入れないでください。'}
-                  </p>
-                  <CompactField icon={<GraduationCap size={15} />}><input value={grade} onChange={(event) => setGrade(event.target.value)} placeholder="学年（例：高校1年）" className="compact-input" /></CompactField>
-                  <CompactField icon={<Compass size={15} />}>
-                    <select value={stream} onChange={(event) => setStream(event.target.value)} className="compact-input appearance-none cursor-pointer">
-                      <option value="science">理系（化学・物理など）</option>
-                      <option value="humanities">文系（社会・国語など）</option>
-                      <option value="other">その他</option>
-                    </select>
-                  </CompactField>
+                {/* ★対戦で相手に見えるカードのプレビュー（A16）★ 名前・称号を変えるとその場で反映される */}
+                <section className="ps-preview" aria-label="対戦で相手に見えるカード">
+                  <p>対戦で相手に見えるカード</p>
+                  <div className="ps-mini" aria-hidden="true">
+                    <span className="ps-mini-avatar"><GrowthAvatar progress={growth} size={44} showLevel={false} /></span>
+                    <div><strong>{name.trim() || 'ニックネーム'}</strong><span><TitleChip progress={growth} rating={rating} /> Lv.{levelOf(growth.xp).level}</span></div>
+                    <b>VS</b>
+                  </div>
                 </section>
               </div>
 
               <div className="space-y-2 sm:space-y-3 flex flex-col">
-                <section className="bg-white border border-gray-150 p-3 rounded-2xl shadow-sm space-y-2">
-                  <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">サウンド</h3>
-                  <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-2.5">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isBgmEnabled ? 'bg-[#A9CCE3]/25 text-[#2C3E50]' : 'bg-gray-200 text-gray-400'}`}>
-                      {isBgmEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-                    </div>
-                    <div className="flex-1"><p className="text-xs font-bold">バックグラウンドBGM</p><p className="text-[10px] text-gray-400">学習中の自動再生</p></div>
-                    <button type="button" onClick={toggleBgm} role="switch" aria-checked={isBgmEnabled} className={`relative h-6 w-11 rounded-full transition-colors ${isBgmEnabled ? 'bg-[#A9CCE3]' : 'bg-gray-200'}`}>
-                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${isBgmEnabled ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                    </button>
-                  </div>
-                  {isBgmEnabled && (
-                    <div className="flex items-center gap-2 px-1">
-                      <VolumeX size={14} className="text-gray-400" />
-                      <input aria-label="BGM音量" type="range" min="0" max="1" step="0.01" value={bgmVolume} onChange={(event) => setBgmVolume(parseFloat(event.target.value))} className="flex-1 accent-[#A9CCE3]" />
-                      <span className="w-9 text-right text-[10px] font-bold text-[#5D6D7E]">{Math.round(bgmVolume * 100)}%</span>
-                    </div>
-                  )}
-
-                  {/* ★対戦の音（臨場感アップデート）★ 通常 BGM とは別のスイッチ */}
-                  <div className="mt-1 border-t border-gray-100 pt-2" id="battle-audio-settings">
-                    <p className="mb-1.5 flex items-center gap-1 text-[10px] font-bold text-gray-400"><Swords size={11} /> 対戦モードの音</p>
-                    <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-2.5">
-                      <div className="flex-1"><p className="text-xs font-bold">対戦BGM</p><p className="text-[10px] text-gray-400">マッチング・試合中・最終問題で変化</p></div>
-                      <button type="button" onClick={() => updateBattleAudio({ bgm: !battleAudioSettings.bgm })} role="switch" aria-checked={battleAudioSettings.bgm} aria-label="対戦BGM" className={`relative h-6 w-11 rounded-full transition-colors ${battleAudioSettings.bgm ? 'bg-[#F4D03F]' : 'bg-gray-200'}`}>
-                        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${battleAudioSettings.bgm ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                      </button>
-                    </div>
-                    <div className="mt-1.5 flex items-center gap-2 bg-gray-50 rounded-xl p-2.5">
-                      <div className="flex-1"><p className="text-xs font-bold">対戦効果音</p><p className="text-[10px] text-gray-400">正解・相手の回答・逆転など</p></div>
-                      <button type="button" onClick={() => { updateBattleAudio({ sfx: !battleAudioSettings.sfx }); if (!battleAudioSettings.sfx) window.setTimeout(() => battleAudio().play('correct'), 50); }} role="switch" aria-checked={battleAudioSettings.sfx} aria-label="対戦効果音" className={`relative h-6 w-11 rounded-full transition-colors ${battleAudioSettings.sfx ? 'bg-[#F4D03F]' : 'bg-gray-200'}`}>
-                        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${battleAudioSettings.sfx ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                      </button>
-                    </div>
-                    {(battleAudioSettings.bgm || battleAudioSettings.sfx) && (
-                      <div className="mt-1.5 flex items-center gap-2 px-1">
-                        <VolumeX size={14} className="text-gray-400" />
-                        <input aria-label="対戦の音量" type="range" min="0" max="1" step="0.01" value={battleAudioSettings.volume} onChange={(event) => updateBattleAudio({ volume: parseFloat(event.target.value) })} onPointerUp={() => battleAudio().play('tap')} className="flex-1 accent-[#F4D03F]" />
-                        <span className="w-9 text-right text-[10px] font-bold text-[#5D6D7E]">{Math.round(battleAudioSettings.volume * 100)}%</span>
-                      </div>
-                    )}
-                  </div>
+                <section className="ps-sound" aria-label="サウンド">
+                  <h3>サウンド</h3>
+                  <Toggle label="BGM" sub="学習中の音楽" checked={isBgmEnabled} onChange={toggleBgm} icon={isBgmEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />} />
+                  {isBgmEnabled && <Volume label="BGM音量" value={bgmVolume} onChange={setBgmVolume} />}
+                  <p className="ps-sub"><Swords size={14} aria-hidden="true" />対戦モードの音</p>
+                  <Toggle label="対戦BGM" sub="試合中・最終問題で変化" checked={battleAudioSettings.bgm} onChange={() => updateBattleAudio({ bgm: !battleAudioSettings.bgm })} tone="gold" />
+                  <Toggle label="対戦効果音" sub="正解・逆転など" checked={battleAudioSettings.sfx} onChange={() => { updateBattleAudio({ sfx: !battleAudioSettings.sfx }); if (!battleAudioSettings.sfx) window.setTimeout(() => battleAudio().play('correct'), 50); }} tone="gold" />
+                  {(battleAudioSettings.bgm || battleAudioSettings.sfx) && <Volume label="対戦の音量" value={battleAudioSettings.volume} onChange={(v) => updateBattleAudio({ volume: v })} onCommit={() => battleAudio().play('tap')} tone="gold" />}
                 </section>
 
                 <section className="bg-white border border-gray-150 p-3 rounded-2xl shadow-sm space-y-2 flex-1">
-                  <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">アカウント</h3>
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">アカウント</h3>
                   {!auth.currentUser ? (
                     /* 未連携：連携の「得」を具体的に見せてから押してもらう。
                        ボタンは Google のブランドガイドに近い白地＋Gマークで、
                        「見慣れた形」にして心理的なハードルを下げる。 */
                     <div className="space-y-2">
-                      <div className="rounded-xl bg-[#FBE0E9]/40 border border-[#F4A9C4]/50 p-2.5">
-                        <p className="text-[11px] font-bold text-[#1B2631] mb-1.5">Google アカウントと連携すると</p>
-                        <ul className="space-y-1">
+                      {/* 利点の一覧は押したら開く（設定画面を縦に長くしない） */}
+                      <details className="ps-benefits rounded-xl bg-[#FBE0E9]/40 border border-[#F4A9C4]/50 px-2.5">
+                        <summary className="text-xs font-bold text-[#1B2631]">連携するとできること（オンライン対戦・記録の引き継ぎ など）</summary>
+                        <ul className="space-y-1 pb-2.5">
                           {GOOGLE_LINK_BENEFITS.map((benefit) => (
-                            <li key={benefit} className="flex items-start gap-1.5 text-[10px] text-[#5D6D7E] leading-snug">
+                            <li key={benefit} className="flex items-start gap-1.5 text-xs text-[#5D6D7E] leading-snug">
                               <Check size={13} className="shrink-0 mt-[1px] text-[#D9466E]" />
                               <span>{benefit}</span>
                             </li>
                           ))}
                         </ul>
-                      </div>
+                      </details>
                       <button
                         onClick={linkGoogle}
                         disabled={signing}
@@ -278,13 +289,13 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                         {signing ? '連携中…' : 'Google アカウントで連携'}
                       </button>
                       <AppleSignInButton onResult={(o) => { if (!o.ok) setAuthError(o.message || 'ログインに失敗しました。'); }} />
-                      <p className="text-[9px] text-gray-400 text-center leading-snug">
+                      <p className="text-xs text-gray-500 text-center leading-snug">
                         連携は無料です。いまの学習記録はそのまま引き継がれます。
                       </p>
                     </div>
                   ) : (
                     <>
-                      <p className="text-[10px] text-gray-400 truncate px-1">{auth.currentUser.email}</p>
+                      <p className="text-xs text-gray-400 truncate px-1">{auth.currentUser.email}</p>
                       {/* 運営専用：フィードバック管理（返信フォーム）への入口。
                           運営メールでログインしているときだけ見える。 */}
                       {onOpenFeedbackAdmin && isFeedbackAdmin(auth.currentUser) && (
@@ -300,7 +311,7 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                     </>
                   )}
                   {authError && (
-                    <div role="alert" className="flex items-start gap-1.5 rounded-xl bg-[#FDEDEC] border border-[#E74C3C]/40 px-2.5 py-2 text-[10px] leading-snug text-[#C0392B]">
+                    <div role="alert" className="flex items-start gap-1.5 rounded-xl bg-[#FDEDEC] border border-[#E74C3C]/40 px-2.5 py-2 text-xs leading-snug text-[#C0392B]">
                       <AlertTriangle size={14} className="shrink-0 mt-[1px]" />
                       <span>{authError}</span>
                     </div>
@@ -314,9 +325,10 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                     App.tsx の起動時・オンライン復帰時に自動で再送されるため、
                     利用者が手動で診断・復旧操作をする必要がない。 */}
 
-                <div className="grid grid-cols-[1fr_2fr] gap-2 shrink-0">
-                  <button onClick={onClose} className="py-2.5 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500">キャンセル</button>
-                  <button onClick={handleSave} disabled={loading || !nameCheck.ok} className="py-2.5 rounded-xl bg-[#2C3E50] text-white text-xs font-bold disabled:opacity-40 flex items-center justify-center gap-1.5"><Save size={14} />{loading ? '保存中…' : '設定を保存'}</button>
+                {/* 保存ボタンは下に貼り付けておく（名前を変えたのに保存し忘れる、を防ぐ） */}
+                <div className="ps-savebar grid grid-cols-[1fr_2fr] gap-2 shrink-0">
+                  <button onClick={onClose} className="min-h-11 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500">キャンセル</button>
+                  <button onClick={handleSave} disabled={loading || !nameCheck.ok} className="min-h-11 rounded-xl bg-[#2C3E50] text-white text-xs font-bold disabled:opacity-40 flex items-center justify-center gap-1.5"><Save size={14} />{loading ? '保存中…' : '設定を保存'}</button>
                 </div>
               </div>
             </div>
@@ -327,8 +339,31 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
   );
 }
 
+/**
+ * ★トグル（A12）★ つまみは必ずトラックの内側（幅48・高さ28、つまみ22・余白3）。
+ * 以前は translate-x-5 の移動量がトラック幅と合っておらず、ON でつまみが外へはみ出していた。
+ */
+function Toggle({ label, sub, checked, onChange, icon, tone = 'blue' }: { label: string; sub?: string; checked: boolean; onChange: () => void; icon?: React.ReactNode; tone?: 'blue' | 'gold' }) {
+  return <div className="ps-toggle-row">
+    {icon && <span className="ps-toggle-icon" data-on={checked || undefined}>{icon}</span>}
+    <div className="ps-toggle-text"><p>{label}</p>{sub && <small>{sub}</small>}</div>
+    <button type="button" role="switch" aria-checked={checked} aria-label={label} onClick={onChange} className="ps-switch" data-tone={tone}><span /></button>
+  </div>;
+}
+
+/** ★音量スライダー（A13）★ 塗りつぶしたトラックを見せ、値は%で表示する。 */
+function Volume({ label, value, onChange, onCommit, tone = 'blue' }: { label: string; value: number; onChange: (v: number) => void; onCommit?: () => void; tone?: 'blue' | 'gold' }) {
+  const pct = Math.round(value * 100);
+  return <div className="ps-volume" data-tone={tone}>
+    <VolumeX size={16} aria-hidden="true" />
+    <input aria-label={label} type="range" min="0" max="1" step="0.01" value={value} onChange={(e) => onChange(parseFloat(e.target.value))} onPointerUp={onCommit} onKeyUp={onCommit} style={{ '--ps-fill': `${pct}%` } as React.CSSProperties} />
+    <Volume2 size={16} aria-hidden="true" />
+    <output>{pct}%</output>
+  </div>;
+}
+
 function Stat({ icon, label, value, color, bg }: { icon: React.ReactNode; label: string; value: string; color: string; bg: string }) {
-  return <div className={`${bg} rounded-xl p-2 flex items-center gap-2`}><span className={color}>{icon}</span><div><p className="text-[9px] text-gray-500 font-bold">{label}</p><p className="text-base font-bold text-[#1B2631] leading-tight">{value}</p></div></div>;
+  return <div className={`${bg} rounded-xl p-2 flex items-center gap-2`}><span className={color}>{icon}</span><div><p className="text-xs text-gray-500 font-bold">{label}</p><p className="text-base font-bold text-[#1B2631] leading-tight">{value}</p></div></div>;
 }
 
 function CompactField({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {

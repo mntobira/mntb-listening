@@ -376,7 +376,7 @@ export function BattleRoomScreen({
             className="grid gap-2 rounded-2xl border-2 p-3"
             style={{ borderColor: LINE, background: '#FFFFFF' }}
           >
-            <p className="text-center text-[11px] font-black" style={{ color: INK }}>
+            <p className="text-center text-xs font-black" style={{ color: INK }}>
               対戦をやめますか？ やめると<span style={{ color: '#C0392B' }}>この試合は負け</span>になります。
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -399,7 +399,7 @@ export function BattleRoomScreen({
           <button
             type="button"
             onClick={() => setConfirmQuit(true)}
-            className="w-full py-1 text-center text-[10px] font-bold underline-offset-2 hover:underline"
+            className="w-full min-h-11 py-1 text-center text-xs font-bold underline-offset-2 hover:underline"
             style={{ color: '#9A948A' }}
           >
             対戦をやめる

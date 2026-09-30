@@ -1,0 +1,33 @@
+/*
+ * 単元カード（UnitCard.tsx）。ホームの色の感じ（クリーム地・細い線・やわらかい影）に合わせる。
+ * ★UIの決まり★ 閉じた状態 80〜100px／文字12px以上／タップ44px以上。
+ */
+.unit-card { --unit-accent: #aa6c87; position: relative; border: 1px solid #e5dccc; border-radius: 14px; background: #fffdf5; box-shadow: 0 2px 0 #efe6d4; }
+.unit-card[data-status=done] { border-color: #bfe0cd; }
+.unit-card[data-status=doing] { border-color: #f1d3ad; }
+.unit-card-row { display: flex; align-items: center; gap: 8px; min-height: 80px; padding: 8px 10px 8px 12px; }
+.unit-card-main { flex: 1; min-width: 0; min-height: 64px; display: flex; flex-direction: column; justify-content: center; gap: 6px; text-align: left; background: none; border: 0; padding: 0; cursor: pointer; color: #344451; }
+.unit-card-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font: 700 15px/1.35 var(--mt-font-body); }
+.unit-card-title b { color: var(--unit-accent); font-weight: 800; font-variant-numeric: tabular-nums; }
+.unit-card-meta { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.unit-card-meter { flex: 1; min-width: 36px; max-width: 120px; height: 6px; }
+.unit-card-meter > i { background: var(--mt-doing); }
+.unit-card-meter[data-status=todo] > i { background: var(--mt-todo); }
+.unit-card-acc { font: 700 12px/1 var(--mt-font-body); color: #5a6573; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.unit-card-chev { flex-shrink: 0; color: #8c806b; transition: transform .2s; }
+.unit-card[data-expanded] .unit-card-chev { transform: rotate(180deg); }
+.unit-card-primary { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 14px; border-radius: 999px; background: var(--unit-accent); color: #fff; font: 800 13px/1 var(--mt-font-body); white-space: nowrap; box-shadow: 0 3px 0 color-mix(in srgb, var(--unit-accent) 70%, #000 12%); cursor: pointer; }
+.unit-card-primary:active { transform: translateY(2px); box-shadow: none; }
+.unit-card-panel { padding: 0 12px 12px; border-top: 1px dashed #e5dccc; }
+.unit-card-topics { margin: 10px 0 0; padding-left: 1.1em; list-style: disc; font: 400 13px/1.6 var(--mt-font-body); color: #4f5a66; }
+.unit-card-count { margin-top: 6px; font: 700 12px/1.4 var(--mt-font-body); color: #765f70; }
+.unit-card-secondary { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.unit-card-secondary button { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; padding: 0 14px; border: 1px solid #e5dccc; border-radius: 12px; background: #fff; color: #4f5a66; font: 700 13px/1 var(--mt-font-body); cursor: pointer; }
+.unit-card-secondary button[aria-pressed=true] { border-color: #3e9c93; background: #eaf9f6; color: #2f7c74; }
+.unit-card :focus-visible { outline: none; box-shadow: var(--mt-focus); border-radius: 10px; }
+@media (max-width: 360px) {
+  .unit-card-row { padding-inline: 10px 8px; gap: 6px; }
+  .unit-card-title { font-size: 14px; }
+  .unit-card-primary { padding: 0 10px; }
+  .unit-card-meter { display: none; }
+}

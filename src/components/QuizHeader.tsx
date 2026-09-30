@@ -109,7 +109,7 @@ export function QuizHeader({
           「完了」でキーボードが閉じれば即座に元に戻る。
       PC（isDesktop）には一切かからない条件にしてある。
     */}
-    <div className={`flex-none p-2 md:p-6 border-b border-gray-200 bg-white shadow-sm z-10 flex items-center justify-between gap-2 md:gap-4 ${
+    <div className={`flex-none px-2 py-1 md:p-6 border-b border-gray-200 bg-white shadow-sm z-10 flex items-center justify-between gap-2 md:gap-4 ${
       !isDesktop && keyboardVisible ? 'hidden' : ''
     }`}>
       <div className="flex items-center text-left gap-2 md:gap-4 min-w-0">
@@ -117,7 +117,7 @@ export function QuizHeader({
           onClick={handleExit}
           title="単元選択に戻る"
           aria-label="単元選択に戻る"
-          className="flex items-center justify-center p-1.5 md:p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors shrink-0"
+          className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors shrink-0"
         >
           <ArrowLeft size={18} className="md:w-5 md:h-5" aria-hidden="true" />
         </button>
@@ -125,7 +125,7 @@ export function QuizHeader({
           <h2 className="text-sm md:text-xl font-handwriting text-[#2C3E50] font-bold truncate">
             {chapter.abstractTitle}
           </h2>
-          <div className="text-[10px] md:text-xs text-gray-500 font-bold mt-0.5">
+          <div className="text-xs text-gray-500 font-bold mt-0.5">
             {mode === 'mini_test' ? '小テスト' : '演習問題'}
           </div>
         </div>
@@ -139,7 +139,7 @@ export function QuizHeader({
 
         {points.length > 0 && (
           <button type="button" onClick={() => setPointsOpen(true)} data-unit-points-button
-            className="flex items-center gap-1 rounded-full border border-[#F4D03F]/50 bg-[#FFF9E0] px-2 py-1 text-[11px] font-bold text-[#8a6d00] md:px-3 md:py-1.5 md:text-xs"
+            className="flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full border border-[#F4D03F]/50 bg-[#FFF9E0] px-2 text-xs font-bold text-[#8a6d00] md:px-3"
             aria-haspopup="dialog" aria-label="この単元のポイントを見る">
             <Lightbulb size={13} aria-hidden="true" />
             <span className="hidden sm:inline">ポイント</span>
@@ -153,12 +153,12 @@ export function QuizHeader({
             {run.totalScore}
           </div>
           {run.runningCombo >= 3 && (
-            <span className="text-[10px] font-bold text-orange-500 ml-0.5">🔥{run.runningCombo}</span>
+            <span className="text-xs font-bold text-orange-500 ml-0.5">🔥{run.runningCombo}</span>
           )}
         </div>
 
         <div className="flex items-center gap-2 md:gap-3 bg-gray-100 rounded-full px-3 py-1 md:px-4 md:py-1.5 shrink-0">
-          <div className="text-[10px] md:text-sm text-gray-500 font-bold hidden sm:block">進捗</div>
+          <div className="text-xs md:text-sm text-gray-500 font-bold hidden sm:block">進捗</div>
           {/* 分母は「今回解く範囲の問題数」。
               1回分（例：第3回演習）だけを選んで解いているときに
               章全体の 14 が分母になると、あと13回残っているように見えて

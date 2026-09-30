@@ -117,13 +117,13 @@ function ScoreColumn({
 }) {
   return (
     <div className="flex-1 text-center">
-      <p className="text-[10px] font-black" style={{ color: INK_SUB }}>
+      <p className="text-xs font-black" style={{ color: INK_SUB }}>
         {label}
       </p>
       <p className="battle-pop text-3xl font-black tabular-nums" style={{ color }}>
         {score?.score ?? 0}
       </p>
-      <p className="text-[10px] font-bold" style={{ color: INK_SUB }}>
+      <p className="text-xs font-bold" style={{ color: INK_SUB }}>
         {score ? `${score.correctCount}問せいかい` : '—'}
       </p>
     </div>
@@ -321,7 +321,7 @@ export function BattleResult({
 
       {byForfeit && (
         <p
-          className="mb-3 rounded-xl px-3 py-2 text-center text-[11px] font-bold"
+          className="mb-3 rounded-xl px-3 py-2 text-center text-xs font-bold"
           style={{ background: `${GOLD}2E`, color: AMBER }}
         >
           相手の通信が切れたため、不戦勝あつかいになりました
@@ -332,7 +332,7 @@ export function BattleResult({
 
       {result.decidedByTime && (
         <p
-          className="mb-3 rounded-xl px-3 py-2 text-center text-[11px] font-bold"
+          className="mb-3 rounded-xl px-3 py-2 text-center text-xs font-bold"
           style={{ background: '#2E86C114', color: '#2E86C1' }}
         >
           同点だったので、解答時間の合計で決まりました
@@ -400,7 +400,7 @@ export function BattleResult({
         style={{ borderColor: `${title.color}44`, background: `${title.color}10` }}
       >
         <div>
-          <p className="text-[10px] font-black" style={{ color: INK_SUB }}>
+          <p className="text-xs font-black" style={{ color: INK_SUB }}>
             レート
           </p>
           {rating ? (
@@ -475,7 +475,7 @@ export function BattleResult({
                 <div className="flex items-center justify-between gap-2">
                   <span className="flex min-w-0 items-center gap-2">
                     <span
-                      className="w-5 shrink-0 text-[11px] font-black tabular-nums"
+                      className="w-5 shrink-0 text-xs font-black tabular-nums"
                       style={{ color: INK_SUB }}
                     >
                       {q.index + 1}
@@ -492,7 +492,7 @@ export function BattleResult({
 
                   </span>
                   <span
-                    className="shrink-0 text-right text-[10px] font-bold tabular-nums"
+                    className="shrink-0 text-right text-xs font-bold tabular-nums"
                     style={{ color: INK_SUB }}
                   >
                     <span style={{ color: q.correct ? AMBER : INK_SUB }}>{q.total}</span>
@@ -511,7 +511,7 @@ export function BattleResult({
                   正しい答え：<BattleText text={correctText} subject={question?.subject ?? subject} />
                 </div>
                 {q.correct && (
-                  <p className="mt-0.5 pl-7 text-[9px] font-bold" style={{ color: INK_SUB }}>
+                  <p className="mt-0.5 pl-7 text-xs font-bold" style={{ color: INK_SUB }}>
                     {q.timeUsed.toFixed(1)}秒 ／ 速さ +{q.speed}
                     {q.streak > 0 && ` ／ 連続 +${q.streak}`}
                   </p>
@@ -581,10 +581,10 @@ export function BattleResult({
               >
                 <BookOpen size={16} className="shrink-0" style={{ color: theme.accent }} />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[11px] font-black" style={{ color: INK }}>
+                  <span className="block truncate text-xs font-black" style={{ color: INK }}>
                     {chapterTitleOf(row.chapterId)}
                   </span>
-                  <span className="block text-[9px] font-bold" style={{ color: INK_SUB }}>
+                  <span className="block text-xs font-bold" style={{ color: INK_SUB }}>
                     {row.wrong ? '★まちがえた単元★ この単元を演習する' : 'この単元を演習する'}
                   </span>
                 </span>
@@ -596,7 +596,7 @@ export function BattleResult({
 
       {!ratingNote && (
         <p
-          className="mb-2 text-center text-[10px] font-bold leading-relaxed"
+          className="mb-2 text-center text-xs font-bold leading-relaxed"
           style={{ color: INK_SUB }}
         >
           点数は両方の端末で同じ計算をして、

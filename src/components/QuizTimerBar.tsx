@@ -106,7 +106,7 @@ export function QuizTimerBar({ timeLimit, running, onTick, resetKey }: QuizTimer
       role="timer"
     >
       <div className="flex items-center justify-between px-3 md:px-4 pt-1 pb-0.5">
-        <div className={`flex items-center gap-1.5 text-[10px] md:text-xs font-bold font-mono ${textColor} transition-colors`}>
+        <div className={`flex items-center gap-1.5 text-xs font-bold font-mono ${textColor} transition-colors`}>
           <Clock size={12} className="md:w-3.5 md:h-3.5" />
           {isOver ? (
             <span className="tabular-nums">

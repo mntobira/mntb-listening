@@ -1,0 +1,56 @@
+/*
+ * 単元一覧（ChapterSelection）の見出し・タブ・一覧（2026-09-30）。
+ * ★UIの決まり（CLAUDE.md「UI principles」）★
+ *   見出しは1行・80px以内。一覧の中だけスクロールし、画面全体はスクロールさせない。
+ *   色はホームと同じクリーム地・細い線・やわらかい影。文字12px以上・タップ44px以上。
+ */
+.chapter-route .unit-head { display: flex; align-items: center; gap: 8px; min-height: 56px; max-height: 80px; margin: 0 0 8px; padding: 0; text-align: left; }
+.chapter-route .unit-head-back { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 14px 0 10px; border: 1px solid #e5dccc; border-radius: 999px; background: #fffdf5; color: #6e6d5b; font: 700 13px/1 var(--mt-font-body); box-shadow: 0 2px 0 #efe6d4; }
+.chapter-route .unit-head-title { flex: 1; min-width: 0; }
+.chapter-route .unit-head-title h2 { margin: 0; font: 800 18px/1.25 var(--mt-font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chapter-route .unit-head-title p { margin: 2px 0 0; font: 700 12px/1.3 var(--mt-font-body); color: #6e6d5b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chapter-route .unit-head-mascot { position: static !important; flex-shrink: 0; max-height: 48px; }
+.chapter-route .unit-head-mascot img { max-height: 48px; width: auto; }
+@media (max-width: 360px) { .chapter-route .unit-head-back span { display: none; } .chapter-route .unit-head-back { padding: 0 12px; } }
+
+/* タブ：12px以上・高さを抑える */
+.chapter-route .chapter-index { margin-bottom: 8px; }
+.chapter-route .chapter-index [role=tab] { min-height: 52px; }
+.chapter-route .chapter-index [role=tab] > span:first-child { font-size: 12px !important; }
+.chapter-route .chapter-index [role=tab] > span:nth-child(2) { font-size: 13px; }
+.chapter-route .chapter-tab-status { font-size: 12px; }
+
+/* パネル：見出しを小さく、一覧が主役 */
+.chapter-route #chapter-tab-panel { padding: 10px; }
+.chapter-route #chapter-tab-panel > div:first-child { margin-bottom: 8px; padding-bottom: 8px; }
+.chapter-route #chapter-tab-panel > div:first-child p { font-size: 12px; }
+.chapter-route #chapter-tab-panel > div:first-child h3 { font-size: 15px; }
+.chapter-route #chapter-tab-panel > div:first-child button { min-height: 44px; font-size: 12px; }
+
+/* 一覧：左の縦線・丸番号（旧デザイン）はやめ、番号はカードの中に「01.」で出す */
+.chapter-route .chapter-route-list.unit-card-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding-left: 0; margin-left: 0; border-left: 0; }
+@media (min-width: 1024px) { .chapter-route .chapter-route-list.unit-card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 12px; align-items: start; } }
+.unit-card-list .math-stage-heading { grid-column: 1 / -1; }
+.unit-card-link { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; margin-top: 6px; padding: 0 12px; border: 1px solid #f1d3ad; border-radius: 12px; background: #fdf0db; color: #8a4b00; font: 700 13px/1 var(--mt-font-body); }
+.unit-card-questions { display: grid; gap: 4px; margin-top: 8px; padding: 6px; border: 1px solid #e5dccc; border-radius: 12px; background: #fff; }
+.unit-card-questions button { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; padding: 6px 10px; border-radius: 8px; text-align: left; font: 700 13px/1.5 var(--mt-font-body); color: #4f5a66; }
+.unit-card-questions button:hover { background: #fdf6e8; }
+
+/* リスニングの「第N回演習」：12px以上・44px以上 */
+.chapter-route [data-listening-rounds] p { font-size: 12px !important; }
+.chapter-route [data-listening-rounds] button { min-height: 44px; }
+.chapter-route [data-listening-rounds] .round-title { font-size: 14px; }
+.chapter-route [data-listening-rounds] .round-detail { font-size: 12px; }
+.chapter-route [data-listening-rounds] .round-done { font-size: 12px; padding: 2px 8px; }
+.chapter-route [data-listening-rounds] .round-audio { font-size: 12px; }
+
+/* タブが3つ以下（英文法の PART 1〜3）は横スクロールさせず等分に並べる */
+@media (max-width: 1023px) {
+  .chapter-route .chapter-index[data-few-tabs] [role=tablist] { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; overflow: visible; }
+  .chapter-route .chapter-index[data-few-tabs] [role=tab] { width: auto; min-width: 0; max-width: none; }
+}
+
+/* リスニングの回：1行・約60px。左＝その回を解く／右＝音源だけ聞く */
+.chapter-route [data-listening-rounds] .round-card:hover { border-color: #e2c98f; }
+.chapter-route [data-listening-rounds] .round-main:focus-visible { outline: none; box-shadow: var(--mt-focus); border-radius: 8px; }
+.chapter-route [data-listening-rounds] .round-audio span { font-size: 12px; line-height: 1; }

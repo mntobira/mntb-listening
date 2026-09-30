@@ -1,3 +1,4 @@
+import './home-legibility.css';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { BookOpen, ChevronRight, Edit3, ArrowRight, BarChart3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Microscope, Flame, Sparkles, Gift, Store, Shirt, Award, Target, Zap, Headphones, PenLine } from 'lucide-react';
 import { auth } from '../firebase';
@@ -77,7 +78,7 @@ import {
 import { profileKey, streakKey, lastActiveKey, completedKey } from '../utils/userStorageKeys';
 import { loadSchoolBrand } from '../utils/classroom';
 import { UpdateNoticeModal } from './UpdateNoticeModal';
-import { unreadNoticeCount } from '../utils/updateNotices';
+import { unreadNoticeCount, refreshRemoteNotices } from '../utils/updateNotices';
 
 interface HomeProps {
   onStart: () => void;
@@ -109,6 +110,8 @@ interface HomeProps {
   onReviewList?: () => void;
   /** 科目選択（タイトル）画面へ戻る */
   onChangeSubject?: () => void;
+  /** 英文法・英単語を固めるページを開く（無ければ onChangeSubject＝科目選択へ） */
+  onFoundation?: () => void;
   /** 現在選択中の科目名（表示用） */
   subjectLabel?: string;
   /** 現在選択中の科目。省略時は従来どおり化学基礎として振る舞う。 */
@@ -135,7 +138,7 @@ interface HomeProps {
   onToggleBgm?: (enabled: boolean) => void;
 }
 
-export function Home({ onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLogicalTree, onLeaderboard, onBattle, onRika, onChangeSubject, subjectLabel = '化学基礎', subject = 'chemistry_basic', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm }: HomeProps) {
+export function Home({ onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLogicalTree, onLeaderboard, onBattle, onRika, onChangeSubject, onFoundation, subjectLabel = '化学基礎', subject = 'chemistry_basic', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm }: HomeProps) {
   const { progress: growth } = useGrowthProgress();
   const reviewDueCount = useMemo(() => {
     const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
@@ -158,6 +161,8 @@ export function Home({ onPickSubject, onStudyMode, onGrowth, onStart, onIntro, o
   const [showNotices, setShowNotices] = useState(false);
   const progressDialog = useRef<HTMLDialogElement>(null);
   const [unreadCount, setUnreadCount] = useState(() => unreadNoticeCount());
+  // 運営のお知らせ（Firestore）が届いたら未読数を更新する（取れなければ同梱分のまま）。
+  useEffect(() => { let alive = true; void refreshRemoteNotices().then(() => { if (alive) setUnreadCount(unreadNoticeCount()); }); return () => { alive = false; }; }, []);
 
   // Real stats state
   const [streak, setStreak] = useState(0);
@@ -361,7 +366,7 @@ export function Home({ onPickSubject, onStudyMode, onGrowth, onStart, onIntro, o
       <div className="home-lobby-lines" aria-hidden="true" />
       <div className="game-home-viewport">
         <header className="game-home-header">
-          <div><h1><img className="game-home-logo" src="/manatobi-logo.jpg" width={1024} height={367} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}>{greetingName}さんのホーム</p></div>
+          <div><h1><img className="game-home-logo" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}>{greetingName}さんのホーム</p></div>
           <div className="game-home-tools">
             <button type="button" onClick={() => onToggleBgm?.(!isBgmEnabled || !!isBgmFadedOut)} aria-label={bgmLabel}>{bgmPlaying ? <Volume2 size={19} /> : <VolumeX size={19} />}</button>
             <button type="button" onClick={() => setShowNotices(true)} aria-label="お知らせを開く"><Bell size={19} />{unreadCount > 0 && <i />}</button>
@@ -394,7 +399,7 @@ export function Home({ onPickSubject, onStudyMode, onGrowth, onStart, onIntro, o
         <section className="game-study-bar" aria-label="科目と英文法・英単語" data-home-study>
           {onPickSubject ? <label><BookOpen size={17} /><select aria-label="学習する科目" value={subject} onChange={e => onPickSubject(e.target.value)}>{SUBJECT_INDEX.filter(s => isSubjectEnabled(s.id)).map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
             : <button type="button" onClick={onChangeSubject} aria-label={`科目をえらぶ（いまは${subjectLabel}）`}><Headphones size={16} />{subjectLabel}<small>・科目</small></button>}
-          <button type="button" onClick={onChangeSubject} data-home-foundation><PenLine size={16} />英文法・英単語を固める</button>
+          <button type="button" onClick={onFoundation ?? onChangeSubject} data-home-foundation><PenLine size={16} />英文法・英単語を固める</button>
         </section>
         <div className={`game-home-utility arena-home-bottom ${onGrowth ? 'has-rush' : ''}`}>
           {onGrowth && <button type="button" className="game-rush-entry" onClick={() => onGrowth('rush')} aria-label="マナラッシュ（60秒チャレンジ）を開く" data-home-rush><Zap size={17} />ラッシュ</button>}

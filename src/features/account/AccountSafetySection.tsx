@@ -41,7 +41,7 @@ export function AccountSafetySection({ onDeleted }: { onDeleted?: () => void }) 
 
   return (
     <section className="bg-white border border-gray-150 p-3 rounded-2xl shadow-sm space-y-2" aria-labelledby="account-safety-title">
-      <h3 id="account-safety-title" className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">安全とアカウント</h3>
+      <h3 id="account-safety-title" className="text-xs font-bold text-gray-500 uppercase tracking-wider">安全とアカウント</h3>
 
       <div className="grid grid-cols-3 gap-1.5">
         <button type="button" className="account-link" onClick={() => setLegal('terms')}><FileText size={14} aria-hidden="true" />利用規約</button>
@@ -52,11 +52,11 @@ export function AccountSafetySection({ onDeleted }: { onDeleted?: () => void }) 
       <div>
         <p className="flex items-center gap-1 text-xs font-bold"><Ban size={13} aria-hidden="true" />ブロック中の人（{blocked.length}）</p>
         {blocked.length === 0 ? (
-          <p className="text-[10px] text-gray-400">ランキングの「…」から通報・ブロックできます。</p>
+          <p className="text-xs text-gray-400">ランキングの「…」から通報・ブロックできます。</p>
         ) : (
           <ul className="mt-1 space-y-1">
             {blocked.map((b) => (
-              <li key={b.uid} className="flex items-center gap-2 text-[11px]">
+              <li key={b.uid} className="flex items-center gap-2 text-xs">
                 <span className="flex-1 truncate">{b.nickname || '（名前なし）'}</span>
                 <button type="button" className="min-h-[32px] px-2 text-[#2980B9] font-bold" onClick={() => unblockUser(b.uid)}>解除</button>
               </li>
@@ -73,8 +73,8 @@ export function AccountSafetySection({ onDeleted }: { onDeleted?: () => void }) 
             </button>
           ) : (
             <div className="space-y-1.5 rounded-xl bg-[#FDEDEC] border border-[#E74C3C]/40 p-2.5">
-              <p className="flex items-start gap-1 text-[11px] font-bold text-[#C0392B]"><AlertTriangle size={14} className="shrink-0" aria-hidden="true" />学習記録・フレンド・対戦履歴・クラス在籍・ランキング掲載が削除され、元に戻せません。</p>
-              <label className="block text-[10px] text-gray-600">確認のため「削除」と入力してください
+              <p className="flex items-start gap-1 text-xs font-bold text-[#C0392B]"><AlertTriangle size={14} className="shrink-0" aria-hidden="true" />学習記録・フレンド・対戦履歴・クラス在籍・ランキング掲載が削除され、元に戻せません。</p>
+              <label className="block text-xs text-gray-600">確認のため「削除」と入力してください
                 <input value={typed} onChange={(e) => setTyped(e.target.value)} className="compact-input mt-1" />
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -83,7 +83,7 @@ export function AccountSafetySection({ onDeleted }: { onDeleted?: () => void }) 
                   {busy ? <Loader2 size={14} className="animate-spin" aria-hidden="true" /> : <Trash2 size={14} aria-hidden="true" />}完全に削除
                 </button>
               </div>
-              {error && <p role="alert" className="text-[10px] text-[#C0392B]">{error}</p>}
+              {error && <p role="alert" className="text-xs text-[#C0392B]">{error}</p>}
             </div>
           )}
         </div>

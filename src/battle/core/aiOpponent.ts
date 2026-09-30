@@ -273,3 +273,12 @@ export function aiAnswerRecord(index: number, move: AiMove, questionStartMs: num
     answeredAt: questionStartMs + move.delayMs,
   };
 }
+
+/**
+ * ★A21：あなたが答えてから AI の答えを見せるまでの間（0.8〜1.5秒）★
+ * 同じ (seed, index) なら同じ値（決定論）。表示のタイミングだけに使い、採点の時刻は変えない。
+ */
+export function aiRevealLagMs(seed: string, index: number): number {
+  const random = createRandom(hashString(`${seed}#${index}#reveal`));
+  return Math.round(800 + random() * 700);
+}

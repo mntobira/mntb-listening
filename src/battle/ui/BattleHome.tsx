@@ -58,6 +58,7 @@
  * 入口で理由を説明して Google ログインに誘導する。
  */
 
+import './battle-lobby.css';
 import { useEffect, useState } from 'react';
 import {
   Bot,
@@ -215,7 +216,7 @@ function ModeCard({
         </h2>
         {badge && (
           <span
-            className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black"
+            className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-xs font-black"
             style={{ background: GOLD, color: INK }}
           >
             {badge}
@@ -235,7 +236,7 @@ function ModeCard({
         style={{ background: '#FAF8F3', border: `1px solid ${LINE}` }}
       >
         {facts.map((f) => (
-          <div key={f.key} className="flex items-baseline gap-2 text-[11px]">
+          <div key={f.key} className="flex items-baseline gap-2 text-xs">
             <dt
               className="flex w-[5.6rem] shrink-0 items-center gap-1 font-black"
               style={{ color: INK_SUB }}
@@ -292,12 +293,25 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
    <div className="arena-menu-player">{progress && <GrowthAvatar progress={progress} size={64}/>}<div><strong>学んだ力で、勝負しよう。</strong><p>正解60点 ＋ 速さ最大240点</p><small>完走10枚・正解ごと2枚・勝利10枚</small></div></div>
    {row && <RankStrip rating={row.rating}/>}
    {notice && <BattleNotice message={notice} tone="info"/>}
-   <section className="arena-mode-card friend"><header><Users/><div><h2>フレンド対戦</h2><p>合言葉で友だちと1対1</p></div><span className="arena-mode-pick">おすすめ</span></header><div className="arena-mode-buttons"><button type="button" onClick={()=>user?onChoose('friend-create'):onRequireLogin?.()}>部屋をつくる</button><button type="button" onClick={()=>user?onChoose('friend-join'):onRequireLogin?.()}>合言葉で入る</button></div></section>
-   <section className="arena-mode-card national"><header><Wifi/><div><h2>全国対戦</h2><p>同じ教科のプレイヤーとマッチ</p></div><span>RANKED</span></header><button type="button" onClick={()=>user?onChoose('national'):onRequireLogin?.()}>相手を見つける<Zap size={17}/></button></section>
-   <section className="arena-mode-card ai"><header><Bot/><div><h2>AIと対戦</h2><p>待ち時間なし・レート変動なし</p></div><span>TRAINING</span></header><button type="button" onClick={()=>onChoose('ai')}>AIと対戦する</button></section>
-   {!user && <p className="arena-login-note">友だち・全国対戦にはログインが必要です。AIはゲストでも遊べます。</p>}
+   {/* ★ホームと同じ組み方（2026-09-30）★ 左右＝パステルの札、中央＝水色の大きな丸。1画面に収める。 */}
+   <section className="arena-lobby-deck" aria-label="対戦の種類">
+    <div className="arena-lobby-side arena-lobby-friend" data-battle-mode="friend">
+     <span className="arena-lobby-icon"><Users aria-hidden="true"/></span><strong>フレンド</strong><small>合言葉で1対1</small>
+     <button type="button" onClick={()=>user?onChoose('friend-create'):onRequireLogin?.()}>部屋をつくる</button>
+     <button type="button" onClick={()=>user?onChoose('friend-join'):onRequireLogin?.()}>合言葉で入る</button>
+    </div>
+    <button type="button" className="arena-lobby-main" data-battle-mode="ai" onClick={()=>onChoose('ai')} aria-label="AIと対戦する">
+     <Bot aria-hidden="true"/><strong>AIと対戦</strong><small>すぐ始まる</small>
+    </button>
+    <div className="arena-lobby-side arena-lobby-national" data-battle-mode="national">
+     <span className="arena-lobby-icon"><Wifi aria-hidden="true"/></span><strong>全国対戦</strong><small>RANKED</small>
+     <button type="button" onClick={()=>user?onChoose('national'):onRequireLogin?.()}>相手を見つける<Zap size={15} aria-hidden="true"/></button>
+    </div>
+   </section>
+   {!user && <p className="arena-login-note">AIはゲストでも遊べます（フレンド・全国はログイン）</p>}
    <div className="arena-menu-links"><button type="button" onClick={()=>onChoose('profile')} aria-label="きせかえ・ガチャ">きせかえ</button><button type="button" onClick={()=>onChoose('missions')}>ミッション</button><button type="button" onClick={()=>onChoose('ranking')}><Trophy size={14}/>ランキング</button><button type="button" onClick={()=>onChoose('history')}><History size={14}/>対戦履歴</button></div>
-   <FriendOnlineStrip/>
+   {/* ゲストには上の「ログイン」の一文で足りるので、同じ趣旨の案内を重ねない */}
+   {user && <FriendOnlineStrip/>}
    <details className="arena-rules-help"><summary>配点と対戦ルール</summary><p>正解のみ加点。速さ点は残り時間の割合rに対して240×(0.7r²+0.3r³)。500ms単位に丸めます。3連続以上に小さな連続点。旧ルームでは作成時の配点を使用します。フレンドもお互い更新してから遊んでください。</p></details>
  </BattleShell>;
 }

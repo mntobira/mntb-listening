@@ -131,7 +131,7 @@ export function LiveScoreboard({
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
         {/* 自分 */}
         <div className="min-w-0">
-          <p className="flex items-center gap-1 text-[10px] font-black" style={{ color: ME_BLUE }}>
+          <p className="flex items-center gap-1 text-xs font-black" style={{ color: ME_BLUE }}>
             <span aria-hidden>🔵</span>
             <span className="truncate">あなた</span>
             {lead === 'me' && <LeadTag color={ME_BLUE} />}
@@ -140,17 +140,17 @@ export function LiveScoreboard({
             <strong className="text-2xl font-black tabular-nums leading-none" style={{ color: INK }}>
               {formatScore(me.shown)}
             </strong>
-            <span className="text-[10px] font-bold" style={{ color: INK_SUB }}>pt</span>
+            <span className="text-xs font-bold" style={{ color: INK_SUB }}>pt</span>
             {me.delta != null && me.delta !== 0 && (
               <span
-                className="battle-live-delta absolute -top-3 left-0 text-[11px] font-black tabular-nums"
+                className="battle-live-delta absolute -top-3 left-0 text-xs font-black tabular-nums"
                 style={{ color: me.delta > 0 ? GREEN : WRONG }}
               >
                 {me.delta > 0 ? `+${me.delta}` : me.delta}
               </span>
             )}
           </p>
-          <p className="mt-0.5 flex h-4 items-center gap-1 text-[10px] font-bold" style={{ color: INK_SUB }}>
+          <p className="mt-0.5 flex h-4 items-center gap-1 text-xs font-bold" style={{ color: INK_SUB }}>
             {myStreak >= 2 ? (
               <span className="flex items-center gap-0.5" style={{ color: '#E67E22' }}>
                 <Flame size={11} /> {myStreak}連続
@@ -169,7 +169,7 @@ export function LiveScoreboard({
 
         {/* VS */}
         <span
-          className="battle-vs-pulse rounded-md px-1.5 py-0.5 text-[10px] font-black"
+          className="battle-vs-pulse rounded-md px-1.5 py-0.5 text-xs font-black"
           style={{ background: '#F4D03F', color: INK }}
         >
           VS
@@ -177,7 +177,7 @@ export function LiveScoreboard({
 
         {/* 相手 */}
         <div className="min-w-0 text-right">
-          <p className="flex items-center justify-end gap-1 text-[10px] font-black" style={{ color: OPP_RED }}>
+          <p className="flex items-center justify-end gap-1 text-xs font-black" style={{ color: OPP_RED }}>
             {lead === 'opponent' && <LeadTag color={OPP_RED} />}
             <span className="truncate">{oppName}</span>
             <span aria-hidden>🔴</span>
@@ -185,7 +185,7 @@ export function LiveScoreboard({
           <p className="relative flex items-baseline justify-end gap-1">
             {op.delta != null && op.delta !== 0 && (
               <span
-                className="battle-live-delta absolute -top-3 right-0 text-[11px] font-black tabular-nums"
+                className="battle-live-delta absolute -top-3 right-0 text-xs font-black tabular-nums"
                 style={{ color: op.delta > 0 ? OPP_RED : INK_SUB }}
               >
                 {op.delta > 0 ? `+${op.delta}` : op.delta}
@@ -194,9 +194,9 @@ export function LiveScoreboard({
             <strong className="text-2xl font-black tabular-nums leading-none" style={{ color: INK }}>
               {formatScore(op.shown)}
             </strong>
-            <span className="text-[10px] font-bold" style={{ color: INK_SUB }}>pt</span>
+            <span className="text-xs font-bold" style={{ color: INK_SUB }}>pt</span>
           </p>
-          <p className="mt-0.5 flex h-4 items-center justify-end gap-1 text-[10px] font-bold">
+          <p className="mt-0.5 flex h-4 min-w-0 items-center justify-end gap-1 overflow-hidden whitespace-nowrap text-xs font-bold">
             <OpponentActivityLabel status={opponent} compact={compactStatus} />
           </p>
         </div>
@@ -208,7 +208,7 @@ export function LiveScoreboard({
 function LeadTag({ color }: { color: string }) {
   return (
     <span
-      className="rounded-full px-1.5 py-px text-[8px] font-black leading-none"
+      className="rounded-full px-1.5 py-px text-xs font-black leading-none"
       style={{ background: `${color}1A`, color }}
     >
       LEAD
@@ -233,7 +233,7 @@ export function OpponentActivityLabel({ status, compact }: { status: OpponentSta
     return (
       <span className="flex items-center gap-0.5" style={{ color: INK_SUB }}>
         <Hourglass size={11} className="animate-pulse" />
-        {compact ? `第${n}問` : `第${n}問を考え中`}
+        {compact ? `第${n}問` : <>第{n}問<span className="bl-long">を考え中</span></>}
         <span className="battle-dot" style={{ '--dot-delay': '0s' } as CSSProperties}>.</span>
         <span className="battle-dot" style={{ '--dot-delay': '0.2s' } as CSSProperties}>.</span>
         <span className="battle-dot" style={{ '--dot-delay': '0.4s' } as CSSProperties}>.</span>
@@ -282,7 +282,7 @@ export function LiveFeed({ entries }: { entries: FeedEntry[] }) {
       {entries.map((e) => (
         <li
           key={e.id}
-          className="battle-live-feed-in max-w-full truncate rounded-full px-2 py-px text-[10px] font-bold leading-4"
+          className="battle-live-feed-in max-w-full truncate rounded-full px-2 py-px text-xs font-bold leading-4"
           style={feedStyle(e)}
         >
           {feedIcon(e)} {e.text}
@@ -326,7 +326,7 @@ export function LiveToast({ toast }: { toast: LiveToastData | null }) {
         style={{ background: conf.bg, color: conf.fg, border: `2px solid ${conf.border}` }}
       >
         {toast.sub && (
-          <span className="text-[10px] font-black tracking-widest opacity-80">{toast.sub}</span>
+          <span className="text-xs font-black tracking-widest opacity-80">{toast.sub}</span>
         )}
         <span className="text-2xl font-black tracking-wide">{conf.icon} {toast.text}</span>
       </div>
@@ -386,7 +386,7 @@ export function FinalBanner() {
 export function ClosingBanner({ remain }: { remain: number }) {
   return (
     <p
-      className="mb-2 text-center text-[10px] font-black tracking-wider"
+      className="bl-closing mb-2 text-center text-xs font-black tracking-wider"
       style={{ color: '#E67E22' }}
       role="status"
     >
@@ -399,7 +399,7 @@ export function ClosingBanner({ remain }: { remain: number }) {
 export function GapHint({ message }: { message: string | null }) {
   if (!message) return null;
   return (
-    <p className="mb-1 text-center text-[10px] font-black" style={{ color: ME_BLUE }} role="status">
+    <p className="mb-1 text-center text-xs font-black" style={{ color: ME_BLUE }} role="status">
       💪 {message}
     </p>
   );

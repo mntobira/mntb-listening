@@ -33,6 +33,7 @@ import { drawQuestionIds, effectiveRule } from '../data/battle';
 import { resolveNickname } from '../../utils/leaderboard';
 import {
   aiAnswerRecord,
+  aiRevealLagMs,
   aiProfileOf,
   aiUidOf,
   decideAiMove,
@@ -265,8 +266,16 @@ export function useAiBattle(
     if (!move || startMs == null) return;
     if (aiSheet[answerKeyOf(currentIndex)]) return;
 
+    /*
+     * ★A21：AI の答え（正誤＋解答時刻）は試合開始時に decideAiMove で確定済み★
+     *   あなたが答えたあとは、AI の予定時刻を待たずに 0.8〜1.5秒（ランダム・決定論）で表示する。
+     *   採点に使う AI の解答時刻（answeredAt）は予定どおり＝速さの点は変わらない。
+     *   （以前は AI が制限時間の9割まで考えることがあり、答えた後に長く待たされていた）
+     */
     const fireAt = startMs + move.delayMs;
-    const wait = Math.max(0, fireAt - Date.now());
+    const mine = mySheet[answerKeyOf(currentIndex)];
+    const revealAt = mine ? mine.answeredAt + aiRevealLagMs(seedRef.current, currentIndex) : Infinity;
+    const wait = Math.max(0, Math.min(fireAt, revealAt) - Date.now());
     const timer = window.setTimeout(() => {
       const rec = aiAnswerRecord(currentIndex, move, startMs);
       if (!rec) return;
@@ -277,7 +286,7 @@ export function useAiBattle(
     return () => window.clearTimeout(timer);
     // aiSheet は「もう答えたか」の判定にだけ使うので依存に含めない
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, current, currentIndex]);
+  }, [phase, current, currentIndex, !!mySheet[answerKeyOf(currentIndex)]]);
 
   // ------------------------------------------------------------
   // 進行（両者解答 or 締切 → 少し見せて次へ／終了）

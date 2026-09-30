@@ -24,6 +24,9 @@ import { ModeSelection } from './components/ModeSelection';
  * ローディング表示を足すと「元には無かった表示」が一瞬出て消えることになり、
  * それ自体が見た目の変化になるため、あえて足していない。
  */
+const FoundationPage = React.lazy(() =>
+  import('./components/FoundationPage').then((m) => ({ default: m.FoundationPage })),
+);
 const ChapterSelection = React.lazy(() =>
   import('./components/ChapterSelection').then((m) => ({ default: m.ChapterSelection })),
 );
@@ -106,6 +109,7 @@ import { NoteDetail } from './components/NoteDetail';
 import { StudyHub, type StudyHubView } from './components/StudyHub';
 import { ScreenLoading, ScreenUnavailable } from './components/ScreenStatus';
 import { studyEntry, isLearningScreen, safeStudyResume } from './utils/studyNavigation';
+import { addStudySeconds } from './utils/studyTime';
 import { setFormatMathContext } from './utils/textFormatter';
 import { resolveReviewTarget } from './utils/reviewTarget';
 import { Onboarding } from './components/Onboarding';
@@ -251,7 +255,7 @@ import type { GrowthPage } from './components/GrowthHub';
 const GrowthHub = React.lazy(() => import('./components/GrowthHub').then(m => ({ default: m.GrowthHub })));
 const MissionToast = React.lazy(() => import('./components/MissionToast').then(m => ({ default: m.MissionToast })));
 
-export type AppState = 'home' | 'mode_selection' | 'chapters' | 'quiz' | 'explanation' | 'learning' | 'intro' | 'study_hub' | 'note_detail' | 'onboarding' | 'logical_tree' | 'settings' | 'leaderboard' | 'mock_exam' | 'subject_selection' | 'advanced_fields' | 'teacher_dashboard' | 'feedback_admin' | 'battle' | 'rika' | 'growth';
+export type AppState = 'home' | 'mode_selection' | 'chapters' | 'quiz' | 'explanation' | 'learning' | 'intro' | 'study_hub' | 'note_detail' | 'onboarding' | 'logical_tree' | 'settings' | 'leaderboard' | 'mock_exam' | 'subject_selection' | 'advanced_fields' | 'teacher_dashboard' | 'feedback_admin' | 'battle' | 'rika' | 'growth' | 'foundation';
 export type AppMode = 'mini_test' | 'practice' | 'learning';
 
 const APP_STATES = new Set<AppState>([
@@ -264,6 +268,8 @@ const APP_STATES = new Set<AppState>([
   'study_hub', 'note_detail', 'onboarding', 'logical_tree', 'settings',
   'leaderboard', 'mock_exam', 'subject_selection', 'advanced_fields', 'teacher_dashboard',
   'feedback_admin', 'battle', 'growth',
+  /** 英文法・英単語を固める（単語・熟語／聞き取りの文法／その他）。下のナビを残す1画面のページ。 */
+  'foundation',
   /**
    * 高校入試 理科の入口（演習・まとめ・出題傾向の3画面）。
    *
@@ -421,6 +427,25 @@ export default function App() {
     setRikaBattleTarget(null);
     setAppState(next);
   };
+  /**
+   * ★学習時間（設定のプロフィールカード）★ utils/studyTime.ts
+   * 演習・解説の画面を開いていて、タブが前面にある間だけ30秒ごとに足す。
+   */
+  useEffect(() => {
+    if (appState !== 'quiz' && appState !== 'explanation') return;
+    let last = Date.now();
+    const tick = () => {
+      const now = Date.now();
+      if (document.visibilityState === 'visible') {
+        const d = new Date(now);
+        const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        addStudySeconds(auth.currentUser?.uid || 'guest', (now - last) / 1000, day);
+      }
+      last = now;
+    };
+    const id = window.setInterval(tick, 30000);
+    return () => { window.clearInterval(id); tick(); };
+  }, [appState]);
   const reviewRequest = useRef(0);
   const reviewBusy = useRef(false);
   useEffect(() => { reviewRequest.current += 1; reviewBusy.current = false; }, [appState]);
@@ -477,6 +502,8 @@ export default function App() {
   const [isExplanationView, setIsExplanationView] = useState(false);
   const [prevAppState, setPrevAppState] = useState<AppState>('home');
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
+  /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
+  const [foundationTab, setFoundationTab] = useState<'words' | 'grammar' | 'more'>('words');
   const [lastQuizResult, setLastQuizResult] = useState<any>(null);
   // 届いているフレンド申請件数（設定ボタンのバッジ表示用）
   const [pendingFriendRequests, setPendingFriendRequests] = useState(0);
@@ -734,6 +761,27 @@ export default function App() {
    *    （ホームに戻してしまうと、もう一度ボタンを押させることになる）
    *  - 「科目を変更」から来た場合 … ホーム（ダッシュボード）へ
    */
+  /**
+   * 単元一覧の「戻る」の行き先。固めるページから英文法の演習に入ったときは固めるページへ戻す
+   * （ホームへ飛ばすと、どこから来たのか分からなくなる）。
+   */
+  const [chaptersBackTo, setChaptersBackTo] = useState<'home' | 'foundation'>('home');
+  /** 科目を切り替えて、その科目の単元一覧を開く（固めるページから使う） */
+  const openSubjectUnits = (subject: SubjectId, from: 'home' | 'foundation') => {
+    if (!isSubjectEnabled(subject)) return;
+    if (subject !== selectedSubject) {
+      setSelectedChapterId(null);
+      setQuizRange(null);
+      setLastQuizResult(null);
+      setLastLearnState('chapters');
+      localStorage.setItem('savedLastLearnState', 'chapters');
+    }
+    setSelectedSubject(subject);
+    setAppMode('practice');
+    setChaptersBackTo(from);
+    setAppState('chapters');
+  };
+
   const handleSelectSubject = (subject: SubjectId) => {
     /*
       ★受け口でもう一度確かめる（4箇所のうちの3番目）★
@@ -842,6 +890,13 @@ export default function App() {
   const [isBgmFadedOut, setIsBgmFadedOut] = useState(false);
   const hasLoggedAudioError = useRef(false);
 
+  /**
+   * ★設定のスライダーの値を、再生開始・フェードの計算にも使う（A13）★
+   * 以前はここが 0.1 固定で、500ms ごとのフェード計算が audio.volume を 0.1 に戻していたため、
+   * スライダーを動かしても音量が変わらなかった。タイマーの中から最新の値を読むので ref で持つ。
+   */
+  const bgmVolumeRef = useRef(bgmVolume);
+  bgmVolumeRef.current = bgmVolume;
   useEffect(() => {
     localStorage.setItem('bgm_volume', bgmVolume.toString());
     if (audioRef.current) {
@@ -1015,13 +1070,11 @@ export default function App() {
 
     if (shouldPlay) {
       /*
-        ★ここで 0.1 を使っているのは従来どおり（挙動を変えないため）★
-        設定画面のスライダーで音量を変えたときは別の useEffect が
-        audio.volume = bgmVolume を入れ直す。この不一致は元からある
-        もので、今回の指摘とは別件なので触らない。
-        変えたのは ★フェードの倍率をかけた★ 点だけ。
+        ★音量は設定のスライダーの値（bgmVolumeRef）にフェードの倍率をかけたもの★
+        以前は 0.1 固定で、スライダーを動かしても再生開始やフェードの計算が
+        0.1 に戻してしまい「音量が変わらない」状態だった（2026-09-30 修正）。
       */
-      audio.volume = bgmVolumeAt(0.1, bgmElapsedMs());
+      audio.volume = bgmVolumeAt(bgmVolumeRef.current, bgmElapsedMs());
       // すでにフェードが終わっている（＝90秒＋5秒鳴り終えた）なら鳴らさない。
       // 画面を移動しただけで音が復活しては「消えた」ことにならない。
       if (isBgmFadeComplete(bgmElapsedMs())) {
@@ -1073,7 +1126,7 @@ export default function App() {
       const audio = audioRef.current;
       if (!audio) return;
       const elapsed = bgmElapsedMs();
-      audio.volume = bgmVolumeAt(0.1, elapsed);
+      audio.volume = bgmVolumeAt(bgmVolumeRef.current, elapsed);
       if (isBgmFadeComplete(elapsed)) {
         markBgmPlaying(false);
         audio.pause();
@@ -1391,7 +1444,13 @@ export default function App() {
    *   同じ引数で同期に呼んでいる）。見つからないときに何も描かないのも同じ。
    */
 
-  if (!hasEntered) return <LaunchScreen soundEnabled={isBgmEnabled} onToggleSound={() => handleToggleBgm(!isBgmEnabled)} onStart={() => { battleAudio().unlock(); setHasInteracted(true); setHasEntered(true); }} />;
+  if (!hasEntered) {
+    const enter = () => { battleAudio().unlock(); setHasInteracted(true); setHasEntered(true); };
+    // 副CTA「ゲストで試す」は、まだゲストでもログイン済みでもない人（＝次にログイン画面が出る人）にだけ出す
+    const firstVisit = !isGuest && !auth.currentUser;
+    return <LaunchScreen soundEnabled={isBgmEnabled} onToggleSound={() => handleToggleBgm(!isBgmEnabled)} onStart={enter}
+      onGuest={firstVisit ? () => { setIsGuest(true); setAppState('home'); enter(); } : undefined} />;
+  }
 
   return (
     <>
@@ -1493,7 +1552,7 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            {appState === 'settings' && <ProfileModal onClose={() => setAppState(prevAppState)} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} />}
+            {appState === 'settings' && <ProfileModal onClose={() => setAppState(prevAppState)} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} />}
             {/* 先生ダッシュボード。戻る先を設定にしているのは、入ってきた経路と揃えるため。 */}
             {appState === 'teacher_dashboard' && <TeacherDashboard onBack={() => setAppState('settings')} />}
             {/* フィードバック管理（運営専用）。入口は設定内の運営専用ボタン。 */}
@@ -1519,7 +1578,7 @@ export default function App() {
                 onBattle={FEATURES.battle ? () => setAppState('battle') : undefined}
               />
             )}
-            {appState === 'home' && <Home onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLogicalTree={() => setAppState('logical_tree')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onRika={FEATURES.rika ? () => { setRikaTab('practice'); setAppState('rika'); } : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
+            {appState === 'home' && <Home onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLogicalTree={() => setAppState('logical_tree')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onRika={FEATURES.rika ? () => { setRikaTab('practice'); setAppState('rika'); } : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => setAppState('foundation')} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
             {/* ★ルーティング側の門（4箇所のうちの3番目）★
                 ナビのボタンを隠すだけでは、Home の「ランキングを見る」など
                 別の導線からこの状態になれてしまう。
@@ -1623,8 +1682,8 @@ export default function App() {
                   mode={appMode as 'mini_test' | 'practice'}
                   onChangeSubject={handleChangeStudySubject}
                   onSelectChapter={handleSelectChapter}
-                  onBack={() => setAppState(studyEntry(selectedSubject) === 'chapters' ? 'home' : 'mode_selection')}
-                  backLabel={studyEntry(selectedSubject) === 'chapters' ? 'ホーム' : '学習モード'}
+                  onBack={() => setAppState(chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? 'foundation' : studyEntry(selectedSubject) === 'chapters' ? 'home' : 'mode_selection')}
+                  backLabel={chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? '固める' : studyEntry(selectedSubject) === 'chapters' ? 'ホーム' : '学習モード'}
                   onChangeField={setSelectedField}
                   rememberedGroup={chapterGroups[`${selectedSubject}:${selectedField}`]}
                   onGroupChange={(group) => setChapterGroups(prev => ({ ...prev, [`${selectedSubject}:${selectedField}`]: group }))}
@@ -1675,7 +1734,23 @@ export default function App() {
                 />
               </React.Suspense>
             )}
-            {appState === 'study_hub' && <StudyHub view={studyHubView} onViewChange={setStudyHubView} onBack={() => setAppState('home')} isGuest={isGuest} onSelectNote={(note) => { setSelectedNote(note); setAppState('note_detail'); }} onReview={handleReviewNote} />}
+            {appState === 'study_hub' && <StudyHub view={studyHubView} onViewChange={setStudyHubView} onBack={() => setAppState('home')} onPractice={() => handleSelectMode('practice')} isGuest={isGuest} onSelectNote={(note) => { setSelectedNote(note); setAppState('note_detail'); }} onReview={handleReviewNote} />}
+            {/* ★英文法・英単語を固める（A1/A17/A18）★
+                リスニング（主役・学習タブ）とは別のページ。下のナビを残したまま1画面で完結させる。
+                英文法の4択演習・単語の例から解くリスニングは、どちらも通常の演習と同じ経路を通す。 */}
+            {appState === 'foundation' && <React.Suspense fallback={<ScreenLoading />}>
+              <FoundationPage
+                tab={foundationTab}
+                onTab={setFoundationTab}
+                uid={auth.currentUser?.uid || 'guest'}
+                onBack={() => setAppState('home')}
+                onGrammarUnits={() => openSubjectUnits('english_grammar', 'foundation')}
+                onPractice={(chapter, index) => { setSelectedSubject('english_listening'); setAppMode('practice'); handleSelectChapter(chapter, index, false, { startIndex: index, endIndex: index }, 'practice'); }}
+                onBattle={FEATURES.battle ? () => navigateMain('battle') : undefined}
+                onReview={() => setAppState('study_hub')}
+                onListening={() => openSubjectUnits('english_listening', 'home')}
+              />
+            </React.Suspense>}
             {appState === 'note_detail' && (selectedNote
               ? <NoteDetail note={selectedNote} onBack={() => setAppState('study_hub')} onReview={handleReviewNote} />
               : <ScreenUnavailable message="ノートを一覧から選び直してください。保存したノートは削除されていません。" onBack={() => setAppState('study_hub')} backLabel="学習ノートへ戻る" />)}
@@ -1822,17 +1897,11 @@ export default function App() {
       {/* Desktop Toggle Button for Mobile Preview
           aria-label / title を日本語で明示、アイコンには aria-hidden */}
       {!isMobileDevice && !isMobilePreview && (
-        <div className="fixed bottom-4 right-4 z-[9999]">
-          <button
-            onClick={() => setIsMobilePreview(true)}
-            aria-label="スマホ版でプレビュー"
-            title="スマホ版でプレビュー（モバイル端末での見え方を確認）"
-            className="bg-white rounded-full shadow-xl border-2 border-[#A9CCE3] flex items-center justify-center text-gray-600 hover:text-[#1B2631] transition-all p-3 group"
-          >
-            <Smartphone size={24} className="group-hover:scale-110 transition-transform" aria-hidden="true" />
-            <span className="ml-2 font-bold text-sm hidden group-hover:inline-block whitespace-nowrap overflow-hidden transition-all">スマホ版</span>
-          </button>
-        </div>
+        /* サイドバーの左下に置く（右下だとホームの復習ノート等のボタンに重なっていた）。ラベルも常に出す */
+        <button type="button" onClick={() => setIsMobilePreview(true)} className="mt-preview-toggle"
+          title="スマホ版でプレビュー（モバイル端末での見え方を確認）">
+          <Smartphone size={16} aria-hidden="true" />スマホ版で見る
+        </button>
       )}
     </>
   );

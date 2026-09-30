@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import './quiz-compact.css';
 import { motion, AnimatePresence } from 'motion/react';
 import { Headphones, Play, Pause, RotateCcw, Repeat2, FileText, ChevronDown } from 'lucide-react';
 import { locateListeningEvidence } from '../utils/listeningExplanation';
@@ -42,7 +43,7 @@ import {
  */
 
 /** The same numbered cues are visible in the script and in the explanation list. */
-function ListeningEvidenceScript({track}: {track: ListeningAudioTrack}) {
+export function ListeningEvidenceScript({track, collapsiblePhrases = false, showHint = true}: {track: ListeningAudioTrack; collapsiblePhrases?: boolean; showHint?: boolean}) {
   const root = useRef<HTMLDivElement>(null);
   const phrases = track.keyPhrases.map(item => item.phrase);
   const segments = track.turns?.length ? track.turns.map(turn => turn.text) : [track.script];
@@ -63,15 +64,18 @@ function ListeningEvidenceScript({track}: {track: ListeningAudioTrack}) {
     target?.scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});
     target?.focus({preventScroll:true});
   };
+  const phraseList = track.keyPhrases.length > 0 && <ol>{track.keyPhrases.map((item,index)=><li key={`${item.phrase}-${index}`}>
+      <button type="button" disabled={!located.has(index)} onClick={()=>jump(index)} aria-label={`${index+1}. ${item.phrase} の英文箇所へ移動`}><b>{index+1}</b>{item.phrase}</button>
+      <p>{item.meaning}{!located.has(index)&&<small>語形・言い換えの説明（本文と完全一致する箇所なし）</small>}</p>
+    </li>)}</ol>;
   return <div ref={root} className="listening-script-evidence">
-    <p className="listening-evidence-hint">番号つきの黄色い部分が対応する英文です。下の表現を押すと、その箇所へ移動します。</p>
+    {showHint && <p className="listening-evidence-hint">番号つきの黄色い部分が対応する英文です。下の表現を押すと、その箇所へ移動します。</p>}
     {track.turns?.length ? <ul className="space-y-2">{track.turns.map((turn,index)=><li key={index} className="flex gap-2"><b className="shrink-0 text-xs">{turn.who}</b><span className="listening-script-text">{renderScript(turn.text)}</span></li>)}</ul>
       : <p className="listening-script-text">{renderScript(track.script)}</p>}
     <p className="mt-3 text-xs leading-relaxed">{track.translation}</p>
-    {track.keyPhrases.length > 0 && <div className="listening-evidence-list"><h3>押さえたい表現</h3><ol>{track.keyPhrases.map((item,index)=><li key={`${item.phrase}-${index}`}>
-      <button type="button" disabled={!located.has(index)} onClick={()=>jump(index)} aria-label={`${index+1}. ${item.phrase} の英文箇所へ移動`}><b>{index+1}</b>{item.phrase}</button>
-      <p>{item.meaning}{!located.has(index)&&<small>語形・言い換えの説明（本文と完全一致する箇所なし）</small>}</p>
-    </li>)}</ol></div>}
+    {track.keyPhrases.length > 0 && (collapsiblePhrases
+      ? <details className="listening-evidence-list listening-evidence-fold"><summary>押さえたい表現（{track.keyPhrases.length}）</summary>{phraseList}</details>
+      : <div className="listening-evidence-list"><h3>押さえたい表現</h3>{phraseList}</div>)}
   </div>;
 }
 
@@ -433,7 +437,7 @@ export function ListeningAudioPlayer({
         */
         className={`flex ${
           isRow
-            ? 'w-full flex-row flex-wrap items-center gap-1.5'
+            ? 'lap-row w-full flex-row flex-wrap items-center gap-1.5'
             : 'shrink-0 flex-col gap-1.5'
         } ${className}`}
         aria-label={`${list[0]?.label ?? ''}の音源`}
@@ -465,7 +469,7 @@ export function ListeningAudioPlayer({
                 {isPlaying
                   ? <Pause size={isRow ? 15 : 18} />
                   : <Play size={isRow ? 15 : 18} />}
-                <span className={isRow ? 'text-[12px] leading-none' : 'text-[10px] leading-none'}>
+                <span className={isRow ? 'text-[13px] leading-none' : 'text-xs leading-none'}>
                   {isPlaying ? '停止' : isLocked(track.subId) ? '再生済み（1回読み）' : lockOnce ? '再生（1回のみ）' : '再生'}
                 </span>
               </button>
@@ -479,8 +483,8 @@ export function ListeningAudioPlayer({
                   aria-label={`${track.label} を本番と同じように2回続けて再生`}
                   className={`flex items-center justify-center gap-0.5 rounded-lg border font-bold transition-colors ${
                     isRow
-                      ? 'min-h-[2.25rem] min-w-[3rem] px-1.5 py-0.5 text-[10px]'
-                      : 'min-h-[2rem] w-[4.5rem] px-1 py-1 text-[10px] sm:w-20'
+                      ? 'min-h-[2.25rem] min-w-[3rem] px-1.5 py-0.5 text-xs'
+                      : 'min-h-[2rem] w-[4.5rem] px-1 py-1 text-xs sm:w-20'
                   } ${
                     speechBlocked
                       ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400'
@@ -495,7 +499,7 @@ export function ListeningAudioPlayer({
                   上部パネルを廃止したので、この注記もインライン側に持つ。 */}
               {speechBlocked && (
                 <p
-                  className={`text-[9px] font-bold leading-tight ${
+                  className={`text-xs font-bold leading-tight ${
                     isRow ? 'w-full' : 'w-[4.5rem] sm:w-20'
                   } ${subTextClass}`}
                 >
@@ -523,8 +527,8 @@ export function ListeningAudioPlayer({
                     aria-pressed={rate === r}
                     className={`rounded-lg border font-bold transition-colors cursor-pointer ${
                       isRow
-                        ? 'min-h-[2.25rem] min-w-[2.5rem] px-1 py-0.5 text-[10px]'
-                        : 'min-h-[1.75rem] px-1 py-0.5 text-[10px]'
+                        ? 'min-h-[2.25rem] min-w-[2.75rem] px-1 py-0.5 text-xs'
+                        : 'min-h-[1.75rem] px-1 py-0.5 text-xs'
                     } ${rate === r ? activeBtnClass : idleBtnClass}`}
                   >
                     {r === 1 ? '標準' : '0.75倍'}

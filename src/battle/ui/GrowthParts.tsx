@@ -61,7 +61,7 @@ export function GrowthAvatar({
 }) {
   const frame = equippedFrameColor(progress);
   const level = levelOf(progress.xp).level;
-  const badgeSize = size >= 72 ? 'text-[11px] px-2' : 'text-[10px] px-1.5';
+  const badgeSize = size >= 56 ? 'text-xs px-1.5' : 'text-[10px] px-1'; // 小さいアバター（56px未満）だけは枠に収めるため例外
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <div
@@ -150,7 +150,7 @@ export function LevelBar({
   return (
     <div>
       <div
-        className={`mb-1 flex items-baseline justify-between ${compact ? 'text-[10px]' : 'text-[11px]'} font-bold`}
+        className={`mb-1 flex items-baseline justify-between ${compact ? 'text-xs' : 'text-xs'} font-bold`}
         style={{ color: INK_SUB }}
       >
         <span className="flex items-baseline gap-1.5">
@@ -195,7 +195,7 @@ export function LevelBar({
 
 export function TitleChip({ progress, rating, size = 'sm' }: { progress: GrowthProgress; rating: number; size?: 'sm' | 'md' }) {
   const custom = equippedTitleLabel(progress);
-  const cls = size === 'md' ? 'px-2.5 py-1 text-[12px]' : 'px-2 py-0.5 text-[11px]';
+  const cls = size === 'md' ? 'px-2.5 py-1 text-[12px]' : 'px-2 py-0.5 text-xs';
   if (custom) {
     const b = badgeById(progress.equipped.title);
     const color = badgeTierColor(b?.tier ?? 1);
@@ -259,11 +259,11 @@ export function BadgeChip({
           <span className="truncate text-[12px] font-black" style={{ color: earned ? INK : INK_SUB }}>
             {b.label}
           </span>
-          <span className="shrink-0 rounded-full px-1.5 py-[1px] text-[8px] font-black" style={{ background: `${color}1A`, color }}>
+          <span className="shrink-0 rounded-full px-1.5 py-[1px] text-xs font-black" style={{ background: `${color}1A`, color }}>
             {TIER_LABEL[b.tier]}
           </span>
         </span>
-        <span className="block truncate text-[10px] font-bold" style={{ color: INK_SUB }}>
+        <span className="block truncate text-xs font-bold" style={{ color: INK_SUB }}>
           {b.desc}
         </span>
         {goal && goal.goal > 1 && (
@@ -271,7 +271,7 @@ export function BadgeChip({
             <span className="h-1 flex-1 overflow-hidden rounded-full" style={{ background: '#E8E2D6' }}>
               <span className="block h-full rounded-full" style={{ width: `${goal.ratio * 100}%`, background: `${color}AA` }} />
             </span>
-            <span className="shrink-0 text-[9px] font-black tabular-nums" style={{ color: INK_SUB }}>
+            <span className="shrink-0 text-xs font-black tabular-nums" style={{ color: INK_SUB }}>
               {goal.current}/{goal.goal}
             </span>
           </span>
@@ -354,7 +354,7 @@ export function MissionRow({
       <div className="min-w-0 flex-1">
         <p className="flex items-center justify-between gap-2 text-[12px] font-black" style={{ color: claimed ? INK_SUB : INK }}>
           <span className={claimed ? 'line-through' : ''}>{m.label}</span>
-          <span className="shrink-0 tabular-nums text-[10px] font-bold" style={{ color: done ? AMBER : INK_SUB }}>
+          <span className="shrink-0 tabular-nums text-xs font-bold" style={{ color: done ? AMBER : INK_SUB }}>
             {Math.min(progress, m.goal)}/{m.goal}
           </span>
         </p>
@@ -364,7 +364,7 @@ export function MissionRow({
             style={{ width: `${ratio * 100}%`, background: claimed ? '#C9CED4' : `linear-gradient(90deg, ${AMBER}, ${GOLD})` }}
           />
         </div>
-        <p className={`mt-1 flex items-center gap-2 text-[10px] font-bold ${justClaimed ? 'growth-bump' : ''}`} style={{ color: justClaimed ? AMBER : INK_SUB }}>
+        <p className={`mt-1 flex items-center gap-2 text-xs font-bold ${justClaimed ? 'growth-bump' : ''}`} style={{ color: justClaimed ? AMBER : INK_SUB }}>
           <span className="inline-flex items-center gap-0.5">
             <Sparkles size={10} /> +{m.rewardXp} XP
           </span>
@@ -407,7 +407,7 @@ export function NextGoals({ progress, max = 3, compact = false }: { progress: Gr
   if (goals.length === 0 && !unlock) return null;
   return (
     <section className="rounded-2xl border px-3 py-2.5" style={{ borderColor: LINE, background: '#FAF8F3' }} aria-label="つぎの目標">
-      <h3 className="mb-1.5 flex items-center gap-1 text-[10px] font-black" style={{ color: INK_SUB }}>
+      <h3 className="mb-1.5 flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
         <Flag size={11} style={{ color: AMBER }} />
         つぎの目標
       </h3>
@@ -421,11 +421,11 @@ export function NextGoals({ progress, max = 3, compact = false }: { progress: Gr
               <span className="shrink-0 text-sm leading-none" aria-hidden>{b.emoji}</span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-baseline justify-between gap-2">
-                  <span className={`truncate ${compact ? 'text-[10px]' : 'text-[11px]'} font-black`} style={{ color: INK }}>
+                  <span className={`truncate ${compact ? 'text-xs' : 'text-xs'} font-black`} style={{ color: INK }}>
                     {b.label}
                     <span className="ml-1 font-bold" style={{ color: INK_SUB }}>{b.desc}</span>
                   </span>
-                  <span className="shrink-0 text-[10px] font-black tabular-nums" style={{ color }}>
+                  <span className="shrink-0 text-xs font-black tabular-nums" style={{ color }}>
                     あと {g.remain}
                   </span>
                 </span>
@@ -437,7 +437,7 @@ export function NextGoals({ progress, max = 3, compact = false }: { progress: Gr
           );
         })}
         {unlock && (
-          <li className="flex items-center gap-2 pt-0.5 text-[10px] font-bold" style={{ color: INK_SUB }}>
+          <li className="flex items-center gap-2 pt-0.5 text-xs font-bold" style={{ color: INK_SUB }}>
             <Lock size={11} className="shrink-0" />
             <span>
               Lv.{unlock.level} で とびら君の「{unlock.item.label}」が解放
@@ -456,14 +456,14 @@ export function NextGoals({ progress, max = 3, compact = false }: { progress: Gr
 export function StatCard({ label, value, sub, color = INK }: { label: string; value: ReactNode; sub?: string; color?: string }) {
   return (
     <div className="rounded-2xl px-2 py-2.5 text-center" style={{ background: '#FFFFFF', border: `1px solid ${LINE}` }}>
-      <p className="text-[10px] font-black" style={{ color: INK_SUB }}>
+      <p className="text-xs font-black" style={{ color: INK_SUB }}>
         {label}
       </p>
       <p className="text-xl font-black tabular-nums leading-tight" style={{ color }}>
         {value}
       </p>
       {sub && (
-        <p className="text-[9px] font-bold" style={{ color: INK_SUB }}>
+        <p className="text-xs font-bold" style={{ color: INK_SUB }}>
           {sub}
         </p>
       )}

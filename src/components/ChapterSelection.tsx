@@ -31,6 +31,9 @@ import {
 } from '../utils/quizStorageKeys';
 import { auth } from '../firebase';
 import { buildUnitSections } from '../data/unitSections';
+import { UnitCard } from './UnitCard';
+import './unit-select.css';
+import { accuracyOf, readUnitStats, unitStatus } from '../utils/unitStats';
 import { MATH_COURSE_LABELS, MATH_LEVELS, buildMathTopicGroups, mathCourseOfGroup, mathLevelOfCourse, type MathCourseKey, type MathStage } from '../data/mathNavigation';
 
 interface ChapterSelectionProps {
@@ -191,6 +194,21 @@ function getChapterGroups(subject: string): ReturnType<typeof buildChapterGroups
   return built;
 }
 
+const GRAMMAR_PART_LABEL: Record<string, string> = { eg_grammar: '文法の幹', eg_usage: '語法', eg_expression: 'イディオム・表現' };
+let grammarPartGroups: ReturnType<typeof buildChapterGroups> | null = null;
+function getGrammarPartGroups(): ReturnType<typeof buildChapterGroups> {
+  if (grammarPartGroups) return grammarPartGroups;
+  grammarPartGroups = getPartsOfSubject('english_grammar').map((part: any, i: number) => ({
+    title: GRAMMAR_PART_LABEL[part.id] ?? part.title,
+    label: GRAMMAR_PART_LABEL[part.id] ?? part.title,
+    kicker: `PART ${i + 1}`,
+    chapters: part.chapters,
+    partId: part.id,
+    partTitle: part.title,
+  })) as unknown as ReturnType<typeof buildChapterGroups>;
+  return grammarPartGroups;
+}
+
 /**
  * 単元の中に収録されている音源を、回（problem）ごとにまとめて取り出す。
  *
@@ -290,6 +308,10 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
       const parts = getPartsOfSubject('chemistry').filter((p: any) => !field || p.field === field);
       return buildChapterGroups(parts);
     }
+    // ★英文法は「PART（文法の幹／語法／イディオム・表現）」の3タブ★
+    //   章見出し（1章〜12章）でタブを作ると、1〜2単元しかないタブが12枚並び、
+    //   スマホでは横スクロールしないと先が見えなかった。3タブにすると1画面で全体が見渡せる。
+    if (isGrammar) return getGrammarPartGroups();
     // 化学基礎（および想定外の科目）は化学基礎のタブになる（従来どおり）。
     return getChapterGroups(subject);
   }, [isAdvanced, subject, field]);
@@ -320,6 +342,12 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
   const solvedMap = useMemo(
     () => readSolvedMap(auth.currentUser?.uid || 'guest'),
     // 画面に入ったときの一度だけで十分（回を解いたら演習画面を経由して戻ってくる）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  /** 単元ごとの正答率（utils/unitStats.ts。採点のたびに quizScoring が記録している） */
+  const unitStats = useMemo(
+    () => readUnitStats(auth.currentUser?.uid || 'guest'),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
@@ -371,6 +399,12 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
   };
 
   const activeGroup = groups.find(group => group.title === activeGroupTitle) || groups[0];
+  /** 科目全体での通し番号（①〜⑳ → 01.〜20.）。タブを切り替えても番号が振り直されないようにする。 */
+  const chapterNumberById = useMemo(() => {
+    const m = new Map<string, number>();
+    groups.flatMap(g => g.chapters).forEach((c: any, i: number) => m.set(c.id, i));
+    return m;
+  }, [groups]);
 
   // 章タブの中の単元を見出しつきで小分けにする（並べ方だけ。問題・IDは変えない）
   const unitSections = useMemo(
@@ -413,55 +447,20 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
 
   return (
     <div className="mtb-page chapter-route flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-0 w-full flex-col overflow-hidden notebook-paper p-3 pb-[calc(5.75rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(5.75rem+env(safe-area-inset-bottom))] md:p-6 md:pb-[calc(5.75rem+env(safe-area-inset-bottom))] relative font-handwriting">
-      <button 
-        onClick={onBack}
-        className="absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-2 text-gray-500 hover:text-[#2C3E50] transition-colors font-bold font-handwriting bg-white/80 px-4 py-2 rounded-full shadow-sm z-10"
-      >
-        <ArrowLeft size={20} />
-        <span className="font-handwriting">{backLabel}</span>
-      </button>
+      {/* ★見出しは1行・80px以内（UIの決まり）★
+          以前は「科目名の小見出し／演習問題／学習したい単元を選択してください／科目を変更」の4段で
+          スマホの縦の1/4を使っていた。戻る・科目名・とびら君を1行にまとめる。 */}
+      <header className="chapter-route-heading unit-head shrink-0">
+        <button type="button" onClick={onBack} className="unit-head-back" aria-label={`${backLabel}へ戻る`}>
+          <ArrowLeft size={18} aria-hidden="true" /><span>{backLabel}</span>
+        </button>
+        <div className="unit-head-title">
+          <h2 style={{ color: theme.accent }}>{isListening ? '英語リスニング' : isGrammar ? '英文法' : isAdvanced && fieldTitle ? `化学 ／ ${fieldTitle}` : theme.label}</h2>
+          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '共通テスト大問別・1回ずつ完結' : isGrammar ? '単元別の4択演習' : isGeography ? '共通テスト大問別' : '単元を選ぶ'}</p>
+        </div>
+        <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />
+      </header>
 
-      <DoorMascot subject={subject} showSpeech={false} size="mini" className="absolute top-3 right-4 md:top-5 md:right-6 w-auto z-10" />
-
-      <div className="chapter-route-heading shrink-0 text-center mb-3 mt-10 md:mt-0 font-handwriting">
-        {/* 化学（発展）では、今どの分野にいるかが分かるよう分野名を添える。 */}
-        {isAdvanced && fieldTitle && (
-          <p className="mb-1 text-[11px] md:text-xs font-bold tracking-widest" style={{ color: theme.accent }}>
-            化学 ／ {fieldTitle}
-          </p>
-        )}
-        {/* 英語リスニングでも、今どの科目にいるかを同じ位置・同じ書式で示す。 */}
-        {isListening && (
-          <p className="mb-1 text-[11px] md:text-xs font-bold tracking-widest" style={{ color: theme.accent }}>
-            英語リスニング ／ 共通テスト大問別
-          </p>
-        )}
-        {/* 英文法も同形。リスニングと同じ「英語」なので、
-            この一行がないとどちらの画面にいるのか区別がつかない。 */}
-        {isGrammar && (
-          <p className="mb-1 text-[11px] md:text-xs font-bold tracking-widest" style={{ color: theme.accent }}>
-            英文法 ／ 単元別（4択演習）
-          </p>
-        )}
-        {/* 地理も同形。リスニングと同じ「大問別タブ」の見た目なので、
-            この一行がないとどちらの画面にいるのか区別がつかない。 */}
-        {isGeography && (
-          <p className="mb-1 text-[11px] md:text-xs font-bold tracking-widest" style={{ color: theme.accent }}>
-            地理総合・地理探究 ／ 共通テスト大問別
-          </p>
-        )}
-        <h2 className="text-xl md:text-3xl font-handwriting font-bold text-[#2C3E50] mb-1.5 md:mb-2">
-          {mode === 'mini_test' ? '小テスト' : '演習問題'}
-        </h2>
-        <p className="text-sm md:text-base text-gray-600 font-handwriting font-bold">
-          学習したい単元を選択してください
-        </p>
-      </div>
-
-      {onChangeSubject && <div className="mb-2 flex shrink-0 items-center justify-between gap-2">
-        <span className="text-sm font-bold" style={{ color: theme.accent }}>{theme.label}</span>
-        <button type="button" onClick={onChangeSubject} className="min-h-[44px] rounded-full border border-gray-200 bg-white px-4 text-sm font-bold text-[#2C3E50]">科目を変更</button>
-      </div>}
       {isAdvanced && onChangeField && <div className="mb-2 flex shrink-0 gap-2" role="group" aria-label="化学の分野">
         {ADVANCED_FIELDS.map(item => <button key={item.id} type="button" aria-pressed={field === item.id} onClick={() => onChangeField(item.id)} className={`min-h-[44px] flex-1 rounded-xl border px-2 text-sm font-bold ${field === item.id ? 'bg-[#2C3E50] text-white' : 'border-gray-200 bg-white text-[#2C3E50]'}`}>{item.title}</button>)}
       </div>}
@@ -519,7 +518,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
               sm 以上では従来どおり折り返しグリッドに戻す。
               長い章名は途中で省略せず、タブ内で折り返して全文を表示する。
         */}
-        <div className="chapter-index mb-3 shrink-0 border-b border-slate-200/80">
+        <div className="chapter-index mb-3 shrink-0 border-b border-slate-200/80" data-few-tabs={visibleGroups.length <= 3 || undefined}>
           <div
             role="tablist"
             aria-label="章を選択"
@@ -619,7 +618,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 pb-3">
               <div>
                 <p className="text-[10px] font-bold" style={{ color: theme.accent }}>{displayPartTitle(subject, activeGroup.partTitle)}</p>
-                <h3 className="mt-0.5 text-base sm:text-lg font-bold text-[#2C3E50]">{(activeGroup as any).label ?? activeGroup.title}</h3>
+                {/* タブと同じ名前をもう一度出さない（UIの決まり：同じものを2つ置かない）。
+                    タブにない情報（部の名前・流れ）だけを1行で添える。 */}
               </div>
               {trendGroupMap[activeGroup.title] && (
                 <button
@@ -656,7 +656,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                   どちらの科目でも意味の分からないボタンが並ぶ。
                   そのため、リスニングだけ専用の並べ方にしている。 */}
             {isListening ? (
-              <div className="space-y-5">
+              <div className="space-y-5" data-listening-rounds>
                 {activeGroup.chapters.map((chapter: any) => {
                   const questions = mode === 'mini_test' ? (chapter.miniTest || []) : (chapter.practiceProblems || []);
                   const rounds = buildListeningRounds(questions);
@@ -668,26 +668,28 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                           回のボタンだけだと「第1問Aって何をするんだっけ」が分からない。 */}
                       <div className="mb-2.5">
                         {chapter.topics && chapter.topics.length > 0 && (
-                          <p className="text-[11px] font-bold leading-relaxed text-slate-500">
+                          <p className="text-xs font-bold leading-relaxed text-slate-600">
                             {chapter.topics.join(' ・ ')}
                           </p>
                         )}
-                        <p className="mt-1 text-[10px] font-bold text-slate-400">
+                        <p className="mt-1 text-xs font-bold text-slate-600">
                           {rounds.length > 0
-                            ? `全${rounds.length}回 ／ 解きたい回を選んでください（1回ずつ完結します）`
+                            ? `全${rounds.length}回 ／ 済 ${rounds.filter((r) => solvedMap[problemKey(chapter.id, r.questionId)]).length}回`
                             : 'この大問の問題は準備中です'}
                         </p>
                       </div>
 
                       {rounds.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                        <div className="round-grid grid grid-cols-1 gap-1.5 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                           {rounds.map((round) => {
                             const solved = solvedMap[problemKey(chapter.id, round.questionId)];
                             const audio = audioSets.find((s) => s.id === round.questionId);
                             return (
                               <div
                                 key={round.questionId}
-                                className={`flex flex-col rounded-xl border p-2.5 text-left shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                                data-round
+                                data-status={solved ? 'done' : 'todo'}
+                                className={`round-card flex items-stretch gap-1.5 rounded-xl border p-1.5 text-left shadow-xs transition-all ${
                                   solved
                                     ? 'border-[#5BC0BE]/60 bg-[#EAF9F6]'
                                     : 'border-yellow-200/80 bg-[#FFFDF2]/90'
@@ -705,23 +707,23 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                                       endIndex: round.index,
                                     })
                                   }
-                                  className="flex min-w-0 flex-1 flex-col items-start text-left cursor-pointer"
+                                  className="round-main flex min-h-[48px] min-w-0 flex-1 flex-col justify-center items-start px-1.5 text-left cursor-pointer"
                                   title={`${round.roundLabel}${round.detail ? ` ／ ${round.detail}` : ''}`}
                                 >
                                   <span className="flex w-full items-center justify-between gap-1">
-                                    <span className="text-[13px] font-bold text-[#2C3E50]">
+                                    <span className="round-title font-bold text-[#2C3E50]">
                                       {round.roundLabel}
                                     </span>
                                     {solved ? (
-                                      <span className="shrink-0 rounded-full bg-[#3E9C93] px-1.5 py-0.5 text-[9px] font-bold text-white">
-                                        済
+                                      <span className="round-done mt-status shrink-0" data-status="done">
+                                        完了
                                       </span>
                                     ) : (
                                       <ChevronRight size={13} className="shrink-0 text-[#A9CCE3]" />
                                     )}
                                   </span>
                                   {round.detail && (
-                                    <span className="mt-1 line-clamp-2 text-[10px] font-bold leading-snug text-slate-500">
+                                    <span className="round-detail mt-0.5 line-clamp-1 font-bold leading-snug text-slate-600">
                                       {round.detail}
                                     </span>
                                   )}
@@ -736,15 +738,16 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                                       setOpenAudioSetId(openAudioSetId === audio.id ? null : audio.id)
                                     }
                                     aria-expanded={openAudioSetId === audio.id}
-                                    className={`mt-2 inline-flex items-center justify-center gap-1 rounded-lg border px-1.5 py-1 text-[10px] font-bold transition-colors cursor-pointer ${
+                                    aria-label={`${round.roundLabel} の音源だけを聞く`}
+                                    className={`round-audio inline-flex min-h-[44px] min-w-[44px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg border px-1 font-bold transition-colors cursor-pointer ${
                                       openAudioSetId === audio.id
                                         ? 'border-[#3E9C93] bg-[#3E9C93] text-white'
                                         : 'border-[#5BC0BE]/60 bg-white text-[#2F7C74] hover:bg-[#D8F3EE]'
                                     }`}
                                     title={`${round.roundLabel} の音源だけを聞く`}
                                   >
-                                    <Headphones size={11} />
-                                    音源
+                                    <Headphones size={16} aria-hidden="true" />
+                                    <span>音源</span>
                                   </button>
                                 )}
                               </div>
@@ -761,7 +764,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                 })}
               </div>
             ) : (
-            <div className="chapter-route-list grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="chapter-route-list unit-card-list">
               {orderedChapters.map((chapter, routeIndex) => {
                 const questions = mode === 'mini_test' ? (chapter.miniTest || []) : (chapter.practiceProblems || []);
                 const hasQuestions = questions.length > 0;
@@ -778,19 +781,13 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                     catch { return false; }
                   })()
                 );
-                const trendInfo = trendUnitMap[chapter.id];
-                // 英語リスニング・英文法の単元に収録されている音源（回ごと）。
-                // 1つでもあれば「復習用音源」ボタンをカードに出す。
-                //
-                // ★英文法を含める理由★
-                //   英文法の各問も「空所を埋めた完成文」の音源を持っている。
-                //   正しい形を音で通しておくと「音の違和感」で誤答を切れるように
-                //   なるので、問題を解き直さなくても聞き直せる入口を単元画面に置く。
+                // 英文法の各問も「空所を埋めた完成文」の音源を持っている（単元画面から聞き直せる入口）。
                 const audioSets = isListening || isGrammar ? collectAudioSets(chapter) : [];
-                const hasAudio = audioSets.length > 0;
+                const solvedCount = questions.filter((q: any) => solvedMap[problemKey(chapter.id, q.id)]).length;
+                const stat = unitStats[chapter.id];
+                const status = unitStatus(solvedCount, questions.length, hasSavedProgress || !!stat);
 
                 // ★見出しつきの小分け（数学の段階・地理の単元演習/模試・準備中）★ src/data/unitSections.ts
-                const stage = (chapter as any).mathStage as MathStage | undefined;
                 const section = unitSectionByChapter.get(chapter.id);
                 const prevSection = routeIndex > 0 ? unitSectionByChapter.get(orderedChapters[routeIndex - 1].id) : undefined;
                 const stageHeading = section?.label && section !== prevSection ? (
@@ -799,148 +796,50 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                     <small>{section.chapters.length}単元</small>
                   </h4>
                 ) : null;
+                const expanded = expandedChapterId === chapter.id;
 
                 return (
                   <React.Fragment key={chapter.id}>
                   {stageHeading}
-                  <article
-                    data-unit-id={chapter.id}
-                    data-route-index={String(routeIndex + 1).padStart(2, '0')}
-                    data-empty={!hasQuestions || undefined}
-                    className="chapter-route-card flex min-h-[148px] flex-col justify-between rounded-xl border border-yellow-200/80 bg-[#FFFDF2]/90 p-3 text-left shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  <div data-unit-id={chapter.id}>
+                  <UnitCard
+                    index={chapterNumberById.get(chapter.id) ?? routeIndex}
+                    title={chapter.abstractTitle}
+                    topics={chapter.topics}
+                    questionCount={questions.length}
+                    status={status}
+                    accuracy={accuracyOf(stat)}
+                    hasSavedProgress={hasSavedProgress}
+                    expanded={expanded}
+                    accent={theme.accent}
+                    onToggle={() => setExpandedChapterId(expanded ? null : chapter.id)}
+                    onStart={() => onSelectChapter(chapter.id, 0, false)}
+                    onResume={() => onSelectChapter(chapter.id, savedIndex, true)}
+                    onAudio={audioSets.length > 0 ? () => setOpenAudioSetId(openAudioSetId === audioSets[0].id ? null : audioSets[0].id) : undefined}
+                    audioOpen={audioSets.length > 0 && openAudioSetId === audioSets[0].id}
+                    onExplain={hasQuestions ? () => setSelectedFlowchart({ id: chapter.id, title: chapter.abstractTitle, questions }) : undefined}
                   >
-                    <div>
-                      {stage && chapter.realTitle && !/基礎から標準/.test(chapter.realTitle) && (
-                        // 数学：同じ分野タブに別の教材の「①」が並ぶので、どの教材の章かを小さく添える
-                        <p className="math-unit-source">{chapter.realTitle.replace(/^\d+章\s*/, '')}</p>
-                      )}
-                      <h4 className="text-sm font-bold leading-tight text-[#2C3E50]">{chapter.abstractTitle}</h4>
-                      <p className="chapter-unit-count">{questions.length > 0 ? `演習 ${questions.length} 大問` : '問題を準備中'}</p>
-                      {chapter.topics && chapter.topics.length > 0 && (
-                        <p className="mt-1.5 line-clamp-2 text-[11px] font-bold leading-relaxed text-slate-500">
-                          {chapter.topics.join(' ・ ')}
-                        </p>
-                      )}
-
-                      {trendInfo && (
-                        <button
-                          type="button"
-                          onClick={() => setTrendModal({
-                            open: true,
-                            chapterGroupTitle: trendInfo.chapterGroupTitle,
-                            unitId: trendInfo.unitId,
-                          })}
-                          className="mt-2 inline-flex items-center gap-1 rounded-md border border-orange-200 bg-orange-50 px-2 py-1 text-[10px] font-bold text-orange-600 transition-colors hover:bg-orange-100 cursor-pointer"
-                          title="この単元の共通テスト出題傾向を確認"
-                        >
-                          <TrendingUp size={11} />
-                          出題傾向
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="mt-3 border-t border-yellow-200/70 pt-2.5">
-                      <div className="flex flex-wrap items-center gap-1.5 font-bold">
-                        {hasQuestions ? (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => onSelectChapter(chapter.id, 0, false)}
-                              className="flex-1 min-w-[82px] rounded-lg bg-[#2C3E50] px-2.5 py-1.5 text-center text-[11px] text-white transition-colors hover:bg-[#1B2631] cursor-pointer"
-                            >
-                              最初から
-                            </button>
-                            {hasSavedProgress && (
-                              <button
-                                type="button"
-                                onClick={() => onSelectChapter(chapter.id, savedIndex, true)}
-                                className="flex-1 min-w-[82px] rounded-lg px-2.5 py-1.5 text-center text-[11px] text-white transition-opacity hover:opacity-85 cursor-pointer"
-                                style={{ backgroundColor: theme.accent }}
-                              >
-                                続きから
-                              </button>
-                            )}
-                          </>
-                        ) : (
-                          <span className="rounded-lg bg-slate-100/70 px-2.5 py-1.5 text-[11px] text-slate-400">準備中</span>
-                        )}
-
-                        {/* ★復習用の音源（英語リスニングのみ）
-                            問題を解き直さなくても音源だけを聞き直せる入口。
-                            ヘッドホンアイコン＋ミントの配色で、他のボタンから
-                            一目で区別できるようにしている。 */}
-                        {hasAudio && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const first = audioSets[0].id;
-                              setOpenAudioSetId(openAudioSetId === first ? null : first);
-                            }}
-                            aria-expanded={openAudioSetId === audioSets[0].id}
-                            className={`inline-flex items-center gap-1 rounded-lg border p-1.5 text-[10px] font-bold transition-colors cursor-pointer ${
-                              openAudioSetId === audioSets[0].id
-                                ? 'border-[#3E9C93] bg-[#3E9C93] text-white'
-                                : 'border-[#5BC0BE]/60 bg-[#EAF9F6] text-[#2F7C74] hover:bg-[#D8F3EE]'
-                            }`}
-                            title="復習用の音源を聞く（問題を解かずに音声だけ再生）"
-                          >
-                            <Headphones size={12} />
-                            音源
+                    {trendUnitMap[chapter.id] && (
+                      <button
+                        type="button"
+                        onClick={() => setTrendModal({ open: true, chapterGroupTitle: trendUnitMap[chapter.id].chapterGroupTitle, unitId: trendUnitMap[chapter.id].unitId })}
+                        className="unit-card-link"
+                      >
+                        <TrendingUp size={14} aria-hidden="true" />出題傾向を見る
+                      </button>
+                    )}
+                    {hasQuestions && questions.length > 1 && (
+                      <div className="chapter-question-list unit-card-questions">
+                        {questions.map((question: any, questionIndex: number) => (
+                          <button key={question.id} type="button" onClick={() => onSelectChapter(chapter.id, questionIndex, false)}>
+                            <span>{question.category || `問 ${questionIndex + 1}`}</span>
+                            <ChevronRight size={14} aria-hidden="true" />
                           </button>
-                        )}
-
-                        <button
-                          type="button"
-                          onClick={() => setSelectedFlowchart({ id: chapter.id, title: chapter.abstractTitle, questions })}
-                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 p-1.5 text-[10px] font-bold text-emerald-800 transition-colors hover:bg-emerald-100 cursor-pointer"
-                          title="単元のフローチャートを確認"
-                        >
-                          <GitBranch size={12} className="text-emerald-600" />
-                          <span>解き方</span>
-                        </button>
-
-                        {hasQuestions && questions.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => setExpandedChapterId(expandedChapterId === chapter.id ? null : chapter.id)}
-                            aria-expanded={expandedChapterId === chapter.id}
-                            className={`inline-flex items-center gap-1 rounded-lg border p-1.5 text-[10px] font-bold transition-colors cursor-pointer ${
-                              expandedChapterId === chapter.id
-                                ? 'border-[#A9CCE3] bg-[#A9CCE3] text-white'
-                                : 'border-slate-200 bg-white text-[#2C3E50] hover:bg-slate-50'
-                            }`}
-                          >
-                            問題を選ぶ
-                            <ChevronDown size={12} className={`transition-transform ${expandedChapterId === chapter.id ? 'rotate-180' : ''}`} />
-                          </button>
-                        )}
+                        ))}
                       </div>
-
-                      <AnimatePresence>
-                        {expandedChapterId === chapter.id && hasQuestions && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="chapter-question-list mt-3 space-y-2 rounded-xl border border-slate-200 bg-white/80 p-2"
-                          >
-                            {questions.map((question: any, questionIndex: number) => (
-                              <button
-                                key={question.id}
-                                type="button"
-                                onClick={() => onSelectChapter(chapter.id, questionIndex, false)}
-                                className="flex w-full items-center justify-between rounded-md border border-transparent bg-white/70 p-1.5 text-left text-[10px] font-bold text-slate-600 transition-colors hover:border-[#A9CCE3]/40 hover:bg-[#A9CCE3]/10 cursor-pointer"
-                              >
-                                <span className="min-w-0 whitespace-normal break-words pr-2">{question.category || `問 ${questionIndex + 1}`}</span>
-                                <ChevronRight size={11} className="shrink-0 text-[#A9CCE3]" />
-                              </button>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </article>
+                    )}
+                  </UnitCard>
+                  </div>
                   </React.Fragment>
                 );
               })}
@@ -998,7 +897,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                           mode="review"
                           tone="light"
                           readCount={target.readCount}
-                          title="復習用の音源を聞く"
+                          title="復習用の音源を聞く（問題を解かずに音声だけ再生）"
                         />
                       </div>
                     </motion.div>

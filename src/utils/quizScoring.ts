@@ -32,6 +32,7 @@ import {
 } from './scoring';
 import { captureWrongAnswers, type WrongAnswerInput } from './reviewList';
 import { markProblemSolved } from './progress';
+import { recordUnitResult } from './unitStats';
 import { schedulePush } from './studySync';
 import { isAnswerCorrect, isDescriptive } from './answerJudge';
 import { stepScoreKey } from './listeningSteps';
@@ -188,6 +189,8 @@ export function createScoreCurrentQuestion({
     try {
       const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
       markProblemSolved(uid, chapter.id, currentQuestion.id, boostedScore);
+      // 単元カードの「正解率」用（採点できた小問だけを数える）
+      recordUnitResult(uid, chapter.id, breakdown.correctCount, breakdown.judgeableCount);
       // とびら君の成長（XP・マナコイン・ミッション）。同じ大問は1日1回。学習の保存とは独立で、失敗しても学習を止めない。
       if (uid && Number.isFinite(boostedScore) && boostedScore >= 1) {
         const key = `${chapter.id}::${currentQuestion.id}`;

@@ -202,7 +202,7 @@ export function BattleAiRoomScreen({
                 <p className="truncate text-xs font-black" style={{ color: INK }}>
                   {profile.name}
                 </p>
-                <p className="text-[10px] font-bold tabular-nums" style={{ color: INK_SUB }}>
+                <p className="text-xs font-bold tabular-nums" style={{ color: INK_SUB }}>
                   正解率 {Math.round(profile.accuracy * 100)}% ／ レート目安 {profile.displayRating}
                 </p>
               </div>
@@ -216,7 +216,7 @@ export function BattleAiRoomScreen({
         />
 
         {b.rules.note && (
-          <p className="mt-4 text-center text-[11px] font-bold leading-relaxed" style={{ color: '#B7791F' }}>
+          <p className="mt-4 text-center text-xs font-bold leading-relaxed" style={{ color: '#B7791F' }}>
             {b.rules.note}
           </p>
         )}
@@ -240,7 +240,7 @@ export function BattleAiRoomScreen({
     <div className="mt-3">
       {confirmQuit ? (
         <div className="grid gap-2 rounded-2xl border-2 p-3" style={{ borderColor: LINE, background: '#FFFFFF' }}>
-          <p className="text-center text-[11px] font-black" style={{ color: INK }}>
+          <p className="text-center text-xs font-black" style={{ color: INK }}>
             対戦をやめますか？（AI対戦なので記録には残りません）
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -256,7 +256,7 @@ export function BattleAiRoomScreen({
         <button
           type="button"
           onClick={() => setConfirmQuit(true)}
-          className="w-full py-1 text-center text-[10px] font-bold underline-offset-2 hover:underline"
+          className="w-full min-h-11 py-1 text-center text-xs font-bold underline-offset-2 hover:underline"
           style={{ color: '#9A948A' }}
         >
           対戦をやめる

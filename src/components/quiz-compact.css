@@ -1,0 +1,18 @@
+/* 演習画面（スマホ・低い画面）：英文4択を1画面に収める。
+   文字15px・高さ44px以上は守り、上下の余白だけを詰める。 */
+@media (max-width: 767px) and (max-height: 700px) {
+  .mc-fill-stack { gap: 6px; }
+  .mc-fill-stack > button { padding-top: 6px; padding-bottom: 6px; font-size: 15px; line-height: 1.35; min-height: 44px; }
+}
+@media (max-width: 767px) and (max-height: 600px) {
+  .mc-fill-stack { gap: 5px; grid-auto-rows: auto; }
+  .mc-fill-stack > button { padding-top: 4px; padding-bottom: 4px; line-height: 1.3; }
+}
+@media (max-width: 767px) and (max-height: 700px) {
+  .mc-fill-stack > button span { line-height: 1.35 !important; }
+}
+
+/* 音源の横帯：見た目は36px（図に高さを譲る＝既存テストの取り決め）のまま、
+   押せる範囲だけ上下4pxずつ広げて 44px にする */
+.lap-row button { position: relative; }
+.lap-row button::after { content: ''; position: absolute; inset: -4px 0; }

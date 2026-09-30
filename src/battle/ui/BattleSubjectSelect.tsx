@@ -162,20 +162,21 @@ export function BattleSubjectSelect({
     const theme = subjectTheme(unitSubject as SubjectKey);
     return <BattleShell footer={<BattleButton variant="ghost" onClick={() => setUnitSubject(null)} icon={<ArrowLeft size={18} />}>科目選択にもどる</BattleButton>}>
       <BattleTitle subtitle={`${theme.label} ／ 単元をえらぶ`} />
-      <p className="mb-3 text-sm font-bold" style={{ color: INK }}>出題範囲を選んでください。今回は最大{questionCount}問です。</p>
-      <p className="mb-3 text-xs" style={{ color: INK_SUB }}>単元の問題が少ない場合は、同じ試合で重複させず、収録数だけ出題します。</p>
+      {/* 説明は1行に。「少ない単元は収録数だけ」は各カードの「今回 N問」で分かる */}
+      <p className="mb-2 text-sm font-bold" style={{ color: INK }}>出題範囲を選ぶ（最大{questionCount}問）</p>
       {unitError ? <div role="alert"><p>単元を読み込めませんでした。</p><BattleButton onClick={() => setRetry(n => n + 1)}>再読み込み</BattleButton></div>
         : !units ? <p role="status">単元を読み込んでいます…</p>
-        : <div className="grid gap-2" aria-label="単元一覧">
+        : <div className="grid grid-cols-2 gap-2" aria-label="単元一覧">
           <button type="button" data-battle-unit="all" onClick={() => onPick(unitSubject, questionCount)}
-            className="min-h-[64px] rounded-2xl border-2 p-4 text-left font-black" style={{ borderColor: theme.accent, color: INK, background: theme.surface }}>
+            className="col-span-2 min-h-[52px] rounded-2xl border-2 px-4 py-2 text-left font-black" style={{ borderColor: theme.accent, color: INK, background: theme.surface }}>
             全単元から出題<span className="ml-2 text-xs">{Math.min(questionCount, units.reduce((n, u) => n + u.count, 0))}問</span>
           </button>
           {units.map(unit => <button key={unit.id} type="button" data-battle-unit={unit.id}
             onClick={() => onPick(unitSubject, questionCount, unit.id)}
-            className="min-h-[64px] rounded-2xl border-2 bg-white p-4 text-left" style={{ borderColor: LINE, color: INK }}>
-            <span className="block text-sm font-black">{unit.title}</span>
-            <span className="mt-1 block text-xs" style={{ color: INK_SUB }}>収録 {unit.count}問 ／ 今回 {Math.min(questionCount, unit.count)}問</span>
+            className="min-h-[52px] min-w-0 rounded-2xl border-2 bg-white px-3 py-2 text-left" style={{ borderColor: LINE, color: INK }}
+            aria-label={`${unit.title}（収録 ${unit.count}問・今回 ${Math.min(questionCount, unit.count)}問）`}>
+            <span className="block truncate text-sm font-black">{unit.title}</span>
+            <span className="mt-0.5 block text-xs" style={{ color: INK_SUB }}>今回 {Math.min(questionCount, unit.count)}問<span className="opacity-70">／{unit.count}</span></span>
           </button>)}
         </div>}
     </BattleShell>;
@@ -190,15 +191,15 @@ export function BattleSubjectSelect({
       }
     >
       <BattleTitle subtitle={title} />
-      <p className="mb-3 text-sm font-bold" style={{ color: INK }}>対戦する科目を確認してください。カードを押すと次へ進みます。</p>
+      {/* 説明の1行は省く：科目カードを押せば次へ進むことはカードの形で分かる（1画面に収める） */}
 
       {allowQuestionCount && (
         <section
-          className="mb-3 rounded-2xl border-2 p-3"
+          className="mb-2 rounded-2xl border-2 px-3 py-2"
           style={{ borderColor: LINE, background: '#FFFFFF' }}
           aria-label="問題数"
         >
-          <p className="mb-2 text-[11px] font-black" style={{ color: INK_SUB }}>
+          <p className="mb-1.5 text-xs font-black" style={{ color: INK_SUB }}>
             問題数
           </p>
           <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="1試合の問題数">
@@ -212,7 +213,7 @@ export function BattleSubjectSelect({
                   aria-checked={selected}
                   data-question-count={n}
                   onClick={() => setQuestionCount(n)}
-                  className="rounded-xl border-2 py-2.5 text-center transition active:scale-[0.98]"
+                  className="min-h-11 rounded-xl border-2 py-1.5 text-center transition active:scale-[0.98]"
                   style={{
                     borderColor: selected ? AMBER : LINE,
                     background: selected ? `${AMBER}1A` : '#FAF8F3',
@@ -220,7 +221,7 @@ export function BattleSubjectSelect({
                   }}
                 >
                   <span className="block text-xl font-black tabular-nums leading-none">{n}</span>
-                  <span className="mt-1 block text-[10px] font-bold" style={{ color: INK_SUB }}>
+                  <span className="mt-1 block text-xs font-bold" style={{ color: INK_SUB }}>
                     {n === 5 ? 'さっと' : n === 10 ? 'ふつう' : 'じっくり'}
                   </span>
                 </button>
@@ -235,19 +236,20 @@ export function BattleSubjectSelect({
           「えらぶだけ」ではなくなっている。
           ただし手打ち入力（IMEの変換）は今も1つも無いので、
           そこを取り違えないように書き分けている。 */}
-      <p
-        className="mb-3 flex items-start gap-1.5 text-[11px] font-bold leading-relaxed"
+      {/* 制限時間と答え方の説明は「押したら開く」（ふだんは1行だけ） */}
+      <details
+        className="mb-2 text-xs font-bold leading-relaxed"
         style={{ color: INK_SUB }}
       >
-        <Info size={13} className="mt-0.5 shrink-0" />
-        <span>
+        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-1.5"><Info size={14} className="shrink-0" aria-hidden="true" />制限時間と答え方</summary>
+        <span className="block pb-1 pl-5">
           選択式は通常25〜55秒、五十音入力は文字数に応じて47〜55秒です。
           <br />
           答え方は「えらぶ」と「五十音を おす」の2つ。
           <br />
           文字を打ちこむ（へんかんする）ことはありません。
         </span>
-      </p>
+      </details>
 
       {!allowQuestionCount && <p className="mb-3 text-xs font-bold" style={{ color: INK_SUB }}>全国対戦は全単元から出題します。単元を指定したいときはAI・フレンド対戦を選んでください。</p>}
       <div className="grid gap-2.5">
@@ -267,29 +269,29 @@ export function BattleSubjectSelect({
               type="button"
               id={`battle-subject-${subject}`}
               onClick={() => allowQuestionCount ? setUnitSubject(subject) : onPick(subject)}
-              className="w-full rounded-2xl border-2 px-4 py-3.5 text-left transition active:scale-[0.99]"
+              className="w-full rounded-2xl px-4 py-2.5 text-left transition active:scale-[0.99]"
               style={{
-                borderColor: subject === currentSubject ? theme.accent : `${theme.accent}66`,
+                border: `${subject === currentSubject ? 3 : 2}px solid ${subject === currentSubject ? theme.accent : `${theme.accent}66`}`,
                 background: `${theme.accent}14`,
               }}
             >
               <div className="flex items-center justify-between gap-3">
-                <span className="text-base font-black" style={{ color: theme.accent }}>
+                <span className="text-base font-black" style={{ color: theme.accent }} aria-current={subject === currentSubject ? 'true' : undefined}>
                   {theme.label}
-                  {subject === currentSubject && <span className="ml-2 rounded-full bg-white px-2 py-1 text-[11px]" style={{ color: INK }}>選択中の科目</span>}
                 </span>
-                <span
-                  className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black tabular-nums"
+                {/* 問題数を上で選べるときは「N問しょうぶ」は重複なので出さない（全国対戦だけ出す） */}
+                {!allowQuestionCount && <span
+                  className="shrink-0 rounded-full px-2 py-0.5 text-xs font-black tabular-nums"
                   // ★アイボリー地に白文字は読めない★
                   //   もとは color: '#FFFFFF' だったが、この画面は
                   //   紙の色（#FDFBF7）の上なので、白だとほぼ見えない。
                   style={{ background: `${theme.accent}2E`, color: INK }}
                 >
                   {rule.questionCount}問しょうぶ
-                </span>
+                </span>}
               </div>
 
-              <p className="mt-1 text-[11px] font-bold" style={{ color: INK_SUB }}>
+              <p className="mt-1 text-xs font-bold" style={{ color: INK_SUB }}>
                 収録{' '}
                 <span className="tabular-nums font-black" style={{ color: INK }}>
                   {count}
@@ -310,7 +312,7 @@ export function BattleSubjectSelect({
                 // ★金（#F4D03F）は文字色に使えない★
                 //   アイボリー地の上ではコントラストが1.5程度しかなく読めない。
                 //   注意書きは読めることが目的なので AMBER を使う。
-                <p className="mt-1.5 text-[10px] font-bold leading-relaxed" style={{ color: AMBER }}>
+                <p className="mt-1 text-xs font-bold leading-snug" style={{ color: AMBER }}>
                   {note}
                 </p>
               )}

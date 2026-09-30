@@ -160,7 +160,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
         <div className="flex items-center gap-3">
           <GrowthAvatar progress={progress} size={56} />
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-1 text-[10px] font-black" style={{ color: INK_SUB }}>
+            <p className="flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
               <CalendarCheck size={12} />
               {today.replace(/-/g, '/')}
               <span className="ml-auto inline-flex items-center gap-1 tabular-nums">
@@ -183,7 +183,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
             </div>
           </div>
         </div>
-        <div className="mt-3 flex items-center justify-between rounded-2xl px-3 py-2 text-[10px] font-bold" style={{ background: '#FAF8F3', border: `1px solid ${LINE}`, color: INK_SUB }}>
+        <div className="mt-3 flex items-center justify-between rounded-2xl px-3 py-2 text-xs font-bold" style={{ background: '#FAF8F3', border: `1px solid ${LINE}`, color: INK_SUB }}>
           <span>きょう全部やると</span>
           <span className="flex items-center gap-2 tabular-nums" style={{ color: INK }}>
             <span className="inline-flex items-center gap-0.5"><Sparkles size={11} style={{ color: AMBER }} /> +{totalXp} XP</span>
@@ -242,9 +242,9 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
           <div className="min-w-0 flex-1">
             <p className="text-sm font-black" style={{ color: INK }}>
               コンプリート宝箱
-              {preview.jackpot && !chestDone && <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-[10px]" style={{ background: AMBER, color: '#FFFFFF' }}>大当たりの日</span>}
+              {preview.jackpot && !chestDone && <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs" style={{ background: AMBER, color: '#FFFFFF' }}>大当たりの日</span>}
             </p>
-            <p className="mt-0.5 text-[11px] font-bold" style={{ color: INK_SUB }}>
+            <p className="mt-0.5 text-xs font-bold" style={{ color: INK_SUB }}>
               {chestDone
                 ? `きょうは開けました（${streakNow}日連続）。また明日！`
                 : chestReady
@@ -262,7 +262,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
             return (
               <div
                 key={d}
-                className="flex h-8 flex-col items-center justify-center rounded-xl text-[9px] font-black tabular-nums"
+                className="flex h-8 flex-col items-center justify-center rounded-xl text-xs font-black tabular-nums"
                 style={{
                   background: filled ? (d === 7 ? AMBER : GOLD) : '#FAF8F3',
                   color: filled ? (d === 7 ? '#FFFFFF' : INK) : INK_SUB,
@@ -274,7 +274,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
             );
           })}
         </div>
-        <div className="mt-2 flex items-center justify-between text-[10px] font-bold" style={{ color: INK_SUB }}>
+        <div className="mt-2 flex items-center justify-between text-xs font-bold" style={{ color: INK_SUB }}>
           <span>{chestDone ? '中身' : 'きょうの中身'}</span>
           <span className="flex items-center gap-2 tabular-nums" style={{ color: INK }}>
             <span className="inline-flex items-center gap-0.5"><Sparkles size={11} style={{ color: AMBER }} /> +{(chestReward ?? preview).xp} XP</span>
@@ -291,7 +291,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
         )}
       </section>
 
-      <p className="mt-4 flex items-start gap-1.5 text-[10px] font-bold leading-relaxed" style={{ color: INK_SUB }}>
+      <p className="mt-4 flex items-start gap-1.5 text-xs font-bold leading-relaxed" style={{ color: INK_SUB }}>
         <Sparkles size={12} className="mt-0.5 shrink-0" style={{ color: AMBER }} />
         ミッションは毎日0時に入れかわり、全員おなじ内容です。ボーナスミッションは演習（大問に得点）・マナラッシュ・ガチャや着がえで進みます。達成すると、どの画面でも上にお知らせが出ます。コインは「プロフィール」でとびら君の装備と交換できます。
         復習リストの「できた」で進みます。同じ問題は1日1回までです。全部うけとると宝箱が開き、7日連続で大当たりです。

@@ -13,7 +13,7 @@
     "gen:index": "tsx scripts/gen-chapter-index.mts && tsx scripts/scope-listening.mts",
     "gen:battle-pool": "tsx scripts/gen-battle-pool.mts",
     "gen:vocabulary": "tsx scripts/gen-listening-vocabulary.mts",
-    "test": "vitest run tests/standalone.test.ts tests/listeningExplanation.test.ts",
+    "test": "vitest run tests/standalone.test.ts tests/listeningExplanation.test.ts tests/updateNotices.test.ts",
     "test:rules": "firebase emulators:exec --only firestore --project demo-manatobi-listening \"vitest run tests/battle.rules.test.ts tests/friends.rules.test.ts tests/leaderboard.rules.test.ts tests/standalone-online.rules.test.ts\"",
     "test:browser": "node tests/standalone.browser.mjs",
     "audio:status": "tsx scripts/listening-audio.mts status",

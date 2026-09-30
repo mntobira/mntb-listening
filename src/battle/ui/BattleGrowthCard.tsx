@@ -92,7 +92,7 @@ export function BattleGrowthCard({
               </span>
             </p>
           ) : (
-            <p className="mb-1 text-[11px] font-bold" style={{ color: INK_SUB }}>
+            <p className="mb-1 text-xs font-bold" style={{ color: INK_SUB }}>
               Lv.{info.level} ／ 累計 {progress.xp.toLocaleString()} XP
               <span className="ml-2 inline-flex items-center gap-0.5 tabular-nums">
                 <Coins size={10} style={{ color: AMBER }} /> {progress.coins}
@@ -105,7 +105,7 @@ export function BattleGrowthCard({
 
       {/* 経験値の内訳（なぜその数になったか） */}
       {delta && (
-        <ul className="mt-3 grid grid-cols-2 gap-1 text-[10px] font-bold" style={{ color: INK_SUB }}>
+        <ul className="mt-3 grid grid-cols-2 gap-1 text-xs font-bold" style={{ color: INK_SUB }}>
           <XpRow label="参加" value={delta.xp.participation} />
           <XpRow label="せいかい" value={delta.xp.correct} />
           {delta.xp.outcome > 0 && <XpRow label="勝利・引き分け" value={delta.xp.outcome} />}
@@ -117,7 +117,7 @@ export function BattleGrowthCard({
       {/* 新しいバッジ */}
       {delta && delta.newBadges.length > 0 && (
         <div className="mt-3">
-          <p className="mb-1.5 flex items-center gap-1 text-[10px] font-black" style={{ color: AMBER }}>
+          <p className="mb-1.5 flex items-center gap-1 text-xs font-black" style={{ color: AMBER }}>
             <Award size={12} />
             あたらしい称号
           </p>
@@ -131,7 +131,7 @@ export function BattleGrowthCard({
 
       {/* 解放された装備 */}
       {delta && delta.unlocked.length > 0 && (
-        <p className="mt-3 flex flex-wrap items-center gap-1 text-[10px] font-bold" style={{ color: INK_SUB }}>
+        <p className="mt-3 flex flex-wrap items-center gap-1 text-xs font-bold" style={{ color: INK_SUB }}>
           <Unlock size={12} style={{ color: AMBER }} />
           とびら君の装備が解放:
           {delta.unlocked.map((id) => {
@@ -148,11 +148,11 @@ export function BattleGrowthCard({
       {/* ミッション */}
       {delta && delta.missionUpdates.length > 0 && (
         <div className="mt-3 rounded-2xl px-3 py-2" style={{ background: '#FAF8F3', border: `1px solid ${LINE}` }}>
-          <p className="mb-1 flex items-center gap-1 text-[10px] font-black" style={{ color: INK_SUB }}>
+          <p className="mb-1 flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
             <Target size={12} />
             きょうのミッション
           </p>
-          <ul className="grid gap-0.5 text-[11px] font-bold" style={{ color: INK }}>
+          <ul className="grid gap-0.5 text-xs font-bold" style={{ color: INK }}>
             {delta.missionUpdates.map((u) => {
               const m = missionById(u.id);
               if (!m) return null;
@@ -170,7 +170,7 @@ export function BattleGrowthCard({
             <button
               type="button"
               onClick={onOpenMissions}
-              className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border-2 py-2 text-[11px] font-black transition active:translate-y-[1px]"
+              className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border-2 py-2 text-xs font-black transition active:translate-y-[1px]"
               style={{ background: GOLD, borderColor: '#E5B93C', color: INK }}
             >
               <Coins size={14} />

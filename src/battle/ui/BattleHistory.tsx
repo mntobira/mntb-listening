@@ -134,7 +134,7 @@ export function BattleHistory({ onBack }: { onBack: () => void }) {
               >
                 {/* 勝敗 */}
                 <span
-                  className="flex h-9 w-11 shrink-0 items-center justify-center rounded-xl text-[11px] font-black"
+                  className="flex h-9 w-11 shrink-0 items-center justify-center rounded-xl text-xs font-black"
                   style={{ background: `${conf.color}1F`, color: conf.color }}
                 >
                   {conf.label}
@@ -144,17 +144,17 @@ export function BattleHistory({ onBack }: { onBack: () => void }) {
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5">
                     <span
-                      className="shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-black"
+                      className="shrink-0 rounded-full px-1.5 py-0.5 text-xs font-black"
                       style={{ background: `${theme.accent}2E`, color: theme.accent }}
                     >
                       {labelOfSubject(item.subject)}
                     </span>
-                    <span className="truncate text-[11px] font-bold" style={{ color: INK }}>
+                    <span className="truncate text-xs font-bold" style={{ color: INK }}>
                       vs {item.opponentNickname || '対戦相手'}
                     </span>
                   </span>
                   <span
-                    className="block text-[10px] font-bold tabular-nums"
+                    className="block text-xs font-bold tabular-nums"
                     style={{ color: INK_SUB }}
                   >
                     {item.myScore} — {item.opponentScore}
@@ -183,7 +183,7 @@ export function BattleHistory({ onBack }: { onBack: () => void }) {
                   </span>
                 ) : (
                   <span
-                    className="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold"
+                    className="shrink-0 rounded px-1 py-0.5 text-xs font-bold"
                     style={{ background: '#F1EDE4', border: `1px solid ${LINE}`, color: INK_SUB }}
                   >
                     未反映

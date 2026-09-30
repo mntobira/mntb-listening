@@ -180,7 +180,7 @@ export function PlayerBadge({
   if (compact) return (
     <div className={`flex min-h-[32px] min-w-0 flex-1 items-center gap-2 ${right ? 'flex-row-reverse text-right' : ''}`}>
       <span className="min-w-0 flex-1 truncate text-xs font-bold" style={{ color: INK }}>{isMe ? 'あなた' : shown}</span>
-      {answered && <span className="shrink-0 text-[10px] font-bold" style={{ color: '#1E7D46' }}>解答済み</span>}
+      {answered && <span className="shrink-0 text-xs font-bold" style={{ color: '#1E7D46' }}>解答済み</span>}
       <strong className="shrink-0 text-lg tabular-nums" style={{ color: INK }} aria-label={`${isMe ? 'あなた' : shown}の得点 ${score ?? 0}`}>{score ?? 0}</strong>
     </div>
   );
@@ -221,12 +221,12 @@ export function PlayerBadge({
         <p className="truncate text-sm font-bold" style={{ color: INK }}>
           {shown}
           {isMe && (
-            <span className="ml-1 text-[10px]" style={{ color: INK_SUB }}>
+            <span className="ml-1 text-xs" style={{ color: INK_SUB }}>
               じぶん
             </span>
           )}
         </p>
-        <p className="flex items-center gap-1 text-[10px] font-bold" style={{ color: title.color }}>
+        <p className="flex items-center gap-1 text-xs font-bold" style={{ color: title.color }}>
           <span className={`flex items-center gap-1 ${right ? 'flex-row-reverse' : ''}`}>
             <Crown size={10} />
             {title.label} {rating}

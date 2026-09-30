@@ -23,15 +23,14 @@ import {
   type ReviewItem,
 } from '../utils/reviewList';
 import { ForgettingCurveChart } from './ForgettingCurveChart';
+import './review-note.css';
 import { stripHtmlToText } from '../utils/sanitizeHtml';
 import {
   ALL_SUBJECTS,
-  badgesForItem,
   filterBySubjectTab,
   formatDue,
   formatScope,
   retentionOf,
-  reviewSubjectStyle,
   subjectOfReviewItem,
   summarizeBySubject,
   summarizeQuestion,
@@ -66,6 +65,8 @@ interface StudyHubProps {
   onSelectNote: (note: any) => void;
   /** 復習アイテム／ノートから、対応する演習問題へ直接遷移する（要件5） */
   onReview?: (target: any) => void;
+  /** 復習が空のときの「演習する」 */
+  onPractice?: () => void;
 }
 
 type Tab = 'today' | 'notes' | 'important' | 'all';
@@ -87,8 +88,18 @@ const stripHtml = stripHtmlToText;
 // （以前はここにも同じ実装があった）。
 
 // ============================================================
-// 復習アイテム カード（自動キャプチャ = 誤答）
+// 復習アイテム（1行 → タップで展開）2026-09-30 作り直し
 // ============================================================
+//
+// ■ 何を直したか
+//   以前は「ピンクの箱の中に白いカード」（入れ子）で、1枚ごとに大きな
+//   「解き直す」ボタンがあり、スマホでは2件しか見えなかった。
+//   文字も 10px が11種類あった。
+// ■ いまの形
+//   ・1件＝1行（区切り線だけ）。1画面に4〜5件見える。
+//   ・行の右端に「解く」（44px の丸ボタン）。押せばすぐその問題へ。
+//   ・行本体を押すと、正答とあなたの解答・自己評価・削除が開く。
+//   ・状態は色つきの小さな印 1つ（期限切れ＝オレンジ／予定＝灰／習得＝緑）。
 
 interface ReviewCardProps {
   item: ReviewItem;
@@ -97,193 +108,61 @@ interface ReviewCardProps {
   onWrong: (key: string) => void;
   onRemove: (key: string) => void;
   onReview?: (item: ReviewItem) => void;
-  /** 科目名を出すか（「すべて」タブでは出し、科目タブでは冗長なので出さない） */
+  /** 科目名を出すか（「すべて」のときだけ出す） */
   showSubject?: boolean;
 }
 
-/**
- * 復習カード（自動キャプチャ = 誤答）
- *
- * ■ 何を直したか
- *   以前のカードは常時、
- *     「苦手（自動）」バッジ / 章名バッジ / 第N問バッジ / 予定日バッジ /
- *      問題文90文字 / 正答 / あなたの解答 / 間違い回数・復習正解回数・定着度 /
- *      ボタン4つ
- *   を全部出していた。1枚で9要素あり、リストが数件並ぶだけで
- *   「どれを次にやるか」を選べない情報量になっていた。
- *
- * ■ どう再設計したか（要件2）
- *   閉じているときは3行に固定する。
- *     1行目: 出題範囲（第2回 第1問 A／1章 物質の状態と平衡 第3問）
- *     2行目: 設問の要約（最初の1文だけ・末尾は省略記号）
- *     3行目: バッジ（苦手／定着）を右寄せで最大2つ
- *   正答・自分の解答・復習回数・予定日・操作ボタンは
- *   カードをタップして開いたときだけ出す。
- *
- *   カード全体をボタンにすると、中の「できた」等のボタンと
- *   入れ子になってしまう（HTML的に不正で、スクリーンリーダーでも壊れる）。
- *   そこで開閉のトリガは見出し部分の <button> に限定し、
- *   詳細の操作ボタンはその外側に置いている。
- */
-const ReviewCard: React.FC<ReviewCardProps> = ({
-  item,
-  now,
-  onCorrect,
-  onWrong,
-  onRemove,
-  onReview,
-  showSubject = false,
-}) => {
+const ReviewCard: React.FC<ReviewCardProps> = ({ item, now, onCorrect, onWrong, onRemove, onReview, showSubject = false }) => {
   const [open, setOpen] = useState(false);
   const due = item.dueAt <= now;
   const mastered = isMastered(item);
   const retention = Math.round(retentionOf(item) * 100);
   const subject = subjectOfReviewItem(item);
-  const style = reviewSubjectStyle(subject);
-  const badges = badgesForItem(item);
   const detailId = `review-detail-${item.key}`;
+  const status = mastered ? 'done' : due ? 'doing' : 'todo';
+  const summary = summarizeQuestion(item.questionText);
 
   return (
-    <li
-      className={`arena-review-card relative overflow-hidden rounded-2xl border shadow-sm transition-colors ${
-        due ? 'bg-[#FFF6F9] border-[#F4A9C4]/60' : 'bg-white border-gray-100'
-      }`}
-    >
-      {/*
-        左端の色帯で科目を示す。
-        バッジを1つ増やすより場所を取らず、リストを縦に流し読みしても
-        「化学基礎の問題が続いている」ことが色で分かる。
-      */}
-      <span
-        className={`absolute left-0 top-0 bottom-0 w-1.5 ${style.stripeClass}`}
-        aria-hidden="true"
-      />
-
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        aria-controls={detailId}
-        className="w-full text-left pl-5 pr-4 py-4 sm:pl-6 sm:pr-5 sm:py-5 cursor-pointer"
-      >
-        {/* 1行目: 出題範囲 */}
-        <div className="flex items-center gap-2">
-          {showSubject && (
-            <span
-              className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold border ${style.textClass} ${style.bgClass} ${style.borderClass}`}
-            >
-              {REVIEW_SUBJECT_LABELS[subject]}
-            </span>
-          )}
-          <span className="min-w-0 flex-1 truncate text-xs sm:text-[13px] font-bold text-gray-500">
-            {formatScope(item)}
+    <li className="rn-item" data-status={status} data-open={open || undefined}>
+      <div className="rn-item-row">
+        <button type="button" className="rn-item-main" onClick={() => setOpen(v => !v)} aria-expanded={open} aria-controls={detailId}>
+          <span className="rn-item-scope">
+            {showSubject && subject !== 'other' && <b>{REVIEW_SUBJECT_LABELS[subject]}</b>}
+            <span>{formatScope(item)}</span>
           </span>
-          <ChevronDown
-            size={18}
-            className={`shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
-            aria-hidden="true"
-          />
-        </div>
-
-        {/* 2行目: 設問の要約（1文・省略記号つき） */}
-        <p className="mt-2 text-[15px] sm:text-base font-bold text-[#2C3E50] leading-relaxed break-words [overflow-wrap:anywhere] font-handwriting line-clamp-2">
-          {summarizeQuestion(item.questionText)}
-        </p>
-
-        {/* 3行目: タグ類（右寄せ・最大2つ） */}
-        <div className="mt-3 flex items-center justify-end gap-1.5">
-          {badges.map((b) => (
-            <span
-              key={b.kind}
-              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold border ${
-                b.kind === 'weak'
-                  ? 'bg-[#E8688E]/10 text-[#C0392B] border-[#E8688E]/30'
-                  : b.kind === 'mastered'
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-slate-50 text-slate-600 border-slate-200'
-              }`}
-            >
-              {b.kind === 'weak' && <Flame size={10} aria-hidden="true" />}
-              {b.kind === 'mastered' && <CheckCircle2 size={10} aria-hidden="true" />}
-              {b.label}
+          <span className="rn-item-q">{summary || '（問題文なし）'}</span>
+          <span className="rn-item-meta">
+            <span className="mt-status" data-status={status}>{mastered ? '習得済み' : due ? '今日やる' : formatDue(item.dueAt, now)}</span>
+            {item.wrongCount >= 2 && !mastered && <span className="rn-weak"><Flame size={13} aria-hidden="true" />{item.wrongCount}回ミス</span>}
+            <span className="rn-retention" aria-label={`定着度 ${retention}%`}>
+              <span className="mt-meter" data-status={mastered ? 'done' : undefined} aria-hidden="true"><i style={{ width: `${Math.max(retention, 4)}%` }} /></span>
+              {retention}%
             </span>
-          ))}
-        </div>
-      </button>
-
-      {onReview && (
-        <div className="px-5 pb-3">
-          <button type="button" onClick={() => onReview(item)} aria-label="答えを見ずにこの問題を解き直す" className="arena-review-start min-h-[44px] rounded-lg bg-[#2C3E50] px-4 text-sm font-bold text-white">
-            解き直す
+          </span>
+        </button>
+        {onReview && (
+          <button type="button" className="rn-item-solve" onClick={() => onReview(item)} aria-label={`答えを見ずに解き直す：${formatScope(item)}`}>
+            <RotateCcw size={18} aria-hidden="true" /><span>解く</span>
           </button>
-        </div>
-      )}
-      {/* ===== 詳細（タップで展開）===== */}
+        )}
+      </div>
+
       {open && (
-        <div id={detailId} className="pl-5 pr-4 pb-4 sm:pl-6 sm:pr-5 sm:pb-5">
-          <div className="border-t border-gray-100 pt-3 space-y-2">
-            {/* 予定日・回数などの補足情報はここに集約する */}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500">
-              <span className="inline-flex items-center gap-1">
-                <Clock size={12} aria-hidden="true" />
-                {formatDue(item.dueAt, now)}
-              </span>
-              <span>間違い {item.wrongCount}回</span>
-              <span>復習正解 {item.correctCount}回</span>
-              <span>定着度 {retention}%</span>
-              {mastered && <span className="text-emerald-600 font-bold">習得済み</span>}
-            </div>
-
-            {(item.correctAnswer || item.lastWrongAnswer) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
-                {item.correctAnswer && (
-                  <div className="text-emerald-700">
-                    <span className="font-bold">正答: </span>
-                    <span className="font-math">{item.correctAnswer}</span>
-                  </div>
-                )}
-                {item.lastWrongAnswer && (
-                  <div className="text-[#C0392B]">
-                    <span className="font-bold">あなたの解答: </span>
-                    <span className="font-math">{item.lastWrongAnswer}</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* 問題文の続き（要約で切り落とした分をここで補う） */}
-            {item.questionText && (
-              <p className="text-[13px] text-gray-600 leading-relaxed break-words [overflow-wrap:anywhere]">
-                {stripHtml(item.questionText)}
-              </p>
-            )}
-
-            {/* アクション */}
-            <div className="pt-1 flex flex-wrap gap-2">
-              <p className="w-full text-xs text-gray-500">答えを確認したあとの自己評価</p>
-              <button
-                onClick={() => onCorrect(item.key)}
-                aria-label="復習で正解にする"
-                className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-lg bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-colors"
-              >
-                <CheckCircle2 size={16} aria-hidden="true" /> できた
-              </button>
-              <button
-                onClick={() => onWrong(item.key)}
-                aria-label="復習でまだ苦手にする"
-                className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-lg bg-amber-100 text-amber-800 text-sm font-bold hover:bg-amber-200 transition-colors border border-amber-200"
-              >
-                <RotateCcw size={16} aria-hidden="true" /> まだ苦手
-              </button>
-              <button
-                onClick={() => onRemove(item.key)}
-                aria-label="復習リストから削除"
-                title="復習リストから削除"
-                className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-lg bg-white text-gray-500 text-sm font-bold hover:bg-gray-50 transition-colors border border-gray-200 ml-auto"
-              >
-                <Trash2 size={16} aria-hidden="true" /> 削除
-              </button>
-            </div>
+        <div id={detailId} className="rn-item-detail">
+          {(item.correctAnswer || item.lastWrongAnswer) && (
+            <dl className="rn-answers">
+              {item.lastWrongAnswer && <div data-kind="wrong"><dt>あなたの解答</dt><dd className="font-math">{item.lastWrongAnswer}</dd></div>}
+              {item.correctAnswer && <div data-kind="right"><dt>正答</dt><dd className="font-math">{item.correctAnswer}</dd></div>}
+            </dl>
+          )}
+          {item.questionText && stripHtml(item.questionText) !== summary && (
+            <p className="rn-item-full">{stripHtml(item.questionText)}</p>
+          )}
+          <p className="rn-item-stats"><Clock size={13} aria-hidden="true" />{formatDue(item.dueAt, now)} ・ 間違い {item.wrongCount}回 ・ 復習正解 {item.correctCount}回</p>
+          <div className="rn-item-actions" role="group" aria-label="答えを確認したあとの自己評価">
+            <button type="button" className="mt-btn mt-btn-primary" onClick={() => onCorrect(item.key)} aria-label="復習で正解にする"><CheckCircle2 size={16} aria-hidden="true" />できた</button>
+            <button type="button" className="mt-btn mt-btn-secondary" onClick={() => onWrong(item.key)} aria-label="復習でまだ苦手にする"><RotateCcw size={16} aria-hidden="true" />まだ苦手</button>
+            <button type="button" className="mt-btn mt-btn-text rn-remove" onClick={() => onRemove(item.key)} aria-label="復習リストから削除"><Trash2 size={16} aria-hidden="true" />削除</button>
           </div>
         </div>
       )}
@@ -303,57 +182,23 @@ interface CollapsibleReviewListProps {
   onRemove: (key: string) => void;
   onReview?: (item: ReviewItem) => void;
   showSubject?: boolean;
-  /** 最初に見せる件数（要件4: 既定3件） */
+  /** 最初に見せる件数（1行表示にしたので既定6件） */
   initialCount?: number;
 }
 
-/**
- * 要件4: カードリストは既定で3件だけ表示し、「もっと見る」で全件に広げる。
- *
- * 「今日の復習が20件」のような状態でも、開いた直後に見えるのは3件なので
- * グラフとサマリーが画面外に押し出されない。
- * 件数が initialCount 以下のときはボタン自体を出さない（無意味な操作を作らない）。
- */
-const CollapsibleReviewList: React.FC<CollapsibleReviewListProps> = ({
-  items,
-  now,
-  onCorrect,
-  onWrong,
-  onRemove,
-  onReview,
-  showSubject = false,
-  initialCount = 3,
-}) => {
+const CollapsibleReviewList: React.FC<CollapsibleReviewListProps> = ({ items, now, onCorrect, onWrong, onRemove, onReview, showSubject = false, initialCount = 6 }) => {
   const [expanded, setExpanded] = useState(false);
   const hasMore = items.length > initialCount;
   const visible = expanded || !hasMore ? items : items.slice(0, initialCount);
   const hiddenCount = items.length - visible.length;
-
   return (
     <>
-      <ul className="space-y-3">
-        {visible.map((it) => (
-          <ReviewCard
-            key={it.key}
-            item={it}
-            now={now}
-            onCorrect={onCorrect}
-            onWrong={onWrong}
-            onRemove={onRemove}
-            onReview={onReview}
-            showSubject={showSubject}
-          />
-        ))}
+      <ul className="rn-list">
+        {visible.map(it => <ReviewCard key={it.key} item={it} now={now} onCorrect={onCorrect} onWrong={onWrong} onRemove={onRemove} onReview={onReview} showSubject={showSubject} />)}
       </ul>
-
       {hasMore && (
-        <button
-          type="button"
-          onClick={() => setExpanded((v) => !v)}
-          aria-expanded={expanded}
-          className="mt-3 w-full min-h-[44px] rounded-xl border border-gray-200 bg-white/80 text-sm font-bold text-[#2C6187] hover:bg-white transition-colors cursor-pointer"
-        >
-          {expanded ? '表示を減らす' : `もっと見る（あと${hiddenCount}件）`}
+        <button type="button" className="rn-more" onClick={() => setExpanded(v => !v)} aria-expanded={expanded}>
+          {expanded ? '表示を減らす' : `もっと見る（あと${hiddenCount}件）`}<ChevronDown size={16} aria-hidden="true" style={{ transform: expanded ? 'rotate(180deg)' : undefined }} />
         </button>
       )}
     </>
@@ -361,79 +206,37 @@ const CollapsibleReviewList: React.FC<CollapsibleReviewListProps> = ({
 };
 
 // ============================================================
-// ノート カード（手動キュレーション）
+// ノート（手動で保存したまとめ）
 // ============================================================
 
-interface NoteCardProps {
-  note: any;
-  onSelect: (note: any) => void;
-}
-
-const NoteCard: React.FC<NoteCardProps> = ({ note, onSelect }) => {
-  return (
-    <li
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 cursor-pointer hover:shadow-md hover:border-[#A9CCE3]/50 transition-all"
-      onClick={() => onSelect(note)}
-      role="button"
-      tabIndex={0}
-      aria-label={`ノートを開く：${truncate(stripHtml(note.question) || '問題文なし', 70)}`}
-      onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onSelect(note); } }}
-    >
-      <div className="flex flex-wrap items-center gap-2 mb-2">
-        {/* 種別バッジ: 手動（ノート） */}
-        <span className="inline-flex items-center gap-1 bg-[#A9CCE3]/15 text-[#2C6187] px-2 py-0.5 rounded text-[10px] font-bold border border-[#A9CCE3]/50">
-          <NotebookPen size={11} aria-hidden="true" /> マイノート
-        </span>
-        {note.chapterTitle && (
-          <span className="bg-[#A9CCE3]/20 text-[#2C3E50] px-2 py-0.5 rounded text-[10px] font-bold border border-[#A9CCE3]/50">
-            {note.chapterTitle}
-          </span>
-        )}
-        {note.questionIndex && (
-          <span className="bg-[#F9E79F]/30 text-[#D35400] px-2 py-0.5 rounded text-[10px] font-bold border border-[#F5B041]/50">
-            第{note.questionIndex}問
-          </span>
-        )}
-        {note.isImportant && (
-          <span className="ml-auto inline-flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold border border-yellow-300">
-            <Star size={11} fill="currentColor" aria-hidden="true" /> 重要
-          </span>
-        )}
-      </div>
-
-      <h3 className="font-bold text-[#2C3E50] leading-relaxed break-words [overflow-wrap:anywhere] font-handwriting text-lg">
-        {truncate(stripHtml(note.question) || '（問題文なし）', 70)}
-      </h3>
-      <p className="text-sm text-gray-500 mt-1 break-words [overflow-wrap:anywhere]">
-        {note.memo ? truncate(note.memo, 60) : 'メモなし'}
-      </p>
-
+const NoteCard: React.FC<{ note: any; onSelect: (note: any) => void }> = ({ note, onSelect }) => (
+  <li className="rn-item rn-note">
+    <button type="button" className="rn-item-main" onClick={() => onSelect(note)} aria-label={`ノートを開く：${truncate(stripHtml(note.question) || '問題文なし', 70)}`}>
+      <span className="rn-item-scope">
+        <b><NotebookPen size={13} aria-hidden="true" />ノート</b>
+        {note.chapterTitle && <span>{note.chapterTitle}{note.questionIndex ? ` 第${note.questionIndex}問` : ''}</span>}
+        {note.isImportant && <span className="rn-star"><Star size={13} fill="currentColor" aria-hidden="true" />重要</span>}
+      </span>
+      <span className="rn-item-q">{truncate(stripHtml(note.question) || '（問題文なし）', 70)}</span>
+      <span className="rn-note-memo">{note.memo ? truncate(note.memo, 60) : 'メモなし'}</span>
       {note.tags && note.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-2">
-          {note.tags.slice(0, 3).map((tag: string) => (
-            <span key={tag} className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
-              #{tag}
-            </span>
-          ))}
-          {note.tags.length > 3 && <span className="text-[10px] text-gray-500">+{note.tags.length - 3}</span>}
-        </div>
+        <span className="rn-tags">{note.tags.slice(0, 3).map((tag: string) => <span key={tag}>#{tag}</span>)}{note.tags.length > 3 && <span>+{note.tags.length - 3}</span>}</span>
       )}
-    </li>
-  );
-};
+    </button>
+  </li>
+);
 
 // ============================================================
 // メイン
 // ============================================================
 
-export function StudyHub({ onBack, isGuest, onSelectNote, onReview, view, onViewChange }: StudyHubProps) {
+export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, view, onViewChange }: StudyHubProps) {
   const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
 
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(() => getAllReviewItems(uid));
   const [notes, setNotes] = useState<any[]>([]);
   const [tab, setTab] = useState<Tab>(view?.tab ?? 'today');
   const [now, setNow] = useState(() => Date.now());
-  const [todayOpen, setTodayOpen] = useState(true);
 
   const loadNotes = () => {
     try {
@@ -462,360 +265,138 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, view, onView
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ---- 科目タブ（要件1）----------------------------------------
-  //
-  // 科目の一覧は「実際に復習アイテムがある科目」だけから作る。
-  // 固定の3科目を常に並べると、化学基礎しか解いていない人にも
-  // 空の「化学」「英語」タブが出てしまい、押しても何も無い体験になる。
+  // 科目の一覧は「実際に復習アイテムがある科目」だけから作る（空の科目タブを出さない）。
   const subjectSummaries = useMemo(() => summarizeBySubject(reviewItems, now), [reviewItems, now]);
-
-  // 選択中の科目タブ。既定は「すべて」（従来どおりの俯瞰表示）。
   const [subjectTab, setSubjectTab] = useState<SubjectTabId>(view?.subjectTab ?? ALL_SUBJECTS);
-
   useEffect(() => { onViewChange?.({ tab, subjectTab }); }, [tab, subjectTab, onViewChange]);
-
-  // 表示中の科目が無くなった場合（最後の1問を削除した等）は
-  // 選択が宙に浮くので「すべて」に戻す。
   useEffect(() => {
     if (subjectTab === ALL_SUBJECTS) return;
-    if (!subjectSummaries.some((s) => s.subject === subjectTab)) {
-      setSubjectTab(ALL_SUBJECTS);
-    }
+    if (!subjectSummaries.some((s) => s.subject === subjectTab)) setSubjectTab(ALL_SUBJECTS);
   }, [subjectSummaries, subjectTab]);
 
-  /** 選択中の科目に属する復習アイテム（グラフ・リストの両方がこれを見る＝要件4の連動） */
-  const scopedItems = useMemo(
-    () => filterBySubjectTab(reviewItems, subjectTab),
-    [reviewItems, subjectTab]
-  );
-
-  /** 選択中の科目のうち、いま復習すべきもの */
+  const scopedItems = useMemo(() => filterBySubjectTab(reviewItems, subjectTab), [reviewItems, subjectTab]);
   const scopedDueItems = useMemo(
-    () =>
-      scopedItems
-        .filter((it) => it.dueAt <= now)
-        .sort((a, b) => a.dueAt - b.dueAt || b.wrongCount - a.wrongCount),
+    () => scopedItems.filter((it) => it.dueAt <= now).sort((a, b) => a.dueAt - b.dueAt || b.wrongCount - a.wrongCount),
     [scopedItems, now]
   );
-
-  /** グラフ見出しに出す科目名（「すべて」のときは付けない） */
-  const scopedSubjectLabel =
-    subjectTab === ALL_SUBJECTS ? undefined : REVIEW_SUBJECT_LABELS[subjectTab];
+  /** 「苦手リスト」は期限の近い順 → 習得済みは最後 */
+  const sortedScopedItems = useMemo(
+    () => [...scopedItems].sort((a, b) => Number(isMastered(a)) - Number(isMastered(b)) || a.dueAt - b.dueAt),
+    [scopedItems]
+  );
+  const scopedSubjectLabel = subjectTab === ALL_SUBJECTS ? undefined : REVIEW_SUBJECT_LABELS[subjectTab];
 
   const dueItems = useMemo(() => getDueReviewItems(uid, now), [reviewItems, now, uid]);
   const masteredCount = useMemo(() => reviewItems.filter(isMastered).length, [reviewItems]);
+  const weakCount = useMemo(() => dueItems.filter(it => it.wrongCount >= 2).length, [dueItems]);
   const importantNotes = useMemo(() => notes.filter((n) => n.isImportant), [notes]);
+  const masteredPercent = reviewItems.length > 0 ? Math.round(masteredCount / reviewItems.length * 100) : 0;
+  const nextUpcoming = useMemo(() => reviewItems.filter(it => it.dueAt > now && !isMastered(it)).sort((a, b) => a.dueAt - b.dueAt)[0], [reviewItems, now]);
 
-  // 「保存 → 画面を作り直す」の3操作は復習リスト画面（ReviewList.tsx）と
-  // 同じ手順なので、reviewList.ts の1つだけを使う
-  // （以前はここにも同じ実装があった）。
-  // ★この画面の refresh はノートの読み直し（setNotes）も含む★ので、
-  // refresh の中身は共通化せず、上の実装をそのまま渡す。
   const { handleCorrect, handleWrong, handleRemove } = createReviewActions(uid, refresh);
 
-  // タブごとの表示内容。
-  // 復習系（今日の復習／すべて）の件数は科目タブの選択に連動させる。
-  // ノートは chapterId を持たない自由記述なので科目で絞らない。
+  // 旧タブIDはそのまま（App 側が view を覚えているため）。'all' は「苦手リスト（全件）」として出す。
   const tabs: { id: Tab; label: string; count: number }[] = [
-    { id: 'today', label: '今日の復習', count: scopedDueItems.length },
-    { id: 'notes', label: 'マイノート', count: notes.length },
+    { id: 'today', label: '今日', count: scopedDueItems.length },
+    { id: 'all', label: '苦手リスト', count: scopedItems.length },
+    { id: 'notes', label: 'ノート', count: notes.length },
     { id: 'important', label: '重要', count: importantNotes.length },
-    { id: 'all', label: 'すべて', count: scopedItems.length + notes.length },
   ];
+  const showSubjectFilter = (tab === 'today' || tab === 'all') && subjectSummaries.length > 1;
+  const first = scopedDueItems[0];
 
   return (
-    // 要件5：学習ノート画面の背景を罫線（ノートの横線）にし、手書き風フォントで統一。
-    <div className="mtb-page study-journal w-full min-h-screen notebook-paper font-handwriting pb-28 md:pb-12">
-      <div className="max-w-3xl mx-auto p-4 md:p-8 space-y-5">
-        {/* ヘッダー */}
-        <div className="mtb-page-header flex items-center gap-4">
-          <button
-            onClick={onBack}
-            aria-label="ホームに戻る"
-            title="ホームに戻る"
-            className="flex items-center justify-center w-10 h-10 min-w-[44px] min-h-[44px] rounded-full bg-gray-100 hover:bg-gray-200 text-[#2C3E50] transition-colors shadow-sm border border-gray-200"
-          >
-            <ArrowLeft size={20} aria-hidden="true" />
-          </button>
-          <div>
-            <p className="mtb-kicker">MY LEARNING JOURNAL</p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#2C3E50] font-handwriting">学習ノート</h2>
-            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-              今日の復習とあなたのノートを、ここでまとめて管理できます
-            </p>
-          </div>
-        </div>
+    <div className="review-note" data-review-note>
+      <div className="rn-wrap">
+        {/* ヘッダー：1行。説明文は置かない（画面を見れば分かる） */}
+        <header className="rn-header">
+          <button type="button" onClick={onBack} aria-label="ホームに戻る" className="rn-back"><ArrowLeft size={20} aria-hidden="true" /></button>
+          <h1>復習ノート</h1>
+          <span className="rn-header-stat" aria-label={`習得済み ${masteredCount}問`}><CheckCircle2 size={16} aria-hidden="true" />習得 {masteredCount}</span>
+        </header>
 
-        {/*
-          サマリー（要件4「今日の復習の件数バッジは維持」）。
-          ここは科目タブの選択に関係なく、常に全科目の合計を出す。
-          科目を絞っている最中でも「まだ他の科目に残っている」ことが
-          分かるようにするため、あえて連動させていない。
-        */}
-        <div className="study-journal-summary grid grid-cols-3 gap-2 sm:gap-3">
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 text-center">
-            <div className="text-2xl font-bold text-[#E8688E]">{dueItems.length}</div>
-            <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">今日の復習（全科目）</div>
+        {/* 今日の復習：数字1つ＋主ボタン1つ */}
+        <section className="rn-hero" aria-labelledby="rn-hero-title" data-empty={dueItems.length === 0 || undefined}>
+          <div className="rn-hero-count">
+            <p id="rn-hero-title">今日の復習</p>
+            <strong>{dueItems.length}<small>問</small></strong>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 text-center">
-            <div className="text-2xl font-bold text-[#2C6187]">{notes.length}</div>
-            <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">マイノート</div>
+          <div className="rn-hero-side">
+            {dueItems.length > 0 ? (
+              <p>{weakCount > 0 ? <><Flame size={14} aria-hidden="true" />2回以上ミスした問題 {weakCount}問</> : '忘れかけたころが、いちばん覚えられるタイミング。'}</p>
+            ) : (
+              <p>{nextUpcoming ? `次の復習は${formatDue(nextUpcoming.dueAt, now)}。` : reviewItems.length === 0 ? '間違えた問題が、ここに自動で集まります。' : '今日の分は完了。'}</p>
+            )}
+            <div className="rn-hero-meter">
+              <span className="mt-meter" data-status="done" role="progressbar" aria-label="習得済みの割合" aria-valuemin={0} aria-valuemax={100} aria-valuenow={masteredPercent}><i style={{ width: `${masteredPercent}%` }} /></span>
+              <small>習得 {masteredCount} / {reviewItems.length}</small>
+            </div>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 text-center">
-            <div className="text-2xl font-bold text-emerald-600">{masteredCount}</div>
-            <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">習得済み</div>
-          </div>
-        </div>
+          {first && onReview ? (
+            <button type="button" className="mt-btn mt-btn-accent rn-hero-cta" onClick={() => onReview(first)}>
+              <RotateCcw size={18} aria-hidden="true" />
+              <span><strong>復習を始める</strong><small>1問目：{formatScope(first)}</small></span>
+            </button>
+          ) : onPractice ? (
+            <button type="button" className="mt-btn mt-btn-secondary rn-hero-cta" onClick={onPractice}>
+              <PenLine size={18} aria-hidden="true" /><span><strong>演習で新しく解く</strong></span>
+            </button>
+          ) : null}
+        </section>
 
-        {/* ===== タブ ===== */}
-        <div className="study-journal-tabs mtb-tabs flex gap-2 overflow-x-auto no-scrollbar" role="tablist" aria-label="学習ノートの表示切替">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={tab === t.id}
-              onClick={() => setTab(t.id)}
-              className={`shrink-0 min-h-[44px] px-4 rounded-full text-sm font-bold transition-colors border ${
-                tab === t.id
-                  ? 'bg-[#E8688E] text-white border-[#E8688E]'
-                  : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-              }`}
-            >
-              {t.label}（{t.count}）
+        {/* 表示切替：1本のセグメント（横スクロールしない） */}
+        <div className="mt-segment rn-tabs" role="tablist" aria-label="復習ノートの表示切替">
+          {tabs.map(t => (
+            <button key={t.id} type="button" role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}>
+              {t.label}<span className="rn-tab-count">{t.count}</span>
             </button>
           ))}
         </div>
 
-        {/*
-          ===== 科目タブ（要件1）=====
-          ここでの選択が、下のグラフと「今日の復習」リストの両方を同時に絞る。
-          科目が1つしか無いユーザーには「すべて」だけを出しても意味がないので、
-          2科目以上ある場合にのみタブ列を表示する。
-        */}
-        {(tab === 'today' || tab === 'all') && subjectSummaries.length > 1 && (
-          <div
-            role="tablist"
-            aria-label="科目を選択"
-            className="flex flex-wrap gap-2"
-          >
-            {[
-              {
-                id: ALL_SUBJECTS as SubjectTabId,
-                label: 'すべて',
-                total: reviewItems.length,
-                avg: null as number | null,
-              },
-              ...subjectSummaries.map((s) => ({
-                id: s.subject as SubjectTabId,
-                label: s.shortLabel,
-                total: s.total,
-                avg: s.avgRetention as number | null,
-              })),
-            ].map((t) => {
-              const isActive = subjectTab === t.id;
-              const style =
-                t.id === ALL_SUBJECTS ? null : reviewSubjectStyle(t.id as any);
-              return (
-                <button
-                  key={t.id}
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-controls="subject-scoped-panel"
-                  onClick={() => setSubjectTab(t.id)}
-                  className={`min-h-[44px] px-3 rounded-xl border text-left transition-colors cursor-pointer ${
-                    isActive
-                      ? style
-                        ? style.activeClass
-                        : 'bg-[#2C3E50] text-white border-[#2C3E50]'
-                      : 'bg-white/80 text-gray-600 border-gray-200 hover:bg-white'
-                  }`}
-                >
-                  <span className="block text-sm font-bold leading-tight">
-                    {t.label}
-                    <span className={`ml-1 text-[11px] font-bold ${isActive ? 'opacity-90' : 'text-gray-400'}`}>
-                      {t.total}
-                    </span>
-                  </span>
-                  {/*
-                    科目ごとの平均定着度（要件1）。
-                    タブ上に出すことで、切り替える前に
-                    「どの科目が弱っているか」を比較できる。
-                  */}
-                  <span className={`block text-[10px] leading-tight ${isActive ? 'opacity-80' : 'text-gray-400'}`}>
-                    {t.avg === null ? '全科目' : `定着 ${t.avg}%`}
-                  </span>
-                </button>
-              );
-            })}
+        {showSubjectFilter && (
+          <div className="rn-subjects" role="group" aria-label="科目で絞り込む">
+            {[{ id: ALL_SUBJECTS as SubjectTabId, label: 'すべて', total: reviewItems.length }, ...subjectSummaries.map(s => ({ id: s.subject as SubjectTabId, label: s.shortLabel, total: s.total }))].map(t => (
+              <button key={t.id} type="button" aria-pressed={subjectTab === t.id} onClick={() => setSubjectTab(t.id)}>{t.label}<span>{t.total}</span></button>
+            ))}
           </div>
         )}
 
-        {/* 科目タブで絞られる領域（グラフ＋今日の復習） */}
-        <div id="subject-scoped-panel" role="tabpanel" className="space-y-5">
+        <div className="rn-panel" role="tabpanel">
+          {tab === 'today' && (scopedDueItems.length === 0
+            ? <EmptyState icon={<CheckCircle2 size={28} aria-hidden="true" />} title={scopedSubjectLabel ? `${scopedSubjectLabel}の今日の復習は完了` : '今日の復習は完了'} desc="問題を解いて間違えると、ここに自動で追加されます。" action={onPractice && (first && onReview) ? { label: '演習する', onClick: onPractice } : undefined} />
+            : <CollapsibleReviewList items={scopedDueItems} now={now} onCorrect={handleCorrect} onWrong={handleWrong} onRemove={handleRemove} onReview={onReview} showSubject={subjectTab === ALL_SUBJECTS} />)}
 
-          {/* ===== 今日の復習セクション（冒頭に自動表示） ===== */}
-          {tab === 'today' && scopedDueItems.length > 0 && (
-            <section className="bg-gradient-to-br from-[#FFF1F5] to-[#FDFBF7] rounded-2xl border border-[#F4A9C4]/50 shadow-sm p-4 sm:p-5">
-              <button
-                onClick={() => setTodayOpen((v) => !v)}
-                className="w-full flex items-center gap-2 text-left cursor-pointer"
-                aria-expanded={todayOpen}
-              >
-                <div className="w-9 h-9 rounded-xl bg-[#FBE0E9] flex items-center justify-center shrink-0">
-                  <Sparkles className="w-5 h-5 text-[#E8688E]" aria-hidden="true" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-[#1B2631] font-handwriting text-lg leading-tight">
-                    今日の復習 <span className="text-[#E8688E]">{scopedDueItems.length}</span> 件
-                    {scopedSubjectLabel && (
-                      <span className="ml-1 text-xs font-bold text-gray-400">
-                        （{scopedSubjectLabel}）
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-[11px] text-gray-500">忘却曲線にそって、いま復習すべき問題です</div>
-                </div>
-                <ChevronDown
-                  size={20}
-                  className={`text-gray-400 shrink-0 transition-transform ${todayOpen ? 'rotate-0' : '-rotate-90'}`}
-                  aria-hidden="true"
-                />
-              </button>
+          {tab === 'all' && (sortedScopedItems.length === 0
+            ? <EmptyState icon={<Sparkles size={28} aria-hidden="true" />} title="苦手はまだありません" desc="間違えた問題は、忘却曲線にそって自動で並びます。" action={onPractice && (first && onReview) ? { label: '演習する', onClick: onPractice } : undefined} />
+            : <CollapsibleReviewList items={sortedScopedItems} now={now} onCorrect={handleCorrect} onWrong={handleWrong} onRemove={handleRemove} onReview={onReview} showSubject={subjectTab === ALL_SUBJECTS} />)}
 
-              {todayOpen && (
-                <div className="mt-4">
-                  {/*
-                    要件4: 既定は3件だけ。残りは「もっと見る」で展開する。
-                    「すべて」タブのときだけカードに科目名を出す
-                    （科目タブでは全件が同じ科目なので冗長）。
-                  */}
-                  <CollapsibleReviewList
-                    items={scopedDueItems}
-                    now={now}
-                    onCorrect={handleCorrect}
-                    onWrong={handleWrong}
-                    onRemove={handleRemove}
-                    onReview={onReview}
-                    showSubject={subjectTab === ALL_SUBJECTS}
-                    initialCount={3}
-                  />
-                </div>
-              )}
-            </section>
-          )}
-          {(tab === 'today' || tab === 'all') && <details className="study-retention mtb-paper">
-            <summary className="min-h-[44px] cursor-pointer py-2 text-sm font-bold text-[#2C3E50]">学習状況のグラフを見る</summary>
-            <ForgettingCurveChart items={scopedItems} now={now} subjectLabel={scopedSubjectLabel} />
-          </details>}
+          {tab === 'notes' && (notes.length === 0
+            ? <EmptyState icon={<BookOpen size={28} aria-hidden="true" />} title="ノートはまだありません" desc="解説ページの「ノートに保存」から、まとめを追加できます。" />
+            : <ul className="rn-list">{notes.map(n => <NoteCard key={n.id} note={n} onSelect={onSelectNote} />)}</ul>)}
+
+          {tab === 'important' && (importantNotes.length === 0
+            ? <EmptyState icon={<Star size={28} aria-hidden="true" />} title="重要マークのノートはありません" desc="ノート詳細で「重要」をつけると、ここに集まります。" />
+            : <ul className="rn-list">{importantNotes.map(n => <NoteCard key={n.id} note={n} onSelect={onSelectNote} />)}</ul>)}
         </div>
 
-        {/* ===== タブ本体 ===== */}
-        {tab === 'today' && (
-          scopedDueItems.length === 0 ? (
-            <EmptyState
-              icon={<CheckCircle2 size={40} className="mx-auto text-emerald-500 mb-3" aria-hidden="true" />}
-              title={
-                scopedSubjectLabel
-                  ? `${scopedSubjectLabel}の今日の復習は完了です！`
-                  : '今日の復習は完了です！'
-              }
-              desc="問題を解いて間違えると、ここに自動で追加されます。"
-            />
-          ) : null
-        )}
-
-        {tab === 'notes' && (
-          notes.length === 0 ? (
-            <EmptyState
-              icon={<BookOpen size={40} className="mx-auto text-gray-300 mb-3" aria-hidden="true" />}
-              title="ノートはまだありません"
-              desc="解説ページの「ノートに保存」から、まとめを追加できます。"
-            />
-          ) : (
-            <ul className="space-y-3">
-              {notes.map((n) => (
-                <NoteCard key={n.id} note={n} onSelect={onSelectNote} />
-              ))}
-            </ul>
-          )
-        )}
-
-        {tab === 'important' && (
-          importantNotes.length === 0 ? (
-            <EmptyState
-              icon={<Star size={40} className="mx-auto text-gray-300 mb-3" aria-hidden="true" />}
-              title="重要マークのノートはありません"
-              desc="ノート詳細で「重要」をつけると、ここに集まります。"
-            />
-          ) : (
-            <ul className="space-y-3">
-              {importantNotes.map((n) => (
-                <NoteCard key={n.id} note={n} onSelect={onSelectNote} />
-              ))}
-            </ul>
-          )
-        )}
-
-        {tab === 'all' && (
-          scopedItems.length === 0 && notes.length === 0 ? (
-            <EmptyState
-              icon={<Sparkles size={40} className="mx-auto text-gray-300 mb-3" aria-hidden="true" />}
-              title="まだ何もありません"
-              desc="問題を解いて間違えたり、ノートを保存すると、ここに集まります。"
-            />
-          ) : (
-            <div className="space-y-5">
-              {scopedItems.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-bold text-gray-500 mb-2 flex items-center gap-1.5">
-                    <Flame size={13} className="text-[#E8688E]" aria-hidden="true" /> 苦手（自動キャプチャ）
-                    {scopedSubjectLabel && (
-                      <span className="font-bold text-gray-400">／{scopedSubjectLabel}</span>
-                    )}
-                  </h3>
-                  {/*
-                    こちらも既定3件＋「もっと見る」。
-                    全件（数十件）を最初から並べると、下のマイノートまで
-                    スクロールで到達できなくなるため。
-                  */}
-                  <CollapsibleReviewList
-                    items={scopedItems}
-                    now={now}
-                    onCorrect={handleCorrect}
-                    onWrong={handleWrong}
-                    onRemove={handleRemove}
-                    onReview={onReview}
-                    showSubject={subjectTab === ALL_SUBJECTS}
-                    initialCount={3}
-                  />
-                </div>
-              )}
-              {notes.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-bold text-gray-500 mb-2 flex items-center gap-1.5">
-                    <NotebookPen size={13} className="text-[#2C6187]" aria-hidden="true" /> マイノート
-                  </h3>
-                  <ul className="space-y-3">
-                    {notes.map((n) => (
-                      <NoteCard key={n.id} note={n} onSelect={onSelectNote} />
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )
+        {(tab === 'today' || tab === 'all') && scopedItems.length > 0 && (
+          <details className="rn-chart">
+            <summary><TrendingUp size={16} aria-hidden="true" />定着のグラフを見る<ChevronDown size={16} aria-hidden="true" /></summary>
+            <ForgettingCurveChart items={scopedItems} now={now} subjectLabel={scopedSubjectLabel} />
+          </details>
         )}
       </div>
     </div>
   );
 }
 
-function EmptyState({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
+function EmptyState({ icon, title, desc, action }: { icon: React.ReactNode; title: string; desc: string; action?: { label: string; onClick: () => void } }) {
   return (
-    <div className="study-empty-state mtb-paper bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500">
-      {icon}
-      <p className="font-bold text-[#2C3E50]">{title}</p>
-      <p className="text-sm mt-1">{desc}</p>
+    <div className="rn-empty">
+      <span className="rn-empty-icon">{icon}</span>
+      <p className="rn-empty-title">{title}</p>
+      <p className="rn-empty-desc">{desc}</p>
+      {action && <button type="button" className="mt-btn mt-btn-secondary" onClick={action.onClick}><PenLine size={16} aria-hidden="true" />{action.label}</button>}
     </div>
   );
 }

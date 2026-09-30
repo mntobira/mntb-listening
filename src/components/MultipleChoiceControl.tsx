@@ -18,6 +18,7 @@ import React from 'react';
 import { HelpCircle } from 'lucide-react';
 import { formatText } from '../utils/textFormatter';
 import { optionCircledMark } from '../utils/questionDisplay';
+import './quiz-compact.css';
 
 export interface MultipleChoiceControlProps {
   sq: any;
@@ -175,7 +176,7 @@ export function MultipleChoiceControl({
             「斜線という段階がある」という肝心の気づきは失われない。
             md 以上は一切変更しない（PC の見た目は元のまま）。
         */
-        <div className="order-2 md:order-none flex flex-wrap items-center gap-x-1.5 md:gap-x-2 gap-y-1 text-[10px] font-bold leading-snug text-gray-400 rounded-lg border border-gray-200 bg-gray-50/80 px-2 py-1 md:px-2.5 md:py-2">
+        <div className="order-2 md:order-none flex flex-wrap items-center gap-x-1.5 md:gap-x-2 gap-y-1 text-xs font-bold leading-snug text-gray-500 rounded-lg border border-gray-200 bg-gray-50/80 px-2 py-1 md:px-2.5 md:py-2">
           <span className="inline-flex items-center gap-1">
             <span className="inline-block rounded-md border-2 border-gray-200 bg-white px-1.5 py-0.5 text-gray-600">ア</span>
             <span className="hidden md:inline">タップで選択</span>
@@ -199,7 +200,7 @@ export function MultipleChoiceControl({
           <button
             type="button"
             onClick={dismissElimHint}
-            className="ml-auto shrink-0 rounded-md border border-gray-300 bg-white px-1.5 py-0.5 md:px-2 text-[10px] font-bold text-gray-500 hover:bg-gray-100"
+            className="ml-auto -my-1 inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md px-2 text-xs font-bold text-gray-600 underline underline-offset-2 hover:bg-gray-100"
             aria-label="操作説明を閉じる（以降は ? ボタンで表示）"
           >
             閉じる
@@ -211,7 +212,7 @@ export function MultipleChoiceControl({
           <button
             type="button"
             onClick={() => setElimHintOpen(true)}
-            className="inline-flex items-center gap-1 text-[10px] font-bold text-gray-400 hover:text-gray-600"
+            className="inline-flex min-h-11 items-center gap-1 px-2 text-xs font-bold text-gray-500 hover:text-gray-700"
             aria-label="選択肢の操作説明を表示"
             title="タップで選択→もう一度で斜線（消去法）の説明を見る"
           >
@@ -237,7 +238,7 @@ export function MultipleChoiceControl({
         ? 'grid grid-cols-2 gap-2 w-full'
         : stacked
         ? `grid ${twoCol ? 'grid-cols-2 gap-2' : listeningMaterialsMobile ? 'grid-cols-1 gap-2' : 'grid-cols-1 gap-2.5'} w-full ${
-            listeningMobileNoFigure && !twoCol ? 'min-h-0 flex-1 auto-rows-fr overflow-y-auto' : ''
+            listeningMobileNoFigure && !twoCol ? 'mc-fill-stack min-h-0 flex-1 auto-rows-fr overflow-y-auto' : ''
           }`
         // 注：以前ここに xs:grid-cols-3 があったが、Tailwind v4 の @theme に
         // xs ブレークポイントは未定義で「効かないクラス」だった。スマホで列数を
@@ -494,7 +495,7 @@ export function MultipleChoiceControl({
               {struck && (
                 <span
                   aria-hidden="true"
-                  className={`pointer-events-none absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#E8A87C] text-[9px] font-bold leading-none text-white shadow-sm ${
+                  className={`pointer-events-none absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#E8A87C] text-xs font-bold leading-none text-white shadow-sm ${
                     strikeAnimating ? 'animate-draw-strike' : ''
                   }`}
                 >
@@ -510,7 +511,7 @@ export function MultipleChoiceControl({
         「今どの状態か」を見た目だけで覚えなくて済むようにするのが目的。
       */}
       {(eliminated[sq.id] || []).length > 0 && (
-        <p className="text-[10px] font-bold text-gray-400" aria-live="polite">
+        <p className="text-xs font-bold text-gray-500" aria-live="polite">
           {(eliminated[sq.id] || []).length}個を消去中（長押しでまとめて元に戻す）
         </p>
       )}

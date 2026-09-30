@@ -376,7 +376,7 @@ export function BattleMatching({
               </span>
             ))}
           </p>
-          <p className="mt-1 text-[11px] font-bold" style={{ color: INK_SUB }}>
+          <p className="mt-1 text-xs font-bold" style={{ color: INK_SUB }}>
             {phase.detail}
           </p>
           <p
@@ -419,7 +419,7 @@ export function BattleMatching({
         )}
 
         <p
-          className="flex items-center gap-1.5 text-center text-[10px] font-bold leading-relaxed"
+          className="flex items-center gap-1.5 text-center text-xs font-bold leading-relaxed"
           style={{ color: INK_SUB }}
         >
           <Wifi size={12} className="shrink-0" />

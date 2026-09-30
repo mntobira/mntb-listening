@@ -173,7 +173,7 @@ export function BattleRanking({ onBack }: { onBack: () => void }) {
               >
                 {/* 順位 */}
                 <span
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-black tabular-nums"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black tabular-nums"
                   style={{
                     background: medal ? medal : '#F1EDE4',
                     color: medal ? INK : INK_SUB,
@@ -207,14 +207,14 @@ export function BattleRanking({ onBack }: { onBack: () => void }) {
                     </span>
                     {isMe && (
                       <span
-                        className="shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-black"
+                        className="shrink-0 rounded-full px-1.5 py-0.5 text-xs font-black"
                         style={{ background: GOLD, color: INK }}
                       >
                         あなた
                       </span>
                     )}
                   </span>
-                  <span className="block text-[10px] font-bold" style={{ color: INK_SUB }}>
+                  <span className="block text-xs font-bold" style={{ color: INK_SUB }}>
                     {row.wins || 0}勝 {row.losses || 0}敗 {row.draws || 0}分
                   </span>
                 </span>
@@ -229,7 +229,7 @@ export function BattleRanking({ onBack }: { onBack: () => void }) {
                   >
                     {row.rating || 1500}
                   </span>
-                  <span className="block text-[9px] font-black" style={{ color: title.color }}>
+                  <span className="block text-xs font-black" style={{ color: title.color }}>
                     {title.label}
                   </span>
                 </span>
@@ -240,7 +240,7 @@ export function BattleRanking({ onBack }: { onBack: () => void }) {
       )}
 
       <p
-        className="battle-ranking-note mt-auto pt-6 text-center text-[10px] font-bold leading-relaxed"
+        className="battle-ranking-note mt-auto pt-6 text-center text-xs font-bold leading-relaxed"
         style={{ color: INK_SUB }}
       >
         このランキングは対戦専用です。

@@ -82,7 +82,10 @@ export function FloatingScoreAnimation({
       newItems.push({ id: 'penalty', label: '\u30da\u30ca\u30eb\u30c6\u30a3', value: -breakdown.overtimePenalty, color: 'bg-gray-500', delay: delayOffset });
       delayOffset += 0.28;
     }
-    newItems.push({ id: 'total', label: '\u5408\u8a08', value: totalScore, color: 'bg-emerald-600', delay: delayOffset + 0.18 });
+    // ★0点のとき（不正解）は「合計 +0」を出さない★ 解説のスクリプトに被るだけで意味がないため（2026-09-30）
+    if (newItems.length > 0 || totalScore !== 0) {
+      newItems.push({ id: 'total', label: '\u5408\u8a08', value: totalScore, color: 'bg-emerald-600', delay: delayOffset + 0.18 });
+    }
 
     setItems(newItems);
   }, [isVisible, breakdown, totalScore]);

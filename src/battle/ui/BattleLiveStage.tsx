@@ -213,7 +213,7 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
       {/* ★相手が先に答えた★ 自分がまだのときだけ、急かしすぎない一言 */}
       {!counting && p.opponentAnswered && !p.answered && !p.reveal && (
         <p
-          className="battle-live-pop mb-1 text-center text-[10px] font-black"
+          className="battle-live-pop mb-1 text-center text-xs font-black"
           style={{ color: '#C0392B' }}
           role="status"
         >
@@ -250,7 +250,7 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
         />
       </div>
 
-      {p.footer}
+      <div className="bl-footer">{p.footer}</div>
 
       <LiveToast toast={live.toast} />
     </div>

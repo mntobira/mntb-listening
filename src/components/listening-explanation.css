@@ -1,0 +1,92 @@
+/*
+ * リスニングの解答・解説（スマホ）2026-09-30。
+ * ★1画面で完結★ 再生は上の帯だけ。結果1行 → スクリプト＋和訳 → 詳しい解説（タップで開く）。
+ * 色はホームの紙色・金・水色に合わせる。文字は 12px 以上。
+ */
+.lx-compact { display: grid; gap: 8px; }
+.lx-result { display: grid; grid-template-columns: auto auto auto minmax(0, 1fr); align-items: center; gap: 6px; min-height: 44px; padding: 6px 12px; border-radius: 14px; border: 1.5px solid #e3d9c8; background: #fffdf6; font-size: 14px; font-weight: 700; }
+.lx-result[data-status=ok] { border-color: #9fd8c3; background: #eef9f3; }
+.lx-result[data-status=ng] { border-color: #f0b8b3; background: #fdf0ee; }
+.lx-result-mark { display: flex; color: #5a6573; }
+.lx-result[data-status=ok] .lx-result-mark, .lx-result[data-status=ok] .lx-result-verdict { color: #1f7a4d; }
+.lx-result[data-status=ng] .lx-result-mark, .lx-result[data-status=ng] .lx-result-verdict { color: #b3261e; }
+.lx-result-label { color: #1c2a39; }
+.lx-result-verdict { font-size: 13px; }
+.lx-result-answers { display: flex; align-items: center; justify-content: flex-end; gap: 6px; min-width: 0; font-size: 15px; }
+.lx-yours { color: #b3261e; text-decoration: line-through; opacity: .85; }
+.lx-right { color: #1f7a4d; font-weight: 800; }
+
+.lx-script { padding: 10px 12px; border-radius: 14px; border: 1.5px solid #bfe3dd; background: #f3fbf9; }
+.lx-script h5 { margin: 0 0 4px; font-size: 12px; font-weight: 800; color: #2f7c74; }
+.lx-script .listening-script-text { font-size: 16px; line-height: 1.6; }
+.lx-script .listening-script-evidence > p.mt-3 { margin-top: 6px; font-size: 13px; line-height: 1.55; color: #3e4c5b; }
+.listening-evidence-fold { margin-top: 8px !important; padding-top: 6px !important; }
+.listening-evidence-fold > summary { display: flex; align-items: center; min-height: 36px; font-size: 13px; font-weight: 800; color: #2f7c74; cursor: pointer; list-style: none; }
+.listening-evidence-fold > summary::-webkit-details-marker { display: none; }
+.listening-evidence-fold > summary::after { content: '▾'; margin-left: auto; transition: transform .2s; }
+.listening-evidence-fold[open] > summary::after { transform: rotate(180deg); }
+.listening-evidence-list small { font-size: 12px !important; }
+.listening-evidence-hint { font-size: 12px !important; }
+
+.lx-fold { border-radius: 14px; border: 1.5px solid #ead9b9; background: #fffaf0; overflow: hidden; }
+.lx-fold > button, .lx-fold > summary { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 0 12px; font-size: 14px; font-weight: 800; color: #8a5a1f; text-align: left; list-style: none; cursor: pointer; }
+.lx-fold > summary::-webkit-details-marker { display: none; }
+.lx-fold > button > svg:last-child, .lx-fold > summary > svg:last-child { margin-left: auto; transition: transform .2s; }
+.lx-fold[open] > summary > svg:last-child { transform: rotate(180deg); }
+.lx-fold > button > span, .lx-fold > summary > span { min-width: 0; }
+.lx-fold-shared { margin-top: 8px; }
+.lx-fold-body { padding: 4px 12px 12px; border-top: 1px dashed #ead9b9; font-size: 14px; }
+.lx-core { display: flex; align-items: flex-start; gap: 6px; margin: 8px 0; padding: 8px 10px; border-radius: 10px; background: #fdf0db; color: #8a4b00; font-weight: 800; font-size: 14px; line-height: 1.5; }
+.lx-core svg { flex-shrink: 0; margin-top: 3px; }
+.lx-steps { display: grid; gap: 6px; margin: 8px 0 0; padding: 0; list-style: none; }
+.lx-steps li { display: flex; gap: 8px; font-size: 14px; line-height: 1.55; }
+.lx-steps b { display: grid; place-items: center; flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: #e3f3ea; color: #1f7a4d; font-size: 12px; }
+@media (prefers-reduced-motion: reduce) { .lx-fold svg, .listening-evidence-fold > summary::after { transition: none; } }
+.lx-fold-extra { margin: 0; }
+.lx-fold-extra > .lx-fold-body > div:first-child { display: none; } /* 見出し「Q1 周辺知識・深掘り」は summary と重複するので隠す */
+@media (max-height: 700px) {
+  .lx-script .listening-script-text { font-size: 15px; line-height: 1.5; }
+  .lx-compact { gap: 6px; }
+}
+
+/* 低い画面（320×568）：問題文の見出しを詰め、結果・スクリプト・解説の入口まで1画面に */
+@media (max-height: 640px) {
+  .lx-problem-head { min-height: 40px; }
+  .lx-problem-head + * { padding-top: 6px !important; padding-bottom: 6px !important; }
+  .lx-compact { gap: 6px; }
+  .lx-result { min-height: 40px; padding: 4px 10px; }
+  .lx-script { padding: 8px 10px; }
+  .lx-script .listening-script-text { font-size: 14px; line-height: 1.45; }
+  .lx-fold > button, .lx-fold > summary { min-height: 44px; }
+}
+/* 問が1つのリスニング（スマホ）：「採点結果」の見出しは下の「問1 ○×」と重複するので出さない。
+   フローチャートの切り替えボタンがあるときはそのボタンだけ右に残す。 */
+[data-score-head][data-lx-single] > h4 { display: none; }
+[data-score-head][data-lx-single] { justify-content: flex-end; }
+[data-score-head][data-lx-single]:not(:has(button)) { display: none; }
+@media (max-height: 640px) {
+  .lx-problem-head { min-height: 36px; padding-block: 0 !important; }
+  .lx-problem-head > span { font-size: 13px; }
+  .lx-fold-shared { margin-top: 6px; }
+  .lx-compact .listening-evidence-fold > summary { min-height: 40px; }
+}
+/* 周辺知識・深掘りの入口：ほかの折りたたみと同じ幅・同じ間隔にそろえる（字下げと大きなすき間をなくす） */
+.lx-extra-wrap { margin-top: -16px; }
+.lx-extra-wrap:empty { display: none; }
+/* 375×667 クラス：最後の折りたたみが下のボタンに隠れないよう少しだけ詰める */
+@media (max-height: 700px) {
+  .lx-problem-head { min-height: 40px; }
+  .lx-compact { gap: 6px; }
+  .lx-script { padding: 8px 12px; }
+  .lx-fold > summary, .lx-fold > button { min-height: 44px; }
+}
+/* 折りたたみの見出し：ふだんは長い名前、低い画面では短い名前（1行で収める） */
+.lx-lbl-short { display: none; }
+@media (max-height: 640px) {
+  .lx-lbl-long { display: none; }
+  .lx-lbl-short { display: inline; }
+  .lx-compact { gap: 4px; }
+  .lx-fold-shared { margin-top: 4px; }
+  .lx-extra-wrap { margin-top: -20px; }
+  .lx-script .listening-script-text + * { font-size: 13px; line-height: 1.4; }
+}

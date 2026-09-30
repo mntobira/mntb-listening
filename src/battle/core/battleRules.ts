@@ -152,7 +152,7 @@ export const BATTLE_RULES: Readonly<Record<string, BattleRule>> = {
       "choice4"
     ],
     "kanaShare": 0,
-    "note": "イヤホン推奨。音声の再生が終わってから解答できます",
+    "note": "イヤホン推奨・聞き終えてから解答",
     "subject": "english_listening"
   },
   "english_grammar": {
