@@ -179,6 +179,17 @@ export function rushCoinPlaysLeft(): number {
     return Math.max(0, RUSH_COIN_PLAYS_PER_DAY - used);
   } catch { return 0; }
 }
+/**
+ * 英単語の4択・単語帳でミッションを進める（2026-10-01 D）。報酬は付けず、ミッションだけ進める。
+ *   vocab_quiz … 1セット解いた／vocab_perfect … 満点／vocab_learn … 「覚えた」をつけた語数
+ */
+export async function recordVocabActivity(kind: 'vocab_quiz' | 'vocab_perfect' | 'vocab_learn', amount = 1, wordId?: string) {
+  return (await mutate((p, today, seen) => {
+    // 同じ語を外して付け直しても、1日1回しか数えない（ミッションの水増しを防ぐ）
+    if (wordId) { const r = `learn:${today}:${wordId}`; if (seen.has(r)) return { next: p, extra: null }; seen.add(r); }
+    return { next: bumpDailyMission(p, kind, today, amount), extra: null };
+  }))?.next || null;
+}
 export async function equip(id: string) {
   return (await mutate((p, today) => {
     const next = equipItem(p, id);
@@ -245,5 +256,5 @@ export async function drawGachaMulti(requestId: string, expectedUid = scope()) {
  * 日付が入っていない記録（match / gacha / rush / review）は従来どおりすべて残す。
  */
 function pruneReceipts(receipts: Set<string>, today: string): string[] {
-  return [...receipts].filter(k => !/^(study|rushcoin):/.test(k) || k.startsWith(`study:${today}:`) || k.startsWith(`rushcoin:${today}:`));
+  return [...receipts].filter(k => !/^(study|rushcoin|learn):/.test(k) || k.startsWith(`study:${today}:`) || k.startsWith(`rushcoin:${today}:`) || k.startsWith(`learn:${today}:`));
 }

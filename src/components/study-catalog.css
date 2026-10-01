@@ -59,3 +59,8 @@
 }
 @media (max-width: 360px) { .sc-back span { display: none; } .sc-back { width: 44px; padding: 0; justify-content: center; } }
 @media (prefers-reduced-motion: reduce) { .sc-card { transition: none; } }
+
+/* E: 演習画面にも、とびら君（2026-10-01） */
+.sc-buddy { flex-shrink: 0; margin: 2px 0 6px; }
+.sc-buddy .tb-bubble { flex: 0 1 auto; }
+@media (max-height: 600px) { .sc-buddy { display: none; } }

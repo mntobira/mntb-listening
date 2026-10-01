@@ -1,0 +1,254 @@
+/*
+ * 世界観レイヤー（2026-10-01 E）
+ *   「情報が整った画面」→「世界観のある、生きた画面」へ。機能・配置の骨組みは変えない。
+ *   1) 濃い面を1つ必ず置いて重心を作る（ホーム＝夕暮れのステージ／対戦＝夜のアリーナ）
+ *   2) 主役ボタンはベタ塗り＋濃い文字（演習する＝金、AIと対戦＝濃い青）
+ *   3) 押すと沈み、離すと軽く戻る（全ボタン共通）
+ *   4) 進捗バーは 0% でも枠が見える＋アクセント色
+ *   ★動きを減らす設定では、すべての動きを止める★
+ */
+:root {
+  --w-night: #172a4f;     /* 夜の扉色（ブランド青を暗く） */
+  --w-dusk: #2d4f8e;      /* 夕暮れの上 */
+  --w-dawn: #f3a55a;      /* 地平線のオレンジ */
+  --w-gold: #f6b93b;      /* 主役の金 */
+  --w-gold-deep: #c98512;
+  --w-gold-ink: #4a2c00;
+  --w-press: cubic-bezier(.3, 1.6, .5, 1);
+}
+
+/* ---------- 押した手触り（押すと沈み、離すとはねる） ---------- */
+:is(.home-pillar, .home-review-wide, .arena-lobby-main, .arena-lobby-side button, .arena-lobby-card, .mt-btn, .mt-btn-gold, .gacha-pull, .fd-map-resume, .study-card-press) { transition: transform .18s var(--w-press), box-shadow .18s, filter .12s; }
+:is(.home-pillar, .home-review-wide, .arena-lobby-main, .arena-lobby-card, .gacha-pull):active:not(:disabled) { transform: translateY(3px) scale(.985); transition-duration: .05s; }
+
+/* ---------- 進捗バー（共通）：0% でも枠＋アクセント色 ---------- */
+.mt-progress { position: relative; height: 10px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1.5px #e3d3b0; overflow: hidden; }
+.mt-progress > i { display: block; height: 100%; min-width: 10px; border-radius: inherit; background: linear-gradient(90deg, var(--w-gold), var(--mt-accent, #f29a1f)); box-shadow: inset 0 -2px 0 #0000001a; transition: width .6s ease-out; }
+
+/* ---------- ホーム：夕暮れのステージ（濃い面＝重心） ---------- */
+.game-home .game-mascot-stage { border-radius: 26px; overflow: hidden; background:
+    radial-gradient(ellipse 70% 40% at 50% 100%, #ffd89a 0%, #f3a55a55 45%, transparent 70%),
+    linear-gradient(180deg, var(--w-night) 0%, var(--w-dusk) 55%, #6d6fa8 82%, #e9a36b 100%);
+  box-shadow: inset 0 0 0 2px #ffffff22, 0 6px 0 #0f1e3a33; }
+.game-home .game-stage-backdrop { inset: 0; background: none; }
+.game-home .game-stage-backdrop::before { border-color: #ffffff30; background: radial-gradient(ellipse at 50% 30%, #ffffff1f, transparent 70%); box-shadow: 0 0 0 9px #ffffff0d, 0 0 0 10px #ffffff1c; }
+/* 星 */
+.game-home .game-stage-backdrop i { opacity: 1 !important; width: 3px !important; height: 3px !important; border: 0 !important; border-radius: 50% !important; background: #fff !important; transform: none !important;
+  box-shadow: 40px 30px 0 #fff9, 120px 8px 0 #fffc, 210px 44px 0 #fff8, 260px 14px 0 #fff, 300px 70px 0 #fff7, 70px 90px 0 #fff6, 180px 110px 0 #fff5 !important; animation: w-twinkle 4s ease-in-out infinite; }
+.game-home .game-stage-backdrop i:nth-child(2) { left: 52% !important; top: 12% !important; animation-delay: 1.3s; }
+.game-home .game-stage-backdrop i:nth-child(3) { left: 6% !important; top: 18% !important; animation-delay: 2.4s; }
+@keyframes w-twinkle { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.game-home .game-stage-floor { filter: brightness(.95) saturate(1.1); }
+.game-home .game-mascot-button > span { color: #ffe9c2 !important; text-shadow: 0 1px 0 #0006 !important; font-size: 12px !important; }
+.game-home .game-mascot-button b { color: #fff !important; }
+.game-home .game-stage-caption { top: auto !important; bottom: 6px; background: #0d1a33aa !important; border-color: #ffffff33 !important; color: #ffe9c2 !important; }
+/* 吹き出し（ステージの上部中央） */
+.game-home .game-stage-say { position: absolute; z-index: 4; top: 8px; left: 50%; translate: -50% 0; width: max-content; max-width: min(92%, 420px); }
+.game-home .game-stage-say .tb-bubble { font-size: 13px; padding: 6px 12px; white-space: normal; text-wrap: balance; }
+/* ホームの大きなとびら君もアイドル（呼吸・ときどき揺れる） */
+.game-home .home-mascot-wrap.tb-idle { display: block; height: 100%; transform-origin: 50% 100%; animation: tb-breathe 3.6s ease-in-out infinite, tb-sway 11s ease-in-out infinite; }
+/* ステージ脇のボタンは夜の上で読める白地に */
+.game-home .game-stage-shortcuts button { background: #fffdf6f2 !important; box-shadow: 0 3px 0 #0f1e3a55 !important; }
+
+/* ---------- ホーム：主役ボタン ---------- */
+/* 演習する＝金のベタ＋濃い文字（背景に溶けない） */
+.game-home .home-pillar-solo { background: linear-gradient(180deg, #ffd36b, var(--w-gold) 60%, #f0a92a) !important; color: var(--w-gold-ink) !important; border-color: #fff3cf !important; box-shadow: 0 5px 0 var(--w-gold-deep), 0 8px 16px #c9851233 !important; }
+.game-home .home-pillar-solo strong { color: var(--w-gold-ink) !important; text-shadow: 0 1px 0 #fff6 !important; }
+.game-home .home-pillar-solo small { color: #6b4300 !important; }
+.game-home .home-pillar-solo .home-pillar-icon { background: #fff8e1 !important; color: #8a5200; }
+/* 対戦する＝濃い青のベタ＋白文字 */
+.game-home .home-pillar-battle { background: linear-gradient(180deg, #3d6fc4, var(--mt-brand, #2458a6) 60%, #1c4687) !important; color: #fff !important; border-color: #b9d0f2 !important; box-shadow: 0 5px 0 #14315f, 0 8px 16px #14315f33 !important; }
+.game-home .home-pillar-battle strong { color: #fff !important; text-shadow: 0 2px 0 #0f2a55 !important; }
+.game-home .home-pillar-battle small { color: #dce8fb !important; }
+.game-home .home-pillar-battle .home-pillar-icon { background: #ffffff26 !important; color: #fff; box-shadow: inset 0 0 0 1.5px #ffffff55 !important; }
+/* 復習ノート＝藤色は残し、少し濃く */
+.game-home .home-review-wide { background: linear-gradient(180deg, #f3e1ee, #e3c6da) !important; box-shadow: 0 4px 0 #b48aa8, 0 0 0 1px #d2b0c7 !important; }
+
+/* ---------- PC：STUDY DESK（重なり・暗いバーの修正） ---------- */
+@media (min-width: 1100px) {
+  .game-home .desktop-study-summary { align-self: stretch !important; justify-content: center; gap: 8px !important; padding: 16px 20px !important; margin-bottom: 4px; min-height: 0; overflow: hidden; background: #fffdf6 !important; box-shadow: 0 3px 0 #e6d7b8; }
+  .game-home .desktop-study-summary > p:first-child { font-size: 12px !important; color: #8a7556 !important; }
+  .game-home .desktop-study-summary > div > span { font-size: 12px !important; }
+  .game-home .desktop-study-summary strong small, .game-home .desktop-study-summary label { font-size: 12px !important; }
+  .game-home .desktop-study-summary h2 { font-family: var(--mt-font-display); color: var(--mt-ink-warm, #3d3222) !important; }
+  .game-home .desktop-study-summary strong { color: var(--mt-brand, #2458a6) !important; font-family: var(--mt-font-display); }
+  .game-home .desktop-study-summary > button { min-height: 44px; margin-top: 0 !important; color: var(--mt-brand, #2458a6) !important; font-weight: 700; }
+  .game-home .home-review-wide { align-self: end; }
+  .game-home .game-mascot-stage { min-height: 260px; }
+}
+@media (min-width: 1100px) and (max-height: 820px) {
+  .game-home .desktop-study-summary { padding-block: 10px !important; gap: 4px !important; }
+  .game-home .desktop-study-summary h2 { font-size: 18px !important; }
+  .game-home .desktop-study-summary strong { font-size: 24px !important; }
+  .game-home .desktop-study-summary .study-next { display: none; }
+}
+.study-doors { display: flex; align-items: flex-end; gap: 4px; margin: 0; }
+.study-doors i { width: 14px; height: 20px; border-radius: 7px 7px 2px 2px; background: #efe6d4; box-shadow: inset 0 0 0 1.5px #dccdaf; }
+.study-doors i[data-open] { background: linear-gradient(90deg, #ffe4a3 0 55%, var(--mt-brand, #2458a6) 55%); box-shadow: inset 0 0 0 1.5px var(--mt-brand, #2458a6), 0 0 8px #f6b93b88; }
+.study-doors b { font-size: 12px; color: var(--mt-brand, #2458a6); margin-left: 2px; }
+.study-next { margin: 0; font-size: 12px; font-weight: 700; color: #8a5200; }
+
+/* ---------- 動きを減らす ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .game-home .home-mascot-wrap.tb-idle, .game-home .game-stage-backdrop i { animation: none !important; }
+  :is(.home-pillar, .home-review-wide, .arena-lobby-main, .arena-lobby-card, .gacha-pull):active { transform: none !important; }
+  .mt-progress > i { transition: none; }
+}
+
+/* 3本柱：同じ高さ・同じ形（古い傾いた帯は消す） */
+.game-home .home-pillars::before { display: none !important; }
+.game-home .home-pillars { align-items: stretch !important; }
+.game-home .home-pillars > .home-pillar { height: 100%; margin: 0 !important; border-radius: 22px !important; border-width: 2px !important; transform: none; }
+/* PC 720px 級：進捗バーは消さずに、余白だけ詰める */
+@media (min-width: 1100px) and (max-height: 760px) {
+  .game-home .desktop-study-summary h2 { display: none; }
+  .game-home .desktop-study-summary .study-doors i { height: 16px; }
+}
+
+/* ================= 対戦ロビー（夜のアリーナ） ================= */
+.arena-menu .arena-vs { position: relative; display: grid; grid-template-columns: 1fr auto 1fr; grid-template-areas: "me vs foe" "say say say"; align-items: center; gap: 6px 8px; padding: 12px 12px 10px; border-radius: 22px; overflow: hidden; isolation: isolate;
+  background: radial-gradient(ellipse 60% 70% at 50% 120%, #f3a55a66, transparent 70%), radial-gradient(circle at 20% 0%, #3d6fc455, transparent 50%), linear-gradient(180deg, var(--w-night), #22396b 70%, #2d4f8e);
+  box-shadow: inset 0 0 0 2px #ffffff1f, 0 5px 0 #0f1e3a44; color: #fff; }
+.arena-menu .arena-vs::before { content: ''; position: absolute; inset: 0; z-index: -1; background: repeating-linear-gradient(115deg, #ffffff08 0 14px, transparent 14px 28px); }
+.arena-vs-me { grid-area: me; } .arena-vs-foe { grid-area: foe; }
+.arena-vs-me, .arena-vs-foe { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; text-align: center; }
+.arena-vs-avatar { display: grid; place-items: center; width: 60px; height: 60px; border-radius: 18px; background: #ffffff1a; box-shadow: inset 0 0 0 2px #ffffff40; overflow: hidden; }
+.arena-vs-me .arena-vs-avatar { background: linear-gradient(#ffe7a8, #f6b93b); box-shadow: 0 0 0 2px #fff, 0 0 18px #f6b93b88; }
+.arena-vs-unknown { font: 900 28px/1 var(--mt-font-display); color: #ffffffb0; animation: w-foe 2.4s ease-in-out infinite; }
+@keyframes w-foe { 0%, 100% { box-shadow: inset 0 0 0 2px #ffffff40; } 50% { box-shadow: inset 0 0 0 2px #e58f6acc, 0 0 16px #e58f6a66; } }
+.arena-vs-me strong, .arena-vs-foe strong { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 14px/1.2 var(--mt-font-display); color: #fff; }
+.arena-vs-me small, .arena-vs-foe small { display: flex; align-items: center; gap: 4px; font-size: 12px !important; font-weight: 700; color: #cfe0ff; white-space: nowrap; }
+.arena-vs-me small .arena-rank-chip { padding: 1px 6px; border-radius: 999px; color: #fff; font-size: 12px; }
+.arena-vs-mark { grid-area: vs; font: 900 34px/1 var(--mt-font-display); letter-spacing: -.02em; color: var(--w-gold); text-shadow: 0 3px 0 #b8640d, 0 0 18px #f6b93b99; transform: skewX(-8deg); animation: w-vs 2.8s ease-in-out infinite; }
+@keyframes w-vs { 0%, 100% { scale: 1; } 50% { scale: 1.08; } }
+.arena-vs-buddy { grid-area: say; justify-self: stretch; }
+.arena-vs-buddy .tb-bubble { font-size: 13px; padding: 6px 10px; }
+/* 古い「あなたの情報」帯は使わない（VS の舞台に置き換え） */
+.arena-menu .arena-menu-player { display: none !important; }
+
+/* ルール：アイコン＋ひとこと */
+.arena-rule-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 2px 0 0; padding: 0; list-style: none; }
+.arena-rule-chips li { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 3px 10px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1.5px #e6d7b8; font-size: 12px; font-weight: 800; color: var(--mt-ink-warm, #3d3222); white-space: nowrap; }
+.arena-rule-chips svg { width: 14px; height: 14px; color: var(--w-gold-deep); }
+
+/* 3つのモード：同じ高さ・同じ幅の3列。AI＝濃い青で最強調、他2つは同格 */
+.arena-menu .arena-lobby-grid { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; align-items: stretch !important; gap: 8px !important; margin: 0 !important; }
+.arena-menu .arena-lobby-card { --card-bg: #fff; --card-line: #e6d7b8; --card-shadow: #d9c8a3; --card-ink: var(--mt-ink-warm, #3d3222); --card-sub: #6b5a43;
+  position: relative; display: flex !important; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; min-width: 0; width: auto !important; height: auto !important; min-height: 176px; padding: 12px 8px 10px !important;
+  border-radius: 20px !important; background: var(--card-bg) !important; box-shadow: inset 0 0 0 2px var(--card-line), 0 4px 0 var(--card-shadow) !important; color: var(--card-ink) !important; text-align: center; }
+.arena-menu .arena-lobby-card[data-tone=friend] { --card-bg: linear-gradient(180deg, #fff7e2, #fbe7b5); --card-line: #e9c97c; --card-shadow: #cfa64a; }
+.arena-menu .arena-lobby-card[data-tone=national] { --card-bg: linear-gradient(180deg, #e8f0fd, #cfdff7); --card-line: #9fbbe6; --card-shadow: #7a9bd0; --card-ink: #1c3e73; --card-sub: #3b5b8c; }
+.arena-menu .arena-lobby-card[data-tone=ai] { --card-bg: linear-gradient(180deg, #3d6fc4, var(--mt-brand, #2458a6) 55%, #1c4687); --card-line: #b9d0f2; --card-shadow: #14315f; --card-ink: #fff; --card-sub: #dce8fb; }
+.arena-menu .arena-lobby-card .arena-lobby-icon { width: 40px; height: 40px; border-radius: 50%; background: #ffffffcc; color: var(--card-ink); }
+.arena-menu .arena-lobby-card[data-tone=ai] .arena-lobby-icon { background: #ffffff26; color: #fff; box-shadow: inset 0 0 0 1.5px #ffffff66; }
+.arena-menu .arena-lobby-card .arena-lobby-icon svg { width: 22px; height: 22px; }
+.arena-menu .arena-lobby-card strong { font: 900 17px/1.2 var(--mt-font-display) !important; color: var(--card-ink) !important; white-space: nowrap; }
+.arena-menu .arena-lobby-card small { font-size: 12px !important; font-weight: 700; line-height: 1.3; color: var(--card-sub) !important; text-wrap: balance; }
+.arena-lobby-actions { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-top: auto; }
+.arena-menu .arena-lobby-card .arena-lobby-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 3px; width: 100%; min-width: 0; min-height: 44px; margin: 0; padding: 4px 6px; border-radius: 12px !important; background: #fffdf6; box-shadow: inset 0 0 0 1.5px var(--card-line), 0 2px 0 var(--card-shadow); color: var(--card-ink); font-size: 13px; font-weight: 800; line-height: 1.2; white-space: normal; text-wrap: balance; }
+.arena-menu .arena-lobby-card .arena-lobby-actions button:active { transform: translateY(2px); box-shadow: inset 0 0 0 1.5px var(--card-line); }
+.arena-lobby-cta { display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%; min-height: 44px; margin-top: auto; border-radius: 12px; background: var(--w-gold); color: var(--w-gold-ink); font: 900 15px/1 var(--mt-font-display); box-shadow: 0 3px 0 var(--w-gold-deep); }
+/* 主役：少しだけ大きく（同じ列幅のまま、上にせり出す） */
+.arena-menu .arena-lobby-card[data-tone=ai] { transform: translateY(-4px); box-shadow: inset 0 0 0 2px var(--card-line), 0 6px 0 var(--card-shadow), 0 10px 22px #14315f40 !important; }
+.arena-menu .arena-lobby-card[data-tone=ai] strong { font-size: 19px !important; }
+.arena-menu .arena-lobby-card[data-tone=ai]:active { transform: translateY(0) scale(.985); }
+.arena-menu .arena-lobby-card[data-tone=ai]:focus-visible { outline: none; box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--mt-brand) !important; }
+.arena-menu .arena-login-note { display: flex; align-items: center; justify-content: center; gap: 4px; margin: 0; font-size: 12px; color: #6b5a43; }
+
+/* 下の補助：通信チェックとルールは並べて、ナビの上に独立して置く（文言と重ならない） */
+.arena-lobby-help { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.arena-lobby-help > details { min-width: 0; border-radius: 12px; background: #fffdf6; box-shadow: inset 0 0 0 1.5px #e6dac3; }
+.arena-lobby-help > details[open] { grid-column: 1 / -1; }
+.arena-lobby-help summary { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; padding: 0 8px; font-size: 12px !important; font-weight: 800; color: #5e5040; cursor: pointer; list-style: none; }
+.arena-lobby-help summary::-webkit-details-marker { display: none; }
+.arena-lobby-help details > :not(summary) { padding: 0 10px 10px; }
+
+/* PC：中央寄せのグリッドで、余白を意図的に */
+@media (min-width: 900px) {
+  .arena-menu .notebook-paper { max-width: 880px; margin-inline: auto; display: flex !important; flex-direction: column; gap: 12px !important; }
+  .arena-menu .arena-vs { grid-template-columns: 1fr auto 1fr 1.3fr; grid-template-areas: "me vs foe say"; padding: 16px 20px; }
+  .arena-vs-avatar { width: 72px; height: 72px; }
+  .arena-vs-mark { font-size: 44px; }
+  .arena-menu .arena-lobby-card { min-height: 210px; padding: 18px 14px 14px !important; }
+  .arena-menu .arena-lobby-card strong { font-size: 20px !important; }
+  .arena-menu .arena-lobby-card[data-tone=ai] strong { font-size: 22px !important; }
+  .arena-menu .arena-lobby-grid { gap: 14px !important; }
+}
+/* 低い画面：舞台とカードを詰める（320×568 でも1画面） */
+@media (max-height: 760px) and (max-width: 899px) {
+  .arena-menu .arena-vs { padding: 8px 10px; gap: 4px 6px; }
+  .arena-vs-avatar { width: 48px; height: 48px; border-radius: 14px; }
+  .arena-vs-mark { font-size: 28px; }
+  .arena-menu .arena-lobby-card { min-height: 150px; padding: 8px 6px !important; gap: 2px; }
+  .arena-menu .arena-lobby-card .arena-lobby-icon { width: 32px; height: 32px; }
+  .arena-menu .arena-lobby-card .arena-lobby-icon svg { width: 18px; height: 18px; }
+}
+@media (max-height: 640px) and (max-width: 899px) {
+  .arena-vs-me small, .arena-vs-foe small, .arena-vs-foe strong { display: none; }
+  .arena-vs-avatar { width: 40px; height: 40px; }
+  .arena-rule-chips li { min-height: 24px; padding: 2px 8px; }
+  .arena-menu .arena-lobby-card { min-height: 0; }
+  .arena-menu .arena-lobby-card small { display: none; }
+  .arena-menu .arena-lobby-label { display: none; }
+}
+@media (max-width: 360px) {
+  .arena-menu .arena-lobby-card .arena-lobby-actions button { font-size: 12px; padding-inline: 3px; }
+  .arena-menu .arena-lobby-card strong { font-size: 15px !important; }
+  .arena-menu .arena-lobby-card[data-tone=ai] strong { font-size: 16px !important; }
+  .arena-rule-chips { gap: 4px; } .arena-rule-chips li { padding-inline: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arena-vs-unknown, .arena-vs-mark { animation: none !important; }
+  .arena-menu .arena-lobby-card[data-tone=ai] { transform: none; }
+}
+/* 調整：主役ボタンの文字は1行、スマホはルールチップを1行、カードの縦を詰める */
+.arena-lobby-cta { white-space: nowrap; padding-inline: 4px; }
+@media (max-width: 899px) {
+  .arena-lobby-cta svg { display: none; }
+  .arena-rule-chips { flex-wrap: nowrap; gap: 4px; }
+  .arena-rule-chips li { padding: 2px 7px; min-height: 26px; }
+  .arena-rule-chips li svg { display: none; }
+  .arena-menu .arena-lobby-card { min-height: 0; }
+  .arena-menu .arena-lobby-card .arena-lobby-actions button { min-height: 44px; }
+  .arena-vs-buddy .tb-body { display: none; }
+  .arena-menu .arena-lobby-sub > .arena-lobby-label { display: none; }
+}
+@media (max-height: 760px) {
+  .arena-menu .arena-lobby-card small { display: none; }
+  .arena-menu .arena-lobby-card[data-tone=friend] small, .arena-menu .arena-lobby-card[data-tone=national] small { display: none; }
+  .arena-menu .arena-lobby-label { display: none; }
+}
+@media (max-height: 760px) and (min-width: 900px) {
+  .arena-menu .arena-vs { padding-block: 10px; }
+  .arena-vs-avatar { width: 56px; height: 56px; }
+  .arena-menu .arena-lobby-card { min-height: 170px; padding-block: 12px 10px !important; }
+  .arena-menu .notebook-paper { gap: 8px !important; padding-block: 16px !important; }
+}
+@media (max-height: 600px) and (max-width: 899px) {
+  .arena-menu .arena-vs { padding: 6px 8px; }
+  .arena-vs-buddy .tb-bubble { padding: 4px 8px; font-size: 12px; }
+  .arena-menu .arena-lobby-card { gap: 1px; padding-block: 6px !important; }
+  .arena-lobby-actions { gap: 4px; }
+}
+@media (max-width: 899px) { .arena-vs-buddy .tb-bubble::before { left: 50%; top: -8px; translate: -50% 0; rotate: 135deg; } .arena-vs-buddy .tb-bubble { text-align: center; } }
+.battle-result-buddy { margin: -6px 0 12px; padding: 6px 10px; border-radius: 18px; background: #fffdf6; box-shadow: inset 0 0 0 1.5px #ecdcb9; }
+
+/* ---------- ホームのとびら君：ドラッグで回す（2026-10-01 D） ---------- */
+.spin-mascot { position: relative; display: block; width: 100%; height: 100%; perspective: 900px; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; outline: none; }
+.spin-mascot:active { cursor: grabbing; }
+.spin-mascot:focus-visible { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--mt-brand, #2458a6); border-radius: 30%; }
+.spin-mascot-stage { position: absolute; inset: 0; display: block; transform-style: preserve-3d; will-change: transform; }
+.spin-mascot[data-settling] .spin-mascot-stage { transition: transform .5s cubic-bezier(.3, 1.7, .5, 1); }
+.spin-mascot-face { position: absolute; inset: 0; display: block; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.spin-mascot-face > img { position: static !important; width: 100% !important; height: 100% !important; object-fit: contain; }
+.spin-mascot-face > .tobira-accessories { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+/* 裏側：左右反転して少し暗く（扉の背中） */
+.spin-mascot-back { transform: rotateY(180deg); }
+.spin-mascot-back > * { filter: brightness(.18) saturate(0) drop-shadow(0 0 1px #8fb0e6) drop-shadow(0 0 6px #6d8fd1aa) !important; transform: scaleX(-1); }
+/* 背中には扉の取っ手と模様（シルエットだけだと寂しいので） */
+.spin-mascot-back::after { content: ''; position: absolute; left: 50%; top: 42%; width: 9%; aspect-ratio: 1; translate: -50% 0; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe7a8, #c98512); box-shadow: 0 0 10px #f6b93b; }
+.spin-mascot-shadow { position: absolute; left: 20%; right: 20%; bottom: -2px; height: 10px; border-radius: 50%; background: radial-gradient(ellipse, #0d1a3366, transparent 70%); pointer-events: none; transition: transform .1s; }
+/* 回しているときは呼吸を止める（回転と重ねると揺れが大きく見える） */
+.game-home .spin-mascot[data-spinning], .game-home .spin-mascot[data-settling] { animation: none !important; }
+@media (hover: hover) { .game-home .spin-mascot:hover .spin-mascot-front img { transform: translateY(-3px); transition: transform .2s; } }
+.game-home .game-mascot-button:hover .spin-mascot-back img { transform: scaleX(-1) !important; }

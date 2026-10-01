@@ -27,16 +27,17 @@ try {
   }
   await page.setViewportSize({width:390,height:844});
   assert.equal(await page.getByRole('button',{name:'まとめプリント',exact:true}).count(),0);
-  // 演習する → 科目（共通UI）→ コンテンツ → 英単語は下のナビを残した1画面のページ（ダイアログではない）。
+  // 演習する → （科目は英語だけなので科目選択は出さない 2026-10-01）コンテンツ → 英単語は下のナビを残した1画面のページ。
   await page.locator('[data-home-practice]').click();
-  await page.locator('[data-study-catalog=subjects]').waitFor();
-  await page.locator('[data-study-card=english]').click();
   await page.locator('[data-study-catalog=contents]').waitFor();
+  assert.equal(await page.locator('[data-study-catalog=subjects]').count(),0,'no subject picker when English is the only subject');
+  assert.equal(await page.locator('[data-study-card=english_listening_grammar]').count(),0,'listening grammar is removed');
+  assert.ok(await page.locator('[data-study-card=english_vocab_quiz]').count()===1,'vocabulary can be solved as 4-choice questions');
   assert.ok(await page.locator('[data-study-card]').count()>=4,'english has its contents as shared cards');
   await page.locator('[data-study-card=english_vocabulary]').click();
   await page.locator('[data-foundation]').waitFor();
   assert.equal(await page.locator('.app-bottom-nav').isVisible(),true,'foundation page keeps the bottom nav');
-  assert.deepEqual(await page.locator('.fd-tabs [role=tab]').allTextContents(),['単語・熟語','英文法','その他']);
+  assert.deepEqual(await page.locator('.fd-tabs [role=tab]').allTextContents(),['単語帳','4択で解く','その他']);
   await page.locator('.fd-word').nth(2).waitFor();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+2),'foundation fits one screen');
   await page.getByRole('tab',{name:'その他'}).click();

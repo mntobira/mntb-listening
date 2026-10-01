@@ -38,3 +38,15 @@ describe('対戦BGM（音源ファイル）', () => {
     expect(stage).toContain("listening ? (counting ? 'matching' : null) : countdownTrack");
   });
 });
+
+describe('対戦BGM（2026-10-01 利用者の指定）', () => {
+  it('待合室＝落ち着いた「夕凪」、対戦＝「風の列車」。リスニング対戦の問題中は鳴らさない', () => {
+    expect(BGM_FILES.waiting?.url).toBe('/bgm/battle/waiting.mp3');
+    expect(BGM_FILES.waiting?.license).toContain('夕凪');
+    expect(BGM_FILES.battle?.url).toBe('/bgm/battle/battle.mp3');
+    expect(BGM_FILES.battle?.license).toContain('風の列車');
+    expect(BGM_FILES.battle?.dropSec).toBe(7);
+    // 配布元とURLの記載（利用規約の条件）がアプリ内にある
+    expect(readFileSync('src/components/Intro.tsx', 'utf8')).toContain('https://yukizakura.net/');
+  });
+});

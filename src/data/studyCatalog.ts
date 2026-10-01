@@ -13,7 +13,8 @@ import { VOCABULARY_COUNT } from './listeningVocabularyMeta.generated';
 /** コンテンツを押したときに開く既存の画面。App 側で1か所にまとめて解釈する */
 export type StudyAction =
   | { kind: 'units'; subject: string }           // 既存の単元一覧（ChapterSelection）
-  | { kind: 'foundation'; tab: 'words' | 'grammar' | 'more' }; // 既存の固めるページの各タブ
+  | { kind: 'foundation'; tab: 'words' | 'grammar' | 'more' } // 既存の固めるページの各タブ
+  | { kind: 'vocabQuiz' };                       // 英単語の4択演習（2026-10-01）
 
 export type StudyIcon = 'headphones' | 'pen' | 'letters' | 'book' | 'flask' | 'sigma' | 'globe';
 
@@ -48,7 +49,7 @@ export const STUDY_CATALOG: readonly StudySubject[] = [
   {
     id: 'english',
     label: '英語',
-    description: 'リスニングと、聞くための英文法・英単語',
+    description: 'リスニング・英文法・英単語',
     icon: 'headphones',
     contents: [
       {
@@ -66,16 +67,17 @@ export const STUDY_CATALOG: readonly StudySubject[] = [
         action: { kind: 'units', subject: 'english_grammar' },
       },
       {
-        id: 'english_vocabulary', title: '英単語・英熟語', icon: 'letters',
-        description: '目標別のセット。リスニングに出る語にしぼれる',
-        meta: `${VOCABULARY_COUNT.toLocaleString()}語・1章20語`,
+        id: 'english_vocabulary', title: '英単語帳', icon: 'letters',
+        description: '100語ずつめくって覚える。意味・英語を隠せる',
+        meta: `${VOCABULARY_COUNT.toLocaleString()}語・レベル別`,
         action: { kind: 'foundation', tab: 'words' },
       },
       {
-        id: 'english_listening_grammar', title: '聞き取りの文法', icon: 'book',
-        description: '音がつながる・弱くなる形を例文で確認',
-        meta: '8ポイント・例文とクイズつき',
-        action: { kind: 'foundation', tab: 'grammar' },
+        // 2026-10-01 D：英単語も英文法・リスニングと同じように「4択の問題」として解ける
+        id: 'english_vocab_quiz', title: '英単語の4択', icon: 'pen',
+        description: '10問ずつ解いて、間違いは復習ノートへ',
+        meta: 'レベル別・英→日／日→英',
+        action: { kind: 'vocabQuiz' },
       },
     ],
   },

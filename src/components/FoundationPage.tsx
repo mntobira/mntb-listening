@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BookOpen, Check, ChevronDown, ChevronLeft, ChevronRight, Headphones, Info, PenLine, Repeat2, Swords, X } from 'lucide-react';
-import { LISTENING_GRAMMAR } from '../data/listeningSupport';
+import { BookOpen, ChevronLeft, ChevronRight, Info, PenLine, Repeat2, Swords, X } from 'lucide-react';
 import { VOCABULARY_COUNT } from '../data/listeningVocabularyMeta.generated';
 import { getSubjectStats } from '../data/chapterIndex.generated';
 import { stopSpeech } from '../utils/listeningSpeech';
-import { ReadAloud, useSupportProgress } from './foundationShared';
+import { useSupportProgress } from './foundationShared';
 import { FoundationWords } from './FoundationWords';
+import { VocabQuiz } from './VocabQuiz';
 import './foundation.css';
 
 /**
@@ -20,7 +20,8 @@ import './foundation.css';
  *   - 注意書き（保存先・出典・照合方法）は ⓘ の吹き出しにまとめる。
  *   - リスニング（主役）とは別のページ。リスニングは「学習」から、ここはホームの帯から入る。
  */
-export type FoundationTab = 'words' | 'grammar' | 'more';
+/** 'grammar'（旧：聞き取りの文法）は 2026-10-01 に廃止。古い保存値・呼び出しは単語帳に寄せる */
+export type FoundationTab = 'words' | 'quiz' | 'more' | 'grammar';
 
 export interface FoundationPageProps {
   tab: FoundationTab;
@@ -38,25 +39,21 @@ export interface FoundationPageProps {
   onListening?: () => void;
 }
 
-export function FoundationPage({ tab, onTab, uid, onBack, backLabel = 'ホーム', onGrammarUnits, onPractice, onBattle, onReview, onListening }: FoundationPageProps) {
-  const { progress, error, locked, mark } = useSupportProgress(uid);
+export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = 'ホーム', onGrammarUnits, onPractice, onBattle, onReview, onListening }: FoundationPageProps) {
+  const tab = rawTab === 'grammar' ? 'words' : rawTab;
+  const { progress, error, mark } = useSupportProgress(uid);
   const [infoOpen, setInfoOpen] = useState(false);
-  const [grammarIndex, setGrammarIndex] = useState(0);
-  const [grammarAnswer, setGrammarAnswer] = useState<number | null>(null);
   const known = useMemo(() => new Set(progress.words), [progress.words]);
   const grammarStats = getSubjectStats('english_grammar');
 
   useEffect(() => () => { stopSpeech(); document.querySelectorAll<HTMLAudioElement>('.fd-page audio').forEach(a => a.pause()); }, []);
   useEffect(() => { stopSpeech(); setInfoOpen(false); }, [tab]);
 
-  const lesson = LISTENING_GRAMMAR[grammarIndex];
-  const grammarKnown = progress.grammar.includes(lesson.id);
-  const pickLesson = (i: number) => { stopSpeech(); setGrammarIndex(i); setGrammarAnswer(null); };
 
   return <main className="fd-page" data-foundation data-tab={tab}>
     <header className="fd-head">
       <button type="button" className="fd-back" onClick={onBack} aria-label={`${backLabel}へ戻る`}><ChevronLeft size={18} aria-hidden="true" /><span>{backLabel}</span></button>
-      <div className="fd-head-title"><h1>英文法・英単語を固める</h1><p>聞き取れない原因の多くは、語と文の形。</p></div>
+      <div className="fd-head-title"><h1>英単語・英熟語</h1><p>単語帳で覚えて、4択で確かめる。</p></div>
       <div className="fd-info">
         <button type="button" className="fd-info-btn" aria-expanded={infoOpen} aria-controls="fd-info-pop" aria-label="保存と収録についての説明" onClick={() => setInfoOpen(v => !v)}><Info size={18} aria-hidden="true" /></button>
         {infoOpen && <div id="fd-info-pop" role="dialog" aria-label="保存と収録について" className="fd-info-pop">
@@ -70,37 +67,16 @@ export function FoundationPage({ tab, onTab, uid, onBack, backLabel = 'ホーム
       </div>
     </header>
 
-    <div className="mt-segment fd-tabs" role="tablist" aria-label="固める内容">
-      <button role="tab" aria-selected={tab === 'words'} onClick={() => onTab('words')}>単語・熟語</button>
-      <button role="tab" aria-selected={tab === 'grammar'} onClick={() => onTab('grammar')}>英文法</button>
+    <div className="mt-segment fd-tabs" role="tablist" aria-label="英単語の使い方">
+      <button role="tab" aria-selected={tab === 'words'} onClick={() => onTab('words')}>単語帳</button>
+      <button role="tab" aria-selected={tab === 'quiz'} onClick={() => onTab('quiz')}>4択で解く</button>
       <button role="tab" aria-selected={tab === 'more'} onClick={() => onTab('more')}>その他</button>
     </div>
     {error && <p role="alert" className="fd-error">{error}</p>}
 
     {tab === 'words' && <FoundationWords known={known} onMark={(id, done) => mark('words', id, done)} onPractice={onPractice} />}
 
-    {tab === 'grammar' && <section className="fd-panel fd-grammar" aria-label="聞き取りの英文法">
-      <div className="fd-points" role="tablist" aria-label="聞き取りの文法ポイント">
-        {LISTENING_GRAMMAR.map((g, i) => <button key={g.id} type="button" role="tab" aria-selected={i === grammarIndex} onClick={() => pickLesson(i)}>
-          <b>{String(i + 1).padStart(2, '0')}</b><span>{g.title}</span>{progress.grammar.includes(g.id) && <Check size={14} aria-label="確認済み" />}
-        </button>)}
-      </div>
-      <article className="fd-lesson">
-        <h2><b>{String(grammarIndex + 1).padStart(2, '0')}.</b> {lesson.title}</h2>
-        <p className="fd-lesson-point">{lesson.point}</p>
-        <div className="fd-lesson-example"><p lang="en">{lesson.example}</p><ReadAloud key={lesson.id} text={lesson.example} /></div>
-        <details className="fd-lesson-more"><summary>訳と聞き取りのコツ<ChevronDown size={15} aria-hidden="true" /></summary><p>{lesson.translation}</p><p className="fd-tip"><Headphones size={16} aria-hidden="true" />{lesson.tip}</p></details>
-        <p className="fd-quiz-q">{lesson.question}</p>
-        <div className="fd-options">{lesson.options.map((o, i) => <button key={lesson.id + i} type="button" disabled={grammarAnswer !== null} onClick={() => setGrammarAnswer(i)}
-          data-correct={grammarAnswer !== null && i === lesson.answer ? true : undefined} data-wrong={grammarAnswer === i && i !== lesson.answer ? true : undefined}>{o}</button>)}</div>
-        {grammarAnswer !== null && <div role="status" className="fd-feedback"><strong>{grammarAnswer === lesson.answer ? '正解' : 'ポイントを確認しよう'}</strong> {lesson.explanation} <button type="button" onClick={() => setGrammarAnswer(null)}>やり直す</button></div>}
-        <div className="fd-lesson-actions">
-          <button type="button" className="fd-secondary" disabled={grammarAnswer !== lesson.answer || locked} aria-pressed={grammarKnown} onClick={() => mark('grammar', lesson.id, !grammarKnown)}><Check size={16} aria-hidden="true" />{grammarKnown ? '確認済みを外す' : '分かった'}</button>
-          {grammarIndex < LISTENING_GRAMMAR.length - 1 && <button type="button" className="fd-secondary" onClick={() => pickLesson(grammarIndex + 1)}>次のポイント<ChevronRight size={16} aria-hidden="true" /></button>}
-        </div>
-      </article>
-      <button type="button" className="fd-primary" onClick={onGrammarUnits}><PenLine size={18} aria-hidden="true" /><span><strong>英文法の4択演習へ</strong><small>全{grammarStats.chapters ?? 20}単元・文型から会話表現まで</small></span><ChevronRight size={18} aria-hidden="true" /></button>
-    </section>}
+    {tab === 'quiz' && <VocabQuiz uid={uid} known={known} onMark={(id) => mark('words', id, true)} onWordbook={() => onTab('words')} />}
 
     {tab === 'more' && <section className="fd-panel fd-more" aria-label="その他の固め方">
       {onBattle && <button type="button" className="fd-more-card" data-kind="battle" onClick={onBattle}><Swords size={22} aria-hidden="true" /><span><strong>対戦で固める</strong><small>英文法・英単語もAI・友だち・全国対戦で</small></span><ChevronRight size={18} aria-hidden="true" /></button>}

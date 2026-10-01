@@ -67,6 +67,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
     setClaiming(null);
     if (r?.reward) {
       play('coin');
+      setTimeout(() => play('levelup', false), 380);
       setJustClaimed(id);
       setToast(`+${r.reward.xp} XP ／ +${r.reward.coins} コイン をうけとりました`);
 
@@ -189,7 +190,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
             <span className="inline-flex items-center gap-0.5"><Sparkles size={11} style={{ color: AMBER }} /> +{totalXp} XP</span>
             <span className="inline-flex items-center gap-0.5"><Coins size={11} style={{ color: AMBER }} /> +{totalCoins}</span>
           </span>
-          <span>もってる <span className="tabular-nums font-black" style={{ color: AMBER }}>{progress.coins}</span> コイン</span>
+          <span data-coin-target>もってる <span className="tabular-nums font-black" style={{ color: AMBER }}>{progress.coins}</span> コイン</span>
         </div>
       </section>
 
@@ -208,7 +209,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
         ))}
       </div>
 
-      <h2 className="mb-2 mt-4 text-xs font-black" style={{ color: INK_SUB }}>ボーナスミッション（演習・マナラッシュ・おたのしみ）</h2>
+      <h2 className="mb-2 mt-4 text-xs font-black" style={{ color: INK_SUB }}>ボーナスミッション（演習・英単語・マナラッシュ・おたのしみ）</h2>
       <div className="grid gap-2.5" data-bonus-missions>
         {bonusMissions.map((m) => (
           <MissionRow
@@ -293,7 +294,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
 
       <p className="mt-4 flex items-start gap-1.5 text-xs font-bold leading-relaxed" style={{ color: INK_SUB }}>
         <Sparkles size={12} className="mt-0.5 shrink-0" style={{ color: AMBER }} />
-        ミッションは毎日0時に入れかわり、全員おなじ内容です。ボーナスミッションは演習（大問に得点）・マナラッシュ・ガチャや着がえで進みます。達成すると、どの画面でも上にお知らせが出ます。コインは「プロフィール」でとびら君の装備と交換できます。
+        ミッションは毎日0時に入れかわり、全員おなじ内容です。ボーナスミッションは演習（大問に得点）・英単語（4択・単語帳）・マナラッシュ・ガチャや着がえで進みます。達成すると、どの画面でも上にお知らせが出ます。コインは「プロフィール」でとびら君の装備と交換できます。
         復習リストの「できた」で進みます。同じ問題は1日1回までです。全部うけとると宝箱が開き、7日連続で大当たりです。
       </p>
     </BattleShell>

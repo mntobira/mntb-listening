@@ -309,6 +309,29 @@ export function BadgeChip({
 // ミッション1行
 // ============================================================
 
+/**
+ * コインが「うけとる」ボタンから画面上（マナコインの残高）へ飛ぶ（2026-10-01 D）。
+ * 見た目だけ。報酬の加算は claimMissionReward が行う。動きを減らす設定では何もしない。
+ */
+export function flyCoins(from: HTMLElement, coins: number) {
+  if (typeof window === 'undefined' || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+  const r = from.getBoundingClientRect();
+  const target = document.querySelector('[data-mana-coins], .gacha-balance, [data-coin-target]')?.getBoundingClientRect();
+  const tx = target ? target.left + target.width / 2 : window.innerWidth - 40;
+  const ty = target ? target.top + target.height / 2 : 24;
+  const n = Math.min(8, Math.max(4, Math.round(coins / 8)));
+  for (let i = 0; i < n; i += 1) {
+    const c = document.createElement('i');
+    c.className = 'mission-coin-fly';
+    const x = r.left + r.width / 2 - 11 + (i - n / 2) * 6; const y = r.top + r.height / 2 - 11;
+    c.style.left = `${x}px`; c.style.top = `${y}px`;
+    c.style.setProperty('--dx', `${tx - x - 11}px`); c.style.setProperty('--dy', `${ty - y - 11}px`);
+    c.style.animationDelay = `${i * 55}ms`;
+    document.body.appendChild(c);
+    window.setTimeout(() => c.remove(), 900 + i * 55);
+  }
+}
+
 export function MissionRow({
   id,
   progress,
@@ -333,7 +356,8 @@ export function MissionRow({
   const state = claimed ? 'claimed' : done ? 'ready' : 'going';
   return (
     <div
-      className="flex items-center gap-3 rounded-2xl border-2 px-3 py-2.5"
+      className={`flex items-center gap-3 rounded-2xl border-2 px-3 py-2.5 ${justClaimed ? 'mission-claimed-fx' : ''} ${state === 'ready' ? 'mission-ready' : ''}`}
+      data-mission-state={state}
       style={{
         borderColor: state === 'ready' ? `${GOLD}CC` : LINE,
         background: state === 'ready' ? `${GOLD}16` : '#FFFFFF',
@@ -352,7 +376,7 @@ export function MissionRow({
         {state === 'claimed' ? <Check size={16} /> : <Flag size={16} />}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="flex items-center justify-between gap-2 text-[12px] font-black" style={{ color: claimed ? INK_SUB : INK }}>
+        <p className="flex items-center justify-between gap-2 text-[13px] font-black" style={{ color: claimed ? INK_SUB : INK }}>
           <span className={claimed ? 'line-through' : ''}>{m.label}</span>
           <span className="shrink-0 tabular-nums text-xs font-bold" style={{ color: done ? AMBER : INK_SUB }}>
             {Math.min(progress, m.goal)}/{m.goal}
@@ -377,9 +401,9 @@ export function MissionRow({
       {state === 'claimed' ? null : state === 'ready' && onClaim ? (
         <button
           type="button"
-          onClick={onClaim}
+          onClick={(e) => { flyCoins(e.currentTarget, m.rewardCoins); onClaim(); }}
           disabled={claiming}
-          className="min-h-11 shrink-0 rounded-xl border-2 px-3 text-[12px] font-black transition active:translate-y-[1px] disabled:opacity-50"
+          className="min-h-11 shrink-0 rounded-xl border-2 px-3 text-[13px] font-black transition active:translate-y-[1px] disabled:opacity-50"
           style={{ background: GOLD, borderColor: '#E5B93C', color: INK, boxShadow: '0 2px 0 #D9A72E' }}
         >
           {claiming ? '…' : 'うけとる'}
