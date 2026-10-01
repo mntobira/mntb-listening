@@ -1,5 +1,6 @@
 import { it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { SUBJECTS, getChaptersOfSubject } from '../src/data/allChapters';
 import { SUBJECT_INDEX, SUBJECT_STATS } from '../src/data/chapterIndex.generated';
@@ -68,3 +69,45 @@ it('ships only commercial audio listed in the ledger', () => {
   for(const r of ledger)expect(existsSync(resolve('public','.'+r.audioUrl)),r.audioUrl).toBe(true);
   expect(existsSync('license_evidence/README.md')).toBe(true);
 });
+
+const releaseFirebase = {
+  VITE_FIREBASE_API_KEY: 'test-listening-key',
+  VITE_FIREBASE_PROJECT_ID: 'listening-release-test',
+  VITE_FIREBASE_AUTH_DOMAIN: 'listening-release-test.firebaseapp.com',
+  VITE_FIREBASE_APP_ID: '1:123:web:release-test',
+};
+const releaseCases = [
+  { name: 'missing configuration', env: {}, ok: false },
+  { name: 'complete configuration', env: releaseFirebase, ok: true },
+  { name: 'partial configuration', env: { VITE_FIREBASE_PROJECT_ID: releaseFirebase.VITE_FIREBASE_PROJECT_ID }, ok: false },
+  { name: 'blank required value', env: { ...releaseFirebase, VITE_FIREBASE_APP_ID: '   ' }, ok: false },
+  { name: 'integrated backend', env: { ...releaseFirebase, VITE_FIREBASE_PROJECT_ID: ' mntb-4ef06 ' }, ok: false },
+  { name: 'demo backend', env: { ...releaseFirebase, VITE_FIREBASE_PROJECT_ID: ' demo-listening ' }, ok: false },
+  { name: 'emulator configuration', env: { ...releaseFirebase, VITE_USE_EMULATORS: 'true' }, ok: false },
+];
+for (const vercel of [false, true]) {
+  it.each(releaseCases)(`${vercel ? 'Vercel' : 'standard'} release checks $name`, ({ env, ok }) => {
+    // Isolate from the developer's real .env.local without writing outside the workspace.
+    const tempRoot = resolve('.tmpwork');
+    mkdirSync(tempRoot, { recursive: true });
+    const cwd = mkdtempSync(resolve(tempRoot, 'release-check-'));
+    try {
+      const inherited = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('VITE_') && key !== 'VERCEL'));
+      const result = spawnSync(process.execPath, [resolve('scripts/check-release.mjs'), ...(vercel ? ['--vercel'] : [])], {
+        cwd,
+        env: { ...inherited, ...env, ...(vercel ? { VERCEL: '1' } : {}) },
+        encoding: 'utf8',
+        timeout: 15000,
+      });
+      expect(result.error).toBeUndefined();
+      expect(result.status, result.stderr).toBe(ok ? 0 : 1);
+      if (ok) expect(result.stdout).toContain('Release target: listening-release-test');
+      else {
+        expect(result.stderr).toContain('公開ビルドを中止');
+        expect(result.stderr).toContain('再デプロイ');
+      }
+    } finally {
+      rmSync(cwd, { recursive: true, force: true });
+    }
+  });
+}
