@@ -1,6 +1,19 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Mana Clan roster, formula inputs, snapshots and grants are SERVER ONLY.
+    // Public views are sanitized by the callable; no direct client write fallback.
+    match /mana_clans/{document=**} { allow read, write: if false; }
+    match /mana_memberships/{document=**} { allow read, write: if false; }
+    match /mana_invites/{document=**} { allow read, write: if false; }
+    match /mana_duels/{document=**} { allow read, write: if false; }
+    match /mana_rate_limits/{document=**} { allow read, write: if false; }
+    match /league_control/{document=**} { allow read, write: if false; }
+    match /league_seasons/{document=**} { allow read, write: if false; }
+    match /league_receipts/{document=**} { allow read, write: if false; }
+    match /league_exclusions/{document=**} { allow read, write: if false; }
+    match /league_rewards/{document=**} { allow read, write: if false; }
+
     // ===============================================================
     // 設計方針（フレンド機能）
     // ===============================================================

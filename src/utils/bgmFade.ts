@@ -114,7 +114,8 @@ export function bgmVolumeAt(baseVolume: number, elapsedMs: number): number {
 //   利用者の指摘「誕生のBGMがまだ大きい。待ち時間の曲は（曲調的にも）特に小さく感じる」。
 //   誕生は音の密度が高く高音も強い（300Hz以上だけで測ると対戦の2曲より約6dB大きい）ので、
 //   数字の上で同じにしても大きく聞こえる。対戦BGMより一段小さい -42.5 LUFS 前後にする。
-export const APP_BGM_GAIN = 0.07;
+// Reduce the dense title track another ~4 dB; do not alter the saved slider.
+export const APP_BGM_GAIN = 0.045;
 export function appBgmVolume(baseVolume: number, elapsedMs = 0): number {
   return bgmVolumeAt(baseVolume, elapsedMs) * APP_BGM_GAIN;
 }

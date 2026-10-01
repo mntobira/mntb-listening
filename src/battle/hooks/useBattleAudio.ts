@@ -64,19 +64,32 @@ export function useBattleAudioSettings(): [
  *
  * @param track いま鳴らすべき BGM（null で止める）。局面から呼び出し側が決める。
  */
-export function useBattleAudio(track: BattleBgmTrack, startInMs?: number) {
+export function useBattleAudio(track: BattleBgmTrack, startInMs?: number, priority = 10) {
   const [settings] = useBattleAudioSettings();
   const engine = useMemo(() => battleAudio(), []);
+  const owner = useRef(Symbol('bgm-screen'));
   // startInMs は曲を始める瞬間の値だけ使う（毎フレーム変わる値で effect を回さない）
   const startRef = useRef<number | undefined>(startInMs);
   startRef.current = startInMs;
 
   useEffect(() => {
-    engine.playBgm(track, { startInMs: startRef.current });
-  }, [engine, track, settings.bgm]);
+    engine.setBgmOwner(owner.current, track, priority, startRef.current);
+  }, [engine, track, priority, settings.bgm]);
 
   // 画面を離れたら止める
-  useEffect(() => () => engine.stopBgm(), [engine]);
+  useEffect(() => {
+    const token = owner.current;
+    const resume = () => { if (document.visibilityState !== 'hidden') engine.unlock(); };
+    window.addEventListener('pointerdown', resume);
+    window.addEventListener('pageshow', resume);
+    document.addEventListener('visibilitychange', resume);
+    return () => {
+      engine.releaseBgmOwner(token);
+      window.removeEventListener('pointerdown', resume);
+      window.removeEventListener('pageshow', resume);
+      document.removeEventListener('visibilitychange', resume);
+    };
+  }, [engine]);
 
   const play = useCallback((sfx: BattleSfx) => engine.play(sfx), [engine]);
   const unlock = useCallback(() => engine.unlock(), [engine]);

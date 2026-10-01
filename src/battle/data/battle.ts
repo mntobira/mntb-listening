@@ -1,3 +1,4 @@
+import { questionInScope } from '../core/vocabRanges';
 /**
  * ===================================================================
  * 対戦モード: Firestore とのやりとり
@@ -263,7 +264,7 @@ export async function drawQuestionIds(
 ): Promise<string[]> {
   const eligible = await poolIdsOf(subject, rules.formats as BattleAnswerFormat[]);
   const chapterIds = chapterId ? new Set((await loadPool(subject))
-    .filter(q => q.chapterId === chapterId).map(q => q.id)) : null;
+    .filter(q => questionInScope(q, chapterId)).map(q => q.id)) : null;
   // Filter BEFORE deterministic drawing. An unknown unit returns no questions;
   // never silently fall back to the entire subject.
   const ids = chapterIds ? eligible.filter(id => chapterIds.has(id)) : eligible;

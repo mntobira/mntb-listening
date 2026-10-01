@@ -844,6 +844,7 @@ export interface ItemDef {
  * gacha: true を付けたものはガチャの抽選対象にも入る（レベル解放と併用可）。
  */
 export const ITEMS: readonly ItemDef[] = [
+  { id: 'frame_league_aurora', kind: 'frame', rarity: 'UR', label: 'リーグ・オーロラフレーム', value: '#8657c5', pattern: 'aurora', unlock: { gacha: true } },
   { id: 'pose_basic', kind: 'pose', label: '基本', value: '/mascots/basic.webp', unlock: { level: 1 } },
   { id: 'pose_walking', kind: 'pose', gacha: true, label: 'おさんぽ', value: '/mascots/walking.webp', unlock: { level: 3 } },
   { id: 'pose_studying', kind: 'pose', gacha: true, label: '勉強中', value: '/mascots/studying.webp', unlock: { level: 5 } },

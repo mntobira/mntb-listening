@@ -127,17 +127,19 @@ export function BattleMode({
    * 自前の BGM を持つ画面（matching / room / ai-room）は、その画面の useBattleAudio に任せる。
    */
   const [audioSettings] = useBattleAudioSettings();
+  const lobbyOwner = useRef(Symbol('battle-lobby'));
   const ownsBgm = screen === 'matching' || screen === 'room' || screen === 'ai-room';
   useEffect(() => {
-    if (ownsBgm) return;
-    battleAudio().playBgm('matching');
+    if (ownsBgm) { battleAudio().releaseBgmOwner(lobbyOwner.current); return; }
+    battleAudio().setBgmOwner(lobbyOwner.current, 'matching', 0);
   }, [ownsBgm, audioSettings.bgm]);
   // ★注意★ room / ai-room に入る瞬間にここで曲を鳴らしてはいけない。
   //   React は子の effect を親より先に走らせるので、対戦画面（BattleLiveStage）が
   //   決めた曲を親が上書きしてしまう。所有する画面へは口を出さない。
   useEffect(() => {
     // 対戦モードを抜けたら止める
-    return () => battleAudio().stopBgm();
+    const token = lobbyOwner.current;
+    return () => battleAudio().releaseBgmOwner(token);
   }, []);
   useEffect(() => {
     // ブラウザが音を止めている（自動再生制限）ときは、最初のタップで再開する

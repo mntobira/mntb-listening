@@ -19,7 +19,6 @@
  */
 import { useState } from 'react';
 import { ArrowLeft, Lightbulb, Trophy, X } from 'lucide-react';
-import { LiveStandingPill } from './LiveStandingPill';
 
 export interface QuizHeaderProps {
   /** 章（単元）の表示名。Quiz.tsx では chapter.abstractTitle を渡している。
@@ -35,8 +34,6 @@ export interface QuizHeaderProps {
   handleExit: () => void;
   /** 章の途中経過（点数・コンボ）。 */
   run: { score: number; combo: number; [k: string]: any };
-  /** ライブ順位（同じ章を解いている人の中での位置）。無いときは null。 */
-  liveStanding: any;
   /** いま何問目か（1 から数えた値）。 */
   progressPosition: number;
   /** 全部で何問か。 */
@@ -52,7 +49,6 @@ export function QuizHeader({
   keyboardVisible,
   handleExit,
   run,
-  liveStanding,
   progressPosition,
   progressTotal,
   topics = [],
@@ -132,11 +128,6 @@ export function QuizHeader({
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
-        {/* 現在順位ピル（臨場感）。
-            既存のスコアピル・進捗ピルと同じ「丸いピル」の形・同じ色域にそろえ、
-            並べても違和感が出ないようにしている。ゲスト時は standing が null で非表示。 */}
-        <LiveStandingPill standing={liveStanding} />
-
         {points.length > 0 && (
           <button type="button" onClick={() => setPointsOpen(true)} data-unit-points-button
             className="flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full border border-[#F4D03F]/50 bg-[#FFF9E0] px-2 text-xs font-bold text-[#8a6d00] md:px-3"

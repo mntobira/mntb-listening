@@ -317,7 +317,7 @@ const BGM_ENABLED_KEY = 'bgm_enabled';
  *     通常 BGM と重なると濁る。対戦モードの間だけ通常 BGM を止め、
  *     戻ってきたら従来どおり再開する（フェードの計測も止まる）。
  */
-const BGM_SILENT_STATES: readonly string[] = ['quiz', 'explanation', 'battle'];
+const BGM_SILENT_STATES: readonly string[] = ['quiz', 'explanation', 'battle', 'study_hub', 'note_list', 'note_detail'];
 /** 化学（発展）で最後に選んだ分野の保存キー */
 const SELECTED_FIELD_KEY = 'savedSelectedAdvancedField';
 
@@ -962,6 +962,22 @@ export default function App() {
     window.addEventListener('battle-audio-settings', sync);
     return () => window.removeEventListener('battle-audio-settings', sync);
   }, []);
+
+  useEffect(() => {
+    // BattleMode remains mounted while hidden to preserve matches. Its owners must
+    // not leak music into home (double BGM) or listening practice (answer interference).
+    if (appState === 'battle') return;
+    const reviewing = ['study_hub', 'note_list', 'note_detail'].includes(appState);
+    const token = Symbol('app-audio-policy');
+    const engine = battleAudio();
+    engine.setSettings({ ...readAudioPreferences(), bgm: isBgmEnabled });
+    engine.setBgmOwner(token, reviewing ? 'matching' : null, 100);
+    const resume = () => { if (reviewing && document.visibilityState !== 'hidden') engine.unlock(); };
+    resume();
+    window.addEventListener('pointerdown', resume);
+    document.addEventListener('visibilitychange', resume);
+    return () => { engine.releaseBgmOwner(token); window.removeEventListener('pointerdown', resume); document.removeEventListener('visibilitychange', resume); };
+  }, [appState, isBgmEnabled]);
 
   const bgmStateRef = useRef({ isBgmEnabled, isAudioValid, appState });
   useEffect(() => {
@@ -1634,11 +1650,11 @@ export default function App() {
                 描画の受け口でも同じフラグを見て、
                 「見えないのに入れる」状態を作らない。 */}
             {appState === 'growth' && <React.Suspense fallback={<ScreenLoading />}>
-              <GrowthHub page={growthPage} onPage={setGrowthPage} onBack={() => navigateMain('home')} defaultSubject={selectedSubject}
+              <GrowthHub onRanking={() => navigateMain('leaderboard')} page={growthPage} onPage={setGrowthPage} onBack={() => navigateMain('home')} defaultSubject={selectedSubject}
                 onBattle={FEATURES.battle ? () => navigateMain('battle') : undefined}
                 onReview={() => { setStudyHubView({ tab: 'today', subjectTab: 'all' }); navigateMain('study_hub'); }} />
             </React.Suspense>}
-            {appState === 'leaderboard' && FEATURES.ranking && <Leaderboard onBack={() => setAppState('home')} isGuest={isGuest} initialChapterId={selectedChapterId} initialSubject={selectedSubject} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
+            {appState === 'leaderboard' && FEATURES.ranking && <Leaderboard onGacha={() => { setGrowthPage('gacha'); navigateMain('growth'); }} onBack={() => setAppState('home')} isGuest={isGuest} initialChapterId={selectedChapterId} initialSubject={selectedSubject} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
             {/* ★対戦モード（ルーティング側の門）★
                 ホームのボタンを隠すだけでは、localStorage に残った
                 appState='battle' から復元して入れてしまう。
@@ -1840,8 +1856,8 @@ export default function App() {
                   } },
                   // 対戦はランキングより前（結果を見る画面より先）。FEATURES.battle が false なら席ごと消す
                   { id: 'battle', label: '対戦', ariaLabel: 'オンライン対戦へ移動', current: appState === 'battle', hidden: !FEATURES.battle, onClick: () => navigateMain('battle') },
-                  { id: 'gacha', label: 'ガチャ', ariaLabel: 'ガチャ・マイページへ移動', current: appState === 'growth', onClick: () => { setGrowthPage('gacha'); navigateMain('growth'); } },
-                  { id: 'ranking', label: 'ランキング', ariaLabel: 'ランキング画面へ移動', current: appState === 'leaderboard', hidden: !FEATURES.ranking, onClick: () => navigateMain('leaderboard') },
+                  { id: 'gacha', label: 'ガチャ', ariaLabel: 'ガチャ画面へ移動', current: appState === 'growth' && growthPage === 'gacha' || appState === 'leaderboard', onClick: () => { setGrowthPage('gacha'); navigateMain('growth'); } },
+                  { id: 'mypage', label: 'マイページ', ariaLabel: 'マイページへ移動', current: appState === 'growth' && growthPage !== 'gacha', onClick: () => { setGrowthPage('overview'); navigateMain('growth'); } },
                   { id: 'settings', label: '設定', ariaLabel: pendingFriendRequests > 0 ? `設定画面へ移動（フレンド申請が${pendingFriendRequests}件届いています）` : '設定画面へ移動',
                     current: appState === 'settings', badge: pendingFriendRequests, onClick: () => navigateMain('settings') },
                 ]}

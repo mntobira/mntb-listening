@@ -1,71 +1,31 @@
-import { useEffect, useRef } from 'react';
-import { ArrowLeft, Coins, BookOpen, Swords, Award, Store, Target, Shirt, BarChart3, Gift, UserRound, Zap, Trophy } from 'lucide-react';
-import { ManaRush } from './ManaRush';
+import { ArrowLeft, Coins, Gift, Trophy, FileText, Shirt, Store, Award, Target, BarChart3, Zap } from 'lucide-react';
 import { GachaRoom } from './GachaRoom';
-import { GrowthHomeStrip } from '../battle/ui/GrowthHomeStrip';
-import { BattleProfile } from '../battle/ui/BattleProfile';
-import { BattleMissions } from '../battle/ui/BattleMissions';
-import { NextGoals } from '../battle/ui/GrowthParts';
-import { loginBonusFor } from '../battle/core/growth';
+import { ManaRush } from './ManaRush';
+import { MyCollection } from './MyCollection';
+import { GrowthAvatar, LevelBar } from '../battle/ui/GrowthParts';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
+import { BattleMissions } from '../battle/ui/BattleMissions';
+import { BattleProfile } from '../battle/ui/BattleProfile';
 import './growth-hub.css';
-
-export type GrowthPage = 'overview' | 'gacha' | 'shop' | 'outfit' | 'badges' | 'stats' | 'missions' | 'rush';
-export function GrowthHub({ page, onPage, onBack, onBattle, onReview, defaultSubject }: {
+export type GrowthPage = 'overview' | 'gacha' | 'shop' | 'outfit' | 'prints' | 'rewards' | 'badges' | 'stats' | 'missions' | 'rush';
+export function GrowthHub({ page, onPage, onBack, onBattle, onReview, onRanking, defaultSubject }: {
   page: GrowthPage; onPage: (page: GrowthPage) => void; onBack: () => void;
-  onBattle?: () => void; onReview: () => void;
-  /** マナラッシュの最初の科目（本体で選択中の科目） */
-  defaultSubject?: string;
+  onBattle?: () => void; onReview: () => void; onRanking?: () => void; defaultSubject?: string;
 }) {
   const { progress, uid } = useGrowthProgress();
-  const scroll = useRef<HTMLDivElement>(null);
-  useEffect(() => { scroll.current?.scrollTo(0, 0); }, [page]);
-  if (page === 'rush') return <div ref={scroll} className="mana-hub h-full min-h-0 overflow-y-auto pb-app-nav" data-growth-hub>
-    <ManaRush onBack={() => onPage('overview')} defaultSubject={defaultSubject} />
-  </div>;
-  return <div ref={scroll} className={`mana-hub h-full min-h-0 overflow-y-auto pb-app-nav ${page === 'gacha' ? 'mana-hub-gacha' : ''}`} data-growth-hub>
-    <header className="mana-hub-header">
-      <button type="button" onClick={onBack}><ArrowLeft size={18} /> ホーム</button>
-      <span className="growth-shared-label">ガチャ・マイページ</span>
-    </header>
-    <nav className="growth-shared-switch" aria-label="ガチャとマイページの切り替え">
-      <button type="button" onClick={() => onPage('gacha')} aria-current={page === 'gacha' ? 'page' : undefined}><Gift size={19} />ガチャ</button>
-      <button type="button" onClick={() => onPage('overview')} aria-current={page !== 'gacha' ? 'page' : undefined}><UserRound size={19} />マイページ</button>
-    </nav>
-    {page === 'gacha' ? <GachaRoom embedded onBack={() => onPage('overview')} onMissions={() => onPage('missions')} /> : page === 'overview' ? <main className="mana-hub-main">
-      <p className="mana-eyebrow">MY GROWTH & COLLECTION</p>
-      <h1>学ぶ。ためる。自分らしく。</h1>
-      <p className="mb-5 text-sm text-slate-600">対戦も、復習も、とびら君の成長につながる。</p>
-      <button type="button" className="mana-rush-banner" onClick={() => onPage('rush')} data-rush-entry>
-        <Zap aria-hidden="true" /><span><strong>マナラッシュ</strong><small>60秒チャレンジ・コンボで高得点をねらえ</small></span>
-        {progress && progress.rushBest > 0 && <em><Trophy size={14} />{progress.rushBest.toLocaleString()}</em>}
-      </button>
-      <GrowthHomeStrip onGacha={() => onPage('gacha')} expanded onProfile={() => onPage('outfit')} onShop={() => onPage('shop')}
-        onMissions={() => onPage('missions')} onBadges={() => onPage('badges')} onWallet={() => onPage('shop')} />
-      <section className="mana-hub-card" aria-label="マナコインのため方">
-        <h2><Coins size={20} /> マナコインのため方</h2>
-        <p>毎日のボーナス・ミッション・演習・マナラッシュで獲得。復習だけでも報酬を目指せます。</p>
-        <div className="mana-earn-actions">
-          <button type="button" onClick={onReview}><BookOpen size={20} /><strong>復習でためる</strong><small>「できた」でミッションを進める</small></button>
-          {onBattle && <button type="button" onClick={onBattle}><Swords size={20} /><strong>対戦でためる</strong><small>AIも対象／対戦終了時に獲得</small></button>}
-          <button type="button" onClick={() => onPage('rush')}><Zap size={20} /><strong>マナラッシュでためる</strong><small>1日5回までコイン／XPは毎回</small></button>
-        </div>
-        <button type="button" className="mana-text-action" onClick={() => onPage('missions')}>達成したミッションの報酬を受け取る</button>
-      </section>
-      <section className="mana-hub-card" aria-label="連続ボーナス一覧">
-        <h2>毎日会おう、7日間のボーナス</h2>
-        <p>受け取りを7日連続で続けると、7日目は50マナコイン。8日目から次のサイクルです。</p>
-        <div className="mana-week">{Array.from({ length: 7 }, (_, i) => <div key={i}><span>{i + 1}日目</span><Coins size={18} /><strong>{loginBonusFor(i + 1).coins}</strong></div>)}</div>
-      </section>
-      {progress && <section className="mana-hub-card"><h2><Award size={20} /> 次の目標</h2><NextGoals progress={progress} max={3} /><button type="button" className="mana-text-action" onClick={() => onPage('stats')}>教科別の対戦記録を見る</button></section>}
-      <p className="mana-storage-info">マナコイン・XP・装備はこのブラウザのアカウントごとに保存され、ホームと対戦で共通です。端末間同期・他の人への公開はありません。サイトデータを削除すると消えます。課金・換金はできません。</p>
-    </main> : <>
-      <nav className="mana-hub-tabs" aria-label="マイページのメニュー">
-        {([['shop', Store, 'ショップ'], ['outfit', Shirt, 'きせかえ'], ['badges', Award, '称号'], ['missions', Target, 'ミッション'], ['stats', BarChart3, '記録']] as const).map(([id, Icon, label]) =>
-          <button type="button" key={id} onClick={() => onPage(id)} aria-current={page === id ? 'page' : undefined}><Icon size={17} />{label}</button>)}
-      </nav>
-      {page === 'missions' ? <BattleMissions key={uid} standalone onBack={() => onPage('overview')} onBattle={onBattle} onReview={onReview} onShop={() => onPage('shop')} onRush={() => onPage('rush')} />
-        : <BattleProfile key={`${uid}:${page}`} standalone onMissions={() => onPage('missions')} initialTab={page} onBack={() => onPage('overview')} />}
-    </>}
-  </div>;
+  if (page === 'gacha') return <section className="mana-hub h-full min-h-0 overflow-y-auto pb-app-nav"><header className="mana-hub-header"><button onClick={onBack}><ArrowLeft size={18}/>ホーム</button><span>ガチャ</span></header><nav className="growth-shared-switch" aria-label="ガチャとランキング"><button aria-current="page"><Gift size={19}/>ガチャ</button><button onClick={onRanking}><Trophy size={19}/>ランキング</button></nav><GachaRoom embedded onBack={onBack} onMissions={()=>onPage('missions')}/></section>;
+  return <section className="mana-hub mypage-hub" data-mypage>
+    <header className="mana-hub-header"><button onClick={onBack}><ArrowLeft size={18}/>ホーム</button><h1>マイページ</h1></header>
+    <nav className="mypage-tabs" aria-label="マイページメニュー">{([['overview','マイページ'],['outfit','持ちもの'],['prints','マイPDF'],['shop','ショップ'],['rewards','プレゼント']] as const).map(([id,label]) => <button type="button" key={id} aria-current={page === id ? 'page' : undefined} onClick={()=>onPage(id)}>{label}</button>)}</nav>
+    <div className="mypage-body">
+    {page === 'overview' ? <main className="mypage-overview">
+      <section className="mypage-hero">{progress && <GrowthAvatar progress={progress} size={86}/>}<div><h2>あなたのコレクション</h2><p><Coins size={18}/><strong>{progress?.coins.toLocaleString() ?? '—'}</strong> マナコイン</p>{progress && <LevelBar xp={progress.xp}/>}</div></section>
+      <div className="mypage-menu">{([['outfit',Shirt,'もっているもの','装備・壁紙をまとめて確認'],['prints',FileText,'マイPDF','獲得したプリントを開く・保存'],['shop',Store,'買えるもの','未所持と所持済みを分けて表示'],['rewards',Gift,'プレゼント','隔週リーグのUR報酬'],['missions',Target,'ミッション','達成報酬を受け取る'],['rush',Zap,'マナラッシュ','60秒チャレンジ'],['badges',Award,'称号','獲得バッジ'],['stats',BarChart3,'記録','教科ごとの戦績']] as const).map(([id,Icon,label,sub]) => <button type="button" key={id} onClick={()=>onPage(id)}><Icon size={22}/><span><strong>{label}</strong><small>{sub}</small></span></button>)}</div>
+      <p className="collection-storage">ゲットした装備・PDFはここに集約。マナコインは課金・換金できません。</p>
+    </main> : page === 'outfit' || page === 'prints' || page === 'shop' || page === 'rewards' ? <MyCollection key={`${uid}:${page}`} view={page === 'outfit' ? 'owned' : page}/>
+    : page === 'rush' ? <div className="mypage-extra-scroll"><ManaRush onBack={()=>onPage('overview')} defaultSubject={defaultSubject}/></div>
+    : page === 'missions' ? <div className="mypage-extra-scroll"><BattleMissions key={uid} standalone onBack={()=>onPage('overview')} onBattle={onBattle} onReview={onReview} onShop={()=>onPage('shop')} onRush={()=>onPage('rush')}/></div>
+    : <div className="mypage-extra-scroll"><BattleProfile key={`${uid}:${page}`} standalone initialTab={page} onBack={()=>onPage('overview')}/></div>}
+    </div>
+  </section>;
 }
