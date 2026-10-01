@@ -255,6 +255,7 @@ import { battleAudio } from './battle/audio/battleAudio';
 import { installFriendPresence } from './utils/friendPresence';
 import { BattleMode } from './battle/ui/BattleMode';
 import type { GrowthPage } from './components/GrowthHub';
+import './styles/world.css';
 const GrowthHub = React.lazy(() => import('./components/GrowthHub').then(m => ({ default: m.GrowthHub })));
 const MissionToast = React.lazy(() => import('./components/MissionToast').then(m => ({ default: m.MissionToast })));
 
@@ -507,7 +508,7 @@ export default function App() {
   const [prevAppState, setPrevAppState] = useState<AppState>('home');
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
   /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
-  const [foundationTab, setFoundationTab] = useState<'words' | 'grammar' | 'more'>('words');
+  const [foundationTab, setFoundationTab] = useState<'words' | 'quiz' | 'grammar' | 'more'>('words');
   const [foundationBackTo, setFoundationBackTo] = useState<'home' | 'study'>('home');
   // 演習する（科目→コンテンツ）。選んだ科目・前回のコンテンツは端末に覚えておく
   const [studyCatalogSubject, setStudyCatalogSubject] = useState<string | null>(() => localStorage.getItem('study_catalog_subject_v1'));
@@ -798,7 +799,7 @@ export default function App() {
       if (isSubjectId(content.action.subject)) openSubjectUnits(content.action.subject, 'study');
       return;
     }
-    setFoundationTab(content.action.tab);
+    setFoundationTab(content.action.kind === 'vocabQuiz' ? 'quiz' : content.action.tab);
     setFoundationBackTo('study');
     setAppState('foundation');
   };

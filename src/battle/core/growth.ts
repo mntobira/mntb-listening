@@ -419,7 +419,10 @@ export type MissionKind =
   | 'rush_combo'
   | 'study_streak'
   | 'gacha'
-  | 'equip';
+  | 'equip'
+  | 'vocab_quiz'     // 英単語の4択を1セット（10問）解く
+  | 'vocab_perfect'  // 英単語の4択で満点
+  | 'vocab_learn';   // 単語帳で「覚えた」をつける
 
 export interface MissionDef {
   id: string;
@@ -450,6 +453,12 @@ export const MISSION_POOL: readonly MissionDef[] = [
   { id: 'm_perfect', kind: 'perfect', label: '全問せいかいする', goal: 1, rewardXp: 80, rewardCoins: 40, countMatch: (m) => (m.score.perQuestion.length > 0 && m.score.correctCount === m.score.perQuestion.length ? 1 : 0) },
   { id: 'm_holes1', kind: 'holes', label: '復習を1問できたにする', goal: 1, rewardXp: 40, rewardCoins: 20, countMatch: (m) => m.holesFilled },
   { id: 'm_holes3', kind: 'holes', label: '復習を3問できたにする', goal: 3, rewardXp: 80, rewardCoins: 40, countMatch: (m) => m.holesFilled },
+  // ── 2026-10-01 D 追加（対戦）──
+  { id: 'm_play5', kind: 'matches', label: '対戦を5回する', goal: 5, rewardXp: 90, rewardCoins: 40, countMatch: () => 1 },
+  { id: 'm_correct20', kind: 'correct', label: '20問せいかいする', goal: 20, rewardXp: 110, rewardCoins: 50, countMatch: (m) => m.score.correctCount },
+  { id: 'm_win2', kind: 'win', label: '2回かつ', goal: 2, rewardXp: 90, rewardCoins: 40, countMatch: (m) => (m.outcome === 'win' && !m.forfeit ? 1 : 0) },
+  { id: 'm_streak5', kind: 'streak', label: '5連続せいかいを出す', goal: 1, rewardXp: 70, rewardCoins: 30, countMatch: (m) => (m.score.maxStreak >= 5 ? 1 : 0) },
+  { id: 'm_holes5', kind: 'holes', label: '復習を5問できたにする', goal: 5, rewardXp: 110, rewardCoins: 50, countMatch: (m) => m.holesFilled },
 ];
 
 /** 1日に出すミッション数 */
@@ -518,20 +527,34 @@ export const BONUS_MISSION_POOL: readonly MissionDef[] = [
   { id: 'x_gacha1', kind: 'gacha', label: 'ガチャを1回まわす', goal: 1, rewardXp: 20, rewardCoins: 10, countMatch: () => 0 },
   { id: 'x_equip1', kind: 'equip', label: 'とびら君の装飾を着がえる', goal: 1, rewardXp: 20, rewardCoins: 10, countMatch: () => 0 },
   { id: 'x_streak_study3', kind: 'study_streak', label: '演習で3問れんぞく正解', goal: 1, rewardXp: 40, rewardCoins: 20, countMatch: () => 0 },
+  // ── 2026-10-01 D 追加：英単語（単語帳・4択）──
+  { id: 'x_vocab1', kind: 'vocab_quiz', label: '英単語の4択を1セット解く', goal: 1, rewardXp: 30, rewardCoins: 15, countMatch: () => 0 },
+  { id: 'x_vocab3', kind: 'vocab_quiz', label: '英単語の4択を3セット解く', goal: 3, rewardXp: 70, rewardCoins: 30, countMatch: () => 0 },
+  { id: 'x_vocab_perfect', kind: 'vocab_perfect', label: '英単語の4択で満点をとる', goal: 1, rewardXp: 60, rewardCoins: 30, countMatch: () => 0 },
+  { id: 'x_learn10', kind: 'vocab_learn', label: '単語帳で10語「覚えた」にする', goal: 10, rewardXp: 40, rewardCoins: 20, countMatch: () => 0 },
+  { id: 'x_learn30', kind: 'vocab_learn', label: '単語帳で30語「覚えた」にする', goal: 30, rewardXp: 90, rewardCoins: 40, countMatch: () => 0 },
+  // ── 2026-10-01 D 追加：演習・おたのしみ ──
+  { id: 'x_study1', kind: 'study', label: '演習で大問を1問とく', goal: 1, rewardXp: 20, rewardCoins: 10, countMatch: () => 0 },
+  { id: 'x_streak_study5', kind: 'study_streak', label: '演習で5問れんぞく正解', goal: 1, rewardXp: 70, rewardCoins: 30, countMatch: () => 0 },
+  { id: 'x_gacha5', kind: 'gacha', label: 'ガチャを5回まわす', goal: 5, rewardXp: 40, rewardCoins: 15, countMatch: () => 0 },
 ];
 
-export const BONUS_MISSIONS_PER_DAY = 3;
+/** 2026-10-01 D：3 → 5（演習・ラッシュ・おたのしみ・英単語×2） */
+export const BONUS_MISSIONS_PER_DAY = 5;
 /** マナラッシュのスコア系ミッションの基準（ミッションIDごと） */
 export const RUSH_SCORE_GOALS: Record<string, number> = { x_rush1500: 1500, x_rush2500: 2500 };
 export const RUSH_COMBO_GOALS: Record<string, number> = { x_combo5: 5, x_combo10: 10 };
 
-/** その日のボーナスミッション（演習1＋マナラッシュ1＋おたのしみ1）。日付だけで決まる */
+/** その日のボーナスミッション（演習1＋マナラッシュ1＋おたのしみ1＋英単語の4択1＋単語帳1）。日付だけで決まる */
 export function bonusMissionsForDate(date: string): MissionDef[] {
   const seed = hashOf(`bonus:${date}`);
   const study = BONUS_MISSION_POOL.filter((m) => m.kind === 'study');
   const rush = BONUS_MISSION_POOL.filter((m) => m.kind.startsWith('rush_'));
   const fun = BONUS_MISSION_POOL.filter((m) => m.kind === 'gacha' || m.kind === 'equip' || m.kind === 'study_streak');
-  return [study[seed % study.length]!, rush[Math.floor(seed / 5) % rush.length]!, fun[Math.floor(seed / 37) % fun.length]!];
+  const vocabQuiz = BONUS_MISSION_POOL.filter((m) => m.kind === 'vocab_quiz' || m.kind === 'vocab_perfect');
+  const vocabLearn = BONUS_MISSION_POOL.filter((m) => m.kind === 'vocab_learn');
+  return [study[seed % study.length]!, rush[Math.floor(seed / 5) % rush.length]!, fun[Math.floor(seed / 37) % fun.length]!,
+    vocabQuiz[Math.floor(seed / 101) % vocabQuiz.length]!, vocabLearn[Math.floor(seed / 211) % vocabLearn.length]!];
 }
 
 /** 対戦3つ＋ボーナス2つ（画面に並べる全部） */

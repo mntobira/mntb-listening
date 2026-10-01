@@ -1,0 +1,32 @@
+/* ミッション達成：中央のスタンプ演出（2026-10-01 D） */
+.mission-clear { position: fixed; inset: 0; z-index: 10001; display: grid; place-items: center; background: radial-gradient(circle at 50% 45%, #172a4fcc, #0b1020ee 70%); animation: mc-fade 1.5s ease both; cursor: pointer; overflow: hidden; }
+.mission-clear-rays { position: absolute; inset: -50%; background: repeating-conic-gradient(from 0deg, #f6b93b40 0deg 8deg, transparent 8deg 22deg); mask: radial-gradient(circle, #000 0%, #0008 35%, transparent 60%); animation: mc-spin 6s linear infinite; }
+.mission-clear-card { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 22px 12px; border-radius: 26px; background: linear-gradient(180deg, #fffbe8, #ffe7a8); box-shadow: 0 0 0 4px #fff, 0 0 0 7px #f6b93b, 0 20px 50px #0008; text-align: center; animation: mc-card .55s cubic-bezier(.2, 1.7, .4, 1) both; max-width: min(340px, calc(100vw - 32px)); }
+.mission-clear-stamp { margin: 0; font: 900 34px/1 var(--mt-font-display); letter-spacing: .02em; color: #c0392b; text-shadow: 0 2px 0 #fff, 0 4px 0 #7a1d12; transform: rotate(-8deg); border: 4px solid #c0392b; border-radius: 14px; padding: 6px 12px; background: #fff7; animation: mc-stamp .5s .15s cubic-bezier(.3, 2, .4, 1) both; }
+.mission-clear-label { margin: 6px 0 0; font: 800 16px/1.4 var(--mt-font-display); color: #4a2c00; }
+.mission-clear-reward { margin: 0; font-size: 14px; font-weight: 800; color: #6b4300; }
+.mission-clear-reward b { font: 900 22px/1 var(--mt-font-display); color: #b8640d; }
+.mission-clear-card .tb { --tb-size: 64px; margin-top: 2px; }
+.mission-clear-confetti { position: absolute; inset: 0; pointer-events: none; }
+.mission-clear-confetti i { position: absolute; left: 50%; top: 45%; width: 9px; height: 14px; border-radius: 2px; background: hsl(calc(var(--i) * 40deg) 85% 60%); opacity: 0; animation: mc-confetti 1.3s cubic-bezier(.2, .8, .3, 1) both; animation-delay: calc(.12s + var(--i) * .015s); }
+@keyframes mc-fade { 0% { opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes mc-spin { to { transform: rotate(360deg); } }
+@keyframes mc-card { 0% { opacity: 0; transform: scale(.3) translateY(30px); } 100% { opacity: 1; transform: none; } }
+@keyframes mc-stamp { 0% { opacity: 0; transform: rotate(-8deg) scale(2.6); } 100% { opacity: 1; transform: rotate(-8deg) scale(1); } }
+@keyframes mc-confetti {
+  0% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg); }
+  100% { opacity: 0; transform: translate(calc(-50% + (var(--i) - 9) * 22px), calc(-50% + 180px - (var(--i) * 13 % 7) * 50px)) rotate(calc(var(--i) * 90deg)); }
+}
+@media (prefers-reduced-motion: reduce) { .mission-clear, .mission-clear * { animation: none !important; } }
+
+/* ミッション画面：受け取ったとき、行に「CLEAR」スタンプ＋コインが飛ぶ */
+.mission-claimed-fx { position: relative; }
+.mission-claimed-fx::after { content: 'CLEAR'; position: absolute; right: 12px; top: 50%; translate: 0 -50%; padding: 2px 8px; border: 3px solid #c0392b; border-radius: 8px; font: 900 16px/1.1 var(--mt-font-display); color: #c0392b; transform: rotate(-10deg); background: #fff8; animation: mc-stamp .45s cubic-bezier(.3, 2, .4, 1) both; pointer-events: none; }
+.mission-coin-fly { position: fixed; z-index: 10002; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff6c4, #f6b93b 55%, #c98512); box-shadow: 0 0 0 2px #fff8, 0 2px 4px #0003; pointer-events: none; animation: mc-coin .75s cubic-bezier(.5, -.4, .7, 1) both; }
+@keyframes mc-coin { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(.5); opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .mission-claimed-fx::after, .mission-coin-fly { animation: none !important; } .mission-coin-fly { display: none; } }
+
+/* tap/readability floor for the legacy toast */
+.mission-toast-body small { font-size: 12px; }
+.mission-toast-claim { min-height: 44px; font-size: 13px; }
+.mission-toast-close { width: 44px; height: 44px; }

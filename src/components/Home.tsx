@@ -67,6 +67,10 @@ import { NotebookScenery } from './NotebookScenery';
 import { getDaysUntilExam, EXAM_DATE_LABEL } from '../utils/examCountdown';
 import { getDueCount } from '../utils/reviewList';
 import { DoorMascot } from './DoorMascot';
+import { TobiraBuddy } from './TobiraBuddy';
+import { SpinMascot } from './SpinMascot';
+import { streakDoors } from '../data/tobiraMood';
+import { CountUp } from './ui/CountUp';
 import { FeedbackButton } from './FeedbackButton';
 import { FeedbackReplyInbox } from './FeedbackReplyInbox';
 import { GoogleLinkBanner } from './GoogleLinkBanner';
@@ -169,6 +173,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
 
   // Real stats state
   const [streak, setStreak] = useState(0);
+  /** とびら君の気分用：前回からの日数（はじめては -1） */
+  const [daysAway, setDaysAway] = useState(0);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
 
   // ===== 学習進捗（大問ベース） =====
@@ -233,6 +239,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         const storedStreak = parseInt(localStorage.getItem(streakKey(uid)) || '0', 10);
 
         const today = new Date().toDateString();
+        setDaysAway(lastActive ? Math.max(0, Math.round((new Date(today).getTime() - new Date(lastActive).getTime()) / 86_400_000)) : -1);
         if (lastActive === today) {
           setStreak(storedStreak);
         } else {
@@ -381,12 +388,17 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         </React.Suspense>}
         <section className="game-mascot-stage" aria-label="とびら君のホームステージ">
           <div className="game-stage-backdrop" aria-hidden="true"><i /><i /><i /></div>
-          <p className="game-stage-caption">{growth && equippedTitleLabel(growth) || '今日も、とびら君とひとつ先へ。'}</p>
+          {/* ★とびら君は「住人」（2026-10-01）★ 状態（はじめて・久しぶり・復習待ち・連続）で言うことが変わる。しっぽ付きの吹き出し */}
+          <TobiraBuddy className="game-stage-say" figure={false} bubble="top" input={{ screen: 'home', streak, dueCount: reviewDueCount, solved: solvedQuestions, daysAway: Math.max(0, daysAway), firstVisit: daysAway < 0 || (streak <= 1 && solvedQuestions === 0 && !completedIds.length), isGuest, seed: new Date().getDate() }} />
+          {growth && equippedTitleLabel(growth) && <p className="game-stage-caption">{equippedTitleLabel(growth)}</p>}
           <div className="game-stage-floor" aria-hidden="true"><div className="game-equipped-ring" data-frame-pattern={growth ? equippedFramePattern(growth) : 'plain'} style={{borderColor: growth ? equippedFrameColor(growth) : undefined}} /><Swords /></div>
-          {growth && <button type="button" className="game-mascot-button" onClick={() => onGrowth?.('outfit')} aria-label="とびら君をきせかえる" disabled={!onGrowth}>
-            <span className="home-mascot-wrap"><img className="home-mascot-art" src={equippedPoseSrc(growth)} alt="あなたのとびら君" draggable={false} style={{ filter: `drop-shadow(0 6px 0 ${equippedFrameColor(growth)}55)` }} /><TobiraAccessories progress={growth} /></span>
+          {/* ★2026-10-01 D：とびら君をドラッグで回せる（モンスト風）★ ちょんと押すと今までどおり着せ替え */}
+          {growth && <div className="game-mascot-button" data-home-mascot>
+            <SpinMascot className="home-mascot-wrap tb-idle" label="とびら君（左右にドラッグで回す・押すと着せ替え）" onTap={onGrowth ? () => onGrowth('outfit') : undefined}>
+              <img className="home-mascot-art" src={equippedPoseSrc(growth)} alt="あなたのとびら君" draggable={false} style={{ filter: `drop-shadow(0 6px 0 ${equippedFrameColor(growth)}55)` }} /><TobiraAccessories progress={growth} />
+            </SpinMascot>
             <span>MY TOBIRA <b>Lv.{levelOf(growth.xp).level}</b></span>
-          </button>}
+          </div>}
           {onGrowth && <div className="game-stage-shortcuts" aria-label="ゲームメニュー">
             <button className="stage-gacha" type="button" onClick={() => onGrowth('gacha')}><Gift /><span>ガチャ</span></button>
             <button className="stage-shop" type="button" onClick={() => onGrowth('shop')}><Store /><span>ショップ</span></button>
@@ -418,9 +430,13 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         </div>
         <section className="desktop-study-summary" aria-label="今日の学習状況">
           <p>STUDY DESK</p><h2>今日の積み重ね</h2>
-          <div><span>連続学習<strong>{streak}<small>日</small></strong></span><span>復習待ち<strong>{reviewDueCount}<small>問</small></strong></span></div>
+          <div><span>連続学習<strong><CountUp value={streak} /><small>日</small></strong></span><span>復習待ち<strong><CountUp value={reviewDueCount} /><small>問</small></strong></span></div>
+          {/* ★連続日数は炎ではなく「開いた扉」で★ 1日＝扉1枚。7枚より先は数字で */}
+          <p className="study-doors" aria-label={`連続学習 ${streak}日`}>{Array.from({ length: 7 }, (_, i) => <i key={i} data-open={i < streakDoors(streak).doors || undefined} />)}{streakDoors(streak).extra > 0 && <b>+{streakDoors(streak).extra}</b>}</p>
           <label>{subjectLabel}の進捗 <b>{solvedQuestions} / {totalQuestions} 大問</b></label>
-          <progress value={solvedQuestions} max={Math.max(1,totalQuestions)} aria-label={`${subjectLabel}の学習進捗`} />
+          <div className="mt-progress" role="progressbar" aria-label={`${subjectLabel}の学習進捗`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}><i style={{ width: `${progressPercent}%` }} /></div>
+          {/* ゼロには次の一手を */}
+          {reviewDueCount === 0 && <p className="study-next">{solvedQuestions === 0 ? '最初の1問で、扉がひとつ開くよ' : '復習はゼロ。新しい大問に進もう'}</p>}
           <button type="button" onClick={() => progressDialog.current?.showModal()}>学習記録を見る <ChevronRight size={16} /></button>
         </section>
         <FriendOnlineStrip />

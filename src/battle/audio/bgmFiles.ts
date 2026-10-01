@@ -44,7 +44,18 @@ export interface BgmFileSpec {
  *   battle: { url: '/bgm/battle/battle.mp3', dropSec: 7, loopStartSec: 7, gain: 0.55,
  *             license: 'ElevenLabs Music・Creator有料契約中に運営者が生成（領収書 #…）' },
  */
-export const BGM_FILES: Readonly<Partial<Record<BgmFileKey, BgmFileSpec>>> = {};
+export const BGM_FILES: Readonly<Partial<Record<BgmFileKey, BgmFileSpec>>> = {
+  // 2026-10-01 利用者が2曲（y005「夕凪」・w001「風の列車」）から「落ち着いている方」として選定。
+  // 夕凪＝ピアノ中心・ゆったり（高域ほぼ無し）→ 待合室。風の列車はテンポが速くにぎやか → 対戦。
+  // 末尾3秒をフェードアウトして曲頭（ピアノの入り）へ戻る。音量は -20 LUFS にそろえた。
+  waiting: { url: '/bgm/battle/waiting.mp3', dropSec: 0, loopStartSec: 0, loopEndSec: 81.5, gain: 0.5,
+    license: 'フリー音源「夕凪」作曲：やっすん／配布元：創作堂さくら紅葉（https://yukizakura.net/）。利用規約第6条：商用・非商用を問わず利用可、カット・ループ調整などの加工可、配布元とURLの記載が条件' },
+  // 2026-10-01 利用者の指定：「風の列車」は対戦の曲に。★リスニング対戦には付けない★
+  //   （BattleLiveStage：リスニングは問題の音声と重ならないよう、問題中は BGM を鳴らさない。カウントダウン中は待合室の曲）
+  // 原曲 6.5 秒から切り出し → 曲頭から 7 秒で本編（原曲 13.5 秒の盛り上がり）に入る。ループは本編の頭（7秒）から曲末まで。
+  battle: { url: '/bgm/battle/battle.mp3', dropSec: 7, loopStartSec: 7, loopEndSec: 67.5, gain: 0.5,
+    license: 'フリー音源「風の列車」作曲：坂田白／配布元：創作堂さくら紅葉（https://yukizakura.net/）。利用規約第6条：商用・非商用を問わず利用可、カット・ループ調整などの加工可、配布元とURLの記載が条件' },
+};
 
 /** 局面のトラック → どのファイルで鳴らすか */
 export function bgmFileKeyOf(track: 'matching' | 'normal' | 'closing' | 'final'): BgmFileKey {

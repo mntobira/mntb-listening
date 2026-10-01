@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, BookOpen, ChevronLeft, FlaskConical, Globe2, Headphones, PenLine, Sigma } from 'lucide-react';
 import { STUDY_CATALOG, findStudySubject, type StudyContent, type StudyIcon, type StudySubject } from '../data/studyCatalog';
 import './study-catalog.css';
+import { TobiraBuddy } from './TobiraBuddy';
 
 /**
  * 演習する（B2〜B6）2026-10-01
@@ -62,25 +63,29 @@ function subjectMeta(s: StudySubject): string {
 }
 
 export function StudyCatalog({ subjectId, onSubject, onContent, onBack, progressOf, lastContentId }: StudyCatalogProps) {
-  const subject = findStudySubject(subjectId);
-  // 科目が決まっていない、または見つからないときは科目選択
+  // ★2026-10-01 D：科目は英語だけなので「科目を選ぶ」を出さない★
+  //   科目が1つのときはその科目のコンテンツを直接出し、戻るはホームへ。
+  //   科目が2つ以上に増えたら、従来どおり科目選択 → コンテンツの2段に戻る。
+  const single = STUDY_CATALOG.length === 1 ? STUDY_CATALOG[0] : undefined;
+  const subject = single ?? findStudySubject(subjectId);
   const showSubjects = !subject;
-  const title = showSubjects ? '科目を選ぶ' : subject.label;
+  const title = showSubjects ? '科目を選ぶ' : single ? '演習する' : subject.label;
   const sub = showSubjects ? 'ひとりで学ぶ・演習する' : subject.description;
-  // 戻る：コンテンツ一覧 → 科目選択 → ホーム（科目が1つでも同じ順にする）
-  const back = showSubjects ? onBack : () => onSubject(null);
-  const backLabel = showSubjects ? 'ホーム' : '科目';
+  const back = showSubjects || single ? onBack : () => onSubject(null);
+  const backLabel = showSubjects || single ? 'ホーム' : '科目';
 
   return (
     <main className="sc-page" data-study-catalog={showSubjects ? 'subjects' : 'contents'}>
       <header className="sc-head">
         <button type="button" className="sc-back" onClick={back} aria-label={`${backLabel}に戻る`}><ChevronLeft size={18} aria-hidden="true" /><span>{backLabel}</span></button>
         <div className="sc-head-title">
-          <p className="sc-crumb" aria-label="現在地">演習する{!showSubjects && <> › <b>{subject.label}</b></>}</p>
+          <p className="sc-crumb" aria-label="現在地">{single ? <>演習する › <b>{single.label}</b></> : <>演習する{!showSubjects && <> › <b>{subject.label}</b></>}</>}</p>
           <h1>{title}</h1>
           <p>{sub}</p>
         </div>
       </header>
+
+      {!showSubjects && <TobiraBuddy className="sc-buddy" size="sm" bubble="right" input={{ screen: 'study', seed: new Date().getDate() }} />}
 
       <div className="sc-list" role="list">
         {showSubjects

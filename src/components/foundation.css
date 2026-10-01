@@ -233,3 +233,100 @@
   .fd-word-main { min-height: 48px; padding-top: 3px; padding-bottom: 3px; }
   .fd-word-tags { display: none; }
 }
+
+/* ---- 2026-10-01 D 英単語の4択（VocabQuiz） ---- */
+.vq-pick { gap: 8px; }
+.vq-dir { flex-shrink: 0; }
+.vq-dir > button { min-height: 44px; font-size: 13px; }
+.vq-missed { flex-shrink: 0; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 12px; border-radius: 14px; border: 0; background: linear-gradient(180deg, #ffd36b, #f6b93b); color: #4a2c00; box-shadow: 0 3px 0 #c98512; text-align: left; }
+.vq-missed span { flex: 1; display: flex; flex-direction: column; }
+.vq-missed strong { font: 800 15px/1.2 var(--mt-font-display); }
+.vq-missed small { font-size: 12px; font-weight: 700; }
+.vq-blocks { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); align-content: start; gap: 6px; margin: 0; padding: 2px; list-style: none; }
+.vq-blocks button { width: 100%; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 12px; border: 1px solid var(--fd-line); background: #fff; color: var(--fd-ink); }
+.vq-blocks button b { font: 800 14px/1 var(--mt-font-display); font-variant-numeric: tabular-nums; }
+.vq-blocks button small { font-size: 12px; color: var(--fd-ink-2); }
+.vq-blocks button[data-best=perfect] { background: #e9f6ee; border-color: #9fd3b4; } .vq-blocks button[data-best=perfect] small { color: #2f7a52; }
+.vq-blocks button[data-best=good] { background: #fff7e6; border-color: #e9c77a; }
+.vq-blocks button[data-best=try] { background: #fdf0ef; border-color: #e7b6b0; }
+
+.vq-play { gap: 10px; }
+.vq-top { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+.vq-dots { flex: 1; display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.vq-dots li { flex: 1; height: 8px; border-radius: 99px; background: #eee4d2; }
+.vq-dots li[data-now] { background: #f6b93b; box-shadow: 0 0 0 2px #fff, 0 0 0 3px #f6b93b; }
+.vq-dots li[data-state=ok] { background: #3e8e63; }
+.vq-dots li[data-state=ng] { background: #c0473f; }
+.vq-count { font: 800 16px/1 var(--mt-font-display); color: var(--fd-ink); font-variant-numeric: tabular-nums; }
+.vq-count small { font-size: 12px; color: var(--fd-ink-2); }
+.vq-card { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 16px 12px; border-radius: 18px; background: linear-gradient(180deg, #172a4f, #2d4f8e); color: #fff; text-align: center; box-shadow: 0 4px 0 #0f1e3a44; animation: vq-in .25s ease-out both; }
+.vq-prompt { margin: 0; font-size: 12px; font-weight: 700; color: #cfe0ff; letter-spacing: .06em; }
+.vq-label { margin: 0; display: flex; align-items: center; gap: 6px; font: 800 26px/1.25 var(--mt-font-display); overflow-wrap: anywhere; }
+.vq-label[lang=ja] { font-size: 19px; }
+.vq-label .fd-icon { color: #fff; background: #ffffff1f; border-radius: 50%; }
+.vq-options { flex: 1; min-height: 0; display: grid; grid-template-rows: repeat(4, minmax(48px, 1fr)); gap: 6px; }
+.vq-options button { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 6px 12px; border-radius: 14px; border: 0; background: #fff; box-shadow: inset 0 0 0 1.5px var(--fd-line), 0 3px 0 #e6d7b8; color: var(--fd-ink); text-align: left; font: 700 15px/1.3 var(--mt-font-body); transition: transform .15s cubic-bezier(.3,1.6,.5,1); }
+.vq-options button:active:not(:disabled) { transform: translateY(2px); box-shadow: inset 0 0 0 1.5px var(--fd-line); }
+.vq-options button i { flex-shrink: 0; font: 900 18px/1 var(--mt-font-display); font-style: normal; color: #c98512; }
+.vq-options button span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.vq-options button[data-correct] { background: #e9f6ee; box-shadow: inset 0 0 0 2.5px #3e8e63, 0 3px 0 #2f7a52; color: #1e5a3a; }
+.vq-options button[data-wrong] { background: #fdf0ef; box-shadow: inset 0 0 0 2.5px #c0473f, 0 3px 0 #9a3029; color: #8a2a24; animation: vq-shake .3s; }
+.vq-options button:disabled:not([data-correct]):not([data-wrong]) { opacity: .55; }
+.vq-foot { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; }
+.vq-judge { margin: 0; font: 800 15px/1.3 var(--mt-font-display); color: #8a2a24; min-width: 0; }
+.vq-judge[data-ok] { color: #2f7a52; font-size: 18px; }
+.vq-hint { margin: 0 auto; font-size: 12px; color: var(--fd-ink-2); }
+.vq-next { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; padding: 0 16px; border-radius: 14px; border: 0; background: #2458a6; color: #fff; font: 800 15px/1 var(--mt-font-display); box-shadow: 0 3px 0 #14315f; }
+.vq-done { gap: 8px; overflow-y: auto; }
+.vq-score { flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 18px; background: #fffdf6; box-shadow: inset 0 0 0 1.5px var(--fd-line); }
+.vq-score > strong { font: 900 42px/1 var(--mt-font-display); color: #2458a6; font-variant-numeric: tabular-nums; animation: vq-pop .5s cubic-bezier(.2,1.6,.4,1) both; }
+.vq-score > strong small { font-size: 18px; color: var(--fd-ink-2); }
+.vq-score[data-perfect] { background: linear-gradient(180deg, #fff7d6, #ffe7a8); box-shadow: inset 0 0 0 2px #e9c25a; }
+.vq-score[data-perfect] > strong { color: #b8640d; }
+.vq-score .tb { flex: 1; }
+.vq-sub { margin: 0; font-size: 12px; font-weight: 700; color: var(--fd-ink-2); }
+.vq-wrong { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.vq-wrong li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--fd-line); font-size: 14px; }
+.vq-wrong li span:first-child { font-weight: 800; }
+.vq-wrong li span:last-child { color: var(--fd-ink-2); text-align: right; }
+.vq-done-actions { display: flex; flex-direction: column; gap: 6px; }
+.vq-done-actions > button { width: 100%; justify-content: center; }
+.vq-markall { align-self: center; }
+@keyframes vq-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes vq-pop { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: none; } }
+@keyframes vq-shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+@media (max-height: 640px) {
+  .vq-card { padding: 10px; }
+  .vq-label { font-size: 22px; } .vq-label[lang=ja] { font-size: 16px; }
+  .vq-options button { font-size: 14px; }
+  .vq-play { gap: 6px; overflow-y: auto; }
+  .vq-card { gap: 2px; padding: 8px 10px; }
+  .vq-options { flex: none; grid-template-rows: repeat(4, 44px); gap: 5px; }
+  .vq-options button { min-height: 44px; padding: 4px 12px; }
+  .vq-foot, .vq-next { min-height: 44px; }
+  .vq-judge { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .vq-card, .vq-score > strong, .vq-options button[data-wrong] { animation: none; } }
+
+/* ---- 2026-10-01 D 単語帳：隠す（なし／意味／英語）・100語ずつめくる ---- */
+.fd-hide { flex-shrink: 0; display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--fd-ink-2); }
+.fd-hide > svg { flex-shrink: 0; }
+.fd-hide > span { margin-right: 2px; }
+.fd-hide > button { min-height: 44px; min-width: 52px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--fd-line); background: var(--fd-card); color: var(--fd-ink); font: 700 13px/1 var(--mt-font-body); }
+.fd-hide > button[aria-checked=true] { border-color: #2458a6; background: #2458a6; color: #fff; }
+.fd-hide > small { margin-left: auto; font-size: 12px; color: #8a5200; white-space: nowrap; }
+.fd-word-en[data-hidden], .fd-word-ja[data-hidden] { color: transparent !important; background: repeating-linear-gradient(135deg, #f0c9c4 0 6px, #f6dcd8 6px 12px); border-radius: 6px; user-select: none; min-width: 4em; }
+.fd-list[data-slide=next] > li { animation: fd-slide-next .22s ease-out both; }
+.fd-list[data-slide=prev] > li { animation: fd-slide-prev .22s ease-out both; }
+@keyframes fd-slide-next { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes fd-slide-prev { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+.fd-list { touch-action: pan-y; }
+.fd-map-block ol { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)) !important; }
+@media (max-height: 640px) { .fd-hide > small { display: none; } }
+@media (max-width: 360px) { .fd-hide > button { min-width: 44px; padding: 0 8px; } }
+@media (prefers-reduced-motion: reduce) { .fd-list[data-slide] > li { animation: none; } }
+/* 「隠す」と見出しを1行に（縦を増やさない） */
+.fd-words .fd-list-head { display: none !important; }
+.fd-hide { justify-content: flex-start; }
+.fd-hide-now { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--fd-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 374px) { .fd-hide > span:not(.fd-hide-now) { display: none; } }

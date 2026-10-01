@@ -41,7 +41,9 @@ export function useSupportProgress(uid: string) {
       const store = safeLocalStorage(); if (!store) throw new Error('この端末では保存できません。');
       // 別タブで付けた印を消さないよう、保存直前に最新を読み直す。
       const current = parseSupportProgress(store.getItem(supportStorageKey(uid)));
-      const ids = new Set(current[kind]); if (done) ids.add(id); else ids.delete(id);
+      const ids = new Set(current[kind]); const added = done && !ids.has(id); if (done) ids.add(id); else ids.delete(id);
+      // 単語帳で新しく「覚えた」にした語はミッション（単語帳でN語）を進める。外して付け直しても1日の上限はミッション側で止まる
+      if (added && kind === 'words') void import('../battle/data/growthStore').then(m => m.recordVocabActivity('vocab_learn', 1, id));
       const next = { ...current, [kind]: [...ids] };
       store.setItem(supportStorageKey(uid), JSON.stringify(next));
       setSaved({ progress: next, error: '' }); setSaveError('');
