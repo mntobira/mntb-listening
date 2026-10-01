@@ -54,3 +54,17 @@
 .chapter-route [data-listening-rounds] .round-card:hover { border-color: #e2c98f; }
 .chapter-route [data-listening-rounds] .round-main:focus-visible { outline: none; box-shadow: var(--mt-focus); border-radius: 8px; }
 .chapter-route [data-listening-rounds] .round-audio span { font-size: 12px; line-height: 1; }
+
+/* C17（2026-10-01）学習画面を共通UIへ：中身（単元・問題）の見やすさを優先し、枠・タブ・文字・角丸だけを共通に */
+.chapter-route { font-family: var(--mt-font-body) !important; }
+.chapter-route .chapter-workspace { font-family: var(--mt-font-body) !important; }
+.chapter-route .unit-head-back { border: var(--mt-border); border-radius: var(--mt-r-pill); background: var(--mt-bg-card); color: var(--mt-ink); box-shadow: var(--mt-shadow-press); font: 700 14px/1 var(--mt-font-body); }
+.chapter-route .unit-head-title h2 { font: var(--mt-text-xl) !important; font-size: 20px !important; color: var(--mt-ink-warm) !important; }
+.chapter-route .unit-head-title p { color: var(--mt-ink-3); }
+/* 大問タブ：選択中は「白い札＋茶の文字＋下の縁」（共通タブと同じ）。濃いピンクの塗りはやめる */
+.chapter-index [role="tab"] { border-radius: var(--mt-radius-md) !important; border: 1.5px solid var(--mt-line) !important; background: var(--mt-bg-sunken) !important; color: var(--mt-ink-2) !important; box-shadow: none !important; }
+.chapter-index [role="tab"][aria-selected="true"] { background: var(--mt-bg-card) !important; border-color: #e3c77f !important; color: var(--mt-ink-warm) !important; box-shadow: 0 3px 0 #d7b865 !important; }
+.chapter-index [role="tab"][aria-selected="true"] > span:first-child { color: #9a6a12 !important; }
+.chapter-route #chapter-tab-panel { border-radius: var(--mt-radius-lg) !important; border: 1.5px solid var(--mt-line) !important; background: var(--mt-bg-card) !important; box-shadow: var(--mt-shadow-card) !important; }
+.chapter-route.mtb-page { background: var(--mt-bg-screen) !important; }
+.chapter-route.mtb-page::before, .chapter-route.mtb-page::after { display: none; }

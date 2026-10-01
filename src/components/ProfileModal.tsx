@@ -148,27 +148,26 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
   };
 
   return (
-    <div className="mtb-page profile-journal w-full h-[100dvh] bg-[#FDFBF7] font-handwriting overflow-hidden pb-20 sm:pb-24">
+    <div className="mtb-page mt-screen profile-journal w-full h-[100dvh] overflow-hidden pb-20 sm:pb-24" data-settings>
       <div className="max-w-4xl h-full mx-auto px-3 sm:px-5 py-3 sm:py-5 flex flex-col relative">
         <div className="absolute top-4 right-8 w-40 h-40 bg-[#A9CCE3]/15 rounded-full blur-3xl pointer-events-none" />
 
-        <header className="mtb-page-header flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 relative z-10 shrink-0">
-          <button onClick={onClose} className="p-2 bg-white border border-gray-200 text-gray-500 rounded-xl shadow-sm" aria-label="設定を閉じる">
-            <ChevronLeft size={19} />
+        <header className="mt-app-header mb-2 sm:mb-3 relative z-10 shrink-0">
+          <button type="button" onClick={onClose} className="mt-icon-btn" aria-label="設定を閉じる">
+            <ChevronLeft size={19} aria-hidden="true" />
           </button>
-          <div className="w-8 h-8 rounded-xl bg-[#2C3E50]/5 text-[#2C3E50] flex items-center justify-center"><Settings size={17} /></div>
-          <div><p className="mtb-kicker">MY ACCOUNT</p><h2 className="text-lg sm:text-xl font-bold text-[#1B2631]">アプリ設定</h2></div>
+          <div className="mt-app-header-title"><p className="mt-kicker">MY ACCOUNT</p><h2>設定</h2></div>
           <DoorMascot showSpeech={false} size="mini" className="w-auto ml-auto -my-2" />
         </header>
 
-        <div className="profile-tabs mtb-tabs grid grid-cols-3 gap-1.5 bg-white/70 border border-gray-200 rounded-2xl p-1.5 mb-2 sm:mb-3 relative z-10 shrink-0">
-          <button aria-pressed={tab === 'general'} onClick={() => setTab('general')} className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${tab === 'general' ? 'bg-[#1B2631] text-white shadow-sm' : 'text-gray-500'}`}>
+        <div className="profile-tabs mt-tabs mb-2 sm:mb-3 relative z-10 shrink-0" role="group" aria-label="設定のページ">
+          <button aria-pressed={tab === 'general'} onClick={() => setTab('general')} type="button">
             <Settings size={14} /> 基本設定
           </button>
-          <button aria-pressed={tab === 'friends'} onClick={() => setTab('friends')} disabled={!auth.currentUser} className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all disabled:opacity-40 ${tab === 'friends' ? 'bg-[#D9466E] text-white shadow-sm' : 'text-gray-500'}`}>
+          <button aria-pressed={tab === 'friends'} onClick={() => setTab('friends')} disabled={!auth.currentUser} type="button">
             <Users size={14} /> フレンド
           </button>
-          <button aria-pressed={tab === 'class'} onClick={() => setTab('class')} disabled={!auth.currentUser} className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all disabled:opacity-40 ${tab === 'class' ? 'bg-[#4A7FA0] text-white shadow-sm' : 'text-gray-500'}`}>
+          <button aria-pressed={tab === 'class'} onClick={() => setTab('class')} disabled={!auth.currentUser} type="button">
             <School size={14} /> クラス
           </button>
         </div>
@@ -196,7 +195,8 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
               <div className="space-y-2 sm:space-y-3">
                 {/* ★プロフィールカード（A14）★ アバター・レベル/称号・連続日数・学習時間・バッジを1枚に。
                     「学習状況」と「プロフィール」の2枚に分かれていたものをまとめ、縦を詰める。 */}
-                <section className="ps-card" aria-label="プロフィール">
+                <h3 className="ps-group-title">アカウント・プロフィール</h3>
+                <section className="ps-card mt-card" aria-label="プロフィール">
                   <div className="ps-card-top">
                     <div className="ps-avatar">
                       <GrowthAvatar progress={growth} size={72} />
@@ -240,7 +240,7 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                 </section>
 
                 {/* ★対戦で相手に見えるカードのプレビュー（A16）★ 名前・称号を変えるとその場で反映される */}
-                <section className="ps-preview" aria-label="対戦で相手に見えるカード">
+                <section className="ps-preview mt-card" aria-label="対戦で相手に見えるカード">
                   <p>対戦で相手に見えるカード</p>
                   <div className="ps-mini" aria-hidden="true">
                     <span className="ps-mini-avatar"><GrowthAvatar progress={growth} size={44} showLevel={false} /></span>
@@ -251,8 +251,8 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
               </div>
 
               <div className="space-y-2 sm:space-y-3 flex flex-col">
-                <section className="ps-sound" aria-label="サウンド">
-                  <h3>サウンド</h3>
+                <h3 className="ps-group-title">アプリ（サウンド）</h3>
+                <section className="ps-sound mt-card" aria-label="サウンド">
                   <Toggle label="BGM" sub="学習中の音楽" checked={isBgmEnabled} onChange={toggleBgm} icon={isBgmEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />} />
                   {isBgmEnabled && <Volume label="BGM音量" value={bgmVolume} onChange={setBgmVolume} />}
                   <p className="ps-sub"><Swords size={14} aria-hidden="true" />対戦モードの音</p>
@@ -261,8 +261,8 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                   {(battleAudioSettings.bgm || battleAudioSettings.sfx) && <Volume label="対戦の音量" value={battleAudioSettings.volume} onChange={(v) => updateBattleAudio({ volume: v })} onCommit={() => battleAudio().play('tap')} tone="gold" />}
                 </section>
 
-                <section className="bg-white border border-gray-150 p-3 rounded-2xl shadow-sm space-y-2 flex-1">
-                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">アカウント</h3>
+                <h3 className="ps-group-title">アカウント連携</h3>
+                <section className="ps-account mt-card space-y-2" aria-label="アカウント連携">
                   {!auth.currentUser ? (
                     /* 未連携：連携の「得」を具体的に見せてから押してもらう。
                        ボタンは Google のブランドガイドに近い白地＋Gマークで、
@@ -318,6 +318,7 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                   )}
                 </section>
 
+                <h3 className="ps-group-title">その他・データ</h3>
                 <AccountSafetySection onDeleted={onClose} />
 
                 {/* ※「お問い合わせの送信状態」の欄は廃止した。

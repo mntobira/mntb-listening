@@ -1,4 +1,5 @@
 import './home-legibility.css';
+import './home-pillars.css';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { BookOpen, ChevronRight, Edit3, ArrowRight, BarChart3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Microscope, Flame, Sparkles, Gift, Store, Shirt, Award, Target, Zap, Headphones, PenLine } from 'lucide-react';
 import { auth } from '../firebase';
@@ -82,6 +83,8 @@ import { unreadNoticeCount, refreshRemoteNotices } from '../utils/updateNotices'
 
 interface HomeProps {
   onStart: () => void;
+  /** ホームの「演習する」→ 科目選択（演習する）画面 */
+  onPractice?: () => void;
   onGrowth?: (page: GrowthPage) => void;
   onPickSubject?: (subject: string) => void;
   onStudyMode?: (mode: 'practice' | 'learning' | 'mini_test') => void;
@@ -138,7 +141,7 @@ interface HomeProps {
   onToggleBgm?: (enabled: boolean) => void;
 }
 
-export function Home({ onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLogicalTree, onLeaderboard, onBattle, onRika, onChangeSubject, onFoundation, subjectLabel = '化学基礎', subject = 'chemistry_basic', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm }: HomeProps) {
+export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLogicalTree, onLeaderboard, onBattle, onRika, onChangeSubject, onFoundation, subjectLabel = '化学基礎', subject = 'chemistry_basic', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm }: HomeProps) {
   const { progress: growth } = useGrowthProgress();
   const reviewDueCount = useMemo(() => {
     const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
@@ -391,16 +394,22 @@ export function Home({ onPickSubject, onStudyMode, onGrowth, onStart, onIntro, o
             <button className="stage-badges" type="button" onClick={() => onGrowth('badges')}><Award /><span>称号</span></button>
           </div>}
         </section>
-        <section className={`game-action-deck ${!onBattle ? 'without-battle' : ''}`} aria-label="学習と対戦の入口" data-home-arena={onBattle ? '' : undefined}>
-          <button type="button" className="game-side-action game-solo" onClick={() => onStudyMode ? onStudyMode('practice') : onStart()}><Edit3 /><small>ひとりで学ぶ</small><strong>演習する</strong></button>
-          {onBattle && <button type="button" onClick={onBattle} className="home-battle-button game-main-action" aria-label="オンライン対戦を開く" data-home-battle><span className="home-battle-emblem" aria-hidden="true"><Swords /></span><strong>対戦する</strong><small>全国・フレンド・AI</small></button>}
-          <button type="button" className="game-side-action game-review" aria-label="学習ノートを開く" onClick={onNoteList}><Repeat2 /><small>苦手をなくす</small><strong>復習ノート</strong>{reviewDueCount > 0 && <b>{reviewDueCount}</b>}</button>
+        {/* ★ホームの3本柱（2026-10-01）★
+            演習する（ひとりで学ぶ）／対戦する（ひとりで・みんなで）を同じ大きさで左右に、
+            その下に復習ノート（苦手をなくす）を横長で。科目の帯は「演習する」の中（科目選択）へ移した。 */}
+        <section className={`game-action-deck home-pillars ${!onBattle ? 'without-battle' : ''}`} aria-label="学習の入口" data-home-arena={onBattle ? '' : undefined}>
+          <button type="button" className="home-pillar home-pillar-solo game-solo" data-home-practice onClick={onPractice ?? (() => (onStudyMode ? onStudyMode('practice') : onStart()))}>
+            <span className="home-pillar-icon" aria-hidden="true"><Edit3 /></span><strong>演習する</strong><small>ひとりで学ぶ</small>
+          </button>
+          {onBattle && <button type="button" onClick={onBattle} className="home-pillar home-pillar-battle home-battle-button" aria-label="対戦する（ひとりで・みんなで）" data-home-battle>
+            <span className="home-pillar-icon" aria-hidden="true"><Swords /></span><strong>対戦する</strong><small>ひとりで・みんなで</small>
+          </button>}
         </section>
-        <section className="game-study-bar" aria-label="科目と英文法・英単語" data-home-study>
-          {onPickSubject ? <label><BookOpen size={17} /><select aria-label="学習する科目" value={subject} onChange={e => onPickSubject(e.target.value)}>{SUBJECT_INDEX.filter(s => isSubjectEnabled(s.id)).map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
-            : <button type="button" onClick={onChangeSubject} aria-label={`科目をえらぶ（いまは${subjectLabel}）`}><Headphones size={16} />{subjectLabel}<small>・科目</small></button>}
-          <button type="button" onClick={onFoundation ?? onChangeSubject} data-home-foundation><PenLine size={16} />英文法・英単語を固める</button>
-        </section>
+        <button type="button" className="home-review-wide game-review" aria-label={`復習ノート（苦手をなくす）${reviewDueCount > 0 ? `・今日の復習 ${reviewDueCount}問` : ''}`} onClick={onNoteList} data-home-review>
+          <span className="home-pillar-icon" aria-hidden="true"><Repeat2 /></span>
+          <span className="home-review-text"><strong>復習ノート</strong><small>苦手をなくす</small></span>
+          {reviewDueCount > 0 ? <b>今日 {reviewDueCount}問</b> : <ChevronRight aria-hidden="true" />}
+        </button>
         <div className={`game-home-utility arena-home-bottom ${onGrowth ? 'has-rush' : ''}`}>
           {onGrowth && <button type="button" className="game-rush-entry" onClick={() => onGrowth('rush')} aria-label="マナラッシュ（60秒チャレンジ）を開く" data-home-rush><Zap size={17} />ラッシュ</button>}
           {onGrowth && <button type="button" onClick={() => onGrowth('missions')}><Target size={17} />ミッション</button>}

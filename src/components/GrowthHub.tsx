@@ -8,6 +8,7 @@ import { BattleMissions } from '../battle/ui/BattleMissions';
 import { NextGoals } from '../battle/ui/GrowthParts';
 import { loginBonusFor } from '../battle/core/growth';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
+import './growth-hub.css';
 
 export type GrowthPage = 'overview' | 'gacha' | 'shop' | 'outfit' | 'badges' | 'stats' | 'missions' | 'rush';
 export function GrowthHub({ page, onPage, onBack, onBattle, onReview, defaultSubject }: {

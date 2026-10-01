@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, LogIn } from 'lucide-react';
 import { abortRoom, joinRoomByCode } from '../data/battle';
 import { AMBER, BattleButton, BattleNotice, BattleShell, BattleTitle, INK, INK_SUB, LINE } from './BattleParts';
+import { ConnectionCheckPanel } from './ConnectionCheckPanel';
 
 /** Normalize only for validation/submission, never rewrite an active IME buffer. */
 export function normalizeJoinCode(raw: string): string {
@@ -85,6 +86,7 @@ export function BattleFriendJoin({ onJoined, onBack }: {
           小文字・全角英数字でも入力できます。入力後に確認して参加します。
         </p>
         {error && <BattleNotice message={error} />}
+        {error && !/見つかりません|合言葉/.test(error) && <ConnectionCheckPanel compact />}
         <p className="rounded-xl px-3 py-2 text-center text-xs font-bold" style={{ background: '#F1EDE4', color: INK_SUB }}>
           合言葉には<span style={{ color: AMBER }}> 0 / O / 1 / I / L </span>を使いません。
         </p>

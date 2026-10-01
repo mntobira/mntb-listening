@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator, disableNetwork } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, connectFirestoreEmulator, disableNetwork, type Firestore } from 'firebase/firestore';
 const env = import.meta.env;
 export const FIREBASE_CONFIGURED = Boolean(env.VITE_FIREBASE_API_KEY && env.VITE_FIREBASE_PROJECT_ID && env.VITE_FIREBASE_AUTH_DOMAIN && env.VITE_FIREBASE_APP_ID);
 export const USE_EMULATORS = env.VITE_USE_EMULATORS === 'true';
@@ -14,7 +14,11 @@ const app = initializeApp({
 }, 'manatobi-listening');
 export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
-export const db = getFirestore(app);
+// 統合版と同じ：学校・塾の Wi-Fi などでストリーム通信が詰まる環境だけ、自動でロングポーリングに切り替える
+function createDb(): Firestore {
+  try { return initializeFirestore(app, { experimentalAutoDetectLongPolling: true }); } catch { return getFirestore(app); }
+}
+export const db = createDb();
 if (USE_EMULATORS) {
   if (!projectId.startsWith('demo-')) throw new Error('Emulator testing requires a demo- project ID.');
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });

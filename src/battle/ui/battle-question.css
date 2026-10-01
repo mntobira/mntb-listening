@@ -125,3 +125,35 @@
   .bl-footer > div { margin-top: 0 !important; }
   .bl-footer > div > button:only-child { min-height: 44px; padding-block: 0; }
 }
+
+/* 2026-10-01 図つき4択（選択肢が①〜④だけ）：横一列。数字を大きく、高さは44px以上 */
+[data-choice-row] { gap: 6px !important; }
+[data-choice-row] > button { min-height: 48px !important; padding: 4px 2px !important; font-size: 20px !important; flex-direction: column; gap: 0 !important; }
+[data-choice-row] > button > svg { position: absolute; top: 3px; right: 3px; }
+[data-choice-row] > button { position: relative; }
+[data-choice-row] > button .text-xs { margin: 0 !important; font-size: 12px !important; line-height: 1.1; white-space: nowrap; }
+@media (max-width: 360px) { [data-choice-row] > button .text-xs { letter-spacing: -.04em; } }
+/* 低い画面では、横一列にした分を図にも少し回して、問題をスクロールなしで収める */
+@media (max-height: 640px) { #battle-question:has([data-choice-row]) [data-battle-figure] img { max-height: 16dvh !important; } }
+/* 文の4択（1列）も低い画面では 58px → 48px（タップ44px以上は守る） */
+@media (max-height: 640px) { #battle-question .grid.grid-cols-1 > button { min-height: 48px !important; padding-block: 6px !important; } }
+/* 320×568：問題の上の行と余白を詰めて、文の4択も最後まで見えるように */
+@media (max-height: 600px) {
+  #battle-question > .mb-3:first-child { margin-bottom: 4px !important; }
+  #battle-question > .bqa { margin-bottom: 4px; }
+  #battle-question > .arena-question-prompt { margin-bottom: 6px !important; }
+  #battle-question .grid.grid-cols-1 { gap: 5px !important; }
+  #battle-question .grid.grid-cols-1 > button { min-height: 44px !important; padding-block: 3px !important; }
+}
+/* 低い画面で問題文が長いとき：選択肢は必ず見える位置に置き、問題文だけを中でスクロールさせる */
+@media (max-height: 640px) {
+  .arena-question-area:has(> #battle-question) { display: flex; flex-direction: column; }
+  #battle-question { min-height: 0; max-height: 100%; }
+  #battle-question > .arena-question-prompt:not([data-picture-grid]):not(:has([data-battle-figure])) { flex: 0 1 auto; min-height: 44px; overflow-y: auto !important; overscroll-behavior: contain; }
+  #battle-question > .grid, #battle-question > .bq-picture-grid { flex-shrink: 0; }
+}
+/* 低い画面：FINAL・のこりN問の帯は細く（最後の問題の選択肢が切れないように） */
+@media (max-height: 640px) {
+  #battle-final-banner { margin-bottom: 2px !important; padding-block: 0 !important; min-height: 18px; }
+  .bl-closing { margin-bottom: 2px !important; }
+}

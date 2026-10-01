@@ -1,0 +1,61 @@
+/*
+ * 演習する：科目選択・学習コンテンツ選択（共通UI）2026-10-01
+ * ホームと同じクリーム地・角丸カード・やわらかい影。文字12px以上・タップ44px以上・1画面。
+ */
+.sc-page { --sc-line: #e5dccc; --sc-card: #fffdf5; --sc-ink: #344451; --sc-ink-2: #5a6573;
+  display: flex; flex-direction: column; gap: 10px; height: calc(100% - var(--app-nav-h, 80px)); min-height: 0; overflow: hidden;
+  padding: 10px 14px 10px; background: radial-gradient(ellipse at 50% 20%, #fffdf8 12%, #f9f1ec 75%, #f4e8eb); color: var(--sc-ink); font-family: var(--mt-font-body); }
+@media (min-width: 1100px) { .sc-page { height: 100%; padding: 24px 32px; max-width: 880px; margin: 0 auto; background: none; } }
+.sc-page button { cursor: pointer; }
+.sc-page :focus-visible { outline: none; box-shadow: var(--mt-focus); }
+
+.sc-head { display: flex; align-items: center; gap: 10px; min-height: 56px; flex-shrink: 0; }
+.sc-back { flex-shrink: 0; display: inline-flex; align-items: center; gap: 2px; min-height: 44px; padding: 0 14px 0 10px; border: 1px solid var(--sc-line); border-radius: 999px; background: var(--sc-card); color: var(--sc-ink); font: 700 14px/1 var(--mt-font-body); box-shadow: 0 2px 0 #e6dccb; }
+.sc-head-title { flex: 1; min-width: 0; }
+.sc-crumb { margin: 0; font-size: 12px; font-weight: 700; color: #8b7a5c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-crumb b { color: #6d4c61; }
+.sc-head-title h1 { margin: 1px 0 0; font: 800 22px/1.2 var(--mt-font-display); color: #3b4a56; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-head-title > p:last-child { margin: 2px 0 0; font-size: 12px; color: #6e6d5b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.sc-list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overscroll-behavior: contain; padding: 2px 2px 6px; }
+
+/* 共通カード（科目・コンテンツ） */
+.sc-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 84px; padding: 12px 14px; text-align: left;
+  border: 1.5px solid var(--sc-line); border-radius: 20px; background: var(--sc-card); box-shadow: 0 3px 0 #e6dccb; color: var(--sc-ink); transition: transform .12s; }
+.sc-card:active { transform: translateY(2px); box-shadow: 0 1px 0 #e6dccb; }
+.sc-card[data-primary] { border-color: #e3c77f; background: linear-gradient(#fdf4de, #f7e6bb); box-shadow: 0 3px 0 #d7b865; }
+.sc-icon { flex-shrink: 0; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; background: #fff7e8; color: #8a6a2c; box-shadow: inset 0 0 0 1.5px #ecdcb8; }
+.sc-card[data-primary] .sc-icon { background: #fffaf0; }
+.sc-letters { font: 700 22px/1 Georgia, 'Times New Roman', serif; color: #6b6a35; }
+.sc-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.sc-title { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.sc-title strong { font: 800 17px/1.25 var(--mt-font-display); color: #3d3222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-title em { flex-shrink: 0; padding: 1px 8px; border-radius: 999px; background: var(--mt-brand-soft); color: var(--mt-brand); font: 700 12px/1.5 var(--mt-font-body); font-style: normal; }
+.sc-desc { font-size: 13px; line-height: 1.4; color: var(--sc-ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sc-meta { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sc-meta small { font-size: 12px; font-weight: 700; color: #7a6a4c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-progress { flex: 1; display: flex; align-items: center; gap: 6px; max-width: 150px; min-width: 76px; margin-left: auto; }
+.sc-track { position: relative; flex: 1; height: 8px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px #d9cba9; overflow: hidden; }
+.sc-track i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: #e0a43c; }
+.sc-progress b { flex-shrink: 0; min-width: 34px; text-align: right; font-size: 12px; line-height: 1; color: #8a6a2c; }
+.sc-arrow { flex-shrink: 0; color: #9a8a6a; }
+.sc-note { flex-shrink: 0; margin: 0; font-size: 12px; line-height: 1.5; color: #6e6d5b; text-align: center; }
+[data-study-catalog="subjects"] .sc-list { flex: 0 1 auto; }
+[data-study-catalog="subjects"] .sc-note { padding: 14px 12px; border: 1.5px dashed #e0d3b8; border-radius: 20px; background: rgba(255,253,245,.6); }
+
+/* 低い画面：カードを少し詰めて4枚が1画面に入るように */
+@media (max-height: 700px) {
+  .sc-page { gap: 8px; padding-top: 6px; }
+  .sc-list { gap: 8px; }
+  .sc-card { min-height: 72px; padding: 8px 12px; gap: 10px; }
+  .sc-icon { width: 42px; height: 42px; border-radius: 14px; }
+  .sc-desc { -webkit-line-clamp: 1; }
+}
+@media (max-height: 600px) {
+  .sc-head-title > p:last-child { display: none; }
+  .sc-head-title h1 { font-size: 20px; }
+  .sc-card { min-height: 64px; }
+  .sc-desc { display: none; }
+}
+@media (max-width: 360px) { .sc-back span { display: none; } .sc-back { width: 44px; padding: 0; justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .sc-card { transition: none; } }

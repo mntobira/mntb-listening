@@ -320,9 +320,12 @@ function ChoiceAnswer({
   const longest = Math.max(0, ...question.options.map((o) => o.length));
   const few = question.options.length <= 3;
   const single = longest > 14 || few;
+  // ★図つき4択で選択肢が「①」〜「④」だけのとき★ 横一列に並べる（2026-10-01）。
+  // 2×2 だと 320×568 で問題が少しスクロールしたため。ボタンの高さは 44px 以上のまま。
+  const row4 = !!question.imageUrl && question.options.length === 4 && longest <= 3;
 
   return (
-    <div className={`grid gap-2 ${single ? 'grid-cols-1' : 'grid-cols-2'}`}>
+    <div className={`grid gap-2 ${row4 ? 'grid-cols-4' : single ? 'grid-cols-1' : 'grid-cols-2'}`} data-choice-row={row4 || undefined}>
       {question.options.map((option, i) => {
         const picked = myChoice === i;
         const correct = reveal && i === question.answerIndex;

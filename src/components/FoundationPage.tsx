@@ -27,6 +27,8 @@ export interface FoundationPageProps {
   onTab: (tab: FoundationTab) => void;
   uid: string;
   onBack: () => void;
+  /** 戻るボタンの文字（既定：ホーム） */
+  backLabel?: string;
   /** 英文法の4択演習（20単元）を開く */
   onGrammarUnits: () => void;
   /** 単語の例から、その回のリスニングを解く */
@@ -36,7 +38,7 @@ export interface FoundationPageProps {
   onListening?: () => void;
 }
 
-export function FoundationPage({ tab, onTab, uid, onBack, onGrammarUnits, onPractice, onBattle, onReview, onListening }: FoundationPageProps) {
+export function FoundationPage({ tab, onTab, uid, onBack, backLabel = 'ホーム', onGrammarUnits, onPractice, onBattle, onReview, onListening }: FoundationPageProps) {
   const { progress, error, locked, mark } = useSupportProgress(uid);
   const [infoOpen, setInfoOpen] = useState(false);
   const [grammarIndex, setGrammarIndex] = useState(0);
@@ -53,7 +55,7 @@ export function FoundationPage({ tab, onTab, uid, onBack, onGrammarUnits, onPrac
 
   return <main className="fd-page" data-foundation data-tab={tab}>
     <header className="fd-head">
-      <button type="button" className="fd-back" onClick={onBack} aria-label="ホームへ戻る"><ChevronLeft size={18} aria-hidden="true" /><span>ホーム</span></button>
+      <button type="button" className="fd-back" onClick={onBack} aria-label={`${backLabel}へ戻る`}><ChevronLeft size={18} aria-hidden="true" /><span>{backLabel}</span></button>
       <div className="fd-head-title"><h1>英文法・英単語を固める</h1><p>聞き取れない原因の多くは、語と文の形。</p></div>
       <div className="fd-info">
         <button type="button" className="fd-info-btn" aria-expanded={infoOpen} aria-controls="fd-info-pop" aria-label="保存と収録についての説明" onClick={() => setInfoOpen(v => !v)}><Info size={18} aria-hidden="true" /></button>

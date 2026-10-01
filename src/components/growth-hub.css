@@ -1,0 +1,51 @@
+/*
+ * ガチャ・マイページの共通部分（2026-10-01 C16）。ガチャと行き来しても違和感がないよう、
+ * 同じ地・同じ見出し・同じカード・同じタブ（共通UI）にそろえる。機能・並びは変えない。
+ */
+.mana-hub { background: var(--mt-bg-screen) !important; color: var(--mt-ink); font-family: var(--mt-font-body); }
+html[data-wallpaper] .mana-hub { background: linear-gradient(#fbf3eab8, #fbf3eaad), var(--app-wallpaper) !important; }
+/* ヘッダー：ホームへ戻る（共通の丸いピル） */
+.mana-hub-header button { border: var(--mt-border); border-radius: var(--mt-r-pill) !important; background: var(--mt-bg-card); box-shadow: var(--mt-shadow-press); color: var(--mt-ink); font: 700 14px/1 var(--mt-font-body) !important; padding: 0 14px 0 10px !important; }
+.growth-shared-label { font: var(--mt-text-xs); color: var(--mt-ink-muted); }
+/* ガチャ／マイページの切替＝共通タブ */
+.growth-shared-switch { border: 0 !important; border-radius: var(--mt-radius-lg) !important; background: var(--mt-bg-sunken) !important; box-shadow: inset 0 0 0 1px var(--mt-line); }
+.growth-shared-switch button { border-radius: calc(var(--mt-radius-lg) - 4px) !important; color: var(--mt-ink-2) !important; font: 700 14px/1 var(--mt-font-body) !important; }
+.growth-shared-switch button[aria-current=page] { background: var(--mt-bg-card) !important; color: var(--mt-ink-warm) !important; font-weight: 800 !important; box-shadow: 0 2px 0 #e6dccb, 0 1px 4px rgba(80, 60, 30, .08) !important; }
+
+/* マイページ本体 */
+.mana-hub-main .mana-eyebrow { font: var(--mt-text-kicker); letter-spacing: var(--mt-kicker-spacing); color: var(--mt-ink-muted); }
+.mana-hub-main > h1 { font: var(--mt-text-xl) !important; color: var(--mt-ink-warm); margin: 2px 0 4px !important; }
+.mana-hub-main > h1 + p { font: var(--mt-text-sm) !important; color: var(--mt-ink-3) !important; margin-bottom: 12px !important; }
+.mana-hub-card { border: 1.5px solid var(--mt-line) !important; border-radius: var(--mt-radius-lg) !important; background: var(--mt-bg-card) !important; box-shadow: var(--mt-shadow-card); margin-top: 14px !important; padding: 14px 16px !important; }
+.mana-hub-card h2 { font: var(--mt-text-lg) !important; color: var(--mt-ink-warm); }
+.mana-hub-card > p, .mana-storage-info { font: var(--mt-text-sm) !important; color: var(--mt-ink-3) !important; }
+.mana-earn-actions button { border-radius: var(--mt-radius-lg) !important; box-shadow: var(--mt-shadow-press); }
+.mana-earn-actions strong { font: var(--mt-text-md) !important; }
+.mana-earn-actions small { font: var(--mt-text-xs) !important; font-weight: 500 !important; }
+.mana-text-action { font: 700 13px/1.3 var(--mt-font-body) !important; color: var(--mt-brand) !important; }
+.mana-week > div { border-radius: var(--mt-radius-sm) !important; }
+.mana-week span { font: 700 12px/1 var(--mt-font-body) !important; white-space: nowrap; letter-spacing: -.04em; }
+.mana-week strong { font: var(--mt-num); font-size: 15px; }
+.mana-rush-banner { border-radius: var(--mt-radius-lg) !important; box-shadow: 0 3px 0 #d39a1a; }
+.mana-rush-banner strong { font: 800 18px/1.2 var(--mt-font-display) !important; }
+.mana-rush-banner small { font: 700 12px/1.3 var(--mt-font-body) !important; }
+/* ショップ・きせかえ・称号・ミッション・記録 のタブ＝共通タブ */
+.mana-hub-tabs { background: var(--mt-bg-sunken); border-radius: var(--mt-radius-lg); padding: 4px !important; gap: 3px !important; box-shadow: inset 0 0 0 1px var(--mt-line); width: calc(100% - 24px); }
+.mana-hub-tabs button { border: 0 !important; border-radius: calc(var(--mt-radius-lg) - 4px) !important; background: transparent !important; color: var(--mt-ink-2) !important; font: 700 12px/1.1 var(--mt-font-body) !important; min-height: 52px; }
+.mana-hub-tabs button[aria-current=page] { background: var(--mt-bg-card) !important; color: var(--mt-ink-warm) !important; font-weight: 800 !important; box-shadow: 0 2px 0 #e6dccb !important; }
+/* マイページ内の見出し（ショップ・ミッション）も丸ゴシック */
+.mana-hub h1.font-handwriting, .mana-hub .font-handwriting { font-family: var(--mt-font-display) !important; }
+/* マイページの「とびら君」カード（GrowthHomeStrip）：共通カード＋12px以上 */
+.mana-hub .mana-dashboard { border: 1.5px solid #e3c77f; border-radius: var(--mt-radius-xl) !important; box-shadow: 0 3px 0 #d7b865, 0 6px 14px rgba(120, 90, 20, .08); }
+.mana-hub .mana-player-meta, .mana-hub .mana-player-meta * { font-size: 12px !important; }
+.mana-hub .mana-wallet { border-radius: var(--mt-radius-md) !important; }
+.mana-hub .mana-wallet > span, .mana-hub .mana-wallet small { font-size: 12px !important; }
+.mana-hub .mana-wallet > strong { font-family: var(--mt-font-display); }
+.mana-hub .mana-shortcuts button { border-radius: var(--mt-radius-md) !important; font-size: 12px !important; box-shadow: var(--mt-shadow-press); }
+.mana-hub .mana-shortcuts button * { font-size: 12px; }
+.mana-hub .mana-shortcuts b { font-size: 12px !important; }
+.mana-hub :is(.text-\[9px\], .text-\[10px\], .text-\[11px\]) { font-size: 12px !important; }
+.mana-hub .mana-save-note, .mana-hub .mana-login small { font-size: 12px !important; }
+.mana-hub .mana-login { border-radius: var(--mt-radius-md) !important; }
+.mana-hub .mana-shortcuts button span { white-space: nowrap; letter-spacing: -.05em; }
+@media (max-width: 400px) { .mana-hub .mana-shortcuts button { padding-inline: 2px !important; } }

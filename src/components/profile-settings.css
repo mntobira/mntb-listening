@@ -97,3 +97,24 @@
 .ps-benefits > summary::-webkit-details-marker { display: none; }
 .ps-benefits > summary::after { content: '▾'; margin-left: auto; padding-left: 6px; color: #b0607f; transition: transform .2s; }
 .ps-benefits[open] > summary::after { transform: rotate(180deg); }
+
+/* C15（2026-10-01）設定を共通UIで統一：グループ見出し（kicker）＋共通カード＋共通の一覧行 */
+.profile-journal.mt-screen { background: var(--mt-bg-screen); font-family: var(--mt-font-body); color: var(--mt-ink); }
+.profile-journal .mt-app-header-title > h2 { font: var(--mt-text-xl) !important; color: var(--mt-ink-warm) !important; }
+.ps-group-title { margin: 6px 4px 2px; font: var(--mt-text-kicker) !important; letter-spacing: var(--mt-kicker-spacing); color: var(--mt-ink-muted) !important; text-transform: none; }
+.profile-workspace > div > .ps-group-title:first-child { margin-top: 0; }
+.profile-workspace .mt-card { padding: 12px; }
+.profile-workspace .ps-safety > .mt-card { padding: 10px 12px; }
+.profile-workspace .mt-list-item { min-height: 48px; font-size: 14px; }
+.profile-workspace .mt-list-item small { font-size: 12px; }
+.profile-journal .profile-tabs.mt-tabs > button { min-height: 44px; font-size: 13px; }
+.ps-savebar > button:last-child { background: var(--mt-brand) !important; box-shadow: 0 3px 0 var(--mt-brand-strong); border-radius: var(--mt-radius-md) !important; }
+.ps-savebar > button:first-child { border-radius: var(--mt-radius-md) !important; }
+/* 古い「ノート風の section」を共通カードへ置き換える（index.css 1893 の上書き） */
+.profile-workspace section.mt-card { border: 1.5px solid var(--mt-line); border-radius: var(--mt-radius-lg); box-shadow: var(--mt-shadow-card); background: var(--mt-bg-card); padding: 12px; }
+.profile-workspace section.ps-safety { border: 0; padding: 0; box-shadow: none; background: none; border-radius: 0; }
+.profile-workspace .ps-safety .mt-list { box-shadow: var(--mt-shadow-card); }
+.profile-workspace section h3:not(.sr-only) { border-bottom: 0; padding-bottom: 0; margin-bottom: 6px; color: var(--mt-ink-muted); }
+.profile-workspace .ps-preview > p { color: var(--mt-ink-muted); }
+.profile-workspace .ps-safety .mt-list-item { padding-inline: 12px; }
+.ps-safety > .mt-card { margin-top: 8px; }

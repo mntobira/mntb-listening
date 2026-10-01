@@ -1,0 +1,57 @@
+/*
+ * ホームの3本柱（2026-10-01）
+ *   ［演習する｜対戦する］を同じ大きさで左右に、その下に［復習ノート］を横長で。
+ *   色と形は従来のホーム（1枚目）を引き継ぐ：演習＝金のクリーム、対戦＝水色の丸みの札、復習＝藤色。
+ */
+.game-home .home-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-height: 0; align-items: stretch; }
+.game-home .home-pillars.without-battle { grid-template-columns: 1fr; }
+.game-home .home-pillars::before { top: 14px; bottom: 6px; }
+.game-home .home-pillar { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 112px; padding: 10px 6px;
+  border: 2px solid #fffdf5; border-radius: 22px; text-align: center; transition: transform .12s, filter .12s; }
+.game-home .home-pillar:active { transform: translateY(2px); }
+.game-home .home-pillar strong { font: 900 22px/1.15 var(--mt-font-display); white-space: nowrap; }
+.game-home .home-pillar small { font-size: 12px !important; font-weight: 700; }
+.game-home .home-pillar-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #fffaf0cc; box-shadow: inset 0 0 0 1.5px #ffffffaa; }
+.game-home .home-pillar-icon svg { width: 24px; height: 24px; }
+.game-home .home-pillar-solo { background: linear-gradient(#f7f1da, #f1e2b9); box-shadow: 0 5px 0 #cdbb8c, 0 0 0 1px #d8caab; color: #7d6830; }
+.game-home .home-pillar-battle { background: radial-gradient(circle at 50% 25%, #effcff, #b5dce9 90%); box-shadow: 0 5px 0 #93b5c4, 0 0 0 1px #bacad0, inset 0 0 0 2px #eaf9fd; color: #2f6684; }
+.game-home .home-pillar-battle strong { color: #2f6684; text-shadow: 0 2px #fff8e7; }
+.game-home .home-pillar-battle small { color: #3f6f88; }
+/* 古いホームの対戦ボタン用の飾り（丸・二重線）は消す */
+.game-home .home-pillar-battle::after, .game-home .home-pillar-battle::before { display: none; }
+
+.game-home .home-review-wide { position: relative; z-index: 5; flex-shrink: 0; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 8px 14px;
+  border: 2px solid #fffdf5; border-radius: 20px; background: linear-gradient(#f7eaf1, #ebd8e5); box-shadow: 0 4px 0 #c5a9bf, 0 0 0 1px #d9c1d2; color: #6f4c66; text-align: left; transition: transform .12s; }
+.game-home .home-review-wide:active { transform: translateY(2px); }
+.game-home .home-review-text { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 10px; }
+.game-home .home-review-text strong { font: 900 20px/1.2 var(--mt-font-display); white-space: nowrap; color: #6f4c66; }
+.game-home .home-review-text small { font-size: 13px !important; font-weight: 700; color: #7e5b74; white-space: nowrap; }
+.game-home .home-review-wide > b { position: static; flex-shrink: 0; padding: 4px 10px; border: 2px solid #fff; border-radius: 999px; background: #c88791; color: #fff; font-size: 13px; font-weight: 800; }
+.game-home .home-review-wide > svg:last-child { flex-shrink: 0; width: 22px; height: 22px; color: #9a7790; }
+.game-home .home-review-wide .home-pillar-icon { width: 44px; height: 44px; }
+
+@media (hover: hover) { .game-home .home-pillar:hover, .game-home .home-review-wide:hover { filter: brightness(1.035); } }
+@media (prefers-reduced-motion: reduce) { .game-home .home-pillar, .game-home .home-review-wide { transition: none; } }
+
+/* 低い画面：柱の背を低く */
+@media (max-height: 740px) {
+  .game-home .home-pillar { min-height: 92px; padding-block: 6px; gap: 2px; }
+  .game-home .home-pillar strong { font-size: 20px; }
+  .game-home .home-pillar-icon { width: 36px; height: 36px; }
+  .game-home .home-pillar-icon svg { width: 20px; height: 20px; }
+  .game-home .home-review-wide { min-height: 54px; padding-block: 4px; }
+  .game-home .home-review-wide .home-pillar-icon { width: 36px; height: 36px; }
+}
+@media (max-height: 600px) {
+  .game-home .home-pillar { min-height: 80px; }
+  .game-home .home-pillar-icon { display: none; }
+  .game-home .home-review-wide { min-height: 48px; }
+  .game-home .home-review-wide .home-pillar-icon { display: none; }
+}
+@media (max-width: 340px) { .game-home .home-review-text small { display: none; } .game-home .home-pillar strong { font-size: 19px; } }
+
+/* PC：右の列（とびら君の下）に3本柱を置く */
+@media (min-width: 1100px) {
+  .game-home .home-pillars { grid-column: 2; grid-row: 5; grid-template-columns: 1fr 1fr; }
+  .game-home .home-review-wide { grid-column: 1; grid-row: 4; }
+}

@@ -1,0 +1,33 @@
+/*
+ * ランキング（2026-10-01 C14）：共通UI（system.css）に合わせる。
+ * 「LEARNING RECORDS」の世界観（金の表彰台・罫線のノート）は残し、文字・タブ・カード・角丸・余白を共通に。
+ */
+.ranking-hall.mt-screen { background: var(--mt-bg-screen); font-family: var(--mt-font-body); color: var(--mt-ink); }
+.ranking-hall .ranking-hall-header { gap: 10px; }
+.ranking-hall .ranking-hall-header > button.mt-icon-btn { width: 44px; height: 44px; border-radius: 50%; padding: 0; }
+.ranking-hall .ranking-hall-header > div:nth-child(2) > div:first-child { transform: none; border-radius: 16px; background: #f6e7bf; box-shadow: 0 3px 0 #dcc58d; }
+.ranking-hall .mt-app-header-title > h2 { font: var(--mt-text-xl) !important; color: var(--mt-ink-warm) !important; }
+.ranking-hall .ranking-hall-caption { font: var(--mt-text-lg) !important; color: var(--mt-ink-muted) !important; }
+.ranking-hall .ranking-battle-bridge { border-radius: var(--mt-radius-lg); border: 1.5px solid #bcd9ea; background: linear-gradient(#f2f9fd, #e1f0f8); box-shadow: 0 3px 0 #b4d2e3; }
+.ranking-bridge-title { font: var(--mt-text-sm); font-weight: 800; color: #1b4f72; line-height: 1.25; }
+.ranking-bridge-sub { font: var(--mt-text-xs); font-weight: 500; color: var(--mt-ink-3); }
+/* タブ：共通の .mt-tabs（範囲は少し細く中央） */
+.ranking-hall .ranking-scope { max-width: 420px; margin-inline: auto; border: 0; }
+.ranking-hall .ranking-scope > button, .ranking-hall .ranking-tabs > button, .ranking-hall .ranking-subselect > button { min-height: 44px; }
+.ranking-hall .ranking-tabs { margin-top: 8px; }
+/* 自分のカード：紺の板 → 金のカード（ガチャ・ホームと同じ札） */
+.ranking-hall .ranking-me-card { color: var(--mt-ink-warm); }
+.ranking-hall .ranking-me-card .opacity-60, .ranking-hall .ranking-me-card .opacity-70 { opacity: 1 !important; color: var(--mt-ink-muted); }
+.ranking-hall .ranking-me-card [class*="border-white"] { border-color: #e5cf98 !important; }
+.ranking-hall .ranking-me-card [class*="bg-white/10"] { background: #fff8e3 !important; color: var(--mt-ink-muted); }
+.ranking-hall .ranking-me-card .text-\[\#F4D03F\] { color: #b37400 !important; }
+/* 一覧：共通カードの中に罫線のノート（LEARNING RECORDS） */
+.ranking-hall .ranking-record-paper { padding: 0; border-top: 5px solid #d9bd7c; }
+.ranking-hall .ranking-record-paper li { font-family: var(--mt-font-body); }
+.ranking-hall .ranking-record-paper .text-gray-400 { color: var(--mt-ink-3) !important; }
+.ranking-hall .mt-num { font-family: var(--mt-font-display); }
+.ranking-hall select { font-family: var(--mt-font-body) !important; }
+.ranking-hall .ranking-subselect > label { border-radius: var(--mt-radius-md); border: 1.5px solid var(--mt-line); box-shadow: none; }
+.ranking-hall .ranking-scope.mt-tabs { background: var(--mt-bg-sunken); border-radius: var(--mt-radius-lg); padding: 4px; }
+.ranking-hall .ranking-scope.mt-tabs > button[aria-pressed=true] { color: var(--mt-ink-warm); }
+.ranking-hall .ranking-guest-wrap > * { border-radius: var(--mt-radius-lg) !important; }
