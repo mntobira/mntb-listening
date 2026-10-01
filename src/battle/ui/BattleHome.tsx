@@ -80,7 +80,10 @@ import {
   Wifi,
   X,
   Zap,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
+import { useBattleAudioSettings } from '../hooks/useBattleAudio';
 import type { CSSProperties, ReactNode } from 'react';
 import { auth } from '../../firebase';
 import { FriendOnlineStrip } from '../../components/FriendOnlineStrip';
@@ -295,7 +298,7 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
  const [row,setRow]=useState<BattleRankingRow|null>(null);
  useEffect(()=>{let active=true;if(user)void fetchMyRankingRow().then(r=>{if(active)setRow(r);}).catch(()=>{});return()=>{active=false;};},[user]);
  return <BattleShell className="arena-menu">
-   <header className="arena-menu-header"><button type="button" onClick={onExit}>ホームへ</button><h1><Swords size={21}/>とびらバトル</h1><span>{row ? <><b className="arena-rank-chip" style={{background:ratingTitle(row.rating).color}}>{ratingTitle(row.rating).label}</b>{row.rating} RP</> : user?'レート確認中':'ゲスト'}</span></header>
+   <header className="arena-menu-header"><button type="button" onClick={onExit}>ホームへ</button><h1><Swords size={21}/>とびらバトル</h1><BgmButton /><span>{row ? <><b className="arena-rank-chip" style={{background:ratingTitle(row.rating).color}}>{ratingTitle(row.rating).label}</b>{row.rating} RP</> : user?'レート確認中':'ゲスト'}</span></header>
    {/* ★E（2026-10-01）対戦前の舞台★ 夜のアリーナに「あなた VS ？？？」。とびら君がひとこと（少し挑発）。
        機能は同じ。下の3択・その他・ルールの中身も同じ */}
    <section className="arena-vs" aria-label="あなたの情報" data-arena-vs>
@@ -354,4 +357,11 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
    {/* ゲストには上の「ログイン」の一文で足りるので、同じ趣旨の案内を重ねない */}
    {user && <FriendOnlineStrip/>}
  </BattleShell>;
+}
+
+/** ★BGMのON/OFF（アプリ全体で1つ）★ ホームのボタン・設定と同じスイッチ。待ち時間と対戦の曲もこれで止まる */
+function BgmButton() {
+  const [settings, update] = useBattleAudioSettings();
+  return <button type="button" className="arena-bgm" aria-pressed={settings.bgm} aria-label={settings.bgm ? 'BGMを止める' : 'BGMを鳴らす'}
+    onClick={() => update({ bgm: !settings.bgm })}>{settings.bgm ? <Volume2 size={19} aria-hidden="true" /> : <VolumeX size={19} aria-hidden="true" />}</button>;
 }

@@ -101,3 +101,16 @@ export function bgmVolumeAt(baseVolume: number, elapsedMs: number): number {
   const base = Number.isFinite(baseVolume) ? Math.min(1, Math.max(0, baseVolume)) : 0;
   return base * bgmFadeFactor(elapsedMs);
 }
+
+/**
+ * ★アプリBGM（tanjou.mp3）の音量補正（2026-10-01）★
+ * 利用者の指摘「誕生の音が大きすぎる。対戦BGM・待ち時間BGMぐらいがちょうどいい」。
+ *   実測：tanjou.mp3 = -13.4 LUFS ／ 対戦の2曲 = -20 LUFS。
+ *   対戦の曲はさらに 対戦音量0.6 × BGMバス0.5 × 曲ごと0.5 = 0.15倍で鳴る → 約 -36.5 LUFS。
+ *   アプリBGMはスライダー既定 0.5 で鳴るので、0.14 をかけると同じ -36.5 LUFS になる。
+ * スライダーの値（0〜1）はそのまま保存し、<audio> に渡す直前にこの倍率をかける。
+ */
+export const APP_BGM_GAIN = 0.14;
+export function appBgmVolume(baseVolume: number, elapsedMs = 0): number {
+  return bgmVolumeAt(baseVolume, elapsedMs) * APP_BGM_GAIN;
+}

@@ -252,3 +252,14 @@
 .game-home .spin-mascot[data-spinning], .game-home .spin-mascot[data-settling] { animation: none !important; }
 @media (hover: hover) { .game-home .spin-mascot:hover .spin-mascot-front img { transform: translateY(-3px); transition: transform .2s; } }
 .game-home .game-mascot-button:hover .spin-mascot-back img { transform: scaleX(-1) !important; }
+
+/* 対戦ロビーのBGMボタン（アプリ全体で1つのスイッチ） */
+.arena-menu-header .arena-bgm { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid #e2d3b5; background: #fff; color: #2d4f8e; margin-left: auto; }
+.arena-menu-header .arena-bgm[aria-pressed='false'] { color: #8a8170; }
+
+/* ★対戦中は下ナビを消す（2026-10-01）★ ナビの高さを0として扱い、問題・絵・選択肢を1画面に入れる */
+.app-shell[data-battle-live] { --app-nav-h: 0px !important; }
+.app-shell[data-battle-live] #battle-screen-scroll { padding-bottom: env(safe-area-inset-bottom); }
+/* 「相手は回答ずみ！」は進捗の行の真ん中。狭い幅では短い言い方だけ */
+.bq-progress-notice p { margin: 0; }
+@media (max-width: 380px) { .bq-notice-long { display: none; } }

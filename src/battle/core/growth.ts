@@ -399,6 +399,8 @@ export interface MatchSummaryForGrowth {
   answeredCount: number;
   /** この試合で埋まった穴の数 */
   holesFilled: number;
+  /** 自分と相手の正解数の差（相手がいないときは undefined）。「接戦で勝つ」ミッションに使う */
+  marginCorrect?: number;
 }
 
 // ============================================================
@@ -422,7 +424,13 @@ export type MissionKind =
   | 'equip'
   | 'vocab_quiz'     // 英単語の4択を1セット（10問）解く
   | 'vocab_perfect'  // 英単語の4択で満点
-  | 'vocab_learn';   // 単語帳で「覚えた」をつける
+  | 'vocab_learn'    // 単語帳で「覚えた」をつける
+  // ── 2026-10-01 ミッション拡充（対戦の中身で進む。どれも試合の採点結果だけで判定できる）──
+  | 'score'          // 1試合で○点以上
+  | 'speedy'         // 速さボーナスがついた正解（3秒以内の正解など）
+  | 'listening'      // リスニングで対戦
+  | 'grammar'        // 英文法で対戦
+  | 'comeback';      // 勝つ（負けている場面からの逆転は記録が無いので「接戦で勝つ」で判定）
 
 export interface MissionDef {
   id: string;
@@ -459,6 +467,15 @@ export const MISSION_POOL: readonly MissionDef[] = [
   { id: 'm_win2', kind: 'win', label: '2回かつ', goal: 2, rewardXp: 90, rewardCoins: 40, countMatch: (m) => (m.outcome === 'win' && !m.forfeit ? 1 : 0) },
   { id: 'm_streak5', kind: 'streak', label: '5連続せいかいを出す', goal: 1, rewardXp: 70, rewardCoins: 30, countMatch: (m) => (m.score.maxStreak >= 5 ? 1 : 0) },
   { id: 'm_holes5', kind: 'holes', label: '復習を5問できたにする', goal: 5, rewardXp: 110, rewardCoins: 50, countMatch: (m) => m.holesFilled },
+  // ── 2026-10-01 追加（対戦の中身）──
+  { id: 'm_score300', kind: 'score', label: '1試合で300点以上とる', goal: 1, rewardXp: 50, rewardCoins: 25, countMatch: (m) => (m.score.score >= 300 ? 1 : 0) },
+  { id: 'm_score600', kind: 'score', label: '1試合で600点以上とる', goal: 1, rewardXp: 90, rewardCoins: 40, countMatch: (m) => (m.score.score >= 600 ? 1 : 0) },
+  { id: 'm_speedy3', kind: 'speedy', label: '速さボーナスつきで3問正解', goal: 3, rewardXp: 50, rewardCoins: 25, countMatch: (m) => m.score.perQuestion.filter((q) => q.correct && q.speed > 0).length },
+  { id: 'm_speedy8', kind: 'speedy', label: '速さボーナスつきで8問正解', goal: 8, rewardXp: 100, rewardCoins: 45, countMatch: (m) => m.score.perQuestion.filter((q) => q.correct && q.speed > 0).length },
+  { id: 'm_listen2', kind: 'listening', label: 'リスニングで2回対戦する', goal: 2, rewardXp: 50, rewardCoins: 25, countMatch: (m) => (m.subject === 'english_listening' ? 1 : 0) },
+  { id: 'm_grammar2', kind: 'grammar', label: '英文法で2回対戦する', goal: 2, rewardXp: 50, rewardCoins: 25, countMatch: (m) => (m.subject === 'english_grammar' ? 1 : 0) },
+  { id: 'm_close_win', kind: 'comeback', label: '接戦（2問差以内）で勝つ', goal: 1, rewardXp: 80, rewardCoins: 40, countMatch: (m) => (m.outcome === 'win' && !m.forfeit && (m.marginCorrect ?? 99) <= 2 ? 1 : 0) },
+  { id: 'm_streak7', kind: 'streak', label: '7連続せいかいを出す', goal: 1, rewardXp: 110, rewardCoins: 50, countMatch: (m) => (m.score.maxStreak >= 7 ? 1 : 0) },
 ];
 
 /** 1日に出すミッション数 */
@@ -537,13 +554,26 @@ export const BONUS_MISSION_POOL: readonly MissionDef[] = [
   { id: 'x_study1', kind: 'study', label: '演習で大問を1問とく', goal: 1, rewardXp: 20, rewardCoins: 10, countMatch: () => 0 },
   { id: 'x_streak_study5', kind: 'study_streak', label: '演習で5問れんぞく正解', goal: 1, rewardXp: 70, rewardCoins: 30, countMatch: () => 0 },
   { id: 'x_gacha5', kind: 'gacha', label: 'ガチャを5回まわす', goal: 5, rewardXp: 40, rewardCoins: 15, countMatch: () => 0 },
+  // ── 2026-10-01 追加：ボーナス ──
+  { id: 'x_study15', kind: 'study', label: '演習で大問を15問とく', goal: 15, rewardXp: 150, rewardCoins: 60, countMatch: () => 0 },
+  { id: 'x_rush5', kind: 'rush_play', label: 'マナラッシュに5回ちょうせん', goal: 5, rewardXp: 90, rewardCoins: 40, countMatch: () => 0 },
+  { id: 'x_rush4000', kind: 'rush_score', label: 'マナラッシュで4000点（Sランク）', goal: 1, rewardXp: 120, rewardCoins: 50, countMatch: () => 0 },
+  { id: 'x_combo15', kind: 'rush_combo', label: 'マナラッシュで15コンボ', goal: 1, rewardXp: 100, rewardCoins: 45, countMatch: () => 0 },
+  { id: 'x_equip2', kind: 'equip', label: 'とびら君の装飾を2回着がえる', goal: 2, rewardXp: 30, rewardCoins: 15, countMatch: () => 0 },
+  { id: 'x_streak_study8', kind: 'study_streak', label: '演習で8問れんぞく正解', goal: 1, rewardXp: 100, rewardCoins: 45, countMatch: () => 0 },
+  { id: 'x_vocab5', kind: 'vocab_quiz', label: '英単語の4択を5セット解く', goal: 5, rewardXp: 110, rewardCoins: 50, countMatch: () => 0 },
+  { id: 'x_vocab_perfect2', kind: 'vocab_perfect', label: '英単語の4択で2回満点をとる', goal: 2, rewardXp: 110, rewardCoins: 50, countMatch: () => 0 },
+  { id: 'x_learn50', kind: 'vocab_learn', label: '単語帳で50語「覚えた」にする', goal: 50, rewardXp: 130, rewardCoins: 55, countMatch: () => 0 },
+  { id: 'x_learn20', kind: 'vocab_learn', label: '単語帳で20語「覚えた」にする', goal: 20, rewardXp: 65, rewardCoins: 30, countMatch: () => 0 },
 ];
 
 /** 2026-10-01 D：3 → 5（演習・ラッシュ・おたのしみ・英単語×2） */
 export const BONUS_MISSIONS_PER_DAY = 5;
 /** マナラッシュのスコア系ミッションの基準（ミッションIDごと） */
-export const RUSH_SCORE_GOALS: Record<string, number> = { x_rush1500: 1500, x_rush2500: 2500 };
-export const RUSH_COMBO_GOALS: Record<string, number> = { x_combo5: 5, x_combo10: 10 };
+export const RUSH_SCORE_GOALS: Record<string, number> = { x_rush1500: 1500, x_rush2500: 2500, x_rush4000: 4000 };
+export const RUSH_COMBO_GOALS: Record<string, number> = { x_combo5: 5, x_combo10: 10, x_combo15: 15 };
+/** 演習の「n問れんぞく正解」ミッションの n */
+export const STUDY_STREAK_GOALS: Record<string, number> = { x_streak_study3: 3, x_streak_study5: 5, x_streak_study8: 8 };
 
 /** その日のボーナスミッション（演習1＋マナラッシュ1＋おたのしみ1＋英単語の4択1＋単語帳1）。日付だけで決まる */
 export function bonusMissionsForDate(date: string): MissionDef[] {
@@ -591,7 +621,12 @@ export function applyStudySolved(progress: GrowthProgress, today: string, now: n
     xp: progress.xp + STUDY_REWARD.xp,
     coins: progress.coins + STUDY_REWARD.coins,
     studySolved: progress.studySolved + 1,
-    daily: bumpMissions(progress.daily, today, { study: 1, study_streak: streak >= 3 ? 1 : 0 }),
+    daily: bumpMissions(progress.daily, today, (m) => {
+      if (m.kind === 'study') return 1;
+      // 「n問れんぞく正解」はミッションごとの n で判定（以前は3以上なら5問・8問も進んでいた）
+      if (m.kind === 'study_streak') return streak >= (STUDY_STREAK_GOALS[m.id] ?? 3) ? 1 : 0;
+      return 0;
+    }),
   };
   return { next: withAchievements(next, now), reward: { ...STUDY_REWARD } };
 }

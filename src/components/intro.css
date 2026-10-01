@@ -50,3 +50,12 @@
 @media (max-width: 360px) { .intro-steps { grid-template-columns: 1fr; } }
 @media (min-width: 900px) { .intro-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); } .intro-page { width: min(1000px, 100%); padding-inline: 24px; } }
 @media (prefers-reduced-motion: reduce) { .intro-faq-item > button svg { transition: none; } .intro-cta button:active { transform: none; } }
+
+/* 応援してくださっている方（カサニマロさん） */
+.intro-support { padding: 12px 14px; border-radius: 16px; background: linear-gradient(180deg, #fff7e6, #fffdf6); box-shadow: inset 0 0 0 1.5px #ecc879; }
+.intro-support h2 { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font: 900 16px/1.3 var(--mt-font-display); color: #b8640d; }
+.intro-support p { margin: 0 0 8px; font-size: 14px; line-height: 1.6; }
+.intro-support ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.intro-support li { display: grid; gap: 1px; font-size: 13px; }
+.intro-support li span { color: #7a6a4c; font-weight: 700; font-size: 12px; }
+.intro-support a { color: #2458a6; text-decoration: underline; overflow-wrap: anywhere; display: flex; align-items: center; min-height: 44px; }

@@ -18,7 +18,8 @@ export function BattleGrowthReward({ matchId, ownerUid, eligible, subject, subje
     setReward(null); setFailed(false);
     if (!eligible) return;
     void applyMatchGrowth({ roomId: matchId, subject, outcome: result.outcome, score: result.me,
-      answeredCount: result.me.perQuestion.length, buzz: false, forfeit: false, holesFilled: 0 }, ownerUid)
+      answeredCount: result.me.perQuestion.length, buzz: false, forfeit: false, holesFilled: 0,
+      marginCorrect: result.opponent ? Math.abs(result.me.correctCount - result.opponent.correctCount) : undefined }, ownerUid)
       .then(value => { if (active) { setReward(value); setFailed(!value); } });
     return () => { active = false; };
   }, [matchId, ownerUid, eligible, subject, result, retry]);

@@ -67,3 +67,43 @@ describe('ボーナスミッション', () => {
     }
   });
 });
+
+import { MISSION_POOL, BONUS_MISSION_POOL, missionsForDate, applyStudySolved, emptyProgress, bonusMissionsForDate as bonusFor } from '../src/battle/core/growth';
+describe('ミッション拡充（2026-10-01）', () => {
+  it('候補が増えている・IDが重複しない', () => {
+    expect(MISSION_POOL.length).toBeGreaterThanOrEqual(22);
+    expect(BONUS_MISSION_POOL.length).toBeGreaterThanOrEqual(32);
+    const ids = [...MISSION_POOL, ...BONUS_MISSION_POOL].map(m => m.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+  it('対戦ミッションは毎日3つ・同じ種類を重ねない（1年分）', () => {
+    const seen = new Set<string>();
+    for (let d = 0; d < 365; d++) {
+      const date = new Date(Date.UTC(2026, 0, 1 + d)).toISOString().slice(0, 10);
+      const m = missionsForDate(date);
+      expect(m).toHaveLength(3);
+      expect(new Set(m.map(x => x.kind)).size).toBe(3);
+      m.forEach(x => seen.add(x.id));
+    }
+    expect(seen.size).toBeGreaterThanOrEqual(15); // 新しいミッションも実際に出る
+  });
+  it('新しい対戦ミッションは採点結果だけで判定できる', () => {
+    const q = (correct: boolean, speed: number) => ({ index: 0, correct, timeUsed: 2, base: 60, speed, streak: 0, total: 60 + speed });
+    const match = { roomId: 'r', subject: 'english_listening', outcome: 'win' as const, buzz: false, forfeit: false, answeredCount: 5, holesFilled: 0, marginCorrect: 1,
+      score: { uid: 'u', perQuestion: [q(true, 10), q(true, 0), q(true, 5), q(false, 0)], score: 320, correctCount: 3, totalTime: 8, maxStreak: 3 } };
+    const by = (id: string) => MISSION_POOL.find(m => m.id === id)!.countMatch(match as never);
+    expect(by('m_score300')).toBe(1);
+    expect(by('m_score600')).toBe(0);
+    expect(by('m_speedy3')).toBe(2);
+    expect(by('m_listen2')).toBe(1);
+    expect(by('m_grammar2')).toBe(0);
+    expect(by('m_close_win')).toBe(1);
+  });
+  it('演習の「n問れんぞく正解」は n に届いたときだけ進む', () => {
+    const day = Array.from({ length: 400 }, (_, i) => new Date(Date.UTC(2026, 0, 1 + i)).toISOString().slice(0, 10))
+      .find(d => bonusFor(d).some(m => m.id === 'x_streak_study5'))!;
+    const p = emptyProgress('u');
+    expect(applyStudySolved(p, day, 0, 3).next.daily.progress['x_streak_study5'] ?? 0).toBe(0);
+    expect(applyStudySolved(p, day, 0, 5).next.daily.progress['x_streak_study5']).toBe(1);
+  });
+});

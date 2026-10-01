@@ -34,7 +34,7 @@
  * 自分が押した選択肢だけを「選択中」として示す。
  */
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { BattleText } from './BattleText';
 import { Check, CircleCheck, CircleX, Hourglass, RotateCcw, Play, Pause, Info } from 'lucide-react';
 import { PICTURE_GRID_SPLITS } from '../data/pictureGrid.generated';
@@ -97,6 +97,8 @@ interface Props {
   onCyclePanel: () => void;
   /** かな入力: 「けってい」 */
   onCommitKana: () => void;
+  /** 「1/10もん」と「4つからえらぶ」の間に置く一言（相手は回答ずみ！ など）。別の行を使わない */
+  notice?: ReactNode;
 }
 
 export function BattleQuestionView({
@@ -115,6 +117,7 @@ export function BattleQuestionView({
   onCyclePanel,
   onCommitKana,
   limitSec,
+  notice,
 }: Props) {
   const theme = subjectTheme(question.subject as SubjectKey);
   const effectiveLimitSec = limitSec ?? question.timeLimit;
@@ -146,16 +149,17 @@ export function BattleQuestionView({
     <section id="battle-question" className="flex min-w-0 flex-1 flex-col">
       {/* 進捗と残り時間 */}
       <div className="mb-3">
-        <div className="mb-2 flex items-center justify-between">
-          <p className="text-xs font-black" style={{ color: INK_SUB }}>
+        <div className="bq-progress-row mb-2 flex items-center justify-between gap-2">
+          <p className="shrink-0 text-xs font-black" style={{ color: INK_SUB }}>
             <span style={{ color: '#B7791F' }} className="text-base tabular-nums">
               {index + 1}
             </span>
             <span className="mx-0.5">/</span>
             {total}もん
           </p>
+          {notice && <div className="bq-progress-notice min-w-0 flex-1 text-center">{notice}</div>}
           <span
-            className="rounded-full px-2 py-0.5 text-xs font-black"
+            className="shrink-0 rounded-full px-2 py-0.5 text-xs font-black"
             style={{ background: `${theme.accent}26`, color: theme.accent }}
           >
             {formatLabel(question.format, question.options.length)}
@@ -816,7 +820,8 @@ function PictureGridAnswer({ question, split, answered, locked, myChoice, reveal
               backgroundSize: `${100 / w}% ${100 / h}%`,
               backgroundPosition: `${w >= 1 ? 0 : (c.x0 / (1 - w)) * 100}% ${h >= 1 ? 0 : (c.y0 / (1 - h)) * 100}%`,
               aspectRatio: `${w} / ${h}`,
-            }} />
+              '--ar': String(w / h),
+            } as CSSProperties} />
             <b className="bq-picture-badge">{question.options[i] || ['①', '②', '③', '④'][i]}</b>
             {right && <span className="bq-picture-tag" data-kind="right"><Check size={14} aria-hidden="true" />正解</span>}
             {wrongPick && <span className="bq-picture-tag" data-kind="wrong">あなた</span>}

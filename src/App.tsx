@@ -204,7 +204,8 @@ import { isSubjectEnabled, fallbackSubjectId, FEATURES } from './config/features
   「経過ミリ秒 → 音量」の対応だけを別ファイルの純粋関数に置いてある
   （ブラウザを開かずに機械検査できるようにするため）。
 */
-import { bgmVolumeAt, isBgmFadeComplete, BGM_FADE_END_MS } from './utils/bgmFade';
+import { appBgmVolume, isBgmFadeComplete, BGM_FADE_END_MS } from './utils/bgmFade';
+import { writeAudioPreferences, readAudioPreferences } from './battle/audio/audioPreferences';
 /*
  * ★chemistryData（1,253,813 B）の静的 import はここから外した★
  *
@@ -908,7 +909,8 @@ export default function App() {
     } catch {
       /* 読めない環境では既定値に従う */
     }
-    return FEATURES.bgm;
+    // まだ選んでいない人は、対戦BGMの設定（既定ON）に合わせる＝BGMのスイッチは1つ（2026-10-01）
+    try { return readAudioPreferences().bgm; } catch { return FEATURES.bgm; }
   });
   const [bgmVolume, setBgmVolume] = useState(() => {
     const saved = localStorage.getItem('bgm_volume');
@@ -934,7 +936,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('bgm_volume', bgmVolume.toString());
     if (audioRef.current) {
-      audioRef.current.volume = bgmVolume;
+      audioRef.current.volume = appBgmVolume(bgmVolume, bgmElapsedMs());
     }
   }, [bgmVolume]);
 
@@ -946,7 +948,20 @@ export default function App() {
     } catch {
       /* 保存できなくても今回のセッションでは効いているので続行する */
     }
+    /*
+      ★BGMのON/OFFは1つのボタンで全部（2026-10-01）★
+      以前は対戦BGMが別スイッチ（battle_audio_settings.bgm・既定ON）で、
+      ホームのBGMボタンを切っても対戦BGM（待ち時間・試合中）は鳴り続けていた。
+      アプリBGMのON/OFFを対戦側の設定へそのまま写し、どの画面のボタンでも両方が切り替わるようにする。
+    */
+    if (readAudioPreferences().bgm !== isBgmEnabled) writeAudioPreferences({ bgm: isBgmEnabled });
   }, [isBgmEnabled]);
+  // 逆向き：対戦ロビーのBGMボタン（対戦側の設定）で切り替えたら、アプリBGMも同じにする
+  useEffect(() => {
+    const sync = () => { const on = readAudioPreferences().bgm; setIsBgmEnabled(prev => (prev === on ? prev : on)); };
+    window.addEventListener('battle-audio-settings', sync);
+    return () => window.removeEventListener('battle-audio-settings', sync);
+  }, []);
 
   const bgmStateRef = useRef({ isBgmEnabled, isAudioValid, appState });
   useEffect(() => {
@@ -1017,7 +1032,7 @@ export default function App() {
       const { isBgmEnabled, isAudioValid, appState } = bgmStateRef.current;
       
       if (audio && isAudioValid && isBgmEnabled && !BGM_SILENT_STATES.includes(appState)) {
-        audio.volume = bgmVolume;
+        audio.volume = appBgmVolume(bgmVolume);
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch(e => {
@@ -1108,7 +1123,7 @@ export default function App() {
         以前は 0.1 固定で、スライダーを動かしても再生開始やフェードの計算が
         0.1 に戻してしまい「音量が変わらない」状態だった（2026-09-30 修正）。
       */
-      audio.volume = bgmVolumeAt(bgmVolumeRef.current, bgmElapsedMs());
+      audio.volume = appBgmVolume(bgmVolumeRef.current, bgmElapsedMs());
       // すでにフェードが終わっている（＝90秒＋5秒鳴り終えた）なら鳴らさない。
       // 画面を移動しただけで音が復活しては「消えた」ことにならない。
       if (isBgmFadeComplete(bgmElapsedMs())) {
@@ -1160,7 +1175,7 @@ export default function App() {
       const audio = audioRef.current;
       if (!audio) return;
       const elapsed = bgmElapsedMs();
-      audio.volume = bgmVolumeAt(bgmVolumeRef.current, elapsed);
+      audio.volume = appBgmVolume(bgmVolumeRef.current, elapsed);
       if (isBgmFadeComplete(elapsed)) {
         markBgmPlaying(false);
         audio.pause();
@@ -1194,7 +1209,7 @@ export default function App() {
     if (enabled) {
       if (!isAudioValid || hasLoggedAudioError.current) return;
       if (BGM_SILENT_STATES.includes(appState)) return;
-      audio.volume = bgmVolume;
+      audio.volume = appBgmVolume(bgmVolume);
       markBgmPlaying(true);
       // iOS Safari 対策:
       // 音源がまだデコードされていない場合、ユーザー操作と同一スタックで
@@ -1547,7 +1562,7 @@ export default function App() {
           縦の短いパソコンでも一番上まで読めるようになる。
           定義は index.css の 13.5 節（未対応ブラウザ用の保険つき）。
         */}
-        <div data-app-state={appState} className={`app-shell h-[100dvh] w-full flex justify-center relative overflow-y-auto ${
+        <div data-app-state={appState} data-battle-live={appState === 'battle' && battleActive ? '' : undefined} className={`app-shell h-[100dvh] w-full flex justify-center relative overflow-y-auto ${
           isFullBleed
             ? 'p-0 items-stretch'
             : `pt-6 pb-safe-lg md:py-12 px-4 md:px-8 md:pb-28 ${['onboarding', 'subject_selection', 'intro', 'mode_selection'].includes(appState) ? 'items-safe-center' : 'items-start'}`
@@ -1630,7 +1645,7 @@ export default function App() {
                 描画の受け口でも同じフラグを見る（既存のランキングと同じ作り）。 */}
             {(appState === 'battle' || battleReturnActive) && FEATURES.battle && (
               <div id="battle-screen-scroll" ref={battleScrollRef} hidden={appState !== 'battle'}
-                className={appState === 'battle' ? 'h-full min-h-0 overflow-y-auto overscroll-contain pb-app-nav' : 'hidden'}>
+                className={appState === 'battle' ? `h-full min-h-0 overflow-y-auto overscroll-contain ${battleActive ? 'battle-no-nav' : 'pb-app-nav'}` : 'hidden'}>
               <BattleMode
                 onExit={() => setAppState('home')}
                 onRequireLogin={() => setAppState('onboarding')}
@@ -1803,7 +1818,9 @@ export default function App() {
             {/* Global Bottom Navigation Footer
                 日本語ラベル化（ホーム／学習／設定）＋aria-labelをaria-currentで現在地を明示
                 アイコンには aria-hidden を付け、ラベルだけがスクリーンリーダーに読まれるよう整理 */}
-            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'quiz' && appState !== 'explanation' && (
+            {/* ★対戦中（試合が始まってから終わるまで）は下ナビを出さない（2026-10-01）★ 問題と絵を1画面に入れるため。
+                 「対戦をやめる」は対戦画面の中にある。結果画面ではナビが戻る。 */}
+            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'quiz' && appState !== 'explanation' && !(appState === 'battle' && battleActive) && (
               /* C19 下ナビは共通部品1つ（components/ui/BottomNavigation）。行き先・条件は以前と同じ。
                  高さは --app-nav-h として公開し、各画面が下の余白の基準にする。 */
               <BottomNavigation

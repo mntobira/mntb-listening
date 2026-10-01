@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { CorrectBurst } from './fx/CorrectBurst';
 import { BookOpen, Check, ChevronRight, RotateCcw, Volume2, X } from 'lucide-react';
 import { VOCAB_LEVELS, type ListeningWord, type VocabularyData } from '../data/listeningSupport';
 import { applyQuizResult, blockCount, blockKey, blockWords, buildQuiz, BLOCK_SIZE, QUIZ_SIZE, quizComment, readQuizRecord, writeQuizRecord, type QuizDirection, type QuizItem } from '../data/vocabQuiz';
@@ -92,6 +93,7 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
         data-correct={answered && k === it.q.answerIndex ? true : undefined} data-wrong={answered && pick === k && k !== it.q.answerIndex ? true : undefined}>
         <i aria-hidden="true">{'①②③④'[k]}</i><span>{o}</span>{answered && k === it.q.answerIndex && <Check size={18} aria-hidden="true" />}
       </button>)}</div>
+      {answered && pick === it.q.answerIndex && <CorrectBurst burstKey={it.q.id} combo={streakAt(phase.items, phase.picks, phase.i)} />}
       <div className="vq-foot" aria-live="polite">
         {answered ? <>
           <p className="vq-judge" data-ok={pick === it.q.answerIndex || undefined}>{pick === it.q.answerIndex ? '正解！' : <>正解は <b>{it.q.options[it.q.answerIndex]}</b></>}</p>
@@ -150,4 +152,11 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
       </button></li>;
     })}</ol>
   </section>;
+}
+
+/** i問目までの連続正解数（2問以上でCOMBO表示） */
+function streakAt(items: readonly { q: { answerIndex: number } }[], picks: readonly (number | null)[], i: number): number {
+  let n = 0;
+  for (let j = i; j >= 0; j--) { if (picks[j] === items[j]!.q.answerIndex) n++; else break; }
+  return n;
 }

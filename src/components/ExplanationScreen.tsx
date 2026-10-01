@@ -16,6 +16,7 @@
  */
 import { Explanation } from './Explanation';
 import { FloatingScoreAnimation } from './FloatingScoreAnimation';
+import { CorrectBurst } from './fx/CorrectBurst';
 import { OvertakeBanner } from './LiveStandingPill';
 import { stepScoreKey } from '../utils/listeningSteps';
 import type { ChapterRunState } from '../utils/quizRunState';
@@ -103,6 +104,10 @@ export function ExplanationScreen({
         totalScore={run.totalScore}
         runningCombo={run.runningCombo}
       />
+      {/* ★正解したら全画面の演出（2026-10-01）★ 解説の表示は隠さない（触れない・1.2秒で抜ける） */}
+      {scoreAnimationData && showScoreAnimation && scoreAnimationData.breakdown.basePoints > 0 && (
+        <CorrectBurst burstKey={`${currentQuestion?.id}:${activeStepSub?.id ?? ''}:${run.totalScore}`} combo={run.runningCombo ?? 0} />
+      )}
       {scoreAnimationData && (
         <FloatingScoreAnimation
           breakdown={scoreAnimationData.breakdown}
