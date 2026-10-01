@@ -33,6 +33,7 @@ import { bgmTrackFor } from '../core/audioSettings';
 import { useBattleAudio } from '../hooks/useBattleAudio';
 import { useBattleLive } from '../hooks/useBattleLive';
 import { ArenaFighters } from './ArenaFighters';
+import { CorrectBurst } from '../../components/fx/CorrectBurst';
 import { BattleText } from './BattleText';
 import { BattleQuestionView } from './BattleQuestionView';
 import {
@@ -138,6 +139,7 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
     s ? s.perQuestion.filter((q) => q.index <= upTo).reduce((a, q) => a + q.total, 0) : 0;
   const mySettled = settled(p.myScore);
   const oppSettled = settled(p.opponentScore);
+  const myCorrect = !!p.myScore?.perQuestion.find(q => q.index === p.index)?.correct;
 
   /**
    * ★残り3秒の刻み音★（自分がまだ答えていないときだけ）
@@ -211,15 +213,7 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
       {!counting && phase === 'closing' && <ClosingBanner remain={p.total - p.index} />}
       <GapHint message={hint} />
       {/* ★相手が先に答えた★ 自分がまだのときだけ、急かしすぎない一言 */}
-      {!counting && p.opponentAnswered && !p.answered && !p.reveal && (
-        <p
-          className="battle-live-pop mb-1 text-center text-xs font-black"
-          style={{ color: '#C0392B' }}
-          role="status"
-        >
-          🔴 相手は回答ずみ！ 落ち着いて選ぼう
-        </p>
-      )}
+      {/* ★相手が先に答えた★ は問題の「1/10もん」と「4つからえらぶ」の間に出す（1行ぶん上に詰める・2026-10-01） */}
       <LiveFeed entries={live.feed} />
       {!counting && (p.answered || p.reveal) && p.opponentAnswered && <div className="arena-opponent-answer" role="status"><span>相手の確定回答 {selectedNumber}</span><BattleText text={theirText || '無回答'} subject={p.question.subject}/></div>}
 
@@ -243,6 +237,9 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
           onPushPanel={push}
           onPopPanel={p.onPopPanel}
           onCyclePanel={p.onCyclePanel}
+          notice={!counting && p.opponentAnswered && !p.answered && !p.reveal
+            ? <p className="battle-live-pop truncate text-xs font-black" style={{ color: '#C0392B' }} role="status">🔴 相手は回答ずみ！<span className="bq-notice-long"> 落ち着いて選ぼう</span></p>
+            : undefined}
           onCommitKana={() => {
             unlock();
             p.onCommitKana();
@@ -252,7 +249,10 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
 
       <div className="bl-footer">{p.footer}</div>
 
-      <LiveToast toast={live.toast} />
+      {/* ★正解したら全画面の演出（2026-10-01）★ 逆転・追いついたも同じ演出の中に添える（別の札でかぶせない） */}
+      {!counting && p.reveal && myCorrect && <CorrectBurst burstKey={`q${p.index}`} combo={live.myStreak}
+        extra={live.toast && (live.toast.kind === 'overtake' || live.toast.kind === 'caught-up') ? live.toast.text : undefined} />}
+      <LiveToast toast={p.reveal && myCorrect && live.toast && (live.toast.kind === 'overtake' || live.toast.kind === 'caught-up') ? null : live.toast} />
     </div>
   );
 }

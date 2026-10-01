@@ -314,6 +314,8 @@ function feedStyle(e: FeedEntry): CSSProperties {
 
 export function LiveToast({ toast }: { toast: LiveToastData | null }) {
   if (!toast) return null;
+  // ★自分の正解・コンボは BattleLiveStage の全画面演出（CorrectBurst）が出すので、ここでは出さない（2026-10-01）★
+  if (toast.kind === 'correct' || toast.kind === 'combo') return null;
   const conf = TOAST_STYLE[toast.kind];
   return (
     <div

@@ -61,7 +61,8 @@
 /* 低い画面（SE・320×568）：1列の選択肢でも4つ目まで画面に収める */
 @media (max-height: 640px) {
   #battle-question > .mb-3:first-child { margin-bottom: 4px; }
-  #battle-question > .mb-3:first-child > .mb-2 { display: none; }
+  #battle-question > .mb-3:first-child > .mb-2:not(:has(.bq-progress-notice)) { display: none; }
+  #battle-question > .mb-3:first-child > .mb-2:has(.bq-progress-notice) { margin-bottom: 2px; }
   #battle-question .grid.grid-cols-1 { gap: 6px; }
   #battle-question .grid > button.min-h-\[58px\] { min-height: 44px; padding-block: 4px; }
   .arena-question-prompt:not([data-picture-grid]) { padding: 6px 10px !important; margin-bottom: 6px !important; }
@@ -157,3 +158,14 @@
   #battle-final-banner { margin-bottom: 2px !important; padding-block: 0 !important; min-height: 18px; }
   .bl-closing { margin-bottom: 2px !important; }
 }
+
+/* ★絵の4択は「残りの高さ」いっぱいに2×2で収める（2026-10-01）★
+   以前は 100dvh − 決め打ちの余白 で絵の高さを決めていたため、幅の広いスマホ（430px）や
+   相手の回答・正誤カードが出たときに③④が画面の外へはみ出していた。
+   いまは問題エリアの残りを2行で分け、各マスの中で絵を縦横比のまま最大にする（コンテナ単位）。 */
+.arena-question-area:has(.bq-picture-grid) { display: flex; flex-direction: column; }
+#battle-question:has(> .bq-picture-grid) { min-height: 0; }
+#battle-question:has(> .bq-picture-grid) > :not(.bq-picture-grid) { flex-shrink: 0; }
+#battle-question > .bq-picture-grid { flex: 1 1 0; min-height: 150px; max-height: 560px; grid-template-rows: 1fr 1fr; }
+.bq-picture-grid > .bq-picture { container-type: size; display: grid; place-items: center; min-height: 0; }
+.bq-picture-grid .bq-picture-img { width: min(100cqw, 100cqh * var(--ar, 1)); height: min(100cqh, 100cqw / var(--ar, 1)); min-height: 0; max-width: none; margin: 0; }

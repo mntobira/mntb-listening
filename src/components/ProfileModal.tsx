@@ -253,12 +253,11 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
               <div className="space-y-2 sm:space-y-3 flex flex-col">
                 <h3 className="ps-group-title">アプリ（サウンド）</h3>
                 <section className="ps-sound mt-card" aria-label="サウンド">
-                  <Toggle label="BGM" sub="学習中の音楽" checked={isBgmEnabled} onChange={toggleBgm} icon={isBgmEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />} />
+                  <Toggle label="BGM" sub="学習中・待ち時間・対戦の音楽（ひとつでON/OFF）" checked={isBgmEnabled} onChange={toggleBgm} icon={isBgmEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />} />
                   {isBgmEnabled && <Volume label="BGM音量" value={bgmVolume} onChange={setBgmVolume} />}
                   <p className="ps-sub"><Swords size={14} aria-hidden="true" />対戦モードの音</p>
-                  <Toggle label="対戦BGM" sub="試合中・最終問題で変化" checked={battleAudioSettings.bgm} onChange={() => updateBattleAudio({ bgm: !battleAudioSettings.bgm })} tone="gold" />
                   <Toggle label="対戦効果音" sub="正解・逆転など" checked={battleAudioSettings.sfx} onChange={() => { updateBattleAudio({ sfx: !battleAudioSettings.sfx }); if (!battleAudioSettings.sfx) window.setTimeout(() => battleAudio().play('correct'), 50); }} tone="gold" />
-                  {(battleAudioSettings.bgm || battleAudioSettings.sfx) && <Volume label="対戦の音量" value={battleAudioSettings.volume} onChange={(v) => updateBattleAudio({ volume: v })} onCommit={() => battleAudio().play('tap')} tone="gold" />}
+                  {(isBgmEnabled || battleAudioSettings.sfx) && <Volume label="対戦の音量" value={battleAudioSettings.volume} onChange={(v) => updateBattleAudio({ volume: v })} onCommit={() => battleAudio().play('tap')} tone="gold" />}
                 </section>
 
                 <h3 className="ps-group-title">アカウント連携</h3>

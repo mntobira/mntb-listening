@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookOpen, ChevronDown, ChevronLeft, Coins, Headphones, Music, PenLine, Repeat2, Swords, Target, Trophy } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronLeft, Coins, Headphones, Heart, Music, PenLine, Repeat2, Swords, Target, Trophy } from 'lucide-react';
 import { TobiraBuddy } from './TobiraBuddy';
 import './intro.css';
 
@@ -67,6 +67,20 @@ export function Intro({ onBack, onBattle }: { onBack: () => void; onBattle?: () 
       </div>)}
     </section>
 
+    {/* ★応援してくださっている方（2026-10-01）★ 利用者の依頼で明記。URLは動画の概要欄で確認済み */}
+    <section className="intro-support" aria-label="応援してくださっている方" data-intro-support>
+      <h2><Heart size={16} aria-hidden="true" />応援してくださっている方</h2>
+      <p>このアプリは、YouTubeチャンネル<b>「カサニマロ【べんとう・ふきのとうの授業動画】」</b>さんに支えていただいています。
+        理科基礎の動画の概要欄で、元のマナトビのアプリ（化学基礎）を紹介していただきました。ありがとうございます！</p>
+      <ul>
+        <li><span>紹介していただいた動画（2026年7月29日公開）</span>
+          <a href={KASANIMARO.video} target="_blank" rel="noopener noreferrer">【最短】理科基礎で9割取る方法【アプリ・参考書・勉強法】</a></li>
+        <li><span>カサニマロ YouTube チャンネル</span><a href={KASANIMARO.channel} target="_blank" rel="noopener noreferrer">{KASANIMARO.channel}</a></li>
+        <li><span>カサニマロ 公式サイト</span><a href={KASANIMARO.site} target="_blank" rel="noopener noreferrer">{KASANIMARO.site}</a></li>
+        <li><span>動画で紹介された元のマナトビ（化学基礎）</span><a href={KASANIMARO.app} target="_blank" rel="noopener noreferrer">{KASANIMARO.app}</a></li>
+      </ul>
+    </section>
+
     <section className="intro-credit" aria-label="クレジット" data-intro-credit>
       <h2><Music size={16} aria-hidden="true" />クレジット</h2>
       <dl>
@@ -82,3 +96,11 @@ export function Intro({ onBack, onBattle }: { onBack: () => void; onBattle?: () 
     </div>
   </main>;
 }
+
+/** カサニマロさん関連のURL（動画概要欄 https://www.youtube.com/watch?v=g1PBc7Axnlo で確認 2026-10-01） */
+export const KASANIMARO = {
+  video: 'https://www.youtube.com/watch?v=g1PBc7Axnlo',
+  channel: 'https://www.youtube.com/@kasanimaro',
+  site: 'https://kasanimaro.com/',
+  app: 'https://chembasis.manatobi.jp/',
+} as const;
