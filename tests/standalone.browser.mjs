@@ -16,16 +16,24 @@ try {
   await page.locator('.launch-start').click();await page.locator('.game-home').waitFor();
   for(const [width,height] of [[320,568],[390,844],[1280,900]]) {
     await page.setViewportSize({width,height});
-    // 統合版と同じ1画面ホーム。科目のプルダウンは無く、下の帯に［科目］［英文法・英単語を固める］
+    // 1画面ホーム（B1）。3本柱：演習する／対戦する（同じ大きさ）＋横長の復習ノート
     assert.equal(await page.locator('select[aria-label="学習する科目"]').count(),0);
-    assert.equal(await page.locator('[data-home-foundation]').count(),1);
+    assert.equal(await page.locator('[data-home-practice]').count(),1);
+    assert.equal(await page.locator('[data-home-battle]').count(),1);
+    assert.equal(await page.locator('[data-home-review]').count(),1);
+    assert.equal(await page.locator('[data-home-foundation]').count(),0);
     assert.ok(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+2),'home fits one screen at '+width+'x'+height);
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   }
   await page.setViewportSize({width:390,height:844});
   assert.equal(await page.getByRole('button',{name:'まとめプリント',exact:true}).count(),0);
-  // 「英文法・英単語を固める」は下のナビを残した1画面のページ（ダイアログではない）。
-  await page.locator('[data-home-foundation]').click();
+  // 演習する → 科目（共通UI）→ コンテンツ → 英単語は下のナビを残した1画面のページ（ダイアログではない）。
+  await page.locator('[data-home-practice]').click();
+  await page.locator('[data-study-catalog=subjects]').waitFor();
+  await page.locator('[data-study-card=english]').click();
+  await page.locator('[data-study-catalog=contents]').waitFor();
+  assert.ok(await page.locator('[data-study-card]').count()>=4,'english has its contents as shared cards');
+  await page.locator('[data-study-card=english_vocabulary]').click();
   await page.locator('[data-foundation]').waitFor();
   assert.equal(await page.locator('.app-bottom-nav').isVisible(),true,'foundation page keeps the bottom nav');
   assert.deepEqual(await page.locator('.fd-tabs [role=tab]').allTextContents(),['単語・熟語','英文法','その他']);

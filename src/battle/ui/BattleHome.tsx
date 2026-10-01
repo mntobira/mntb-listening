@@ -80,6 +80,7 @@ import {
 import type { CSSProperties, ReactNode } from 'react';
 import { auth } from '../../firebase';
 import { FriendOnlineStrip } from '../../components/FriendOnlineStrip';
+import { ConnectionCheckPanel } from './ConnectionCheckPanel';
 import { useGrowthProgress } from '../../hooks/useGrowthProgress';
 import { GrowthAvatar } from './GrowthParts';
 import { GrowthHomeStrip } from './GrowthHomeStrip';
@@ -290,11 +291,13 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
  useEffect(()=>{let active=true;if(user)void fetchMyRankingRow().then(r=>{if(active)setRow(r);}).catch(()=>{});return()=>{active=false;};},[user]);
  return <BattleShell className="arena-menu">
    <header className="arena-menu-header"><button type="button" onClick={onExit}>ホームへ</button><h1><Swords size={21}/>とびらバトル</h1><span>{row ? <><b className="arena-rank-chip" style={{background:ratingTitle(row.rating).color}}>{ratingTitle(row.rating).label}</b>{row.rating} RP</> : user?'レート確認中':'ゲスト'}</span></header>
-   <div className="arena-menu-player">{progress && <GrowthAvatar progress={progress} size={64}/>}<div><strong>学んだ力で、勝負しよう。</strong><p>正解60点 ＋ 速さ最大240点</p><small>完走10枚・正解ごと2枚・勝利10枚</small></div></div>
+   {/* B9 情報の3層：ユーザー情報（このカード）→ 今すぐ対戦（3択）→ その他（サブ機能） */}
+   <div className="arena-menu-player" role="group" aria-label="あなたの情報">{progress && <GrowthAvatar progress={progress} size={64}/>}<div><strong>学んだ力で、勝負しよう。</strong><p>正解60点 ＋ 速さ最大240点</p><small>完走10枚・正解ごと2枚・勝利10枚</small></div></div>
    {row && <RankStrip rating={row.rating}/>}
    {notice && <BattleNotice message={notice} tone="info"/>}
    {/* ★ホームと同じ組み方（2026-09-30）★ 左右＝パステルの札、中央＝水色の大きな丸。1画面に収める。 */}
-   <section className="arena-lobby-deck" aria-label="対戦の種類">
+   <p className="arena-lobby-label" aria-hidden="true">今すぐ対戦</p>
+   <section className="arena-lobby-deck" aria-label="今すぐ対戦：AI・フレンド・全国">
     <div className="arena-lobby-side arena-lobby-friend" data-battle-mode="friend">
      <span className="arena-lobby-icon"><Users aria-hidden="true"/></span><strong>フレンド</strong><small>合言葉で1対1</small>
      <button type="button" onClick={()=>user?onChoose('friend-create'):onRequireLogin?.()}>部屋をつくる</button>
@@ -309,9 +312,14 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
     </div>
    </section>
    {!user && <p className="arena-login-note">AIはゲストでも遊べます（フレンド・全国はログイン）</p>}
+   {/* B13 サブ機能はメインの3択の下に「その他」としてまとめる（機能は削らない） */}
+   <nav className="arena-lobby-sub" aria-label="その他の機能">
+   <p className="arena-lobby-label" aria-hidden="true">その他</p>
    <div className="arena-menu-links"><button type="button" onClick={()=>onChoose('profile')} aria-label="きせかえ・ガチャ">きせかえ</button><button type="button" onClick={()=>onChoose('missions')}>ミッション</button><button type="button" onClick={()=>onChoose('ranking')}><Trophy size={14}/>ランキング</button><button type="button" onClick={()=>onChoose('history')}><History size={14}/>対戦履歴</button></div>
+   <details className="arena-rules-help arena-connection-help"><summary>つながらないとき（通信チェック）</summary><ConnectionCheckPanel compact/></details>
+   <details className="arena-rules-help"><summary>配点と対戦ルール</summary><p>正解のみ加点。速さ点は残り時間の割合rに対して240×(0.7r²+0.3r³)。500ms単位に丸めます。3連続以上に小さな連続点。旧ルームでは作成時の配点を使用します。フレンドもお互い更新してから遊んでください。</p></details>
+   </nav>
    {/* ゲストには上の「ログイン」の一文で足りるので、同じ趣旨の案内を重ねない */}
    {user && <FriendOnlineStrip/>}
-   <details className="arena-rules-help"><summary>配点と対戦ルール</summary><p>正解のみ加点。速さ点は残り時間の割合rに対して240×(0.7r²+0.3r³)。500ms単位に丸めます。3連続以上に小さな連続点。旧ルームでは作成時の配点を使用します。フレンドもお互い更新してから遊んでください。</p></details>
  </BattleShell>;
 }

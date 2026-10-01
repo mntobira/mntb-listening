@@ -62,7 +62,8 @@
 
   /* 文字 */
   --mt-font-display: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
-  --mt-font-body: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', 'Inter', sans-serif;
+  /* 本文：ガチャ画面と同じ Inter（英数字）＋システムのゴシック（日本語）。アプリ全体でこれ1つ */
+  --mt-font-body: 'Inter', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', sans-serif;
   --mt-fs-xs: 12px;             /* 最小。これより小さくしない */
   --mt-fs-sm: 13px;
   --mt-fs-md: 15px;
@@ -90,6 +91,51 @@
 
   /* タップ領域 */
   --mt-tap: 44px;
+
+  /* ===== 2026-10-01 C2・C21 デザインシステムの拡張 =====
+     名前の対応：text.xl → --mt-text-xl、radius.md → --mt-radius-md、spacing.sm → --mt-space-sm */
+  /* 文字の役割（サイズ／太さ／行間／字間を組で決める）。見出しは丸ゴシック、本文はゴシック */
+  --mt-text-display: 800 28px/1.25 var(--mt-font-display);   /* 画面の主題（ガチャ名など）*/
+  --mt-text-xl: 800 22px/1.3 var(--mt-font-display);         /* h1：画面タイトル */
+  --mt-text-lg: 800 18px/1.35 var(--mt-font-display);        /* h2：節の見出し */
+  --mt-text-md: 700 15px/1.45 var(--mt-font-body);           /* h3・カードの題名・ボタン */
+  --mt-text-body: 400 14px/1.6 var(--mt-font-body);          /* 本文 */
+  --mt-text-sm: 500 13px/1.5 var(--mt-font-body);            /* 補足 */
+  --mt-text-xs: 700 12px/1.4 var(--mt-font-body);            /* 最小（ラベル・バッジ）*/
+  --mt-text-kicker: 800 12px/1.3 var(--mt-font-body);        /* 英字の小見出し（TOBIRA COLLECTION など）*/
+  --mt-kicker-spacing: .14em;
+  --mt-num: 800 1em/1 var(--mt-font-display);                /* 数字（コイン・順位）*/
+
+  --mt-space-xs: var(--mt-s1);
+  --mt-space-sm: var(--mt-s2);
+  --mt-space-md: var(--mt-s3);
+  --mt-space-lg: var(--mt-s4);
+  --mt-space-xl: var(--mt-s5);
+
+  --mt-radius-sm: 10px;    /* バッジ・小さな入力 */
+  --mt-radius-md: 14px;    /* ボタン・リスト行 */
+  --mt-radius-lg: 20px;    /* カード（ガチャ・ホームの札と同じ丸み）*/
+  --mt-radius-xl: 26px;    /* 舞台（ガチャのプレビュー・大きな札）*/
+
+  --mt-border: 1px solid var(--mt-line);
+  --mt-border-strong: 1.5px solid var(--mt-line-strong);
+  /* 札の影：ガチャ・ホームと同じ「下に2〜3pxの縁」＋やわらかい影 */
+  --mt-shadow-card: 0 3px 0 #e6dccb, 0 6px 14px rgba(80, 60, 30, .06);
+  --mt-shadow-press: 0 1px 0 #e6dccb;
+
+  /* 背景：画面（クリーム）／カード（温かい白）／くぼみ */
+  --mt-bg-screen: radial-gradient(ellipse at 50% 12%, #fffdf8 10%, #fbf3ea 70%, #f7ece9);
+  --mt-bg-card: #fffdf6;
+  --mt-bg-sunken: #f6efe2;
+  --mt-ink-warm: #3d3222;   /* 見出しの濃い茶（ガチャ・演習カードと同じ）*/
+  --mt-ink-muted: #7a6a4c;  /* 茶系の補足（紙色の上で 4.9:1）*/
+
+  /* レア度（N→R→SR→UR の順に「特別さ」を上げる。色だけでなく枠の太さ・装飾も変える）*/
+  --mt-rare-n-bg: #f3f4f6;   --mt-rare-n-line: #d5dbe1;  --mt-rare-n-ink: #4b5866;
+  --mt-rare-r-bg: #fff6d9;   --mt-rare-r-line: #d9a92a;  --mt-rare-r-ink: #6e4a00;
+  --mt-rare-sr-bg: #f6efff;  --mt-rare-sr-line: #a77be8; --mt-rare-sr-ink: #5b2a9e;
+  --mt-rare-ur-bg: #fff4dc;  --mt-rare-ur-line: #e2a83a; --mt-rare-ur-ink: #7a3e00;
+  --mt-rare-ur-grad: linear-gradient(120deg, #ffe7a6, #ffd1e8 35%, #d9ccff 65%, #c8f0ff);
 }
 @media (min-width: 1100px) {
   :root { --mt-fs-xs: 13px; }

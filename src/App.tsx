@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Smartphone, Home as HomeIcon, BookOpen, Settings, Trophy, Swords, UserRound, Gift } from 'lucide-react';
+import { Smartphone } from 'lucide-react';
+import { BottomNavigation } from './components/ui/BottomNavigation';
 import { ListeningHome as Home } from './components/ListeningHome';
 import { ListeningSubjectSelection } from './components/ListeningSubjectSelection';
 import { LaunchScreen } from './components/LaunchScreen';
@@ -24,6 +25,7 @@ import { ModeSelection } from './components/ModeSelection';
  * ローディング表示を足すと「元には無かった表示」が一瞬出て消えることになり、
  * それ自体が見た目の変化になるため、あえて足していない。
  */
+const StudyCatalog = React.lazy(() => import('./components/StudyCatalog').then(m => ({ default: m.StudyCatalog })));
 const FoundationPage = React.lazy(() =>
   import('./components/FoundationPage').then((m) => ({ default: m.FoundationPage })),
 );
@@ -234,7 +236,8 @@ import { applyOverviewViewport } from './utils/viewportControl';
 import { flushFeedbackQueue, getFeedbackWebhookUrl } from './utils/feedback';
 import { recordUserPresence } from './utils/userRegistry';
 import { ensureRankingEntry } from './utils/leaderboard';
-import { parseStoredStringRecord } from './utils/progress';
+import { parseStoredStringRecord, countSolvedProblemsIn } from './utils/progress';
+import { getChapterIndexOfSubject as getUnitIndexOf } from './data/chapterIndex.generated';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey, completedKey } from './utils/userStorageKeys';
 // 章 × モードごとの保存キー名は utils/quizStorageKeys.ts が唯一の定義
@@ -255,7 +258,7 @@ import type { GrowthPage } from './components/GrowthHub';
 const GrowthHub = React.lazy(() => import('./components/GrowthHub').then(m => ({ default: m.GrowthHub })));
 const MissionToast = React.lazy(() => import('./components/MissionToast').then(m => ({ default: m.MissionToast })));
 
-export type AppState = 'home' | 'mode_selection' | 'chapters' | 'quiz' | 'explanation' | 'learning' | 'intro' | 'study_hub' | 'note_detail' | 'onboarding' | 'logical_tree' | 'settings' | 'leaderboard' | 'mock_exam' | 'subject_selection' | 'advanced_fields' | 'teacher_dashboard' | 'feedback_admin' | 'battle' | 'rika' | 'growth' | 'foundation';
+export type AppState = 'home' | 'mode_selection' | 'chapters' | 'quiz' | 'explanation' | 'learning' | 'intro' | 'study_hub' | 'note_detail' | 'onboarding' | 'logical_tree' | 'settings' | 'leaderboard' | 'mock_exam' | 'subject_selection' | 'advanced_fields' | 'teacher_dashboard' | 'feedback_admin' | 'battle' | 'rika' | 'growth' | 'foundation' | 'study';
 export type AppMode = 'mini_test' | 'practice' | 'learning';
 
 const APP_STATES = new Set<AppState>([
@@ -270,6 +273,7 @@ const APP_STATES = new Set<AppState>([
   'feedback_admin', 'battle', 'growth',
   /** 英文法・英単語を固める（単語・熟語／聞き取りの文法／その他）。下のナビを残す1画面のページ。 */
   'foundation',
+  'study',
   /**
    * 高校入試 理科の入口（演習・まとめ・出題傾向の3画面）。
    *
@@ -504,6 +508,10 @@ export default function App() {
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
   /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
   const [foundationTab, setFoundationTab] = useState<'words' | 'grammar' | 'more'>('words');
+  const [foundationBackTo, setFoundationBackTo] = useState<'home' | 'study'>('home');
+  // 演習する（科目→コンテンツ）。選んだ科目・前回のコンテンツは端末に覚えておく
+  const [studyCatalogSubject, setStudyCatalogSubject] = useState<string | null>(() => localStorage.getItem('study_catalog_subject_v1'));
+  const [studyLastContent, setStudyLastContent] = useState<string | null>(() => localStorage.getItem('study_catalog_last_v1'));
   const [lastQuizResult, setLastQuizResult] = useState<any>(null);
   // 届いているフレンド申請件数（設定ボタンのバッジ表示用）
   const [pendingFriendRequests, setPendingFriendRequests] = useState(0);
@@ -765,9 +773,9 @@ export default function App() {
    * 単元一覧の「戻る」の行き先。固めるページから英文法の演習に入ったときは固めるページへ戻す
    * （ホームへ飛ばすと、どこから来たのか分からなくなる）。
    */
-  const [chaptersBackTo, setChaptersBackTo] = useState<'home' | 'foundation'>('home');
+  const [chaptersBackTo, setChaptersBackTo] = useState<'home' | 'foundation' | 'study'>('home');
   /** 科目を切り替えて、その科目の単元一覧を開く（固めるページから使う） */
-  const openSubjectUnits = (subject: SubjectId, from: 'home' | 'foundation') => {
+  const openSubjectUnits = (subject: SubjectId, from: 'home' | 'foundation' | 'study') => {
     if (!isSubjectEnabled(subject)) return;
     if (subject !== selectedSubject) {
       setSelectedChapterId(null);
@@ -780,6 +788,31 @@ export default function App() {
     setAppMode('practice');
     setChaptersBackTo(from);
     setAppState('chapters');
+  };
+
+  /** 演習する（B2〜B6）：コンテンツを押したら既存の画面へ。科目ごとの分岐はここ1か所だけ（データの action で決まる） */
+  const openStudyContent = (content: import('./data/studyCatalog').StudyContent) => {
+    setStudyLastContent(content.id);
+    localStorage.setItem('study_catalog_last_v1', content.id);
+    if (content.action.kind === 'units') {
+      if (isSubjectId(content.action.subject)) openSubjectUnits(content.action.subject, 'study');
+      return;
+    }
+    setFoundationTab(content.action.tab);
+    setFoundationBackTo('study');
+    setAppState('foundation');
+  };
+  /** 演習するのカードに出す進捗（ホームの「学習状況」と同じ数え方：解いた大問 / 大問数） */
+  const studyProgressOf = (subject: string) => {
+    const chapters = getUnitIndexOf(subject);
+    const total = chapters.reduce((sum, c) => sum + (c.problemCount || 0), 0);
+    if (!total) return undefined;
+    const uid = auth.currentUser?.uid || 'guest';
+    return { solved: Math.min(countSolvedProblemsIn(uid, chapters.map(c => c.id)), total), total };
+  };
+  const setStudySubject = (id: string | null) => {
+    setStudyCatalogSubject(id);
+    if (id) localStorage.setItem('study_catalog_subject_v1', id); else localStorage.removeItem('study_catalog_subject_v1');
   };
 
   const handleSelectSubject = (subject: SubjectId) => {
@@ -1578,7 +1611,7 @@ export default function App() {
                 onBattle={FEATURES.battle ? () => setAppState('battle') : undefined}
               />
             )}
-            {appState === 'home' && <Home onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLogicalTree={() => setAppState('logical_tree')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onRika={FEATURES.rika ? () => { setRikaTab('practice'); setAppState('rika'); } : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => setAppState('foundation')} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
+            {appState === 'home' && <Home onPractice={() => { setFoundationBackTo('home'); setAppState('study'); }} onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLogicalTree={() => setAppState('logical_tree')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onRika={FEATURES.rika ? () => { setRikaTab('practice'); setAppState('rika'); } : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => { setFoundationBackTo('home'); setAppState('foundation'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
             {/* ★ルーティング側の門（4箇所のうちの3番目）★
                 ナビのボタンを隠すだけでは、Home の「ランキングを見る」など
                 別の導線からこの状態になれてしまう。
@@ -1682,8 +1715,8 @@ export default function App() {
                   mode={appMode as 'mini_test' | 'practice'}
                   onChangeSubject={handleChangeStudySubject}
                   onSelectChapter={handleSelectChapter}
-                  onBack={() => setAppState(chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? 'foundation' : studyEntry(selectedSubject) === 'chapters' ? 'home' : 'mode_selection')}
-                  backLabel={chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? '固める' : studyEntry(selectedSubject) === 'chapters' ? 'ホーム' : '学習モード'}
+                  onBack={() => setAppState(chaptersBackTo === 'study' ? 'study' : chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? 'foundation' : studyEntry(selectedSubject) === 'chapters' ? 'home' : 'mode_selection')}
+                  backLabel={chaptersBackTo === 'study' ? '演習' : chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? '固める' : studyEntry(selectedSubject) === 'chapters' ? 'ホーム' : '学習モード'}
                   onChangeField={setSelectedField}
                   rememberedGroup={chapterGroups[`${selectedSubject}:${selectedField}`]}
                   onGroupChange={(group) => setChapterGroups(prev => ({ ...prev, [`${selectedSubject}:${selectedField}`]: group }))}
@@ -1738,12 +1771,23 @@ export default function App() {
             {/* ★英文法・英単語を固める（A1/A17/A18）★
                 リスニング（主役・学習タブ）とは別のページ。下のナビを残したまま1画面で完結させる。
                 英文法の4択演習・単語の例から解くリスニングは、どちらも通常の演習と同じ経路を通す。 */}
+            {appState === 'study' && <React.Suspense fallback={<ScreenLoading />}>
+              <StudyCatalog
+                subjectId={studyCatalogSubject}
+                onSubject={setStudySubject}
+                onContent={openStudyContent}
+                onBack={() => setAppState('home')}
+                lastContentId={studyLastContent}
+                progressOf={(subject) => studyProgressOf(subject)}
+              />
+            </React.Suspense>}
             {appState === 'foundation' && <React.Suspense fallback={<ScreenLoading />}>
               <FoundationPage
                 tab={foundationTab}
                 onTab={setFoundationTab}
                 uid={auth.currentUser?.uid || 'guest'}
-                onBack={() => setAppState('home')}
+                onBack={() => setAppState(foundationBackTo)}
+                backLabel={foundationBackTo === 'study' ? '演習' : undefined}
                 onGrammarUnits={() => openSubjectUnits('english_grammar', 'foundation')}
                 onPractice={(chapter, index) => { setSelectedSubject('english_listening'); setAppMode('practice'); handleSelectChapter(chapter, index, false, { startIndex: index, endIndex: index }, 'practice'); }}
                 onBattle={FEATURES.battle ? () => navigateMain('battle') : undefined}
@@ -1759,7 +1803,9 @@ export default function App() {
                 日本語ラベル化（ホーム／学習／設定）＋aria-labelをaria-currentで現在地を明示
                 アイコンには aria-hidden を付け、ラベルだけがスクリーンリーダーに読まれるよう整理 */}
             {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'quiz' && appState !== 'explanation' && (
-              <nav
+              /* C19 下ナビは共通部品1つ（components/ui/BottomNavigation）。行き先・条件は以前と同じ。
+                 高さは --app-nav-h として公開し、各画面が下の余白の基準にする。 */
+              <BottomNavigation
                 ref={(node: HTMLElement | null) => {
                   if (!node) return;
                   const shell = node.closest<HTMLElement>('.app-shell');
@@ -1769,121 +1815,19 @@ export default function App() {
                   observer.observe(node);
                   return () => observer.disconnect();
                 }}
-                aria-label="メインナビゲーション"
-                /*
-                  ★以前は `pb-safe pt-3 … pb-6` と下パディングを2つ書いていた★
-                  Tailwind（CSS）では後から出てくる pb-6 が勝つため、
-                  pb-safe の env(safe-area-inset-bottom) は黙って捨てられていた。
-                  ＝ iPhone のホームインジケータ領域ぶんの余白が確保されず、
-                    ナビのラベルがぎりぎりまで下がっていた。
-
-                  ここでは 1 つの pb に calc で統合し、
-                  「基本の余白 ＋ 端末の安全領域」を確実に両方effectiveにする。
-                  高さは各画面が余白を予約するときの基準にもなるので、
-                  --app-nav-h として公開する（下の画面側で参照する）。
-                */
-                className="app-bottom-nav fixed bottom-0 left-0 right-0 bg-[#FDFBF7]/95 backdrop-blur-md border-t border-[#D1D5DB]/65 flex justify-around items-center px-2 md:px-10 pt-3 pb-[calc(0.9rem+env(safe-area-inset-bottom))] z-[60] shadow-sm"
-              >
-                <button 
-                  onClick={() => navigateMain('home')}
-                  aria-label="ホーム画面へ移動"
-                  aria-current={appState === 'home' ? 'page' : undefined}
-                  className={`flex flex-col items-center justify-center min-w-0 flex-1 gap-1.5 min-h-[44px] transition-colors ${appState === 'home' ? 'text-[#1B2631] font-bold' : 'text-[#4B5563]/60 hover:text-[#1B2631]/80'}`}
-                >
-                  <HomeIcon className="w-5 h-5 stroke-[2.2]" aria-hidden="true" />
-                  <span className="text-[10px] tracking-wider font-modern">ホーム</span>
-                </button>
-                
-                <button 
-                  onClick={() => {
-                    if (!isLearningScreen(appState)) {
-                      navigateMain(safeStudyResume(selectedSubject, lastLearnState, selectedChapterId) as AppState);
-                    }
-                  }}
-                  aria-label="学習画面へ移動"
-                  aria-current={isLearningScreen(appState) ? 'page' : undefined}
-                  className={`flex flex-col items-center justify-center min-w-0 flex-1 gap-1.5 min-h-[44px] transition-colors ${isLearningScreen(appState) ? 'text-[#1B2631] font-bold' : 'text-[#4B5563]/60 hover:text-[#1B2631]/80'}`}
-                >
-                  <BookOpen className="w-5 h-5 stroke-[2.2]" aria-hidden="true" />
-                  <span className="text-[10px] tracking-wider font-modern">学習</span>
-                </button>
-
-                {/* ===== 対戦（オンライン） =====
-
-                    ★ナビに足した理由★
-                      利用者の指示「オンラインをメインにするUIにしていかんと
-                      だめよね？…ボタンの配置変えるぐらい」。
-                      それまで対戦への入口は★ホームの小カード1つだけ★で、
-                      ナビには席が無かった。つまり
-                        「対戦したい」→ ホームへ戻る → 下までスクロール → 押す
-                      という道しかなく、学習中に思い立っても2手かかる。
-                      ナビはどの画面からでも1タップで届く唯一の場所なので、
-                      主機能はここに席を持っていなければならない。
-
-                    ★ランキングより前に置いている理由★
-                      ランキングは「対戦した結果」を見る画面なので、
-                      対戦より先に並んでいると順序が逆になる。
-
-                    ★フラグで消せるようにしてある★
-                      FEATURES.battle が false のときは席ごと消える。
-                      ホームのカード（Home.tsx の主CTA）と同じ条件なので、
-                      片方だけ残って「見えるのに入れない」にはならない。 */}
-                {FEATURES.battle && (
-                <button
-                  onClick={() => navigateMain('battle')}
-                  aria-label="オンライン対戦へ移動"
-                  aria-current={appState === 'battle' ? 'page' : undefined}
-                  className={`flex flex-col items-center justify-center min-w-0 flex-1 gap-1.5 min-h-[44px] transition-colors ${appState === 'battle' ? 'text-[#2E86C1] font-bold' : 'text-[#4B5563]/60 hover:text-[#2E86C1]/80'}`}
-                >
-                  <Swords className="w-5 h-5 stroke-[2.2]" aria-hidden="true" />
-                  <span className="text-[10px] tracking-wider font-modern">対戦</span>
-                </button>
-                )}
-
-                {/* ★ここは「4箇所」のうちの1番目（ナビ）★
-                    ランキングは現在公開中（FEATURES.ranking === true）なので
-                    見た目は今までと一切変わらない。
-                    それでもフラグを通しておくのは、
-                    ★止めたくなった日に「ここも直す」を思い出さなくて済む★
-                    ようにするため。フラグを後から足す作業が、
-                    今回の「隠したつもりで入れた」の原因そのものである。 */}
-                <button type="button" onClick={() => { setGrowthPage('gacha'); navigateMain('growth'); }}
-                  aria-label="ガチャ・マイページへ移動" aria-current={appState === 'growth' ? 'page' : undefined}
-                  className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5 min-h-[44px] ${appState === 'growth' ? 'text-amber-800 font-bold' : 'text-slate-500'}`}>
-                  <Gift className="w-5 h-5" aria-hidden="true" /><span className="text-[10px]">ガチャ</span>
-                </button>
-                {FEATURES.ranking && (
-                <button 
-                  onClick={() => navigateMain('leaderboard')}
-                  aria-label="ランキング画面へ移動"
-                  aria-current={appState === 'leaderboard' ? 'page' : undefined}
-                  className={`flex flex-col items-center justify-center min-w-0 flex-1 gap-1.5 min-h-[44px] transition-colors ${appState === 'leaderboard' ? 'text-[#1B2631] font-bold' : 'text-[#4B5563]/60 hover:text-[#1B2631]/80'}`}
-                >
-                  <Trophy className="w-5 h-5 stroke-[2.2]" aria-hidden="true" />
-                  <span className="text-[10px] tracking-wider font-modern">ランキング</span>
-                </button>
-                )}
-
-                <button 
-                  onClick={() => navigateMain('settings')}
-                  aria-label={pendingFriendRequests > 0 ? `設定画面へ移動（フレンド申請が${pendingFriendRequests}件届いています）` : '設定画面へ移動'}
-                  aria-current={appState === 'settings' ? 'page' : undefined}
-                  className={`relative flex flex-col items-center justify-center min-w-0 flex-1 gap-1.5 min-h-[44px] transition-colors ${appState === 'settings' ? 'text-[#1B2631] font-bold' : 'text-[#4B5563]/60 hover:text-[#1B2631]/80'}`}
-                >
-                  <div className="relative">
-                    <Settings className="w-5 h-5 stroke-[2.2]" aria-hidden="true" />
-                    {pendingFriendRequests > 0 && (
-                      <span
-                        className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-[#E74C3C] text-white text-[9px] font-bold flex items-center justify-center shadow-sm"
-                        aria-hidden="true"
-                      >
-                        {pendingFriendRequests > 9 ? '9+' : pendingFriendRequests}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-[10px] tracking-wider font-modern">設定</span>
-                </button>
-              </nav>
+                items={[
+                  { id: 'home', label: 'ホーム', ariaLabel: 'ホーム画面へ移動', current: appState === 'home', onClick: () => navigateMain('home') },
+                  { id: 'study', label: '学習', ariaLabel: '学習画面へ移動', current: isLearningScreen(appState), onClick: () => {
+                    if (!isLearningScreen(appState)) navigateMain(safeStudyResume(selectedSubject, lastLearnState, selectedChapterId) as AppState);
+                  } },
+                  // 対戦はランキングより前（結果を見る画面より先）。FEATURES.battle が false なら席ごと消す
+                  { id: 'battle', label: '対戦', ariaLabel: 'オンライン対戦へ移動', current: appState === 'battle', hidden: !FEATURES.battle, onClick: () => navigateMain('battle') },
+                  { id: 'gacha', label: 'ガチャ', ariaLabel: 'ガチャ・マイページへ移動', current: appState === 'growth', onClick: () => { setGrowthPage('gacha'); navigateMain('growth'); } },
+                  { id: 'ranking', label: 'ランキング', ariaLabel: 'ランキング画面へ移動', current: appState === 'leaderboard', hidden: !FEATURES.ranking, onClick: () => navigateMain('leaderboard') },
+                  { id: 'settings', label: '設定', ariaLabel: pendingFriendRequests > 0 ? `設定画面へ移動（フレンド申請が${pendingFriendRequests}件届いています）` : '設定画面へ移動',
+                    current: appState === 'settings', badge: pendingFriendRequests, onClick: () => navigateMain('settings') },
+                ]}
+              />
             )}
           </div>
         </div>

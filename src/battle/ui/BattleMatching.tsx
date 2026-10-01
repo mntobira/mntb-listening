@@ -60,6 +60,7 @@ import {
   INK_SUB,
   LINE,
 } from './BattleParts';
+import { ConnectionCheckPanel } from './ConnectionCheckPanel';
 
 /**
  * これ以上待ったら「AI と対戦しませんか」と案内する秒数。
@@ -410,6 +411,7 @@ export function BattleMatching({
         </ol>
 
         {error && <BattleNotice message={error} />}
+        {error && <ConnectionCheckPanel autoRun compact />}
 
         {elapsed >= SUGGEST_AI_AFTER_SEC && !error && (
           <BattleNotice

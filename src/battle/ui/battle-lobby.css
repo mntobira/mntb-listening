@@ -20,7 +20,7 @@
 .arena-lobby-side button:active { transform: translateY(1px); }
 .arena-lobby-main { --size: 128px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: var(--size); height: var(--size); border-radius: 50%; background: radial-gradient(circle at 50% 35%, #e9f7fd, #bfe5f4 70%, #9fd3ea); box-shadow: 0 0 0 5px #fff, 0 0 0 7px #bfe0ee, 0 6px 14px rgba(59, 135, 168, .25); color: #2d5b75; }
 .arena-lobby-main svg { width: 30px; height: 30px; }
-.arena-lobby-main strong { font-family: var(--font-handwriting, inherit); font-size: 20px; font-weight: 900; line-height: 1.1; }
+.arena-lobby-main strong { font-family: var(--mt-font-display); font-size: 20px; font-weight: 900; line-height: 1.1; }
 .arena-lobby-main small { font-size: 12px; font-weight: 700; }
 .arena-lobby-main:active { transform: scale(.97); }
 .arena-lobby-deck button:focus-visible { outline: none; box-shadow: 0 0 0 3px #fff, 0 0 0 5px #2458a6; }
@@ -87,3 +87,27 @@
   #battle-shell:not(.arena-menu) [id^="battle-subject-"] p { margin-top: 0; }
   #battle-shell:not(.arena-menu) .grid.gap-2\.5 { gap: 6px; }
 }
+
+/* B9・B13（2026-10-01）ロビーの情報を3層に：ユーザー情報 → 今すぐ対戦 → その他。
+   見出しは小さなラベルだけにして、画面の高さはほぼ増やさない。 */
+.arena-lobby-label { grid-column: 1/-1; margin: 2px 2px -2px; font-size: 12px; font-weight: 800; letter-spacing: .08em; color: #8b7a5c; line-height: 1.2; }
+.arena-lobby-sub { grid-column: 1/-1; display: flex; flex-direction: column; gap: 4px; margin-top: 2px; padding-top: 6px; border-top: 1.5px dashed #e6dac3; }
+.arena-lobby-sub .arena-menu-links { margin-top: 0 !important; }
+.arena-lobby-sub .arena-rules-help summary { min-height: 44px; }
+@media (max-height: 640px) {
+  .arena-lobby-label { margin-block: 0 -3px; }
+  .arena-lobby-sub { padding-top: 3px; gap: 2px; }
+  .arena-lobby-sub > .arena-lobby-label { display: none; }
+}
+
+/* C18（2026-10-01）対戦も共通の文字体系：見出しは丸ゴシック、本文はゴシック。ゲーム性（色・札・演出）はそのまま */
+#battle-shell .font-handwriting, .arena-menu .font-handwriting { font-family: var(--mt-font-display) !important; }
+.arena-menu-header h1 { font: var(--mt-text-lg) !important; color: var(--mt-ink-warm); }
+.arena-menu-header > button { border: var(--mt-border); border-radius: var(--mt-r-pill); background: var(--mt-bg-card); box-shadow: var(--mt-shadow-press); padding: 0 12px; min-height: 44px; font: 700 13px/1 var(--mt-font-body); }
+.arena-menu-player { border-radius: var(--mt-radius-lg) !important; }
+.arena-menu-player strong { font-family: var(--mt-font-display); }
+.arena-lobby-side { border-radius: var(--mt-radius-lg) !important; }
+.arena-lobby-side strong { font-family: var(--mt-font-display); }
+.arena-lobby-side button { border-radius: var(--mt-radius-md) !important; }
+.arena-menu-links button { border-radius: var(--mt-radius-md) !important; box-shadow: var(--mt-shadow-press); }
+.arena-lobby-label { font: var(--mt-text-kicker) !important; letter-spacing: var(--mt-kicker-spacing) !important; color: var(--mt-ink-muted) !important; }

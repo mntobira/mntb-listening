@@ -11,6 +11,7 @@ import { listBlockedUsers, subscribeBlocked, unblockUser, type BlockedUser } fro
 import { deleteAccount } from './accountDeletion';
 import { LegalDialog, type LegalDoc } from '../legal/LegalDialog';
 import { SUPPORT_EMAIL } from '../legal/legalText';
+import { ListItem } from '../../components/ui';
 
 export function AccountSafetySection({ onDeleted }: { onDeleted?: () => void }) {
   const [blocked, setBlocked] = useState<BlockedUser[]>(() => listBlockedUsers());
@@ -40,14 +41,16 @@ export function AccountSafetySection({ onDeleted }: { onDeleted?: () => void }) 
   };
 
   return (
-    <section className="bg-white border border-gray-150 p-3 rounded-2xl shadow-sm space-y-2" aria-labelledby="account-safety-title">
-      <h3 id="account-safety-title" className="text-xs font-bold text-gray-500 uppercase tracking-wider">安全とアカウント</h3>
+    <section className="ps-safety space-y-2" aria-labelledby="account-safety-title">
+      <h3 id="account-safety-title" className="sr-only">安全とアカウント</h3>
 
-      <div className="grid grid-cols-3 gap-1.5">
-        <button type="button" className="account-link" onClick={() => setLegal('terms')}><FileText size={14} aria-hidden="true" />利用規約</button>
-        <button type="button" className="account-link" onClick={() => setLegal('privacy')}><Shield size={14} aria-hidden="true" />プライバシー</button>
-        <a className="account-link" href={`mailto:${SUPPORT_EMAIL}`}><Mail size={14} aria-hidden="true" />お問い合わせ</a>
+      {/* C15 その他：共通の一覧（ListItem）。中身・行き先は以前と同じ */}
+      <div className="mt-list">
+        <ListItem icon={<FileText size={16} />} title="利用規約" onClick={() => setLegal('terms')} />
+        <ListItem icon={<Shield size={16} />} title="プライバシー" onClick={() => setLegal('privacy')} />
+        <ListItem icon={<Mail size={16} />} title="お問い合わせ" sub={SUPPORT_EMAIL} href={`mailto:${SUPPORT_EMAIL}`} />
       </div>
+      <div className="mt-card space-y-2">
 
       <div>
         <p className="flex items-center gap-1 text-xs font-bold"><Ban size={13} aria-hidden="true" />ブロック中の人（{blocked.length}）</p>
@@ -88,6 +91,7 @@ export function AccountSafetySection({ onDeleted }: { onDeleted?: () => void }) 
           )}
         </div>
       )}
+      </div>
       {legal && <LegalDialog doc={legal} onClose={() => setLegal(null)} />}
     </section>
   );

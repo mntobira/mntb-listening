@@ -94,7 +94,7 @@ export function GoogleLinkBanner({
               置くという、このファイル冒頭の設計方針）。
               文を足すのではなく、既にある文の言葉を置き換えた。
               leading-snug の1〜2行のまま。 */}
-          <p className="flex-1 min-w-0 text-[11px] font-modern leading-snug text-[#5D6D7E]">
+          <p className="flex-1 min-w-0 text-xs font-modern leading-snug text-[#5D6D7E]">
             <b className="text-[#1B2631]">ゲストで利用中です。</b>
             連携すると<b className="text-[#2E86C1]">オンライン対戦</b>ができ、記録も端末を変えても残ります。
           </p>
@@ -102,7 +102,7 @@ export function GoogleLinkBanner({
             type="button"
             onClick={handleLink}
             disabled={state === 'signing'}
-            className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#E8688E] to-[#D9466E] px-3 py-1.5 text-[11px] font-bold text-white shadow-[0_8px_18px_-10px_rgba(217,70,110,0.9)] transition-colors hover:from-[#E0567F] hover:to-[#C93C61] disabled:opacity-50"
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#E8688E] to-[#D9466E] px-3 py-1.5 text-xs font-bold text-white shadow-[0_8px_18px_-10px_rgba(217,70,110,0.9)] transition-colors hover:from-[#E0567F] hover:to-[#C93C61] disabled:opacity-50"
           >
             {state === 'signing' ? <Loader2 size={13} className="animate-spin" aria-hidden="true" /> : <CloudUpload size={13} aria-hidden="true" />}
             連携する
@@ -122,7 +122,7 @@ export function GoogleLinkBanner({
         {error && (
           <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-[#E74C3C]/40 bg-[#FDEDEC] px-2.5 py-1.5" role="alert">
             <AlertTriangle size={13} className="mt-[1px] shrink-0 text-[#C0392B]" aria-hidden="true" />
-            <p className="text-[10px] font-modern leading-relaxed text-[#C0392B]">{error}</p>
+            <p className="text-xs font-modern leading-relaxed text-[#C0392B]">{error}</p>
           </div>
         )}
       </div>
@@ -167,13 +167,13 @@ export function GoogleLinkBanner({
               inline 版と同じ理由で、対戦ができないことを書く。
               下の利点リスト（GOOGLE_LINK_BENEFITS）の1行目も対戦なので、
               説明文と利点で話がつながる。 */}
-          <p className="mb-2.5 text-[11px] font-modern leading-relaxed text-[#5D6D7E]">
+          <p className="mb-2.5 text-xs font-modern leading-relaxed text-[#5D6D7E]">
             いまは<b className="text-[#D9466E]">ゲスト利用</b>のため、<b className="text-[#1B2631]">オンライン対戦が使えません</b>。
             学習記録もこの端末の中だけに保存され、ブラウザのデータを消すと消えてしまいます。
           </p>
           <ul className="space-y-1">
             {GOOGLE_LINK_BENEFITS.map((benefit) => (
-              <li key={benefit} className="flex items-start gap-1.5 text-[11px] font-modern leading-snug text-[#5D6D7E]">
+              <li key={benefit} className="flex items-start gap-1.5 text-xs font-modern leading-snug text-[#5D6D7E]">
                 <Check size={13} className="mt-[1px] shrink-0 text-[#E8688E]" aria-hidden="true" />
                 <span>{benefit}</span>
               </li>
@@ -192,7 +192,7 @@ export function GoogleLinkBanner({
               ? <><Loader2 size={16} className="animate-spin" aria-hidden="true" />連携中…</>
               : <><CloudUpload size={16} aria-hidden="true" />いま連携する</>}
           </button>
-          <p className="mt-1.5 text-center text-[10px] font-modern leading-snug text-[#8895A0]">
+          <p className="mt-1.5 text-center text-xs font-modern leading-snug text-[#8895A0]">
             連携は無料です。いまの学習記録はそのまま引き継がれます。
           </p>
         </div>
@@ -201,7 +201,7 @@ export function GoogleLinkBanner({
       {error && (
         <div className="mt-3 flex items-start gap-2 rounded-xl border border-[#E74C3C]/40 bg-[#FDEDEC] px-3 py-2" role="alert">
           <AlertTriangle size={14} className="mt-0.5 shrink-0 text-[#C0392B]" aria-hidden="true" />
-          <p className="text-[11px] font-modern leading-relaxed text-[#C0392B]">{error}</p>
+          <p className="text-xs font-modern leading-relaxed text-[#C0392B]">{error}</p>
         </div>
       )}
     </motion.section>
