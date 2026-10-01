@@ -28,6 +28,13 @@ export interface StudyContent {
   icon: StudyIcon;
   /** 主役のコンテンツ（カードを少し強調する） */
   primary?: boolean;
+  /**
+   * 並べる場所（2026-10-01 夜）。
+   *   'practice' … 問題を解くもの（リスニング・英文法・英単語の4択）。単元と同じ列に並べる
+   *   'memorize' … 覚えるための暗記帳（英単語帳）。問題とは混ぜず、最初から別の枠に置く
+   * 省略は 'practice'。
+   */
+  section?: 'practice' | 'memorize';
   /** 進捗の集計に使う科目ID（単元一覧を持つコンテンツだけ） */
   progressSubject?: string;
   action: StudyAction;
@@ -67,17 +74,19 @@ export const STUDY_CATALOG: readonly StudySubject[] = [
         action: { kind: 'units', subject: 'english_grammar' },
       },
       {
-        id: 'english_vocabulary', title: '英単語帳', icon: 'letters',
+        // 2026-10-01 D：英単語も英文法・リスニングと同じように「4択の問題」として解ける
+        // 2026-10-01 夜：問題の方を単元の列に並べる（暗記帳は下の別枠）
+        id: 'english_vocab_quiz', title: '英単語・英熟語', icon: 'pen',
+        description: '4択の問題を10問ずつ。間違いは復習ノートへ',
+        meta: 'レベル別・英→日／日→英',
+        action: { kind: 'vocabQuiz' },
+      },
+      {
+        // ★暗記帳は「単語」の中のタブではなく、最初から別の枠（覚える）に置く（2026-10-01 夜）★
+        id: 'english_vocabulary', title: '英単語帳（暗記帳）', icon: 'letters', section: 'memorize',
         description: '100語ずつめくって覚える。意味・英語を隠せる',
         meta: `${VOCABULARY_COUNT.toLocaleString()}語・レベル別`,
         action: { kind: 'foundation', tab: 'words' },
-      },
-      {
-        // 2026-10-01 D：英単語も英文法・リスニングと同じように「4択の問題」として解ける
-        id: 'english_vocab_quiz', title: '英単語の4択', icon: 'pen',
-        description: '10問ずつ解いて、間違いは復習ノートへ',
-        meta: 'レベル別・英→日／日→英',
-        action: { kind: 'vocabQuiz' },
       },
     ],
   },

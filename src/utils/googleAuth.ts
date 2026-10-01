@@ -27,7 +27,6 @@
  */
 
 import {
-  OAuthProvider,
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
@@ -95,25 +94,11 @@ export function describeAuthError(error: any): string {
   return String(error?.message || 'ログインに失敗しました。時間をおいてお試しください。');
 }
 
-/** ログイン方法 */
-export type SignInMethod = 'google' | 'apple';
+/** ログイン方法（2026-10-01：App Store 申請をいったん取りやめたため Google のみ） */
+export type SignInMethod = 'google';
 
-/**
- * Apple でサインイン（App Store Review Guideline 4.8）。
- * Google などの外部ログインを提供するアプリは、同等の選択肢として
- * 「Sign in with Apple」も出す必要がある。
- * ★Firebase コンソールで Apple プロバイダを有効化すること★（docs/APP_STORE.md）
- */
-export function appleProvider(): OAuthProvider {
-  const p = new OAuthProvider('apple.com');
-  p.addScope('email');
-  p.addScope('name');
-  p.setCustomParameters({ locale: 'ja' });
-  return p;
-}
-
-function providerFor(method: SignInMethod): AuthProvider {
-  return method === 'apple' ? appleProvider() : provider;
+function providerFor(_method: SignInMethod): AuthProvider {
+  return provider;
 }
 
 /**
@@ -122,7 +107,7 @@ function providerFor(method: SignInMethod): AuthProvider {
  */
 export async function signInWith(method: SignInMethod): Promise<GoogleSignInOutcome> {
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) return { ok: false, message: 'オンライン機能は初期設定が必要です。運営者はREADMEに従って専用Firebaseを設定してください。ゲストで演習・AI対戦を試せます。' };
-  const label = method === 'apple' ? 'Apple' : 'Google';
+  const label = 'Google';
   if (isInAppBrowser()) {
     return {
       ok: false,
@@ -147,7 +132,7 @@ export async function signInWith(method: SignInMethod): Promise<GoogleSignInOutc
       }
     }
     if (code.includes('operation-not-allowed')) {
-      return { ok: false, message: `${label} でのログインは現在準備中です。Google でログインしてください。` };
+      return { ok: false, message: `${label} でのログインは現在準備中です。時間をおいてお試しください。` };
     }
     return { ok: false, message: describeAuthError(error) };
   }
@@ -156,11 +141,6 @@ export async function signInWith(method: SignInMethod): Promise<GoogleSignInOutc
 /** Google アカウントで連携する（既存の呼び出し口） */
 export function signInWithGoogle(): Promise<GoogleSignInOutcome> {
   return signInWith('google');
-}
-
-/** Apple でサインインする */
-export function signInWithApple(): Promise<GoogleSignInOutcome> {
-  return signInWith('apple');
 }
 
 /**

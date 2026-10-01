@@ -6,6 +6,7 @@ import { VOCAB_LEVELS, type ListeningWord, type VocabularyData } from '../data/l
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { stopSpeech, isSpeechSupported } from '../utils/listeningSpeech';
 import { say } from './foundationShared';
+import { VOCAB_PREF_KEY } from '../utils/vocabGoal';
 
 /**
  * 単語・熟語タブ（A4・A19）。
@@ -27,7 +28,7 @@ export const PRESETS = [
   { id: 'custom', label: '志望校別', full: '志望校別', levels: null },
 ] as const;
 export type PresetId = typeof PRESETS[number]['id'];
-const PREF_KEY = 'foundation_prefs_v1';
+const PREF_KEY = VOCAB_PREF_KEY;
 /** 単語帳の1ページ＝100語（2026-10-01 D：100語ずつめくる） */
 export const WORDBOOK_PAGE = 100;
 const PAGE = WORDBOOK_PAGE;

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BookOpen, ChevronLeft, ChevronRight, Info, PenLine, Repeat2, Swords, X } from 'lucide-react';
+import { ChevronLeft, Info, X } from 'lucide-react';
 import { VOCABULARY_COUNT } from '../data/listeningVocabularyMeta.generated';
-import { getSubjectStats } from '../data/chapterIndex.generated';
 import { stopSpeech } from '../utils/listeningSpeech';
 import { useSupportProgress } from './foundationShared';
 import { FoundationWords } from './FoundationWords';
@@ -40,11 +39,13 @@ export interface FoundationPageProps {
 }
 
 export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = 'ホーム', onGrammarUnits, onPractice, onBattle, onReview, onListening }: FoundationPageProps) {
-  const tab = rawTab === 'grammar' ? 'words' : rawTab;
+  // ★2026-10-01 夜：暗記帳（単語帳）と問題（4択）は1ページの中のタブで分けず、別々のページにする★
+  //   「演習する」で 問題＝他の単元と同じ列、暗記帳＝「覚える」の別枠 から入る。'more'（その他）は廃止して暗記帳へ。
+  const tab: 'words' | 'quiz' = rawTab === 'quiz' ? 'quiz' : 'words';
+  void onGrammarUnits; void onBattle; void onReview; void onListening;
   const { progress, error, mark } = useSupportProgress(uid);
   const [infoOpen, setInfoOpen] = useState(false);
   const known = useMemo(() => new Set(progress.words), [progress.words]);
-  const grammarStats = getSubjectStats('english_grammar');
 
   useEffect(() => () => { stopSpeech(); document.querySelectorAll<HTMLAudioElement>('.fd-page audio').forEach(a => a.pause()); }, []);
   useEffect(() => { stopSpeech(); setInfoOpen(false); }, [tab]);
@@ -53,7 +54,9 @@ export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = '�
   return <main className="fd-page" data-foundation data-tab={tab}>
     <header className="fd-head">
       <button type="button" className="fd-back" onClick={onBack} aria-label={`${backLabel}へ戻る`}><ChevronLeft size={18} aria-hidden="true" /><span>{backLabel}</span></button>
-      <div className="fd-head-title"><h1>英単語・英熟語</h1><p>単語帳で覚えて、4択で確かめる。</p></div>
+      <div className="fd-head-title">{tab === 'quiz'
+        ? <><h1>英単語・英熟語</h1><p>4択の問題で確かめる。</p></>
+        : <><h1>英単語帳（暗記帳）</h1><p>100語ずつめくって覚える。</p></>}</div>
       <div className="fd-info">
         <button type="button" className="fd-info-btn" aria-expanded={infoOpen} aria-controls="fd-info-pop" aria-label="保存と収録についての説明" onClick={() => setInfoOpen(v => !v)}><Info size={18} aria-hidden="true" /></button>
         {infoOpen && <div id="fd-info-pop" role="dialog" aria-label="保存と収録について" className="fd-info-pop">
@@ -67,22 +70,11 @@ export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = '�
       </div>
     </header>
 
-    <div className="mt-segment fd-tabs" role="tablist" aria-label="英単語の使い方">
-      <button role="tab" aria-selected={tab === 'words'} onClick={() => onTab('words')}>単語帳</button>
-      <button role="tab" aria-selected={tab === 'quiz'} onClick={() => onTab('quiz')}>4択で解く</button>
-      <button role="tab" aria-selected={tab === 'more'} onClick={() => onTab('more')}>その他</button>
-    </div>
     {error && <p role="alert" className="fd-error">{error}</p>}
 
     {tab === 'words' && <FoundationWords known={known} onMark={(id, done) => mark('words', id, done)} onPractice={onPractice} />}
 
     {tab === 'quiz' && <VocabQuiz uid={uid} known={known} onMark={(id) => mark('words', id, true)} onWordbook={() => onTab('words')} />}
 
-    {tab === 'more' && <section className="fd-panel fd-more" aria-label="その他の固め方">
-      {onBattle && <button type="button" className="fd-more-card" data-kind="battle" onClick={onBattle}><Swords size={22} aria-hidden="true" /><span><strong>対戦で固める</strong><small>英文法・英単語もAI・友だち・全国対戦で</small></span><ChevronRight size={18} aria-hidden="true" /></button>}
-      <button type="button" className="fd-more-card" data-kind="grammar" onClick={onGrammarUnits}><PenLine size={22} aria-hidden="true" /><span><strong>英文法の4択演習</strong><small>全{grammarStats.chapters ?? 20}単元・単元ごとに正答率を記録</small></span><ChevronRight size={18} aria-hidden="true" /></button>
-      {onReview && <button type="button" className="fd-more-card" data-kind="review" onClick={onReview}><Repeat2 size={22} aria-hidden="true" /><span><strong>復習ノート</strong><small>間違えた問題を解き直す</small></span><ChevronRight size={18} aria-hidden="true" /></button>}
-      {onListening && <button type="button" className="fd-more-card" data-kind="listening" onClick={onListening}><BookOpen size={22} aria-hidden="true" /><span><strong>リスニングへ</strong><small>メイン：第1問A〜第6問B</small></span><ChevronRight size={18} aria-hidden="true" /></button>}
-    </section>}
   </main>;
 }

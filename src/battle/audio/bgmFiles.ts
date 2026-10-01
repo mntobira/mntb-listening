@@ -48,7 +48,7 @@ export const BGM_FILES: Readonly<Partial<Record<BgmFileKey, BgmFileSpec>>> = {
   // 2026-10-01 利用者が2曲（y005「夕凪」・w001「風の列車」）から「落ち着いている方」として選定。
   // 夕凪＝ピアノ中心・ゆったり（高域ほぼ無し）→ 待合室。風の列車はテンポが速くにぎやか → 対戦。
   // 末尾3秒をフェードアウトして曲頭（ピアノの入り）へ戻る。音量は -20 LUFS にそろえた。
-  waiting: { url: '/bgm/battle/waiting.mp3', dropSec: 0, loopStartSec: 0, loopEndSec: 81.5, gain: 0.5,
+  waiting: { url: '/bgm/battle/waiting.mp3', dropSec: 0, loopStartSec: 0, loopEndSec: 81.5, gain: 0.6,
     license: 'フリー音源「夕凪」作曲：やっすん／配布元：創作堂さくら紅葉（https://yukizakura.net/）。利用規約第6条：商用・非商用を問わず利用可、カット・ループ調整などの加工可、配布元とURLの記載が条件' },
   // 2026-10-01 利用者の指定：「風の列車」は対戦の曲に。★リスニング対戦には付けない★
   //   （BattleLiveStage：リスニングは問題の音声と重ならないよう、問題中は BGM を鳴らさない。カウントダウン中は待合室の曲）

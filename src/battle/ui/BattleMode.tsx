@@ -31,7 +31,8 @@ import { ensureBattleRankingEntry } from '../data/battleRanking';
 import { battleAudio } from '../audio/battleAudio';
 import { useBattleAudioSettings } from '../hooks/useBattleAudio';
 import { auth } from '../../firebase';
-import type { AiLevel } from '../core/aiOpponent';
+import type { AiLevel, AiProfile } from '../core/aiOpponent';
+import type { GhostReason } from '../core/matchFallback';
 import { BattleAiRoomScreen } from './BattleAiRoomScreen';
 import { BattleAiSelect } from './BattleAiSelect';
 import { BattleFriendJoin } from './BattleFriendJoin';
@@ -160,6 +161,8 @@ export function BattleMode({
    * key に使って BattleAiRoomScreen を作り直す（内部状態を捨てる）。
    */
   const [aiMatchNo, setAiMatchNo] = useState(0);
+  /** 全国対戦で相手がいなかったときの AI プレイヤー（ai-room を「全国対戦」として見せる） */
+  const [ghost, setGhost] = useState<{ profile: AiProfile; reason: GhostReason } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -328,8 +331,16 @@ export function BattleMode({
           //   結局また待つことになる）。
           //   代わりに AI 対戦を出す。同じ教科で、押した瞬間に始まる。
           onSwitchToAi={() => {
+            setGhost(null);
             setAiMatchNo((n) => n + 1);
             setScreen('ai-level');
+          }}
+          onGhostMatch={(g) => {
+            setGhost(g);
+            setQuestionCount(undefined);
+            setChapterId(undefined);
+            setAiMatchNo((n) => n + 1);
+            setScreen('ai-room');
           }}
         />
       );
@@ -356,6 +367,7 @@ export function BattleMode({
           subject={subject}
           onPick={(level) => {
             setAiLevel(level);
+            setGhost(null);
             setAiMatchNo((n) => n + 1);
             setScreen('ai-room');
           }}
@@ -370,10 +382,15 @@ export function BattleMode({
           subject={subject}
           questionCount={questionCount}
           chapterId={chapterId}
-          level={aiLevel}
-          onExit={leaveRoom}
-          onRematch={() => setAiMatchNo((n) => n + 1)}
-          onChangeLevel={() => setScreen('ai-level')}
+          level={ghost?.profile.level ?? aiLevel}
+          ghost={ghost ?? undefined}
+          onExit={(m) => { setGhost(null); leaveRoom(m); }}
+          // ★AI プレイヤー戦の「もう1回」は、もう一度全国の人をさがす★（人が来ていればその人と組む）
+          onRematch={() => {
+            if (ghost) { setGhost(null); setScreen('matching'); return; }
+            setAiMatchNo((n) => n + 1);
+          }}
+          onChangeLevel={() => { setGhost(null); setScreen('ai-level'); }}
           onPractice={onPractice}
           onActiveChange={onActiveChange}
           onOpenProfile={() => setScreen('profile')}

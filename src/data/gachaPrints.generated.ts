@@ -207,8 +207,8 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [
     "category": "演習プリント",
     "file": "/prints/print_c_inorganic.pdf",
     "thumb": "/prints/thumbs/print_c_inorganic.webp",
-    "pages": 11,
-    "kb": 649
+    "pages": 23,
+    "kb": 300
   },
   {
     "id": "print_math_prob",
@@ -262,13 +262,13 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [
   },
   {
     "id": "print_math_basic_all",
-    "label": "数学Ⅰ・A・Ⅱ・B・Ⅲ・C 基礎〜標準 総まとめ",
+    "label": "数学Ⅰ・A・Ⅱ・B・Ⅲ・C 基礎〜標準 総まとめ114題",
     "subject": "math",
     "category": "演習プリント",
     "file": "/prints/print_math_basic_all.pdf",
     "thumb": "/prints/thumbs/print_math_basic_all.webp",
-    "pages": 17,
-    "kb": 686
+    "pages": 33,
+    "kb": 299
   },
   {
     "id": "print_math_quadratic_weekly",
@@ -417,8 +417,8 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [
     "category": "演習プリント",
     "file": "/prints/print_rika_1.pdf",
     "thumb": "/prints/thumbs/print_rika_1.webp",
-    "pages": 13,
-    "kb": 722
+    "pages": 28,
+    "kb": 363
   },
   {
     "id": "print_rika_2",
@@ -427,8 +427,8 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [
     "category": "演習プリント",
     "file": "/prints/print_rika_2.pdf",
     "thumb": "/prints/thumbs/print_rika_2.webp",
-    "pages": 13,
-    "kb": 605
+    "pages": 28,
+    "kb": 307
   },
   {
     "id": "print_rika_3",
@@ -437,8 +437,8 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [
     "category": "演習プリント",
     "file": "/prints/print_rika_3.pdf",
     "thumb": "/prints/thumbs/print_rika_3.webp",
-    "pages": 13,
-    "kb": 639
+    "pages": 25,
+    "kb": 279
   },
   {
     "id": "print_rank_cb",

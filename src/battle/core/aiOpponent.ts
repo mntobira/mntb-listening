@@ -275,10 +275,58 @@ export function aiAnswerRecord(index: number, move: AiMove, questionStartMs: num
 }
 
 /**
- * ★A21：あなたが答えてから AI の答えを見せるまでの間（0.8〜1.5秒）★
+ * ★A21：あなたが答えてから AI の答えを見せるまでの間（0.35〜0.8秒）★
+ * 2026-10-01 夜：0.8〜1.5秒 → 0.35〜0.8秒に短縮（押したらすぐ結果が見えるように。
+ * ゼロにしないのは「相手も考えて押した」感じを残すため）。
  * 同じ (seed, index) なら同じ値（決定論）。表示のタイミングだけに使い、採点の時刻は変えない。
  */
 export function aiRevealLagMs(seed: string, index: number): number {
   const random = createRandom(hashString(`${seed}#${index}#reveal`));
-  return Math.round(800 + random() * 700);
+  return Math.round(350 + random() * 450);
+}
+
+// ===================================================================
+// ★全国対戦の「AIプレイヤー」（2026-10-01）★
+// ===================================================================
+//
+// 全国対戦で相手が見つからないとき・サーバーが使えないとき（無料枠の上限など）に、
+// 人と同じように振る舞う AI を相手にする。
+//   ・名前は毎回変わる（決まった一覧から、種で選ぶ＝同じ試合なら同じ名前）
+//   ・レートは自分の近く（±90）。強さ（正解率・速さ）もそのレートに合わせる
+//   ・正解率・速さに個性のゆらぎを付ける（毎回同じ動きの相手に見えないように）
+// ★2026-10-01 夜 方針変更★ 全国対戦で組まれたときは「AI」と表示しない（運営判断）。
+//   見た目は人と組めたときと同じ（名前は伏せ字・開始準備画面も同じ）。
+//   レートは動かない（サーバー側は2人の記録がそろわないとレートを動かせないため）。
+
+const GHOST_NAMES = [
+  'そら', 'ゆずき', 'はると', 'みお', 'りく', 'あおい', 'こはる', 'そうた', 'ひなた', 'れん',
+  'つむぎ', 'ゆうと', 'さくら', 'かいと', 'めい', 'しおん', 'いろは', 'たくみ', 'なぎ', 'るか',
+  'Haru', 'Yuu', 'Mio', 'Ren', 'Sora', 'Kai', 'Nana', 'Riku',
+] as const;
+const GHOST_SUFFIX = ['', '', '', '_jp', '0', '7', '23', '♪', '★', '（受験生）', '高2', '高3'] as const;
+
+/** 自分のレートから、近い強さの AI プレイヤーを作る（同じ seed なら同じ相手） */
+export function ghostProfileFor(myRating: number, seed: string): AiProfile {
+  const random = createRandom(hashString(`ghost#${seed}`));
+  const rating = Math.round(Math.min(2600, Math.max(900, (Number.isFinite(myRating) ? myRating : 1500) + (random() * 180 - 90))));
+  const level: AiLevel = rating < 1350 ? 'easy' : rating < 1700 ? 'normal' : rating < 2050 ? 'hard' : 'expert';
+  const base = AI_PROFILES[level];
+  // レートに合わせて正解率をなめらかに（900 で 0.42、2600 で 0.93）
+  const accuracy = Math.min(0.95, Math.max(0.4, 0.42 + ((rating - 900) / 1700) * 0.51 + (random() * 0.08 - 0.04)));
+  const shift = random() * 0.1 - 0.05;
+  const speedRange: [number, number] = [
+    Math.min(0.8, Math.max(0.08, base.speedRange[0] + shift)),
+    Math.min(0.9, Math.max(0.2, base.speedRange[1] + shift)),
+  ];
+  const name = GHOST_NAMES[Math.floor(random() * GHOST_NAMES.length)] + GHOST_SUFFIX[Math.floor(random() * GHOST_SUFFIX.length)];
+  return {
+    level,
+    name,
+    tagline: '全国対戦の相手',
+    displayRating: rating,
+    accuracy,
+    kanaPenalty: base.kanaPenalty,
+    speedRange,
+    color: base.color,
+  };
 }

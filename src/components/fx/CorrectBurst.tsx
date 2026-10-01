@@ -11,8 +11,19 @@ import './correct-burst.css';
  *   ・pointer-events: none なので、演出中も次のボタンは押せる
  *   ・prefers-reduced-motion では、ふちの光と小さなスタンプだけ
  *
+ *   ・★下の空いている所にトビラ君が飛び込んでくる（2026-10-01 夜）★
+ *     左右どちらか（問題ごとに交互になりやすいよう burstKey から決める）から跳ねて入り、
+ *     ガッツポーズで1回弾んで、反対側へ抜ける。コンボ中はトロフィーのトビラ君。
+ *
  * key（burstKey）が変わるたびに1回鳴る。combo を渡すと「COMBO ×n」を添えて金色に。
  */
+function sideOf(key: string | number): 'left' | 'right' {
+  const s = String(key);
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return (h & 1) === 0 ? 'left' : 'right';
+}
+
 export function CorrectBurst({ burstKey, combo = 0, label = '正解！', sub = 'CORRECT!', extra }: { burstKey: string | number; combo?: number; label?: string; sub?: string; extra?: string }) {
   const hot = combo >= 2;
   const bits = Array.from({ length: 28 }, (_, i) => i);
@@ -34,6 +45,10 @@ export function CorrectBurst({ burstKey, combo = 0, label = '正解！', sub = '
           } as CSSProperties;
           return <b key={i} style={style} data-shape={i % 3} />;
         })}
+      </div>
+      <div className="cb-tobira" data-from={sideOf(burstKey)} data-cb-tobira>
+        <img src={hot ? '/mascots/trophy.webp' : '/mascots/cheering.webp'} alt="" draggable={false} decoding="async" />
+        <i className="cb-tobira-shadow" />
       </div>
       <div className="cb-stamp">
         <small>{sub}</small>

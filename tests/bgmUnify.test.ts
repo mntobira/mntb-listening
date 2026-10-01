@@ -5,11 +5,16 @@ import { BGM_FILES } from '../src/battle/audio/bgmFiles';
 import { DEFAULT_BATTLE_AUDIO } from '../src/battle/core/audioSettings';
 
 describe('BGMの音量と1つのスイッチ（2026-10-01）', () => {
-  it('アプリBGM（誕生 -13.4LUFS）は既定で対戦BGM（-20LUFS×0.15）と同じくらいの大きさ', () => {
+  it('アプリBGM（誕生 -13.4LUFS）は既定で対戦BGM・待ち時間BGMより小さい（誕生は音が詰まっていて大きく聞こえるため）', () => {
     const db = (x: number) => 20 * Math.log10(x);
     const app = -13.4 + db(appBgmVolume(0.5));
-    const battle = -20 + db(DEFAULT_BATTLE_AUDIO.volume * 0.5 * BGM_FILES.battle!.gain);
-    expect(Math.abs(app - battle)).toBeLessThan(1);
+    const battle = -19.7 + db(DEFAULT_BATTLE_AUDIO.volume * 0.5 * BGM_FILES.battle!.gain);
+    const waiting = -20.3 + db(DEFAULT_BATTLE_AUDIO.volume * 0.5 * BGM_FILES.waiting!.gain);
+    expect(app).toBeLessThan(battle - 4);
+    expect(app).toBeLessThan(waiting - 4);
+    expect(app).toBeGreaterThan(battle - 9);
+    // 待ち時間の曲（静かな曲調）は対戦の曲と同じくらいまで持ち上げる
+    expect(Math.abs(waiting - battle)).toBeLessThan(1.5);
     expect(appBgmVolume(0)).toBe(0);
     expect(appBgmVolume(1)).toBeCloseTo(APP_BGM_GAIN);
   });

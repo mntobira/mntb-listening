@@ -46,7 +46,11 @@ import type { CSSProperties } from 'react';
 import { Bot, Radar, Wifi, X, Zap } from 'lucide-react';
 import { subjectTheme } from '../../data/subjectTheme';
 import type { SubjectKey } from '../../data/allChapters';
-import { findOrEnqueue, leaveQueue, watchMatched } from '../data/battle';
+import { fetchMyRating, findOrEnqueue, leaveQueue, watchMatched } from '../data/battle';
+import { auth } from '../../firebase';
+import { ghostProfileFor, type AiProfile } from '../core/aiOpponent';
+import { GHOST_AFTER_SEC, fallbackDecision, type GhostReason } from '../core/matchFallback';
+import { isQuotaBlocked, lastKnownRating } from '../data/serverHealth';
 import { retryDelayMs } from '../core/connection';
 import { ArenaFighters } from './ArenaFighters';
 import { useBattleAudio } from '../hooks/useBattleAudio';
@@ -72,7 +76,7 @@ import { ConnectionCheckPanel } from './ConnectionCheckPanel';
  * 結局また待つことになる。
  * 「待たずに今すぐ1試合」の受け皿は AI 対戦の方が適している。
  */
-const SUGGEST_AI_AFTER_SEC = 45;
+const SUGGEST_AI_AFTER_SEC = GHOST_AFTER_SEC;
 
 /**
  * 経過秒数に応じて出す説明。
@@ -92,19 +96,19 @@ const PHASES: { after: number; label: string; detail: string }[] = [
     detail: '同じ教科を選んだ人を全国から探しています',
   },
   {
-    after: 12,
+    after: 8,
     label: 'まだ探しています',
     detail: '同じ教科で対戦する相手を引き続き探しています',
   },
   {
-    after: 30,
+    after: 14,
     label: '相手を待っています',
-    detail: 'まだ相手が見つかっていません。キャンセルして戻ることもできます',
+    detail: 'レートの近い相手を優先して探しています',
   },
   {
     after: SUGGEST_AI_AFTER_SEC,
-    label: '待っている人が少ないようです',
-    detail: 'AIと対戦なら、待たずにすぐ始められます',
+    label: 'もうすぐ見つかります',
+    detail: '対戦相手を決めています',
   },
 ];
 
@@ -122,12 +126,18 @@ export function BattleMatching({
   onMatched,
   onCancel,
   onSwitchToAi,
+  onGhostMatch,
 }: {
   subject: string;
   onMatched: (roomId: string) => void;
   onCancel: () => void;
   /** 待ちが長いときに「AI と対戦する」導線（同じ教科で強さ選択へ） */
   onSwitchToAi: () => void;
+  /**
+   * 相手がいない／サーバーが使えないときに AI プレイヤーで試合を始める。
+   * 渡されないときは従来どおり「AIと対戦する」ボタンを出すだけ。
+   */
+  onGhostMatch?: (ghost: { profile: AiProfile; reason: GhostReason }) => void;
 }) {
   const theme = subjectTheme(subject as SubjectKey);
   /** ★マッチング中の BGM（期待感のある短いループ。BGM 設定が OFF なら鳴らない）★ */
@@ -146,6 +156,8 @@ export function BattleMatching({
    * ポケポケの「対戦相手が見つかりました」と同じ役目。
    */
   const [found, setFound] = useState(false);
+  /** AI プレイヤーが相手になった理由（見つかった画面の文言用） */
+  const [ghostReason, setGhostReason] = useState<GhostReason | null>(null);
 
   /** onMatched を二重に呼ばないための記録 */
   const doneRef = useRef(false);
@@ -185,17 +197,26 @@ export function BattleMatching({
    */
   const [searchNo, setSearchNo] = useState(0);
   const searchFailRef = useRef(0);
-  const retrySearch = (message: string) => {
+  const [failures, setFailures] = useState(0);
+  const [lastCode, setLastCode] = useState<string | null>(null);
+  const [online, setOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine !== false));
+  // ★無料枠の上限を最近見ていたら、最初からサーバーに行かない★
+  const [quotaBlocked] = useState(() => isQuotaBlocked());
+  const retrySearch = (message: string, code?: string) => {
     const n = searchFailRef.current;
     searchFailRef.current = n + 1;
+    setFailures(n + 1);
+    if (code) setLastCode(code);
     if (n >= 4) { setError(message); return; }
     setError(null);
     window.setTimeout(() => setSearchNo((v) => v + 1), retryDelayMs(n, Math.random(), 800, 6_000));
   };
   useEffect(() => {
-    const onOnline = () => { if (!doneRef.current) { searchFailRef.current = 0; setError(null); setSearchNo((v) => v + 1); } };
+    const onOnline = () => { setOnline(true); if (!doneRef.current) { searchFailRef.current = 0; setFailures(0); setError(null); setSearchNo((v) => v + 1); } };
+    const onOffline = () => setOnline(false);
     window.addEventListener('online', onOnline);
-    return () => window.removeEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => { window.removeEventListener('online', onOnline); window.removeEventListener('offline', onOffline); };
   }, []);
 
   // マッチング本体
@@ -205,6 +226,7 @@ export function BattleMatching({
     const searchId = crypto.randomUUID();
     sessionId.current = searchId;
     let stopWatch: (() => void) | null = null;
+    if (quotaBlocked || !online) return () => { alive = false; controller.abort(); };
 
     findOrEnqueue(subject, searchId, controller.signal)
       .then(({ roomId }) => {
@@ -227,15 +249,15 @@ export function BattleMatching({
           // 画面は「対戦相手を探しています…」のまま
           // ★永遠に何も起きない★状態になっていた。
           // 待っても無駄だと分かるようにしておく。
-          () => {
+          (err) => {
             if (!alive) return;
-            retrySearch('対戦相手の検索に失敗しました。通信を確かめて、もう一度お試しください。');
+            retrySearch('対戦相手の検索に失敗しました。通信を確かめて、もう一度お試しください。', (err as { code?: string } | null)?.code);
           },
           { subject, sessionId: searchId },
         );
       })
-      .catch((e: Error) => {
-        if (alive && !controller.signal.aborted) retrySearch(e.message);
+      .catch((e: Error & { code?: string }) => {
+        if (alive && !controller.signal.aborted) retrySearch(e.message, e.code);
       });
 
     return () => {
@@ -247,7 +269,31 @@ export function BattleMatching({
       if (!doneRef.current) void leaveQueue(searchId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subject, searchNo]);
+  }, [subject, searchNo, online]);
+
+  /**
+   * ★人がいない・サーバーが使えないときは AI プレイヤーを相手にする★
+   * 判定は core/matchFallback.ts の fallbackDecision（純関数・テストあり）。
+   */
+  const ghostSentRef = useRef(false);
+  const reason = fallbackDecision({ elapsedSec: elapsed, failures, lastErrorCode: lastCode, online, quotaBlocked });
+  useEffect(() => {
+    if (!onGhostMatch || !reason || doneRef.current || ghostSentRef.current) return;
+    ghostSentRef.current = true;
+    doneRef.current = true;
+    void leaveQueue(sessionId.current);
+    const uid = auth.currentUser?.uid;
+    const seed = `${uid || 'guest'}:${Date.now()}`;
+    // サーバーが使えないときは端末に覚えているレートで強さを合わせる
+    const ratingP = reason === 'empty' ? fetchMyRating() : Promise.resolve(lastKnownRating(uid) ?? 1500);
+    void ratingP.catch(() => lastKnownRating(uid) ?? 1500).then((rating) => {
+      setGhostReason(reason);
+      setFound(true);
+      playSfx('matched');
+      flashTimerRef.current = window.setTimeout(() => onGhostMatch({ profile: ghostProfileFor(rating, seed), reason }), 700);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reason]);
 
   const cancel = () => {
     void leaveQueue(sessionId.current);
@@ -285,7 +331,8 @@ export function BattleMatching({
           <p className="battle-pop font-handwriting text-2xl font-black" style={{ color: INK }}>
             相手が見つかりました！
           </p>
-          <p className="text-xs font-bold" style={{ color: INK_SUB }}>
+          <p className="text-xs font-bold" style={{ color: INK_SUB }} data-ghost-reason={ghostReason || undefined}>
+            {/* ★全国対戦では AI が相手でも「AI」とは出さない（2026-10-01 夜）★ data-ghost-reason はテスト用 */}
             部屋を用意しています…
           </p>
         </div>
@@ -300,7 +347,7 @@ export function BattleMatching({
     <BattleShell className="arena-matching"
       footer={
         <div className="grid gap-2.5">
-          {elapsed >= SUGGEST_AI_AFTER_SEC && (
+          {elapsed >= SUGGEST_AI_AFTER_SEC && !onGhostMatch && (
             <BattleButton
               onClick={() => {
                 void leaveQueue(sessionId.current);
@@ -413,7 +460,7 @@ export function BattleMatching({
         {error && <BattleNotice message={error} />}
         {error && <ConnectionCheckPanel autoRun compact />}
 
-        {elapsed >= SUGGEST_AI_AFTER_SEC && !error && (
+        {elapsed >= SUGGEST_AI_AFTER_SEC && !error && !onGhostMatch && (
           <BattleNotice
             message="いま対戦を待っている人が少ないようです。AIと対戦なら、同じ教科で今すぐ始められます（レートは動きません）。"
             tone="info"

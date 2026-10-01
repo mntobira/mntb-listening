@@ -29,7 +29,7 @@ console.log(`✓ .env の設定はそろっています。
   npx firebase deploy --only firestore:rules,firestore:indexes --project ${id}
 
 Firebase コンソールで確認すること:
-  □ Authentication → ログイン方法 → Google を有効（Apple を出すなら Apple も）
+  □ Authentication → ログイン方法 → Google を有効
   □ Authentication → 設定 → 承認済みドメイン に 公開URLのドメイン と localhost
   □ Firestore Database を「本番モード」で作成済み（テストモードで公開しない）
   □ Firestore → インデックス が「有効」になるまで待つ（数分）

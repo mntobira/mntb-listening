@@ -136,7 +136,7 @@ npx firebase deploy --only firestore:rules,firestore:indexes --project <プロ�
 
 ### Firebase コンソールで一緒に確認しておくこと
 
-- [ ] Authentication → ログイン方法 → Google を有効（Apple を出すなら Apple も）
+- [ ] Authentication → ログイン方法 → Google を有効
 - [ ] Authentication → 設定 → 承認済みドメイン に、公開URLのドメインと `localhost`
 - [ ] Firestore Database を「本番モード」で作成済み（テストモードで公開しない）
 
