@@ -21,7 +21,39 @@
   70% { opacity: 1; transform: translateY(0) scale(1) rotate(-3deg); }
   100% { opacity: 0; transform: translateY(-28vh) scale(.45) rotate(0deg); }
 }
+/* ★トビラ君が下の空き場所へ飛び込む★ 中身（選択肢）より上のレイヤーだが触れないので操作は邪魔しない */
+.cb-tobira { position: absolute; bottom: max(3vh, env(safe-area-inset-bottom, 0px)); left: 50%; width: clamp(110px, 32vw, 190px); aspect-ratio: 1; margin-left: calc(clamp(110px, 32vw, 190px) / -2); --dir: 1; animation: cb-tobira 1.45s cubic-bezier(.3, .9, .4, 1) both; }
+.cb-tobira[data-from='right'] { --dir: -1; }
+/* スマホ・タブレットは下にタブがあるので、その上（タブにかぶらない所）に着地する */
+@media (max-width: 1023px) { .cb-tobira { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); width: clamp(96px, 27vw, 150px); margin-left: calc(clamp(96px, 27vw, 150px) / -2); } }
+.cb-tobira img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 10px #0003); transform: scaleX(var(--dir)); animation: cb-tobira-squash 1.45s ease-out both; transform-origin: 50% 100%; }
+.cb-tobira-shadow { position: absolute; left: 18%; right: 18%; bottom: -2px; height: 12px; border-radius: 50%; background: #0002; animation: cb-tobira-shadow 1.45s ease-out both; }
+/* 横から弧を描いて飛び込む → 着地して弾む → 反対側へ跳ねて抜ける */
+@keyframes cb-tobira {
+  0%   { opacity: 0; transform: translate(calc(var(--dir) * -70vw), -26vh) rotate(calc(var(--dir) * -40deg)); }
+  10%  { opacity: 1; }
+  30%  { transform: translate(calc(var(--dir) * -6vw), 0) rotate(calc(var(--dir) * 6deg)); }
+  40%  { transform: translate(0, -5vh) rotate(0deg); }
+  50%  { transform: translate(0, 0) rotate(0deg); }
+  58%  { transform: translate(0, -2.5vh) rotate(calc(var(--dir) * -4deg)); }
+  66%  { transform: translate(0, 0) rotate(0deg); }
+  80%  { opacity: 1; transform: translate(calc(var(--dir) * 12vw), -9vh) rotate(calc(var(--dir) * 12deg)); }
+  100% { opacity: 0; transform: translate(calc(var(--dir) * 75vw), -30vh) rotate(calc(var(--dir) * 30deg)); }
+}
+@keyframes cb-tobira-squash {
+  0%, 26% { scale: 1 1; }
+  30% { scale: 1.12 .86; }
+  36% { scale: .94 1.08; }
+  48% { scale: 1 1; }
+  51% { scale: 1.08 .9; }
+  56%, 64% { scale: 1 1; }
+  67% { scale: 1.06 .92; }
+  72%, 100% { scale: 1 1; }
+}
+@keyframes cb-tobira-shadow { 0%, 22% { opacity: 0; scale: .4 1; } 30%, 70% { opacity: 1; scale: 1 1; } 40% { opacity: .5; scale: .7 1; } 85%, 100% { opacity: 0; scale: .4 1; } }
 @media (prefers-reduced-motion: reduce) {
+  .cb-tobira, .cb-tobira img, .cb-tobira-shadow { animation: none; }
+  .cb-tobira { animation: cb-fade 1s ease-out both; }
   .cb-rays, .cb-confetti { display: none; }
   .cb-edge { animation-duration: .8s; }
   .cb-stamp { animation: cb-fade .9s ease-out both; }

@@ -17,7 +17,9 @@ import { auth } from '../../firebase';
 import { Bot, LogOut, Play, X } from 'lucide-react';
 import { subjectTheme } from '../../data/subjectTheme';
 import type { SubjectKey } from '../../data/allChapters';
-import { aiProfileOf, type AiLevel } from '../core/aiOpponent';
+import { aiProfileOf, type AiLevel, type AiProfile } from '../core/aiOpponent';
+import type { GhostReason } from '../core/matchFallback';
+import { ArenaFighters } from './ArenaFighters';
 import { useAiBattle } from '../hooks/useAiBattle';
 import { BattleLiveStage } from './BattleLiveStage';
 import { BattleResult } from './BattleResult';
@@ -49,6 +51,7 @@ export function BattleAiRoomScreen({
   onPractice,
   onOpenProfile, onOpenMissions, onActiveChange,
   onReview,
+  ghost,
 }: {
   subject: string;
   level: AiLevel;
@@ -73,10 +76,24 @@ export function BattleAiRoomScreen({
   onOpenMissions?: () => void;
   /** リザルトの「復習する」 */
   onReview?: () => void;
+  /**
+   * 全国対戦で相手がいない／サーバーが使えないときの AI プレイヤー。
+   * 渡すと「全国対戦」として見せ、名前・レートは ghost.profile、試合は自動で始まる。
+   */
+  ghost?: { profile: AiProfile; reason: GhostReason };
 }) {
   const theme = subjectTheme(subject as SubjectKey);
-  const profile = aiProfileOf(level);
-  const b = useAiBattle(subject, level, matchNo, questionCount, chapterId);
+  const profile = ghost?.profile ?? aiProfileOf(level);
+  const b = useAiBattle(subject, level, matchNo, questionCount, chapterId, ghost?.profile);
+  // ★全国対戦で組まれた AI（ghost）は、人と組めたときと同じ見た目にする（「AI」とは出さない）★
+  const modeLabel = ghost ? '全国対戦' : 'AIと対戦';
+  // ★AI プレイヤーは見つかった直後に自動で始める★（人と組めたときと同じ流れ）
+  const { phase: aiPhase, start: aiStart } = b;
+  useEffect(() => {
+    if (!ghost || aiPhase !== 'ready') return;
+    const timer = window.setTimeout(aiStart, 2200);
+    return () => window.clearTimeout(timer);
+  }, [ghost, aiPhase, aiStart]);
 
   useEffect(() => {
     onActiveChange?.(b.phase === 'playing');
@@ -113,7 +130,7 @@ export function BattleAiRoomScreen({
   if (b.phase === 'loading') {
     return (
       <BattleShell>
-        <BattleTitle subtitle={`${theme.label} ／ AIと対戦`} />
+        <BattleTitle subtitle={`${theme.label} ／ ${modeLabel}`} />
         <BattleLoading message="問題を用意しています…" />
       </BattleShell>
     );
@@ -121,7 +138,7 @@ export function BattleAiRoomScreen({
   if (b.phase === 'error') {
     return (
       <BattleShell footer={backButton}>
-        <BattleTitle subtitle={`${theme.label} ／ AIと対戦`} />
+        <BattleTitle subtitle={`${theme.label} ／ ${modeLabel}`} />
         <div className="flex flex-1 items-center justify-center py-16">
           <BattleNotice message={b.error || '問題を用意できませんでした。'} />
         </div>
@@ -142,9 +159,9 @@ export function BattleAiRoomScreen({
         meNickname={b.me.nickname}
         mePhotoURL={b.me.photoURL}
         rating={null}
-        ratingNote="AI対戦ではレートは動きません（練習用）"
+        ratingNote={ghost ? 'この試合はレートに反映されませんでした' : 'AI対戦ではレートは動きません（練習用）'}
         byForfeit={false}
-        maskOpponent={false}
+        maskOpponent={!!ghost}
         onRematch={onRematch}
         onExit={() => onExit()}
         onPractice={onPractice}
@@ -160,6 +177,17 @@ export function BattleAiRoomScreen({
   // ------------------------------------------------------------
   // 準備（はじめる）
   // ------------------------------------------------------------
+  if (b.phase === 'ready' && ghost) {
+    // 人間どうしの全国対戦の開始準備画面（BattleRoomScreen）と同じ見た目
+    return (
+      <BattleShell className="arena-matching">
+        <BattleTitle subtitle="全国対戦・開始準備" />
+        <ArenaFighters matched />
+        <p className="text-center font-bold" data-ghost-ready>2人がそろいました。まもなくスタート</p>
+        <BattleButton variant="ghost" onClick={() => onExit()}>対戦を終了する</BattleButton>
+      </BattleShell>
+    );
+  }
   if (b.phase === 'ready') {
     return (
       <BattleShell
@@ -203,7 +231,7 @@ export function BattleAiRoomScreen({
                   {profile.name}
                 </p>
                 <p className="text-xs font-bold tabular-nums" style={{ color: INK_SUB }}>
-                  正解率 {Math.round(profile.accuracy * 100)}% ／ レート目安 {profile.displayRating}
+                  {`正解率 ${Math.round(profile.accuracy * 100)}% ／ レート目安 ${profile.displayRating}`}
                 </p>
               </div>
             </div>
@@ -241,7 +269,7 @@ export function BattleAiRoomScreen({
       {confirmQuit ? (
         <div className="grid gap-2 rounded-2xl border-2 p-3" style={{ borderColor: LINE, background: '#FFFFFF' }}>
           <p className="text-center text-xs font-black" style={{ color: INK }}>
-            対戦をやめますか？（AI対戦なので記録には残りません）
+            {ghost ? '対戦をやめますか？' : '対戦をやめますか？（AI対戦なので記録には残りません）'}
           </p>
           <div className="grid grid-cols-2 gap-2">
             <BattleButton variant="ghost" onClick={() => setConfirmQuit(false)}>
@@ -288,7 +316,7 @@ export function BattleAiRoomScreen({
         opponentScore={b.result?.opponent ?? b.scores?.other ?? null}
         meNickname={b.me.nickname}
         opponentNickname={b.opponent.nickname}
-        maskOpponent={false}
+        maskOpponent={!!ghost}
         finished={b.finished}
         onChoose={b.choose}
         onPushPanel={b.pushPanel}

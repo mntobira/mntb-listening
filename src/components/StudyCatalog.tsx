@@ -93,12 +93,23 @@ export function StudyCatalog({ subjectId, onSubject, onContent, onBack, progress
               <StudyCard dataId={s.id} icon={s.icon} title={s.label} description={s.description}
                 meta={`${s.contents.length}コース：${subjectMeta(s)}`} onClick={() => onSubject(s.id)} />
             </div>)
-          : subject.contents.map(c => <div role="listitem" key={c.id}>
-              <StudyCard dataId={c.id} icon={c.icon} title={c.title} description={c.description} meta={c.meta}
-                primary={c.primary} badge={lastContentId === c.id ? '前回' : undefined}
-                progress={c.progressSubject ? progressOf?.(c.progressSubject) : undefined}
-                onClick={() => onContent(c)} />
-            </div>)}
+          : <>
+              {/* 問題を解くもの（リスニング・英文法・英単語の4択）は同じ列に並べる */}
+              {subject.contents.filter(c => c.section !== 'memorize').map(c => <div role="listitem" key={c.id}>
+                <StudyCard dataId={c.id} icon={c.icon} title={c.title} description={c.description} meta={c.meta}
+                  primary={c.primary} badge={lastContentId === c.id ? '前回' : undefined}
+                  progress={c.progressSubject ? progressOf?.(c.progressSubject) : undefined}
+                  onClick={() => onContent(c)} />
+              </div>)}
+              {/* ★暗記帳は問題とは別の枠に置く（2026-10-01 夜）★ */}
+              {subject.contents.some(c => c.section === 'memorize') && <>
+                <h2 className="sc-section" role="presentation" data-study-section="memorize">覚える</h2>
+                {subject.contents.filter(c => c.section === 'memorize').map(c => <div role="listitem" key={c.id}>
+                  <StudyCard dataId={c.id} icon={c.icon} title={c.title} description={c.description} meta={c.meta}
+                    badge={lastContentId === c.id ? '前回' : undefined} onClick={() => onContent(c)} />
+                </div>)}
+              </>}
+            </>}
       </div>
 
       {showSubjects && <p className="sc-note" data-study-more>ほかの科目は順次追加します。<br />進捗と復習ノートは科目ごとに保存されます。</p>}

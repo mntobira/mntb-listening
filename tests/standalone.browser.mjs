@@ -37,11 +37,13 @@ try {
   await page.locator('[data-study-card=english_vocabulary]').click();
   await page.locator('[data-foundation]').waitFor();
   assert.equal(await page.locator('.app-bottom-nav').isVisible(),true,'foundation page keeps the bottom nav');
-  assert.deepEqual(await page.locator('.fd-tabs [role=tab]').allTextContents(),['単語帳','4択で解く','その他']);
+  // 2026-10-01 夜：暗記帳は単語の中のタブで分けず別ページ（「覚える」枠）。問題（4択）は単元と同じ列。
+  assert.equal(await page.locator('.fd-tabs').count(),0,'wordbook page has no tabs');
   await page.locator('.fd-word').nth(2).waitFor();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+2),'foundation fits one screen');
-  await page.getByRole('tab',{name:'その他'}).click();
-  await page.getByRole('button',{name:/リスニングへ/}).click();
+  await page.locator('.fd-back').click();
+  await page.locator('[data-study-section=memorize]').waitFor();
+  await page.locator('[data-study-card=english_listening]').click();
   await page.getByRole('button',{name:/第1回演習/}).first().waitFor();
   await page.getByRole('button',{name:/第1回演習/}).first().click();
   await page.waitForTimeout(500);

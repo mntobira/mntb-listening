@@ -108,6 +108,8 @@ import {
   toMillis,
 } from '../core/serverClock';
 import { isTransientError, retryDelayMs, smoothRtt } from '../core/connection';
+import { isStaleQueueTicket } from '../core/matchFallback';
+import { noteServerError, rememberRating } from './serverHealth';
 import { loadPool, poolIdsOf } from './battlePool';
 import { blockedUidSet } from '../../features/safety/userSafety';
 
@@ -174,11 +176,15 @@ function randomCode(): string {
 /** Firestore の権限エラーを利用者向けの日本語にする */
 function friendlyError(error: unknown, fallback: string): Error {
   const code = (error as { code?: string })?.code || '';
+  noteServerError(error);
+  if (code === 'resource-exhausted') {
+    return Object.assign(new Error('サーバーが混み合っています（無料枠の上限）。しばらくしてからもう一度お試しください。'), { code });
+  }
   if (code === 'permission-denied') {
     return new Error('この操作は許可されていません。部屋がすでに閉じている可能性があります。');
   }
   if (code === 'unavailable' || code === 'deadline-exceeded') {
-    return new Error('通信が不安定です。電波の良い場所でもう一度お試しください。');
+    return Object.assign(new Error('通信が不安定です。電波の良い場所でもう一度お試しください。'), { code });
   }
   // ★索引不足のときに英語のままだった問題への対処★
   //
@@ -197,7 +203,7 @@ function friendlyError(error: unknown, fallback: string): Error {
     );
   }
   if (error instanceof Error && error.message) return error;
-  return new Error(fallback);
+  return Object.assign(new Error(fallback), { code });
 }
 
 // ============================================================
@@ -220,8 +226,11 @@ export async function fetchMyRating(): Promise<number> {
   try {
     const snap = await getDoc(doc(db, COL_RANKING, uid));
     const value = snap.exists() ? Number(snap.get('rating')) : NaN;
-    return Number.isFinite(value) ? value : RATING_INITIAL;
-  } catch {
+    const rating = Number.isFinite(value) ? value : RATING_INITIAL;
+    rememberRating(uid, rating);
+    return rating;
+  } catch (error) {
+    noteServerError(error);
     // レートが読めなくても対戦自体はできるようにする
     return RATING_INITIAL;
   }
@@ -647,7 +656,12 @@ export async function findOrEnqueue(
   }
   // ブロックした相手とは組まない（App Store 1.2。端末のブロック一覧で判定）
   const blocked = blockedUidSet();
-  const candidate = waitingDocs.find((d) => d.id !== uid && !blocked.has(d.id));
+  // ★古い待機票（3分以上前）は相手にしない★
+  //   画面を閉じた・電池が切れた人の票が残っていると、その人と部屋ができて試合が始まらない。
+  //   相手の時刻はサーバー時刻なので、端末の時計ではなく serverNow() と比べる。
+  const nowMs = serverNow();
+  const candidate = waitingDocs.find((d) => d.id !== uid && !blocked.has(d.id)
+    && !isStaleQueueTicket(toMillis(d.get('createdAt') as Timestamp | null), nowMs));
   if (!candidate) {
     // 誰もいない。票を置いたまま、拾われるのを待つ（watchMatched）
     return { roomId: null };

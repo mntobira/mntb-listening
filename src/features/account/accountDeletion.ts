@@ -7,7 +7,7 @@
  *   friends（双方向）/ friend_requests / friend_profiles / friend_codes / battle_history
  * ★ルールで削除禁止のため残るもの★
  *   leaderboard_* / battle_ranking / app_users
- *   → 運営への削除依頼を自動送信し、Admin SDK で消してもらう（docs/APP_STORE.md）。
+ *   → 運営への削除依頼を自動送信し、Admin SDK で消してもらう。
  */
 import { deleteUser, type User } from 'firebase/auth';
 import { db } from '../../firebase';

@@ -64,3 +64,7 @@
 .sc-buddy { flex-shrink: 0; margin: 2px 0 6px; }
 .sc-buddy .tb-bubble { flex: 0 1 auto; }
 @media (max-height: 600px) { .sc-buddy { display: none; } }
+
+/* 2026-10-01 夜：問題の列とは別の「覚える」枠（暗記帳） */
+.sc-section { margin: 4px 2px -2px; font: 800 13px/1.4 var(--mt-font-display); color: #8b7a5c; letter-spacing: .08em; display: flex; align-items: center; gap: 8px; }
+.sc-section::after { content: ''; flex: 1; height: 1.5px; background: var(--sc-line); }

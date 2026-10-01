@@ -16,12 +16,12 @@ import { ensureFriendProfile } from '../utils/friends';
 import { profileKey, streakKey, completedKey } from '../utils/userStorageKeys';
 import { checkNickname, NICKNAME_MAX } from '../features/safety/nicknameFilter';
 import { AccountSafetySection } from '../features/account/AccountSafetySection';
-import { AppleSignInButton } from '../features/auth/AppleSignInButton';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { BADGES, levelOf } from '../battle/core/growth';
 import { GrowthAvatar, TitleChip } from '../battle/ui/GrowthParts';
 import { fetchMyRankingRow } from '../battle/data/battleRanking';
 import { readStudyTime, formatStudyTime } from '../utils/studyTime';
+import { GOAL_OPTIONS, TARGET_SCHOOL_MAX, normalizeTargetSchool, readGoal, writeGoal, type GoalId } from '../utils/vocabGoal';
 import './profile-settings.css';
 
 interface ProfileModalProps {
@@ -63,6 +63,9 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
   const [name, setName] = useState('');
   const [grade, setGrade] = useState('');
   const [stream, setStream] = useState('science');
+  /** 志望校（2026-10-01 夜：いつでも変えられる）と、単語帳の目標レベル */
+  const [targetSchool, setTargetSchool] = useState('');
+  const [goal, setGoal] = useState<GoalId>(readGoal);
   const [loading, setLoading] = useState(false);
   const [streak, setStreak] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
@@ -79,6 +82,7 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
         setName(data.name || '');
         setGrade(data.grade || '');
         setStream(data.stream || 'science');
+        setTargetSchool(typeof data.targetSchool === 'string' ? data.targetSchool : '');
       } else {
         setName(auth.currentUser?.displayName || (auth.currentUser ? 'ユーザー' : 'ゲスト'));
         setGrade('高校生');
@@ -99,8 +103,9 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
     try {
       const uid = auth.currentUser?.uid || 'guest';
       localStorage.setItem(profileKey(uid), JSON.stringify({
-        name: name.trim(), grade: grade.trim(), stream, iconUrl: auth.currentUser?.photoURL || '',
+        name: name.trim(), grade: grade.trim(), stream, targetSchool: normalizeTargetSchool(targetSchool), iconUrl: auth.currentUser?.photoURL || '',
       }));
+      writeGoal(goal);
       // 名前を変えたら、ランキング・フレンド検索の表示名もその場で最新化する。
       // これまでは「次にスコアを出すまで」旧名のままで、
       // 「プロフィールを変えたのにランキングが変わらない」と混乱させていた。
@@ -236,7 +241,16 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                         <option value="other">その他</option>
                       </select><ChevronDown size={16} aria-hidden="true" />
                     </label>
+                    <label className="ps-select" data-target-school><School size={15} aria-hidden="true" /><span className="sr-only">志望校</span>
+                      <input value={targetSchool} maxLength={TARGET_SCHOOL_MAX} onChange={(event) => setTargetSchool(event.target.value)} placeholder="志望校（例：〇〇大学）" /><Pencil size={15} aria-hidden="true" />
+                    </label>
+                    <label className="ps-select" data-target-goal><GraduationCap size={15} aria-hidden="true" /><span className="sr-only">目標レベル（単語帳の範囲）</span>
+                      <select value={goal} onChange={(event) => setGoal(event.target.value as GoalId)} aria-describedby="target-goal-help">
+                        {GOAL_OPTIONS.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
+                      </select><ChevronDown size={16} aria-hidden="true" />
+                    </label>
                   </div>
+                  <p id="target-goal-help" className="sr-only">目標レベルを変えると、単語帳の出題範囲も変わります。志望校はほかの人には見えません。</p>
                 </section>
 
                 {/* ★対戦で相手に見えるカードのプレビュー（A16）★ 名前・称号を変えるとその場で反映される */}
@@ -287,7 +301,6 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                         {signing ? <Loader2 size={15} className="animate-spin" /> : <GoogleMark size={17} />}
                         {signing ? '連携中…' : 'Google アカウントで連携'}
                       </button>
-                      <AppleSignInButton onResult={(o) => { if (!o.ok) setAuthError(o.message || 'ログインに失敗しました。'); }} />
                       <p className="text-xs text-gray-500 text-center leading-snug">
                         連携は無料です。いまの学習記録はそのまま引き継がれます。
                       </p>

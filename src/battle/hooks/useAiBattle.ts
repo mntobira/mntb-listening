@@ -35,6 +35,7 @@ import {
   aiAnswerRecord,
   aiRevealLagMs,
   aiProfileOf,
+  type AiProfile,
   aiUidOf,
   decideAiMove,
   type AiLevel,
@@ -128,10 +129,12 @@ export function useAiBattle(
    */
   questionCount?: number,
   chapterId?: string,
+  /** 全国対戦の AI プレイヤー（ghostProfileFor）。渡すと強さ・名前はこちらを使う */
+  ghost?: AiProfile,
 ): AiBattleState & AiBattleActions {
   const user = auth.currentUser;
   const uid = user?.uid || 'me';
-  const profile = aiProfileOf(level);
+  const profile = ghost ?? aiProfileOf(level);
   const aiUid = aiUidOf(level);
 
   const rules = useMemo(() => {
@@ -197,7 +200,7 @@ export function useAiBattle(
     };
     // level は profile 経由で使う。subject/level/matchNo が変わったら作り直す
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subject, level, rules, matchNo, chapterId]);
+  }, [subject, level, rules, matchNo, chapterId, ghost]);
 
   // ------------------------------------------------------------
   // 時計
@@ -268,7 +271,7 @@ export function useAiBattle(
 
     /*
      * ★A21：AI の答え（正誤＋解答時刻）は試合開始時に decideAiMove で確定済み★
-     *   あなたが答えたあとは、AI の予定時刻を待たずに 0.8〜1.5秒（ランダム・決定論）で表示する。
+     *   あなたが答えたあとは、AI の予定時刻を待たずに 0.35〜0.8秒（ランダム・決定論）で表示する。
      *   採点に使う AI の解答時刻（answeredAt）は予定どおり＝速さの点は変わらない。
      *   （以前は AI が制限時間の9割まで考えることがあり、答えた後に長く待たされていた）
      */
