@@ -1,4 +1,4 @@
-import { chromium } from 'playwright';
+const { chromium } = await import('playwright').catch(()=>import('../.tmp_ui/node_modules/playwright/index.mjs'));
 import assert from 'node:assert/strict';
 const url=process.env.PRODUCTION_TEST_URL || 'http://localhost:4173';
 const browser=await chromium.launch({args:['--disable-dev-shm-usage']});
@@ -13,7 +13,7 @@ try {
     localStorage.setItem('savedSelectedSubject','math');localStorage.setItem('bgm_enabled','off');
   });
   await page.goto(url);assert.equal(await page.title(),'マナトビ リスニング');
-  await page.locator('.launch-start').click();await page.locator('.game-home').waitFor();
+  await page.locator('.launch-start').click();await page.locator('.launch-announcement-actions').getByRole('button',{name:'閉じる',exact:true}).click();await page.locator('.game-home').waitFor();
   for(const [width,height] of [[320,568],[390,844],[1280,900]]) {
     await page.setViewportSize({width,height});
     // 1画面ホーム（B1）。3本柱：演習する／対戦する（同じ大きさ）＋横長の復習ノート
@@ -51,7 +51,7 @@ try {
   if(await briefing.count())await briefing.click();
   await page.locator('audio[src*="listening"]').first().waitFor({state:'attached'});
   // Quiz deliberately hides the main navigation. Reload the seeded home for the battle scenario.
-  await page.goto(url);await page.locator('.launch-start').click();await page.locator('.game-home').waitFor();
+  await page.goto(url);await page.locator('.launch-start').click();await page.locator('.launch-announcement-actions').getByRole('button',{name:'閉じる',exact:true}).click();await page.locator('.game-home').waitFor();
   await page.getByRole('button',{name:'オンライン対戦へ移動',exact:true}).click();
   await page.getByRole('button',{name:'AIと対戦する',exact:true}).click();
   const listening=page.getByRole('button',{name:/英語リスニング/});

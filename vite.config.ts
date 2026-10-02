@@ -505,6 +505,6 @@ export default defineConfig({
     hmr: process.env.DISABLE_HMR !== 'true',
     // Local npm caches and generated output can contain tens of thousands of files.
     // Watching them exhausts Linux inotify limits and crashes the dev preview.
-    watch: { ignored: ['**/.npm-cache/**', '**/dist/**'] },
+    watch: { ignored: ['**/.npm-cache/**', '**/dist/**', '**/.delivery/**', '**/.tmpwork/**', '**/.tmp_ui/**', '**/functions/node_modules/**', '**/shots/**'] },
   },
 });

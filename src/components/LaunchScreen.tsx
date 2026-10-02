@@ -5,6 +5,8 @@ import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc } from '../battle/core/growth';
 import { TobiraAccessories } from '../battle/ui/TobiraAccessories';
 import './launch-screen.css';
+import { UpdateNoticeModal } from './UpdateNoticeModal';
+import { getDaysUntilExam, EXAM_DATE_LABEL } from '../utils/examCountdown';
 
 /**
  * タイトル画面（2026-09-30 作り直し）。保存された画面やアカウントには一切触れない（見た目だけ）。
@@ -34,6 +36,14 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
 }) {
   const { progress } = useGrowthProgress();
   const [phase, setPhase] = useState<Phase>('intro');
+  const [gate, setGate] = useState<'emblem' | 'title' | 'announcement'>('emblem');
+  const [entry, setEntry] = useState<'start' | 'guest'>('start');
+  const [notices, setNotices] = useState(false);
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const timer = window.setTimeout(() => setGate('title'), reduced ? 350 : 1200);
+    return () => window.clearTimeout(timer);
+  }, []);
   const [played, setPlayed] = useState(false);
   const [walkReady, setWalkReady] = useState(false);
   useEffect(() => {
@@ -44,6 +54,10 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
   const finishIntro = () => setPhase(p => (p === 'intro' ? (played ? 'crossfade' : 'done') : p));
   // 動画を再生できなかった時だけ歩いて登場
   const walk = phase === 'done' && !played;
+  const announce = (next: 'start' | 'guest') => { setEntry(next); setGate('announcement'); };
+  const enter = () => { if (entry === 'guest' && onGuest) onGuest(); else onStart(); };
+  if (gate === 'emblem') return <main className="launch-emblem" aria-label="マナトビ 起動エンブレム"><div className="launch-emblem-mark" aria-hidden="true"><Swords/><Headphones/></div><img src="/brand/manatobi-logo.webp" alt="マナトビ" width={1008} height={321}/><h1>対戦する力を聞く力へ</h1><p>MANATOBI LISTENING</p><button type="button" onClick={()=>setGate('title')}>タイトルへ</button></main>;
+  if (gate === 'announcement') return <main className="launch-announcement" aria-label="スタートのお知らせ"><section><p className="mt-kicker">WHAT’S NEW</p><h1>学ぶ入口を、もっと快適に。</h1><div className="launch-countdown"><Headphones size={24}/><span>共通テストまで<strong>{getDaysUntilExam()}<small>日</small></strong><small>{EXAM_DATE_LABEL}</small></span></div><p>BGMの音量を共通化。ガチャとホームを見やすく整理しました。</p><p>対戦の結果を復習につなげて、今日の「聞く力」を積み重ねよう。</p><div className="launch-announcement-actions"><button type="button" onClick={()=>setNotices(true)}>見てみる</button><button type="button" onClick={enter}>閉じる</button></div></section>{notices && <UpdateNoticeModal onClose={()=>setNotices(false)}/>}</main>;
   return <main className="launch-screen" aria-label="マナトビ タイトル画面" data-launch-screen>
     <div className="launch-content">
       <header className="launch-top">
@@ -77,9 +91,9 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
         <li><Swords size={16} aria-hidden="true" />オンライン対戦</li>
       </ul>
       <div className="launch-actions">
-        <button type="button" className="launch-start mt-btn mt-btn-accent" onClick={onStart}><Headphones size={20} aria-hidden="true" />はじめる<ArrowRight size={20} aria-hidden="true" /></button>
+        <button type="button" className="launch-start mt-btn mt-btn-accent" onClick={()=>announce('start')}><Headphones size={20} aria-hidden="true" />はじめる<ArrowRight size={20} aria-hidden="true" /></button>
         {onGuest
-          ? <button type="button" className="launch-guest mt-btn mt-btn-text" onClick={onGuest}>登録せずにゲストで試す</button>
+          ? <button type="button" className="launch-guest mt-btn mt-btn-text" onClick={()=>announce('guest')}>登録せずにゲストで試す</button>
           : <p className="launch-note">学習のつづきから始まります</p>}
       </div>
     </div>

@@ -2,7 +2,7 @@ export interface WordQuestion { id:string; prompt:string; label:string; options:
 export interface ListeningExample { chapterId:string; chapterTitle:string; problemId:string; problemIndex:number; script:string; audioUrl:string; translation:string }
 export interface ListeningWord { id:string; word:string; meaning:string; fullMeaning:string; level:string; chapterIds:string[]; examples:ListeningExample[]; questions:WordQuestion[] }
 export interface VocabularyData { wordCount:number; questionCount:number; unitSize:number; chapters:{id:string;title:string}[]; words:ListeningWord[] }
-export const VOCAB_LEVELS: Record<string,string> = {lv1:'単語・基礎',lv2:'単語・標準',lv3:'単語・発展',lv4:'単語・上級',ilv1:'熟語・基礎',ilv2:'熟語・標準',ilv3:'熟語・発展'};
+export const VOCAB_LEVELS: Record<string,string> = {lv1:'単語・共通テスト6割〜',lv2:'単語・共通テスト8割〜',lv3:'単語・2次試験レベル',lv4:'単語・2次試験の追加語彙',ilv1:'熟語・共通テスト6割〜',ilv2:'熟語・共通テスト8割〜',ilv3:'熟語・2次試験レベル'};
 export interface SupportProgress { version:1; words:string[]; grammar:string[] }
 export const supportStorageKey=(uid:string)=>'listening_support_v1_'+encodeURIComponent(uid||'guest');
 export function parseSupportProgress(raw:string|null):SupportProgress {

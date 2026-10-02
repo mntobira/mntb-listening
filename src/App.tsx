@@ -206,6 +206,7 @@ import { isSubjectEnabled, fallbackSubjectId, FEATURES } from './config/features
 */
 import { appBgmVolume, isBgmFadeComplete, BGM_FADE_END_MS } from './utils/bgmFade';
 import { writeAudioPreferences, readAudioPreferences } from './battle/audio/audioPreferences';
+import { setTitleBgmVolume, unlockTitleBgm } from './battle/audio/titleMediaAudio';
 /*
  * ★chemistryData（1,253,813 B）の静的 import はここから外した★
  *
@@ -614,8 +615,8 @@ export default function App() {
   // Prevent iOS pinch zoom and double tap zoom, EXCEPT on the answers/explanations pages
   useEffect(() => {
     const handleTouchMove = (e: TouchEvent) => {
-      if (appState === 'explanation' || isExplanationView) {
-        return; // Allow zooming
+      if (appState === 'explanation' || isExplanationView || (e.target instanceof Element && e.target.closest('input, select, button, a'))) {
+        return; // Native controls must retain their touch behavior.
       }
       if (e.touches.length > 1) {
         e.preventDefault();
@@ -624,8 +625,8 @@ export default function App() {
     
     let lastTouchEnd = 0;
     const handleTouchEnd = (e: TouchEvent) => {
-      if (appState === 'explanation' || isExplanationView) {
-        return; // Allow zooming
+      if (appState === 'explanation' || isExplanationView || (e.target instanceof Element && e.target.closest('input, select, button, a'))) {
+        return; // Native controls must retain their touch behavior.
       }
       const now = (new Date()).getTime();
       if (now - lastTouchEnd <= 300) {
@@ -912,10 +913,7 @@ export default function App() {
     // まだ選んでいない人は、対戦BGMの設定（既定ON）に合わせる＝BGMのスイッチは1つ（2026-10-01）
     try { return readAudioPreferences().bgm; } catch { return FEATURES.bgm; }
   });
-  const [bgmVolume, setBgmVolume] = useState(() => {
-    const saved = localStorage.getItem('bgm_volume');
-    return saved ? parseFloat(saved) : 0.5;
-  });
+  const [bgmVolume, setBgmVolume] = useState(() => readAudioPreferences().volume);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isAudioValid, setIsAudioValid] = useState(true);
   /*
@@ -934,9 +932,10 @@ export default function App() {
   const bgmVolumeRef = useRef(bgmVolume);
   bgmVolumeRef.current = bgmVolume;
   useEffect(() => {
-    localStorage.setItem('bgm_volume', bgmVolume.toString());
+    if (readAudioPreferences().volume !== bgmVolume) writeAudioPreferences({ volume: bgmVolume });
+    battleAudio().setSettings({ ...readAudioPreferences(), volume: bgmVolume });
     if (audioRef.current) {
-      audioRef.current.volume = appBgmVolume(bgmVolume, bgmElapsedMs());
+      setTitleBgmVolume(audioRef.current, appBgmVolume(bgmVolume, bgmElapsedMs()));
     }
   }, [bgmVolume]);
 
@@ -958,9 +957,15 @@ export default function App() {
   }, [isBgmEnabled]);
   // 逆向き：対戦ロビーのBGMボタン（対戦側の設定）で切り替えたら、アプリBGMも同じにする
   useEffect(() => {
-    const sync = () => { const on = readAudioPreferences().bgm; setIsBgmEnabled(prev => (prev === on ? prev : on)); };
+    const sync = () => {
+      const settings = readAudioPreferences();
+      setIsBgmEnabled(prev => prev === settings.bgm ? prev : settings.bgm);
+      setBgmVolume(prev => prev === settings.volume ? prev : settings.volume);
+    };
+    const onStorage = (event: StorageEvent) => { if (event.key === 'battle_audio_settings' || event.key === null) sync(); };
+    window.addEventListener('storage', onStorage);
     window.addEventListener('battle-audio-settings', sync);
-    return () => window.removeEventListener('battle-audio-settings', sync);
+    return () => { window.removeEventListener('battle-audio-settings', sync); window.removeEventListener('storage', onStorage); };
   }, []);
 
   useEffect(() => {
@@ -1048,7 +1053,7 @@ export default function App() {
       const { isBgmEnabled, isAudioValid, appState } = bgmStateRef.current;
       
       if (audio && isAudioValid && isBgmEnabled && !BGM_SILENT_STATES.includes(appState)) {
-        audio.volume = appBgmVolume(bgmVolume);
+        unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current));
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch(e => {
@@ -1139,7 +1144,7 @@ export default function App() {
         以前は 0.1 固定で、スライダーを動かしても再生開始やフェードの計算が
         0.1 に戻してしまい「音量が変わらない」状態だった（2026-09-30 修正）。
       */
-      audio.volume = appBgmVolume(bgmVolumeRef.current, bgmElapsedMs());
+      unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current, bgmElapsedMs()));
       // すでにフェードが終わっている（＝90秒＋5秒鳴り終えた）なら鳴らさない。
       // 画面を移動しただけで音が復活しては「消えた」ことにならない。
       if (isBgmFadeComplete(bgmElapsedMs())) {
@@ -1191,7 +1196,7 @@ export default function App() {
       const audio = audioRef.current;
       if (!audio) return;
       const elapsed = bgmElapsedMs();
-      audio.volume = appBgmVolume(bgmVolumeRef.current, elapsed);
+      setTitleBgmVolume(audio, appBgmVolume(bgmVolumeRef.current, elapsed));
       if (isBgmFadeComplete(elapsed)) {
         markBgmPlaying(false);
         audio.pause();
@@ -1225,7 +1230,7 @@ export default function App() {
     if (enabled) {
       if (!isAudioValid || hasLoggedAudioError.current) return;
       if (BGM_SILENT_STATES.includes(appState)) return;
-      audio.volume = appBgmVolume(bgmVolume);
+      unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current));
       markBgmPlaying(true);
       // iOS Safari 対策:
       // 音源がまだデコードされていない場合、ユーザー操作と同一スタックで

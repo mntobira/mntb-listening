@@ -111,3 +111,15 @@
 .arena-lobby-side button { border-radius: var(--mt-radius-md) !important; }
 .arena-menu-links button { border-radius: var(--mt-radius-md) !important; box-shadow: var(--mt-shadow-press); }
 .arena-lobby-label { font: var(--mt-text-kicker) !important; letter-spacing: var(--mt-kicker-spacing) !important; color: var(--mt-ink-muted) !important; }
+
+/* D: retain history only; optional help stays expandable. */
+.arena-lobby-sub .arena-menu-links { display:flex; justify-content:center; }
+.arena-lobby-sub .arena-menu-links button { min-width:140px; }
+@media(max-height:700px) {
+ .arena-menu > main { padding:6px 10px !important; }
+ .arena-menu .notebook-paper { padding:8px !important; gap:6px !important; }
+ .arena-menu .arena-vs { min-height:80px; padding-block:4px; }
+ .arena-menu .arena-vs-buddy { display:none; }
+ .arena-menu .arena-rule-chips { margin:2px 0; }
+ .arena-menu .arena-lobby-sub { padding-top:2px; gap:2px; }
+}

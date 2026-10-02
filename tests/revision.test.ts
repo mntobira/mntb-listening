@@ -1,7 +1,9 @@
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 const user = vi.hoisted(()=>({currentUser:{uid:'revision-user'} as {uid:string}|null}));
-vi.mock('../src/firebase',()=>({auth:user}));
+vi.mock('../src/firebase',()=>({auth:user,db:null}));
+import { parsePublicStudyProfile } from '../src/utils/publicStudyProfile';
+import { VOCAB_LEVELS } from '../src/data/listeningSupport';
 import { GACHA_COST, GACHA_MULTI_COUNT, GACHA_MULTI_COST, gachaItems, rollGacha } from '../src/battle/core/arenaEconomy';
 import { emptyProgress } from '../src/battle/core/growth';
 import { drawGacha, drawGachaMulti, drawVideoGacha, completedVideoToken, videoGachaPlaysLeft, GROWTH_STORAGE_PREFIX } from '../src/battle/data/growthStore';
@@ -47,5 +49,21 @@ describe('battle range and league revision',()=>{
   });
   it('server aggregation is never imported by the frontend and nav has an independent My Page',()=>{
     expect(readFileSync('src/components/Leaderboard.tsx','utf8')).not.toContain('clanPower');expect(readFileSync('src/App.tsx','utf8')).toContain("id: 'mypage'");expect(readFileSync('src/components/GrowthHub.tsx','utf8')).toContain('ガチャとランキング');
+  });
+});
+
+
+describe('D publication boundary and vocabulary guidance',()=>{
+  it('missing or false publication never exposes stored fields',()=>{
+    for(const value of [null,{}, {targetSchool:'private school',studySeconds:3600}, {public:false,targetSchool:'private school',studySeconds:3600}]) expect(parsePublicStudyProfile(value)).toBeNull();
+  });
+  it('valid consent permits only two public fields, rejecting corrupt totals',()=>{
+    expect(parsePublicStudyProfile({public:true,targetSchool:'  Example   University ',studySeconds:3725,email:'never returned'})).toEqual({public:true,targetSchool:'Example University',studySeconds:3725});
+    for(const seconds of [-1,NaN,Infinity,0.5,315360001])expect(parsePublicStudyProfile({public:true,targetSchool:'U',studySeconds:seconds})).toBeNull();
+  });
+  it('vocabulary IDs are preserved and labels state target-based guidance',()=>{
+    expect(Object.keys(VOCAB_LEVELS)).toEqual(['lv1','lv2','lv3','lv4','ilv1','ilv2','ilv3']);
+    expect(VOCAB_LEVELS.lv1).toContain('共通テスト6割');expect(VOCAB_LEVELS.lv2).toContain('共通テスト8割');expect(VOCAB_LEVELS.lv3).toContain('2次試験');
+    expect(readFileSync('src/components/FoundationWords.tsx','utf8')).toContain('保証するものではありません');
   });
 });

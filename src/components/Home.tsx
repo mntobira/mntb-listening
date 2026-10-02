@@ -394,8 +394,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           <div className="game-stage-floor" aria-hidden="true"><div className="game-equipped-ring" data-frame-pattern={growth ? equippedFramePattern(growth) : 'plain'} style={{borderColor: growth ? equippedFrameColor(growth) : undefined}} /><Swords /></div>
           {/* ★2026-10-01 D：とびら君をドラッグで回せる（モンスト風）★ ちょんと押すと今までどおり着せ替え */}
           {growth && <div className="game-mascot-button" data-home-mascot>
-            <SpinMascot className="home-mascot-wrap tb-idle" label="とびら君（左右にドラッグで回す・押すと着せ替え）" onTap={onGrowth ? () => onGrowth('outfit') : undefined}>
-              <img className="home-mascot-art" src={equippedPoseSrc(growth)} alt="あなたのとびら君" draggable={false} style={{ filter: `drop-shadow(0 6px 0 ${equippedFrameColor(growth)}55)` }} /><TobiraAccessories progress={growth} />
+            <SpinMascot className="home-mascot-wrap" label="とびら君（左右にドラッグで回す・押すと着せ替え）" onTap={onGrowth ? () => onGrowth('outfit') : undefined}>
+              <img className="home-mascot-art" src={equippedPoseSrc(growth)} alt="あなたのとびら君" draggable={false} /><TobiraAccessories progress={growth} />
             </SpinMascot>
             <span>MY TOBIRA <b>Lv.{levelOf(growth.xp).level}</b></span>
           </div>}
@@ -417,13 +417,15 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
             <span className="home-pillar-icon" aria-hidden="true"><Swords /></span><strong>対戦する</strong><small>ひとりで・みんなで</small>
           </button>}
         </section>
+        <section className="home-review-rush" aria-label="復習と短時間チャレンジ">
         <button type="button" className="home-review-wide game-review" aria-label={`復習ノート（苦手をなくす）${reviewDueCount > 0 ? `・今日の復習 ${reviewDueCount}問` : ''}`} onClick={onNoteList} data-home-review>
           <span className="home-pillar-icon" aria-hidden="true"><Repeat2 /></span>
           <span className="home-review-text"><strong>復習ノート</strong><small>苦手をなくす</small></span>
           {reviewDueCount > 0 ? <b>今日 {reviewDueCount}問</b> : <ChevronRight aria-hidden="true" />}
         </button>
-        <div className={`game-home-utility arena-home-bottom ${onGrowth ? 'has-rush' : ''}`}>
-          {onGrowth && <button type="button" className="game-rush-entry" onClick={() => onGrowth('rush')} aria-label="マナラッシュ（60秒チャレンジ）を開く" data-home-rush><Zap size={17} />ラッシュ</button>}
+          {onGrowth && <button type="button" className="home-rush-card" onClick={() => onGrowth('rush')} aria-label="マナラッシュ（60秒チャレンジ）を開く" data-home-rush><Zap size={20} /><span><strong>マナラッシュ</strong><small>60秒チャレンジ</small></span></button>}
+        </section>
+        <div className="game-home-utility arena-home-bottom">
           {onGrowth && <button type="button" onClick={() => onGrowth('missions')}><Target size={17} />ミッション</button>}
           <button type="button" onClick={() => progressDialog.current?.showModal()} aria-haspopup="dialog"><BarChart3 size={17} />学習状況</button>
           <button type="button" aria-label="アプリ紹介を開く" onClick={onIntro}><ShieldCheck size={17} />使い方</button>

@@ -1,11 +1,12 @@
 import { beforeAll,beforeEach,afterAll,it,expect,vi } from 'vitest';
 import { initializeTestEnvironment,type RulesTestEnvironment,assertFails } from '@firebase/rules-unit-testing';
-import { doc,getDoc,updateDoc,setDoc } from 'firebase/firestore';
+import { doc,getDoc,updateDoc,setDoc,deleteDoc,serverTimestamp } from 'firebase/firestore';
 import { readFileSync } from 'node:fs';
 const state=vi.hoisted(()=>({db:null as any,auth:{currentUser:null as any}}));
 vi.mock('../src/firebase',()=>({get db(){return state.db;},auth:state.auth}));
 vi.mock('../src/utils/leaderboard',()=>({resolveNickname:()=>state.auth.currentUser?.uid || 'test'}));
 import { createFriendRoom,joinRoomByCode,findOrEnqueue,startBattle,submitAnswer,advanceQuestion,watchMatched } from '../src/battle/data/battle';
+import { watchPublicStudyProfiles, parsePublicStudyProfile } from '../src/utils/publicStudyProfile';
 import { loadPool } from '../src/battle/data/battlePool';
 let env:RulesTestEnvironment;
 const subject='english_listening';
@@ -52,3 +53,36 @@ it('fine vocabulary scope works in friend rooms under rules',async()=>{
  expect(room.get('questionIds')).toHaveLength(5);
  for(const id of room.get('questionIds')){const q=pool.find(q=>q.id===id)!;expect(q.chapterId).toBe('lv1');expect(Number(q.subQuestionId)).toBeGreaterThanOrEqual(1);expect(Number(q.subQuestionId)).toBeLessThanOrEqual(50);}
 },30000);
+
+
+it('public study profile requires explicit consent and owner-only bounded writes',async()=>{
+ const ref=doc(state.db,'public_study_profiles','listener-a');
+ const valid={public:true,targetSchool:'Example University',studySeconds:3600,updatedAt:serverTimestamp()};
+ expect((await getDoc(ref)).exists()).toBe(false);
+ await assertFails(setDoc(ref,{...valid,public:false}));
+ await assertFails(setDoc(ref,{...valid,email:'private@example.test'}));
+ await assertFails(setDoc(ref,{...valid,studySeconds:-1}));
+ await assertFails(setDoc(ref,{...valid,studySeconds:0.5}));
+ await assertFails(setDoc(ref,{...valid,targetSchool:'x'.repeat(41)}));
+ await setDoc(ref,valid);
+ login('viewer');expect(parsePublicStudyProfile((await getDoc(doc(state.db,'public_study_profiles','listener-a'))).data())?.targetSchool).toBe('Example University');
+ await assertFails(setDoc(doc(state.db,'public_study_profiles','listener-a'),valid));
+ await assertFails(deleteDoc(doc(state.db,'public_study_profiles','listener-a')));
+ await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(),'public_study_profiles','listener-a')));
+});
+it('withdrawing removes metadata live, and a stale time refresh cannot recreate it',async()=>{
+ const ref=doc(state.db,'public_study_profiles','listener-a');
+ await setDoc(ref,{public:true,targetSchool:'Visible only by consent',studySeconds:120,updatedAt:serverTimestamp()});
+ login('viewer');const updates:Record<string,unknown>[]=[];const stop=watchPublicStudyProfiles(['listener-a','never-published'],p=>updates.push(p));
+ try{
+  await vi.waitFor(()=>expect(updates.at(-1)?.['listener-a']).toBeTruthy(),{timeout:5000});
+  login('listener-a');await deleteDoc(doc(state.db,'public_study_profiles','listener-a'));
+  await vi.waitFor(()=>expect(updates.at(-1)).toEqual({}),{timeout:5000});
+  await assertFails(updateDoc(doc(state.db,'public_study_profiles','listener-a'),{studySeconds:360,updatedAt:serverTimestamp()}));
+  expect((await getDoc(doc(state.db,'public_study_profiles','listener-a'))).exists()).toBe(false);
+ }finally{stop();}
+},15000);
+it('unpublished metadata cannot be retrieved even if an admin seeded it',async()=>{
+ await env.withSecurityRulesDisabled(async context=>{await setDoc(doc(context.firestore(),'public_study_profiles','private-user'),{public:false,targetSchool:'Hidden',studySeconds:999});});
+ login('viewer');await assertFails(getDoc(doc(state.db,'public_study_profiles','private-user')));
+});

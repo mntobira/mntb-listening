@@ -227,3 +227,46 @@
 @media (min-width: 1100px) { .mana-hub-gacha .gacha-room.is-busy > .gacha-reveal { min-height: min(440px, calc(100dvh - 240px)); } }
 .gacha-outcome .gacha-reveal-rarity .gacha-stars { font-size: 18px; }
 .gacha-multi-result .gacha-reveal-rarity .gacha-stars { font-size: 14px; }
+
+/* D: a single task screen. Long odds and result collections scroll internally. */
+.compact-gacha { height:100%; min-height:0; display:flex; flex-direction:column; overflow:hidden; padding-bottom:calc(var(--app-nav-h,72px) + 6px); }
+.compact-gacha > .mana-hub-header { padding:4px 12px !important; min-height:48px; flex-shrink:0; }
+.compact-gacha > .growth-shared-switch { margin:2px auto 6px !important; width:calc(100% - 24px); max-width:680px; flex-shrink:0; }
+.compact-gacha .gacha-room { display:flex !important; flex-direction:column; width:100%; max-width:680px; min-height:0; flex:1; margin:auto; gap:6px; padding:2px 12px 6px !important; }
+.compact-gacha .gacha-head { display:block; flex-shrink:0; }
+.compact-gacha .gacha-head h1 { font-size:20px !important; }
+.compact-gacha .gacha-lead { display:block; font-size:12px; line-height:1.4; }
+.compact-gacha .gacha-head > .mt-kicker { display:none; }
+.compact-gacha .gacha-room > .gacha-machine { display:flex; position:relative; flex:1; min-height:104px; max-height:260px; margin:0; }
+.compact-gacha .gacha-preview-tag { display:none; }
+.compact-gacha .gacha-exhibit { top:8px; bottom:35px; }
+.compact-gacha .gacha-preview-info { bottom:5px; }
+.compact-gacha .gacha-pulls { display:grid; grid-template-columns:1fr 1fr; gap:6px; flex-shrink:0; }
+.compact-gacha .gacha-pulls .gacha-pull { min-height:50px; font-size:16px; padding:5px; }
+.compact-gacha [data-video-gacha] { grid-column:1/-1; background:linear-gradient(#edf8f7,#d4e9e6) !important; border-color:#79a6a1 !important; color:#285956 !important; box-shadow:0 2px 0 #93b9b4 !important; }
+.compact-gacha [data-video-gacha] small { color:#285956; }
+.compact-gacha .gacha-wallet { flex-shrink:0; padding-inline:8px; }
+.compact-gacha .gacha-wallet .gacha-balance { font-size:12px !important; }
+.compact-gacha .gacha-foot { flex-shrink:0; }
+.compact-gacha .gacha-room.is-busy > :is(.gacha-result,.gacha-cinema) { flex:1; min-height:0; max-height:100%; overflow-y:auto; width:100%; }
+.compact-gacha .gacha-multi-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.compact-gacha .gacha-multi-grid button { min-height:44px !important; }
+.compact-gacha .gacha-multi-grid .mt-item-card > strong { display:block; }
+@media(min-width:700px) { .compact-gacha .gacha-pulls { grid-template-columns:1fr 1.25fr 1fr; } .compact-gacha [data-video-gacha] { grid-column:auto; } }
+
+/* Keep the weekly UR hero; remove only the three secondary SR/SR/R cards.
+ * Draw actions precede the optional carousel. On short screens the complete
+ * lineup remains available in the existing collection dialog. */
+.compact-gacha .gacha-featured { flex-shrink:0; padding:6px; gap:4px; }
+.compact-gacha .gacha-featured > .gacha-step { font-size:13px; line-height:18px; }
+.compact-gacha .gacha-hero { min-height:76px; padding:5px 8px; gap:8px; box-shadow:0 0 0 1px #fff,0 2px 0 2px #efd28d; }
+.compact-gacha .gacha-hero-art { width:48px; height:62px; }
+.compact-gacha .gacha-hero-body > strong { font-size:14px; line-height:1.25; }
+.compact-gacha .gacha-hero-body > small { white-space:normal; font-size:12px; }
+.compact-gacha .gacha-room > .gacha-machine { order:1; }
+.compact-gacha .gacha-foot { order:2; }
+@media(max-height:740px) {
+ .compact-gacha .gacha-room > .gacha-machine { display:none; }
+ .compact-gacha .gacha-featured { margin-block:auto; }
+ .compact-gacha .gacha-lead { display:none; }
+}

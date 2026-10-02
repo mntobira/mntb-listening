@@ -16,15 +16,15 @@ import { VOCAB_PREF_KEY } from '../utils/vocabGoal';
 
 /**
  * 目標別の範囲。語数はデータの level から数える（数字を直書きしない）。
- *   共通テストレベル … 単語・基礎／標準 ＋ 熟語・基礎
- *   国公立大         … ＋ 単語・発展 ＋ 熟語・標準
- *   難関私大         … 全レベル
+ *   共通テスト6〜8割 … 単語・共通テスト6割〜／8割〜 ＋ 熟語・共通テスト6割〜
+ *   2次試験レベル    … ＋ 単語・2次試験レベル ＋ 熟語・共通テスト8割〜
+ *   2次＋追加        … 全レベル
  *   志望校別         … 志望校の出題に合わせてレベルを自分で選ぶ
  */
 export const PRESETS = [
-  { id: 'common', label: '共通テスト', full: '共通テストレベル', levels: ['lv1', 'lv2', 'ilv1'] },
-  { id: 'national', label: '国公立大', full: '国公立大', levels: ['lv1', 'lv2', 'lv3', 'ilv1', 'ilv2'] },
-  { id: 'private', label: '難関私大', full: '難関私大', levels: Object.keys(VOCAB_LEVELS) },
+  { id: 'common', label: '共通6〜8割', full: '共通テスト6〜8割を目標に', levels: ['lv1', 'lv2', 'ilv1'] },
+  { id: 'national', label: '2次試験', full: '2次試験レベル', levels: ['lv1', 'lv2', 'lv3', 'ilv1', 'ilv2'] },
+  { id: 'private', label: '2次＋追加', full: '2次試験の追加語彙まで', levels: Object.keys(VOCAB_LEVELS) },
   { id: 'custom', label: '志望校別', full: '志望校別', levels: null },
 ] as const;
 export type PresetId = typeof PRESETS[number]['id'];
@@ -152,7 +152,7 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
   </section>;
 
   return <section className="fd-panel fd-words" aria-label="単語・熟語">
-    <div className="fd-presets" role="radiogroup" aria-label="目標">
+    <p className="fd-goal-guide" style={{fontSize:12}}>目標の目安です。得点や志望校の出題範囲を保証するものではありません。</p><div className="fd-presets" role="radiogroup" aria-label="目標">
       {PRESETS.map(p => <button key={p.id} type="button" role="radio" aria-checked={prefs.preset === p.id}
         onClick={() => { setPrefs(v => ({ ...v, preset: p.id })); if (p.id === 'custom') setFiltersOpen(true); resetList(); }}>
         <span aria-label={p.full}><span className="fd-preset-short">{p.label}</span><span className="fd-preset-full">{p.full}</span></span><small>{(countByPreset[p.id] ?? 0).toLocaleString()}語</small>

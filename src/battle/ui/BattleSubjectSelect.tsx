@@ -176,6 +176,7 @@ export function BattleSubjectSelect({
       <BattleTitle subtitle={`${theme.label} ／ 単元をえらぶ`} />
       {/* 説明は1行に。「少ない単元は収録数だけ」は各カードの「今回 N問」で分かる */}
       <p className="mb-2 text-sm font-bold" style={{ color: INK }}>出題範囲を選ぶ（最大{questionCount}問）</p>
+      {unitSubject === 'english_vocab' && <p className="mb-2 text-xs">共通テスト目標・2次試験は学習範囲の目安です。得点や志望校の出題を保証しません。</p>}
       {split && <><p className="mb-2 text-sm font-bold">{externalChapterTitleOf(unitSubject, book)}</p><div className="mb-2 flex gap-2" aria-label="単語範囲の大きさ">{([50,100] as const).map(n => <button type="button" key={n} className="min-h-11 flex-1 rounded-xl border-2 bg-white text-sm font-bold" aria-pressed={rangeSize === n} onClick={() => setRangeSize(n)}>{n}語ずつ</button>)}</div></>}
       {unitError ? <div role="alert"><p>単元を読み込めませんでした。</p><BattleButton onClick={() => setRetry(n => n + 1)}>再読み込み</BattleButton></div>
         : !units ? <p role="status">単元を読み込んでいます…</p>

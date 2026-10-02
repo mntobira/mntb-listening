@@ -75,3 +75,22 @@
   .launch-walking-pose { display: none; }
   .launch-equipped-pose { opacity: 1 !important; }
 }
+
+.launch-emblem, .launch-announcement { height:100dvh; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:20px; background:#fcf5e9; color:#344451; font-family:var(--mt-font-body); }
+.launch-emblem img { width:min(260px,70vw); height:auto; }
+.launch-emblem h1 { font:800 clamp(20px,5.5vw,28px)/1.4 var(--mt-font-display); text-align:center; }
+.launch-emblem p { font-size:12px; letter-spacing:.2em; color:#6b6047; }
+.launch-emblem-mark { position:relative; display:grid; place-items:center; width:108px; height:118px; border:3px solid #b59c5d; border-radius:48% 48% 40% 40%; background:linear-gradient(#fffdf8,#f5e5bc); box-shadow:0 0 0 5px #fffaf0,0 0 0 6px #dfcc9d; }
+.launch-emblem-mark svg:first-child { width:56px; height:56px; color:#987735; }
+.launch-emblem-mark svg:last-child { position:absolute; right:8px; bottom:9px; width:34px; height:34px; background:#fff7e6; border-radius:50%; color:#3e7289; }
+.launch-emblem button { min-height:44px; padding:0 16px; font-size:12px; color:#596673; border:1px solid #d8caa9; border-radius:20px; }
+.launch-announcement > section { width:min(520px,100%); display:flex; flex-direction:column; gap:18px; }
+.launch-announcement h1 { font-size:clamp(22px,6vw,30px); font-weight:900; line-height:1.4; }
+.launch-announcement p { font-size:14px; line-height:1.7; }
+.launch-countdown { display:flex; align-items:center; gap:20px; padding:18px; border:1px solid #d7bd78; border-radius:20px; background:linear-gradient(#fff7e3,#f4e2b4); }
+.launch-countdown > span { font-size:14px; }
+.launch-countdown strong { display:block; font-size:50px; line-height:1.1; color:#496d80; font-variant-numeric:tabular-nums; }
+.launch-countdown small { font-size:12px; margin-left:6px; }
+.launch-announcement-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.launch-announcement-actions button { min-height:48px; border:1px solid #bca568; border-radius:14px; font-size:16px; font-weight:800; background:#f0d388; color:#4a3b1f; }
+.launch-announcement-actions button:last-child { background:#fffaf0; color:#475d6b; }
