@@ -1,0 +1,15 @@
+/* 対戦結果：1問ずつの答えあわせ（2026-10-02） */
+.result-review-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.result-review-count { font-size: 12px; font-weight: 800; color: #6b7280; }
+.result-review-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.result-review-chips { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px; scrollbar-width: none; scroll-behavior: smooth; }
+.result-review-chips::-webkit-scrollbar { display: none; }
+.result-review-chips button { flex: 0 0 44px; height: 44px; border-radius: 12px; border: 2px solid #f0b8b3; background: #fdf0ee; color: #b3261e; font-size: 14px; font-weight: 900; }
+.result-review-chips button[data-ok] { border-color: #9fd8c3; background: #eef9f3; color: #1f7a4d; }
+.result-review-chips button[data-none] { border-color: #ddd5c8; background: #f6f3ee; color: #6b7280; }
+.result-review-chips button[aria-current] { outline: 3px solid #E5B93C; outline-offset: 1px; }
+.result-review-arrow { flex: 0 0 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; border: 1.5px solid #d9cdbb; background: #fffdf6; color: #2c3e50; }
+.result-review-arrow:disabled { opacity: .3; }
+.result-review-stage { display: block; touch-action: pan-y; }
+.result-review-card { animation: result-review-in .18s ease-out; }
+@keyframes result-review-in { from { opacity: .4; transform: translateX(6px); } to { opacity: 1; transform: none; } }

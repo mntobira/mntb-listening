@@ -646,7 +646,7 @@ export default function App() {
 
   const [lastLearnState, setLastLearnState] = useState<AppState>(() => {
     const saved = localStorage.getItem('savedLastLearnState');
-    return isAppState(saved) && isLearningScreen(saved) ? saved : 'mode_selection';
+    return isAppState(saved) && isLearningScreen(saved) ? saved : 'study';
   });
 
   useEffect(() => { localStorage.setItem('savedAppState', appState); }, [appState]);
@@ -871,6 +871,7 @@ export default function App() {
   
   // BGM state
   const audioRef = useRef<HTMLAudioElement>(null);
+  const titlePauseTimer = useRef<number | null>(null);
   /*
     ===== BGM の初期状態について =====
     ★以前は常に ON（useState(true)）だった。これを OFF 既定に変える。★
@@ -1153,6 +1154,9 @@ export default function App() {
         return;
       }
       markBgmPlaying(true);
+      // 鳴っている最中に play() を重ねて呼ばない（画面遷移のたびに呼ぶとバッファが詰まり「ガガッ」と鳴る）
+      if (titlePauseTimer.current) { window.clearTimeout(titlePauseTimer.current); titlePauseTimer.current = null; }
+      if (!audio.paused) return;
       // Play might fail if user hasn't interacted with the document yet or if source is invalid
       const playPromise = audio.play();
       if (playPromise !== undefined) {
@@ -1175,7 +1179,12 @@ export default function App() {
       // 止まる側でも計測を止める。演習中に進んだ時間を数えてしまうと
       // 「演習から戻ったらもう消えていた」状態になる。
       markBgmPlaying(false);
-      audio.pause();
+      // いきなり pause せず、音量を絞ってから止める（ブツッ・ガガッを防ぐ）。
+      // 短い時間で戻ってきたら（演習→解説などの行き来）止めずに続ける。
+      if (!audio.paused && !titlePauseTimer.current) {
+        setTitleBgmVolume(audio, 0);
+        titlePauseTimer.current = window.setTimeout(() => { titlePauseTimer.current = null; audio.pause(); }, 250);
+      }
     }
   }, [appState, isBgmEnabled, hasInteracted, isAudioValid, hasEntered]);
 
@@ -1857,7 +1866,7 @@ export default function App() {
                 items={[
                   { id: 'home', label: 'ホーム', ariaLabel: 'ホーム画面へ移動', current: appState === 'home', onClick: () => navigateMain('home') },
                   { id: 'study', label: '学習', ariaLabel: '学習画面へ移動', current: isLearningScreen(appState), onClick: () => {
-                    if (!isLearningScreen(appState)) navigateMain(safeStudyResume(selectedSubject, lastLearnState, selectedChapterId) as AppState);
+                    if (!isLearningScreen(appState)) { const next = safeStudyResume(selectedSubject, lastLearnState, selectedChapterId); setFoundationBackTo('home'); navigateMain((next === 'mode_selection' ? 'study' : next) as AppState); }
                   } },
                   // 対戦はランキングより前（結果を見る画面より先）。FEATURES.battle が false なら席ごと消す
                   { id: 'battle', label: '対戦', ariaLabel: 'オンライン対戦へ移動', current: appState === 'battle', hidden: !FEATURES.battle, onClick: () => navigateMain('battle') },

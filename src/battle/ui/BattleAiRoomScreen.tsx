@@ -21,6 +21,8 @@ import { aiProfileOf, type AiLevel, type AiProfile } from '../core/aiOpponent';
 import type { GhostReason } from '../core/matchFallback';
 import { ArenaFighters } from './ArenaFighters';
 import { useAiBattle } from '../hooks/useAiBattle';
+import { useBattleAudio } from '../hooks/useBattleAudio';
+import { OpponentCard } from './OpponentCard';
 import { BattleLiveStage } from './BattleLiveStage';
 import { BattleResult } from './BattleResult';
 import {
@@ -48,6 +50,7 @@ export function BattleAiRoomScreen({
   onExit,
   onRematch,
   onChangeLevel,
+  onChangeSubject,
   onPractice,
   onOpenProfile, onOpenMissions, onActiveChange,
   onReview,
@@ -70,6 +73,8 @@ export function BattleAiRoomScreen({
   onRematch: () => void;
   /** 強さを変える */
   onChangeLevel: () => void;
+  /** 教科・単元を選び直す */
+  onChangeSubject?: () => void;
   onPractice?: (subject: string, chapterId: string, problemId?: string, subQuestionId?: string) => void;
   onActiveChange?: (active: boolean) => void;
   onOpenProfile?: () => void;
@@ -85,6 +90,11 @@ export function BattleAiRoomScreen({
   const theme = subjectTheme(subject as SubjectKey);
   const profile = ghost?.profile ?? aiProfileOf(level);
   const b = useAiBattle(subject, level, matchNo, questionCount, chapterId, ghost?.profile);
+  // ★開始前（読み込み・はじめる画面）も待合室の曲を鳴らし続ける（2026-10-02）★
+  //   この画面は親（BattleMode）から「BGMは自分で持つ」と見なされるので、
+  //   対戦ステージが始まるまで誰も曲を要求せず、無音になっていた。
+  //   優先度は低め（1）：ステージ（10）や結果画面が始まればそちらが勝つ。
+  useBattleAudio('matching', undefined, 1);
   // ★全国対戦で組まれた AI（ghost）は、人と組めたときと同じ見た目にする（「AI」とは出さない）★
   const modeLabel = ghost ? '全国対戦' : 'AIと対戦';
   // ★AI プレイヤーは見つかった直後に自動で始める★（人と組めたときと同じ流れ）
@@ -163,6 +173,10 @@ export function BattleAiRoomScreen({
         byForfeit={false}
         maskOpponent={!!ghost}
         onRematch={onRematch}
+        rematchLabel={ghost ? 'もう1回 全国対戦' : `同じ相手（${b.opponent?.nickname || 'AI'}）ともう1回`}
+        onPlayAgain={ghost ? undefined : onChangeLevel}
+        playAgainLabel="相手の強さを変える"
+        onChangeSubject={onChangeSubject}
         onExit={() => onExit()}
         onPractice={onPractice}
         growthMatchId={growthMatchId} growthOwnerUid={growthOwnerUid} growthEligible
@@ -183,6 +197,7 @@ export function BattleAiRoomScreen({
       <BattleShell className="arena-matching">
         <BattleTitle subtitle="全国対戦・開始準備" />
         <ArenaFighters matched />
+        <OpponentCard nickname={b.opponent.nickname} photoURL={b.opponent.photoURL} rating={b.opponent.rating} mask isAi />
         <p className="text-center font-bold" data-ghost-ready>2人がそろいました。まもなくスタート</p>
         <BattleButton variant="ghost" onClick={() => onExit()}>対戦を終了する</BattleButton>
       </BattleShell>
@@ -237,6 +252,9 @@ export function BattleAiRoomScreen({
             </div>
           </div>
         </section>
+
+        <OpponentCard nickname={profile.name} rating={profile.displayRating} isAi
+          aiNote={`${profile.tagline}（正解率 ${Math.round(profile.accuracy * 100)}%）`} />
 
         <BattleNotice
           message="出題・制限時間・点数の計算は全国対戦と同じです。レートは動きません。"

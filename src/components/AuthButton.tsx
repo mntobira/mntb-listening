@@ -11,6 +11,7 @@ import { auth } from '../firebase';
 import { Loader2 } from 'lucide-react';
 import { signInWithGoogle, consumeGoogleRedirectResult, isInAppBrowser } from '../utils/googleAuth';
 import { GoogleMark } from './GoogleLinkBanner';
+import { AppleSignInButton } from '../features/auth/AppleSignInButton';
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
@@ -65,6 +66,7 @@ export function AuthButton() {
         {signing ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <GoogleMark size={18} />}
         {signing ? '連携中…' : 'Google アカウントで連携'}
       </button>
+      <AppleSignInButton className="!w-auto !rounded-full" onResult={(o) => { if (!o.ok) setError(o.message || 'ログインに失敗しました。'); }} />
       {error && (
         <p className="max-w-xs text-[11px] font-bold leading-snug text-rose-600" role="alert">{error}</p>
       )}

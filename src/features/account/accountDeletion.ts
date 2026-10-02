@@ -4,7 +4,8 @@
  *
  * ★今の firestore.rules で本人が消せるもの★
  *   study_progress / battle_queue / class_members + study_access（退出）/
- *   friends（双方向）/ friend_requests / friend_profiles / friend_codes / battle_history
+ *   friends（双方向）/ friend_requests / friend_profiles / friend_codes / battle_history /
+ *   public_study_profiles / クラン在籍（manaClan 関数の leave）
  * ★ルールで削除禁止のため残るもの★
  *   leaderboard_* / battle_ranking / app_users
  *   → 運営への削除依頼を自動送信し、Admin SDK で消してもらう。
@@ -15,6 +16,8 @@ import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, se
 import { fetchMyMemberships, leaveClassroom } from '../../utils/classroom';
 import { STUDY_PROGRESS_COLLECTION } from '../../utils/studySync';
 import { submitFeedback } from '../../utils/feedback';
+import { PUBLIC_STUDY_PROFILES } from '../../utils/publicStudyProfile';
+import { clanCall } from '../../utils/manaClan';
 
 async function quiet(p: Promise<unknown>): Promise<boolean> {
   try { await p; return true; } catch { return false; }
@@ -24,6 +27,9 @@ async function quiet(p: Promise<unknown>): Promise<boolean> {
 export async function deleteMyCloudData(uid: string): Promise<void> {
   await quiet(deleteDoc(doc(db, STUDY_PROGRESS_COLLECTION, uid)));
   await quiet(deleteDoc(doc(db, 'battle_queue', uid)));
+  // 公開プロフィール（志望校・学習時間）とクラン在籍（サーバー関数経由で抜ける）
+  await quiet(deleteDoc(doc(db, PUBLIC_STUDY_PROFILES, uid)));
+  await quiet(clanCall('leave'));
 
   try {
     for (const m of await fetchMyMemberships()) await quiet(leaveClassroom(m.classId));
@@ -89,7 +95,7 @@ export async function deleteAccount(user: User): Promise<DeleteOutcome> {
   try {
     await quiet(submitFeedback({
       screen: 'other', category: 'request', rating: 0,
-      message: `[アカウント削除依頼] uid: ${uid}\nランキング（leaderboard_* / battle_ranking）と app_users の削除をお願いします。`,
+      message: `[アカウント削除依頼] uid: ${uid}\nランキング（leaderboard_* / battle_ranking）・app_users・league_rewards/{uid} の削除をお願いします。`,
       context: { kind: 'account_deletion', uid },
     }));
     await deleteMyCloudData(uid);

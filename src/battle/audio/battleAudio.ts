@@ -32,6 +32,7 @@ import { DEFAULT_BATTLE_AUDIO } from '../core/audioSettings';
 import { playSample, preloadSamples } from './sfxSamples';
 import { BGM_FILES, bgmFileKeyOf, introDelaySec, introOffsetSec, type BgmFileKey } from './bgmFiles';
 import { BATTLE_BGM_BUS_GAIN } from './bgmLoudness';
+import { sharedAudioContext } from './sharedAudioContext';
 
 /** 効果音ファイルの再生音量（ファイルはピーク約 -1dB で作ってあるので下げて合成音と揃える） */
 const SAMPLE_GAIN = 0.5;
@@ -431,9 +432,9 @@ export class BattleAudioEngine {
     if (this.ctx && this.ctx.state !== 'closed') return this.ctx;
     if (this.ctx) { this.stopBgm(); this.ctx = null; this.fileBuffers.clear(); }
     try {
-      const AC = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AC) return null;
-      const ctx: Ctx = new AC();
+      // タイトル曲と同じ1つのコンテキストを使う（sharedAudioContext.ts の理由を参照）
+      const ctx = sharedAudioContext();
+      if (!ctx) return null;
       const master = ctx.createGain();
       master.gain.value = this.settings.volume;
       master.connect(ctx.destination);
@@ -483,7 +484,8 @@ export class BattleAudioEngine {
 
   dispose(): void {
     this.stopBgm();
-    if (this.ctx && this.ctx.state !== 'closed') void this.ctx.close().catch(() => {});
+    // 共有コンテキストは閉じない（タイトル曲も同じものを使っている）
+    try { this.master?.disconnect(); } catch { /* noop */ }
     this.ctx = null;
     this.master = null;
     this.bgmGain = null;

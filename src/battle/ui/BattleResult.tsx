@@ -49,14 +49,17 @@ import { answerNumber } from '../core/arenaRules';
 
 import { TobiraBuddy } from '../../components/TobiraBuddy';
 import { CinematicClip, CINEMATIC_CLIPS } from '../../components/CinematicClip';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import './battle-result-review.css';
 import { BattleText } from './BattleText';
 import { BattleReviewDetails } from './BattleReviewDetails';
 import { BattleGrowthReward } from './BattleGrowthReward';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, TouchEvent as ReactTouchEvent } from 'react';
 import {
   ArrowLeft,
   BookOpen,
+  ChevronLeft,
+  ChevronRight,
   Lightbulb,
   Minus,
   RotateCcw,
@@ -144,6 +147,9 @@ export function BattleResult({
   maskOpponent,
   onRematch,
   rematchLabel = 'もう1回たいせん',
+  onChangeSubject,
+  onPlayAgain,
+  playAgainLabel = '同じ単元でもう1回',
   onExit,
   onPractice: onPracticeProp,
   ratingNote,
@@ -172,6 +178,11 @@ export function BattleResult({
    * 省略時は AI 戦などそのまま再戦できる場合の文言。
    */
   rematchLabel?: string;
+  /** 2026-10-02：別の単元・教科でもう一度（教科選びへ） */
+  onChangeSubject?: () => void;
+  /** 同じ相手・同じ単元以外の「もう一戦」（例：AI戦で同じ設定のまま次の試合） */
+  onPlayAgain?: () => void;
+  playAgainLabel?: string;
   onExit: () => void;
   /**
    * ★「この単元を演習する」を押したとき（請求⑦-A）★
@@ -229,6 +240,25 @@ export function BattleResult({
    */
   const [answerLoadFailed, setAnswerLoadFailed] = useState(false);
   const [answerRetry, setAnswerRetry] = useState(0);
+  // 1問ずつの答えあわせ：いま見ている問（最初は最初に間違えた問）
+  const firstWrong = result.me.perQuestion.findIndex((q) => !q.correct);
+  const [reviewIndex, setReviewIndex] = useState(firstWrong >= 0 ? firstWrong : 0);
+  const swipeX = useRef<number | null>(null);
+  const chipsRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    // 番号の列だけを横に動かす（ページ全体はスクロールさせない）
+    const nav = chipsRef.current;
+    const chip = nav?.querySelector<HTMLElement>(`[data-review-chip="${reviewIndex}"]`);
+    if (nav && chip) nav.scrollLeft = Math.max(0, chip.offsetLeft - nav.clientWidth / 2 + chip.offsetWidth / 2);
+  }, [reviewIndex]);
+  const onReviewTouchStart = (e: ReactTouchEvent) => { swipeX.current = e.touches[0]?.clientX ?? null; };
+  const onReviewTouchEnd = (e: ReactTouchEvent) => {
+    const start = swipeX.current; swipeX.current = null;
+    const end = e.changedTouches[0]?.clientX;
+    if (start == null || end == null || Math.abs(end - start) < 50) return;
+    const last = result.me.perQuestion.length - 1;
+    setReviewIndex((i) => (end < start ? Math.min(last, i + 1) : Math.max(0, i - 1)));
+  };
   const [answers, setAnswers] = useState<ReadonlyMap<string, string>>(new Map());
 
   useEffect(() => {
@@ -310,6 +340,12 @@ export function BattleResult({
             subject={subject}
             chapterTitleOf={chapterTitleOf}
           />
+          {(onPlayAgain || onChangeSubject) && (
+            <div className="grid grid-cols-2 gap-2" data-result-next>
+              {onPlayAgain && <BattleButton variant="ghost" onClick={onPlayAgain} icon={<RotateCcw size={16} />}>{playAgainLabel}</BattleButton>}
+              {onChangeSubject && <BattleButton variant="ghost" onClick={onChangeSubject} icon={<BookOpen size={16} />}>ほかの単元で</BattleButton>}
+            </div>
+          )}
           <BattleButton variant="ghost" onClick={onExit} icon={<ArrowLeft size={18} />}>
             対戦メニューにもどる
           </BattleButton>
@@ -443,14 +479,28 @@ export function BattleResult({
 
 
 
-      {/* 1問ずつの内訳 ＋ ★試合後の答えとひと言の理由（請求⑦-A）★ */}
-      <section id="battle-result-detail" className="mb-4">
-        <h2 className="mb-2 text-xs font-black" style={{ color: INK_SUB }}>
-          1問ずつのけっか（答えあわせ）
-        </h2>
+      {/* 1問ずつの内訳 ＋ ★試合後の答えとひと言の理由（請求⑦-A）★
+          2026-10-02 夜：縦に長くスクロールさせず、問の番号と ‹ › で1問ずつ切り替える（スマホ） */}
+      <section id="battle-result-detail" className="mb-4 result-review" data-result-review>
+        <div className="result-review-head">
+          <h2 className="text-xs font-black" style={{ color: INK_SUB }}>1問ずつのけっか（答えあわせ）</h2>
+          <span className="result-review-count">{reviewIndex + 1} / {result.me.perQuestion.length}</span>
+        </div>
         {answerLoadFailed && <p role="alert" className="mb-2 text-sm text-red-700">解説の読み込みに失敗しました。<button type="button" className="min-h-11 underline" onClick={() => setAnswerRetry(n => n + 1)}>再読み込み</button></p>}
-        <div className="grid gap-1.5">
-          {result.me.perQuestion.map((q) => {
+        <div className="result-review-bar">
+          <button type="button" className="result-review-arrow" data-review-prev aria-label="前の問題" disabled={reviewIndex <= 0} onClick={() => setReviewIndex(i => Math.max(0, i - 1))}><ChevronLeft size={22} /></button>
+        <nav ref={chipsRef} className="result-review-chips" aria-label="問の番号">
+          {result.me.perQuestion.map((q, i) => (
+            <button key={q.index} type="button" data-review-chip={i} aria-current={i === reviewIndex ? 'true' : undefined}
+              data-ok={q.correct || undefined} data-none={(!q.correct && q.answered === false) || undefined}
+              aria-label={`第${q.index + 1}問 ${q.correct ? '正解' : q.answered === false ? '未回答' : '不正解'}`}
+              onClick={() => setReviewIndex(i)}>{q.index + 1}</button>
+          ))}
+        </nav>
+          <button type="button" className="result-review-arrow" data-review-next aria-label="次の問題" disabled={reviewIndex >= result.me.perQuestion.length - 1} onClick={() => setReviewIndex(i => Math.min(result.me.perQuestion.length - 1, i + 1))}><ChevronRight size={22} /></button>
+        </div>
+        <div className="result-review-stage" onTouchStart={onReviewTouchStart} onTouchEnd={onReviewTouchEnd}>
+          {result.me.perQuestion.filter((_, i) => i === reviewIndex).map((q) => {
             const question = questions[q.index];
             const other = result.opponent?.perQuestion.find((o) => o.index === q.index) || null;
             /**
@@ -471,7 +521,8 @@ export function BattleResult({
             return (
               <div
                 key={q.index}
-                className="rounded-xl border-2 px-3 py-2"
+                data-review-card={q.index}
+                className="result-review-card min-w-0 flex-1 rounded-xl border-2 px-3 py-2"
                 style={{
                   borderColor: q.correct ? `${theme.accent}55` : LINE,
                   background: q.correct ? `${theme.accent}12` : '#FFFFFF',

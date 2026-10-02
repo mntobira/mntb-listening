@@ -35,6 +35,7 @@ import { QUESTION_COUNT_CHOICES, type QuestionCountChoice } from './BattleSubjec
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useBattleAudio } from '../hooks/useBattleAudio';
+import { OpponentCard } from './OpponentCard';
 import { subjectTheme } from '../../data/subjectTheme';
 import type { SubjectKey } from '../../data/allChapters';
 import type { BattleRoom } from '../core/types';
@@ -344,6 +345,7 @@ export function BattleLobby({
           )}
         </div>
       </section>
+      {opponent && <OpponentCard uid={opponentUid} nickname={opponent.nickname} photoURL={opponent.photoURL} rating={opponent.rating} mask={!room.joinCode} />}
 
       {room.rules.note && (
         <p className="mt-4 text-center text-xs font-bold leading-relaxed" style={{ color: AMBER }}>

@@ -95,7 +95,7 @@ function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & 
  return <section className={`gacha-room ${result?'has-result':''} ${busyView?'is-busy':''}`} data-best-rarity={!revealing && bestRarity ? bestRarity : undefined}>{!embedded && <button type="button" className="arena-back" onClick={onBack}><ArrowLeft size={18}/>マイページ</button>}
   <header className="gacha-head">
    <p className="mt-kicker">TOBIRA COLLECTION</p><h1>とびらくんの装飾ガチャ</h1>
-   <p className="gacha-lead">コインで<strong>ランダム抽選</strong>。選んで買うならマイページの「ショップ」へ</p>
+   <p className="gacha-lead">コインで<strong>ランダム抽選</strong>。選んで買うなら<wbr/>「ショップ」へ</p>
   </header>
 
   {!busyView && featured.hero && <section className="gacha-featured" aria-labelledby="gacha-featured-title" data-gacha-featured>

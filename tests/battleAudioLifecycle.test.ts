@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BattleAudioEngine } from '../src/battle/audio/battleAudio';
 import { DEFAULT_BATTLE_AUDIO } from '../src/battle/core/audioSettings';
+import { resetSharedAudioContextForTest } from '../src/battle/audio/sharedAudioContext';
 
 vi.mock('../src/battle/audio/sfxSamples', () => ({ preloadSamples: vi.fn(), playSample: () => false }));
 
@@ -23,6 +24,7 @@ const flush = async () => { for (let i = 0; i < 12; i++) await Promise.resolve()
 
 beforeEach(() => {
   contexts.length = 0;
+  resetSharedAudioContextForTest();
   vi.stubGlobal('window', { AudioContext: MockContext, setTimeout, clearTimeout });
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(1) })));
 });

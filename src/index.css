@@ -3154,3 +3154,8 @@ html[data-wallpaper] .mana-hub { background: linear-gradient(#f4f1eab8,#f4f1eaad
 .game-home .home-review-rush .home-review-wide .home-pillar-icon svg { width:20px; height:20px; }
 .game-home .home-review-rush .home-review-wide > svg:last-child { display:none; }
 .game-home .home-review-rush .home-review-wide > b { display:inline-block !important; position:absolute; top:-8px; right:-4px; padding:1px 7px; font-size:12px; }
+
+/* Appleでサインイン（App Store 4.8）。Apple HIG：黒地・白文字・Google と同じ大きさ */
+.apple-signin-btn { display:flex; width:100%; align-items:center; justify-content:center; gap:8px; min-height:44px; border-radius:14px; background:#000; color:#fff; font-weight:700; font-size:14px; padding:0 16px; }
+.apple-signin-btn:hover { background:#1c1c1e; }
+.apple-signin-btn:disabled { opacity:.5; }

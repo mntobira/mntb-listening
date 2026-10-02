@@ -9,13 +9,14 @@ import { FriendPanel } from './FriendPanel';
 import { ClassPanel } from './ClassPanel';
 import { DoorMascot } from './DoorMascot';
 import { GoogleMark } from './GoogleLinkBanner';
+import { AppleSignInButton } from '../features/auth/AppleSignInButton';
 import { signInWithGoogle, signOutGoogle, switchGoogleAccount, GOOGLE_LINK_BENEFITS } from '../utils/googleAuth';
 import { isFeedbackAdmin } from '../utils/feedbackReply';
 import { syncRankingNickname } from '../utils/leaderboard';
 import { ensureFriendProfile } from '../utils/friends';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey, streakKey, completedKey } from '../utils/userStorageKeys';
-import { checkNickname, NICKNAME_MAX } from '../features/safety/nicknameFilter';
+import { checkNickname, checkPublicText, NICKNAME_MAX } from '../features/safety/nicknameFilter';
 import { AccountSafetySection } from '../features/account/AccountSafetySection';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { BADGES, levelOf } from '../battle/core/growth';
@@ -108,9 +109,10 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
 
   /** 名前の安全チェック（他人の画面に出るので、使えない名前は保存させない） */
   const nameCheck = checkNickname(name);
+  const schoolCheck = checkPublicText(targetSchool, TARGET_SCHOOL_MAX);
 
   const handleSave = async () => {
-    if (!nameCheck.ok) return;
+    if (!nameCheck.ok || !schoolCheck.ok) return;
     setLoading(true);
     try {
       const uid = auth.currentUser?.uid || 'guest';
@@ -259,8 +261,9 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                       </select><ChevronDown size={16} aria-hidden="true" />
                     </label>
                     <label className="ps-select" data-target-school><School size={15} aria-hidden="true" /><span className="sr-only">志望校</span>
-                      <input value={targetSchool} maxLength={TARGET_SCHOOL_MAX} onChange={(event) => setTargetSchool(event.target.value)} placeholder="志望校（例：〇〇大学）" /><Pencil size={15} aria-hidden="true" />
+                      <input value={targetSchool} maxLength={TARGET_SCHOOL_MAX} onChange={(event) => setTargetSchool(event.target.value)} placeholder="志望校" aria-invalid={!schoolCheck.ok || undefined} aria-describedby={!schoolCheck.ok ? 'target-school-error' : undefined} /><Pencil size={15} aria-hidden="true" />
                     </label>
+                    {!schoolCheck.ok && <p id="target-school-error" role="alert" className="ps-help" data-error>{schoolCheck.message?.replace('名前','志望校')}</p>}
                     <label className="ps-select" data-target-goal><GraduationCap size={15} aria-hidden="true" /><span className="sr-only">目標レベル（単語帳の範囲）</span>
                       <select value={goal} onChange={(event) => setGoal(event.target.value as GoalId)} aria-describedby="target-goal-help">
                         {GOAL_OPTIONS.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
@@ -321,6 +324,7 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                         {signing ? <Loader2 size={15} className="animate-spin" /> : <GoogleMark size={17} />}
                         {signing ? '連携中…' : 'Google アカウントで連携'}
                       </button>
+                      <AppleSignInButton onResult={(o) => { if (!o.ok) setAuthError(o.message || 'ログインに失敗しました。'); }} />
                       <p className="text-xs text-gray-500 text-center leading-snug">
                         連携は無料です。いまの学習記録はそのまま引き継がれます。
                       </p>
@@ -361,7 +365,7 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                 {/* 保存ボタンは下に貼り付けておく（名前を変えたのに保存し忘れる、を防ぐ） */}
                 <div className="ps-savebar grid grid-cols-[1fr_2fr] gap-2 shrink-0">
                   <button onClick={onClose} className="min-h-11 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-500">キャンセル</button>
-                  <button onClick={handleSave} disabled={loading || !nameCheck.ok} className="min-h-11 rounded-xl bg-[#2C3E50] text-white text-xs font-bold disabled:opacity-40 flex items-center justify-center gap-1.5"><Save size={14} />{loading ? '保存中…' : '設定を保存'}</button>
+                  <button onClick={handleSave} disabled={loading || !nameCheck.ok || !schoolCheck.ok} className="min-h-11 rounded-xl bg-[#2C3E50] text-white text-xs font-bold disabled:opacity-40 flex items-center justify-center gap-1.5"><Save size={14} />{loading ? '保存中…' : '設定を保存'}</button>
                 </div>
               </div>
             </div>
