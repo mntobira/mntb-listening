@@ -53,5 +53,7 @@
 /* PC：右の列（とびら君の下）に3本柱を置く */
 @media (min-width: 1100px) {
   .game-home .home-pillars { grid-column: 2; grid-row: 5; grid-template-columns: 1fr 1fr; }
-  .game-home .home-review-wide { grid-column: 1; grid-row: 4; }
+  /* 復習ノートはマナラッシュと左右に並ぶ（.home-review-rush の中）。外側グリッドの行指定はしない */
+  .game-home .home-review-rush > .home-review-wide { grid-column: 1; grid-row: auto; align-self: stretch; transform: none; }
+  .game-home .home-review-rush > .home-rush-card { grid-column: 2; }
 }

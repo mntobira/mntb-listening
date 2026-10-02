@@ -68,7 +68,7 @@
 /* 音量：塗りつぶしたトラック（6px）＋ 20px のつまみ。値は右に% */
 .ps-volume { --ps-accent: #2458a6; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px; color: var(--ps-ink-2); }
 .ps-volume[data-tone=gold] { --ps-accent: #b35c00; }
-.ps-volume input { flex: 1; min-width: 0; height: 44px; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; }
+.ps-volume input { flex: 1; min-width: 0; height: 44px; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; touch-action: none; user-select: none; }
 .ps-volume input::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--ps-accent) var(--ps-fill), #d9dee4 var(--ps-fill)); }
 .ps-volume input::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -8px; border-radius: 50%; background: #fff; border: 2px solid var(--ps-accent); box-shadow: 0 1px 3px rgba(0,0,0,.2); }
 .ps-volume input::-moz-range-track { height: 6px; border-radius: 999px; background: #d9dee4; }

@@ -1,3 +1,4 @@
+import { bgmLoudnessGain } from '../battle/audio/bgmLoudness';
 /*
   ===== BGM のフェードアウト（純粋関数だけを置く） =====
 
@@ -103,19 +104,10 @@ export function bgmVolumeAt(baseVolume: number, elapsedMs: number): number {
 }
 
 /**
- * ★アプリBGM（tanjou.mp3）の音量補正（2026-10-01）★
- * 利用者の指摘「誕生の音が大きすぎる。対戦BGM・待ち時間BGMぐらいがちょうどいい」。
- *   実測：tanjou.mp3 = -13.4 LUFS ／ 対戦の2曲 = -20 LUFS。
- *   対戦の曲はさらに 対戦音量0.6 × BGMバス0.5 × 曲ごと0.5 = 0.15倍で鳴る → 約 -36.5 LUFS。
- *   アプリBGMはスライダー既定 0.5 で鳴るので、0.14 をかけると同じ -36.5 LUFS になる。
- * スライダーの値（0〜1）はそのまま保存し、<audio> に渡す直前にこの倍率をかける。
+ * タイトル・ホームの「誕生」の倍率。全BGMの基準は bgmLoudness.ts の1か所だけ。
+ * 誕生だけ大きい／他が小さい、を防ぐため、曲ごとの実測値の差だけを補正する。
  */
-// ★2026-10-01 夜 さらに半分に（0.14 → 0.07、約 -6dB）★
-//   利用者の指摘「誕生のBGMがまだ大きい。待ち時間の曲は（曲調的にも）特に小さく感じる」。
-//   誕生は音の密度が高く高音も強い（300Hz以上だけで測ると対戦の2曲より約6dB大きい）ので、
-//   数字の上で同じにしても大きく聞こえる。対戦BGMより一段小さい -42.5 LUFS 前後にする。
-// Reduce the dense title track another ~4 dB; do not alter the saved slider.
-export const APP_BGM_GAIN = 0.045;
+export const APP_BGM_GAIN = bgmLoudnessGain('title');
 export function appBgmVolume(baseVolume: number, elapsedMs = 0): number {
   return bgmVolumeAt(baseVolume, elapsedMs) * APP_BGM_GAIN;
 }

@@ -1,3 +1,4 @@
+import { readOwnPublicStudyProfile, savePublicStudyProfile } from '../utils/publicStudyProfile';
 import React, { useEffect, useState } from 'react';
 import { auth } from '../firebase';
 import { ChevronLeft, ChevronDown, Pencil, User, LogOut, Flame, BookOpen, Clock, GraduationCap, Compass, Settings, Volume2, VolumeX, LogIn, Users, Save, Check, Loader2, AlertTriangle, School, ClipboardList, Swords, Shirt } from 'lucide-react';
@@ -65,6 +66,17 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
   const [stream, setStream] = useState('science');
   /** 志望校（2026-10-01 夜：いつでも変えられる）と、単語帳の目標レベル */
   const [targetSchool, setTargetSchool] = useState('');
+  const [profilePublic, setProfilePublic] = useState(false);
+  const [wasPublic, setWasPublic] = useState(false);
+  const [publicationReady, setPublicationReady] = useState(!auth.currentUser);
+  const [publicationError, setPublicationError] = useState('');
+  useEffect(() => {
+    let alive = true;
+    if (auth.currentUser) void readOwnPublicStudyProfile().then(p => {
+      if (alive) { setProfilePublic(!!p); setWasPublic(!!p); setPublicationReady(true); }
+    }).catch(() => { if (alive) setPublicationError('公開設定を確認できません。公開機能には新版のFirestoreルールの反映が必要です。'); });
+    return () => { alive = false; };
+  }, []);
   const [goal, setGoal] = useState<GoalId>(readGoal);
   const [loading, setLoading] = useState(false);
   const [streak, setStreak] = useState(0);
@@ -102,8 +114,12 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
     setLoading(true);
     try {
       const uid = auth.currentUser?.uid || 'guest';
+      if (auth.currentUser && (profilePublic || wasPublic)) {
+        await savePublicStudyProfile(profilePublic, targetSchool);
+        setWasPublic(profilePublic);
+      }
       localStorage.setItem(profileKey(uid), JSON.stringify({
-        name: name.trim(), grade: grade.trim(), stream, targetSchool: normalizeTargetSchool(targetSchool), iconUrl: auth.currentUser?.photoURL || '',
+        name: name.trim(), grade: grade.trim(), stream, profilePublic, targetSchool: normalizeTargetSchool(targetSchool), iconUrl: auth.currentUser?.photoURL || '',
       }));
       writeGoal(goal);
       // 名前を変えたら、ランキング・フレンド検索の表示名もその場で最新化する。
@@ -117,6 +133,7 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
       onClose();
     } catch (error) {
       console.error('保存エラー:', error);
+      setPublicationError('設定を保存できませんでした。公開／非公開の変更は完了していません。接続とFirestoreルールを確認して再度保存してください。');
     } finally {
       setLoading(false);
     }
@@ -250,7 +267,10 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                       </select><ChevronDown size={16} aria-hidden="true" />
                     </label>
                   </div>
-                  <p id="target-goal-help" className="sr-only">目標レベルを変えると、単語帳の出題範囲も変わります。志望校はほかの人には見えません。</p>
+                  <Toggle label="プロフィールを公開" sub="志望校・学習時間をランキングに表示（初期は非公開）" checked={profilePublic} onChange={()=>{ if (auth.currentUser && publicationReady) setProfilePublic(p=>!p); else setPublicationError('Googleログインと公開設定の確認が必要です。新版ルールの反映後に開き直してください。'); }}/>
+                  <p className="ps-help">公開をやめて保存すると公開データを削除します。学習時間はこの端末での演習・解説の累計で、順位には使いません。</p>
+                  {publicationError && <p className="ps-help" role="alert" data-error>{publicationError}</p>}
+                  <p id="target-goal-help" className="sr-only">目標レベルを変えると、単語帳の出題範囲も変わります。志望校と学習時間は「プロフィールを公開」を保存した場合だけランキングに表示されます。</p>
                 </section>
 
                 {/* ★対戦で相手に見えるカードのプレビュー（A16）★ 名前・称号を変えるとその場で反映される */}
@@ -268,10 +288,10 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
                 <h3 className="ps-group-title">アプリ（サウンド）</h3>
                 <section className="ps-sound mt-card" aria-label="サウンド">
                   <Toggle label="BGM" sub="学習中・待ち時間・対戦の音楽（ひとつでON/OFF）" checked={isBgmEnabled} onChange={toggleBgm} icon={isBgmEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />} />
-                  {isBgmEnabled && <Volume label="BGM音量" value={bgmVolume} onChange={setBgmVolume} />}
+                  <Volume label="BGM音量" value={bgmVolume} onChange={setBgmVolume} />
+                  <p className="ps-help">タイトル・待機・対戦で共通。効果音もこの音量に合わせます。</p>
                   <p className="ps-sub"><Swords size={14} aria-hidden="true" />対戦モードの音</p>
                   <Toggle label="対戦効果音" sub="正解・逆転など" checked={battleAudioSettings.sfx} onChange={() => { updateBattleAudio({ sfx: !battleAudioSettings.sfx }); if (!battleAudioSettings.sfx) window.setTimeout(() => battleAudio().play('correct'), 50); }} tone="gold" />
-                  {(isBgmEnabled || battleAudioSettings.sfx) && <Volume label="対戦の音量" value={battleAudioSettings.volume} onChange={(v) => updateBattleAudio({ volume: v })} onCommit={() => battleAudio().play('tap')} tone="gold" />}
                 </section>
 
                 <h3 className="ps-group-title">アカウント連携</h3>
@@ -369,7 +389,7 @@ function Volume({ label, value, onChange, onCommit, tone = 'blue' }: { label: st
   const pct = Math.round(value * 100);
   return <div className="ps-volume" data-tone={tone}>
     <VolumeX size={16} aria-hidden="true" />
-    <input aria-label={label} type="range" min="0" max="1" step="0.01" value={value} onChange={(e) => onChange(parseFloat(e.target.value))} onPointerUp={onCommit} onKeyUp={onCommit} style={{ '--ps-fill': `${pct}%` } as React.CSSProperties} />
+    <input aria-label={label} type="range" min="0" max="1" step="0.01" value={value} onInput={(e) => onChange(e.currentTarget.valueAsNumber)} onChange={(e) => onChange(e.currentTarget.valueAsNumber)} onPointerUp={onCommit} onKeyUp={onCommit} style={{ '--ps-fill': `${pct}%` } as React.CSSProperties} />
     <Volume2 size={16} aria-hidden="true" />
     <output>{pct}%</output>
   </div>;

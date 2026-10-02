@@ -137,31 +137,31 @@ export const EXTERNAL_SUBJECTS: readonly ExternalSubject[] = [
     "chapters": [
       {
         "id": "lv1",
-        "title": "単語 Lv1　共通テスト 基礎"
+        "title": "単語　共通テスト6割〜"
       },
       {
         "id": "lv2",
-        "title": "単語 Lv2　共通テスト 標準"
+        "title": "単語　共通テスト8割〜"
       },
       {
         "id": "lv3",
-        "title": "単語 Lv3　二次・私大 標準"
+        "title": "単語　2次試験レベル"
       },
       {
         "id": "lv4",
-        "title": "単語 Lv4　難関・最難関"
+        "title": "単語　2次試験の追加語彙"
       },
       {
         "id": "ilv1",
-        "title": "熟語 Lv1　基礎"
+        "title": "熟語　共通テスト6割〜"
       },
       {
         "id": "ilv2",
-        "title": "熟語 Lv2　標準"
+        "title": "熟語　共通テスト8割〜"
       },
       {
         "id": "ilv3",
-        "title": "熟語 Lv3　発展"
+        "title": "熟語　2次試験レベル"
       }
     ]
   }

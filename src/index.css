@@ -3099,3 +3099,47 @@ html[data-wallpaper] .mana-hub { background: linear-gradient(#f4f1eab8,#f4f1eaad
 .connection-check-list li[data-status=skip] { color: #8b98a5; }
 .connection-check.is-compact { font-size: 11px; }
 .arena-connection-help > .connection-check { margin-top: 4px; }
+
+/* D: two focused rows below Practice/Battle; sharp artwork at rest. */
+.game-home .home-review-rush { display:grid; grid-template-columns:1fr 1fr; gap:8px; flex-shrink:0; }
+.game-home .home-review-rush > button { min-width:0; min-height:56px; margin:0; position:relative; display:flex; align-items:center; justify-content:center; gap:6px; padding:6px; border-radius:16px; font-size:12px; }
+.game-home .home-review-rush strong { font-size:15px; }
+.game-home .home-review-rush small { display:block; font-size:12px; }
+.game-home .home-review-wide > b { display:none; }
+.game-home .home-review-wide > svg:last-child { display:none; }
+.game-home .home-rush-card { border:1px solid #cca144; background:linear-gradient(#fff0c2,#f5d88c); color:#715222; box-shadow:0 3px 0 #d0b367; }
+.game-home .game-home-utility { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.game-home .game-home-utility button { justify-content:center; padding-inline:2px; font-size:12px; color:#51594b; }
+.game-home .spin-mascot:not([data-spinning]):not([data-settling]) .spin-mascot-stage { transform:none !important; will-change:auto; transform-style:flat; }
+.game-home .spin-mascot:not([data-spinning]):not([data-settling]) .spin-mascot-back { display:none; }
+.game-home .spin-mascot-front img { filter:none; transform:none !important; }
+.game-home .game-stage-floor .game-equipped-ring { border-width:3px; box-shadow:inset 0 0 0 2px #fffaf0,0 0 0 1px #b6a789; filter:none; }
+.game-home .game-stage-caption, .game-home .game-mascot-button > span { font-size:12px; color:#655434; }
+@media(min-width:1100px) {
+ .game-home-viewport { grid-template-rows:auto auto minmax(100px,1fr) 110px 60px 48px auto; }
+ .game-home .game-action-deck { grid-row:4; grid-column:2; }
+ .game-home .home-review-rush { grid-row:5; grid-column:2; }
+ .game-home .game-home-utility { grid-row:6; grid-column:2; }
+ .game-home .game-mascot-stage { grid-row:2/4; }
+ .game-home-viewport > .arena-friends { grid-row:7; }
+}
+.collection-guide { font-size:12px; padding:0 12px; flex-shrink:0; color:#425464; }
+.collection-guide summary { min-height:44px; display:flex; align-items:center; cursor:pointer; font-weight:800; }
+.collection-guide p { margin-bottom:6px; line-height:1.5; }
+.collection-guide button { min-height:44px; border:1px solid #c8b578; border-radius:12px; padding:0 12px; background:#fff5da; }
+
+.game-home .home-review-rush > button { height:56px; min-height:56px; max-height:56px; }
+.game-home .home-review-rush .home-pillar-icon { width:24px; height:24px; flex:0 0 24px; }
+.game-home .home-review-rush .home-pillar-icon svg { width:22px; height:22px; }
+.game-home .home-review-rush .home-review-text { min-width:0; }
+
+/* 2026-10-02 D：ショップ／ガチャ／プレゼントの違いを常に見える形で（折りたたまない） */
+.store-guide { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 12px; padding:10px; border-radius:16px; background:#fffaf0; border:1px solid #ecdcbc; }
+.store-guide > div { display:flex; flex-direction:column; gap:2px; padding:8px 10px; border-radius:12px; background:#fff; border:1px solid #f0e4cc; }
+.store-guide > div b { font-size:14px; color:#7a5a2b; }
+.store-guide > div span { font-size:12px; color:#5d4c38; line-height:1.45; }
+.store-guide > div strong { color:#c26a1b; }
+.store-guide > p { grid-column:1 / -1; margin:0; font-size:12px; line-height:1.55; color:#5d4c38; }
+.store-guide > button { grid-column:1 / -1; min-height:44px; border-radius:12px; background:linear-gradient(#ffd877,#f2b33f); color:#5b3a07; font-weight:800; font-size:14px; }
+.store-guide.is-gift { grid-template-columns:1fr; background:#f5f0ff; border-color:#ddd0f5; }
+.store-guide.is-gift strong { color:#6b47b8; }

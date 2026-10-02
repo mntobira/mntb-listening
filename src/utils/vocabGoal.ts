@@ -10,9 +10,9 @@ export const VOCAB_PREF_KEY = 'foundation_prefs_v1';
 
 /** 単語帳の目標（ラベルは FoundationWords の PRESETS と同じ） */
 export const GOAL_OPTIONS = [
-  { id: 'common', label: '共通テストレベル' },
-  { id: 'national', label: '国公立大' },
-  { id: 'private', label: '難関私大' },
+  { id: 'common', label: '共通テスト6〜8割を目標に' },
+  { id: 'national', label: '2次試験レベル' },
+  { id: 'private', label: '2次試験＋追加語彙' },
   { id: 'custom', label: '志望校別（自分で選ぶ）' },
 ] as const;
 export type GoalId = typeof GOAL_OPTIONS[number]['id'];

@@ -14,6 +14,24 @@ service cloud.firestore {
     match /league_exclusions/{document=**} { allow read, write: if false; }
     match /league_rewards/{document=**} { allow read, write: if false; }
 
+    // D: no private fields in this explicit, revocable public projection.
+    match /public_study_profiles/{uid} {
+      // resource == null: ランキングは documentId() in [...] で一括購読する。未公開の人（文書なし）が
+      // 1人でも混ざるとクエリ全体が拒否されて全員の志望校・時間が消えるため、存在しない文書だけは許可する
+      // （中身が無いので何も漏れない）。public:false の文書は従来どおり読めない。
+      allow get: if isOwner(uid) || (isAuthenticated() && (resource == null || resource.data.public == true));
+      allow list: if isAuthenticated() && (resource == null || resource.data.public == true);
+      allow create, update: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['public', 'targetSchool', 'studySeconds', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['public', 'targetSchool', 'studySeconds', 'updatedAt'])
+        && request.resource.data.public == true
+        && request.resource.data.targetSchool is string && request.resource.data.targetSchool.size() <= 40
+        && request.resource.data.studySeconds is int && request.resource.data.studySeconds >= 0
+        && request.resource.data.studySeconds <= 315360000
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isOwner(uid);
+    }
+
     // ===============================================================
     // 設計方針（フレンド機能）
     // ===============================================================

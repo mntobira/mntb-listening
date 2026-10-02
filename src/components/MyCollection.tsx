@@ -6,7 +6,7 @@ import { buyItem, equip, importLeagueReward } from '../battle/data/growthStore';
 import { GrowthAvatar } from '../battle/ui/GrowthParts';
 import { clanCall, type LeagueReward } from '../utils/manaClan';
 import { auth } from '../firebase';
-export function MyCollection({ view = 'owned' }: { view?: 'owned' | 'prints' | 'shop' | 'rewards'; key?: string }) {
+export function MyCollection({ view = 'owned', onGacha }: { view?: 'owned' | 'prints' | 'shop' | 'rewards'; key?: string; onGacha?: () => void }) {
   const { progress, uid } = useGrowthProgress();
   const [kind, setKind] = useState('all'); const [search, setSearch] = useState('');
   const [state, setState] = useState<'owned' | 'available' | 'all'>(view === 'shop' ? 'available' : 'owned');
@@ -20,7 +20,7 @@ export function MyCollection({ view = 'owned' }: { view?: 'owned' | 'prints' | '
     return () => { alive = false; };
   }, [view, uid]);
   if (!progress) return <p role="alert">所有記録を読み込めません。ブラウザの保存設定を確認してください。</p>;
-  const titles = { owned: 'もっているもの', prints: 'マイPDF', shop: '買えるもの', rewards: 'プレゼント' };
+  const titles = { owned: 'もっているもの', prints: 'マイPDF', shop: 'ショップ（選んで交換）', rewards: 'プレゼント（リーグ報酬）' };
   const base = ITEMS.filter(i => view === 'prints' ? i.kind === 'print' && progress.owned.includes(i.id) : view === 'shop' ? 'coins' in i.unlock : i.kind !== 'print');
   const list = base.filter(i => (kind === 'all' || i.kind === kind) && (!search || i.label.includes(search)) && (view === 'prints' || state === 'all' || (state === 'owned') === progress.owned.includes(i.id)));
   const perform = async (item: ItemDef) => {
@@ -37,6 +37,16 @@ export function MyCollection({ view = 'owned' }: { view?: 'owned' | 'prints' | '
     <header><h2>{view === 'prints' ? <FileText size={22}/> : view === 'rewards' ? <Gift size={22}/> : <Shirt size={22}/>} {titles[view]}</h2><b><Coins size={18}/>{progress.coins.toLocaleString()}</b></header>
     {message && <p role="status" className="collection-message">{message}</p>}
     {view !== 'rewards' && <><div className="collection-controls"><label className="sr-only" htmlFor="collection-search">アイテム名で探す</label><input id="collection-search" placeholder="名前で探す" value={search} onChange={e => setSearch(e.target.value)}/>{view !== 'prints' && <select aria-label="所有状況" value={state} onChange={e => setState(e.target.value as typeof state)}><option value="owned">所持済み</option><option value="available">未所持</option><option value="all">すべて</option></select>}</div>{view !== 'prints' && <label className="collection-kind">種類<select value={kind} onChange={e => setKind(e.target.value)}>{[['all','すべて'],['pose','ポーズ'],['frame','フレーム'],['hat','帽子'],['glasses','メガネ'],['cheek','ほっぺ'],['aura','オーラ'],['wallpaper','壁紙']].map(([id,label]) => <option key={id} value={id}>{label}</option>)}</select></label>}</>}
+    {view === 'shop' && <section className="store-guide" aria-label="ショップとガチャの違い" data-store-guide>
+      <div><b>ショップ</b><span>欲しい物を<strong>選んで</strong>コイン交換</span></div>
+      <div><b>ガチャ</b><span>何が出るか<strong>ランダム</strong>（UR・SRはガチャ限定）</span></div>
+      <p>どちらで手に入れても「持ちもの」に入り、PDFは「マイPDF」で開けます。装飾で対戦の強さは変わりません。</p>
+      {onGacha && <button type="button" onClick={onGacha}>ガチャを見てみる</button>}
+    </section>}
+    {view === 'rewards' && <section className="store-guide is-gift" aria-label="プレゼントとは" data-gift-guide>
+      <p><strong>プレゼント＝隔週リーグの上位報酬を受け取る場所</strong>です。全国対人戦3試合以上で各リーグ上位10名（同順位含む）・上位3クランの対象メンバーに、限定UR「リーグ・オーロラフレーム」が届きます。</p>
+      <p>「受け取る」を押すと「持ちもの」に入り、装備できます。機種変更後もここから受け取り直せます。コインで買うショップ・抽選のガチャとは別です。</p>
+    </section>}
     <div className="collection-scroll" tabIndex={0} aria-label="所有アイテム一覧">
       {view === 'rewards' ? <>{busy && <p>プレゼントを確認中…</p>}{rewards.map(r => <article key={r.id} className="collection-reward"><strong>UR · リーグ・オーロラフレーム</strong><p>{r.season} · {r.label} {r.rank}位</p><button type="button" disabled={busy || progress.owned.includes(r.itemId)} onClick={async () => { setBusy(true); try { const validated = await clanCall<LeagueReward>('claimReward', { rewardId: r.id }); const result = await importLeagueReward(validated.id, validated.itemId, uid); setMessage(result ? 'プレゼントを受け取りました。もっているものから装備できます。' : '端末保存に失敗しました。再度受け取れます。'); } catch (e: any) { setMessage(e.message); } finally { setBusy(false); } }}>{progress.owned.includes(r.itemId) ? '所持済み' : '受け取る'}</button></article>)}{!busy && !rewards.length && !message && <p>プレゼントはまだ届いていません。隔週リーグで上位を目指そう。</p>}</> : <>
       <ul className="collection-grid">{list.map(item => { const owned = progress.owned.includes(item.id); const print = printOf(item.id); const equipped = progress.equipped[item.kind] === item.id; return <li key={item.id} data-owned={owned}>

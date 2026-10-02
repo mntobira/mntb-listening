@@ -31,6 +31,7 @@ import type { BattleAudioSettings, BattleBgmTrack } from '../core/audioSettings'
 import { DEFAULT_BATTLE_AUDIO } from '../core/audioSettings';
 import { playSample, preloadSamples } from './sfxSamples';
 import { BGM_FILES, bgmFileKeyOf, introDelaySec, introOffsetSec, type BgmFileKey } from './bgmFiles';
+import { BATTLE_BGM_BUS_GAIN } from './bgmLoudness';
 
 /** 効果音ファイルの再生音量（ファイルはピーク約 -1dB で作ってあるので下げて合成音と揃える） */
 const SAMPLE_GAIN = 0.5;
@@ -437,7 +438,7 @@ export class BattleAudioEngine {
       master.gain.value = this.settings.volume;
       master.connect(ctx.destination);
       const bgm = ctx.createGain();
-      bgm.gain.value = 0.5;
+      bgm.gain.value = BATTLE_BGM_BUS_GAIN;
       bgm.connect(master);
       const sfx = ctx.createGain();
       sfx.gain.value = 1;

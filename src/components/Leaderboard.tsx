@@ -12,6 +12,8 @@ import { useWithoutBlocked } from '../features/safety/useBlockedFilter';
 import { UserSafetyMenu } from '../features/safety/UserSafetyMenu';
 import { ManaClan } from './ManaClan';
 import { clanCall } from '../utils/manaClan';
+import { refreshPublicStudyTime, watchPublicStudyProfiles, type PublicStudyProfile } from '../utils/publicStudyProfile';
+import { formatStudyTime } from '../utils/studyTime';
 interface LeaderboardProps { onBack: () => void; isGuest?: boolean; initialChapterId?: string | null; initialSubject?: string; onBattle?: () => void; onGacha?: () => void; }
 export function Leaderboard({ onBack, onBattle, onGacha }: LeaderboardProps) {
   const [uid, setUid] = useState(auth.currentUser?.uid ?? '');
@@ -37,6 +39,14 @@ export function Leaderboard({ onBack, onBattle, onGacha }: LeaderboardProps) {
     return () => { alive = false; };
   }, [tab, filter, uid, retry]);
   const visible = useWithoutBlocked<BattleRankingRow>(rows);
+  const [profiles, setProfiles] = useState<{viewer: string; data: Record<string, PublicStudyProfile>}>({viewer:'',data:{}});
+  const profileIds = visible.map(r=>r.uid).sort().join(',');
+  useEffect(() => {
+    setProfiles({viewer:uid,data:{}});
+    if (!uid || tab === 'clan' || !profileIds) return;
+    void refreshPublicStudyTime().catch(()=>{});
+    return watchPublicStudyProfiles(profileIds.split(','), data=>setProfiles({viewer:uid,data}));
+  }, [uid, tab, profileIds, retry]);
   const rankOf = (row: BattleRankingRow) => rows.filter(r => r.rating > row.rating).length + 1;
   const rating = me?.rating ?? 1500; const league = leagueOf(rating); const progress = leagueProgress(rating);
   const end = new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', month: 'numeric', day: 'numeric' }).format(seasonAt().end);
@@ -48,8 +58,8 @@ export function Leaderboard({ onBack, onBattle, onGacha }: LeaderboardProps) {
     {uid && <div className="league-progress"><progress value={progress.ratio} max={1} aria-label="次のリーグへの進捗"/><span>{progress.next ? `${progress.next.label}まであと${progress.remain}` : '最高リーグに到達'}</span></div>}
     <label className="league-filter">リーグで見る<select value={filter} onChange={e => setFilter(e.target.value as LeagueId | 'all')}><option value="all">すべてのリーグ</option>{LEAGUES.map(l => <option value={l.id} key={l.id}>{l.label}（{l.min}〜）</option>)}</select></label></>}
     <div className="league-scroll" tabIndex={0} aria-label="ランキング一覧">
-      {tab === 'clan' ? <ManaClan key={uid}/> : <>{loading ? <p role="status">順位表を読み込み中…</p> : error ? <p role="alert" className="league-error">{error}</p> : !rows.length ? <p className="league-empty">{tab === 'friend' && !uid ? 'フレンド順位を見るにはGoogle連携が必要です。' : 'まだこの範囲に対戦記録がありません。'}</p> : <ol className="league-rows">{visible.map(r => { const mine = r.uid === uid; const l = leagueOf(r.rating); const rank = rankOf(r); return <li key={r.uid} data-me={mine} data-top={rank <= 3}><b>{rank}</b><span><strong>{mine ? 'あなた' : displayNicknameForNational(displaySafeNickname(r.nickname), false)}</strong><small style={{color:l.color}}>{l.label} · {r.wins}勝 {r.losses}敗</small></span>{!mine && <UserSafetyMenu target={{uid:r.uid,nickname:displaySafeNickname(r.nickname),where:'ranking'}}/>}<em>{r.rating.toLocaleString()}<small>レート</small></em></li>; })}</ol>}
-      <details className="league-info"><summary>5つのリーグと隔週プレゼント</summary><ul>{LEAGUES.map((l,i) => <li key={l.id} style={{color:l.color}}><strong>{l.label}</strong> {l.min}〜{LEAGUES[i+1] ? LEAGUES[i+1].min-1 : '上限なし'}</li>)}</ul><p>得点ではなく対戦レートで順位が決まります。同レートは同順位。表示は上位100名までです。</p><p>{seasonReady ? `隔週月曜0時（日本時間）締切。次回 ${end}。期間中に全国の対人戦3試合以上の各リーグ上位10名へ、限定UR「リーグ・オーロラフレーム」。上位3クランの対象メンバーにも贈ります。同順位は同じ扱いです。` : '隔週のURプレゼントは集計サーバーの反映後に開始します。未稼働の配布は約束しません。'}</p><p>報酬はマイページの「プレゼント」に届きます。集計方法・メンバー別貢献値は非公開です。</p></details></>}
+      {tab === 'clan' ? <ManaClan key={uid}/> : <>{loading ? <p role="status">順位表を読み込み中…</p> : error ? <p role="alert" className="league-error">{error}</p> : !rows.length ? <p className="league-empty">{tab === 'friend' && !uid ? 'フレンド順位を見るにはGoogle連携が必要です。' : 'まだこの範囲に対戦記録がありません。'}</p> : <ol className="league-rows">{visible.map(r => { const mine = r.uid === uid; const l = leagueOf(r.rating); const rank = rankOf(r); const profile = profiles.viewer === uid ? profiles.data[r.uid] : undefined; return <li key={r.uid} data-me={mine} data-top={rank <= 3} style={{borderLeftColor:l.color}}><b>{rank <= 3 ? <Trophy size={16} aria-hidden="true"/> : null}{rank}</b><span><strong>{mine ? 'あなた' : displayNicknameForNational(displaySafeNickname(r.nickname), !!profile)}</strong><small style={{color:l.color}}>{l.label} · {r.wins}勝 {r.losses}敗</small>{profile && <small className="league-public-profile" data-public-profile title="公開設定済み・この端末の演習／解説の学習累計（最後に同期した値）">{profile.targetSchool ? displaySafeNickname(profile.targetSchool) : '志望校未設定'} · 学習 {formatStudyTime(profile.studySeconds)}</small>}</span>{!mine && <UserSafetyMenu target={{uid:r.uid,nickname:displaySafeNickname(r.nickname),where:'ranking'}}/>}<em>{r.rating.toLocaleString()}<small>レート</small></em></li>; })}</ol>}
+      <details className="league-info"><summary>5つのリーグと隔週プレゼント</summary><ul>{LEAGUES.map((l,i) => <li key={l.id} style={{color:l.color}}><strong>{l.label}</strong> {l.min}〜{LEAGUES[i+1] ? LEAGUES[i+1].min-1 : '上限なし'}</li>)}</ul><p>志望校・学習時間は「設定」で公開を選んだ人だけ表示します。学習時間は最後に同期した端末の演習・解説の累計で、対戦レートや聞く力の測定値ではありません。</p><p>得点ではなく対戦レートで順位が決まります。同レートは同順位。表示は上位100名までです。</p><p>{seasonReady ? `隔週月曜0時（日本時間）締切。次回 ${end}。期間中に全国の対人戦3試合以上の各リーグ上位10名へ、限定UR「リーグ・オーロラフレーム」。上位3クランの対象メンバーにも贈ります。同順位は同じ扱いです。` : '隔週のURプレゼントは集計サーバーの反映後に開始します。未稼働の配布は約束しません。'}</p><p>報酬はマイページの「プレゼント」に届きます。集計方法・メンバー別貢献値は非公開です。</p></details></>}
     </div>
     {tab !== 'clan' && <footer className="league-footer"><span>{me && rows.some(r => r.uid === uid) ? `この範囲で${rankOf(me)}位` : me ? '上位表示の圏外／別リーグ' : '公式戦でレートを記録しよう'}</span>{onBattle && <button type="button" onClick={onBattle}><Swords size={18}/>対戦へ</button>}</footer>}
   </section>;
