@@ -1,0 +1,50 @@
+/* 1問ずつ演習の解答と解説（対戦の結果カードと同じ並び・演習らしい紙色） */
+.step-ex { display:flex; flex-direction:column; height:100%; min-height:0; background:#fbf6ec; color:#2c3e50; font-family:var(--mt-font-body, system-ui); }
+.step-ex-head { flex:none; display:grid; grid-template-columns:44px 1fr auto; align-items:center; gap:8px; padding:8px 12px; background:#fffaf0; border-bottom:1px solid #eadfc8; }
+.step-ex-back { width:44px; height:44px; display:grid; place-items:center; border-radius:999px; background:#fff; border:1px solid #e3d6ba; }
+.step-ex-title { min-width:0; display:flex; flex-direction:column; gap:2px; }
+.step-ex-title strong { font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.step-ex-mode { align-self:flex-start; display:inline-flex; align-items:center; gap:3px; padding:1px 8px; border-radius:999px; background:#f3c64f; color:#5b3d00; font-size:12px; font-weight:800; }
+.step-ex-progress { font:800 18px/1 var(--mt-font-display, inherit); color:#2c3e50; }
+.step-ex-progress small { font-size:12px; color:#7a6c55; margin-left:1px; }
+.step-ex-dots { flex:none; display:flex; gap:4px; margin:0; padding:6px 14px 0; list-style:none; }
+.step-ex-dots li { flex:1; height:5px; border-radius:999px; background:#e7dcc6; }
+.step-ex-dots li[data-state="done"] { background:#c9a75a; }
+.step-ex-dots li[data-state="now"] { background:#2c3e50; }
+.step-ex-body { flex:1; min-height:0; overflow-y:auto; padding:10px 12px 16px; display:flex; flex-direction:column; gap:10px; -webkit-overflow-scrolling:touch; }
+.step-ex-card { flex:none; border-radius:18px; background:#fff; border:1.5px solid #e6dcc6; box-shadow:0 3px 0 #e6dcc6; overflow:hidden; }
+.step-ex-verdict { display:flex; align-items:center; gap:8px; padding:10px 14px; color:#fff; }
+.step-ex-card[data-correct="true"] .step-ex-verdict { background:linear-gradient(90deg,#1e7d46,#2f9a5d); }
+.step-ex-card[data-correct="false"] .step-ex-verdict { background:linear-gradient(90deg,#c0392b,#d4574a); }
+.step-ex-verdict strong { font:900 18px/1 var(--mt-font-display, inherit); }
+.step-ex-verdict span { margin-left:auto; padding:2px 10px; border-radius:999px; background:#ffffff2e; font-size:13px; font-weight:800; }
+.step-ex-question { margin:0; padding:12px 14px 0; font:500 16px/1.6 'Times New Roman', Georgia, serif; }
+.step-ex-answers { margin:0; padding:10px 14px 4px; display:grid; gap:6px; }
+.step-ex-answers > div { display:grid; grid-template-columns:1fr; gap:2px; padding:8px 10px; border-radius:12px; background:#f7f3ea; }
+.step-ex-answers dt { font-size:12px; font-weight:800; color:#6b5a43; }
+.step-ex-answers dd { margin:0; display:flex; flex-wrap:wrap; align-items:baseline; gap:6px; font-size:15px; font-weight:700; }
+.step-ex-answers dd b { font-size:17px; }
+.step-ex-answers dd span { font-family:'Times New Roman', Georgia, serif; font-weight:500; }
+.step-ex-answers [data-kind="right"] { background:#eaf6ee; }
+.step-ex-answers [data-kind="right"] dt { color:#1e7d46; }
+.step-ex-card[data-correct="false"] [data-kind="mine"] { background:#fbecea; }
+.step-ex-card[data-correct="false"] [data-kind="mine"] dt { color:#c0392b; }
+.step-ex-reason { display:flex; gap:6px; margin:6px 14px 12px; padding:8px 10px; border-radius:10px; background:#fff8e6; border:1px solid #f0dfaf; font-size:13px; font-weight:700; line-height:1.55; }
+.step-ex-reason svg { flex:none; margin-top:3px; color:#b7791f; }
+.step-ex-audio { flex:none; border-radius:16px; background:#fff; border:1px solid #e6dcc6; padding:4px; }
+.step-ex-detail { flex:none; border-radius:18px; background:#fff; border:1px solid #e6dcc6; overflow:hidden; }
+.step-ex-detail-toggle { width:100%; min-height:48px; display:flex; align-items:center; gap:8px; padding:0 14px; font-size:15px; font-weight:800; color:#2c3e50; }
+.step-ex-detail-toggle svg:last-child { margin-left:auto; transition:transform .2s; }
+.step-ex-detail-toggle svg[data-open="true"] { transform:rotate(180deg); }
+.step-ex-detail-body { padding:0 14px 14px; font-size:15px; line-height:1.8; border-top:1px dashed #eadfc8; }
+.step-ex-detail-body > * + * { margin-top:14px; }
+.step-ex-note { font-size:12px; color:#7a6c55; }
+.step-ex-foot { flex:none; display:grid; grid-template-columns:auto 1fr; gap:8px; padding:8px 12px calc(8px + env(safe-area-inset-bottom)); background:#fffaf0; border-top:1px solid #eadfc8; }
+.step-ex-secondary, .step-ex-primary { min-height:48px; display:inline-flex; align-items:center; justify-content:center; gap:6px; border-radius:999px; font-size:14px; font-weight:800; }
+.step-ex-secondary { padding:0 14px; background:#fff; border:1.5px solid #d9cba8; color:#4a5866; }
+.step-ex-primary { background:#2c3e50; color:#fff; box-shadow:0 3px 0 #1b2631; }
+.step-ex-primary:active, .step-ex-secondary:active { transform:translateY(1px); }
+@media (min-width: 900px) {
+  .step-ex-body { width:100%; max-width:760px; margin:0 auto; padding-top:16px; }
+  .step-ex-foot { grid-template-columns:auto minmax(0,420px); justify-content:center; }
+}

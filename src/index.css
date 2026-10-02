@@ -2937,6 +2937,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .gacha-print-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
 .gacha-print-thumb em { position: absolute; left: 0; right: 0; bottom: 0; padding: 1px 2px; font-style: normal; font-size: 9px; font-weight: 900; text-align: center; color: #fff; background: linear-gradient(90deg,#7c3aed,#f59e0b); }
 .gacha-exhibit[data-kind=print] .gacha-print-thumb { max-height: 150px; width: auto !important; aspect-ratio: 1 / 1.414; height: 100% !important; }
+.gacha-exhibit[data-kind=print] .gacha-print-thumb em { font-size: 12px; padding: 2px 3px; }
 .gacha-print-links { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 4px 0; }
 .gacha-print-links a { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 6px 12px; border-radius: 12px; font-weight: 800; font-size: 13px; text-decoration: none; color: #3b1d78; background: linear-gradient(135deg,#fef3c7,#ede9fe); border: 1px solid #c4b5fd; }
 .gacha-print-links.is-compact { gap: 4px; }
@@ -3143,3 +3144,13 @@ html[data-wallpaper] .mana-hub { background: linear-gradient(#f4f1eab8,#f4f1eaad
 .store-guide > button { grid-column:1 / -1; min-height:44px; border-radius:12px; background:linear-gradient(#ffd877,#f2b33f); color:#5b3a07; font-weight:800; font-size:14px; }
 .store-guide.is-gift { grid-template-columns:1fr; background:#f5f0ff; border-color:#ddd0f5; }
 .store-guide.is-gift strong { color:#6b47b8; }
+
+/* 2026-10-02 D2：復習ノートもマナラッシュと同じ「アイコン＋上下2段」に（文字のはみ出し防止） */
+.game-home .home-review-rush > .home-review-wide { justify-content:center; gap:6px; padding:6px; }
+.game-home .home-review-rush .home-review-text { flex:0 1 auto; flex-direction:column; align-items:flex-start; gap:0; }
+.game-home .home-review-rush .home-review-text strong { font-size:15px; line-height:1.25; }
+.game-home .home-review-rush .home-review-text small { display:block !important; font-size:12px !important; line-height:1.3; }
+.game-home .home-review-rush .home-review-wide .home-pillar-icon { display:grid; width:auto; height:auto; background:none; box-shadow:none; }
+.game-home .home-review-rush .home-review-wide .home-pillar-icon svg { width:20px; height:20px; }
+.game-home .home-review-rush .home-review-wide > svg:last-child { display:none; }
+.game-home .home-review-rush .home-review-wide > b { display:inline-block !important; position:absolute; top:-8px; right:-4px; padding:1px 7px; font-size:12px; }

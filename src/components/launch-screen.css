@@ -94,3 +94,13 @@
 .launch-announcement-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .launch-announcement-actions button { min-height:48px; border:1px solid #bca568; border-radius:14px; font-size:16px; font-weight:800; background:#f0d388; color:#4a3b1f; }
 .launch-announcement-actions button:last-child { background:#fffaf0; color:#475d6b; }
+
+/* 2026-10-02 D2：起動エンブレムを市販アプリのスプラッシュの間合いに（白→フェードイン→保持→フェードアウト→タイトル） */
+.launch-emblem { background:#fff; cursor:pointer; -webkit-tap-highlight-color:transparent; outline:none; }
+.launch-emblem-inner { display:flex; flex-direction:column; align-items:center; gap:22px; opacity:0; transition:opacity .7s ease, transform 2.6s cubic-bezier(.2,.7,.2,1); transform:scale(.985); }
+.launch-emblem[data-phase="hold"] .launch-emblem-inner { opacity:1; transform:scale(1); }
+.launch-emblem[data-phase="out"] .launch-emblem-inner { opacity:0; transform:scale(1); transition-duration:.7s, 0s; }
+.launch-emblem[data-skip] .launch-emblem-inner { transition-duration:.4s, 0s; }
+.launch-screen { animation: launch-title-in .8s ease both; }
+@keyframes launch-title-in { from { opacity:0; } to { opacity:1; } }
+@media (prefers-reduced-motion: reduce) { .launch-emblem-inner, .launch-screen { transition:none; animation:none; transform:none; } .launch-emblem[data-phase="hold"] .launch-emblem-inner { opacity:1; } }

@@ -49,13 +49,17 @@ export function GachaRoom(props:GachaProps) {
  const {uid}=useGrowthProgress();
  return <GachaRoomContent key={uid} owner={uid} {...props}/>;
 }
+/** 下のプレビューで見せる「質の高いUR」。教科をばらして10個だけ */
+const FEATURED_UR_IDS = ['print_math_basic_all','print_grammar_100','print_trend_cb_all','print_mock_cb_1','print_mock_joho_1','print_mock_bio_1','print_rank_c','print_trend_c_all','print_math_quadratic_weekly','print_vocab_lv2'] as const;
 function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & {owner:string;key?:string}) {
  const {progress}=useGrowthProgress();const lock=useRef(false);const [busy,setBusy]=useState(false);
  const oddsDialog=useRef<HTMLDialogElement>(null);
  const [collectionFilter,setCollectionFilter]=useState<'all'|'owned'|'missing'>('all');
  const items=gachaItems();const tiers=gachaItemsByRarity();
+ const topUr=FEATURED_UR_IDS.map(id=>items.find(i=>i.id===id)).filter((i):i is ItemDef=>!!i);
+ const showcase=topUr.length?topUr:tiers.UR.slice(0,10);
  const [previewIndex,setPreviewIndex]=useState(0);
- const previewItem=items[previewIndex % items.length];
+ const previewItem=showcase[previewIndex % showcase.length];
  const ownedCount=items.filter(item=>progress?.owned.includes(item.id)).length;
  const [confirm,setConfirm]=useState(false);const [error,setError]=useState('');
  const [revealing,setRevealing]=useState(false);const [revealKey,setRevealKey]=useState(0);
@@ -106,12 +110,12 @@ function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & 
     </article>
   </section>}
 
-  <div className={`gacha-machine gacha-preview-stage ${busy?'is-spinning':''}`} aria-label="ラインナップのプレビュー">
-    <span className="gacha-preview-tag">ラインナップ</span>
-    <button type="button" className="gacha-preview-prev" aria-label="前の装飾をプレビュー" disabled={busy} onClick={()=>setPreviewIndex(i=>(i+items.length-1)%items.length)}><ChevronLeft /></button>
+  <div className={`gacha-machine gacha-preview-stage ${busy?'is-spinning':''}`} aria-label="厳選UR（大当たり）10種" data-gacha-showcase>
+    <span className="gacha-preview-tag">厳選UR 10</span>
+    <button type="button" className="gacha-preview-prev" aria-label="前の厳選URを見る" disabled={busy} onClick={()=>setPreviewIndex(i=>(i+showcase.length-1)%showcase.length)}><ChevronLeft /></button>
     <div className="gacha-exhibit" data-kind={previewItem.kind}><ItemArt item={previewItem} progress={progress} size={previewItem.kind==='print'?64:88}/></div>
-    <button type="button" className="gacha-preview-next" aria-label="次の装飾をプレビュー" disabled={busy} onClick={()=>setPreviewIndex(i=>(i+1)%items.length)}><ChevronRight /></button>
-    <div className="gacha-preview-info" aria-live="polite"><strong><RarityTag rarity={gachaRarityOf(previewItem)}/> {previewItem.label}</strong><span>{previewIndex+1} / {items.length} · {pct(gachaItemRate(previewItem))}%</span></div>
+    <button type="button" className="gacha-preview-next" aria-label="次の厳選URを見る" disabled={busy} onClick={()=>setPreviewIndex(i=>(i+1)%showcase.length)}><ChevronRight /></button>
+    <div className="gacha-preview-info" aria-live="polite"><strong><RarityTag rarity={gachaRarityOf(previewItem)}/> {previewItem.label}</strong><span>{previewIndex+1} / {showcase.length} · {pct(gachaItemRate(previewItem))}%</span></div>
   </div>
 
   <div className="gacha-wallet" data-gacha-wallet>

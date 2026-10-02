@@ -135,6 +135,22 @@ export function BattleProfile({ onBack, initialTab = 'outfit', standalone = fals
     ['stats', <BarChart3 size={14} />, '教科別'],
   ];
 
+  if (standalone) {
+    const heading = tab === 'badges' ? ['称号', 'バッジを集めて、つけたい称号を選べます'] : tab === 'stats' ? ['記録', '教科ごとの対戦成績'] : ['とびら君', ''];
+    return (
+      <section className="profile-standalone" data-profile-standalone={tab}>
+        <header className="profile-standalone-head">
+          <button type="button" onClick={onBack} aria-label="マイページにもどる"><ArrowLeft size={18} /></button>
+          <div><h2>{heading[0]}</h2>{heading[1] && <p>{heading[1]}</p>}</div>
+        </header>
+        {notice && <div className="mb-3"><BattleNotice message={notice} tone="info" /></div>}
+        {(tab === 'outfit' || tab === 'shop') && <OutfitTab key={tab} shop={tab === 'shop'} progress={progress} busy={busy} run={run} setNotice={setNotice} />}
+        {tab === 'badges' && <BadgesTab progress={progress} busy={busy} run={run} />}
+        {tab === 'stats' && <StatsTab progress={progress} />}
+      </section>
+    );
+  }
+
   return (
     <BattleShell
       footer={
@@ -143,7 +159,7 @@ export function BattleProfile({ onBack, initialTab = 'outfit', standalone = fals
         </BattleButton>
       }
     >
-{standalone ? <h1 className="mb-4 text-center font-handwriting text-2xl font-black">{tab === 'shop' ? 'マナコインショップ' : 'とびら君のマイページ'}</h1> : <BattleTitle subtitle="プロフィール ／ とびら君の成長" />}
+{standalone ? null : <BattleTitle subtitle="プロフィール ／ とびら君の成長" />}
 
       {notice && (
         <div className="mb-3">
@@ -151,10 +167,10 @@ export function BattleProfile({ onBack, initialTab = 'outfit', standalone = fals
         </div>
       )}
 
-      <p className="mb-3 text-xs leading-relaxed text-gray-600">成長記録はこのブラウザ・アカウント専用です。端末間同期や他の人への公開はありません。サイトデータを削除すると消えます。</p>
+      {!standalone && <p className="mb-3 text-xs leading-relaxed text-gray-600">成長記録はこのブラウザ・アカウント専用です。端末間同期や他の人への公開はありません。サイトデータを削除すると消えます。</p>}
       {tab === 'shop' ? <section className="mb-4 flex items-center gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4" aria-label="現在の装備と残高">
         <GrowthAvatar progress={progress} size={64} /><div className="min-w-0 flex-1"><p className="text-xs text-amber-900">いまのとびら君</p><p className="text-xl font-black tabular-nums">{progress.coins.toLocaleString()} <span className="text-xs">マナコイン</span></p><LevelBar xp={progress.xp} compact /></div>
-      </section> : <ProfileHeader progress={progress} rating={rating} />}
+      </section> : standalone ? null : <ProfileHeader progress={progress} rating={rating} />}
 
       {!standalone && <nav className="mb-3 grid grid-cols-5 gap-1.5" aria-label="プロフィールの切り替え">
         {tabs.map(([id, icon, label]) => (

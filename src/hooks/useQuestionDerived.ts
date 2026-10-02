@@ -347,7 +347,8 @@ export function useQuestionDerived({
    *
    * 化学など音源が無い教科では false のままなので、従来表示に影響しない。
    */
-  const listeningUnified = listeningTracks.length > 0;
+  // 英文法（stepwise）も、音源は無いが同じ「設問＋選択肢を1枚のカード」表示にする
+  const listeningUnified = listeningTracks.length > 0 || (currentQuestion as any)?.stepwise === true;
 
   /**
    * スマホのリスニングで「高さの配り方を逆にする」レイアウトを使うか。

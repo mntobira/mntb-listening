@@ -94,3 +94,25 @@ html[data-wallpaper] .mana-hub { background: linear-gradient(#fbf3eab8, #fbf3eaa
 .mypage-extra-scroll { min-height:0; overflow-y:auto; flex:1; }
 @media(min-width:700px){.collection-grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
 @media(max-height:620px){.mypage-hero{padding:6px 8px;} .mypage-hero>span{max-height:64px;} .mypage-menu button{min-height:59px;padding:7px;} .mypage-menu small{display:none;} .mypage-overview{padding-top:0;} }
+.profile-standalone { padding:4px 12px 16px; }
+.profile-standalone-head { display:flex; align-items:center; gap:10px; margin:2px 0 10px; }
+.profile-standalone-head button { width:40px; height:40px; flex-shrink:0; display:grid; place-items:center; border:1px solid #d9cdbb; border-radius:12px; background:#fffdf6; }
+.profile-standalone-head h2 { font-size:19px; font-weight:900; margin:0; }
+.profile-standalone-head p { font-size:12px; color:#5f605e; margin:2px 0 0; }
+/* マイページ：とびら君を中央に、部位ごとに着がえ */
+.mypage-stage { position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px 12px 10px; margin-bottom:10px; border:1px solid #d4b66a; border-radius:22px; background:radial-gradient(circle at 50% 42%, #fff8e1 0, #f7e5b4 62%, #efd79a 100%); }
+.mypage-stage-title { font-size:13px; font-weight:900; color:#7a5212; background:#fffdf6; border:1px solid #e0c27a; border-radius:999px; padding:3px 12px; margin:0; }
+.mypage-stage-avatar { display:grid; place-items:center; padding:4px 0; }
+.mypage-stage-meta { width:100%; max-width:300px; display:flex; flex-direction:column; gap:4px; }
+.mypage-stage-meta>span { display:flex; align-items:center; justify-content:center; gap:4px; font-size:12px; font-weight:700; }
+.mypage-stage-meta strong { font-size:19px; }
+.mypage-parts h2 { font-size:14px; font-weight:900; margin:0 2px 6px; }
+.mypage-parts ul { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; margin:0 0 10px; padding:0; list-style:none; }
+.mypage-parts li:last-child:nth-child(odd) { grid-column:1 / -1; }
+.mypage-parts button { width:100%; display:flex; align-items:center; gap:6px; min-height:46px; padding:6px 10px; border:1px solid #d9cdbb; border-radius:14px; background:#fffdf7; text-align:left; }
+.mypage-part-label { font-size:13px; font-weight:900; flex-shrink:0; }
+.mypage-part-cur { flex:1; min-width:0; font-size:12px; color:#6b6a66; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; }
+.mypage-more { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; padding-bottom:8px; }
+.mypage-more button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; min-height:58px; border:1px solid #d9cdbb; border-radius:14px; background:#f3f0e8; font-size:12px; font-weight:800; }
+@media(min-width:720px){ .mypage-overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-content:start;} .mypage-stage{grid-row:span 2;margin:0;justify-content:center;} .mypage-more{grid-column:2;} }
+@media(max-height:700px){ .mypage-stage-avatar{transform:scale(.8);margin:-12px 0;} .mypage-parts button{min-height:44px;} .mypage-more button{min-height:48px;} }

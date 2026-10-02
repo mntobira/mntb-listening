@@ -18,7 +18,7 @@
  *   詳しい経緯は下のコメントに残してある。
  */
 import { useState } from 'react';
-import { ArrowLeft, Lightbulb, Trophy, X } from 'lucide-react';
+import { ArrowLeft, Lightbulb, X } from 'lucide-react';
 
 export interface QuizHeaderProps {
   /** 章（単元）の表示名。Quiz.tsx では chapter.abstractTitle を渡している。
@@ -105,7 +105,7 @@ export function QuizHeader({
           「完了」でキーボードが閉じれば即座に元に戻る。
       PC（isDesktop）には一切かからない条件にしてある。
     */}
-    <div className={`flex-none px-2 py-1 md:p-6 border-b border-gray-200 bg-white shadow-sm z-10 flex items-center justify-between gap-2 md:gap-4 ${
+    <div data-quiz-header className={`flex-none px-2 py-1 md:p-6 border-b border-[#EADFC8] bg-[#FFFAF0] shadow-sm z-10 flex items-center justify-between gap-2 md:gap-4 ${
       !isDesktop && keyboardVisible ? 'hidden' : ''
     }`}>
       <div className="flex items-center text-left gap-2 md:gap-4 min-w-0">
@@ -118,12 +118,13 @@ export function QuizHeader({
           <ArrowLeft size={18} className="md:w-5 md:h-5" aria-hidden="true" />
         </button>
         <div className="min-w-0 flex-1">
+          {/* 2026-10-02 D2：解答・解説カードと同じ「演習」札。対戦（夜の青）と見分けがつく */}
+          <span className="inline-flex items-center rounded-full bg-[#F3C64F] px-2 text-xs font-extrabold leading-5 text-[#5B3D00]">
+            {mode === 'mini_test' ? '小テスト' : '演習'}
+          </span>
           <h2 className="text-sm md:text-xl font-handwriting text-[#2C3E50] font-bold truncate">
             {chapter.abstractTitle}
           </h2>
-          <div className="text-xs text-gray-500 font-bold mt-0.5">
-            {mode === 'mini_test' ? '小テスト' : '演習問題'}
-          </div>
         </div>
       </div>
 
@@ -137,16 +138,7 @@ export function QuizHeader({
           </button>
         )}
 
-        {/* 現在の累積スコアピル（スコア機能の視覚フィードバック） */}
-        <div className="flex items-center gap-1.5 bg-[#F4D03F]/15 border border-[#F4D03F]/30 rounded-full px-2 py-1 md:px-3 md:py-1.5" title={`累積スコア / 連続正解 ${run.runningCombo}`}>
-          <Trophy size={12} className="text-[#D4A017]" />
-          <div className="font-mono font-bold text-[#1B2631] text-xs md:text-sm tabular-nums">
-            {run.totalScore}
-          </div>
-          {run.runningCombo >= 3 && (
-            <span className="text-xs font-bold text-orange-500 ml-0.5">🔥{run.runningCombo}</span>
-          )}
-        </div>
+        {/* 2026-10-02 D2：演習では点数（累積スコア）を出さない。学習に集中する画面にする */}
 
         <div className="flex items-center gap-2 md:gap-3 bg-gray-100 rounded-full px-3 py-1 md:px-4 md:py-1.5 shrink-0">
           <div className="text-xs md:text-sm text-gray-500 font-bold hidden sm:block">進捗</div>

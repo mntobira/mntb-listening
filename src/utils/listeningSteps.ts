@@ -67,6 +67,9 @@ export interface ListeningStep {
  * audioTracks を持たないので、これまでどおり大問まるごと1画面のまま。
  */
 export function isPerSubQuestionListening(problem: any): boolean {
+  // 英文法：答えを読み上げる音源は外したが「問1→解説→問2…」の1問ずつ進行は残す（2026-10-02）。
+  //   音源の有無と進め方を切り離すため、明示フラグ stepwise でも1問ずつにする。
+  if (problem?.stepwise === true && Array.isArray(problem?.subQuestions) && problem.subQuestions.length > 1) return true;
   const tracks = problem?.audioTracks;
   if (!Array.isArray(tracks) || tracks.length === 0) return false;
   const subs = problem?.subQuestions;

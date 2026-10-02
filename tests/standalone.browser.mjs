@@ -39,6 +39,8 @@ try {
   assert.equal(await page.locator('.app-bottom-nav').isVisible(),true,'foundation page keeps the bottom nav');
   // 2026-10-01 夜：暗記帳は単語の中のタブで分けず別ページ（「覚える」枠）。問題（4択）は単元と同じ列。
   assert.equal(await page.locator('.fd-tabs').count(),0,'wordbook page has no tabs');
+  // 2026-10-02：先に範囲を選ぶ画面 → 単語帳
+  await page.locator('[data-fd-range-pick]').first().click();
   await page.locator('.fd-word').nth(2).waitFor();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+2),'foundation fits one screen');
   await page.locator('.fd-back').click();
