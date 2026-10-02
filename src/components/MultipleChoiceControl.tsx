@@ -347,8 +347,8 @@ export function MultipleChoiceControl({
                 struck
                   ? 'bg-gray-100 border-gray-300 border-dashed opacity-60'
                   : isSelected
-                    ? 'bg-[#A9CCE3]/20 border-[#A9CCE3] ring-2 ring-[#A9CCE3]/40'
-                    : 'bg-white border-gray-200 hover:border-[#A9CCE3]/50'
+                    ? 'bg-[#F4D03F]/25 border-[#E5B93C] ring-2 ring-[#E5B93C]/30'
+                    : 'bg-white border-[#E6DCC6] hover:border-[#E5B93C]/60'
               }` : `relative ${
                 /* ★B-1：本文つき選択肢（英文）はスマホで左右余白を詰める★
                    px-4（16px×2）→ px-2.5（10px×2）で 12px を英文に回す。
@@ -360,7 +360,7 @@ export function MultipleChoiceControl({
                    4択で約 32px を選択肢・資料の表示に回す。
                    min-h-[3rem]（48px）は残すのでタップ領域は縮まない。 */
                 listeningMaterialsMobile ? 'py-2' : 'py-3'
-              } md:py-2.5 min-h-[3rem] md:min-h-0 rounded-xl font-bold text-[16px] md:text-sm transition-all duration-200 border-2 flex ${
+              } md:py-2.5 min-h-[3rem] md:min-h-0 rounded-2xl font-bold text-[16px] md:text-sm transition-all duration-200 border-2 flex ${
                 /* ★丸文字つき／本文つきは items-start にする★
                    items-center だと本文が2行になったとき丸数字が
                    行の中央に浮き、ぶら下げインデントが成立しない。
@@ -403,16 +403,17 @@ export function MultipleChoiceControl({
                   // 色や透明度だけでは段階の違いが伝わりにくい、というご指摘への対応。
                   // 紙の冊子で選択肢に線を引いた状態の再現。
                   ? `bg-gray-100 text-gray-400 border-gray-300 border-dashed line-through decoration-2 decoration-[#E8A87C] opacity-70 shadow-none ${strikeAnimating ? 'animate-strike-out' : ''}`
+                  // 2026-10-02 D2：選択中の見た目を対戦の4択と同じ「金枠・薄い金」に統一（操作が同じに見えるように）
                   : isSelected
-                    ? 'bg-[#A9CCE3] text-white border-[#A9CCE3] ring-2 ring-[#A9CCE3]/30 scale-[1.01]'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#A9CCE3]/50 hover:bg-gray-50'
+                    ? 'bg-[#F4D03F]/25 text-[#2C3E50] border-[#E5B93C] ring-2 ring-[#E5B93C]/25 scale-[1.01]'
+                    : 'bg-white text-[#2C3E50] border-[#E6DCC6] hover:border-[#E5B93C]/60 hover:bg-[#FFFCF3]'
                 }`}
             >
               {optionImages ? (
                 // 図が選択肢：左上にマーク、下に図。図はセルの幅いっぱいに広げる。
                 <>
                   <span className={`self-start rounded-md px-1.5 text-[14px] font-bold leading-6 ${
-                    struck ? 'text-gray-400' : isSelected ? 'bg-[#A9CCE3] text-white' : 'text-[#2C3E50]'
+                    struck ? 'text-gray-400' : isSelected ? 'bg-[#E5B93C] text-white' : 'text-[#2C3E50]'
                   }`}>
                     {opt}
                   </span>
@@ -473,7 +474,7 @@ export function MultipleChoiceControl({
                 <span className="flex w-full items-start gap-2">
                   <span
                     className={`shrink-0 ${listeningMaterialsMobile ? 'leading-[1.4]' : 'leading-6'} ${
-                      struck ? 'text-gray-400' : isSelected ? 'text-white' : 'text-[#2C3E50]'
+                      struck ? 'text-gray-400' : isSelected ? 'text-[#8A5A00]' : 'text-[#2C3E50]'
                     }`}
                     aria-hidden="true"
                   >

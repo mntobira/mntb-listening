@@ -281,7 +281,7 @@ function RankStrip({ rating }: { rating: number }) {
   const t = ratingTitle(rating);
   const p = ratingProgress(rating);
   return (
-    <div className="arena-rank-strip" aria-label={`称号 ${t.label}・${rating} RP`}>
+    <div className="arena-rank-strip arena-vs-progress" aria-label={`称号 ${t.label}・${rating} RP`}>
       <span className="arena-rank-badge" style={{ background: t.color }}><Trophy size={14} />{t.label}</span>
       <div className="arena-rank-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(p.ratio * 100)}>
         <i style={{ width: `${Math.round(p.ratio * 100)}%`, background: t.color }} />
@@ -298,7 +298,7 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
  const [row,setRow]=useState<BattleRankingRow|null>(null);
  useEffect(()=>{let active=true;if(user)void fetchMyRankingRow().then(r=>{if(active)setRow(r);}).catch(()=>{});return()=>{active=false;};},[user]);
  return <BattleShell className="arena-menu">
-   <header className="arena-menu-header"><button type="button" onClick={onExit}>ホームへ</button><h1><Swords size={21}/>とびらバトル</h1><BgmButton /><span>{row ? <><b className="arena-rank-chip" style={{background:ratingTitle(row.rating).color}}>{ratingTitle(row.rating).label}</b>{row.rating} RP</> : user?'レート確認中':'ゲスト'}</span></header>
+   <header className="arena-menu-header"><button type="button" onClick={onExit}>ホームへ</button><h1><Swords size={21}/>とびらバトル</h1><BgmButton /></header>
    {/* ★E（2026-10-01）対戦前の舞台★ 夜のアリーナに「あなた VS ？？？」。とびら君がひとこと（少し挑発）。
        機能は同じ。下の3択・その他・ルールの中身も同じ */}
    <section className="arena-vs" aria-label="あなたの情報" data-arena-vs>
@@ -313,9 +313,8 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
      <strong>対戦相手</strong>
      <small>だれが来る？</small>
     </div>
-    <TobiraBuddy className="arena-vs-buddy" size="sm" input={{ screen: 'battle', isGuest: !user, seed: new Date().getDate() }} />
+    {row ? <RankStrip rating={row.rating}/> : <TobiraBuddy className="arena-vs-buddy" size="sm" input={{ screen: 'battle', isGuest: !user, seed: new Date().getDate() }} />}
    </section>
-   {row && <RankStrip rating={row.rating}/>}
    {notice && <BattleNotice message={notice} tone="info"/>}
    {/* ルールは仕様書の文ではなく、アイコン＋ひとことに（詳しい式は下の「配点と対戦ルール」） */}
    <ul className="arena-rule-chips" aria-label="点数とごほうび">
@@ -348,14 +347,12 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
    {/* B13 サブ機能はメインの3択の下に「その他」としてまとめる（機能は削らない） */}
    <nav className="arena-lobby-sub" aria-label="その他の機能">
    <p className="arena-lobby-label" aria-hidden="true">その他</p>
-   <div className="arena-menu-links"><button type="button" onClick={()=>onChoose('history')}><History size={16}/>対戦履歴</button></div>
+   <div className="arena-menu-links"><button type="button" onClick={()=>onChoose('history')}><History size={16}/>対戦履歴</button>{user && <FriendOnlineStrip/>}</div>
    <div className="arena-lobby-help">
    <details className="arena-rules-help arena-connection-help"><summary><Activity size={14} aria-hidden="true"/>つながらないとき</summary><ConnectionCheckPanel compact/></details>
    <details className="arena-rules-help"><summary><BookOpen size={14} aria-hidden="true"/>配点と対戦ルール</summary><p>正解のみ加点。速さ点は残り時間の割合rに対して240×(0.7r²+0.3r³)。500ms単位に丸めます。3連続以上に小さな連続点。旧ルームでは作成時の配点を使用します。フレンドもお互い更新してから遊んでください。</p></details>
    </div>
    </nav>
-   {/* ゲストには上の「ログイン」の一文で足りるので、同じ趣旨の案内を重ねない */}
-   {user && <FriendOnlineStrip/>}
  </BattleShell>;
 }
 

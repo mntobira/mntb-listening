@@ -172,10 +172,7 @@ export function buildEgSet(meta: EgSetMeta, items: EgItem[]): GrammarProblem {
   const head =
     `第${meta.setNo}回　${meta.unitTitle}（${items.length}問・4択）\n\n` +
     `空所に入れるのに最も適切なものを、①〜④のうちから1つずつ選びなさい。\n\n` +
-    `【英文の確認のしかた】\n` +
-    `問題文の上にある「音源を聞く」パネルの 問1〜問${items.length} のボタンから、` +
-    `空所を埋めた完成文を音声で確認できます。解説画面では同じ英文を和訳・語句つきで読み直せます。` +
-    `目で覚えるだけでなく、正しい形を音で通しておくと、本番で「音の違和感」で誤答を切れるようになります。`;
+    `1問ずつ解いて、すぐ下の解説で「なぜその形か」を確認してから次の問へ進みます。`;
 
   const blocks = items.map(
     (item, index) =>

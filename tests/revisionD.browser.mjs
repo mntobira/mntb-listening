@@ -64,6 +64,21 @@ try {
       const r=await button.boundingBox();assert.ok(r && r.y+r.height<=limit+1,'pull controls hidden behind navigation');
     }
     await page.screenshot({path:`shots/d-gacha-${w}.png`});
+    assert.equal(await page.locator('[data-gacha-showcase] .gacha-preview-info > span').innerText().then(t=>t.split(' / ')[1].split(' ')[0]),'10','showcase must list 10 curated UR');
+    await page.getByRole('button',{name:'マイページへ移動',exact:true}).click();
+    await page.locator('[data-mypage-overview]').waitFor();
+    await fit(page,'.mypage-hub',`${w} mypage`);
+    assert.equal(await page.locator('.mypage-menu').count(),0,'duplicate menu grid removed');
+    assert.equal(await page.locator('.mypage-parts [data-part]').count(),7);
+    await page.locator('.mypage-parts [data-part=hat]').click();
+    assert.equal(await page.locator('.collection-kind select').inputValue(),'hat');
+    await page.getByRole('button',{name:'マイページ',exact:true}).click();
+    await page.locator('.mypage-more').getByRole('button',{name:'称号'}).click();
+    await page.locator('[data-profile-standalone=badges]').waitFor();
+    assert.equal(await page.getByText('とびら君のマイページ').count(),0);assert.equal(await page.locator('#battle-shell').count(),0);
+    await page.screenshot({path:`shots/d-mypage-badges-${w}.png`});
+    await page.getByRole('button',{name:'マイページにもどる'}).click();await page.locator('[data-mypage-overview]').waitFor();
+    await page.screenshot({path:`shots/d-mypage-${w}.png`});
     await page.getByRole('button',{name:'オンライン対戦へ移動',exact:true}).click();await page.locator('.arena-menu').waitFor();
     await fit(page,'.arena-menu',`${w} battle`);
     assert.deepEqual(await page.locator('.arena-menu-links button').allTextContents(),['対戦履歴']);

@@ -123,3 +123,20 @@
  .arena-menu .arena-rule-chips { margin:2px 0; }
  .arena-menu .arena-lobby-sub { padding-top:2px; gap:2px; }
 }
+
+/* 2026-10-02 D2：ログイン時もスクロールさせない。
+   ランク表示は VS の舞台の中（ヘッダーの重複表示は削除）、フレンドの在線は「対戦履歴」の横に1行で。 */
+.arena-menu .arena-vs-progress { grid-area: say; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; padding: 4px 8px; border: 0; border-radius: 12px; background: #ffffff14; }
+.arena-menu .arena-vs-progress small { grid-column: auto; color: #ffe7a8 !important; font-size: 12px !important; text-align: right; white-space: nowrap; }
+.arena-menu .arena-vs-progress .arena-rank-bar { height: 6px; background: #ffffff2e; }
+.arena-menu .arena-vs-progress .arena-rank-badge { padding: 2px 8px; }
+.arena-lobby-sub .arena-menu-links { align-items: center; gap: 10px; flex-wrap: nowrap; }
+.arena-lobby-sub .arena-menu-links .arena-friends { margin: 0 !important; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* iPhone SE などアドレスバー込みで低い画面 */
+@media (max-height: 600px) {
+  .arena-menu .arena-rule-chips { display: none; }
+  .arena-menu .arena-lobby-label { display: none; }
+  .arena-menu .arena-vs { min-height: 0; gap: 2px 8px; }
+  .arena-menu .arena-vs-avatar { width: 44px; height: 44px; }
+  .arena-menu .arena-vs-mark { font-size: 26px; }
+}

@@ -412,6 +412,15 @@ const EG_PROBLEMS: Record<string, GrammarProblem[]> = {
     for (const problem of [...c.practiceProblems, ...c.miniTest]) {
       delete (problem as any).audioTracks;
       delete (problem as any).audioUrl;
+      // 音源は外しても、進め方は以前どおり「問1→解説→問2→解説…」の1問ずつ
+      (problem as any).stepwise = true;
+      // 音が無いので、リスニング用の見出しを文法向けの言葉に置き換える
+      if (typeof (problem as any).explanation === 'string') {
+        (problem as any).explanation = (problem as any).explanation
+          .replace(/SCRIPT ／ 実際に流れた英文/g, 'ANSWER ／ 完成した英文')
+          .replace(/聞き取りの決め手/g, '解くカギ')
+          .replace(/スクリプト内の黄色いマーカー/g, '英文の黄色いマーカー');
+      }
     }
   }
 })();
