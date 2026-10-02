@@ -25,6 +25,8 @@ import { BattleLobby, type FriendRoomSettings } from './BattleLobby';
 import { abortRoom, createFriendRoom, followSuccessorRoom } from '../data/battle';
 import { friendModeById, friendModeOfRules } from '../core/friendModes';
 import { BattleLiveStage } from './BattleLiveStage';
+import { useBattleAudio } from '../hooks/useBattleAudio';
+import { OpponentCard } from './OpponentCard';
 import { ConnectionMeter } from './ConnectionMeter';
 import { BattleResult } from './BattleResult';
 import {
@@ -51,6 +53,8 @@ export function BattleRoomScreen({
   onPractice,
   onOpenProfile, onOpenMissions, onActiveChange,
   onReview,
+  onChangeSubject,
+  onNationalAgain,
 }: {
   roomId: string;
   /** 部屋が変わったら画面ごと作り直す（前の部屋の状態を持ち越さない） */
@@ -72,6 +76,10 @@ export function BattleRoomScreen({
   onOpenMissions?: () => void;
   /** ★リザルトの「復習する」（間違えた問題を復習リストに入れて学習ノートへ）★ */
   onReview?: () => void;
+  /** 結果画面から「ほかの単元で」：部屋を出て教科選びへ */
+  onChangeSubject?: (friend: boolean) => void;
+  /** 全国戦の結果から「もう1回 全国対戦」 */
+  onNationalAgain?: () => void;
 }) {
   const uid = auth.currentUser?.uid || '';
   const {
@@ -114,6 +122,8 @@ export function BattleRoomScreen({
     leave,
     dismissResumeMessage,
   } = useBattleRoom(roomId);
+  // 開始準備・待機中も待合室の曲を切らさない（ステージが始まればそちらが優先）
+  useBattleAudio('matching', undefined, 1);
 
   useEffect(() => {
     onActiveChange?.(room?.status === 'waiting' || (room?.status === 'playing' && !finished));
@@ -279,6 +289,9 @@ export function BattleRoomScreen({
         rematchLabel={onSwitchRoom
           ? moving === 'host' ? '部屋を用意しています…' : moving === 'guest' ? '相手の部屋を待っています…' : isHostHere ? '同じ相手ともう1回（合言葉なし）' : '同じ相手ともう1回（相手の部屋に入る）'
           : '同じ科目で新しい部屋を作る'}
+        onPlayAgain={!room.joinCode ? onNationalAgain : undefined}
+        playAgainLabel="もう1回 全国対戦"
+        onChangeSubject={onChangeSubject ? () => onChangeSubject(!!room.joinCode) : undefined}
         onExit={() => onExit()}
         onPractice={onPractice}
         growthMatchId={`online:${roomId}`}
@@ -297,7 +310,7 @@ export function BattleRoomScreen({
   // 待機
   // ------------------------------------------------------------
   if (room.status === 'waiting') {
-    if (!room.joinCode) return <BattleShell className="arena-matching"><BattleTitle subtitle="全国対戦・開始準備"/><ArenaFighters matched/><p className="text-center font-bold">2人がそろいました。まもなくスタート</p>{error && <BattleNotice message={error}/>}{error && <BattleButton onClick={start}>開始を再試行</BattleButton>}<BattleButton variant="ghost" onClick={()=>{leave();onExit();}}>対戦を終了する</BattleButton></BattleShell>;
+    if (!room.joinCode) return <BattleShell className="arena-matching"><BattleTitle subtitle="全国対戦・開始準備"/><ArenaFighters matched/>{opponent && <OpponentCard uid={opponent.uid} nickname={opponent.nickname} photoURL={opponent.photoURL} rating={opponent.rating} mask />}<p className="text-center font-bold">2人がそろいました。まもなくスタート</p>{error && <BattleNotice message={error}/>}{error && <BattleButton onClick={start}>開始を再試行</BattleButton>}<BattleButton variant="ghost" onClick={()=>{leave();onExit();}}>対戦を終了する</BattleButton></BattleShell>;
     return (
       <BattleLobby
         room={room}

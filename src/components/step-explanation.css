@@ -48,3 +48,14 @@
   .step-ex-body { width:100%; max-width:760px; margin:0 auto; padding-top:16px; }
   .step-ex-foot { grid-template-columns:auto minmax(0,420px); justify-content:center; }
 }
+/* 演習の結果（ポイントなし） */
+.practice-result-summary { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.practice-result-main { display:flex; flex-direction:column; gap:2px; }
+.practice-result-badge { align-self:flex-start; font-size:12px; font-weight:800; color:#8A5A00; background:#F4D03F33; border:1px solid #E5B93C; border-radius:999px; padding:1px 10px; }
+.practice-result-main p { margin:0; display:flex; align-items:baseline; gap:4px; color:#1B2631; }
+.practice-result-main strong { font-size:30px; font-weight:900; line-height:1; }
+.practice-result-main span { font-size:13px; font-weight:700; color:#4B5563; }
+.practice-result-stats { display:flex; gap:6px; margin:0; }
+.practice-result-stats div { min-width:64px; text-align:center; background:#ffffffb3; border:1px solid #fff; border-radius:12px; padding:4px 8px; }
+.practice-result-stats dt { font-size:12px; font-weight:700; color:#6b7280; }
+.practice-result-stats dd { margin:0; font-size:15px; font-weight:900; color:#1B2631; }

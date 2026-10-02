@@ -90,3 +90,21 @@
   .lx-extra-wrap { margin-top: -20px; }
   .lx-script .listening-script-text + * { font-size: 13px; line-height: 1.4; }
 }
+
+/* 2026-10-02 夜：問題画面と同じ選択肢の上に正誤をつける */
+.lx-choices { display: grid; gap: 6px; padding: 8px; border-radius: 16px; border: 1.5px solid #e3d9c8; background: #fffdf6; }
+.lx-choices[data-status=ok] { border-color: #9fd8c3; }
+.lx-choices[data-status=ng] { border-color: #f0b8b3; }
+.lx-choices-head { display: flex; align-items: center; gap: 6px; padding: 0 4px; font-size: 14px; font-weight: 800; }
+.lx-choices[data-status=ok] .lx-result-mark, .lx-choices[data-status=ok] .lx-result-verdict { color: #1f7a4d; }
+.lx-choices[data-status=ng] .lx-result-mark, .lx-choices[data-status=ng] .lx-result-verdict { color: #b3261e; }
+.lx-choice-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.lx-choice { position: relative; display: flex; align-items: baseline; gap: 6px; min-height: 44px; padding: 10px 12px; border-radius: 14px; border: 1.5px solid #ead9bd; background: #fff; font-size: 15px; line-height: 1.45; color: #2c3e50; }
+.lx-choice-mark { flex-shrink: 0; font-weight: 800; }
+.lx-choice-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.lx-choice[data-tone=right] { border-color: #3fae7d; background: #eaf8f1; box-shadow: inset 4px 0 0 #3fae7d; }
+.lx-choice[data-tone=wrong] { border-color: #e0786f; background: #fdeeed; box-shadow: inset 4px 0 0 #e0786f; }
+.lx-choice[data-tone=plain] { opacity: .78; }
+.lx-choice-tag { flex-shrink: 0; align-self: center; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 2px 8px; }
+.lx-choice[data-tone=right] .lx-choice-tag { color: #fff; background: #2f9a6b; }
+.lx-choice[data-tone=wrong] .lx-choice-tag { color: #fff; background: #c9483e; }

@@ -1,3 +1,4 @@
+import './step-explanation.css';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowLeft, CheckCircle2, XCircle, Lightbulb, BookOpen, AlertCircle, CheckSquare, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, Search, Network, Circle, Trophy, KeyRound, ListOrdered, Target } from 'lucide-react';
@@ -5,7 +6,6 @@ import { motion } from 'motion/react';
 import { formatText } from '../utils/textFormatter';
 import { ExplanationBody } from './ExplanationBody';
 import { auth } from '../firebase';
-import { ChapterRankingPanel } from './ChapterRankingPanel';
 import { FeedbackButton } from './FeedbackButton';
 import { QuestionFigure } from './QuestionFigure';
 import { ListeningAudioPlayer, ListeningEvidenceScript } from './ListeningAudioPlayer';
@@ -15,7 +15,7 @@ import { isAnswerCorrect } from '../utils/answerJudge';
 import { gradingCriteriaProgress, resolveGradingCriteria } from '../utils/gradingCriteria';
 // cleanQuestionText は演習画面（Quiz.tsx）と同じ実装が必要なので
 // questionDisplay.ts の1つだけを使う（以前はここにも同じ実装があった）。
-import { answerCardMarker, buildSubQuestionList, isSubQuestionListRedundant, extractInlineQuestionRows, extractListeningQuestionRows, cleanQuestionText } from '../utils/questionDisplay';
+import { answerCardMarker, buildSubQuestionList, isSubQuestionListRedundant, extractInlineQuestionRows, extractListeningQuestionRows, cleanQuestionText, findSubQuestionSentence, optionCircledMark } from '../utils/questionDisplay';
 import {
   buildUnitKataBlock,
   sliceEnhancedByQuestion,
@@ -27,7 +27,7 @@ import {
   listeningQuestionNumberOf,
   scopeListeningCommonToQuestion,
 } from '../utils/listeningExplanation';
-import { sliceListeningQuestionBlock } from '../utils/listeningOptions';
+import { sliceListeningQuestionBlock, buildListeningOptionTexts } from '../utils/listeningOptions';
 import { getUnitTeaching } from '../data/unitTeaching';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import type { ScoreBreakdown } from '../utils/scoring';
@@ -144,6 +144,21 @@ const getDifficulty = (sqId: string) => {
   return 1;
 };
 
+/**
+ * 解説の1画面表示（結果 → 英文 → 解説）に使う英文トラック。
+ * リスニングは音源つき（audioTracks）、英文法は音を出さない文字だけ（explanationTracks）。
+ */
+function textTracksOf(q: any): any[] {
+  if (Array.isArray(q?.audioTracks) && q.audioTracks.length) return q.audioTracks;
+  return Array.isArray(q?.explanationTracks) ? q.explanationTracks : [];
+}
+
+/** 結果の所要時間（例：45秒 / 3分20秒） */
+function formatResultTime(sec: number): string {
+  const s = Math.max(0, Math.round(sec));
+  return s < 60 ? `${s}秒` : `${Math.floor(s / 60)}分${s % 60 ? `${s % 60}秒` : ''}`;
+}
+
 export function Explanation({ mode: initialMode, chapter, answers, onBack, onReturnToBattle, isGuest, singleQuestionIndex, onNextQuestion, isLastQuestion, isMobileView, scoreBreakdown, scoreMeta, totalScore, runningCombo, resultTotalScore, resultTotalCorrect, resultTotalJudgeable, resultTotalTimeSec, questionRange, onRetryWrong, onNextChapter, nextChapterTitle, focusSubQuestionId }: ExplanationProps) {
   const isPracticeMode = initialMode === 'practice';
   // Virtual mode is always 'mini_test' for bright style choices!
@@ -247,7 +262,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
     if (!focusSubQuestionId) return picked;
     return picked.map((q: any) => {
       const subs: any[] = Array.isArray(q?.subQuestions) ? q.subQuestions : [];
-      const tracks: any[] = Array.isArray(q?.audioTracks) ? q.audioTracks : [];
+      const hasAudio = Array.isArray(q?.audioTracks) && q.audioTracks.length > 0;
+      const tracks: any[] = textTracksOf(q);
       // ★第4問以降：音源1本に複数の小問（問18〜21 など）★
       //   その音源（subIds）に属する小問は全部まとめて解いたので、解説も全部出す。
       //   第1〜3問は subIds が無いので従来どおり1問だけ。
@@ -276,7 +292,9 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         subQuestions: hit,
         // 音源も「その問のトラックだけ」にする。復習で問1〜問4の
         // スクリプトが全部開けると、未着手の問の答えが読めてしまう。
-        audioTracks: focusedTracks.length > 0 ? focusedTracks : tracks,
+        ...(hasAudio
+          ? { audioTracks: focusedTracks.length > 0 ? focusedTracks : tracks }
+          : { explanationTracks: focusedTracks.length > 0 ? focusedTracks : tracks }),
       };
     });
   }, [allQuestions, singleQuestionIndex, questionRange, rangeOffset, focusSubQuestionId]);
@@ -368,8 +386,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
    */
   const isEnglishChapter = useMemo(() => {
     return allQuestions.some((q: any) => {
-      const tracks = q?.audioTracks;
-      return Array.isArray(tracks) && tracks.length > 0;
+      return textTracksOf(q).length > 0;
     });
   }, [allQuestions]);
 
@@ -1174,7 +1191,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
               結果表示画面（isResultView）では下部の「RESULT SCORE」カード内にのみ Score を表示し、
               固定ヘッダーには「単元選択に戻る」ボタンのみを残す。
               1問ごとの答え合わせ（!isResultView）でのみ、進行中スコアを従来どおりヘッダーに表示する。 */}
-          {!isResultView && displayTotalScore != null && (
+          {/* 2026-10-02：演習ではポイントを出さない */}
+          {false && !isResultView && displayTotalScore != null && (
             <motion.div
               key={scorePulse ? 'a' : 'b'}
               initial={{ scale: 1.15 }}
@@ -1347,50 +1365,16 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           }`}>
             {/* スマホ（compactResult）ではスコアと Correct/Rate/Time を1行に圧縮して、
                 直下の「復習推奨エリア」まで同じ画面に収める。 */}
-            <div className={compactResult
-              ? 'flex flex-row items-center justify-between gap-2'
-              : 'flex flex-col md:flex-row md:items-center justify-between gap-4'
-            }>
-              <div className={`flex items-center ${compactResult ? 'gap-2 shrink-0' : 'gap-3'}`}>
-                <div className={`rounded-2xl bg-[#F4D03F] text-[#1B2631] flex items-center justify-center shadow-md ${
-                  compactResult ? 'w-8 h-8 rounded-xl' : 'w-12 h-12'
-                }`}>
-                  <Trophy size={compactResult ? 16 : 22} />
-                </div>
-                <div>
-                  <p className={`uppercase tracking-widest text-[#1B2631]/60 font-bold font-modern ${
-                    compactResult ? 'text-[9px] leading-none' : 'text-[10px] md:text-xs'
-                  }`}>
-                    Result Score
-                  </p>
-                  <p className={`font-handwriting font-bold text-[#1B2631] leading-none tabular-nums ${
-                    compactResult ? 'text-xl' : 'text-3xl md:text-4xl'
-                  }`}>
-                    {displayTotalScore}
-                    <span className={`ml-1 text-[#4B5563] ${compactResult ? 'text-[10px]' : 'text-sm md:text-base'}`}>pt</span>
-                  </p>
-                </div>
+            {/* 2026-10-02：演習ではポイントを出さない（対戦と分ける）。正解数・正答率・時間だけ */}
+            <div className="practice-result-summary" data-practice-result>
+              <div className="practice-result-main">
+                <span className="practice-result-badge">演習の結果</span>
+                <p><strong>{resultTotalCorrect ?? 0}</strong><span>/ {resultTotalJudgeable ?? 0} 問 正解</span></p>
               </div>
-              <div className={`grid grid-cols-3 text-center ${compactResult ? 'gap-1.5 flex-1 min-w-0' : 'gap-2 md:gap-3'}`}>
-                <div className={`bg-white/70 border border-white shadow-xs ${compactResult ? 'rounded-xl px-1 py-1' : 'rounded-2xl p-3'}`}>
-                  <div className={`text-[#4B5563]/70 font-bold ${compactResult ? 'text-[9px] leading-none' : 'text-[10px]'}`}>Correct</div>
-                  <div className={`font-mono font-bold text-[#1B2631] tabular-nums ${compactResult ? 'text-[11px]' : ''}`}>
-                    {resultTotalCorrect ?? 0}/{resultTotalJudgeable ?? 0}
-                  </div>
-                </div>
-                <div className={`bg-white/70 border border-white shadow-xs ${compactResult ? 'rounded-xl px-1 py-1' : 'rounded-2xl p-3'}`}>
-                  <div className={`text-[#4B5563]/70 font-bold ${compactResult ? 'text-[9px] leading-none' : 'text-[10px]'}`}>Rate</div>
-                  <div className={`font-mono font-bold text-[#1B2631] tabular-nums ${compactResult ? 'text-[11px]' : ''}`}>
-                    {resultTotalJudgeable ? Math.round(((resultTotalCorrect ?? 0) / resultTotalJudgeable) * 100) : 0}%
-                  </div>
-                </div>
-                <div className={`bg-white/70 border border-white shadow-xs ${compactResult ? 'rounded-xl px-1 py-1' : 'rounded-2xl p-3'}`}>
-                  <div className={`text-[#4B5563]/70 font-bold ${compactResult ? 'text-[9px] leading-none' : 'text-[10px]'}`}>Time</div>
-                  <div className={`font-mono font-bold text-[#1B2631] tabular-nums ${compactResult ? 'text-[11px]' : ''}`}>
-                    {resultTotalTimeSec ?? 0}s
-                  </div>
-                </div>
-              </div>
+              <dl className="practice-result-stats">
+                <div><dt>正答率</dt><dd>{resultTotalJudgeable ? Math.round(((resultTotalCorrect ?? 0) / resultTotalJudgeable) * 100) : 0}%</dd></div>
+                <div><dt>時間</dt><dd>{formatResultTime(resultTotalTimeSec ?? 0)}</dd></div>
+              </dl>
             </div>
 
             {/* ===== 次にすること =====
@@ -1425,18 +1409,13 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 1画面で「点数」と「どこを復習すべきか」が同時に見えるようにする。 */}
             {compactWeakAreas}
 
-            <ChapterRankingPanel
-              chapterId={chapter.id}
-              userScore={displayTotalScore}
-              isGuest={isGuest}
-            />
 
             {/* ===== この単元についてのご意見（結果画面の意見収集入口）=====
                 解いた直後は「ここが分かりにくい」が一番鮮明なタイミングなので、
                 スコアカードの直下に常設する。単元ID・スコア・正答数を自動で添付する。 */}
             <div className="mt-4 pt-4 border-t border-[#F4D03F]/40 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <p className="text-[11px] text-[#4B5563]/80 font-modern leading-snug flex-1">
-                この単元の問題文・解説で気づいたこと（分かりにくい、誘導が欲しい、誕字・表示崩れなど）をお寄せください。
+                この単元の問題文・解説で気づいたこと（分かりにくい、誘導が欲しい、誤字・表示崩れなど）をお寄せください。
               </p>
               <FeedbackButton
                 screen="chapter_result"
@@ -1765,16 +1744,20 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                         if (listeningRows) {
                           return (
                             <ul className="flex flex-col gap-1">
-                              {listeningRows.map((row) => (
+                              {listeningRows.map((row, ri) => {
+                                // 英文法：設問名（「be 動詞以外の SVC」）より、空所つきの英文そのものを出す
+                                const sentence = findSubQuestionSentence(question, (question.subQuestions || [])[ri]);
+                                return (
                                 <li key={row.marker} className="flex items-baseline gap-1.5">
                                   <span className="shrink-0 font-bold text-gray-500">
                                     {row.marker}
                                   </span>
                                   <span className="min-w-0 break-words [overflow-wrap:anywhere]">
-                                    {formatText(row.body, [], { prose: true })}
+                                    {formatText(sentence || row.body, [], { prose: true })}
                                   </span>
                                 </li>
-                              ))}
+                                );
+                              })}
                             </ul>
                           );
                         }
@@ -1922,7 +1905,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                         /* ★B-2：音源・スクリプトを変数に束ねる（描く場所を出し分けるため）★
                            スマホでは正誤ボタンの後、PC では従来位置で描く。
                            中身はそのまま。詳しくは下の使用箇所のコメントを参照。 */
-                        const listeningTracks: any[] = Array.isArray((question as any).audioTracks) ? (question as any).audioTracks : [];
+                        const listeningTracks: any[] = textTracksOf(question);
+                        const optionTextsBySq = buildListeningOptionTexts(allQuestions.find((q: any) => q?.id === question?.id) ?? question);
                         const audioPlayerBlock = Array.isArray((question as any).audioTracks) &&
                                   (question as any).audioTracks.length > 0 && (
                                     <ListeningAudioPlayer
@@ -2295,7 +2279,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                             )}
 
                             {objectiveSqs.length > 0 && (
-                              <div className={`${reorderMobile ? 'space-y-2' : 'space-y-3 md:space-y-4'} ${reorderMobile && Array.isArray((question as any).audioTracks) && (question as any).audioTracks.length > 0 ? 'mt-0' : 'mt-6'}`}>
+                              <div className={`${reorderMobile ? 'space-y-2' : 'space-y-3 md:space-y-4'} ${reorderMobile && textTracksOf(question).length > 0 ? 'mt-0' : 'mt-6'}`}>
                                 {/*
                                   見出し：採点結果（正誤の内訳を小さく併記）
 
@@ -2429,22 +2413,53 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                      ・その下にスクリプトと和訳を直接出す（押さなくても読める）
                                      ・解説／思考手順／押さえたい表現はタップで開く */
                                   <div className="lx-compact" data-listening-explanation>
+                                    {/* ★2026-10-02 夜（ご指摘）：問題画面と同じ選択肢の並びの上に、
+                                         正解（緑）・自分が選んだ不正解（赤）を直接つける。
+                                         「問題は固定で、今の選択肢のところに合ってるか間違ってるか」 */}
                                     {objectiveSqs.map((sq: any) => {
                                       const ok = isAnswerCorrect(sq, answers[sq.id]);
                                       const attempted = isAttempted(answers[sq.id]);
                                       const sqIdx = ((question?.subQuestions || []) as any[]).indexOf(sq);
                                       const marker = answerCardMarker(sq, sqIdx < 0 ? 0 : sqIdx, question);
                                       const status = !attempted ? 'none' : ok ? 'ok' : 'ng';
+                                      const options: string[] = Array.isArray(sq.options) ? sq.options : [];
+                                      const texts = optionTextsBySq.get(sq.id);
+                                      const mine = String(answers[sq.id] ?? '');
+                                      const right = String(sq.correctAnswer ?? '');
+                                      const hasImages = Array.isArray(sq.optionImages);
                                       return (
-                                        <div key={`lx-${sq.id}`} className="lx-result" data-status={status}>
-                                          <span className="lx-result-mark" aria-hidden="true">{status === 'none' ? <Circle size={18} /> : ok ? <CheckCircle2 size={18} /> : <XCircle size={18} />}</span>
-                                          <span className="lx-result-label">{formatText(marker)}</span>
-                                          <span className="lx-result-verdict">{status === 'none' ? '未解答' : ok ? '正解' : '不正解'}</span>
-                                          <span className="lx-result-answers">
-                                            {attempted && !ok && <><span className="lx-yours">{formatText(String(answers[sq.id]))}</span><span aria-hidden="true">→</span></>}
-                                            <span className="lx-right" aria-label={`正解 ${String(sq.correctAnswer)}`}>{formatText(sq.correctAnswer)}</span>
-                                          </span>
-                                        </div>
+                                        <section key={`lx-${sq.id}`} className="lx-choices" data-status={status} aria-label={`${marker} の答え合わせ`}>
+                                          <header className="lx-choices-head">
+                                            <span className="lx-result-mark" aria-hidden="true">{status === 'none' ? <Circle size={18} /> : ok ? <CheckCircle2 size={18} /> : <XCircle size={18} />}</span>
+                                            <span className="lx-result-label">{formatText(marker)}</span>
+                                            <span className="lx-result-verdict">{status === 'none' ? '未解答' : ok ? '正解' : '不正解'}</span>
+                                          </header>
+                                          {options.length > 0 && !hasImages ? (
+                                            <ol className="lx-choice-list">
+                                              {options.map((opt, oi) => {
+                                                const isRight = opt.trim() === right.trim();
+                                                const isMine = attempted && opt.trim() === mine.trim();
+                                                const tone = isRight ? 'right' : isMine ? 'wrong' : 'plain';
+                                                const body = texts?.[oi];
+                                                const mark = optionCircledMark(opt, oi);
+                                                return (
+                                                  <li key={opt + oi} className="lx-choice" data-tone={tone} data-mine={isMine || undefined}>
+                                                    <span className="lx-choice-mark">{mark ? `${mark} ` : ''}{formatText(opt)}</span>
+                                                    {body && <span className="lx-choice-text">{formatText(body, [], { prose: true })}</span>}
+                                                    {(isRight || isMine) && (
+                                                      <span className="lx-choice-tag">{isRight && isMine ? 'あなた・正解' : isRight ? '正解' : 'あなた'}</span>
+                                                    )}
+                                                  </li>
+                                                );
+                                              })}
+                                            </ol>
+                                          ) : (
+                                            <p className="lx-result-answers">
+                                              {attempted && !ok && <><span className="lx-yours">{formatText(mine)}</span><span aria-hidden="true">→</span></>}
+                                              <span className="lx-right" aria-label={`正解 ${right}`}>{formatText(right)}</span>
+                                            </p>
+                                          )}
+                                        </section>
                                       );
                                     })}
                                     {listeningTracks.map((track: any) => (
@@ -2637,7 +2652,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
               if (!hasKnowledge && !hasDeepDive) return null;
 
               // ★スマホのリスニング解説：周辺知識・深掘りも「押したら開く」（1画面で完結させる）
-              const foldExtras = reorderMobile && Array.isArray((question as any).audioTracks) && (question as any).audioTracks.length > 0;
+              const foldExtras = reorderMobile && textTracksOf(question).length > 0;
               const ExtraWrap: any = foldExtras ? 'details' : 'div';
               const ExtraInner: any = foldExtras ? 'div' : React.Fragment;
               return (

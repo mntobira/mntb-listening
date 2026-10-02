@@ -30,6 +30,7 @@ import { syncRankingNickname } from '../utils/leaderboard';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey } from '../utils/userStorageKeys';
 import { GoogleMark } from './GoogleLinkBanner';
+import { AppleSignInButton } from '../features/auth/AppleSignInButton';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -184,6 +185,11 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
                 ? <><Loader2 size={19} className="animate-spin" aria-hidden="true" />連携中…</>
                 : <><GoogleMark size={20} />Google アカウントで続ける</>}
             </button>
+            <AppleSignInButton
+              className="mt-2.5 !rounded-2xl !min-h-[50px] !text-[14px]"
+              label="Appleで続ける"
+              onResult={(o) => { if (o.ok && o.user) checkProfile(o.user); else setError(o.message || 'ログインに失敗しました。'); }}
+            />
             <p className="mt-2 text-center text-[10.5px] font-modern leading-snug text-[#8895A0]">
               メールアドレスとお名前のみを利用します。パスワードは受け取りません。
             </p>

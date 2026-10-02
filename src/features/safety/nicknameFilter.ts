@@ -103,10 +103,10 @@ const MESSAGES: Record<NicknameIssue, string> = {
 };
 
 /** ニックネームとして使えるか */
-export function checkNickname(raw: string): NicknameCheck {
+export function checkNickname(raw: string, max = NICKNAME_MAX): NicknameCheck {
   const name = (raw || '').trim();
   if (!name) return { ok: false, issue: 'empty', message: MESSAGES.empty };
-  if ([...name].length > NICKNAME_MAX) return { ok: false, issue: 'too_long', message: MESSAGES.too_long };
+  if ([...name].length > max) return { ok: false, issue: 'too_long', message: MESSAGES.too_long };
   // 制御文字・書字方向の上書き（表示を偽装できる）・ゼロ幅文字
   if (/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/.test(name)) {
     return { ok: false, issue: 'control_chars', message: MESSAGES.control_chars };
@@ -153,4 +153,20 @@ export function displaySafeNickname(raw: string | null | undefined): string {
   // マスク済み（山＊＊＊）や定型の名前はそのまま
   if (/＊/.test(name) || name === '退会したユーザー' || name === '対戦相手') return [...name].slice(0, NICKNAME_MAX).join('');
   return checkNickname([...name].slice(0, NICKNAME_MAX).join('')).ok ? [...name].slice(0, NICKNAME_MAX).join('') : '（表示できない名前）';
+}
+
+/**
+ * 志望校など「他人に見える短い自由入力」の判定。空欄は可（未設定）。
+ * 名前と同じ NG 語・連絡先の規則を使う（App Store 1.2：利用者生成コンテンツのフィルタ）。
+ */
+export function checkPublicText(raw: string, max = 40): NicknameCheck {
+  if (!(raw || '').trim()) return { ok: true };
+  return checkNickname(raw, max);
+}
+
+/** 他人の志望校などを表示する直前に通す。使えない語は伏せる */
+export function displaySafePublicText(raw: string | null | undefined, max = 40): string {
+  const t = [...(raw || '').trim()].slice(0, max).join('');
+  if (!t) return '';
+  return checkNickname(t, max).ok ? t : '（非表示）';
 }

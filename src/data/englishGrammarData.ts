@@ -410,6 +410,8 @@ const EG_PROBLEMS: Record<string, GrammarProblem[]> = {
   // Keep prepared explanations/translations, but never expose answer-bearing narration.
   for (const c of englishGrammarData.parts.flatMap(p => p.chapters)) {
     for (const problem of [...c.practiceProblems, ...c.miniTest]) {
+      // 音は出さない（答えが聞こえるため）。完成文・和訳・語句は解説の1画面表示用に文字だけ残す
+      if (Array.isArray((problem as any).audioTracks)) (problem as any).explanationTracks = (problem as any).audioTracks;
       delete (problem as any).audioTracks;
       delete (problem as any).audioUrl;
       // 音源は外しても、進め方は以前どおり「問1→解説→問2→解説…」の1問ずつ

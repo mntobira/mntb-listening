@@ -31,7 +31,6 @@ import { ListeningBriefing } from './ListeningBriefing';
 import { createScoreCurrentQuestion } from '../utils/quizScoring';
 import { QuizTimerBar } from './QuizTimerBar';
 import { FloatingScoreAnimation } from './FloatingScoreAnimation';
-import { StepExplanation } from './StepExplanation';
 import { calcQuestionTimeLimit, type ScoreBreakdown } from '../utils/scoring';
 import { submitChapterScore } from '../utils/leaderboard';
 import {
@@ -1111,24 +1110,8 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   // ここに 50 行の JSX が並んでいた。フックを1つも含まない
   // ただの JSX だったので（実測：フック呼び出し0件）、
   // 切り出してもフックの呼び出し順には影響しない。
-  // ★1問ずつ進む演習（リスニング・英文法）は新しい解答・解説カードで見せる（点数演出なし）★
-  if (showingExplanation && perStep && activeStepSubs.length > 0) {
-    const nextStep = !isLastStep ? listeningSteps[safeStepIndex + 1] : null;
-    return (
-      <StepExplanation
-        chapter={chapter}
-        question={currentQuestion}
-        subs={activeStepSubs}
-        answers={answers}
-        position={progressPosition}
-        total={progressTotal}
-        nextLabel={nextStep ? nextStep.label : (!isLastQuestion ? '次の回' : null)}
-        isLast={isLastQuestion}
-        onBack={() => { setShowingExplanation(false); if (onExplanationChange) onExplanationChange(false); }}
-        onNext={handleNext}
-      />
-    );
-  }
+  // 2026-10-02 夜：一度入れた別カード（StepExplanation）はやめ、元の
+  // 「問題は固定・選択肢の場所に正誤＋スクリプト＋解説」を1画面で見せる形に戻した（ご指摘）。
   if (showingExplanation) {
     return (
       <ExplanationScreen

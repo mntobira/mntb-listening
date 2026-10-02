@@ -1,0 +1,15 @@
+.opponent-card { display: grid; gap: 8px; margin: 8px 0 12px; padding: 12px 14px; border-radius: 20px; border: 2px solid color-mix(in srgb, var(--league) 40%, white); background: linear-gradient(135deg, var(--league-tint), #fffdf7 70%); animation: opponent-in .35s ease-out; }
+.opponent-card-kicker { font-size: 12px; font-weight: 800; color: #6b7280; }
+.opponent-card-main { display: flex; align-items: center; gap: 12px; }
+.opponent-card-avatar { width: 56px; height: 56px; flex-shrink: 0; border-radius: 16px; overflow: hidden; border: 2px solid var(--league); background: #fff; }
+.opponent-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.opponent-card-id { min-width: 0; display: grid; gap: 2px; }
+.opponent-card-id strong { font-size: 18px; font-weight: 900; color: #1c2a39; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opponent-card-league { display: inline-flex; align-items: baseline; gap: 6px; font-size: 13px; font-weight: 800; color: var(--league); }
+.opponent-card-league b { font-size: 15px; color: #1c2a39; }
+.opponent-card-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0; }
+.opponent-card-facts div { min-width: 0; padding: 6px 8px; border-radius: 12px; background: #ffffffb8; }
+.opponent-card-facts dt { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: #6b7280; }
+.opponent-card-facts dd { margin: 0; font-size: 14px; font-weight: 800; color: #1c2a39; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opponent-card-note { margin: 0; font-size: 12px; font-weight: 700; color: #6b5a3a; }
+@keyframes opponent-in { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }

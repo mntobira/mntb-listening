@@ -393,6 +393,7 @@ export function BattleMode({
             setAiMatchNo((n) => n + 1);
           }}
           onChangeLevel={() => { setGhost(null); setScreen('ai-level'); }}
+          onChangeSubject={() => { const wasGhost = !!ghost; setGhost(null); setScreen(wasGhost ? 'subject-national' : 'subject-ai'); }}
           onPractice={onPractice}
           onActiveChange={onActiveChange}
           onOpenProfile={() => setScreen('profile')}
@@ -423,6 +424,8 @@ export function BattleMode({
           onExit={leaveRoom}
           onRematch={rematch}
           onSwitchRoom={(next) => setRoomId(next)}
+          onChangeSubject={(friend) => { setRoomId(null); setScreen(friend ? 'subject-friend' : 'subject-national'); }}
+          onNationalAgain={() => { setRoomId(null); setScreen('matching'); }}
           onPractice={onPractice}
           onActiveChange={onActiveChange}
           onOpenProfile={() => setScreen('profile')}
