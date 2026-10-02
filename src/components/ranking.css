@@ -31,3 +31,48 @@
 .ranking-hall .ranking-scope.mt-tabs { background: var(--mt-bg-sunken); border-radius: var(--mt-radius-lg); padding: 4px; }
 .ranking-hall .ranking-scope.mt-tabs > button[aria-pressed=true] { color: var(--mt-ink-warm); }
 .ranking-hall .ranking-guest-wrap > * { border-radius: var(--mt-radius-lg) !important; }
+
+/* Rating leagues: fixed summary and controls, a single contained list scroller. */
+.league-hall { height:100%; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:8px; padding:12px 12px calc(var(--app-nav-h,80px) + 8px); background:#fcf8ef; color:#293b48; max-width:850px; margin:auto; font-size:14px; }
+.league-hall button,.league-hall input,.league-hall select { min-height:44px; font-size:14px; border:1px solid #d8cdb9; border-radius:12px; padding:8px 12px; background:#fffdf7; color:#293b48; }
+.league-hall button { min-width:44px; }
+.league-hall button:disabled { opacity:.55; }
+.league-header { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0; }
+.league-header > button { min-width:44px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.league-header h1 { display:flex; align-items:center; gap:8px; margin:0; font-size:23px; font-weight:900; }
+.league-header small { font-size:12px; color:#6e6455; letter-spacing:.12em; }
+.league-tabs,.league-actions { display:flex; gap:5px; flex-shrink:0; }
+.league-tabs button,.league-actions button { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; }
+.league-tabs [aria-selected=true],.league-actions [aria-current=page] { background:#f6e4b6; border-color:#b18434; }
+.league-my-card { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1.5px solid; border-radius:18px; flex-shrink:0; }
+.league-my-card div { flex:1; min-width:0; }
+.league-my-card strong { display:block; font-size:19px; font-weight:900; }
+.league-my-card small,.league-my-card span,.league-rows small { display:block; font-size:12px; font-style:normal; }
+.league-my-card>b { text-align:right; font-size:25px; font-variant-numeric:tabular-nums; }
+.league-my-card b small { font-size:12px; }
+.league-progress { display:flex; align-items:center; gap:8px; font-size:12px; flex-shrink:0; }
+.league-progress progress { flex:1; width:30px; accent-color:#997135; height:8px; }
+.league-filter { display:flex; align-items:center; gap:10px; font-size:12px; flex-shrink:0; }
+.league-filter select { min-width:0; flex:1; }
+.league-scroll { min-height:0; flex:1; overflow-y:auto; overscroll-behavior:contain; }
+.league-rows { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+.league-rows li { display:flex; align-items:center; gap:8px; padding:10px; border:1px solid #ddd2bf; border-radius:15px; background:white; min-height:64px; }
+.league-rows li[data-me=true] { background:#fff0c6; border:2px solid #b98627; }
+.league-rows li>b { min-width:30px; text-align:center; font-size:18px; }
+.league-rows li[data-top=true]>b { background:#f2dc9c; border-radius:50%; padding:3px; }
+.league-rows li>span { flex:1; min-width:0; }
+.league-rows li strong { display:block; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.league-rows em { font-style:normal; font-size:21px; font-weight:900; text-align:right; font-variant-numeric:tabular-nums; }
+.league-footer { display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:12px; flex-shrink:0; }
+.league-footer button { display:flex; align-items:center; gap:5px; background:#dceff9; font-weight:800; }
+.league-info { background:#fffdf7; border:1px solid #dfd4bf; border-radius:14px; padding:10px 12px; margin:8px 0; font-size:13px; line-height:1.6; }
+.league-info summary { min-height:44px; display:flex; align-items:center; cursor:pointer; font-weight:800; }
+.league-info h2 { display:flex; align-items:center; gap:6px; font-size:18px; margin:0; }
+.league-info p { margin:6px 0; }
+.league-info label,.league-info form { display:grid; gap:6px; }
+.league-info input { width:100%; }
+.league-error { padding:10px; background:#fce7e1; color:#893325; border-radius:12px; }
+.league-empty { padding:20px 10px; text-align:center; }
+.league-list-title { font-size:16px; font-weight:900; margin:10px 0; }
+.league-list-title small { font-size:12px; }
+@media(max-height:620px) { .league-hall{gap:4px;padding-top:6px;} .league-header h1{font-size:20px;} .league-my-card{padding:6px 10px;} .league-my-card strong{font-size:16px;} }

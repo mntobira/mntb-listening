@@ -38,8 +38,6 @@ import {
   orderBy,
   limit,
   where,
-  serverTimestamp,
-  addDoc,
   Timestamp,
 } from './firestoreMetered';
 import { db, auth } from '../firebase';
@@ -109,65 +107,9 @@ export function resolveNickname(): string {
 // ランキングへの参加登録（0pt でも掲載する）
 // ============================================================
 
-/**
- * ランキングに「自分」を登録する（スコア 0 のままでも掲載されるようにする）。
- *
- * ■ なぜ必要か
- *   これまで leaderboard_total のドキュメントは
- *   「1問でも採点してスコアを更新したとき」にしか作られていなかった。
- *   そのため Google 連携直後のユーザーはランキングに現れず、
- *   「参加していないのか、0点なのか」が本人にも他人にも分からなかった。
- *
- *   ご要望どおり「Google アカウント連携したユーザーは全員掲載」にするため、
- *   ログイン直後にこの関数を呼び、totalScore: 0 の枠を先に作っておく。
- *
- * ■ 既存スコアを絶対に壊さないための作り
- *   単純な merge でも totalScore を書くと、既にスコアを持つ人の値を
- *   0 に巻き戻してしまう危険がある。そこで
- *     ・ドキュメントが存在しない場合 → totalScore: 0 で新規作成
- *     ・存在する場合                 → nickname / photoURL だけ更新
- *   と経路を分ける。ニックネームやアイコンの変更が
- *   スコアを出すまで反映されない問題も同時に解消する。
- *
- * ■ 失敗してもアプリは止めない
- *   ランキングは学習の付随機能なので、通信・権限のエラーは警告に留める。
- *
- * @returns 新規に枠を作ったか（テスト・ログ用）
- */
+/** Legacy compatibility: learning-score ranking writes are retired. */
 export async function ensureRankingEntry(): Promise<{ created: boolean }> {
-  const user = auth.currentUser;
-  if (!user) return { created: false }; // ゲストは掲載対象外（識別子を持たない）
-
-  const nickname = resolveNickname();
-  const photoURL = user.photoURL || '';
-  const ref = doc(db, 'leaderboard_total', user.uid);
-
-  try {
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      // すでに枠がある人：スコアには一切触れず、表示名とアイコンだけ最新化する。
-      const data = snap.data() as TotalScoreEntry;
-      if (data.nickname === nickname && (data.photoURL || '') === photoURL) {
-        return { created: false }; // 変化なし。無駄な書き込みをしない。
-      }
-      await setDoc(ref, { nickname, photoURL, updatedAt: serverTimestamp() }, { merge: true });
-      return { created: false };
-    }
-
-    // 初回：0pt の枠を作る。これで「連携済みなら必ず載る」状態になる。
-    await setDoc(ref, {
-      uid: user.uid,
-      nickname,
-      photoURL,
-      totalScore: 0,
-      chapterScores: {},
-      updatedAt: serverTimestamp(),
-    });
-    return { created: true };
-  } catch (e) {
-    console.warn('[Leaderboard] ensureRankingEntry failed:', e);
-    return { created: false };
-  }
+  return { created: false };
 }
 
 // ============================================================
@@ -183,156 +125,27 @@ export interface SubmitChapterScoreInput {
   timeUsedSec: number;
 }
 
-/**
- * 章のベストスコアを Firestore に書き込む。
- * - 既存スコアより低ければ書き込まない（ただし event 履歴には常に残す）
- * - ゲストモードでは何もしない
- * - 失敗してもアプリ動作は止めない（catch して console.error）
- */
+/** Keep local learning records; never publish them as ranking scores. */
 export async function submitChapterScore(
-  input: SubmitChapterScoreInput
+  _input: SubmitChapterScoreInput
 ): Promise<{ updated: boolean; previousBest: number }> {
-  const user = auth.currentUser;
-  if (!user) return { updated: false, previousBest: 0 };
-
-  const nickname = resolveNickname();
-  const docId = `${input.chapterId}_${user.uid}`;
-  const ref = doc(db, 'leaderboard_chapter', docId);
-
-  let previousBest = 0;
-  try {
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      const data = snap.data() as ChapterScoreEntry;
-      previousBest = data.bestScore || 0;
-    }
-  } catch (e) {
-    console.error('[Leaderboard] read chapter best failed:', e);
-  }
-
-  // プレイ履歴は常に記録（週間/月間ランキング用）
-  try {
-    await addDoc(collection(db, 'leaderboard_events'), {
-      uid: user.uid,
-      nickname,
-      photoURL: user.photoURL || '',
-      chapterId: input.chapterId,
-      score: input.score,
-      correctRate: input.correctRate,
-      totalCorrect: input.totalCorrect,
-      totalQuestions: input.totalQuestions,
-      timeUsedSec: input.timeUsedSec,
-      playedAt: serverTimestamp(),
-    });
-  } catch (e) {
-    console.error('[Leaderboard] add event failed:', e);
-  }
-
-  if (input.score <= previousBest) {
-    return { updated: false, previousBest };
-  }
-
-  // 章ベスト更新
-  try {
-    await setDoc(ref, {
-      uid: user.uid,
-      nickname,
-      photoURL: user.photoURL || '',
-      chapterId: input.chapterId,
-      bestScore: input.score,
-      correctRate: input.correctRate,
-      totalCorrect: input.totalCorrect,
-      totalQuestions: input.totalQuestions,
-      timeUsedSec: input.timeUsedSec,
-      playedAt: serverTimestamp(),
-    });
-  } catch (e) {
-    console.error('[Leaderboard] set chapter best failed:', e);
-    return { updated: false, previousBest };
-  }
-
-  // 全章合計を更新
-  try {
-    await updateTotalScore(user.uid, nickname, user.photoURL || '');
-  } catch (e) {
-    console.error('[Leaderboard] update total failed:', e);
-  }
-
-  return { updated: true, previousBest };
-}
-
-async function updateTotalScore(uid: string, nickname: string, photoURL: string) {
-  // 自分の章ベスト一覧を取得
-  const q = query(
-    collection(db, 'leaderboard_chapter'),
-    where('uid', '==', uid)
-  );
-  const snaps = await getDocs(q);
-  const chapterScores: Record<string, number> = {};
-  let totalScore = 0;
-  snaps.forEach((s) => {
-    const d = s.data() as ChapterScoreEntry;
-    chapterScores[d.chapterId] = d.bestScore || 0;
-    totalScore += d.bestScore || 0;
-  });
-
-  const ref = doc(db, 'leaderboard_total', uid);
-  await setDoc(ref, {
-    uid,
-    nickname,
-    photoURL,
-    totalScore,
-    chapterScores,
-    updatedAt: serverTimestamp(),
-  });
+  return { updated: false, previousBest: 0 };
 }
 
 // ============================================================
 // ニックネーム変更の即時反映
 // ============================================================
 
-/**
- * プロフィールで名前を変えたとき、ランキング上の表示名をその場で同期する。
- *
- * ■ なぜ必要か
- *   ランキングの名前は各ドキュメントに書き込み時点の値が保存されている
- *   （非正規化）。そのため
- *     ・leaderboard_total   … 次のログインかスコア更新まで旧名のまま
- *     ・leaderboard_chapter … その章を次にプレイするまで旧名のまま
- *   となり、「プロフィールの名前を変えたのにランキングが変わらない」
- *   という状態になっていた。プロフィール保存時にこの関数を呼び、
- *   自分の全ドキュメントの nickname / photoURL を最新化する。
- *
- * ■ leaderboard_events は更新しない
- *   セキュリティルールが create 専用（改ざん防止）のため書き換えられない。
- *   代わりに fetchPeriodRanking 側で「最新のプレイの名前」を採用する。
- *
- * ■ 失敗してもアプリは止めない（ランキングは付随機能）
- */
+/** Update only the active battle-rating profile, without touching its rating. */
 export async function syncRankingNickname(): Promise<void> {
   const user = auth.currentUser;
   if (!user) return;
-  const nickname = resolveNickname();
-  const photoURL = user.photoURL || '';
   try {
-    // 全章合計（leaderboard_total）は既存の参加登録ロジックがそのまま使える
-    await ensureRankingEntry();
-
-    // 章別ベスト（leaderboard_chapter）の自分の行をすべて最新化
-    const snaps = await getDocs(
-      query(collection(db, 'leaderboard_chapter'), where('uid', '==', user.uid))
-    );
-    await Promise.all(
-      snaps.docs.map((s) => {
-        const d = s.data() as ChapterScoreEntry;
-        if (d.nickname === nickname && (d.photoURL || '') === photoURL) {
-          return Promise.resolve(); // 変化なし。無駄な書き込みをしない。
-        }
-        return setDoc(s.ref, { nickname, photoURL }, { merge: true });
-      })
-    );
+    const ref = doc(db, 'battle_ranking', user.uid);
+    if (!(await getDoc(ref)).exists()) return;
+    await setDoc(ref, { nickname: resolveNickname(), photoURL: user.photoURL || '' }, { merge: true });
   } catch (e) {
-    console.warn('[Leaderboard] syncRankingNickname failed:', e);
+    console.warn('[Leaderboard] nickname sync failed:', e);
   }
 }
 

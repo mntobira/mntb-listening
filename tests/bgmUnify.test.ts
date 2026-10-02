@@ -10,9 +10,9 @@ describe('BGMの音量と1つのスイッチ（2026-10-01）', () => {
     const app = -13.4 + db(appBgmVolume(0.5));
     const battle = -19.7 + db(DEFAULT_BATTLE_AUDIO.volume * 0.5 * BGM_FILES.battle!.gain);
     const waiting = -20.3 + db(DEFAULT_BATTLE_AUDIO.volume * 0.5 * BGM_FILES.waiting!.gain);
-    expect(app).toBeLessThan(battle - 4);
-    expect(app).toBeLessThan(waiting - 4);
-    expect(app).toBeGreaterThan(battle - 9);
+    expect(app).toBeLessThan(battle - 8);
+    expect(app).toBeLessThan(waiting - 8);
+    expect(app).toBeGreaterThan(battle - 12);
     // 待ち時間の曲（静かな曲調）は対戦の曲と同じくらいまで持ち上げる
     expect(Math.abs(waiting - battle)).toBeLessThan(1.5);
     expect(appBgmVolume(0)).toBe(0);
@@ -23,6 +23,15 @@ describe('BGMの音量と1つのスイッチ（2026-10-01）', () => {
     expect(app).toMatch(/writeAudioPreferences\(\{ bgm: isBgmEnabled \}\)/);
     expect(app).toMatch(/addEventListener\('battle-audio-settings', sync\)/);
     expect(app).not.toMatch(/audio\.volume = bgmVolume;/);
+  });
+  it('勝敗ジングルは結果BGMを止める無音リクエストを登録しない', () => {
+    expect(readFileSync('src/battle/ui/BattleResultLive.tsx', 'utf8')).not.toContain('useBattleAudio(null)');
+    expect(readFileSync('src/battle/ui/BattleResult.tsx', 'utf8')).toContain("useBattleAudio('matching')");
+  });
+  it('非表示の対戦画面はホーム・演習へBGMを持ち込まない', () => {
+    const app = readFileSync('src/App.tsx', 'utf8');
+    expect(app).toContain("if (appState === 'battle') return;");
+    expect(app).toContain("engine.setBgmOwner(token, reviewing ? 'matching' : null, 100)");
   });
   it('設定画面に「対戦BGM」の別スイッチは無い', () => {
     expect(readFileSync('src/components/ProfileModal.tsx', 'utf8')).not.toMatch(/label="対戦BGM"/);

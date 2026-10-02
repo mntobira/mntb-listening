@@ -1,6 +1,6 @@
 import { beforeAll,beforeEach,afterAll,it,expect,vi } from 'vitest';
 import { initializeTestEnvironment,type RulesTestEnvironment,assertFails } from '@firebase/rules-unit-testing';
-import { doc,getDoc,updateDoc } from 'firebase/firestore';
+import { doc,getDoc,updateDoc,setDoc } from 'firebase/firestore';
 import { readFileSync } from 'node:fs';
 const state=vi.hoisted(()=>({db:null as any,auth:{currentUser:null as any}}));
 vi.mock('../src/firebase',()=>({get db(){return state.db;},auth:state.auth}));
@@ -36,4 +36,19 @@ it('national listening queue pairs two sessions and notifies the waiting player'
   await vi.waitFor(()=>expect(found).toContain(second.roomId),{timeout:5000});expect(errors).toEqual([]);
   const room=await getDoc(doc(state.db,'battle_rooms',second.roomId!));expect(room.get('subject')).toBe(subject);expect(room.get('mode')).toBe('random');
  }finally{stop();}
+},30000);
+
+it('clan internals and league grants deny all direct client reads and writes',async()=>{
+ for(const path of ['mana_clans/c','mana_memberships/listener-a','mana_invites/ABCDEF12','mana_duels/d','mana_rate_limits/listener-a','league_control/config','league_seasons/s/entries/listener-a','league_receipts/listener-a/rooms/r','league_exclusions/listener-a','league_rewards/listener-a/items/prize']) {
+  await assertFails(getDoc(doc(state.db,path)));
+  await assertFails(setDoc(doc(state.db,path),{power:999999,itemId:'frame_league_aurora'}));
+ }
+});
+it('fine vocabulary scope works in friend rooms under rules',async()=>{
+ const created=await createFriendRoom('english_vocab',{questionCount:5},'vocab:lv1:1:50');
+ login('listener-b');await joinRoomByCode(created.joinCode);
+ login('listener-a');await startBattle(created.roomId,30);
+ const room=await getDoc(doc(state.db,'battle_rooms',created.roomId));const pool=await loadPool('english_vocab');
+ expect(room.get('questionIds')).toHaveLength(5);
+ for(const id of room.get('questionIds')){const q=pool.find(q=>q.id===id)!;expect(q.chapterId).toBe('lv1');expect(Number(q.subQuestionId)).toBeGreaterThanOrEqual(1);expect(Number(q.subQuestionId)).toBeLessThanOrEqual(50);}
 },30000);

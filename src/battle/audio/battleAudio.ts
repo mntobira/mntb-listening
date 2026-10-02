@@ -118,6 +118,23 @@ export class BattleAudioEngine {
 
   private settings: BattleAudioSettings = { ...DEFAULT_BATTLE_AUDIO };
 
+  // Screen-owned requests prevent an outgoing screen from stopping the incoming screen.
+  private owners = new Map<symbol, { track: BattleBgmTrack; priority: number; startInMs?: number }>();
+  setBgmOwner(owner: symbol, track: BattleBgmTrack, priority = 10, startInMs?: number): void {
+    this.owners.set(owner, { track, priority, startInMs });
+    this.reconcileBgm();
+  }
+  releaseBgmOwner(owner: symbol): void {
+    this.owners.delete(owner);
+    // React runs all unmount cleanups before the next screen's effects.
+    // Let the new screen claim the SAME source before deciding to stop it.
+    queueMicrotask(() => this.reconcileBgm());
+  }
+  private reconcileBgm(): void {
+    let request: { track: BattleBgmTrack; priority: number; startInMs?: number } | undefined;
+    for (const next of this.owners.values()) if (!request || next.priority >= request.priority) request = next;
+    this.playBgm(request?.track ?? null, { startInMs: request?.startInMs });
+  }
   private track: BattleBgmTrack = null;
   private bgmTimer: number | null = null;
   private step = 0;
@@ -131,15 +148,17 @@ export class BattleAudioEngine {
   /** ユーザー操作の中で呼ぶ（自動再生制限を解く） */
   unlock(): void {
     const ctx = this.ensure();
-    if (ctx && ctx.state === 'suspended') void ctx.resume().catch(() => {});
+    if (ctx && ctx.state !== 'running' && ctx.state !== 'closed') void ctx.resume().catch(() => {});
     if (ctx) preloadSamples(ctx);
     if (ctx) this.preloadBgmFiles();
+    if (this.owners.size) this.reconcileBgm();
   }
 
   setSettings(next: BattleAudioSettings): void {
+    const changed = this.settings.bgm !== next.bgm;
     this.settings = next;
     if (this.master) this.master.gain.value = next.volume;
-    if (!next.bgm) this.stopBgm();
+    if (changed) this.reconcileBgm();
   }
 
   getSettings(): BattleAudioSettings {
@@ -157,18 +176,25 @@ export class BattleAudioEngine {
    */
   playBgm(track: BattleBgmTrack, opts: { startInMs?: number } = {}): void {
     if (!this.settings.bgm) track = null;
-    if (track === this.track) return;
+    // A closed context invalidates its sources, even when the requested track is unchanged.
+    // Recreate BEFORE setting this.track: ensure() clears the old context's playback state.
+    if (track && !this.ensure()) { this.track = null; return; }
+    if (track === this.track) {
+      if (track && this.ctx && this.ctx.state !== 'running' && this.ctx.state !== 'closed') void this.ctx.resume().catch(() => {});
+      return;
+    }
     const prev = this.track;
     this.track = track;
     // ★音源ファイル（bgmFiles.ts に登録があるとき）★
     //   normal→closing→final は同じ battle 曲を流しっぱなしにする（曲を切らない）。
     const fileKey = track ? bgmFileKeyOf(track) : null;
-    if (fileKey && BGM_FILES[fileKey] && prev && this.fileKey === fileKey && this.fileSource) return;
+    if (fileKey && BGM_FILES[fileKey] && prev && this.fileKey === fileKey) return;
     this.clearBgmTimer();
     this.stopFile();
     if (!track) return;
     const ctx = this.ensure();
-    if (!ctx) return;
+    if (!ctx) { this.track = null; return; }
+    if (ctx.state !== 'running') void ctx.resume().catch(() => {});
     if (fileKey && BGM_FILES[fileKey]) {
       this.playFile(fileKey, opts.startInMs);
       return;
@@ -401,7 +427,8 @@ export class BattleAudioEngine {
   // ------------------------------------------------------------
 
   private ensure(): Ctx | null {
-    if (this.ctx) return this.ctx;
+    if (this.ctx && this.ctx.state !== 'closed') return this.ctx;
+    if (this.ctx) { this.stopBgm(); this.ctx = null; this.fileBuffers.clear(); }
     try {
       const AC = window.AudioContext || (window as any).webkitAudioContext;
       if (!AC) return null;

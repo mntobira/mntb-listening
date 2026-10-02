@@ -1,3 +1,5 @@
+import { vocabRanges } from '../core/vocabRanges';
+import type { BattleQuestion } from '../core/types';
 /**
  * ===================================================================
  * BattleSubjectSelect — 対戦する教科をえらぶ
@@ -104,6 +106,9 @@ export function BattleSubjectSelect({
   const [questionCount, setQuestionCount] = useState<QuestionCountChoice>(10);
   const [unitSubject, setUnitSubject] = useState<string | null>(null);
   const [units, setUnits] = useState<{ id: string; title: string; count: number }[] | null>(null);
+  const [vocabPool, setVocabPool] = useState<readonly BattleQuestion[]>([]);
+  const [book, setBook] = useState<string | null>(null);
+  const [rangeSize, setRangeSize] = useState<50 | 100>(100);
   const [unitError, setUnitError] = useState(false);
   const [retry, setRetry] = useState(0);
   useEffect(() => {
@@ -114,6 +119,7 @@ export function BattleSubjectSelect({
     void loadPool(unitSubject).then(pool => {
       if (!alive) return;
       const formats = effectiveRule(unitSubject).formats;
+      if (unitSubject === 'english_vocab') setVocabPool(pool);
       const groups = new Map<string, Set<string>>();
       for (const q of pool) {
         if (!formats.includes(q.format)) continue;
@@ -160,19 +166,26 @@ export function BattleSubjectSelect({
 
   if (unitSubject) {
     const theme = subjectTheme(unitSubject as SubjectKey);
-    return <BattleShell footer={<BattleButton variant="ghost" onClick={() => setUnitSubject(null)} icon={<ArrowLeft size={18} />}>科目選択にもどる</BattleButton>}>
+    const split = unitSubject === 'english_vocab' && book;
+    const shownUnits = split ? vocabRanges(vocabPool, book, rangeSize) : units;
+    const pickUnit = (id: string) => {
+      if (unitSubject === 'english_vocab' && !book) setBook(id);
+      else onPick(unitSubject, questionCount, id);
+    };
+    return <BattleShell footer={<BattleButton variant="ghost" onClick={() => { if (book) setBook(null); else setUnitSubject(null); }} icon={<ArrowLeft size={18} />}>{book ? '教材選択にもどる' : '科目選択にもどる'}</BattleButton>}>
       <BattleTitle subtitle={`${theme.label} ／ 単元をえらぶ`} />
       {/* 説明は1行に。「少ない単元は収録数だけ」は各カードの「今回 N問」で分かる */}
       <p className="mb-2 text-sm font-bold" style={{ color: INK }}>出題範囲を選ぶ（最大{questionCount}問）</p>
+      {split && <><p className="mb-2 text-sm font-bold">{externalChapterTitleOf(unitSubject, book)}</p><div className="mb-2 flex gap-2" aria-label="単語範囲の大きさ">{([50,100] as const).map(n => <button type="button" key={n} className="min-h-11 flex-1 rounded-xl border-2 bg-white text-sm font-bold" aria-pressed={rangeSize === n} onClick={() => setRangeSize(n)}>{n}語ずつ</button>)}</div></>}
       {unitError ? <div role="alert"><p>単元を読み込めませんでした。</p><BattleButton onClick={() => setRetry(n => n + 1)}>再読み込み</BattleButton></div>
         : !units ? <p role="status">単元を読み込んでいます…</p>
         : <div className="grid grid-cols-2 gap-2" aria-label="単元一覧">
-          <button type="button" data-battle-unit="all" onClick={() => onPick(unitSubject, questionCount)}
+          <button type="button" data-battle-unit="all" onClick={() => onPick(unitSubject, questionCount, book ?? undefined)}
             className="col-span-2 min-h-[52px] rounded-2xl border-2 px-4 py-2 text-left font-black" style={{ borderColor: theme.accent, color: INK, background: theme.surface }}>
-            全単元から出題<span className="ml-2 text-xs">{Math.min(questionCount, units.reduce((n, u) => n + u.count, 0))}問</span>
+            {book ? 'この教材すべて' : '全単元から出題'}<span className="ml-2 text-xs">{Math.min(questionCount, units.filter(u => !book || u.id === book).reduce((n, u) => n + u.count, 0))}問</span>
           </button>
-          {units.map(unit => <button key={unit.id} type="button" data-battle-unit={unit.id}
-            onClick={() => onPick(unitSubject, questionCount, unit.id)}
+          {shownUnits?.map(unit => <button key={unit.id} type="button" data-battle-unit={unit.id}
+            onClick={() => pickUnit(unit.id)}
             className="min-h-[52px] min-w-0 rounded-2xl border-2 bg-white px-3 py-2 text-left" style={{ borderColor: LINE, color: INK }}
             aria-label={`${unit.title}（収録 ${unit.count}問・今回 ${Math.min(questionCount, unit.count)}問）`}>
             <span className="block truncate text-sm font-black">{unit.title}</span>
@@ -268,7 +281,7 @@ export function BattleSubjectSelect({
               key={subject}
               type="button"
               id={`battle-subject-${subject}`}
-              onClick={() => allowQuestionCount ? setUnitSubject(subject) : onPick(subject)}
+              onClick={() => allowQuestionCount ? (setBook(null), setUnitSubject(subject)) : onPick(subject)}
               className="w-full rounded-2xl px-4 py-2.5 text-left transition active:scale-[0.99]"
               style={{
                 border: `${subject === currentSubject ? 3 : 2}px solid ${subject === currentSubject ? theme.accent : `${theme.accent}66`}`,

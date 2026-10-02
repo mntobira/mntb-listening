@@ -1,3 +1,4 @@
+import { useBattleAudio } from '../hooks/useBattleAudio';
 import { answerNumber } from '../core/arenaRules';
 /**
  * ===================================================================
@@ -205,6 +206,7 @@ export function BattleResult({
   /** XP を同じ試合で2回足さないための鍵（部屋IDなど） */
   matchKey?: string;
 }) {
+  useBattleAudio('matching');
   /**
    * ★英単語・英熟語（english_vocab）・情報Ⅰ（joho）には演習画面が無い★（isBattleOnlySubject）
    * 外部プールだけで成り立つ対戦専用教科なので、「この問題を演習する」

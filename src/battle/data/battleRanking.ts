@@ -1,3 +1,4 @@
+import { leagueOf, leagueProgress } from '../core/leagues';
 /**
  * ===================================================================
  * 対戦モード: レート（Elo）と対戦ランキング
@@ -223,14 +224,14 @@ export async function fetchMyRankingRow(): Promise<BattleRankingRow | null> {
 }
 
 /** 対戦ランキング（レート上位） */
-export async function fetchBattleRanking(max = 50): Promise<BattleRankingRow[]> {
+export async function fetchBattleRanking(max = 50, range?: { min: number; max?: number }): Promise<BattleRankingRow[]> {
   try {
     const snap = await getDocs(
-      query(collection(db, COL_RANKING), orderBy('rating', 'desc'), limit(max)),
+      query(collection(db, COL_RANKING), orderBy('rating', 'desc'), ...(range ? [where('rating', '>=', range.min), ...(range.max == null ? [] : [where('rating', '<', range.max)])] : []), limit(max)),
     );
     return snap.docs.map((d) => ({ uid: d.id, ...(d.data() as object) } as BattleRankingRow));
-  } catch {
-    return [];
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -277,27 +278,10 @@ export async function fetchFriendBattleRanking(
  * 負けて下がったときの落差も数字より受け止めやすい。
  */
 export function ratingTitle(rating: number): { label: string; color: string } {
-  if (rating >= 2000) return { label: '達人', color: '#F4D03F' };
-  if (rating >= 1800) return { label: '師範', color: '#E67E22' };
-  if (rating >= 1650) return { label: '上級', color: '#9B59B6' };
-  if (rating >= 1500) return { label: '中級', color: '#3498DB' };
-  if (rating >= 1350) return { label: '初級', color: '#2ECC71' };
-  return { label: '入門', color: '#95A5A6' };
+  const league = leagueOf(rating);
+  return { label: league.label, color: league.color };
 }
-
-/** 次の称号まであと何点か（進捗バーに使う） */
 export function ratingProgress(rating: number): { next: string; remain: number; ratio: number } {
-  const steps = [1350, 1500, 1650, 1800, 2000];
-  for (const step of steps) {
-    if (rating < step) {
-      const prev = steps[steps.indexOf(step) - 1] ?? 1200;
-      const span = step - prev;
-      return {
-        next: ratingTitle(step).label,
-        remain: step - rating,
-        ratio: Math.max(0, Math.min(1, (rating - prev) / span)),
-      };
-    }
-  }
-  return { next: '達人', remain: 0, ratio: 1 };
+  const p = leagueProgress(rating);
+  return { next: p.next?.label ?? 'マナトビ', remain: p.remain, ratio: p.ratio };
 }

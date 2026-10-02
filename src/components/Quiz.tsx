@@ -31,8 +31,6 @@ import { ListeningBriefing } from './ListeningBriefing';
 import { createScoreCurrentQuestion } from '../utils/quizScoring';
 import { QuizTimerBar } from './QuizTimerBar';
 import { FloatingScoreAnimation } from './FloatingScoreAnimation';
-import { OvertakeBanner } from './LiveStandingPill';
-import { useLiveStanding } from '../hooks/useLiveStanding';
 import { calcQuestionTimeLimit, type ScoreBreakdown } from '../utils/scoring';
 import { submitChapterScore } from '../utils/leaderboard';
 import {
@@ -801,20 +799,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     return calcQuestionTimeLimit(currentQuestion.subQuestions || []);
   }, [currentQuestion]);
 
-  // ===== 解答中のライブ順位（臨場感）=====
-  //
-  // 「解き終わってから順位を見る」だけでは、いまの1問が順位に
-  // どう跳ね返るのか分からず、得点が手応えにならない。
-  // ワールドカップ中継のように、解答中もずっと順位と点差を見せる。
-  //
-  // 通信は「章を開いたとき1回だけ」。順位はスコアが動くたびに手元で
-  // 再計算するので、1問ごとに Firestore を読みに行くことはしない。
-  const { standing: liveStanding, delta: rankDeltaValue } = useLiveStanding(
-    chapter.id,
-    run.totalScore,
-    isGuest,
-  );
-
   // ────────────────────────────────────────────────────────────────
   // 設問から作る「表示用の派生値」は hooks/useQuestionDerived.ts へ
   // ────────────────────────────────────────────────────────────────
@@ -1148,8 +1132,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
         }}
         scoreAnimationData={scoreAnimationData}
         showScoreAnimation={showScoreAnimation}
-        rankDeltaValue={rankDeltaValue}
-        liveStanding={liveStanding}
       />
     );
   }
@@ -1202,7 +1184,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
         keyboardVisible={keyboardVisible}
         handleExit={handleExit}
         run={run}
-        liveStanding={liveStanding}
         progressPosition={progressPosition}
         progressTotal={progressTotal}
         topics={Array.isArray(chapter.topics) ? chapter.topics : []}
@@ -1232,16 +1213,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
           isVisible={showScoreAnimation}
         />
       )}
-
-      {/* 順位が動いた瞬間だけ降りてくる実況バナー（「2人抜き！ 7位 → 5位」）。
-          「+120点」だけでは順位への影響が伝わらないので、順位変動を言語化する。
-          2.6秒で自動的に消えるので、解答の邪魔にならない。 */}
-      <OvertakeBanner
-        delta={rankDeltaValue}
-        rank={liveStanding?.rank ?? 0}
-        triggerKey={run.totalScore}
-      />
-
 
       {/* Main Content Area (Split on Desktop, Stacked on Mobile)
 

@@ -9,15 +9,10 @@
  * （実測：この区間のフック呼び出しは0件）。よって切り出しても
  * フックの呼び出し順には影響しない。
  *
- * ★消してはいけないもの★
- * 実況バナー（OvertakeBanner）は「採点した瞬間」＝この画面へ
- * 切り替わる瞬間に順位が動くので、ここに無いと肝心の順位変動が
- * 一度も表示されない。解答中の画面と両方に置くのが正しい。
  */
 import { Explanation } from './Explanation';
 import { FloatingScoreAnimation } from './FloatingScoreAnimation';
 import { CorrectBurst } from './fx/CorrectBurst';
-import { OvertakeBanner } from './LiveStandingPill';
 import { stepScoreKey } from '../utils/listeningSteps';
 import type { ChapterRunState } from '../utils/quizRunState';
 import type { ScoreBreakdown } from '../utils/scoring';
@@ -45,8 +40,6 @@ export interface ExplanationScreenProps {
   onBackFromExplanation: () => void;
   scoreAnimationData: { breakdown: ScoreBreakdown; totalScore: number } | null;
   showScoreAnimation: boolean;
-  rankDeltaValue: number;
-  liveStanding: any;
 }
 
 export function ExplanationScreen({
@@ -66,8 +59,6 @@ export function ExplanationScreen({
   onBackFromExplanation,
   scoreAnimationData,
   showScoreAnimation,
-  rankDeltaValue,
-  liveStanding,
 }: ExplanationScreenProps) {
   // Quiz.tsx にあったときの呼び名をそのまま残す（下の JSX を書き換えないため）。
   const setShowingExplanation = (_v: boolean) => onBackFromExplanation();
@@ -115,14 +106,6 @@ export function ExplanationScreen({
           isVisible={showScoreAnimation}
         />
       )}
-      {/* 順位が動くのは「採点した瞬間」＝この解説画面へ切り替わる瞬間なので、
-          実況バナーは解説画面側にも置く。ここに無いと肝心の順位変動が
-          一度も表示されないことになる。 */}
-      <OvertakeBanner
-        delta={rankDeltaValue}
-        rank={liveStanding?.rank ?? 0}
-        triggerKey={run.totalScore}
-      />
     </>
   );
 }

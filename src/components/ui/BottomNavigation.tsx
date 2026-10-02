@@ -1,12 +1,12 @@
 import React from 'react';
-import { BookOpen, Gift, Home as HomeIcon, Settings, Swords, Trophy } from 'lucide-react';
+import { BookOpen, Gift, Home as HomeIcon, Settings, Swords, Trophy, UserRound } from 'lucide-react';
 
 /**
  * C19 下部ナビ（スマホ）／サイドバー（PC）。全画面でこの1つだけを使う（2026-10-01）。
  * 見た目は styles/nav.css。どの項目も同じ大きさ・同じ文字・同じアイコン線幅で、現在地だけを強調する。
  * 遷移の中身（どこへ行くか）は App 側の onClick に任せ、ここは並びと見た目だけを持つ。
  */
-export type BottomNavId = 'home' | 'study' | 'battle' | 'gacha' | 'ranking' | 'settings';
+export type BottomNavId = 'home' | 'study' | 'battle' | 'gacha' | 'ranking' | 'mypage' | 'settings';
 export interface BottomNavItem {
   id: BottomNavId;
   label: string;
@@ -18,7 +18,7 @@ export interface BottomNavItem {
   hidden?: boolean;
 }
 const ICONS: Record<BottomNavId, React.ComponentType<{ className?: string; 'aria-hidden'?: boolean | 'true' }>> = {
-  home: HomeIcon, study: BookOpen, battle: Swords, gacha: Gift, ranking: Trophy, settings: Settings,
+  home: HomeIcon, study: BookOpen, battle: Swords, gacha: Gift, ranking: Trophy, mypage: UserRound, settings: Settings,
 };
 
 export const BottomNavigation = React.forwardRef<HTMLElement, { items: BottomNavItem[] }>(function BottomNavigation({ items }, ref) {

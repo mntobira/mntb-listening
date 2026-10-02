@@ -9,7 +9,7 @@ import { applyHolesFilled, applyLoginWithBonus, applyMatchToProgress, applyRushR
   purchaseItem, RUSH_COIN_PLAYS_PER_DAY, unequipKind, type EquipKind, type GrowthProgress, type ItemDef, type MatchSummaryForGrowth,
   type RushResult, type GachaRarity, type MissionDef } from '../core/growth';
 
-import { matchCoins, rollGacha } from '../core/arenaEconomy';
+import { GACHA_MULTI_COUNT, GACHA_MULTI_COST, VIDEO_GACHA_DAILY_LIMIT, matchCoins, rollGacha } from '../core/arenaEconomy';
 
 export const GROWTH_STORAGE_PREFIX = 'battle_growth_local_v1_';
 type Envelope = { version: 1; progress: GrowthProgress; receipts: string[]; day: string };
@@ -227,20 +227,20 @@ export async function drawGacha(requestId: string, expectedUid = scope()) {
   return out ? { progress: out.next, result: out.extra } : null;
 }
 
-/** 5連ガチャ。1回の確認・1回の書き込みで5回ぶん引く（途中で残高が尽きたらそこまで）。 */
-export const GACHA_MULTI_COUNT = 5;
+/** 10 + 1 pulls: debit the full price once, with a single atomic persistence. */
+export { GACHA_MULTI_COUNT } from '../core/arenaEconomy';
 export async function drawGachaMulti(requestId: string, expectedUid = scope()) {
   if (!requestId || requestId.length > 100) return null;
   const out = await mutate((p, today, seen) => {
-    const receipt = `gacha5:${requestId}`;
-    if (seen.has(receipt)) return { next: p, extra: null };
+    const receipt = `gacha11:${requestId}`;
+    if (seen.has(receipt) || p.coins < GACHA_MULTI_COST) return { next: p, extra: null };
     const values = new Uint32Array(GACHA_MULTI_COUNT); crypto.getRandomValues(values);
-    let cur = p; const results: { item: ItemDef; rarity: GachaRarity; duplicate: boolean; refund: number }[] = [];
+    let cur = { ...p, coins: p.coins - GACHA_MULTI_COST }; const results: { item: ItemDef; rarity: GachaRarity; duplicate: boolean; refund: number }[] = [];
     for (let i = 0; i < GACHA_MULTI_COUNT; i += 1) {
       // 最後の1回は、それまでに R 以上が1つも出ていなければ「R以上確定」
       const last = i === GACHA_MULTI_COUNT - 1;
       const guaranteed = last && results.every(x => x.rarity === 'N');
-      const r = rollGacha(cur, values[i] / 4294967296, guaranteed ? 'R' : 'N');
+      const r = rollGacha(cur, values[i] / 4294967296, guaranteed ? 'R' : 'N', { cost: 0 });
       if (!r) break;
       cur = r.next; results.push({ item: r.item, rarity: r.rarity, duplicate: r.duplicate, refund: r.refund });
     }
@@ -256,5 +256,36 @@ export async function drawGachaMulti(requestId: string, expectedUid = scope()) {
  * 日付が入っていない記録（match / gacha / rush / review）は従来どおりすべて残す。
  */
 function pruneReceipts(receipts: Set<string>, today: string): string[] {
-  return [...receipts].filter(k => !/^(study|rushcoin|learn):/.test(k) || k.startsWith(`study:${today}:`) || k.startsWith(`rushcoin:${today}:`) || k.startsWith(`learn:${today}:`));
+  return [...receipts].filter(k => !/^(study|rushcoin|learn|video):/.test(k) || k.startsWith(`study:${today}:`) || k.startsWith(`rushcoin:${today}:`) || k.startsWith(`learn:${today}:`) || k.startsWith(`video:${today}:`));
+}
+
+/** The local video completion token is issued only by the watched-video component.
+ * This is not an ad-network proof or a monetary security boundary. */
+const videoTokens = new WeakSet<object>();
+export function completedVideoToken(): object { const token = {}; videoTokens.add(token); return token; }
+export function videoGachaPlaysLeft(): number {
+  try { const e = read(scope()); const today = [e.day, localDateKey()].sort().at(-1)!;
+    return Math.max(0, VIDEO_GACHA_DAILY_LIMIT - e.receipts.filter(k => k.startsWith(`video:${today}:`)).length);
+  } catch { return 0; }
+}
+export async function drawVideoGacha(token: object, expectedUid = scope()) {
+  if (!videoTokens.has(token)) return null;
+  videoTokens.delete(token);
+  const out = await mutate((p, today, seen) => {
+    const used = [...seen].filter(k => k.startsWith(`video:${today}:`)).length;
+    if (used >= VIDEO_GACHA_DAILY_LIMIT) return { next: p, extra: null };
+    const values = new Uint32Array(1); crypto.getRandomValues(values);
+    const r = rollGacha(p, values[0] / 4294967296, 'N', { cost: 0, refundDuplicates: false });
+    if (!r) return { next: p, extra: null };
+    seen.add(`video:${today}:${used + 1}`);
+    return { next: bumpDailyMission(r.next, 'gacha', today), extra: { item: r.item, rarity: r.rarity, duplicate: r.duplicate, refund: r.refund } };
+  }, expectedUid);
+  return out ? { progress: out.next, result: out.extra } : null;
+}
+export async function importLeagueReward(rewardId: string, itemId: string, expectedUid: string) {
+  if (!rewardId || itemId !== 'frame_league_aurora') return null;
+  return mutate((p, _today, seen) => {
+    seen.add(`league:${rewardId}`);
+    return { next: p.owned.includes(itemId) ? p : { ...p, owned: [...p.owned, itemId] }, extra: null };
+  }, expectedUid);
 }

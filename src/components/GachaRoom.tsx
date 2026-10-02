@@ -1,3 +1,4 @@
+import { RewardVideo } from './RewardVideo';
 import { useMemo, useRef, useState } from 'react';
 import { GachaReveal, RarityStars } from './GachaReveal';
 import { RARITY_STARS } from './gachaRevealSteps';
@@ -6,8 +7,8 @@ import { gachaFeatured } from '../battle/core/gachaFeatured';
 import { Badge, ItemCard, RarityBadge } from './ui';
 import './gacha.css';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
-import { GACHA_COST, GACHA_DUPLICATE_REFUND_BY_RARITY, GACHA_RARITY_LABELS, GACHA_RARITY_ORDER, GACHA_RARITY_RATES, gachaItems, gachaItemsByRarity, gachaItemRate } from '../battle/core/arenaEconomy';
-import { drawGacha, drawGachaMulti, equip, GACHA_MULTI_COUNT } from '../battle/data/growthStore';
+import { GACHA_COST, GACHA_MULTI_COST, GACHA_DUPLICATE_REFUND_BY_RARITY, GACHA_RARITY_LABELS, GACHA_RARITY_ORDER, GACHA_RARITY_RATES, gachaItems, gachaItemsByRarity, gachaItemRate } from '../battle/core/arenaEconomy';
+import { drawVideoGacha, videoGachaPlaysLeft, drawGacha, drawGachaMulti, equip, GACHA_MULTI_COUNT } from '../battle/data/growthStore';
 import { GrowthAvatar } from '../battle/ui/GrowthParts';
 import { gachaRarityOf, printOf, type ItemDef, type GachaRarity, type GrowthProgress } from '../battle/core/growth';
 import { primeAudio } from '../battle/ui/feedback';
@@ -69,14 +70,17 @@ function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & 
  const collectionList=items.filter(COLLECTION_KINDS.find(k=>k.id===collectionKind)!.match);
  const partsCount=items.filter(COLLECTION_KINDS[1].match).length;const wallCount=items.filter(COLLECTION_KINDS[2].match).length;
  const [confirmMulti,setConfirmMulti]=useState(false);
- const multiCost=GACHA_COST*GACHA_MULTI_COUNT;
+ const multiCost=GACHA_MULTI_COST;
+ const [videoOpen,setVideoOpen]=useState(false);
+ const [freeResult,setFreeResult]=useState(false);
+ const videoLeft=videoGachaPlaysLeft();
  const drawMulti=async()=>{
-  if(lock.current)return;lock.current=true;setBusy(true);setError('');setConfirmMulti(false);primeAudio();
+  if(lock.current)return;lock.current=true;setBusy(true);setError('');setFreeResult(false);setConfirmMulti(false);primeAudio();
   try {const r=await drawGachaMulti(crypto.randomUUID(),owner);if(!r?.results){setError('抽選できませんでした。残高や保存設定を確認してください。');return;}setResult(null);setMulti(r.results);setRevealKey(k=>k+1);setRevealing(true);}
   catch {setError('抽選できませんでした。再度お試しください。');}finally{lock.current=false;setBusy(false);}
  };
  const draw=async()=>{
-  if(lock.current)return;lock.current=true;setBusy(true);setError('');setConfirm(false);primeAudio();
+  if(lock.current)return;lock.current=true;setBusy(true);setError('');setFreeResult(false);setConfirm(false);primeAudio();
   try {const r=await drawGacha(crypto.randomUUID(),owner);if(!r?.result){setError('抽選できませんでした。残高や保存設定を確認してください。');return;}setMulti(null);setResult(r.result);setRevealKey(k=>k+1);setRevealing(true);}
   catch {setError('抽選できませんでした。再度お試しください。');}finally{lock.current=false;setBusy(false);}
  };
@@ -135,7 +139,7 @@ function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & 
     <div className="gacha-result-art" data-kind={result.item.kind}><ItemArt item={result.item} progress={progress} size={result.item.kind==='print'?96:120}/></div>
     <h2 className="gacha-reveal-name">{result.item.label}</h2>
     <p className="gacha-reveal-collect">{result.duplicate
-      ? <><Badge tone="muted">もう持っている</Badge>{result.refund} マナコイン返還（実質 {GACHA_COST-result.refund}枚）</>
+      ? <><Badge tone="muted">もう持っている</Badge>{freeResult ? '無料抽選のためコイン返還はありません' : `${result.refund} マナコイン返還（実質 ${GACHA_COST-result.refund}枚）`}</>
       : <><Badge tone="new">NEW</Badge>{result.item.kind==='print'?'マイプリントに追加！':'コレクションに追加！'}</>}</p>
     {collectionLine}
     <div className="gacha-reveal-actions">
@@ -151,13 +155,18 @@ function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & 
       <p className="gacha-reveal-collect">{multi.some(r=>!r.duplicate)?<><Badge tone="new">NEW</Badge>{multi.filter(r=>!r.duplicate).length}種をコレクションに追加！</>:'すべて持っているものでした'}{multi.some(r=>r.duplicate) && ` · 重複分 ${multi.reduce((n,r)=>n+r.refund,0)}枚返還`}</p>
       {collectionLine}
       <button type="button" onClick={()=>{setMulti(null);setError('');}}>抽選画面にもどる</button></div>
-    : confirmMulti ? <div className="gacha-confirm" role="group" aria-label="5連ガチャ購入確認"><p>{multiCost}マナコインを使って{GACHA_MULTI_COUNT}回まとめて引きますか？<br/><small>5連は R 以上が1つ以上確定</small></p><button type="button" disabled={busy} onClick={()=>void drawMulti()}>{multiCost}枚で確定する</button><button type="button" onClick={()=>setConfirmMulti(false)}>キャンセル</button></div>
-    : confirm ? <div className="gacha-confirm" role="group" aria-label="ガチャ購入確認"><p>{GACHA_COST}マナコインを使って1回引きますか？</p><button type="button" disabled={busy} onClick={()=>void draw()}>50枚で確定する</button><button type="button" onClick={()=>setConfirm(false)}>キャンセル</button></div>
+    : confirmMulti ? <div className="gacha-confirm" role="group" aria-label="10＋1連ガチャ購入確認"><p>{multiCost}マナコインを使って{GACHA_MULTI_COUNT}回まとめて引きますか？<br/><small>10＋1連は R 以上が1つ以上確定</small></p><button type="button" disabled={busy} onClick={()=>void drawMulti()}>{multiCost}枚で確定する</button><button type="button" onClick={()=>setConfirmMulti(false)}>キャンセル</button></div>
+    : confirm ? <div className="gacha-confirm" role="group" aria-label="ガチャ購入確認"><p>{GACHA_COST}マナコインを使って1回引きますか？</p><button type="button" disabled={busy} onClick={()=>void draw()}>{GACHA_COST}枚で確定する</button><button type="button" onClick={()=>setConfirm(false)}>キャンセル</button></div>
     : <div className="gacha-pulls" data-gacha-pulls>
        <h2 className="gacha-step"><i aria-hidden="true">3</i><span className="sr-only">ガチャを引く</span></h2>
        <button type="button" className="gacha-pull" disabled={busy || !progress || progress.coins<GACHA_COST} onClick={()=>setConfirm(true)}><Gift size={20} aria-hidden="true"/><span>1回引く<small>{GACHA_COST}枚</small></span></button>
-       <button type="button" className="gacha-pull gacha-pull-multi" disabled={busy || !progress || progress.coins<multiCost} onClick={()=>setConfirmMulti(true)} data-gacha-multi-pull><Gift size={20} aria-hidden="true"/><span>{GACHA_MULTI_COUNT}連<small>{multiCost}枚・R以上1つ確定</small></span></button>
+       <button type="button" className="gacha-pull gacha-pull-multi" disabled={busy || !progress || progress.coins<multiCost} onClick={()=>setConfirmMulti(true)} data-gacha-multi-pull><Gift size={20} aria-hidden="true"/><span>10＋1連<small>{multiCost}枚・R以上1つ確定</small></span></button>
+       <button type="button" className="gacha-pull" disabled={busy || !progress || videoLeft === 0} onClick={()=>setVideoOpen(true)} data-video-gacha><Gift size={20}/><span>動画で1回<small>無料・今日あと{videoLeft} / 5回</small></span></button>
       </div>}
+  {videoOpen && <RewardVideo onCancel={()=>setVideoOpen(false)} onComplete={async token=>{
+    setVideoOpen(false); if(lock.current)return;lock.current=true;setBusy(true);
+    try {const r=await drawVideoGacha(token,owner);if(!r?.result){setError('今日の上限に達したか、保存できませんでした。');return;}setFreeResult(true);setMulti(null);setResult(r.result);setRevealKey(k=>k+1);setRevealing(true);}finally{lock.current=false;setBusy(false);}
+  }}/>}
   {error && <p role="status" className="gacha-message">{error}</p>}
   {!busyView && <div className="gacha-foot">
    {progress && progress.coins<GACHA_COST && <button type="button" className="gacha-foot-link" onClick={onMissions}><Target size={16} aria-hidden="true"/>ミッションでコインをためる</button>}
@@ -172,7 +181,7 @@ function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & 
   <dialog ref={oddsDialog} className="game-details-dialog mt-dialog" aria-labelledby="gacha-odds-title">
     <header><h2 id="gacha-odds-title">装飾コレクション・提供割合</h2><button type="button" autoFocus onClick={()=>oddsDialog.current?.close()}>閉じる</button></header>
     <div className="game-details-body gacha-odds">
-      <p>全{items.length}種類。まず<strong>レア度</strong>を抽選（UR {pct(GACHA_RARITY_RATES.UR)}%・SR {pct(GACHA_RARITY_RATES.SR)}%・R {pct(GACHA_RARITY_RATES.R)}%・N {pct(GACHA_RARITY_RATES.N)}%）し、同じレア度の中から等確率で1つ出ます。<strong>UR（大当たり）は学習プリント{tiers.UR.length}種</strong>で、1種あたり約{pct(GACHA_RARITY_RATES.UR/Math.max(1,tiers.UR.length))}%。<strong>5連は最後の1回が「R以上確定」</strong>（それまでにR以上が出ていなければ、UR {pct(GACHA_RARITY_RATES.UR/(1-GACHA_RARITY_RATES.N))}%・SR {pct(GACHA_RARITY_RATES.SR/(1-GACHA_RARITY_RATES.N))}%・R {pct(GACHA_RARITY_RATES.R/(1-GACHA_RARITY_RATES.N))}% で抽選）。重複は N {GACHA_DUPLICATE_REFUND_BY_RARITY.N}枚・R {GACHA_DUPLICATE_REFUND_BY_RARITY.R}枚・SR {GACHA_DUPLICATE_REFUND_BY_RARITY.SR}枚・UR {GACHA_DUPLICATE_REFUND_BY_RARITY.UR}枚返還。課金・換金なし／天井なし。UR・SR はガチャ限定です。フレームや一部ポーズはショップ交換・レベル・称号でも獲得できます。学習プリントの問題・正解はアプリ内の問題（確認済み）から作っています。</p>
+      <p>全{items.length}種類。まず<strong>レア度</strong>を抽選（UR {pct(GACHA_RARITY_RATES.UR)}%・SR {pct(GACHA_RARITY_RATES.SR)}%・R {pct(GACHA_RARITY_RATES.R)}%・N {pct(GACHA_RARITY_RATES.N)}%）し、同じレア度の中から等確率で1つ出ます。<strong>UR（大当たり）は学習プリント{tiers.UR.length}種</strong>で、1種あたり約{pct(GACHA_RARITY_RATES.UR/Math.max(1,tiers.UR.length))}%。<strong>10＋1連は最後の1回が「R以上確定」</strong>（それまでにR以上が出ていなければ、UR {pct(GACHA_RARITY_RATES.UR/(1-GACHA_RARITY_RATES.N))}%・SR {pct(GACHA_RARITY_RATES.SR/(1-GACHA_RARITY_RATES.N))}%・R {pct(GACHA_RARITY_RATES.R/(1-GACHA_RARITY_RATES.N))}% で抽選）。重複は N {GACHA_DUPLICATE_REFUND_BY_RARITY.N}枚・R {GACHA_DUPLICATE_REFUND_BY_RARITY.R}枚・SR {GACHA_DUPLICATE_REFUND_BY_RARITY.SR}枚・UR {GACHA_DUPLICATE_REFUND_BY_RARITY.UR}枚返還。課金・換金なし／天井なし。UR・SR はガチャ限定です。フレームや一部ポーズはショップ交換・レベル・称号でも獲得できます。学習プリントの問題・正解はアプリ内の問題（確認済み）から作っています。</p>
       <div className="gacha-collection-filters gacha-collection-kinds" role="group" aria-label="種類で切り替える">{COLLECTION_KINDS.map(k=><button key={k.id} type="button" aria-pressed={collectionKind===k.id} onClick={()=>setCollectionKind(k.id)}>{k.label} {items.filter(k.match).length}</button>)}</div>
       <div className="gacha-collection-filters" role="group" aria-label="所持状況で絞り込む">{([['all','すべて'],['owned','所持済み'],['missing','未所持']] as const).map(([id,label])=><button key={id} type="button" aria-pressed={collectionFilter===id} onClick={()=>setCollectionFilter(id)}>{label}</button>)}</div>
       <ul className="gacha-collection-grid" data-kind={collectionKind}>{collectionList.filter(item=>collectionFilter==='all'||(collectionFilter==='owned')===!!progress?.owned.includes(item.id)).map(item=>{

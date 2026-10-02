@@ -34,7 +34,7 @@ import {
   type ReviewPick,
 } from '../core/battleSummary';
 import type { BattleQuestion, BattleResultSummary } from '../core/types';
-import { useBattleAudio } from '../hooks/useBattleAudio';
+import { battleAudio } from '../audio/battleAudio';
 import { AMBER, BattleButton, INK, INK_SUB, LINE, WRONG } from './BattleParts';
 import { BattleText } from './BattleText';
 import { ME_BLUE, OPP_RED } from './BattleLiveParts';
@@ -349,13 +349,13 @@ export function ResultActions({
 
 /** 勝敗のジングルを1回だけ鳴らす */
 export function useOutcomeJingle(outcome: 'win' | 'lose' | 'draw') {
-  const { play } = useBattleAudio(null);
+  // A sound effect must not claim a silent BGM owner over the result screen.
   const done = useRef(false);
   useEffect(() => {
     if (done.current) return;
     done.current = true;
-    play(outcome);
-  }, [outcome, play]);
+    battleAudio().play(outcome);
+  }, [outcome]);
 }
 
 export { pickReviewQuestions, kanaTextOf, WRONG };

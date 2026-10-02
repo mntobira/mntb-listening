@@ -1,0 +1,60 @@
+/** SERVER ONLY. Never import this file in Vite or expose per-member intermediate values. */
+export const EPOCH = Date.UTC(2026, 9, 4, 15);
+export const PERIOD = 14 * 86400000;
+export const REWARD_ITEM = 'frame_league_aurora';
+export const LEAGUES = ['bronze', 'silver', 'gold', 'platinum', 'manatobi'];
+export function leagueId(r) { return r >= 2000 ? 'manatobi' : r >= 1800 ? 'platinum' : r >= 1600 ? 'gold' : r >= 1400 ? 'silver' : 'bronze'; }
+export function seasonAt(time) {
+  if (time < EPOCH) return null;
+  const n = Math.floor((time - EPOCH) / PERIOD);
+  return { id: `s${n + 1}`, start: EPOCH + n * PERIOD, end: EPOCH + (n + 1) * PERIOD };
+}
+/** Production values come ONLY from Secret Manager; no public fallback criteria. */
+export function parsePowerPolicy(raw) {
+  let p;
+  try { p = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch { /* fail closed */ }
+  if (p?.version !== 1 || !Array.isArray(p.bands) || p.bands.length < 2 || p.bands.length > 50
+    || p.bands.some((b,i) => !Number.isFinite(b.rating) || !Number.isFinite(b.power) || b.power <= 0
+      || (i > 0 && (b.rating <= p.bands[i-1].rating || b.power < p.bands[i-1].power)))) {
+    throw new Error('Clan power policy is missing or invalid.');
+  }
+  return p;
+}
+export function clanPower(rows, policy) {
+  const { bands } = parsePowerPolicy(policy);
+  const contribution = row => {
+    const rating = Number.isFinite(row.rating) ? row.rating : 1500;
+    if (rating <= bands[0].rating) return bands[0].power;
+    const next = bands.findIndex(b => b.rating >= rating);
+    if (next < 0) return bands.at(-1).power;
+    const lo = bands[next-1], hi = bands[next];
+    return lo.power + (hi.power-lo.power)*(rating-lo.rating)/(hi.rating-lo.rating);
+  };
+  return Math.round(rows.slice(0,20).reduce((sum,row)=>sum+contribution(row),0));
+}
+export function ranked(rows, field = 'rating') {
+  const sorted = [...rows].sort((a, b) => b[field] - a[field] || a.uid?.localeCompare(b.uid ?? '') || a.id?.localeCompare(b.id ?? '') || 0);
+  let rank = 0; let previous;
+  return sorted.map((r, i) => { if (r[field] !== previous) rank = i + 1; previous = r[field]; return { ...r, rank }; });
+}
+export function validAttestation(room, uid) {
+  if (room?.status !== 'finished' || room.players?.length !== 2 || !room.players.includes(uid) || room.players[0] === room.players[1]) return false;
+  const [a,b] = room.players.map(p => room.attest?.[p]);
+  if (!a || !b || !Number.isFinite(a.myScore) || !Number.isFinite(b.myScore) || a.myScore < 0 || b.myScore < 0 || a.myScore !== b.opponentScore || b.myScore !== a.opponentScore) return false;
+  const outcome = a.myScore > b.myScore ? 'win' : a.myScore < b.myScore ? 'lose' : 'draw';
+  return a.outcome === outcome && b.outcome === ({ win:'lose',lose:'win',draw:'draw' })[outcome];
+}
+export function rewardPlan(entries, powerPolicy) {
+  const eligible = entries.filter(e => e.matches >= 3 && !e.excluded);
+  const gifts = [];
+  for (const league of LEAGUES) {
+    for (const row of ranked(eligible.filter(e => leagueId(e.rating) === league))) {
+      if (row.rank <= 10) gifts.push({ uid:row.uid, kind:'individual', rank:row.rank, label:league });
+    }
+  }
+  const groups = new Map();
+  for (const e of eligible) if (e.clanId && e.clanMatches >= 3) { const list=groups.get(e.clanId) ?? []; list.push(e); groups.set(e.clanId,list); }
+  const clans=ranked([...groups].map(([id, members]) => ({ id, power:clanPower(members, powerPolicy), members })), 'power');
+  for (const clan of clans.filter(c => c.rank <= 3)) for (const e of clan.members) gifts.push({ uid:e.uid, kind:'clan', rank:clan.rank, label:'マナクラン' });
+  return { gifts, clans:clans.map(({members,...publicRow}) => publicRow) };
+}

@@ -1,9 +1,12 @@
 import { ITEMS, gachaRarityOf, type GachaRarity, type GrowthProgress, type ItemDef } from './growth';
 import type { MatchSummaryForGrowth } from './growth';
-export const GACHA_COST = 50;
+export const GACHA_COST = 100;
+export const GACHA_MULTI_COST = 1000;
+export const GACHA_MULTI_COUNT = 11;
+export const VIDEO_GACHA_DAILY_LIMIT = 5;
 export const GACHA_DUPLICATE_REFUND = 20;
 /** SR の重複はうれしさが減らないよう多めに返す。UR（学習プリント）の重複は全額返す */
-export const GACHA_DUPLICATE_REFUND_BY_RARITY: Record<GachaRarity, number> = { N: 20, R: 25, SR: 40, UR: 50 };
+export const GACHA_DUPLICATE_REFUND_BY_RARITY: Record<GachaRarity, number> = { N: 20, R: 25, SR: 40, UR: 100 };
 export const gachaItems = () => ITEMS.filter(item => 'coins' in item.unlock || item.gacha);
 
 /**
@@ -63,13 +66,14 @@ export function matchCoins(match: MatchSummaryForGrowth) {
   const victory = active && match.outcome === 'win' ? 10 : 0;
   return { finish, correct, victory, total: finish + correct + victory };
 }
-export function rollGacha(progress: GrowthProgress, random: number, minRarity: GachaRarity = 'N') {
-  if (!Number.isFinite(random) || random < 0 || random >= 1 || progress.coins < GACHA_COST) return null;
+export function rollGacha(progress: GrowthProgress, random: number, minRarity: GachaRarity = 'N', options: { cost?: number; refundDuplicates?: boolean } = {}) {
+  const cost = options.cost ?? GACHA_COST;
+  if (!Number.isFinite(cost) || cost < 0 || !Number.isFinite(random) || random < 0 || random >= 1 || progress.coins < cost) return null;
   const picked = pickGachaItem(random, minRarity);
   if (!picked) return null;
   const { item, rarity } = picked;
   const duplicate = progress.owned.includes(item.id);
-  const refund = duplicate ? GACHA_DUPLICATE_REFUND_BY_RARITY[rarity] : 0;
-  return { next: { ...progress, coins: progress.coins - GACHA_COST + refund,
+  const refund = duplicate && options.refundDuplicates !== false ? GACHA_DUPLICATE_REFUND_BY_RARITY[rarity] : 0;
+  return { next: { ...progress, coins: progress.coins - cost + refund,
     owned: duplicate ? progress.owned : [...progress.owned, item.id] }, item, rarity, duplicate, refund };
 }

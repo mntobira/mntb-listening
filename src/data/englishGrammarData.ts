@@ -407,6 +407,13 @@ const EG_PROBLEMS: Record<string, GrammarProblem[]> = {
  */
 (() => {
   applyListeningPostProcess(englishGrammarData);
+  // Keep prepared explanations/translations, but never expose answer-bearing narration.
+  for (const c of englishGrammarData.parts.flatMap(p => p.chapters)) {
+    for (const problem of [...c.practiceProblems, ...c.miniTest]) {
+      delete (problem as any).audioTracks;
+      delete (problem as any).audioUrl;
+    }
+  }
 })();
 
 /** 全単元をまとめて返す（Home の進捗集計などで使う） */

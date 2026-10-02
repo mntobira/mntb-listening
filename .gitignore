@@ -10,3 +10,7 @@ coverage/
 /core
 .delivery/
 __pycache__/
+
+.secret.local
+.secret.*
+.private-clan-policy*
