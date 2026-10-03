@@ -185,6 +185,7 @@ import type { RikaTab } from './features/rika/RikaHome';
 //   この2つを使うだけで問題データ本体まで読み込み対象になっていた）
 import { ADVANCED_FIELDS, type AdvancedFieldId } from './data/advancedFields';
 import { readJsonArray } from './utils/safeLocalStorage';
+import { safeSetItem } from './utils/storageGuard';
 /*
   公開/非公開の判断は src/config/features.ts が唯一の出どころ。
 
@@ -651,31 +652,31 @@ export default function App() {
     return isAppState(saved) && isLearningScreen(saved) ? saved : 'study';
   });
 
-  useEffect(() => { localStorage.setItem('savedAppState', appState); }, [appState]);
-  useEffect(() => { localStorage.setItem('savedAppMode', appMode); }, [appMode]);
+  useEffect(() => { safeSetItem('savedAppState', appState); }, [appState]);
+  useEffect(() => { safeSetItem('savedAppMode', appMode); }, [appMode]);
   useEffect(() => {
     if (selectedChapterId) {
-      localStorage.setItem('savedSelectedChapterId', selectedChapterId);
+      safeSetItem('savedSelectedChapterId', selectedChapterId);
     } else {
       localStorage.removeItem('savedSelectedChapterId');
     }
   }, [selectedChapterId]);
   useEffect(() => {
     if (quizRange) {
-      localStorage.setItem('savedQuizRange', JSON.stringify(quizRange));
+      safeSetItem('savedQuizRange', JSON.stringify(quizRange));
     } else {
       localStorage.removeItem('savedQuizRange');
     }
   }, [quizRange]);
-  useEffect(() => { localStorage.setItem('savedQuizAnswers', JSON.stringify(quizAnswers)); }, [quizAnswers]);
-  useEffect(() => { localStorage.setItem('savedIsGuest', isGuest.toString()); }, [isGuest]);
-  useEffect(() => { localStorage.setItem(SELECTED_SUBJECT_KEY, selectedSubject); }, [selectedSubject]);
-  useEffect(() => { localStorage.setItem(SELECTED_FIELD_KEY, selectedField); }, [selectedField]);
+  useEffect(() => { safeSetItem('savedQuizAnswers', JSON.stringify(quizAnswers)); }, [quizAnswers]);
+  useEffect(() => { safeSetItem('savedIsGuest', isGuest.toString()); }, [isGuest]);
+  useEffect(() => { safeSetItem(SELECTED_SUBJECT_KEY, selectedSubject); }, [selectedSubject]);
+  useEffect(() => { safeSetItem(SELECTED_FIELD_KEY, selectedField); }, [selectedField]);
   
   useEffect(() => {
     if (isLearningScreen(appState)) {
       setLastLearnState(appState);
-      localStorage.setItem('savedLastLearnState', appState);
+      safeSetItem('savedLastLearnState', appState);
     }
   }, [appState]);
 
@@ -787,7 +788,7 @@ export default function App() {
       setQuizRange(null);
       setLastQuizResult(null);
       setLastLearnState('chapters');
-      localStorage.setItem('savedLastLearnState', 'chapters');
+      safeSetItem('savedLastLearnState', 'chapters');
     }
     setSelectedSubject(subject);
     setAppMode('practice');
@@ -798,7 +799,7 @@ export default function App() {
   /** 演習する（B2〜B6）：コンテンツを押したら既存の画面へ。科目ごとの分岐はここ1か所だけ（データの action で決まる） */
   const openStudyContent = (content: import('./data/studyCatalog').StudyContent) => {
     setStudyLastContent(content.id);
-    localStorage.setItem('study_catalog_last_v1', content.id);
+    safeSetItem('study_catalog_last_v1', content.id);
     if (content.action.kind === 'units') {
       if (isSubjectId(content.action.subject)) openSubjectUnits(content.action.subject, 'study');
       return;
@@ -817,7 +818,7 @@ export default function App() {
   };
   const setStudySubject = (id: string | null) => {
     setStudyCatalogSubject(id);
-    if (id) localStorage.setItem('study_catalog_subject_v1', id); else localStorage.removeItem('study_catalog_subject_v1');
+    if (id) safeSetItem('study_catalog_subject_v1', id); else localStorage.removeItem('study_catalog_subject_v1');
   };
 
   const handleSelectSubject = (subject: SubjectId) => {
@@ -836,7 +837,7 @@ export default function App() {
       setQuizRange(null);
       setLastQuizResult(null);
       setLastLearnState(entry);
-      localStorage.setItem('savedLastLearnState', entry);
+      safeSetItem('savedLastLearnState', entry);
     }
     setSelectedSubject(subject);
     setAppMode('practice');
@@ -946,7 +947,7 @@ export default function App() {
   // localStorage が使えない環境でも起動を止めない。
   useEffect(() => {
     try {
-      localStorage.setItem(BGM_ENABLED_KEY, isBgmEnabled ? 'on' : 'off');
+      safeSetItem(BGM_ENABLED_KEY, isBgmEnabled ? 'on' : 'off');
     } catch {
       /* 保存できなくても今回のセッションでは効いているので続行する */
     }
@@ -1353,7 +1354,7 @@ export default function App() {
       localStorage.removeItem(quizRunKey(chapterId, targetMode));
       localStorage.removeItem(quizExplKey(chapterId, targetMode));
       localStorage.removeItem(quizStepKey(chapterId, targetMode));
-      localStorage.setItem(quizIndexKey(chapterId, targetMode), questionIndex.toString());
+      safeSetItem(quizIndexKey(chapterId, targetMode), questionIndex.toString());
     }
   };
 
@@ -1449,7 +1450,7 @@ export default function App() {
         const completed = readJsonArray<string>(key);
         if (!completed.includes(selectedChapterId)) {
           completed.push(selectedChapterId);
-          localStorage.setItem(key, JSON.stringify(completed));
+          safeSetItem(key, JSON.stringify(completed));
         }
       } catch (e) {
         console.error('Failed to save completion:', e);

@@ -92,7 +92,7 @@ export async function handleClan(req) {
   }
   fail('invalid-argument','操作を選び直してください。');
 }
-export const manaClan=onCall({region,maxInstances:5,timeoutSeconds:60,secrets:[powerPolicy]},handleClan);
+export const manaClan=onCall({region,maxInstances:10,timeoutSeconds:60,secrets:[powerPolicy]},handleClan);
 
 /** Recalculate privately, never trust a browser-supplied clan power or membership. */
 export async function refreshClan(uid) {
@@ -130,7 +130,7 @@ export async function recordSeasonRating(uid, after) {
     tx.set(db.collection('league_seasons').doc(season.id),{start:season.start,end:season.end},{merge:true});
   });
 }
-export const onManaRating=onDocumentWritten({document:'battle_ranking/{uid}',region,maxInstances:5,retry:true,secrets:[powerPolicy]},event=>event.data?.after.exists?recordRating(event.params.uid,event.data.before.data(),event.data.after.data()):undefined);
+export const onManaRating=onDocumentWritten({document:'battle_ranking/{uid}',region,maxInstances:20,retry:true,secrets:[powerPolicy]},event=>event.data?.after.exists?recordRating(event.params.uid,event.data.before.data(),event.data.after.data()):undefined);
 
 export async function recordDuel(roomId,room) {
   if(!validAttestation(room,room?.players?.[0])) return;
@@ -146,7 +146,10 @@ export async function recordDuel(roomId,room) {
     tx.update(ca.ref,{[field]:FieldValue.increment(1)});tx.update(cb.ref,{[other]:FieldValue.increment(1)});
   });
 }
-export const onManaDuel=onDocumentWritten({document:'battle_rooms/{roomId}',region,maxInstances:5,retry:true,secrets:[powerPolicy]},async event=>{
+// ★対戦の部屋は解答のたびに書き込まれる（1試合 約35回）。同時に大勢が対戦すると
+//   maxInstances:5 では処理待ちが積み上がり、クラン戦の結果反映が遅れる。
+//   決着していない書き込みはすぐ return するので、上限を上げても費用はほぼ増えない。
+export const onManaDuel=onDocumentWritten({document:'battle_rooms/{roomId}',region,maxInstances:30,retry:true,secrets:[powerPolicy]},async event=>{
   const room=event.data?.after.data();
   if(!validAttestation(room,room?.players?.[0])) return;
   await recordDuel(event.params.roomId,room);

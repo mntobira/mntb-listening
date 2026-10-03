@@ -60,6 +60,7 @@ import { buildListeningSteps, isPerSubQuestionListening, stepSubQuestions } from
 import { useIsDesktop } from '../hooks/useMediaQuery';
 import { asMobileChoiceSub, useMathChoices } from '../utils/mathMobileChoices';
 import { mathCourseOfChapter } from '../data/mathNavigation';
+import { safeSetItem } from '../utils/storageGuard';
 
 interface QuizProps {
   mode: 'mini_test' | 'practice';
@@ -176,19 +177,19 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   );
 
   useEffect(() => {
-    localStorage.setItem(quizAnswersKey(chapter.id, mode), JSON.stringify(answers));
+    safeSetItem(quizAnswersKey(chapter.id, mode), JSON.stringify(answers));
   }, [answers, chapter.id, mode]);
 
   useEffect(() => {
-    localStorage.setItem(quizStepKey(chapter.id, mode), stepIndex.toString());
+    safeSetItem(quizStepKey(chapter.id, mode), stepIndex.toString());
   }, [stepIndex, chapter.id, mode]);
 
   useEffect(() => {
-    localStorage.setItem(quizIndexKey(chapter.id, mode), currentQuestionIndex.toString());
+    safeSetItem(quizIndexKey(chapter.id, mode), currentQuestionIndex.toString());
   }, [currentQuestionIndex, chapter.id, mode]);
 
   useEffect(() => {
-    localStorage.setItem(quizExplKey(chapter.id, mode), showingExplanation.toString());
+    safeSetItem(quizExplKey(chapter.id, mode), showingExplanation.toString());
   }, [showingExplanation, chapter.id, mode]);
 
   // ────────────────────────────────────────────────────────────────
@@ -446,7 +447,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     if (currentQuestionIndex > 0 && elimHintOpen) {
       try {
         if (localStorage.getItem('quiz_elim_hint_seen') !== 'true') {
-          localStorage.setItem('quiz_elim_hint_seen', 'true');
+          safeSetItem('quiz_elim_hint_seen', 'true');
           setElimHintOpen(false);
         }
       } catch { /* 保存不可の環境ではそのまま */ }

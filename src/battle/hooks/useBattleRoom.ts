@@ -568,7 +568,13 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
     if (advancedRef.current >= currentIndex) return;
     advancedRef.current = currentIndex;
 
-    void advanceQuestion(roomId, nextIndex, resolveTimeLimit(questions[nextIndex], rules));
+    // ★失敗したら同じ番号でもう一度進められるように戻す★
+    //   以前は失敗しても advancedRef が進んだままで、二度と送らなかった。
+    //   相手も同時に圏外だと、試合がその問題で永久に止まっていた（未処理の例外にもなっていた）。
+    const failedIndex = currentIndex;
+    void advanceQuestion(roomId, nextIndex, resolveTimeLimit(questions[nextIndex], rules)).catch(() => {
+      if (advancedRef.current === failedIndex) advancedRef.current = failedIndex - 1;
+    });
   }, [
     roomId,
     status,
@@ -935,6 +941,9 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
 
   /** 開始の書き込み中（ボタンの二度押し防止・「開始しています…」の表示） */
   const [starting, setStarting] = useState(false);
+  /** 自動開始の再試行回数（失敗のたびに増やして effect を張り直す） */
+  const [autoStartRetry, setAutoStartRetry] = useState(0);
+  const autoStartedForRef = useRef<string | null>(null);
   const start = useCallback(() => {
     if (!roomId) return;
     if (questions.length === 0) {
@@ -955,7 +964,12 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
     setError(null);
     setStarting(true);
     void startBattle(roomId, first)
-      .catch((e: Error) => setError(`${e.message} もう一度「はじめる」を押してください。`))
+      .catch((e: Error) => {
+        setError(`${e.message} もう一度「はじめる」を押してください。`);
+        // 全国対戦の自動開始が失敗したら、部屋がまだ待機中なら自動でもう一度試せるようにする
+        if (autoStartedForRef.current === roomId) autoStartedForRef.current = null;
+        setAutoStartRetry((n) => n + 1);
+      })
       .finally(() => setStarting(false));
   }, [roomId, questions, rules]);
 
@@ -971,7 +985,6 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
    * 部屋ごとに 1 回しか撃たないよう roomId を記録する。
    * status が waiting → playing に変わればタイマーは片付ける。
    */
-  const autoStartedForRef = useRef<string | null>(null);
   const roomStatus = room?.status;
   const roomJoinCode = room?.joinCode;
   const roomHostUid = room?.hostUid;
@@ -984,14 +997,16 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
       true,
     );
     if (delay == null) return;
+    // 再試行は 3 回まで・間隔を空ける（相手が先に開始していれば status が変わって止まる）
+    if (autoStartRetry > 3) return;
     const timer = window.setTimeout(() => {
       autoStartedForRef.current = roomId;
       start();
-    }, delay);
+    }, delay + autoStartRetry * 2_000);
     return () => window.clearTimeout(timer);
     // room 全体ではなく開始判断に関わる値だけを見る（answers 等の更新で張り直さない）
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId, roomStatus, roomJoinCode, roomHostUid, players, uid, questions.length, start]);
+  }, [roomId, roomStatus, roomJoinCode, roomHostUid, players, uid, questions.length, start, autoStartRetry]);
 
   const leave = useCallback(() => {
     if (!roomId) return;

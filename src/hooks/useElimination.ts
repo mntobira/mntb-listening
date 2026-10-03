@@ -22,6 +22,7 @@ import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { parseStoredStringArrayRecord } from '../utils/progress';
 import { quizElimKey } from '../utils/quizStorageKeys';
+import { safeSetItem } from '../utils/storageGuard';
 
 /**
  * ★消去法の操作説明（タップで選択→斜線→…）を見たかどうかの保存キー。
@@ -76,11 +77,11 @@ export function useElimination(chapterId: string, mode: string): UseEliminationR
   /** 初回表示を「見た」ことにして閉じる（以降は ? アイコンから開閉） */
   const dismissElimHint = () => {
     setElimHintOpen(false);
-    try { localStorage.setItem(ELIM_HINT_SEEN_KEY, 'true'); } catch { /* 保存不可でも表示は閉じる */ }
+    try { safeSetItem(ELIM_HINT_SEEN_KEY, 'true'); } catch { /* 保存不可でも表示は閉じる */ }
   };
 
   useEffect(() => {
-    localStorage.setItem(quizElimKey(chapterId, mode), JSON.stringify(eliminated));
+    safeSetItem(quizElimKey(chapterId, mode), JSON.stringify(eliminated));
   }, [eliminated, chapterId, mode]);
 
   /** ある設問で、その選択肢が消去済みか。 */

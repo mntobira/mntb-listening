@@ -116,18 +116,18 @@ service cloud.firestore {
     // Collections
     // ===============================================================
 
-    // ユーザープロフィール（本人のみ）
+    // ユーザープロフィール／個人ノート（★2026-10-03 閉鎖★）
+    //   アプリはどちらも使っていない（ノートは端末内、プロフィールは app_users / friend_profiles）。
+    //   以前は「本人なら形も大きさも自由に書ける」状態で、使っていない場所に
+    //   大量のデータを書き込まれても気づけなかった（保存料金と退会時の消し残しの原因）。
+    //   既存データの本人による削除だけ残す。
     match /users/{userId} {
-      allow read: if isOwner(userId);
-      allow write: if isOwner(userId);
+      allow read, delete: if isOwner(userId);
+      allow create, update: if false;
     }
-
-    // 個人ノート
     match /notes/{noteId} {
-      allow read: if isDocOwner(resource.data);
-      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
-      allow update: if isDocOwner(resource.data) && request.resource.data.uid == request.auth.uid;
-      allow delete: if isDocOwner(resource.data);
+      allow read, delete: if isDocOwner(resource.data);
+      allow create, update: if false;
     }
 
     // ============================================================
@@ -1145,7 +1145,32 @@ service cloud.firestore {
       // -----------------------------------------------------------
       // 作成（部屋を作る側）
       // -----------------------------------------------------------
-      allow create: if battleSignedIn() && battleValidNewRoom(request.resource.data);
+      allow create: if battleSignedIn() && battleValidNewRoom(request.resource.data)
+        && battleRoomMembersLegit(request.resource.data);
+
+      // -----------------------------------------------------------
+      // ★2人目を勝手に入れた部屋を作らせない（2026-10-03）★
+      // -----------------------------------------------------------
+      //   以前は「部屋主＝自分」しか見ていなかったので、
+      //   並んでもいない相手（ブロックしてきた人を含む）の uid を players に入れた
+      //   random 部屋を作れた。相手が待機中なら watchMatched がその部屋を拾い、
+      //   ★ブロックをすり抜けて対戦を強制できた★。
+      //   ・friend … 作るときは部屋主1人だけ（2人目は合言葉で入室＝battleJoining）
+      //   ・random … 2人部屋。相手の待機票が「書き込み前にあり、同じ書き込みで消える」こと
+      //              ＝相手が実際にこの教科で並んでいて、それを消費したことを要求する。
+      //              findOrEnqueue は両者の票を消す＋部屋を作るを1トランザクションで行う。
+      function battleRoomMembersLegit(d) {
+        return (d.mode == 'friend' && d.players.size() == 1)
+          || (d.mode == 'random' && d.players.size() == 2
+              && d.players[0] == request.auth.uid
+              && d.players[1] != request.auth.uid
+              && battleQueueConsumed(d.players[1], d.subject));
+      }
+      function battleQueueConsumed(other, subject) {
+        return exists(/databases/$(database)/documents/battle_queue/$(other))
+          && get(/databases/$(database)/documents/battle_queue/$(other)).data.subject == subject + ':speed2'
+          && !existsAfter(/databases/$(database)/documents/battle_queue/$(other));
+      }
 
       // -----------------------------------------------------------
       // 更新

@@ -1,4 +1,8 @@
 // src/main.tsx
+// ★必ず最初に読む★（古い iOS で無い関数を、他のモジュールが使う前に補う）
+import './utils/polyfills';
+// localStorage の容量オーバーで画面が止まらないようにする（setItem を1回だけ包む）
+import './utils/storageGuard';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';

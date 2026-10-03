@@ -59,6 +59,7 @@ import {
   where,
   setDoc,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import { mergedRules } from './helpers/battleRules';
 
@@ -352,6 +353,39 @@ describe('battle_codes — 合言葉', () => {
 describe('battle_rooms — 部屋を作る', () => {
   it('自分をホストにした正しい部屋は作れる', async () => {
     await assertSucceeds(setDoc(doc(ctxFor(HOST), 'battle_rooms', ROOM), roomPayload()));
+  });
+
+  it('★並んでいない相手を入れた全国対戦の部屋は作れない（ブロックのすり抜け防止）★', async () => {
+    const payload = roomPayload({
+      mode: 'random', joinCode: '', players: [HOST, GUEST],
+      profiles: {
+        [HOST]: { uid: HOST, nickname: 'ホスト', photoURL: '', rating: 1500 },
+        [GUEST]: { uid: GUEST, nickname: 'ゲスト', photoURL: '', rating: 1500 },
+      },
+    });
+    await assertFails(setDoc(doc(ctxFor(HOST), 'battle_rooms', ROOM), payload));
+    // 相手が並んでいても、票を消さずに部屋だけ作るのは不可
+    await seed(['battle_queue', GUEST], { uid: GUEST, subject: `${SUBJECT}:speed2`, profile: { uid: GUEST, nickname: 'g', photoURL: '', rating: 1500 }, createdAt: new Date() });
+    await assertFails(setDoc(doc(ctxFor(HOST), 'battle_rooms', ROOM), payload));
+    // 票を同じ書き込みで消費すれば作れる（findOrEnqueue と同じ）
+    const db = ctxFor(HOST);
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'battle_queue', GUEST));
+    batch.set(doc(db, 'battle_rooms', ROOM), payload);
+    await assertSucceeds(batch.commit());
+  });
+
+  it('★別の教科で並んでいる相手は引き込めない★', async () => {
+    await seed(['battle_queue', GUEST], { uid: GUEST, subject: 'math_1a:speed2', profile: { uid: GUEST, nickname: 'g', photoURL: '', rating: 1500 }, createdAt: new Date() });
+    const db = ctxFor(HOST);
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'battle_queue', GUEST));
+    batch.set(doc(db, 'battle_rooms', ROOM), roomPayload({ mode: 'random', joinCode: '', players: [HOST, GUEST] }));
+    await assertFails(batch.commit());
+  });
+
+  it('★フレンド部屋を最初から2人で作れない（合言葉入室を飛ばせない）★', async () => {
+    await assertFails(setDoc(doc(ctxFor(HOST), 'battle_rooms', ROOM), roomPayload({ players: [HOST, GUEST] })));
   });
 
   it('★他人をホストにした部屋は作れない★', async () => {
