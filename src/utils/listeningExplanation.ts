@@ -513,6 +513,15 @@ export function extractDecisivePhrases(
 
   // ① 手書きの keyPhrases（意味つき）＝いちばん価値が高い
   const track = trackForSubQuestion(problem, sq);
+  // 英文法（改訂版）は「空所に入った正解そのもの」だけを指す。
+  // 機能語の除去・語数の上限をかけると「the number of」が「number」になったり、
+  // 「can」1語の正解が消えたりするので、完成文に実在するかだけを見る。
+  // 解説文の英語も拾わない（誤りの選択肢の語まで黄色くなるため）。
+  if (problem?.keyPhrasesOnly === true) {
+    return ((track?.keyPhrases || []) as any[])
+      .map((kp) => ({ phrase: String(kp?.phrase || '').trim(), meaning: String(kp?.meaning || '').trim() }))
+      .filter((kp) => kp.phrase && occursInScript(script, kp.phrase));
+  }
   for (const kp of (track?.keyPhrases || []) as any[]) {
     push(String(kp?.phrase || ''), String(kp?.meaning || ''), { allowCitationForm: true });
   }

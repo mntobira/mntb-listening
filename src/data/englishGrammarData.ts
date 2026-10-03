@@ -70,20 +70,6 @@
 
 import { countProblemsInChapters } from './problemCount';
 import {
-  egSvPatternProblems,
-  egTenseProblems,
-  egAspectProblems,
-  egModalProblems,
-  egPassiveProblems,
-  egInfinitiveProblems,
-  egGerundProblems,
-  egParticipleProblems,
-  egRelativeProblems,
-  egRelativeAdverbProblems,
-  egSubjunctiveProblems,
-  egSubjunctiveNoIfProblems,
-  egComparisonProblems,
-  egSpecialProblems,
   egVerbUsageProblems,
   egNounArticleProblems,
   egAdjAdverbProblems,
@@ -92,6 +78,7 @@ import {
   egConversationProblems,
 } from './englishGrammarProblems';
 import type { GrammarProblem } from './englishGrammarProblems';
+import { egV3Chapters, egV3ChapterId } from './egV3Problems';
 // 解説の後処理は listeningPostProcess.ts に1つだけ置いている
 // （リスニングとまったく同じループだったため共通化した）。
 import { applyListeningPostProcess } from './listeningPostProcess';
@@ -147,126 +134,13 @@ export const englishGrammarData: { parts: GrammarPart[] } = {
     // =================================================================
     // PART 1　文法の幹（森田鉄也 基礎英文法講座 総集編①〜⑨の順序）
     // =================================================================
+    // 第1〜16章（4択・全729問）2026-10-03 改訂版。中身は egV3Problems.ts
     {
       id: 'eg_grammar',
-      title: '文法の幹（文型→時制→準動詞→関係詞→仮定法→比較）',
-      chapters: [
-        // ---- 総集編① 基本5文型 ----
-        ch('eg1_1', '1章 文型と動詞', '① 基本5文型と自動詞・他動詞', '文法', [
-          '第1文型 SV と第2文型 SVC の見分け（be 動詞以外の SVC）',
-          '第3文型 SVO と第4文型 SVOO（give 型・二重目的語）',
-          '第5文型 SVOC（O と C に主述関係がある）',
-          '自動詞と他動詞の区別（discuss / marry / enter に前置詞は不要）',
-          '疑問詞を用いた文の語順（間接疑問は「疑問詞＋S＋V」）',
-        ]),
-
-        // ---- 総集編② 英語の時制 ----
-        ch('eg1_2', '2章 時制', '② 基本時制と時制の一致', '文法', [
-          '現在形は「現在の習慣・不変の事実」を表す（今この瞬間ではない）',
-          '進行形にできない動詞（know / belong / resemble などの状態動詞）',
-          '時・条件の副詞節では未来のことも現在形（when he comes）',
-          '時制の一致と、その例外（不変の真理・歴史上の事実）',
-          '未来を表す形の使い分け（will / be going to / 現在進行形）',
-        ]),
-        ch('eg1_3', '2章 時制', '③ 完了形（現在・過去・未来）', '文法', [
-          '現在完了の4用法（完了・結果・経験・継続）',
-          '現在完了と過去形の使い分け（yesterday とは共起しない）',
-          '過去完了は「過去のある時点より前」を表す大過去',
-          '未来完了（by the time 節との組み合わせ）',
-          '完了進行形（have been ~ing）が表す「継続してきた動作」',
-        ]),
-
-        // ---- 総集編⑥ 助動詞 ----
-        ch('eg1_4', '3章 助動詞', '④ 助動詞と助動詞＋have p.p.', '文法', [
-          'can / may / must / should の基本義（能力・許可・義務・推量）',
-          'must not（禁止）と don\'t have to（不要）の決定的な差',
-          '助動詞＋have p.p.（過去への推量・後悔・非難）',
-          'used to / would（過去の習慣）と be used to ~ing の区別',
-          'had better / may well / may as well などの慣用表現',
-        ]),
-
-        // ---- 総集編④ 受動態・知覚動詞・使役動詞 ----
-        ch('eg1_5', '4章 態', '⑤ 受動態・知覚動詞・使役動詞', '文法', [
-          '受動態の作り方と by 以外の前置詞（be known to / be filled with）',
-          '第4文型・第5文型の受動態（O が2つある文の受け身）',
-          '群動詞の受動態（be laughed at / be spoken to）',
-          '知覚動詞（see / hear / feel）＋O＋原形／~ing／p.p.',
-          '使役動詞 make / have / let ＋O＋原形と get / help の扱い',
-        ]),
-
-        // ---- 総集編③ 準動詞（不定詞・動名詞・分詞・分詞構文）----
-        ch('eg2_1', '5章 準動詞', '⑥ 不定詞（3用法と重要構文）', '文法', [
-          '名詞・形容詞・副詞の3用法の判別',
-          '不定詞の意味上の主語（for A to do / of A to do）',
-          '完了不定詞 to have p.p.（述語動詞より前の時）',
-          'too ~ to / enough to / so as to / in order to',
-          '原形不定詞をとる形（all you have to do is do）',
-        ]),
-        ch('eg2_2', '5章 準動詞', '⑦ 動名詞と to do / doing の使い分け', '文法', [
-          '動名詞のみを目的語にとる動詞（enjoy / mind / avoid / finish）',
-          '不定詞のみを目的語にとる動詞（hope / decide / promise）',
-          '両方とれるが意味が変わる動詞（remember / forget / try / stop）',
-          '前置詞＋動名詞の慣用表現（look forward to ~ing / be used to ~ing）',
-          '動名詞の完了形・受動形・否定（having p.p. / being p.p. / not ~ing）',
-        ]),
-        ch('eg2_3', '5章 準動詞', '⑧ 分詞と分詞構文', '文法', [
-          '現在分詞（能動・進行）と過去分詞（受動・完了）の使い分け',
-          '感情を表す分詞形容詞（exciting / excited, boring / bored）',
-          '分詞構文の基本（接続詞＋S＋V を分詞1語に圧縮する）',
-          '独立分詞構文・完了分詞構文（having p.p.）・being の省略',
-          '慣用的な分詞構文（generally speaking / judging from）',
-        ]),
-
-        // ---- 総集編⑤ 関係詞 ----
-        ch('eg2_4', '6章 関係詞', '⑨ 関係代名詞（格と what・that）', '文法', [
-          '主格・目的格・所有格（who / whom / whose / which / that）',
-          '関係代名詞 what（＝the thing which）と接続詞 that の区別',
-          '前置詞＋関係代名詞（the house in which he lives）',
-          '連鎖関係代名詞（the man who I think is honest）',
-          '制限用法とコンマつき非制限用法の意味差',
-        ]),
-        ch('eg2_5', '6章 関係詞', '⑩ 関係副詞と複合関係詞', '文法', [
-          '関係副詞 where / when / why / how の使い分け',
-          '関係副詞と「前置詞＋関係代名詞」の書き換え',
-          '複合関係代名詞 whoever / whatever / whichever',
-          '複合関係副詞 wherever / whenever / however（譲歩）',
-          '先行詞が省略される関係副詞（This is where ~）',
-        ]),
-
-        // ---- 総集編⑦ 仮定法 ----
-        ch('eg3_1', '7章 仮定法', '⑪ 仮定法過去・過去完了・未来', '文法', [
-          '仮定法過去（現在の事実に反する仮定）の形',
-          '仮定法過去完了（過去の事実に反する仮定）の形',
-          'ミックス条件（If S had p.p., S would do now）',
-          '仮定法未来（should / were to）',
-          'if の省略と倒置（Were I you / Had I known）',
-        ]),
-        ch('eg3_2', '7章 仮定法', '⑫ if を使わない仮定表現', '文法', [
-          'I wish / if only ＋仮定法',
-          'as if / as though ＋仮定法',
-          'without / but for / otherwise（〜がなければ）',
-          'It is time ＋仮定法過去（そろそろ〜してよい時間だ）',
-          '要求・提案・命令の that 節中の should（仮定法現在）',
-        ]),
-
-        // ---- 総集編⑧ 比較 ----
-        ch('eg3_3', '8章 比較', '⑬ 原級・比較級・最上級と重要表現', '文法', [
-          'as ~ as の原級比較と倍数表現（twice as ~ as）',
-          '比較級の強調（much / far / even）※very は不可',
-          '最上級・the＋比較級（of the two）・no more than 系',
-          'クジラ構文（A is no more B than C is D）と rather than',
-          '比較の慣用（the 比較級, the 比較級 / all the more / no less than）',
-        ]),
-
-        // ---- 総集編⑨ 強調構文・否定の倒置・同格 ----
-        ch('eg3_4', '9章 特殊構文', '⑭ 強調・倒置・省略・同格・無生物主語', '文法', [
-          'It is ~ that ... の強調構文（形式主語との識別）',
-          '否定の副詞が文頭に出たときの倒置（Never have I ~）',
-          '否定表現（部分否定・二重否定・準否定 hardly / seldom）',
-          '同格の that / of と挿入・省略（共通関係）',
-          '無生物主語構文（This road will take you to ~）',
-        ]),
-      ],
+      title: '文法（第1〜16章・4択）',
+      chapters: egV3Chapters.map((c) =>
+        ch(egV3ChapterId(c.chapter), `${c.chapter}章 ${c.title}`, `第${c.chapter}章 ${c.title}`, '文法', c.topics),
+      ),
     },
 
     // =================================================================
@@ -347,20 +221,7 @@ export const englishGrammarData: { parts: GrammarPart[] } = {
  *   静かに流し込まれてしまう。明示的に書くことでその事故を防ぐ。
  */
 const EG_PROBLEMS: Record<string, GrammarProblem[]> = {
-  eg1_1: egSvPatternProblems,
-  eg1_2: egTenseProblems,
-  eg1_3: egAspectProblems,
-  eg1_4: egModalProblems,
-  eg1_5: egPassiveProblems,
-  eg2_1: egInfinitiveProblems,
-  eg2_2: egGerundProblems,
-  eg2_3: egParticipleProblems,
-  eg2_4: egRelativeProblems,
-  eg2_5: egRelativeAdverbProblems,
-  eg3_1: egSubjunctiveProblems,
-  eg3_2: egSubjunctiveNoIfProblems,
-  eg3_3: egComparisonProblems,
-  eg3_4: egSpecialProblems,
+  ...Object.fromEntries(egV3Chapters.map((c) => [egV3ChapterId(c.chapter), c.problems])),
   eg4_1: egVerbUsageProblems,
   eg4_2: egNounArticleProblems,
   eg4_3: egAdjAdverbProblems,
@@ -421,7 +282,8 @@ const EG_PROBLEMS: Record<string, GrammarProblem[]> = {
         (problem as any).explanation = (problem as any).explanation
           .replace(/SCRIPT ／ 実際に流れた英文/g, 'ANSWER ／ 完成した英文')
           .replace(/聞き取りの決め手/g, '解くカギ')
-          .replace(/スクリプト内の黄色いマーカー/g, '英文の黄色いマーカー');
+          .replace(/スクリプト内の黄色いマーカー/g, '英文の黄色いマーカー')
+          .replace(/解答の道すじ/g, '解説');
       }
     }
   }

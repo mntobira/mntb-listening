@@ -23,6 +23,7 @@
 
 import { readAudioPreferences, writeAudioPreferences } from '../audio/audioPreferences';
 import { playSample, preloadSamples } from '../audio/sfxSamples';
+import { sharedAudioContextResumed } from '../audio/sharedAudioContext';
 
 export type SfxName =
   | 'tap' // ボタン
@@ -124,15 +125,9 @@ let ctx: AudioContext | null = null;
 
 function context(): AudioContext | null {
   if (typeof window === 'undefined') return null;
-  const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-  if (!Ctor) return null;
-  try {
-    if (!ctx) ctx = new Ctor();
-    if (ctx.state === 'suspended') void ctx.resume().catch(() => {});
-    return ctx;
-  } catch {
-    return null;
-  }
+  // アプリ全体で1つの AudioContext を使う（sharedAudioContext.ts の説明を参照）
+  ctx = sharedAudioContextResumed();
+  return ctx;
 }
 
 export function sfxEnabled(): boolean { return readAudioPreferences().sfx; }

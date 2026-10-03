@@ -7,6 +7,7 @@ import { buildUnitKataBlock } from '../utils/explanationFormat';
 import { getUnitTeaching } from '../data/unitTeaching';
 import { MOCK_EXAM_UNIT_MAP } from '../data/mockExamData';
 import { FeedbackButton } from './FeedbackButton';
+import { readJsonObject } from '../utils/safeLocalStorage';
 
 // 共通テスト化学基礎 予想問題の目標時間（30分 = 1800秒）
 const EXAM_DURATION_SEC = 30 * 60;
@@ -31,7 +32,7 @@ export function MockExam({ onBack }: MockExamProps) {
   // 解答は localStorage に保存し、誤って画面を離れても入力が消えないようにする
   const [answers, setAnswers] = useState<Record<string, string>>(() => {
     try {
-      return JSON.parse(localStorage.getItem(MOCK_ANSWERS_KEY) || '{}');
+      return readJsonObject<Record<string, string>>(MOCK_ANSWERS_KEY);
     } catch {
       return {};
     }

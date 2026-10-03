@@ -54,7 +54,9 @@ import {
   doc,
   getDoc,
   getDocs,
+  query,
   serverTimestamp,
+  where,
   setDoc,
   updateDoc,
 } from 'firebase/firestore';
@@ -432,6 +434,15 @@ describe('battle_rooms — 読み取り', () => {
     // 正解を先に調べることができてしまう。
     await seedPlayingRoom();
     await assertFails(getDoc(doc(ctxFor(OUTSIDER), 'battle_rooms', ROOM)));
+  });
+
+  it('参加者は「自分が入っている待機中・対戦中の部屋」を検索できる（全国マッチの待ち受け）', async () => {
+    await seedPlayingRoom();
+    await assertSucceeds(getDocs(query(collection(ctxFor(GUEST), 'battle_rooms'),
+      where('players', 'array-contains', GUEST), where('status', 'in', ['waiting', 'playing']))));
+    // 他人の uid では検索できない
+    await assertFails(getDocs(query(collection(ctxFor(OUTSIDER), 'battle_rooms'),
+      where('players', 'array-contains', GUEST), where('status', 'in', ['waiting', 'playing']))));
   });
 
   it('★部屋の一覧取得はできない（全部屋を覗けない）★', async () => {

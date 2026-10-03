@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { BGM_FILES, bgmFileKeyOf, introDelaySec, introOffsetSec } from '../src/battle/audio/bgmFiles';
+import { BGM_FILES, bgmFileKeyOf, introDelaySec, introOffsetSec, pickBattleVariant } from '../src/battle/audio/bgmFiles';
+import { BGM_MEASURED_LUFS } from '../src/battle/audio/bgmLoudness';
 import { COUNTDOWN_SECONDS, COUNTDOWN_START_HOLD_MS, COUNTDOWN_STEP_MS, COUNTDOWN_TOTAL_MS } from '../src/battle/core/battleLive';
 
 describe('対戦BGM（音源ファイル）', () => {
@@ -29,7 +30,7 @@ describe('対戦BGM（音源ファイル）', () => {
       expect(existsSync(resolve('public', '.' + spec!.url)), key).toBe(true);
       expect(spec!.license.length, key).toBeGreaterThan(10);
       expect(readFileSync('docs/BATTLE_BGM.md', 'utf8')).toContain(spec!.url);
-      if (key === 'battle') expect(spec!.dropSec).toBe(7);
+      if (key === 'battle' || key === 'battle2') expect(spec!.dropSec).toBe(7);
     }
   });
   it('対戦画面はカウントダウン中から対戦曲を渡し、リスニングは問題中に鳴らさない', () => {
@@ -48,5 +49,29 @@ describe('対戦BGM（2026-10-01 利用者の指定）', () => {
     expect(BGM_FILES.battle?.dropSec).toBe(7);
     // 配布元とURLの記載（利用規約の条件）がアプリ内にある
     expect(readFileSync('src/components/Intro.tsx', 'utf8')).toContain('https://yukizakura.net/');
+  });
+});
+
+describe('対戦BGM 2曲目「カナリアスキップ」（2026-10-03 利用者の指定）', () => {
+  it('登録・ドロップ7秒・ループ区間・音量の実測値がある', () => {
+    const s = BGM_FILES.battle2!;
+    expect(s.url).toBe('/bgm/battle/battle2.mp3');
+    expect(s.license).toContain('カナリアスキップ');
+    expect(s.dropSec).toBe(7);
+    expect(s.loopStartSec).toBe(7);
+    // 135bpm・114小節（作曲者指定のループ区間）
+    expect(s.loopEndSec! - s.loopStartSec).toBeCloseTo(114 * 4 * 60 / 135, 2);
+    expect(BGM_MEASURED_LUFS.battle2).toBeLessThan(-18);
+    expect(readFileSync('src/components/Intro.tsx', 'utf8')).toContain('カナリアスキップ');
+  });
+  it('試合ごとに2曲から等確率で選ぶ。対戦中の局面はすべて選ばれた曲', () => {
+    expect(pickBattleVariant(0)).toBe('battle');
+    expect(pickBattleVariant(0.49)).toBe('battle');
+    expect(pickBattleVariant(0.5)).toBe('battle2');
+    expect(pickBattleVariant(0.999999)).toBe('battle2');
+    expect(pickBattleVariant(1)).toBe('battle2');
+    expect(pickBattleVariant(Number.NaN)).toBe('battle');
+    for (const t of ['normal', 'closing', 'final'] as const) expect(bgmFileKeyOf(t, 'battle2')).toBe('battle2');
+    expect(bgmFileKeyOf('matching', 'battle2')).toBe('waiting');
   });
 });

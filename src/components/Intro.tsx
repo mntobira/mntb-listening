@@ -87,6 +87,7 @@ export function Intro({ onBack, onBattle }: { onBack: () => void; onBattle?: () 
         <div><dt>対戦の待ち時間 BGM</dt><dd>「夕凪」作曲：やっすん</dd></div>
         <div><dt>対戦中 BGM</dt><dd>「風の列車」作曲：坂田白</dd></div>
         <div><dt>配布元</dt><dd>創作堂さくら紅葉 <a href="https://yukizakura.net/" target="_blank" rel="noopener noreferrer">https://yukizakura.net/</a></dd></div>
+        <div><dt>対戦中 BGM</dt><dd>「カナリアスキップ」作曲：まんぼう二等兵（OpenTracks）</dd></div>
       </dl>
     </section>
 

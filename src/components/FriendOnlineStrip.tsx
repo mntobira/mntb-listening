@@ -8,6 +8,9 @@ type Presence = { active: boolean; at: number } | null;
 type FriendState = { uid: string | null; total: number; online: number; known: number; loading: boolean; failed: boolean };
 const empty = (uid: string | null): FriendState => ({ uid, total: 0, online: 0, known: 0, loading: !!uid, failed: false });
 
+/** オンライン状況を見に行くフレンドの上限（購読の本数） */
+const MAX_WATCHED = 30;
+
 /** Recent visible-tab heartbeats, not an authoritative connection count. */
 export function FriendOnlineStrip() {
   const [state, setState] = useState(() => empty(auth.currentUser?.uid ?? null));
@@ -41,7 +44,11 @@ export function FriendOnlineStrip() {
         stops.forEach(stop => stop()); stops = [];
         rows = new Map(snap.docs.map(d => [d.id, null])); loading = false; failed = false;
         publish();
-        for (const friend of snap.docs) {
+        // ★購読するフレンドは最大 MAX_WATCHED 人★
+        //   1人につき購読が1本開く。上限が無いとフレンドが多い人ほど
+        //   接続と読み取りが増え、端末も重くなる（ホーム画面に常に出ている部品なので）。
+        //   上限を超えた分は「未確認」として数に入れる。
+        for (const friend of snap.docs.slice(0, MAX_WATCHED)) {
           const valid = () => current() && listToken === revision;
           stops.push(onSnapshot(doc(db, 'friend_profiles', friend.id), profile => {
             if (!valid()) return;

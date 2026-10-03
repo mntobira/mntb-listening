@@ -27,6 +27,8 @@ beforeEach(() => {
   resetSharedAudioContextForTest();
   vi.stubGlobal('window', { AudioContext: MockContext, setTimeout, clearTimeout });
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(1) })));
+  // 対戦曲は2曲から乱数で選ぶ。既存のテストは「風の列車」側に固定する
+  vi.spyOn(Math, 'random').mockReturnValue(0);
 });
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
@@ -53,17 +55,19 @@ describe('screen-owned battle BGM lifecycle', () => {
     expect(contexts[0].sources[0]).toMatchObject({ loop: true, loopStart: 7, loopEnd: 67.5 });
   });
   it('does not discard slow decoding when battle phases change', async () => {
-    let resolve!: (buffer: any) => void;
+    const pending: Array<(buffer: any) => void> = [];
+    const resolve = (b: any) => pending.splice(0).forEach((r) => r(b));
     const e = new BattleAudioEngine(), owner = Symbol();
-    e.unlock(); contexts[0].decodeAudioData.mockImplementation(() => new Promise(r => { resolve = r; }));
+    e.unlock(); contexts[0].decodeAudioData.mockImplementation(() => new Promise(r => { pending.push(r); }));
     await flush(); e.setBgmOwner(owner, 'normal'); e.setBgmOwner(owner, 'closing'); e.setBgmOwner(owner, 'final');
     resolve({ duration: 70 }); await flush();
     expect(contexts[0].sources).toHaveLength(1); expect(contexts[0].sources[0].start).toHaveBeenCalledOnce();
   });
   it('ignores stale decode after leaving the battle', async () => {
-    let resolve!: (buffer: any) => void;
+    const pending: Array<(buffer: any) => void> = [];
+    const resolve = (b: any) => pending.splice(0).forEach((r) => r(b));
     const e = new BattleAudioEngine(), owner = Symbol();
-    e.unlock(); contexts[0].decodeAudioData.mockImplementation(() => new Promise(r => { resolve = r; }));
+    e.unlock(); contexts[0].decodeAudioData.mockImplementation(() => new Promise(r => { pending.push(r); }));
     await flush(); e.setBgmOwner(owner, 'normal'); e.releaseBgmOwner(owner); await flush();
     resolve({ duration: 70 }); await flush(); expect(contexts[0].sources).toHaveLength(0);
   });
@@ -91,5 +95,24 @@ describe('screen-owned battle BGM lifecycle', () => {
     e.setBgmOwner(owner, 'normal'); await flush(); contexts[0].state = 'closed';
     e.setBgmOwner(owner, 'normal'); await flush();
     expect(contexts).toHaveLength(2); expect(contexts[1].sources).toHaveLength(1);
+  });
+  it('picks one of the two battle songs per match and keeps it through closing/final', async () => {
+    const urls = () => (fetch as any).mock.calls.map((c: any[]) => c[0]);
+    const e = new BattleAudioEngine(), owner = Symbol();
+    e.random = () => 0.7;
+    e.setBgmOwner(owner, 'matching'); await flush();
+    e.setBgmOwner(owner, 'normal'); await flush();
+    expect(e.currentBattleVariant()).toBe('battle2');
+    e.random = () => 0.1; // 試合中に乱数が変わっても曲は変えない
+    e.setBgmOwner(owner, 'closing'); e.setBgmOwner(owner, 'final'); await flush();
+    expect(e.currentBattleVariant()).toBe('battle2');
+    const battleSources = contexts[0].sources.slice(1);
+    expect(battleSources).toHaveLength(1);
+    expect(battleSources[0]).toMatchObject({ loop: true, loopStart: 7, loopEnd: 209.667 });
+    expect(urls()).toContain('/bgm/battle/battle2.mp3');
+    // 次の試合（待合室を経由）では選び直す
+    e.setBgmOwner(owner, 'matching'); await flush();
+    e.setBgmOwner(owner, 'normal'); await flush();
+    expect(e.currentBattleVariant()).toBe('battle');
   });
 });

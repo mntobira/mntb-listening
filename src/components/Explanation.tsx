@@ -122,6 +122,7 @@ import { substanceTreeData, separationTreeData, thermalMotionTreeData, atomicStr
 import { hasChapterTree } from '../data/chapterTreeMap';
 import { PracticeExplanationTree } from './PracticeExplanationTree';
 import { IonizationEnergyChart } from './IonizationEnergyChart';
+import { readJsonArray } from '../utils/safeLocalStorage';
 
 // Substance Tree Data for Chapter 1 (Moved to chemistryData.ts)
 
@@ -561,7 +562,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         lastReviewedAt: null
       };
       
-      const existingNotes = JSON.parse(localStorage.getItem(notesKey) || '[]');
+      const existingNotes = readJsonArray<any>(notesKey);
       existingNotes.push(newNote);
       localStorage.setItem(notesKey, JSON.stringify(existingNotes));
       
@@ -1752,7 +1753,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                   <span className="shrink-0 font-bold text-gray-500">
                                     {row.marker}
                                   </span>
-                                  <span className="min-w-0 break-words [overflow-wrap:anywhere]">
+                                  <span className="min-w-0 whitespace-pre-line break-words [overflow-wrap:anywhere]">
                                     {formatText(sentence || row.body, [], { prose: true })}
                                   </span>
                                 </li>

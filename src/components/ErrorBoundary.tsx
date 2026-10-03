@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, RotateCcw, Home } from 'lucide-react';
+import { isChunkLoadError, shouldReloadForChunk } from '../utils/chunkRecovery';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -38,6 +39,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     // 開発時・本番ともに原因を追えるようコンソールへ残す
     console.error(`[ErrorBoundary${this.props.label ? `:${this.props.label}` : ''}]`, error, info);
+    // 新しい版の配信直後に古い画面の部品が見つからないときは、1回だけ読み直して新しい版にする
+    if (isChunkLoadError(error) && navigator.onLine && shouldReloadForChunk()) window.location.reload();
   }
 
   private handleReset = () => {

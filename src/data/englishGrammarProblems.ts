@@ -34,45 +34,7 @@ export type {
 
 export { EG_MARKS, buildEgSet } from './englishGrammarKit';
 
-// =====================================================================
-// 第1部　文法の幹（文型 → 時制 → 準動詞 → 関係詞 → 仮定法 → 比較）
-// =====================================================================
-
-/** eg1_1　① 基本5文型と自動詞・他動詞 */
-export { egSvPatternProblems } from './egProblemsGrammar1';
-/** eg1_2　② 基本時制と時制の一致 */
-export { egTenseProblems } from './egProblemsGrammar1';
-
-/** eg1_3　③ 完了形（現在・過去・未来） */
-export { egAspectProblems } from './egProblemsGrammar2';
-/** eg1_4　④ 助動詞と助動詞＋have p.p. */
-export { egModalProblems } from './egProblemsGrammar2';
-
-/** eg1_5　⑤ 受動態・知覚動詞・使役動詞 */
-export { egPassiveProblems } from './egProblemsGrammar3';
-/** eg2_1　⑥ 不定詞（3用法と重要構文） */
-export { egInfinitiveProblems } from './egProblemsGrammar3';
-
-/** eg2_2　⑦ 動名詞と to do / doing の使い分け */
-export { egGerundProblems } from './egProblemsGrammar4';
-/** eg2_3　⑧ 分詞と分詞構文 */
-export { egParticipleProblems } from './egProblemsGrammar4';
-
-/** eg2_4　⑨ 関係代名詞（格と what・that） */
-export { egRelativeProblems } from './egProblemsGrammar5';
-/** eg2_5　⑩ 関係副詞と複合関係詞 */
-export { egRelativeAdverbProblems } from './egProblemsGrammar5';
-
-/** eg3_1　⑪ 仮定法過去・過去完了・未来 */
-export { egSubjunctiveProblems } from './egProblemsGrammar6';
-/** eg3_2　⑫ if を使わない仮定表現 */
-export { egSubjunctiveNoIfProblems } from './egProblemsGrammar6';
-
-/** eg3_3　⑬ 原級・比較級・最上級と重要表現 */
-export { egComparisonProblems } from './egProblemsGrammar7';
-
-/** eg3_4　⑭ 強調・倒置・省略・同格・無生物主語 */
-export { egSpecialProblems } from './egProblemsGrammar8';
+// 第1部（文法 第1〜16章・4択729問）は egV3Problems.ts に移した（2026-10-03 改訂）。
 
 // =====================================================================
 // 第2部　語法（動詞・名詞・形容詞・副詞・前置詞の使い方）

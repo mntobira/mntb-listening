@@ -38,6 +38,7 @@ import { auth } from '../../firebase';
 import {
   abortRoom,
   advanceQuestion,
+  releaseRoomCode,
   attestResult,
   saveHistory,
   startBattle,
@@ -618,6 +619,11 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
 
   const finished =
     status === 'finished' || (status === 'playing' && (lastQuestionDone || explicitForfeit));
+
+  // 決着・中断したら、この端末が作った合言葉を返す（合言葉の枯渇と「入れない部屋」を防ぐ）
+  useEffect(() => {
+    if (roomId && (finished || status === 'aborted')) releaseRoomCode(roomId);
+  }, [roomId, finished, status]);
 
   /**
    * 復帰したときの知らせを作る。

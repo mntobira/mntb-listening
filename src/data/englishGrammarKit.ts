@@ -102,8 +102,8 @@ export type EgItem = {
   choices: [string, string, string, string];
   /** 正解のマーク */
   answer: EgMark;
-  /** 想定正答率（%） */
-  rate: number;
+  /** 想定正答率（%）。元データに無いときは省略（でっち上げない） */
+  rate?: number;
   /** 完成文（空所を正解で埋めた文）＝音源スクリプト */
   full: string;
   /** 完成文の和訳 */
@@ -189,7 +189,7 @@ export function buildEgSet(meta: EgSetMeta, items: EgItem[]): GrammarProblem {
     type: 'multiple_choice',
     options: [...EG_MARKS],
     correctAnswer: item.answer,
-    correctAnswerRate: item.rate,
+    ...(typeof item.rate === 'number' ? { correctAnswerRate: item.rate } : {}),
     detailedExplanation: {
       theme: item.theme,
       type: item.type,

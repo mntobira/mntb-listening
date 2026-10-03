@@ -139,88 +139,100 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
     "label": "英文法",
     "chapters": [
       {
-        "id": "eg1_1",
-        "problemCount": 1,
-        "abstractTitle": "① 基本5文型と自動詞・他動詞",
-        "realTitle": "1章 文型と動詞"
+        "id": "eg6_1",
+        "problemCount": 9,
+        "abstractTitle": "第1章 時制",
+        "realTitle": "1章 時制"
       },
       {
-        "id": "eg1_2",
-        "problemCount": 1,
-        "abstractTitle": "② 基本時制と時制の一致",
-        "realTitle": "2章 時制"
+        "id": "eg6_2",
+        "problemCount": 3,
+        "abstractTitle": "第2章 態",
+        "realTitle": "2章 態"
       },
       {
-        "id": "eg1_3",
-        "problemCount": 1,
-        "abstractTitle": "③ 完了形（現在・過去・未来）",
-        "realTitle": "2章 時制"
-      },
-      {
-        "id": "eg1_4",
-        "problemCount": 1,
-        "abstractTitle": "④ 助動詞と助動詞＋have p.p.",
+        "id": "eg6_3",
+        "problemCount": 10,
+        "abstractTitle": "第3章 助動詞",
         "realTitle": "3章 助動詞"
       },
       {
-        "id": "eg1_5",
-        "problemCount": 1,
-        "abstractTitle": "⑤ 受動態・知覚動詞・使役動詞",
-        "realTitle": "4章 態"
+        "id": "eg6_4",
+        "problemCount": 8,
+        "abstractTitle": "第4章 仮定法",
+        "realTitle": "4章 仮定法"
       },
       {
-        "id": "eg2_1",
-        "problemCount": 1,
-        "abstractTitle": "⑥ 不定詞（3用法と重要構文）",
-        "realTitle": "5章 準動詞"
+        "id": "eg6_5",
+        "problemCount": 8,
+        "abstractTitle": "第5章 不定詞",
+        "realTitle": "5章 不定詞"
       },
       {
-        "id": "eg2_2",
-        "problemCount": 1,
-        "abstractTitle": "⑦ 動名詞と to do / doing の使い分け",
-        "realTitle": "5章 準動詞"
+        "id": "eg6_6",
+        "problemCount": 6,
+        "abstractTitle": "第6章 動名詞",
+        "realTitle": "6章 動名詞"
       },
       {
-        "id": "eg2_3",
-        "problemCount": 1,
-        "abstractTitle": "⑧ 分詞と分詞構文",
-        "realTitle": "5章 準動詞"
+        "id": "eg6_7",
+        "problemCount": 7,
+        "abstractTitle": "第7章 分詞",
+        "realTitle": "7章 分詞"
       },
       {
-        "id": "eg2_4",
-        "problemCount": 1,
-        "abstractTitle": "⑨ 関係代名詞（格と what・that）",
-        "realTitle": "6章 関係詞"
-      },
-      {
-        "id": "eg2_5",
-        "problemCount": 1,
-        "abstractTitle": "⑩ 関係副詞と複合関係詞",
-        "realTitle": "6章 関係詞"
-      },
-      {
-        "id": "eg3_1",
-        "problemCount": 1,
-        "abstractTitle": "⑪ 仮定法過去・過去完了・未来",
-        "realTitle": "7章 仮定法"
-      },
-      {
-        "id": "eg3_2",
-        "problemCount": 1,
-        "abstractTitle": "⑫ if を使わない仮定表現",
-        "realTitle": "7章 仮定法"
-      },
-      {
-        "id": "eg3_3",
-        "problemCount": 1,
-        "abstractTitle": "⑬ 原級・比較級・最上級と重要表現",
+        "id": "eg6_8",
+        "problemCount": 12,
+        "abstractTitle": "第8章 比較",
         "realTitle": "8章 比較"
       },
       {
-        "id": "eg3_4",
-        "problemCount": 1,
-        "abstractTitle": "⑭ 強調・倒置・省略・同格・無生物主語",
-        "realTitle": "9章 特殊構文"
+        "id": "eg6_9",
+        "problemCount": 15,
+        "abstractTitle": "第9章 代名詞",
+        "realTitle": "9章 代名詞"
+      },
+      {
+        "id": "eg6_10",
+        "problemCount": 15,
+        "abstractTitle": "第10章 関係詞",
+        "realTitle": "10章 関係詞"
+      },
+      {
+        "id": "eg6_11",
+        "problemCount": 17,
+        "abstractTitle": "第11章 接続詞",
+        "realTitle": "11章 接続詞"
+      },
+      {
+        "id": "eg6_12",
+        "problemCount": 12,
+        "abstractTitle": "第12章 前置詞",
+        "realTitle": "12章 前置詞"
+      },
+      {
+        "id": "eg6_13",
+        "problemCount": 5,
+        "abstractTitle": "第13章 主語と動詞の一致",
+        "realTitle": "13章 主語と動詞の一致"
+      },
+      {
+        "id": "eg6_14",
+        "problemCount": 12,
+        "abstractTitle": "第14章 疑問文と語順",
+        "realTitle": "14章 疑問文と語順"
+      },
+      {
+        "id": "eg6_15",
+        "problemCount": 9,
+        "abstractTitle": "第15章 否定・省略・強調",
+        "realTitle": "15章 否定・省略・強調"
+      },
+      {
+        "id": "eg6_16",
+        "problemCount": 3,
+        "abstractTitle": "第16章 時制の一致と話法",
+        "realTitle": "16章 時制の一致と話法"
       },
       {
         "id": "eg4_1",
@@ -325,9 +337,9 @@ export const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = {
     "questions": 135
   },
   "english_grammar": {
-    "chapters": 20,
-    "questions": 20,
-    "marks": 100
+    "chapters": 22,
+    "questions": 157,
+    "marks": 759
   }
 };
 

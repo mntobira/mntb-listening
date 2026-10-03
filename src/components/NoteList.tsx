@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase';
 import { ArrowLeft, BookOpen, Star, RotateCw, AlertCircle } from 'lucide-react';
 import { stripHtmlToText } from '../utils/sanitizeHtml';
+import { readJsonArray } from '../utils/safeLocalStorage';
 
 interface NoteListProps {
   onBack: () => void;
@@ -16,7 +17,7 @@ export function NoteList({ onBack, onSelectNote }: NoteListProps) {
     if (!auth.currentUser) return;
     const fetchNotes = async () => {
       try {
-        const localNotes = JSON.parse(localStorage.getItem(`notes_${auth.currentUser!.uid}`) || '[]');
+        const localNotes = readJsonArray<any>(`notes_${auth.currentUser!.uid}`);
         localNotes.sort((a: any, b: any) => {
           // Sort by importance first, then by creation date
           if (a.isImportant !== b.isImportant) {

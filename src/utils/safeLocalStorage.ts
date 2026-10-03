@@ -66,3 +66,34 @@ export function safeLocalStorage(): Storage | null {
   }
   return null;
 }
+
+/**
+ * 保存されている JSON の「配列」を読む。読めない・配列でない・壊れているときは [] を返す。
+ *
+ * ★JSON.parse(... || '[]') をそのまま使わない理由★
+ *   古い版が別の形（{} や文字列）で保存していた、容量オーバーで途中までしか書けなかった、
+ *   などで中身が配列でないと、その直後の .push / .includes / .map で例外になり、
+ *   ノートの保存や結果画面が丸ごと失敗する（端末を変えるまで直らない）。
+ */
+export function readJsonArray<T = unknown>(key: string): T[] {
+  try {
+    const raw = safeLocalStorage()?.getItem(key);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as T[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/** 保存されている JSON の「オブジェクト」を読む。読めない・オブジェクトでないときは {} */
+export function readJsonObject<T extends Record<string, unknown> = Record<string, unknown>>(key: string): T {
+  try {
+    const raw = safeLocalStorage()?.getItem(key);
+    if (!raw) return {} as T;
+    const parsed: unknown = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as T) : ({} as T);
+  } catch {
+    return {} as T;
+  }
+}

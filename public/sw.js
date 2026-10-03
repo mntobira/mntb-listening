@@ -10,7 +10,9 @@
  *   - 容量が膨らまないよう、実行時キャッシュは件数に上限を設ける。
  *   - Range リクエスト（音声のシーク）はキャッシュしない（206 を保存すると壊れる）。
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
+/** 画面（HTML）の取得をこれ以上待たない（電波が弱いとき白い画面のまま待ち続けないため） */
+const NAV_TIMEOUT_MS = 8000;
 const SHELL = `manatobi-shell-${VERSION}`;
 const RUNTIME = `manatobi-runtime-${VERSION}`;
 const RUNTIME_MAX_ENTRIES = 300;
@@ -50,9 +52,15 @@ function cacheable(res) {
   return res && res.ok && res.status === 200 && res.type === 'basic';
 }
 
+function fetchWithTimeout(request, ms) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(request, { signal: ctrl.signal }).finally(() => clearTimeout(timer));
+}
+
 async function networkFirstPage(request) {
   try {
-    const res = await fetch(request);
+    const res = await fetchWithTimeout(request, NAV_TIMEOUT_MS);
     // 画面（HTML）だけを '/' として保存する。PDF などを開いた時に '/' が上書きされないように。
     if (cacheable(res) && (res.headers.get('content-type') || '').includes('text/html')) {
       const copy = res.clone();

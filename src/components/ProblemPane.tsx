@@ -555,7 +555,7 @@ export function ProblemPane({
                   prose: true で組むので、英単語がセリフ体に化けない。
                 */}
                 {stepSentence && (
-                  <p className="mb-2.5 rounded-lg border border-gray-200 bg-gray-50/80 px-3 py-2 text-[16px] md:text-base font-bold leading-relaxed text-gray-900 font-modern break-words [overflow-wrap:anywhere]">
+                  <p className="mb-2.5 rounded-lg border border-gray-200 bg-gray-50/80 px-3 py-2 text-[16px] md:text-base font-bold leading-relaxed text-gray-900 font-modern whitespace-pre-line break-words [overflow-wrap:anywhere]">
                     {formatText(stepSentence, combinedHighlights, { prose: true })}
                   </p>
                 )}

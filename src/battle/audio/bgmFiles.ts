@@ -8,12 +8,13 @@
  *   商用利用できる作曲済みBGM（ElevenLabs Music を有料契約中に生成したもの等）を
  *   置けるように、ファイルがあればファイルを、無ければ従来の合成音を鳴らす。
  *
- * ■ 曲は2本
+ * ■ 曲は3本（対戦曲は2本から試合ごとに1本を選ぶ）
  *   waiting … 待合室・相手さがし・対戦メニュー（'matching'）。ループ。
  *   battle  … カウントダウン開始から鳴らし、★曲頭から dropSec 秒で本編に入る★。
  *             カウントダウン「7・6・…・1」が 7 秒、そのあと START! なので、
  *             dropSec = 7 で作れば「7秒たった瞬間にバトルが始まる」形になる。
  *             'normal' / 'closing' / 'final' はすべてこの1曲を流しっぱなしにする。
+ *   battle2 … battle と同じ作り（dropSec = 7）の2曲目。試合ごとに battle と 50% で入れ替わる。
  *
  * ■ ここに登録するのは「実在して、商用の根拠があるファイル」だけ
  *   ・音源は public/bgm/battle/ に置き、license を必ず書く（台帳は docs/BATTLE_BGM.md）。
@@ -23,7 +24,11 @@
 
 import { battleFileGain } from './bgmLoudness';
 
-export type BgmFileKey = 'waiting' | 'battle';
+export type BgmFileKey = 'waiting' | 'battle' | 'battle2';
+
+/** 対戦中に流す曲の候補（試合ごとにどちらか1曲を選び、最後まで流しっぱなし） */
+export type BattleBgmVariant = 'battle' | 'battle2';
+export const BATTLE_BGM_VARIANTS: readonly BattleBgmVariant[] = ['battle', 'battle2'];
 
 export interface BgmFileSpec {
   /** public からのパス（例: '/bgm/battle/waiting.mp3'） */
@@ -57,11 +62,34 @@ export const BGM_FILES: Readonly<Partial<Record<BgmFileKey, BgmFileSpec>>> = {
   // 原曲 6.5 秒から切り出し → 曲頭から 7 秒で本編（原曲 13.5 秒の盛り上がり）に入る。ループは本編の頭（7秒）から曲末まで。
   battle: { url: '/bgm/battle/battle.mp3', dropSec: 7, loopStartSec: 7, loopEndSec: 67.5, gain: battleFileGain('battle'),
     license: 'フリー音源「風の列車」作曲：坂田白／配布元：創作堂さくら紅葉（https://yukizakura.net/）。利用規約第6条：商用・非商用を問わず利用可、カット・ループ調整などの加工可、配布元とURLの記載が条件' },
+  // 2026-10-03 利用者の指定：対戦曲の2曲目に「カナリアスキップ」（135bpm）。試合ごとに 50% で風の列車と入れ替わる。
+  //   原曲 22.32 秒から切り出し → 曲頭から 7 秒で本編（原曲 29.32 秒、バンドとフルートが一斉に入る所）＝ START! と同時。
+  //   ループは作曲者指定のループ区間（原曲 0:14.222〜3:36.888 = 114 小節）に合わせ、本編の頭 7 秒 → 209.667 秒。
+  battle2: { url: '/bgm/battle/battle2.mp3', dropSec: 7, loopStartSec: 7, loopEndSec: 209.667, gain: battleFileGain('battle2'),
+    license: 'フリーBGM「カナリアスキップ」作曲：まんぼう二等兵／配布元：OpenTracks（旧DOVA-SYNDROME https://opentracks.com/bgm/detail/7312 ）。音源利用ライセンス：商用・非商用を問わずアプリのBGMとして利用可、カット・ループ・フェード等の加工可、クレジット不要（音源単体の再配布・AI学習は禁止）' },
 };
 
+/**
+ * 対戦曲を1曲選ぶ（登録されている候補から等確率）。
+ * rand は 0〜1 の乱数（テスト用に差し替え可）。候補が無ければ 'battle'（＝合成音へ戻る）。
+ */
+export function pickBattleVariant(rand: number = Math.random()): BattleBgmVariant {
+  const list = BATTLE_BGM_VARIANTS.filter((k) => BGM_FILES[k]);
+  if (list.length === 0) return 'battle';
+  const r = Number.isFinite(rand) ? Math.min(Math.max(rand, 0), 0.999999) : 0;
+  return list[Math.floor(r * list.length)];
+}
+
+export function isBattleVariantKey(key: BgmFileKey | null): key is BattleBgmVariant {
+  return key === 'battle' || key === 'battle2';
+}
+
 /** 局面のトラック → どのファイルで鳴らすか */
-export function bgmFileKeyOf(track: 'matching' | 'normal' | 'closing' | 'final'): BgmFileKey {
-  return track === 'matching' ? 'waiting' : 'battle';
+export function bgmFileKeyOf(
+  track: 'matching' | 'normal' | 'closing' | 'final',
+  variant: BattleBgmVariant = 'battle',
+): BgmFileKey {
+  return track === 'matching' ? 'waiting' : variant;
 }
 
 /**
