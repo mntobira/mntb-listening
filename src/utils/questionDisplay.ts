@@ -626,16 +626,27 @@ export function extractSubQuestionSentences(question: any): Map<string, string> 
   const HEAD_RE = /^問\s*([0-9]{1,2})[　\s]+(.+)$/u;
 
   const map = new Map<string, string>();
+  // ★英文が2行以上ある問（英文法の書き換え「(a) …／(b) …（空所）」）★
+  //   1行目だけを拾うと、空所のある (b) の行が問題画面に出なかった。
+  //   「問N」の次の行から、①〜④ の選択肢・区切り線・次の「問N」までを続きとして拾う。
+  let current: string | null = null;
   for (const rawLine of text.split('\n')) {
     const line = rawLine.trim();
-    if (!line) continue;
+    if (!line) { current = null; continue; }
     const m = line.match(HEAD_RE);
-    if (!m) continue;
+    if (!m) {
+      if (current && !/^[①②③④⑤⑥⑦⑧⑨⑩]/u.test(line) && !/^[─―—-]{3,}$/u.test(line)) {
+        map.set(current, `${map.get(current)}\n${line}`);
+      } else {
+        current = null;
+      }
+      continue;
+    }
     const no = m[1];
     const body = m[2].trim();
-    if (!body) continue;
+    if (!body) { current = null; continue; }
     // 同じ番号が2回出てきたら最初のものを採用（後段の重複記述に引きずられない）
-    if (!map.has(no)) map.set(no, body);
+    if (!map.has(no)) { map.set(no, body); current = no; } else { current = null; }
   }
 
   return map.size > 0 ? map : null;

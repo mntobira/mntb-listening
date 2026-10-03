@@ -390,7 +390,8 @@ function cleanPrompt(text: string): string {
     // 区切り線
     if (/^[─—\-=＝]{3,}$/.test(line)) continue;
     // 【…】で始まる操作説明のブロックは、次の空行までまとめて捨てる
-    if (/^【.*】/.test(line)) {
+    // ただし英文法の【並べかえ】は問題文そのもの（操作説明ではない）なので残す
+    if (/^【.*】/.test(line) && !/^【並べかえ】/.test(line)) {
       skipping = true;
       continue;
     }
@@ -772,8 +773,11 @@ function convertChoice(
     options: options.map((o) => trimOption(o)),
     answerIndex,
     panelOrder: [],
-    timeLimit: battleTimeLimit(row),
+    // ★元データが制限時間を持っていればそれを使う（英文法 改訂版：15／20／25秒）★
+    timeLimit: Number.isFinite(row.raw?.battleTimeLimit) ? Number(row.raw.battleTimeLimit) : battleTimeLimit(row),
     imageUrl: pictureImage ?? row.imageUrl,
+    // ★試合後の1行解答（答え＋ひと言）。出題プールには入らず answer.*.generated.ts に分けて出る★
+    ...(typeof row.raw?.oneLine === 'string' && row.raw.oneLine.trim() ? { oneLine: String(row.raw.oneLine).trim() } : {}),
   };
 }
 

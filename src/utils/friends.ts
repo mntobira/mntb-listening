@@ -29,6 +29,7 @@
  */
 
 import {
+  limit,
   collection,
   deleteDoc,
   doc,
@@ -385,7 +386,10 @@ export async function countIncomingFriendRequests(): Promise<number> {
   const user = auth.currentUser;
   if (!user) return 0;
   try {
-    const snaps = await getDocs(query(collection(db, 'friend_requests'), where('toUid', '==', user.uid)));
+    // ★件数バッジのための読み取りは上限つき★
+    //   承認・拒否済みの申請も残るので、上限が無いと使い続けるほど
+    //   1分ごとの読み取りが増える。バッジは「9+」で十分なので 50 件まで見る。
+    const snaps = await getDocs(query(collection(db, 'friend_requests'), where('toUid', '==', user.uid), limit(50)));
     return snaps.docs.filter((s) => (s.data().status ?? 'pending') === 'pending').length;
   } catch {
     return 0;
@@ -591,8 +595,12 @@ export async function fetchFriendCompetition(
     return entries.filter((entry): entry is FriendCompetitionEntry => entry !== null).sort((a, b) => b.score - a.score);
   }
 
+  // ★1人あたり読む件数に上限をかける★
+  //   プレイ履歴（leaderboard_events）は遊ぶたびに増えるので、上限が無いと
+  //   「フレンド20人 × 1人数千件」を開くたびに読むことになる。
+  //   期間別ランキングは直近の記録で十分なので、1人 200 件までにする。
   const entries = await Promise.all(uids.map(async (uid) => {
-    const snaps = await getDocs(query(collection(db, 'leaderboard_events'), where('uid', '==', uid)));
+    const snaps = await getDocs(query(collection(db, 'leaderboard_events'), where('uid', '==', uid), limit(200)));
     const events = snaps.docs.map((item) => item.data() as any).filter((event) => {
       if (!options.since) return true;
       const playedAt = event.playedAt?.toDate?.();

@@ -25,6 +25,7 @@ import { fetchMyRankingRow } from '../battle/data/battleRanking';
 import { readStudyTime, formatStudyTime } from '../utils/studyTime';
 import { GOAL_OPTIONS, TARGET_SCHOOL_MAX, normalizeTargetSchool, readGoal, writeGoal, type GoalId } from '../utils/vocabGoal';
 import './profile-settings.css';
+import { readJsonArray } from '../utils/safeLocalStorage';
 
 interface ProfileModalProps {
   onClose: () => void;
@@ -101,7 +102,7 @@ export function ProfileModal({ onClose, isBgmEnabled, setIsBgmEnabled, onToggleB
         setGrade('高校生');
       }
       setStreak(parseInt(localStorage.getItem(streakKey(uid)) || '0', 10));
-      setCompletedCount(JSON.parse(localStorage.getItem(completedKey(uid)) || '[]').length);
+      setCompletedCount(readJsonArray(completedKey(uid)).length);
     } catch (error) {
       console.error('プロフィール取得エラー:', error);
     }

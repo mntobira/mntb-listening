@@ -162,10 +162,17 @@ export async function fetchChapterRanking(
 ): Promise<RankingResult<ChapterScoreEntry>[]> {
   const me = auth.currentUser;
   try {
-    // chapterId の単一条件で取得してクライアント側で並べる。
-    // 複合インデックスが未デプロイの環境でもランキングを確実に表示できる。
-    const q = query(collection(db, 'leaderboard_chapter'), where('chapterId', '==', chapterId));
-    const snaps = await getDocs(q);
+    // ★まず「点数の高い順に上位だけ」を読む★（複合インデックスを使う）
+    //   以前は chapterId の全件を読んで手元で並べていたので、
+    //   その章を解いた人が1万人いれば、ランキングを開くたびに1万件読んでいた。
+    //   インデックスが未デプロイ・構築中（failed-precondition）のときだけ、
+    //   上限つきの全件読みに切り替える（表示を止めない）。
+    const base = collection(db, 'leaderboard_chapter');
+    const snaps = await getDocs(query(base, where('chapterId', '==', chapterId), orderBy('bestScore', 'desc'), limit(Math.max(topN * 2, 50))))
+      .catch((error: { code?: string }) => {
+        if (error?.code !== 'failed-precondition') throw error;
+        return getDocs(query(base, where('chapterId', '==', chapterId), limit(1000)));
+      });
     const entries = snaps.docs
       .map((item) => item.data() as ChapterScoreEntry)
       .sort((a, b) => (b.bestScore || 0) - (a.bestScore || 0) || (a.timeUsedSec || 0) - (b.timeUsedSec || 0))

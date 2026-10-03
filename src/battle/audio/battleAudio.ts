@@ -30,7 +30,7 @@
 import type { BattleAudioSettings, BattleBgmTrack } from '../core/audioSettings';
 import { DEFAULT_BATTLE_AUDIO } from '../core/audioSettings';
 import { playSample, preloadSamples } from './sfxSamples';
-import { BGM_FILES, bgmFileKeyOf, introDelaySec, introOffsetSec, type BgmFileKey } from './bgmFiles';
+import { BGM_FILES, bgmFileKeyOf, introDelaySec, introOffsetSec, pickBattleVariant, BATTLE_BGM_VARIANTS, type BattleBgmVariant, type BgmFileKey } from './bgmFiles';
 import { BATTLE_BGM_BUS_GAIN } from './bgmLoudness';
 import { sharedAudioContext } from './sharedAudioContext';
 
@@ -189,7 +189,18 @@ export class BattleAudioEngine {
     this.track = track;
     // ★音源ファイル（bgmFiles.ts に登録があるとき）★
     //   normal→closing→final は同じ battle 曲を流しっぱなしにする（曲を切らない）。
-    const fileKey = track ? bgmFileKeyOf(track) : null;
+    //   対戦曲は2曲（風の列車・カナリアスキップ）から★試合の頭で1回だけ★選ぶ。
+    //   直前も対戦中（normal/closing/final）なら同じ曲のまま。待合室・停止から入ったときだけ選び直す。
+    const inBattle = (t: BattleBgmTrack) => t === 'normal' || t === 'closing' || t === 'final';
+    if (inBattle(track) && !inBattle(prev)) {
+      this.battleVariant = this.upcomingVariant();
+      this.nextVariant = null;
+    } else if (!inBattle(track) && inBattle(prev)) {
+      // 試合が終わった → 次の試合の曲を決めて、待合室にいるあいだに先読みする
+      this.nextVariant = pickBattleVariant(this.random());
+      if (this.ctx) this.preloadBgmFiles();
+    }
+    const fileKey = track ? bgmFileKeyOf(track, this.battleVariant) : null;
     if (fileKey && BGM_FILES[fileKey] && prev && this.fileKey === fileKey) return;
     this.clearBgmTimer();
     this.stopFile();
@@ -215,6 +226,18 @@ export class BattleAudioEngine {
   // 音源ファイルのBGM（bgmFiles.ts）
   // ------------------------------------------------------------
   private fileKey: BgmFileKey | null = null;
+  /** この試合の対戦曲（playBgm で試合の頭に決まる） */
+  private battleVariant: BattleBgmVariant = 'battle';
+  /** 次の試合の対戦曲（先読みする曲を1曲に絞るため、待合室にいるうちに決めておく） */
+  private nextVariant: BattleBgmVariant | null = null;
+  private upcomingVariant(): BattleBgmVariant {
+    if (!this.nextVariant) this.nextVariant = pickBattleVariant(this.random());
+    return this.nextVariant;
+  }
+  /** 乱数（テストで差し替える） */
+  random: () => number = () => Math.random();
+  /** いま選ばれている対戦曲（テスト・デバッグ用） */
+  currentBattleVariant(): BattleBgmVariant { return this.battleVariant; }
   private fileSource: AudioBufferSourceNode | null = null;
   private fileEnv: GainNode | null = null;
   private fileBuffers = new Map<BgmFileKey, Promise<AudioBuffer | null>>();
@@ -238,7 +261,14 @@ export class BattleAudioEngine {
   /** 待合室にいるあいだに battle 曲を先読みしておく（カウントダウン頭で待たせない） */
   preloadBgmFiles(): void {
     if (!this.ensure()) return;
-    (Object.keys(BGM_FILES) as BgmFileKey[]).forEach((k) => void this.loadFile(k));
+    // ★対戦曲は「次に使う1曲」だけ★ 3分半の曲をデコードすると 70MB を超えるため、
+    //   使わない対戦曲を抱えたままにしない（古い iPhone でタブが落ちるのを防ぐ）。
+    const inBattle = this.track === 'normal' || this.track === 'closing' || this.track === 'final';
+    const want = inBattle ? this.battleVariant : this.upcomingVariant();
+    for (const k of BATTLE_BGM_VARIANTS) {
+      if (k !== want && k !== this.fileKey) this.fileBuffers.delete(k);
+    }
+    (['waiting', want] as BgmFileKey[]).forEach((k) => { if (BGM_FILES[k]) void this.loadFile(k); });
   }
 
   private playFile(key: BgmFileKey, startInMs?: number): void {
@@ -334,7 +364,7 @@ export class BattleAudioEngine {
     if (!this.settings.sfx) return;
     const ctx = this.ensure();
     if (!ctx || !this.sfxGain) return;
-    if (ctx.state === 'suspended') void ctx.resume().catch(() => {});
+    if (ctx.state !== 'running' && ctx.state !== 'closed') void ctx.resume().catch(() => {});
     const t = ctx.currentTime;
     const g = this.sfxGain;
 

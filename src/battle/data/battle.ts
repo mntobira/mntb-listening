@@ -429,6 +429,7 @@ export async function createFriendRoom(
         });
       });
 
+      issuedCodes.set(roomRef.id, joinCode);
       return { roomId: roomRef.id, joinCode };
     } catch (error) {
       if ((error as Error).message === 'CODE_TAKEN') continue;
@@ -565,21 +566,37 @@ async function fetchWaitingQueue(subject: string) {
   //   同時に待つ人数はごく少数（多くて数人）なので、
   //   20件取って手元で並べても負荷にならない。
   const snap = await getDocs(
-    query(collection(db, COL_QUEUE), where('subject', '==', subject), limit(20)),
+    query(collection(db, COL_QUEUE), where('subject', '==', subject), limit(QUEUE_SCAN_LIMIT)),
   );
+
+  // ★古い待機票（画面を閉じた・電池が切れた人）は先に外し、ついでに片付ける★
+  //   以前は「古い順に5件」を切り出してから古い票を除いていたので、
+  //   放置された票が5件たまるだけで、新しく来た人どうしが一生マッチしなかった。
+  //   この検索は順番を指定していない（索引を要らなくするため）ので、
+  //   放置票が増えると新しい票が検索結果に入らなくなる。
+  //   見つけた放置票は消しておく（ルール上だれでも消せる・消されても並び直せるだけ）。
+  const nowMs = serverNow();
+  const stale = snap.docs.filter((d) => isStaleQueueTicket(toMillis(d.get('createdAt') as Timestamp | null), nowMs));
+  for (const d of stale.slice(0, 10)) void deleteDoc(d.ref).catch(() => undefined);
 
   // ★「古い順」に並べ直す★
   //   長く待っている人から先にマッチさせるため。
   //   ここを崩すと、後から来た人が先に対戦できてしまい、
   //   混雑時に待ち続ける人が出る。
-  return [...snap.docs]
+  return snap.docs
+    .filter((d) => !stale.includes(d))
     .sort((a, b) => {
       const at = toMillis(a.get('createdAt') as Timestamp | null) || 0;
       const bt = toMillis(b.get('createdAt') as Timestamp | null) || 0;
       return at - bt; // 古い順（待っている人が先）
     })
-    .slice(0, 5);
+    .slice(0, 8);
 }
+
+/** 待機票を一度に見る件数（放置票が混ざっても新しい票が見えるだけの余裕） */
+const QUEUE_SCAN_LIMIT = 50;
+/** 1回の検索で拾いに行く相手の数（同時に大勢が同じ相手を取り合ったときの次善） */
+const MATCH_ATTEMPTS = 3;
 
 export async function findOrEnqueue(
   subject: string,
@@ -660,24 +677,41 @@ export async function findOrEnqueue(
   // ★古い待機票（3分以上前）は相手にしない★
   //   画面を閉じた・電池が切れた人の票が残っていると、その人と部屋ができて試合が始まらない。
   //   相手の時刻はサーバー時刻なので、端末の時計ではなく serverNow() と比べる。
-  const nowMs = serverNow();
-  const candidate = waitingDocs.find((d) => d.id !== uid && !blocked.has(d.id)
-    && !isStaleQueueTicket(toMillis(d.get('createdAt') as Timestamp | null), nowMs));
-  if (!candidate) {
+  const candidates = waitingDocs.filter((d) => d.id !== uid && !blocked.has(d.id));
+  if (candidates.length === 0) {
     // 誰もいない。票を置いたまま、拾われるのを待つ（watchMatched）
     return { roomId: null };
   }
 
   // 3. 双方の票を同じトランザクションで確認・消費し、部屋を作る
-  const otherRef = doc(db, COL_QUEUE, candidate.id);
+  //   ★大勢が同時に探すと、全員がいちばん古い1人を取り合う★
+  //   負けた人は「拾われるのを待つ」に回るが、相手が多いときは
+  //   2番目・3番目の人を続けて試したほうが早く成立する。
+  //   先頭の数人の中から順番をずらして試し、取り合いを分散させる。
+  const head = candidates.slice(0, MATCH_ATTEMPTS);
+  const offset = head.length > 1 ? Math.floor(Math.random() * Math.min(2, head.length)) : 0;
+  const order = [...head.slice(offset), ...head.slice(0, offset)];
+  for (const candidate of order) {
+    signal?.throwIfAborted();
+    const result = await tryMatchWith(candidate.id);
+    if (result !== 'retry') return { roomId: result };
+  }
+  return { roomId: null };
+
+  /** 1人の相手と部屋を作る。'retry' は「相手が先に取られた」なので次の人を試す */
+  async function tryMatchWith(otherId: string): Promise<string | null | 'retry'> {
+  const otherRef = doc(db, COL_QUEUE, otherId);
   try {
+    let otherGone = false;
     const matched = await runTransaction(db, async (tx) => {
+      otherGone = false;
       const mine = await tx.get(ownRef);
       const other = await tx.get(otherRef);
       // 自分の票が無い … 相手が先に自分を拾った（相手が部屋を作る）
       // 相手の票が無い … 別の誰かが先に相手を拾った
       // 教科が違う    … 票が差し替わっていた
-      if (!mine.exists() || !other.exists()) return false;
+      if (!mine.exists()) return false;
+      if (!other.exists()) { otherGone = true; return false; }
       if (signal?.aborted || auth.currentUser?.uid !== uid) return false;
       if (mine.get('profile')?.matchSessionId !== sessionId) return false;
       if (mine.get('subject') !== queueSubject || other.get('subject') !== queueSubject) return false;
@@ -718,9 +752,11 @@ export async function findOrEnqueue(
 
     // 拾えなかった場合、自分の票は（相手に拾われていなければ）残っているので
     // そのまま拾われるのを待つ。相手に拾われていれば watchMatched が部屋を見つける。
-    return { roomId: matched ? roomRef.id : null };
+    if (matched) return roomRef.id;
+    return otherGone ? 'retry' : null;
   } catch (error) {
     throw friendlyError(error, 'マッチングに失敗しました。');
+  }
   }
 }
 
@@ -789,14 +825,23 @@ export function watchMatched(
   const uid = auth.currentUser?.uid;
   if (!uid) return () => {};
 
-  return onSnapshot(
+  /**
+   * ★まず「待機中・対戦中の部屋だけ」を購読し、索引が無いときだけ全件に落とす★
+   *   array-contains だけだと、その人が今までに遊んだ ★すべての部屋★ を
+   *   待機のたびに読み込む。100戦した人なら100件、1000戦なら1000件で、
+   *   人が増えるほど読み取り回数と端末のメモリが膨らむ。
+   *   status in [waiting, playing] を足すと複合索引（firestore.indexes.json に宣言済み）が要るので、
+   *   索引が使えない（failed-precondition）ときだけ従来の購読に切り替える。
+   *   購読は長く続くので、切り替えの1回分の失敗は負担にならない。
+   */
+  let current: Unsubscribe = () => {};
+  let stopped = false;
+  const subscribe = (narrow: boolean) => {
+    current = onSnapshot(
     query(
       collection(db, COL_ROOMS),
-      // ★条件は array-contains の1つだけ★
-      //   これなら複合索引が要らない（上の解説を参照）。
       where('players', 'array-contains', uid),
-      // 過去のフレンド部屋で上限が埋まらないよう、セッションで絞る。
-
+      ...(narrow ? [where('status', 'in', ['waiting', 'playing'])] : []),
     ),
     (snap) => {
       // status と作成時刻の判定は手元で行う。
@@ -811,12 +856,20 @@ export function watchMatched(
       if (first) onMatched(first.id);
     },
     (error) => {
+      if (narrow && (error as { code?: string })?.code === 'failed-precondition' && !stopped) {
+        console.warn('[battle] 待機部屋の索引が使えないため、全件の購読に切り替えます');
+        subscribe(false);
+        return;
+      }
       // 待機画面自体は壊さないが、★黙って捨てない★。
       // 以前ここが空だったため、索引不足に気付けなかった。
       console.error('[battle] 待機中の購読に失敗しました', error);
       onError?.(error);
     },
   );
+  };
+  subscribe(true);
+  return () => { stopped = true; current(); };
 }
 
 // ============================================================
@@ -1243,7 +1296,29 @@ export async function abortRoom(roomId: string): Promise<void> {
   } catch {
     // 離脱の記録に失敗しても、相手側は無応答から不戦勝を判定できる
   }
+  void releaseJoinCode(roomId);
 }
+
+/**
+ * ★部屋主が部屋を離れたら合言葉を返す★
+ *   合言葉は 31^4 ≒ 92万通りしかなく、作るたびに1つ使う。
+ *   以前は一度も消していなかったので、利用者が増えるほど
+ *   「合言葉が使われていて引き直し」が増え、最後は部屋が作れなくなる。
+ *   また消えた部屋を指す合言葉が残ると「入れない部屋」が見つかってしまう。
+ *   消せるのは部屋主だけ（ルール）。失敗しても試合には影響しない。
+ */
+async function releaseJoinCode(roomId: string): Promise<void> {
+  const uid = auth.currentUser?.uid;
+  const code = issuedCodes.get(roomId);
+  if (!uid || !code) return;
+  issuedCodes.delete(roomId);
+  try { await deleteDoc(doc(db, COL_CODES, code)); } catch { /* 部屋主でない・既に消えている */ }
+}
+
+/** この端末で作った部屋の合言葉（部屋ID → 合言葉）。部屋を離れたときに返すために覚えておく */
+const issuedCodes = new Map<string, string>();
+/** 試合が終わった・部屋が閉じたときに呼ぶ（部屋主でなければ何もしない） */
+export function releaseRoomCode(roomId: string): void { void releaseJoinCode(roomId); }
 
 // ============================================================
 // ルール（Firestore で上書きできるようにする）

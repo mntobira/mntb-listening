@@ -184,6 +184,7 @@ import type { RikaTab } from './features/rika/RikaHome';
 // （以前は ./data/chemistryAdvancedData から読んでいたため、
 //   この2つを使うだけで問題データ本体まで読み込み対象になっていた）
 import { ADVANCED_FIELDS, type AdvancedFieldId } from './data/advancedFields';
+import { readJsonArray } from './utils/safeLocalStorage';
 /*
   公開/非公開の判断は src/config/features.ts が唯一の出どころ。
 
@@ -532,7 +533,8 @@ export default function App() {
       if (!cancelled) setPendingFriendRequests(n);
     };
     refresh();
-    const id = window.setInterval(refresh, 60000);
+    // 画面が見えていないときは読みに行かない（裏で開きっぱなしのタブが読み取りを使い続けないように）
+    const id = window.setInterval(() => { if (document.visibilityState === 'visible') void refresh(); }, 60000);
     const unsub = onAuthStateChanged(auth, () => refresh());
     return () => { cancelled = true; window.clearInterval(id); unsub(); };
   }, [appState]);
@@ -1444,7 +1446,7 @@ export default function App() {
       const uid = auth.currentUser.uid;
       const key = completedKey(uid);
       try {
-        const completed = JSON.parse(localStorage.getItem(key) || '[]');
+        const completed = readJsonArray<string>(key);
         if (!completed.includes(selectedChapterId)) {
           completed.push(selectedChapterId);
           localStorage.setItem(key, JSON.stringify(completed));

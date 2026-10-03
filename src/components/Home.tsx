@@ -84,6 +84,7 @@ import { profileKey, streakKey, lastActiveKey, completedKey } from '../utils/use
 import { loadSchoolBrand } from '../utils/classroom';
 import { UpdateNoticeModal } from './UpdateNoticeModal';
 import { unreadNoticeCount, refreshRemoteNotices } from '../utils/updateNotices';
+import { readJsonArray } from '../utils/safeLocalStorage';
 
 interface HomeProps {
   onStart: () => void;
@@ -323,7 +324,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         setSubjectProgress(perSubject);
 
         // completed chapters（次の章を求めるために継続利用）
-        const completed = JSON.parse(localStorage.getItem(completedKey(uid)) || '[]');
+        const completed = readJsonArray<string>(completedKey(uid));
         setCompletedIds(completed);
 
       } catch (error) {

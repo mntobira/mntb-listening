@@ -468,7 +468,8 @@ export default defineConfig({
           /* 英文法の問題データ */
           if (
             id.includes('/src/data/englishGrammar') ||
-            id.includes('/src/data/egProblems')
+            id.includes('/src/data/egProblems') ||
+            id.includes('/src/data/egV3')
           ) {
             return 'data-english-g';
           }

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { sharedAudioContextResumed } from '../battle/audio/sharedAudioContext';
 
 export function useGlobalClickSound() {
   useEffect(() => {
@@ -6,15 +7,11 @@ export function useGlobalClickSound() {
 
     const playClickSound = () => {
       try {
-        if (!audioCtx) {
-          const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-          if (!AudioContextClass) return;
-          audioCtx = new AudioContextClass();
-        }
-
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
+        // ★アプリ全体で1つの AudioContext を使う★（タイトル曲・対戦の音と共有）
+        //   別に作ると iOS で音声出力の組み直しが起き、BGM が崩れる。
+        //   またブラウザは同時に開けるコンテキスト数に上限がある。
+        audioCtx = sharedAudioContextResumed();
+        if (!audioCtx) return;
 
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
@@ -53,9 +50,7 @@ export function useGlobalClickSound() {
 
     return () => {
       document.removeEventListener('click', handleClick);
-      if (audioCtx && audioCtx.state !== 'closed') {
-        audioCtx.close().catch(e => console.warn('Audio close failed', e));
-      }
+      // 共有コンテキストは閉じない（ほかの音も止まってしまう）
     };
   }, []);
 }

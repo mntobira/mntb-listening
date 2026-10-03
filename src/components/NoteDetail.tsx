@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Save, Trash2, Star, RotateCw, Tag, PenLine } from 'lucide-react';
 import { formatText } from '../utils/textFormatter';
 import { auth } from '../firebase';
+import { readJsonArray } from '../utils/safeLocalStorage';
 
 interface NoteDetailProps {
   note: any;
@@ -32,7 +33,7 @@ export function NoteDetail({ note, onBack, onReview }: NoteDetailProps) {
   const persist = (patch: Record<string, unknown>): boolean => {
     try {
       const key = notesKey;
-      const localNotes = JSON.parse(localStorage.getItem(key) || '[]');
+      const localNotes = readJsonArray<any>(key);
       const updatedNotes = localNotes.map((n: any) => (n.id === note.id ? { ...n, ...patch } : n));
       localStorage.setItem(key, JSON.stringify(updatedNotes));
       // 一覧へ戻ったときに古い値が見えないよう、渡されたノート自体も更新する。
@@ -66,7 +67,7 @@ export function NoteDetail({ note, onBack, onReview }: NoteDetailProps) {
   const handleDelete = async () => {
     if (!confirm('本当に削除しますか？')) return;
     try {
-      const localNotes = JSON.parse(localStorage.getItem(notesKey) || '[]');
+      const localNotes = readJsonArray<any>(notesKey);
       const updatedNotes = localNotes.filter((n: any) => n.id !== note.id);
       localStorage.setItem(notesKey, JSON.stringify(updatedNotes));
       onBack();

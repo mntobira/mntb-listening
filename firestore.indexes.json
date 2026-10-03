@@ -5,8 +5,14 @@
       "collectionGroup": "battle_queue",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "subject", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "ASCENDING" }
+        {
+          "fieldPath": "subject",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
@@ -14,9 +20,48 @@
       "collectionGroup": "battle_rooms",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "players", "arrayConfig": "CONTAINS" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
+        {
+          "fieldPath": "players",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "//": "全国マッチ: 待機中の自分の部屋だけを購読する（watchMatched）。array-contains + 等式なので複合索引が必要。無いときは全件購読に自動で切り替わる。",
+      "collectionGroup": "battle_rooms",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "players",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "//": "章ランキング: 章ごとに点数の高い順で上位だけ読む（src/utils/leaderboard.ts fetchChapterRanking）。無いときは上限つきの全件読みに切り替わる。",
+      "collectionGroup": "leaderboard_chapter",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "chapterId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "bestScore",
+          "order": "DESCENDING"
+        }
       ]
     }
   ],
