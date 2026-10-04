@@ -428,3 +428,60 @@ export function createReviewActions(
     },
   };
 }
+
+// ============================================================
+// 問題ごとのまとまり（2026-10-04 ご要望）
+// ============================================================
+//
+// 記録は小問ごと（問4だけ間違えたら問4だけ）に持つ。
+// ただし一覧に小問を1行ずつ並べると数が多すぎるので、
+// 「同じ大問（回）で間違えた小問」は1枚のカードにまとめて見せ、
+// 解き直すときもその小問だけを出す（問1〜5をすべて解き直させない）。
+
+export interface ReviewGroup {
+  /** `${chapterId}::${questionId}` */
+  key: string;
+  chapterId: string;
+  questionId: string;
+  items: ReviewItem[];
+  /** 解き直す小問ID（items の並び＝問番号順） */
+  subQuestionIds: string[];
+  /** いちばん早い復習予定 */
+  dueAt: number;
+  wrongCount: number;
+}
+
+const subNo = (it: ReviewItem) => {
+  const m = String(it.subLabel || '').match(/問\s*(\d+)/u) || String(it.subQuestionId).match(/_(\d+)$/u);
+  return m ? Number(m[1]) : 0;
+};
+
+/** 小問ごとの復習アイテムを、大問（回）ごとにまとめる。並びは元の items の順（最初に出てきた順）を保つ */
+export function groupReviewItems(items: ReviewItem[]): ReviewGroup[] {
+  const map = new Map<string, ReviewGroup>();
+  for (const it of items) {
+    const key = `${it.chapterId}::${it.questionId}`;
+    let g = map.get(key);
+    if (!g) { g = { key, chapterId: it.chapterId, questionId: it.questionId, items: [], subQuestionIds: [], dueAt: it.dueAt, wrongCount: 0 }; map.set(key, g); }
+    g.items.push(it);
+    g.dueAt = Math.min(g.dueAt, it.dueAt);
+    g.wrongCount = Math.max(g.wrongCount, it.wrongCount);
+  }
+  for (const g of map.values()) {
+    g.items.sort((a, b) => subNo(a) - subNo(b));
+    g.subQuestionIds = g.items.map(it => it.subQuestionId);
+  }
+  return [...map.values()];
+}
+
+/** 解き直しの結果を反映する：正解した小問は「できた」、間違えた小問は採点時に自動で当日へ戻る */
+export function applyReviewRetry(
+  uid: string | null | undefined,
+  chapterId: string,
+  questionId: string,
+  results: { subQuestionId: string; correct: boolean }[],
+): void {
+  for (const r of results) {
+    if (r.correct) markReviewedCorrect(uid, makeItemKey(chapterId, questionId, r.subQuestionId));
+  }
+}

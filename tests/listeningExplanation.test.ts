@@ -116,7 +116,7 @@ describe('リスニングの解説：スクリプトを最初に出す（C3）',
     // ここが外れると、全問共通の一般論がスクリプトより前に4問ぶん並んでしまう。
     const source = read('src/components/Explanation.tsx');
     expect(source).toContain('isScriptFirstExplanation');
-    expect(source).toContain('const isScriptFirst = isScriptFirstExplanation(sqSlice)');
+    expect(source).toContain('const isScriptFirst = isScriptFirstExplanation(sqSliceRaw)');
     expect(source).toContain('{!isScriptFirst && isPracticeMode && sq.detailedExplanation?.steps?.length > 0');
   });
 });

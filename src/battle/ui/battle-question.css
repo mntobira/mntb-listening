@@ -203,3 +203,12 @@
 .arena-live-stage #battle-live-feed + * { margin-top: 4px; }
 
 @media (max-height: 700px) and (max-width: 1023px) { .arena-live-stage #battle-live-feed > li:nth-last-child(n+3) { display: none; } .arena-live-stage #battle-live-feed { gap: 5px !important; margin-block: 4px 8px !important; } }
+
+/* 試合終了の FINISH（結果画面へ移るまでの間ずっと出す） */
+.battle-finish-overlay { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: radial-gradient(circle at 50% 45%, rgba(255, 214, 102, .55) 0%, rgba(20, 30, 48, .82) 62%); animation: battle-finish-bg .35s ease-out both; pointer-events: auto; }
+.battle-finish-word { margin: 0; font: 900 clamp(56px, 18vw, 120px)/1 var(--mt-font-display, 'M PLUS Rounded 1c', sans-serif); letter-spacing: .06em; color: #fff; -webkit-text-stroke: 3px #c0392b; text-shadow: 0 6px 0 #8e2a1f, 0 12px 28px rgba(0,0,0,.45); transform-origin: center; animation: battle-finish-slam .55s cubic-bezier(.2, 1.6, .4, 1) both; }
+.battle-finish-sub { margin: 0; color: #fff3cd; font-size: 15px; font-weight: 700; letter-spacing: .1em; animation: battle-finish-pulse 1.2s ease-in-out .6s infinite; }
+@keyframes battle-finish-bg { from { opacity: 0; } to { opacity: 1; } }
+@keyframes battle-finish-slam { 0% { opacity: 0; transform: scale(2.4) rotate(-6deg); } 70% { opacity: 1; transform: scale(.94) rotate(1deg); } 100% { transform: scale(1) rotate(-2deg); } }
+@keyframes battle-finish-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .battle-finish-overlay, .battle-finish-word, .battle-finish-sub { animation: none; } }

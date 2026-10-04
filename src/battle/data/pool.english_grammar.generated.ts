@@ -12,7 +12,7 @@
  * を実行すること。
  *
  * -------------------------------------------------------------------
- * ■ 収録数: 1188 問
+ * ■ 収録数: 1163 問
  * -------------------------------------------------------------------
  *
  * ■ 中身は「タプルの配列」であって、読みやすさを捨てている。
@@ -26,31 +26,6 @@
 
 /** [id, chapterId, problemId, subQuestionId, format, prompt, label, options, answerIndex, panelOrder, timeLimit, imageUrl] */
 export const POOL: readonly unknown[][] = [
-  ["q:eg4_1:q_eg4_1_set1:q_eg4_1_set1_1","eg4_1","q_eg4_1_set1","q_eg4_1_set1_1",0,"The price of imported wheat has ［　？　］ sharply over the past three months.","空欄に入るものを選びなさい。",["raised","risen","rose","been raising"],1,[],17,""],
-  ["q:eg4_1:q_eg4_1_set1:q_eg4_1_set1_2","eg4_1","q_eg4_1_set1","q_eg4_1_set1_2",0,"Could you please explain ［　？　］ why this method is more efficient than the old one?","空欄に入るものを選びなさい。",["us","to us","for us","us about"],1,[],17,""],
-  ["q:eg4_1:q_eg4_1_set1:q_eg4_1_set1_3","eg4_1","q_eg4_1_set1","q_eg4_1_set1_3",0,"The coach made all the players ［　？　］ around the field five times before practice.","空欄に入るものを選びなさい。",["to run","running","run","ran"],2,[],17,""],
-  ["q:eg4_1:q_eg4_1_set1:q_eg4_1_set1_4","eg4_1","q_eg4_1_set1","q_eg4_1_set1_4",0,"She ［　？　］ me that the meeting had been moved to the following Monday afternoon.","空欄に入るものを選びなさい。",["said","told","spoke","talked"],1,[],17,""],
-  ["q:eg4_1:q_eg4_1_set1:q_eg4_1_set1_5","eg4_1","q_eg4_1_set1","q_eg4_1_set1_5",0,"Would you mind if I ［　？　］ your umbrella until tomorrow morning? Mine is broken.","空欄に入るものを選びなさい。",["lent","borrowed","rented","hired"],1,[],17,""],
-  ["q:eg4_2:q_eg4_2_set1:q_eg4_2_set1_1","eg4_2","q_eg4_2_set1","q_eg4_2_set1_1",0,"The guidebook gave us a lot of useful ［　？　］ about local restaurants and public transport.","空欄に入るものを選びなさい。",["informations","information","an information","informations about"],1,[],17,""],
-  ["q:eg4_2:q_eg4_2_set1:q_eg4_2_set1_2","eg4_2","q_eg4_2_set1","q_eg4_2_set1_2",0,"I had ［　？　］ time to prepare for the presentation, so I stayed up almost all night.","空欄に入るものを選びなさい。",["few","little","a few","a little"],1,[],17,""],
-  ["q:eg4_2:q_eg4_2_set1:q_eg4_2_set1_3","eg4_2","q_eg4_2_set1","q_eg4_2_set1_3",0,"I have two cousins in Osaka. One is a nurse, and ［　？　］ works at a design company.","空欄に入るものを選びなさい。",["another","the other","other","others"],1,[],17,""],
-  ["q:eg4_2:q_eg4_2_set1:q_eg4_2_set1_4","eg4_2","q_eg4_2_set1","q_eg4_2_set1_4",0,"Neither of the two explanations ［　？　］ convincing enough to persuade the committee.","空欄に入るものを選びなさい。",["are","were","was","have been"],2,[],17,""],
-  ["q:eg4_2:q_eg4_2_set1:q_eg4_2_set1_5","eg4_2","q_eg4_2_set1","q_eg4_2_set1_5",0,"The part-time workers at that cafe are paid ［　？　］ hour, not by the month.","空欄に入るものを選びなさい。",["by a","by the","for the","in an"],1,[],17,""],
-  ["q:eg4_3:q_eg4_3_set1:q_eg4_3_set1_1","eg4_3","q_eg4_3_set1","q_eg4_3_set1_1",0,"［　？　］ for a beginner to master this instrument in only a few weeks.","空欄に入るものを選びなさい。",["He is impossible","It is impossible","It is impossible that","There is impossible"],1,[],17,""],
-  ["q:eg4_3:q_eg4_3_set1:q_eg4_3_set1_2","eg4_3","q_eg4_3_set1","q_eg4_3_set1_2",0,"Dragons are ［　？　］ creatures, but they appear in the myths of many different cultures.","空欄に入るものを選びなさい。",["imaginable","imaginary","imaginative","imagining"],1,[],17,""],
-  ["q:eg4_3:q_eg4_3_set1:q_eg4_3_set1_3","eg4_3","q_eg4_3_set1","q_eg4_3_set1_3",0,"The city recorded a ［　？　］ population growth of nearly ten percent last year.","空欄に入るものを選びなさい。",["many","much","large","high"],2,[],17,""],
-  ["q:eg4_3:q_eg4_3_set1:q_eg4_3_set1_4","eg4_3","q_eg4_3_set1","q_eg4_3_set1_4",0,"I have been waiting for over an hour, but the delivery has not arrived ［　？　］.","空欄に入るものを選びなさい。",["already","still","yet","almost"],2,[],17,""],
-  ["q:eg4_3:q_eg4_3_set1:q_eg4_3_set1_5","eg4_3","q_eg4_3_set1","q_eg4_3_set1_5",0,"The room was so dark that I could ［　？　］ see the numbers written on the door.","空欄に入るものを選びなさい。",["hard","hardly","hardly not","not hardly"],1,[],17,""],
-  ["q:eg4_4:q_eg4_4_set1:q_eg4_4_set1_1","eg4_4","q_eg4_4_set1","q_eg4_4_set1_1",0,"You have to submit the report ［　？　］ Friday afternoon, or you will lose ten points.","空欄に入るものを選びなさい。",["until","by","till","in"],1,[],17,""],
-  ["q:eg4_4:q_eg4_4_set1:q_eg4_4_set1_2","eg4_4","q_eg4_4_set1","q_eg4_4_set1_2",0,"My sister left ［　？　］ Osaka early this morning and will arrive there before noon.","空欄に入るものを選びなさい。",["to","for","into","at"],1,[],17,""],
-  ["q:eg4_4:q_eg4_4_set1:q_eg4_4_set1_3","eg4_4","q_eg4_4_set1","q_eg4_4_set1_3",0,"Cheese is made ［　？　］ milk, so people who cannot drink milk should be careful.","空欄に入るものを選びなさい。",["of","from","by","into"],1,[],17,""],
-  ["q:eg4_4:q_eg4_4_set1:q_eg4_4_set1_4","eg4_4","q_eg4_4_set1","q_eg4_4_set1_4",0,"［　？　］ the heavy rain, the outdoor concert was held as originally planned.","空欄に入るものを選びなさい。",["Although","Despite","Despite of","Even"],1,[],17,""],
-  ["q:eg4_4:q_eg4_4_set1:q_eg4_4_set1_5","eg4_4","q_eg4_4_set1","q_eg4_4_set1_5",0,"I took a lot of notes ［　？　］ the professor was explaining the experiment.","空欄に入るものを選びなさい。",["during","while","for","in"],1,[],17,""],
-  ["q:eg5_2:q_eg5_2_set1:q_eg5_2_set1_1","eg5_2","q_eg5_2_set1","q_eg5_2_set1_1",0,"\"［　？　］ you didn't come to the party last night?\" \"I had to look after my little brother.\"","空欄に入るものを選びなさい。",["How come","How come did","Why come","What come"],0,[],17,""],
-  ["q:eg5_2:q_eg5_2_set1:q_eg5_2_set1_2","eg5_2","q_eg5_2_set1","q_eg5_2_set1_2",0,"\"Would you mind opening the window?\" \"［　？　］ It's getting hot in here.\"","空欄に入るものを選びなさい。",["Yes, I would.","Not at all.","No, thank you.","Never mind."],1,[],17,""],
-  ["q:eg5_2:q_eg5_2_set1:q_eg5_2_set1_3","eg5_2","q_eg5_2_set1","q_eg5_2_set1_3",0,"I can't ［　？　］ the noise from the construction site any longer; I'm going to complain.","空欄に入るものを選びなさい。",["stand","stand for","stand by","stand out"],0,[],17,""],
-  ["q:eg5_2:q_eg5_2_set1:q_eg5_2_set1_4","eg5_2","q_eg5_2_set1","q_eg5_2_set1_4",0,"The plan looked perfect on paper. ［　？　］, it failed completely when we actually tried it.","空欄に入るものを選びなさい。",["However","But however","Although","Despite"],0,[],17,""],
-  ["q:eg5_2:q_eg5_2_set1:q_eg5_2_set1_5","eg5_2","q_eg5_2_set1","q_eg5_2_set1_5",0,"Scientists are studying how rising temperatures ［　？　］ the migration of birds.","空欄に入るものを選びなさい。",["effect","affect","effect on","affect on"],1,[],17,""],
   ["q:eg6_10:q_eg6_10_set10:q_eg6_10_set10_1","eg6_10","q_eg6_10_set10","q_eg6_10_set10_1",0,"He is no longer ［　？　］ he used to be.","空欄に入るものを選びなさい。",["what","which","who","that"],0,[],20,""],
   ["q:eg6_10:q_eg6_10_set10:q_eg6_10_set10_2","eg6_10","q_eg6_10_set10","q_eg6_10_set10_2",0,"(a) The town has changed a lot in twenty years. (b) The town is not ［　？　］ it was twenty years ago.","空欄に入るものを選びなさい。",["that","how","which","what"],3,[],25,""],
   ["q:eg6_10:q_eg6_10_set10:q_eg6_10_set10_3","eg6_10","q_eg6_10_set10","q_eg6_10_set10_3",0,"Water is to fish ［　？　］ air is to humans.","空欄に入るものを選びなさい。",["than","which","what","that"],2,[],20,""],

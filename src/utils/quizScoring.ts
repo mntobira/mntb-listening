@@ -30,7 +30,9 @@ import {
   comboMultiplier,
   type ScoreBreakdown,
 } from './scoring';
-import { captureWrongAnswers, type WrongAnswerInput } from './reviewList';
+import { captureWrongAnswers, applyReviewRetry, type WrongAnswerInput } from './reviewList';
+import { recordStudyLog } from './studyLog';
+import { readReviewFocus } from './reviewFocus';
 import { markProblemSolved } from './progress';
 import { recordUnitResult } from './unitStats';
 import { schedulePush } from './studySync';
@@ -235,6 +237,33 @@ export function createScoreCurrentQuestion({
     } catch (e) {
       console.error('[Quiz] captureWrongAnswers failed:', e);
     }
+
+    // ★学習記録（直近3日）★ どの問題を解いて、どの小問を間違えたか
+    try {
+      const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
+      const judged = subQuestions.filter((sq: any) => !isDescriptive(sq));
+      if (judged.length > 0) {
+        const unit = String(chapter.abstractTitle || chapter.realTitle || chapter.title || chapter.id);
+        const round = String(currentQuestion.title || '').trim() || `第${currentQuestionIndex + 1}問`;
+        recordStudyLog(uid, {
+          key: `study:${chapter.id}:${currentQuestion.id}:${new Date().toDateString()}`,
+          kind: 'study', at: Date.now(), chapterId: chapter.id, questionId: currentQuestion.id,
+          title: unit, sub: round,
+          items: judged.map((sq: any, i: number) => {
+            const ok = isAnswerCorrect(sq, answers[sq.id]);
+            const m = String(sq.label || '').match(/問\s*\d+/u);
+            return { id: String(sq.id), label: m ? m[0].replace(/\s+/g, '') : (sq.label ? String(sq.label).slice(0, 12) : `(${i + 1})`), correct: ok, answer: ok ? undefined : String(sq.correctAnswer ?? '') };
+          }),
+        });
+        // 復習ノートから「間違えた問題だけ」を解き直しているとき：正解した小問はノートで1段階進める
+        const focus = readReviewFocus();
+        if (focus && focus.chapterId === chapter.id && focus.questionId === currentQuestion.id) {
+          applyReviewRetry(uid, chapter.id, currentQuestion.id,
+            judged.filter((sq: any) => focus.subQuestionIds.includes(String(sq.id)))
+              .map((sq: any) => ({ subQuestionId: String(sq.id), correct: isAnswerCorrect(sq, answers[sq.id]) })));
+        }
+      }
+    } catch { /* 記録できなくても学習は止めない */ }
 
     if (onScored) {
       onScored(finalBreakdown, {

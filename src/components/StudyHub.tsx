@@ -20,6 +20,8 @@ import {
   getDueReviewItems,
   createReviewActions,
   isMastered,
+  groupReviewItems,
+  type ReviewGroup,
   type ReviewItem,
 } from '../utils/reviewList';
 import { ForgettingCurveChart } from './ForgettingCurveChart';
@@ -171,6 +173,69 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ item, now, onCorrect, onWrong, 
 };
 
 // ============================================================
+// 問題ごとのカード（2026-10-04 ご要望）
+//   同じ大問で間違えた小問を1枚にまとめ、「解く」は間違えた小問だけを出す
+// ============================================================
+
+const GroupCard: React.FC<Omit<ReviewCardProps, 'item' | 'onReview'> & { group: ReviewGroup; onReview?: (target: any) => void }> = ({ group, now, onCorrect, onWrong, onRemove, onReview, showSubject = false }) => {
+  const [open, setOpen] = useState(false);
+  const head = group.items[0];
+  if (group.items.length === 1) return <ReviewCard item={head} now={now} onCorrect={onCorrect} onWrong={onWrong} onRemove={onRemove} showSubject={showSubject}
+    onReview={onReview ? () => onReview({ ...head, subQuestionIds: group.subQuestionIds }) : undefined} />;
+  const due = group.dueAt <= now;
+  const mastered = group.items.every(isMastered);
+  const status = mastered ? 'done' : due ? 'doing' : 'todo';
+  const subject = subjectOfReviewItem(head);
+  const labels = group.items.map((it, i) => (String(it.subLabel || '').match(/問\s*\d+/u)?.[0] ?? `(${i + 1})`).replace(/\s+/g, ''));
+  const detailId = `review-group-${group.key}`;
+  return (
+    <li className="rn-item rn-group" data-status={status} data-open={open || undefined} data-review-group>
+      <div className="rn-item-row">
+        <button type="button" className="rn-item-main" onClick={() => setOpen(v => !v)} aria-expanded={open} aria-controls={detailId}>
+          <span className="rn-item-scope">
+            {showSubject && subject !== 'other' && <b>{REVIEW_SUBJECT_LABELS[subject]}</b>}
+            <span>{formatScope(head)}</span>
+          </span>
+          <span className="rn-group-chips" aria-label={`間違えた問題 ${labels.join('・')}`}>
+            {labels.map((l, i) => <span key={i} data-mastered={isMastered(group.items[i]) || undefined}>{l}</span>)}
+            <small>の{group.items.length}問だけ</small>
+          </span>
+          <span className="rn-item-meta">
+            <span className="mt-status" data-status={status}>{mastered ? '習得済み' : due ? '今日やる' : formatDue(group.dueAt, now)}</span>
+            {group.wrongCount >= 2 && !mastered && <span className="rn-weak"><Flame size={13} aria-hidden="true" />{group.wrongCount}回ミス</span>}
+          </span>
+        </button>
+        {onReview && (
+          <button type="button" className="rn-item-solve" onClick={() => onReview({ ...head, subQuestionIds: group.subQuestionIds })} aria-label={`間違えた${group.items.length}問だけ解き直す：${formatScope(head)}`}>
+            <RotateCcw size={18} aria-hidden="true" /><span>解く</span>
+          </button>
+        )}
+      </div>
+      {open && (
+        <ul id={detailId} className="rn-group-detail">
+          {group.items.map((it, i) => (
+            <li key={it.key}>
+              <p className="rn-group-label"><b>{labels[i]}</b>{summarizeQuestion(it.subLabel?.replace(/^問\s*\d+\s*/u, '') || '', 30)}</p>
+              {(it.correctAnswer || it.lastWrongAnswer) && (
+                <dl className="rn-answers">
+                  {it.lastWrongAnswer && <div data-kind="wrong"><dt>あなたの解答</dt><dd className="font-math">{it.lastWrongAnswer}</dd></div>}
+                  {it.correctAnswer && <div data-kind="right"><dt>正答</dt><dd className="font-math">{it.correctAnswer}</dd></div>}
+                </dl>
+              )}
+              <div className="rn-item-actions" role="group" aria-label={`${labels[i]}の自己評価`}>
+                <button type="button" className="mt-btn mt-btn-primary" onClick={() => onCorrect(it.key)}><CheckCircle2 size={16} aria-hidden="true" />できた</button>
+                <button type="button" className="mt-btn mt-btn-secondary" onClick={() => onWrong(it.key)}><RotateCcw size={16} aria-hidden="true" />まだ苦手</button>
+                <button type="button" className="mt-btn mt-btn-text rn-remove" onClick={() => onRemove(it.key)} aria-label={`${labels[i]}を復習リストから削除`}><Trash2 size={16} aria-hidden="true" />削除</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+};
+
+// ============================================================
 // 「もっと見る」で展開する復習リスト
 // ============================================================
 
@@ -188,13 +253,14 @@ interface CollapsibleReviewListProps {
 
 const CollapsibleReviewList: React.FC<CollapsibleReviewListProps> = ({ items, now, onCorrect, onWrong, onRemove, onReview, showSubject = false, initialCount = 6 }) => {
   const [expanded, setExpanded] = useState(false);
-  const hasMore = items.length > initialCount;
-  const visible = expanded || !hasMore ? items : items.slice(0, initialCount);
-  const hiddenCount = items.length - visible.length;
+  const groups = useMemo(() => groupReviewItems(items), [items]);
+  const hasMore = groups.length > initialCount;
+  const visible = expanded || !hasMore ? groups : groups.slice(0, initialCount);
+  const hiddenCount = groups.length - visible.length;
   return (
     <>
       <ul className="rn-list">
-        {visible.map(it => <ReviewCard key={it.key} item={it} now={now} onCorrect={onCorrect} onWrong={onWrong} onRemove={onRemove} onReview={onReview} showSubject={showSubject} />)}
+        {visible.map(g => <GroupCard key={g.key} group={g} now={now} onCorrect={onCorrect} onWrong={onWrong} onRemove={onRemove} onReview={onReview} showSubject={showSubject} />)}
       </ul>
       {hasMore && (
         <button type="button" className="rn-more" onClick={() => setExpanded(v => !v)} aria-expanded={expanded}>
@@ -333,7 +399,7 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, 
             </div>
           </div>
           {first && onReview ? (
-            <button type="button" className="mt-btn mt-btn-accent rn-hero-cta" onClick={() => onReview(first)}>
+            <button type="button" className="mt-btn mt-btn-accent rn-hero-cta" onClick={() => { const g = groupReviewItems(scopedDueItems).find(x => x.key === `${first.chapterId}::${first.questionId}`); onReview({ ...first, subQuestionIds: g?.subQuestionIds ?? [first.subQuestionId] }); }}>
               <RotateCcw size={18} aria-hidden="true" />
               <span><strong>復習を始める</strong><small>1問目：{formatScope(first)}</small></span>
             </button>

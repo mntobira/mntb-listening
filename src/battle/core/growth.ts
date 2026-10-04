@@ -843,6 +843,24 @@ export interface ItemDef {
  * 「ポーズを選べる」こと自体が装備で、レベルや実績・コイン・ガチャで順に解放する。
  * gacha: true を付けたものはガチャの抽選対象にも入る（レベル解放と併用可）。
  */
+/**
+ * レベル報酬の学習プリント（UR）。ガチャからは出ない。レベルに届いたら自動で手に入る。
+ * PDF は scripts/gacha-prints/build-level-ur.py で作る。
+ */
+export const LEVEL_PRINTS: readonly GachaPrintDef[] = [
+  { id: 'print_level_listening_howto', label: '共通テスト リスニングの聞き方（大問別の聞き方と毎日の練習法）', subject: 'english_listening', category: '出題傾向', file: '/prints/print_level_listening_howto.pdf', thumb: '/prints/thumbs/print_level_listening_howto.webp', pages: 2, kb: 82 },
+];
+
+/** レベルでだけ解放される装備（ガチャ・ショップには出さない） */
+export const LEVEL_REWARD_ITEMS: readonly ItemDef[] = [
+  { id: 'lv_cheek_star', kind: 'cheek', rarity: 'R', label: 'ほしのペイント（Lv.3）', value: 'star:#FFD43B', unlock: { level: 3 } },
+  { id: 'lv_glasses_round', kind: 'glasses', rarity: 'R', label: '学者のまるメガネ（Lv.7）', value: 'round:#8B5E34', unlock: { level: 7 } },
+  { id: 'lv_aura_notes', kind: 'aura', rarity: 'SR', label: 'リスニングのおんぷ（Lv.12）', value: 'notes:#2F9E8F', unlock: { level: 12 } },
+  { id: 'print_level_listening_howto', kind: 'print', rarity: 'UR', label: LEVEL_PRINTS[0].label, value: LEVEL_PRINTS[0].file, unlock: { level: 15 } },
+  { id: 'lv_wall_gold', kind: 'wallpaper', rarity: 'SR', label: '壁紙：黄金の書斎（Lv.25）', value: 'gold', unlock: { level: 25 } },
+  { id: 'lv_frame_aurora', kind: 'frame', rarity: 'UR', label: 'マスターのオーロラフレーム（Lv.30）', value: '#8657c5', pattern: 'aurora', unlock: { level: 30 } },
+];
+
 export const ITEMS: readonly ItemDef[] = [
   { id: 'frame_league_aurora', kind: 'frame', rarity: 'UR', label: 'リーグ・オーロラフレーム', value: '#8657c5', pattern: 'aurora', unlock: { gacha: true } },
   { id: 'pose_basic', kind: 'pose', label: '基本', value: '/mascots/basic.webp', unlock: { level: 1 } },
@@ -956,11 +974,13 @@ export const ITEMS: readonly ItemDef[] = [
   { id: 'wall_gold', kind: 'wallpaper', gacha: true, rarity: 'SR', label: '壁紙：黄金の書斎', value: 'gold', unlock: { gacha: true } },
   // ── UR（大当たり）：学習プリント PDF。ガチャからだけ出る（一覧は gachaPrints.generated.ts）──
   ...GACHA_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'UR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  // ── レベル報酬（2026-10-04 ご要望「レベルを上げる意味」）：このレベルでしか手に入らないもの ──
+  ...LEVEL_REWARD_ITEMS,
 ];
 
 /** 学習プリント（UR）の詳細（サムネイル・ページ数など）。プリントでなければ undefined */
 export function printOf(id: string): GachaPrintDef | undefined {
-  return GACHA_PRINTS.find((p) => p.id === id);
+  return GACHA_PRINTS.find((p) => p.id === id) ?? LEVEL_PRINTS.find((p) => p.id === id);
 }
 
 /**

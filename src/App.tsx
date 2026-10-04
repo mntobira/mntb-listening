@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { setReviewFocus } from './utils/reviewFocus';
 import { BottomNavigation } from './components/ui/BottomNavigation';
 import { ListeningHome as Home } from './components/ListeningHome';
 import { ListeningSubjectSelection } from './components/ListeningSubjectSelection';
@@ -1344,6 +1345,8 @@ export default function App() {
     range: { startIndex: number; endIndex: number } | null = null,
     targetMode: AppMode = appMode,
   ) => {
+    // 通常の演習を始めるときは、復習ノートの「間違えた小問だけ」の絞り込みを外す（復習ノートからは後で付け直す）
+    setReviewFocus(null);
     setSelectedChapterId(chapterId);
     setQuizRange(range);
     setAppState('quiz');
@@ -1489,7 +1492,15 @@ export default function App() {
       setSelectedSubject(target.subject);
       if (target.field) setSelectedField(target.field);
       setAppMode('practice');
-      handleSelectChapter(target.chapterId, target.questionIndex, false, null, 'practice');
+      // ★間違えた小問だけを解き直す（2026-10-04 ご要望）★ その大問1つだけを範囲にして、小問も間違えた分に絞る
+      const subIds: string[] = Array.isArray(note.subQuestionIds) ? note.subQuestionIds.map(String)
+        : note.subQuestionId && note.questionId ? [String(note.subQuestionId)] : [];
+      if (subIds.length > 0 && note.questionId) {
+        handleSelectChapter(target.chapterId, target.questionIndex, false, { startIndex: target.questionIndex, endIndex: target.questionIndex }, 'practice');
+        setReviewFocus({ chapterId: target.chapterId, questionId: String(note.questionId), subQuestionIds: subIds });
+      } else {
+        handleSelectChapter(target.chapterId, target.questionIndex, false, null, 'practice');
+      }
     } catch {
       if (request === reviewRequest.current) {
         alert('問題データの読み込みに失敗しました。通信状況を確認して、もう一度お試しください。');
@@ -1884,7 +1895,7 @@ export default function App() {
                   // 対戦はランキングより前（結果を見る画面より先）。FEATURES.battle が false なら席ごと消す
                   { id: 'battle', label: '対戦', ariaLabel: 'オンライン対戦へ移動', current: appState === 'battle', hidden: !FEATURES.battle, onClick: () => navigateMain('battle') },
                   { id: 'gacha', label: 'ガチャ', ariaLabel: 'ガチャ画面へ移動', current: appState === 'growth' && growthPage === 'gacha', onClick: () => { setGrowthPage('gacha'); navigateMain('growth'); } },
-                  { id: 'mypage', label: 'マイページ', ariaLabel: 'マイページへ移動', current: appState === 'growth' && growthPage !== 'gacha', onClick: () => { setGrowthPage('overview'); navigateMain('growth'); } },
+                  { id: 'mypage', label: 'マイページ', ariaLabel: 'マイページへ移動', current: appState === 'growth' && growthPage !== 'gacha' && growthPage !== 'rush', onClick: () => { setGrowthPage('overview'); navigateMain('growth'); } },
                   { id: 'settings', label: '設定', ariaLabel: pendingFriendRequests > 0 ? `設定画面へ移動（フレンド申請が${pendingFriendRequests}件届いています）` : '設定画面へ移動',
                     current: appState === 'settings', badge: pendingFriendRequests, onClick: () => navigateMain('settings') },
                 ]}
