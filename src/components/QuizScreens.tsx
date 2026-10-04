@@ -106,6 +106,8 @@ interface QuizScreensProps {
   onNextChapter?: (chapterId: string) => void;
   /** 1回だけ解いたとき、同じ単元の次の回を始める（英文法・リスニング） */
   onNextRound?: (chapterId: string, index: number) => void;
+  /** 結果の詳しい答え合わせの下に置く「ホームに戻る」 */
+  onHome?: () => void;
 }
 
 export function QuizScreens({
@@ -128,6 +130,7 @@ export function QuizScreens({
   onRetryWrong,
   onNextChapter,
   onNextRound,
+  onHome,
 }: QuizScreensProps) {
   /*
    * 章の解決はここで行う。
@@ -211,6 +214,7 @@ export function QuizScreens({
         onRetryWrong={onRetryWrong ? (index) => onRetryWrong(chapter.id, index) : undefined}
         onNextChapter={nextRoundIndex >= 0 && onNextRound ? () => onNextRound(chapter.id, nextRoundIndex)
           : nextChapter && onNextChapter ? () => onNextChapter(nextChapter.id) : undefined}
+        onHome={onHome}
         nextChapterTitle={nextRoundIndex >= 0 && onNextRound ? `第${nextRoundIndex + 1}回` : nextChapter?.abstractTitle || nextChapter?.realTitle || undefined}
       />
     </ErrorBoundary>

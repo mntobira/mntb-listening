@@ -1,5 +1,6 @@
 /** SERVER ONLY. Never import this file in Vite or expose per-member intermediate values. */
-export const EPOCH = Date.UTC(2026, 9, 4, 15);
+// シーズン1：2026-10-16(金) 0:00 JST 開始・2週間ごと（src/battle/core/leagues.ts と必ず同じ値）
+export const EPOCH = Date.UTC(2026, 9, 15, 15);
 export const PERIOD = 14 * 86400000;
 export const REWARD_ITEM = 'frame_league_aurora';
 export const LEAGUES = ['bronze', 'silver', 'gold', 'platinum', 'manatobi'];
@@ -44,18 +45,24 @@ export function validAttestation(room, uid) {
   const outcome = a.myScore > b.myScore ? 'win' : a.myScore < b.myScore ? 'lose' : 'draw';
   return a.outcome === outcome && b.outcome === ({ win:'lose',lose:'win',draw:'draw' })[outcome];
 }
+/** シーズン報酬表（src/battle/core/leagues.ts の SEASON_REWARDS と同じ値を保つ） */
+export const PARTICIPATION_COINS = { bronze: 50, silver: 100, gold: 150, platinum: 200, manatobi: 300 };
+export function rankCoins(rank) { return rank === 1 ? 500 : rank <= 3 ? 300 : 150; }
+export const CLAN_COINS = 200;
 export function rewardPlan(entries, powerPolicy) {
   const eligible = entries.filter(e => e.matches >= 3 && !e.excluded);
   const gifts = [];
+  // 参加賞：シーズン中に全国の対人戦3試合以上 → 最終リーグに応じたマナコイン
+  for (const e of eligible) { const lg = leagueId(e.rating); gifts.push({ uid:e.uid, kind:'join', rank:0, label:lg, coins:PARTICIPATION_COINS[lg], itemId:null }); }
   for (const league of LEAGUES) {
     for (const row of ranked(eligible.filter(e => leagueId(e.rating) === league))) {
-      if (row.rank <= 10) gifts.push({ uid:row.uid, kind:'individual', rank:row.rank, label:league });
+      if (row.rank <= 10) gifts.push({ uid:row.uid, kind:'individual', rank:row.rank, label:league, coins:rankCoins(row.rank), itemId:REWARD_ITEM });
     }
   }
   const groups = new Map();
   for (const e of eligible) if (e.clanId && e.clanMatches >= 3) { const list=groups.get(e.clanId) ?? []; list.push(e); groups.set(e.clanId,list); }
   const clans=ranked([...groups].map(([id, members]) => ({ id, power:clanPower(members, powerPolicy), members })), 'power');
-  for (const clan of clans.filter(c => c.rank <= 3)) for (const e of clan.members) gifts.push({ uid:e.uid, kind:'clan', rank:clan.rank, label:'マナクラン' });
+  for (const clan of clans.filter(c => c.rank <= 3)) for (const e of clan.members) gifts.push({ uid:e.uid, kind:'clan', rank:clan.rank, label:'マナクラン', coins:CLAN_COINS, itemId:REWARD_ITEM });
   return { gifts, clans:clans.map(({members,...publicRow}) => publicRow) };
 }
 

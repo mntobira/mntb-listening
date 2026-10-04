@@ -59,3 +59,60 @@
 .practice-result-stats div { min-width:64px; text-align:center; background:#ffffffb3; border:1px solid #fff; border-radius:12px; padding:4px 8px; }
 .practice-result-stats dt { font-size:12px; font-weight:700; color:#6b7280; }
 .practice-result-stats dd { margin:0; font-size:15px; font-weight:900; color:#1B2631; }
+
+/* ===== 一人で学ぶ：結果画面（2026-10-04）===== */
+.practice-reward-line { display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; margin:8px 0 0; padding:6px 12px; border-radius:12px; background:#fff7dc; border:1px solid #f1d58a; color:#7a5200; font-size:13px; font-weight:700; }
+.practice-reward-line b { font-size:18px; color:#b26b00; font-family: var(--mt-font-display, inherit); }
+.practice-reward-line svg { color:#d79a00; flex-shrink:0; }
+/* 解いた問題のページ送り（対戦の「1問ずつのけっか」と同じ操作感・一人で学ぶの配色） */
+.practice-pager { position: sticky; top: 0; z-index: 30; margin: 12px 16px 0; padding: 8px 10px; border-radius: 18px; background: #ffffffee; border: 1px solid #dfe7da; box-shadow: 0 4px 14px #2c3e5014; backdrop-filter: blur(6px); }
+.practice-pager-title { display:flex; justify-content:space-between; align-items:center; margin:0 4px 6px; font-size:12px; font-weight:800; color:#4b5d55; }
+.practice-pager-title b { color:#2c3e50; }
+.practice-pager-row { display:flex; align-items:center; gap:6px; }
+.practice-pager-arrow { flex-shrink:0; width:44px; height:44px; display:grid; place-items:center; border-radius:14px; border:1px solid #d6dfd2; background:#fff; color:#2c3e50; }
+.practice-pager-arrow:disabled { opacity:.35; }
+.practice-pager-chips { flex:1; min-width:0; display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding:2px; margin:0; list-style:none; }
+.practice-pager-chips::-webkit-scrollbar { display:none; }
+.practice-pager-chips button { min-width:44px; height:44px; border-radius:14px; font-weight:800; font-size:15px; border:2px solid transparent; }
+.practice-pager-chips button[data-state=ok] { background:#e6f6ec; color:#1f7a4a; border-color:#a8dcbc; }
+.practice-pager-chips button[data-state=ng] { background:#fdecef; color:#c0394f; border-color:#f3b6c1; }
+.practice-pager-chips button[data-state=skip], .practice-pager-chips button[data-state=self] { background:#f2f4f3; color:#6b7772; border-color:#dde3e0; }
+.practice-pager-chips button[aria-current] { box-shadow: 0 0 0 3px #f4d03f; transform: translateY(-1px); }
+@media (min-width: 768px) {
+  .practice-pager { margin: 16px 24px 0; padding: 10px 14px; }
+  .practice-pager-row { justify-content: center; }
+  .practice-pager-chips { flex: 0 1 auto; }
+}
+/* PC：結果カードは横に広がりすぎないよう中央に、ページ送りも同じ幅で */
+@media (min-width: 1024px) {
+  [data-practice-result] { max-width: none; }
+  .practice-pager { max-width: 1180px; margin-inline: auto; }
+}
+/* 結果（1画面目）→ 詳しい結果へ */
+.practice-detail-open { margin-top: 10px; width: 100%; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; background: #f4d03f; color: #3d3222; font-weight: 800; font-size: 15px; box-shadow: 0 4px 0 #c9a227; border: 0; }
+.practice-detail-open:active { transform: translateY(2px); box-shadow: 0 2px 0 #c9a227; }
+.practice-pager-title { gap: 8px; }
+.practice-pager-title span { flex: 1; }
+.practice-pager-back { display: inline-flex; align-items: center; gap: 2px; min-height: 32px; padding: 0 10px 0 6px; border-radius: 999px; border: 1px solid #d6dfd2; background: #fff; color: #2c3e50; font-size: 12px; font-weight: 800; }
+/* 詳しい結果（スマホ）：ページ送りで位置が分かるので、大問ごとの見出し行は小さく */
+@media (max-width: 767px) {
+  [data-practice-pager] ~ div h3:has(> svg + span) { margin-bottom: 6px !important; font-size: 14px !important; }
+  .practice-pager { margin: 8px 10px 0; }
+}
+
+/* ===== 2026-10-04 演習の結果：ボタンはすべて画面の下（親指の届く所）にそろえる ===== */
+.practice-bottom-bar { flex-shrink: 0; width: 100%; box-sizing: border-box; position: sticky; bottom: 0; z-index: 40; margin-top: auto; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(to top, #fdfbf7 75%, #fdfbf700); }
+.practice-bottom-bar .practice-detail-open { margin: 0; max-width: 720px; display: flex; margin-inline: auto; }
+.practice-bottom-bar.is-review { display: grid; gap: 8px; border-top: 1px solid #ece4d3; background: #fffdf8; box-shadow: 0 -6px 18px #2c3e5014; }
+.practice-bottom-bar.is-review > * { max-width: 720px; width: 100%; margin-inline: auto; }
+.pbb-main { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; background: #2c3e50; color: #fff; font-weight: 800; font-size: 15px; border: 0; }
+.pbb-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pbb-sub button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; border: 1.5px solid #d6dfd2; background: #fff; color: #2c3e50; font-weight: 700; font-size: 13px; }
+.pbb-sub button:only-child { grid-column: 1 / -1; }
+/* 詳しい結果の上：結果へ戻る＋問題の切り替えを1行に */
+.practice-pager.is-review { position: sticky; top: 0; z-index: 56; margin: 0; width: 100%; max-width: none; box-sizing: border-box; flex-shrink: 0; border-radius: 0; border-width: 0 0 1px; padding: 6px 8px; box-shadow: 0 2px 10px #2c3e5010; }
+.practice-pager.is-review .practice-pager-row { gap: 4px; }
+.practice-pager.is-review .practice-pager-back { flex-shrink: 0; min-height: 44px; }
+.practice-pager.is-review .practice-pager-arrow { width: 40px; }
+.practice-pager.is-review .practice-pager-chips button { min-width: 40px; height: 40px; font-size: 14px; }
+@media (min-width: 768px) { .practice-pager.is-review .practice-pager-row { justify-content: center; } .practice-pager.is-review .practice-pager-chips { flex: 0 1 auto; } }

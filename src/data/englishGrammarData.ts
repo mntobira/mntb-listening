@@ -74,7 +74,6 @@ import {
   egNounArticleProblems,
   egAdjAdverbProblems,
   egPrepositionProblems,
-  egIdiomProblems,
   egConversationProblems,
 } from './englishGrammarProblems';
 import type { GrammarProblem } from './englishGrammarProblems';
@@ -155,28 +154,28 @@ export const englishGrammarData: { parts: GrammarPart[] } = {
         // 第17〜19章（4択・2026-10-04 追加）。中身は egV3Problems.ts
         ...egV3Chapters.filter((c) => c.chapter >= 17 && c.chapter <= 19).map((c) =>
           ch(egV3ChapterId(c.chapter), `${c.chapter}章 ${c.title}`, `第${c.chapter}章 ${c.title}`, '語法', c.topics)),
-        ch('eg4_1', '10章 語法', '⑮ 動詞の語法（自他・語形・型）', '語法', [
+        ch('eg4_1', '20章 語法（総合）', '⑮ 動詞の語法（自他・語形・型）', '語法', [
           '混同しやすい自動詞と他動詞（rise / raise, lie / lay, sit / seat）',
           '第4文型をとらない動詞（explain / suggest には to が必要）',
           'V＋O＋to do / V＋O＋do の型の区別（tell / let / make）',
           'say / speak / talk / tell の使い分け',
           'borrow / lend / rent、hear / listen などの対立ペア',
         ]),
-        ch('eg4_2', '10章 語法', '⑯ 名詞・代名詞・冠詞の語法', '語法', [
+        ch('eg4_2', '20章 語法（総合）', '⑯ 名詞・代名詞・冠詞の語法', '語法', [
           '不可算名詞（information / advice / furniture / news）',
           '数量表現（many / much / few / little / a number of）',
           '再帰代名詞・it の特別用法・one / another / the other',
           'both / either / neither / none の呼応と動詞の数',
           '冠詞（a / an / the / 無冠詞）と by the hour などの慣用',
         ]),
-        ch('eg4_3', '10章 語法', '⑰ 形容詞・副詞の語法', '語法', [
+        ch('eg4_3', '20章 語法（総合）', '⑰ 形容詞・副詞の語法', '語法', [
           '人が主語にできない形容詞（It is impossible for A to do）',
           '紛らわしい形容詞（imaginable / imaginary / imaginative）',
           '数と量の形容詞（high / large / heavy の相性）',
           '副詞の位置と意味（already / yet / still / almost）',
           'ago / before、late / lately、hard / hardly の区別',
         ]),
-        ch('eg4_4', '10章 語法', '⑱ 前置詞の語法', '語法', [
+        ch('eg4_4', '20章 語法（総合）', '⑱ 前置詞の語法', '語法', [
           '時を表す前置詞（in / on / at / by / until / for / during）',
           '場所・方向（in / at / on / to / into / for）',
           '手段・原因・材料（by / with / of / from / through）',
@@ -197,16 +196,10 @@ export const englishGrammarData: { parts: GrammarPart[] } = {
       title: '会話表現',
       chapters: [
         // 会話表現（4択144問・2026-10-04 追加）。教材の「第8章」だが比較と重なるため第20章として扱う
+        // 2026-10-04：イディオムは「英熟語」に移したので外し、章番号を 1〜22 の通し番号に詰めた（中身のIDは eg6_20 のまま）
         ...egV3Chapters.filter((c) => c.chapter === 20).map((c) =>
-          ch(egV3ChapterId(c.chapter), `${c.chapter}章 ${c.title}`, `第${c.chapter}章 ${c.title}`, '表現', c.topics)),
-        ch('eg5_1', '11章 イディオム', '⑲ 動詞を含む熟語・群動詞', '表現', [
-          'put / take / get / make / come / go の句動詞',
-          '「動詞＋副詞」と「動詞＋前置詞」の目的語の位置',
-          'be動詞＋形容詞＋前置詞（be aware of / be capable of）',
-          '前置詞を含む慣用（in terms of / on behalf of / at the expense of）',
-          '否定・強調の慣用表現（by no means / anything but）',
-        ]),
-        ch('eg5_2', '12章 会話・語い', '⑳ 会話表現と多義語・語い', '表現', [
+          ch(egV3ChapterId(c.chapter), `21章 ${c.title}`, `第21章 ${c.title}`, '表現', c.topics)),
+        ch('eg5_2', '22章 会話・語い', '⑳ 会話表現と多義語・語い', '表現', [
           '定型応答（Why don\'t you ~? / How come ~? / What if ~?）',
           '依頼・提案・申し出への自然な返し方',
           '多義語（bear / hold / stand / matter / practice）',
@@ -232,7 +225,6 @@ const EG_PROBLEMS: Record<string, GrammarProblem[]> = {
   eg4_2: egNounArticleProblems,
   eg4_3: egAdjAdverbProblems,
   eg4_4: egPrepositionProblems,
-  eg5_1: egIdiomProblems,
   eg5_2: egConversationProblems,
 };
 

@@ -38,8 +38,8 @@ export async function handleClan(req) {
   if(action==='status') {const config=await db.collection('league_control').doc('config').get(); return {ready:config.get('enabled')===true && Boolean(privatePolicy()),epoch:EPOCH,periodDays:14};}
   if(action==='overview' || action==='refresh') return overview(req.auth?.uid);
   const uid=requireUid(req); await quota(uid);
-  if(action==='rewards') {const snap=await db.collection('league_rewards').doc(uid).collection('items').orderBy('createdAt','desc').limit(100).get(); return {rewards:snap.docs.map(d=>({id:d.id,itemId:d.get('itemId'),season:d.get('season'),label:d.get('label'),rank:d.get('rank')}))};}
-  if(action==='claimReward') {if(!safeId(data.rewardId)) fail('invalid-argument','プレゼントを選び直してください。'); const d=await db.collection('league_rewards').doc(uid).collection('items').doc(data.rewardId).get(); if(!d.exists || d.get('itemId')!==REWARD_ITEM) fail('not-found','このアカウントのプレゼントはありません。'); return {id:d.id,itemId:d.get('itemId'),season:d.get('season'),label:d.get('label'),rank:d.get('rank')};}
+  if(action==='rewards') {const snap=await db.collection('league_rewards').doc(uid).collection('items').orderBy('createdAt','desc').limit(100).get(); return {rewards:snap.docs.map(d=>({id:d.id,itemId:d.get('itemId')??null,season:d.get('season'),label:d.get('label'),rank:d.get('rank'),kind:d.get('kind')??'individual',coins:d.get('coins')??0}))};}
+  if(action==='claimReward') {if(!safeId(data.rewardId)) fail('invalid-argument','プレゼントを選び直してください。'); const d=await db.collection('league_rewards').doc(uid).collection('items').doc(data.rewardId).get(); const item=d.get('itemId')??null; if(!d.exists || (item!==null && item!==REWARD_ITEM)) fail('not-found','このアカウントのプレゼントはありません。'); return {id:d.id,itemId:item,season:d.get('season'),label:d.get('label'),rank:d.get('rank'),kind:d.get('kind')??'individual',coins:Math.max(0,Math.min(1000,Number(d.get('coins'))||0))};}
   if(action==='create' || action==='join') {
     const now=Date.now(); const invite=String(data.inviteCode ?? '').toUpperCase(); const name=String(data.name ?? '').normalize('NFKC').trim();
     if(action==='create' && (name.length<2 || name.length>16 || /[\p{Cc}<>@]|https?:|死ね|殺す|fuck|sex/iu.test(name))) fail('invalid-argument','クラン名は個人情報や不適切な語を含まない2〜16文字で入力してください。');
@@ -176,7 +176,7 @@ export async function settleSeason(id,now=Date.now()) {
   const plan=(await ref.get()).get('plan');
   for(const gift of plan.gifts) {
     const target=db.collection('league_rewards').doc(gift.uid).collection('items').doc(`${id}_${gift.kind}`);
-    try {await target.create({itemId:REWARD_ITEM,season:id,label:gift.label,rank:gift.rank,createdAt:stamp()});}
+    try {await target.create({itemId:gift.itemId===undefined?REWARD_ITEM:gift.itemId,season:id,label:gift.label,rank:gift.rank,kind:gift.kind,coins:gift.coins??0,createdAt:stamp()});}
     catch(e) {if(e.code!==6 && e.code!=='already-exists') throw e;}
   }
   await ref.update({status:'settled',settledAt:stamp()});

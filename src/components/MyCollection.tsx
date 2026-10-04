@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { FileText, Download, Coins, Gift, Shirt } from 'lucide-react';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { ITEMS, gachaRarityOf, printOf, type ItemDef } from '../battle/core/growth';
-import { buyItem, equip, importLeagueReward } from '../battle/data/growthStore';
+import { buyItem, equip, importLeagueReward, leagueRewardClaimed } from '../battle/data/growthStore';
 import { GrowthAvatar } from '../battle/ui/GrowthParts';
 import { clanCall, type LeagueReward } from '../utils/manaClan';
 import { auth } from '../firebase';
 /** プレゼント（隔週リーグ報酬）でしか手に入らないアイテム */
 const LEAGUE_GIFT_ITEM = 'frame_league_aurora';
+const LEAGUE_LABEL: Record<string, string> = { bronze: 'ブロンズ', silver: 'シルバー', gold: 'ゴールド', platinum: 'プラチナ', manatobi: 'マナトビ' };
 export function MyCollection({ view = 'owned', onGacha, initialKind = 'all' }: { view?: 'owned' | 'prints' | 'shop'; key?: string; onGacha?: () => void; initialKind?: string }) {
   const { progress, uid } = useGrowthProgress();
   const [kind, setKind] = useState(initialKind); const [search, setSearch] = useState('');
@@ -49,7 +50,7 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all' }: {
       {/* 届いたプレゼント（未受け取りだけ）。受け取ると下の一覧に「プレゼントで獲得」と出る */}
       {view === 'owned' && rewards.some(r => !progress.owned.includes(r.itemId)) && <section className="store-guide is-gift" aria-label="届いたプレゼント" data-gift-guide>
         <p><strong>プレゼントが届いています</strong>（隔週リーグの上位報酬）。受け取ると持ちものに入り、装備できます。</p>
-        {rewards.filter(r => !progress.owned.includes(r.itemId)).map(r => <article key={r.id} className="collection-reward"><strong><Gift size={16} aria-hidden/> UR · リーグ・オーロラフレーム</strong><p>{r.season} · {r.label} {r.rank}位</p><button type="button" disabled={busy} onClick={async () => { setBusy(true); try { const validated = await clanCall<LeagueReward>('claimReward', { rewardId: r.id }); const result = await importLeagueReward(validated.id, validated.itemId, uid); setMessage(result ? 'プレゼントを受け取りました。持ちものから装備できます。' : '端末保存に失敗しました。再度受け取れます。'); } catch (e: any) { setMessage(e.message); } finally { setBusy(false); } }}>受け取る</button></article>)}
+        {rewards.filter(r => !leagueRewardClaimed(r.id) && !(r.itemId && progress.owned.includes(r.itemId) && !r.coins)).map(r => <article key={r.id} className="collection-reward"><strong><Gift size={16} aria-hidden/> {r.kind === 'join' ? `シーズン参加賞（${LEAGUE_LABEL[r.label] ?? r.label}）` : 'UR · リーグ・オーロラフレーム'}{r.coins ? ` ＋${r.coins}マナコイン` : ''}</strong><p>{r.season.replace(/^s/, 'シーズン')} · {r.kind === 'join' ? '全国対戦3試合以上' : r.kind === 'clan' ? `マナクラン ${r.rank}位` : `${LEAGUE_LABEL[r.label] ?? r.label} ${r.rank}位`}</p><button type="button" disabled={busy} onClick={async () => { setBusy(true); try { const validated = await clanCall<LeagueReward>('claimReward', { rewardId: r.id }); const result = await importLeagueReward(validated.id, validated.itemId, uid, validated.coins ?? 0); setMessage(result ? (validated.itemId ? 'プレゼントを受け取りました。持ちものから装備できます。' : `${validated.coins ?? 0}マナコインを受け取りました。`) : '端末保存に失敗しました。再度受け取れます。'); } catch (e: any) { setMessage(e.message); } finally { setBusy(false); } }}>受け取る</button></article>)}
       </section>}
       <ul className="collection-grid">{list.map(item => { const owned = progress.owned.includes(item.id); const print = printOf(item.id); const equipped = progress.equipped[item.kind] === item.id; return <li key={item.id} data-owned={owned}>
         <div className="collection-art">{print ? <img src={print.thumb} alt="PDFの表紙" loading="lazy"/> : <GrowthAvatar progress={{...progress,equipped:{...progress.equipped,[item.kind]:item.id}}} size={68} showLevel={false}/>}</div>

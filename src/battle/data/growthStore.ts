@@ -149,8 +149,16 @@ export async function recordStudyGrowth(uid: string, problemKey: string) {
     const r = applyStudySolved(p, today, Date.now(), studyStreak);
     return { next: r.next, extra: r.reward };
   }, uid);
+  if (out?.extra) { studySession.coins += out.extra.coins; studySession.xp += out.extra.xp; studySession.count += 1; studyListeners.forEach(f => f({ ...studySession })); }
   return out ? { progress: out.next, reward: out.extra } : null;
 }
+/** 一人で学ぶ：この回（単元を開いてから）でもらったマナコイン・XP。結果画面に出す（2026-10-04） */
+export interface StudySessionReward { coins: number; xp: number; count: number }
+const studySession: StudySessionReward = { coins: 0, xp: 0, count: 0 };
+const studyListeners = new Set<(r: StudySessionReward) => void>();
+export function resetStudySession() { studySession.coins = 0; studySession.xp = 0; studySession.count = 0; studyListeners.forEach(f => f({ ...studySession })); }
+export function currentStudySession(): StudySessionReward { return { ...studySession }; }
+export function subscribeStudySession(fn: (r: StudySessionReward) => void): () => void { studyListeners.add(fn); return () => { studyListeners.delete(fn); }; }
 /** 演習の連続正解（この画面を開いている間だけ数える。0点の採点で切れる） */
 let studyStreak = 0;
 export function breakStudyStreak() { studyStreak = 0; }
@@ -282,10 +290,20 @@ export async function drawVideoGacha(token: object, expectedUid = scope()) {
   }, expectedUid);
   return out ? { progress: out.next, result: out.extra } : null;
 }
-export async function importLeagueReward(rewardId: string, itemId: string, expectedUid: string) {
-  if (!rewardId || itemId !== 'frame_league_aurora') return null;
+export async function importLeagueReward(rewardId: string, itemId: string | null, expectedUid: string, coins = 0) {
+  if (!rewardId || (itemId !== null && itemId !== 'frame_league_aurora')) return null;
+  const add = Math.max(0, Math.min(1000, Math.floor(Number(coins) || 0)));
   return mutate((p, _today, seen) => {
+    // 同じプレゼントは1回だけ（コインの二重取りを防ぐ）
+    if (seen.has(`league:${rewardId}`)) return { next: p, extra: null };
     seen.add(`league:${rewardId}`);
-    return { next: p.owned.includes(itemId) ? p : { ...p, owned: [...p.owned, itemId] }, extra: null };
+    let next = p;
+    if (itemId && !next.owned.includes(itemId)) next = { ...next, owned: [...next.owned, itemId] };
+    if (add > 0) next = { ...next, coins: next.coins + add };
+    return { next, extra: null };
   }, expectedUid);
+}
+/** そのプレゼントをこの端末で受け取り済みか（コインだけのプレゼントは持ちもので判定できないため） */
+export function leagueRewardClaimed(rewardId: string): boolean {
+  try { return read(scope()).receipts.includes(`league:${rewardId}`); } catch { return false; }
 }

@@ -196,3 +196,10 @@
   .arena-question-area #battle-question .grid > button { min-height: 76px; font-size: 17px; }
   .arena-question-area #battle-question .grid > button .text-xs, .arena-question-area #battle-question .grid > button .text-sm { font-size: 17px !important; }
 }
+
+/* 2026-10-04：実況ログが重なって見えにくい → 行の高さと行間に余白を持たせ、2行がきちんと収まる高さに */
+.arena-live-stage #battle-live-feed { display: flex !important; flex-direction: column; gap: 6px !important; max-height: none !important; height: auto; padding: 4px 0 !important; overflow: visible !important; margin-block: 6px 10px !important; }
+.arena-live-stage #battle-live-feed > li { display: block; line-height: 22px !important; min-height: 24px; padding: 1px 10px !important; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-live-stage #battle-live-feed + * { margin-top: 4px; }
+
+@media (max-height: 700px) and (max-width: 1023px) { .arena-live-stage #battle-live-feed > li:nth-last-child(n+3) { display: none; } .arena-live-stage #battle-live-feed { gap: 5px !important; margin-block: 4px 8px !important; } }

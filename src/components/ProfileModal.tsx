@@ -123,12 +123,25 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
     setLoading(true);
     try {
       const uid = auth.currentUser?.uid || 'guest';
+      // ★公開設定の保存に失敗しても、名前・学年などの設定は保存する（2026-10-04）★
+      //   以前は公開の保存が1つ失敗すると全部止まり、何も保存されなかった。
+      let publishFailed: string | null = null;
       if (auth.currentUser && (profilePublic || wasPublic)) {
-        await savePublicStudyProfile(profilePublic, targetSchool, motto);
-        setWasPublic(profilePublic);
+        try {
+          await savePublicStudyProfile(profilePublic, targetSchool, motto);
+          setWasPublic(profilePublic);
+        } catch (e) {
+          const code = (e as { code?: string })?.code || '';
+          console.error('公開設定の保存エラー:', e);
+          publishFailed = code === 'permission-denied'
+            ? 'プロフィールの公開だけ保存できませんでした（サーバー側の公開設定が未更新です）。名前などほかの設定は保存しました。運営がサーバー設定を更新すると公開できるようになります。'
+            : code === 'unavailable' || !navigator.onLine
+              ? 'オフラインのため、プロフィールの公開だけ保存できませんでした。ほかの設定は保存しました。電波のよい所でもう一度保存してください。'
+              : 'プロフィールの公開だけ保存できませんでした。ほかの設定は保存しました。少し時間をおいてもう一度保存してください。';
+        }
       }
       localStorage.setItem(profileKey(uid), JSON.stringify({
-        name: name.trim(), grade: grade.trim(), stream, profilePublic, targetSchool: normalizeTargetSchool(targetSchool), motto: normalizeMotto(motto), iconUrl: auth.currentUser?.photoURL || '',
+        name: name.trim(), grade: grade.trim(), stream, profilePublic: publishFailed ? wasPublic : profilePublic, targetSchool: normalizeTargetSchool(targetSchool), motto: normalizeMotto(motto), iconUrl: auth.currentUser?.photoURL || '',
       }));
       writeGoal(goal);
       // 名前を変えたら、ランキング・フレンド検索の表示名もその場で最新化する。
@@ -139,6 +152,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
         void syncRankingNickname().catch(() => {});
         void ensureFriendProfile().catch(() => {});
       }
+      if (publishFailed) { setPublicationError(publishFailed); setProfilePublic(wasPublic); return; }
       onClose();
     } catch (error) {
       console.error('保存エラー:', error);

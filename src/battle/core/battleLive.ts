@@ -137,6 +137,12 @@ export interface OpponentStatus {
   label: string;
 }
 
+/** 回答時間の表示（1.2秒 / 12秒） */
+export function fmtSec(sec: number | undefined): string {
+  const v = Math.max(0, Number(sec) || 0);
+  return v < 10 ? `${(Math.round(v * 10) / 10).toFixed(1)}秒` : `${Math.round(v)}秒`;
+}
+
 export function opponentStatusOf(
   index: number,
   answered: boolean,
@@ -148,8 +154,9 @@ export function opponentStatusOf(
   if (!answered) return { activity: 'thinking', index, streak, label: `第${n}問を考え中…` };
   if (!reveal) return { activity: 'answered', index, streak, label: `第${n}問に回答！` };
   const q = opponentScore?.perQuestion.find((s) => s.index === index);
-  if (q?.correct) return { activity: 'correct', index, streak, label: `第${n}問 正解！` };
-  return { activity: 'wrong', index, streak, label: `第${n}問 ミス` };
+  const t = q && answered ? ` ${fmtSec(q.timeUsed)}` : '';
+  if (q?.correct) return { activity: 'correct', index, streak, label: `第${n}問 正解！${t}` };
+  return { activity: 'wrong', index, streak, label: `第${n}問 ミス${t}` };
 }
 
 /**
@@ -271,18 +278,21 @@ export function diffFeed(
     const mine = cur.myScore?.perQuestion.find((s) => s.index === cur.index);
     const theirs = cur.opponentScore?.perQuestion.find((s) => s.index === cur.index);
 
+    // 2026-10-04：自分と相手の回答時間も添える（何秒で答えたか）
+    const myT = mine && cur.myAnswered ? `（${fmtSec(mine.timeUsed)}）` : '';
+    const opT = theirs && cur.opponentAnswered ? `（${fmtSec(theirs.timeUsed)}）` : '';
     if (mine?.correct) {
       const streak = streakThrough(cur.myScore, cur.index);
-      entries.push(streak >= 3 ? mk('me', 'streak', `あなたが${streak}連続正解！`) : mk('me', 'correct', `あなたが第${n}問を正解！`));
+      entries.push(streak >= 3 ? mk('me', 'streak', `あなたが${streak}連続正解！${myT}`) : mk('me', 'correct', `あなたが第${n}問を正解！${myT}`));
     } else if (cur.myAnswered) {
-      entries.push(mk('me', 'wrong', `あなたは第${n}問をミス…`));
+      entries.push(mk('me', 'wrong', `あなたは第${n}問をミス${myT}`));
     }
 
     if (theirs?.correct) {
       const streak = streakThrough(cur.opponentScore, cur.index);
-      entries.push(streak >= 3 ? mk('opponent', 'streak', `相手が${streak}連続正解！`) : mk('opponent', 'correct', `相手が第${n}問を正解！`));
+      entries.push(streak >= 3 ? mk('opponent', 'streak', `相手が${streak}連続正解！${opT}`) : mk('opponent', 'correct', `相手が第${n}問を正解！${opT}`));
     } else if (cur.opponentAnswered) {
-      entries.push(mk('opponent', 'wrong', `相手は第${n}問をミス`));
+      entries.push(mk('opponent', 'wrong', `相手は第${n}問をミス${opT}`));
     }
 
     lead = leadOf(cur.myScore?.score ?? 0, cur.opponentScore?.score ?? 0);

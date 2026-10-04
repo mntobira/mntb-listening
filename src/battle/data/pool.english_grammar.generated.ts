@@ -12,7 +12,7 @@
  * を実行すること。
  *
  * -------------------------------------------------------------------
- * ■ 収録数: 1193 問
+ * ■ 収録数: 1188 問
  * -------------------------------------------------------------------
  *
  * ■ 中身は「タプルの配列」であって、読みやすさを捨てている。
@@ -46,11 +46,6 @@ export const POOL: readonly unknown[][] = [
   ["q:eg4_4:q_eg4_4_set1:q_eg4_4_set1_3","eg4_4","q_eg4_4_set1","q_eg4_4_set1_3",0,"Cheese is made ［　？　］ milk, so people who cannot drink milk should be careful.","空欄に入るものを選びなさい。",["of","from","by","into"],1,[],17,""],
   ["q:eg4_4:q_eg4_4_set1:q_eg4_4_set1_4","eg4_4","q_eg4_4_set1","q_eg4_4_set1_4",0,"［　？　］ the heavy rain, the outdoor concert was held as originally planned.","空欄に入るものを選びなさい。",["Although","Despite","Despite of","Even"],1,[],17,""],
   ["q:eg4_4:q_eg4_4_set1:q_eg4_4_set1_5","eg4_4","q_eg4_4_set1","q_eg4_4_set1_5",0,"I took a lot of notes ［　？　］ the professor was explaining the experiment.","空欄に入るものを選びなさい。",["during","while","for","in"],1,[],17,""],
-  ["q:eg5_1:q_eg5_1_set1:q_eg5_1_set1_1","eg5_1","q_eg5_1_set1","q_eg5_1_set1_1",0,"The meeting was ［　？　］ until next Monday because the manager caught a bad cold.","空欄に入るものを選びなさい。",["put off","put on","put out","put up"],0,[],17,""],
-  ["q:eg5_1:q_eg5_1_set1:q_eg5_1_set1_2","eg5_1","q_eg5_1_set1","q_eg5_1_set1_2",0,"If you find any mistakes in my essay, please ［　？　］ in red ink.","空欄に入るものを選びなさい。",["point out them","point them out","point out it","point to them"],1,[],17,""],
-  ["q:eg5_1:q_eg5_1_set1:q_eg5_1_set1_3","eg5_1","q_eg5_1_set1","q_eg5_1_set1_3",0,"This small device is capable ［　？　］ all the data from the entire library.","空欄に入るものを選びなさい。",["to store","of storing","for storing","in store"],1,[],17,""],
-  ["q:eg5_1:q_eg5_1_set1:q_eg5_1_set1_4","eg5_1","q_eg5_1_set1","q_eg5_1_set1_4",0,"The vice president gave the speech ［　？　］ the company president, who was ill in bed.","空欄に入るものを選びなさい。",["in terms of","on behalf of","at the expense of","in place"],1,[],17,""],
-  ["q:eg5_1:q_eg5_1_set1:q_eg5_1_set1_5","eg5_1","q_eg5_1_set1","q_eg5_1_set1_5",0,"His explanation was ［　？　］ clear, and in the end nobody understood what he meant.","空欄に入るものを選びなさい。",["nothing but","anything but","no less than","none other than"],1,[],17,""],
   ["q:eg5_2:q_eg5_2_set1:q_eg5_2_set1_1","eg5_2","q_eg5_2_set1","q_eg5_2_set1_1",0,"\"［　？　］ you didn't come to the party last night?\" \"I had to look after my little brother.\"","空欄に入るものを選びなさい。",["How come","How come did","Why come","What come"],0,[],17,""],
   ["q:eg5_2:q_eg5_2_set1:q_eg5_2_set1_2","eg5_2","q_eg5_2_set1","q_eg5_2_set1_2",0,"\"Would you mind opening the window?\" \"［　？　］ It's getting hot in here.\"","空欄に入るものを選びなさい。",["Yes, I would.","Not at all.","No, thank you.","Never mind."],1,[],17,""],
   ["q:eg5_2:q_eg5_2_set1:q_eg5_2_set1_3","eg5_2","q_eg5_2_set1","q_eg5_2_set1_3",0,"I can't ［　？　］ the noise from the construction site any longer; I'm going to complain.","空欄に入るものを選びなさい。",["stand","stand for","stand by","stand out"],0,[],17,""],

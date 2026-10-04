@@ -18,11 +18,18 @@ test('admitting a beginner cannot reduce clan power',()=>{
 });
 test('server grants require three games and exclude an operator-blocked record',()=>{
   const p=plan([{uid:'a',rating:1800,matches:3,clanId:'one',clanMatches:3},{uid:'b',rating:2200,matches:2},{uid:'c',rating:2500,matches:4,excluded:true}]);
-  assert.deepEqual(p.gifts.map(g=>g.uid),['a','a']); assert.equal(p.clans.length,1); assert.ok(!('members' in p.clans[0]));
+  assert.deepEqual(p.gifts.map(g=>g.uid),['a','a','a']); assert.deepEqual(p.gifts.map(g=>g.kind),['join','individual','clan']); assert.equal(p.clans.length,1); assert.ok(!('members' in p.clans[0]));
 });
 test('individual cutoff includes every tied player at tenth place',()=>{
   const entries=Array.from({length:12},(_,i)=>({uid:`u${i}`,rating:i<9?1900-i:1800,matches:3}));
-  assert.equal(plan(entries).gifts.length,12);
+  assert.equal(plan(entries).gifts.filter(g=>g.kind==='individual').length,12);
+});
+test('season rewards: participation coins by final league, rank coins for top 10',()=>{
+  const p=plan([{uid:'m',rating:2050,matches:3},{uid:'b',rating:1200,matches:5}]);
+  const coins=Object.fromEntries(p.gifts.filter(g=>g.kind==='join').map(g=>[g.uid,g.coins]));
+  assert.deepEqual(coins,{m:300,b:50});
+  assert.equal(p.gifts.find(g=>g.uid==='m'&&g.kind==='individual').coins,500);
+  assert.equal(seasonAt(Date.UTC(2026,9,15,14,59)),null); assert.equal(seasonAt(Date.UTC(2026,9,15,15)).id,'s1');
 });
 test('clan grants cannot be gained by moving to a strong clan at the deadline',()=>{
   const p=plan([{uid:'a',rating:1500,matches:10,clanId:'team',clanMatches:0}]); assert.equal(p.gifts.some(g=>g.kind==='clan'),false);

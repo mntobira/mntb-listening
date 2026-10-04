@@ -100,3 +100,32 @@
 .clan-hint { font-size: 12px; color: #6b5a43; }
 .clan-notice { margin: 6px 0; padding: 8px 10px; border-radius: 10px; background: #e9f7ef; color: #1f6b44; font-size: 13px; font-weight: 700; }
 .league-error button { margin-left: 8px; min-height: 44px; display: inline-flex; align-items: center; gap: 4px; }
+
+/* ===== シーズン報酬カード（2026-10-04）：何がもらえるかを必ず見えるところに ===== */
+.season-card { flex-shrink: 0; border: 1.5px solid #e6c766; border-radius: 16px; background: linear-gradient(180deg,#fff8dc,#fffdf4); }
+.season-card > summary { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-height: 44px; padding: 8px 12px; cursor: pointer; font-size: 12px; font-weight: 800; color: #6b4e00; }
+.season-card > summary::-webkit-details-marker { display: none; }
+.season-card > summary::after { content: '▼ もらえるもの'; margin-left: auto; font-size: 12px; color: #a07400; }
+.season-card[open] > summary::after { content: '▲ 閉じる'; }
+.season-badge { padding: 2px 10px; border-radius: 999px; background: #172a4f; color: #ffd36b; font-size: 12px; }
+.season-when { color: #4a3a10; }
+.season-mine { color: #b26b00; }
+.season-body { padding: 0 12px 12px; font-size: 12px; color: #4a3a10; }
+.season-body h3 { margin: 10px 0 6px; font-size: 13px; font-weight: 900; }
+.season-cond { margin: 0; line-height: 1.6; }
+.season-join { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.season-join li { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border: 1.5px solid; border-radius: 12px; background: #fff; }
+.season-join li[data-me] { box-shadow: 0 0 0 3px #f4d03f; }
+.season-join strong { font-size: 12px; }
+.season-join span { font-size: 16px; font-weight: 900; color: #3d3222; }
+.season-join small { font-size: 12px; margin-left: 1px; color: #7a6a40; }
+.season-rank { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.season-rank li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 10px; border-radius: 10px; background: #fff; border: 1px solid #f0e2b0; }
+.season-rank strong { font-size: 12px; white-space: nowrap; }
+.season-rank span { font-size: 12px; text-align: right; }
+.season-note { margin: 8px 0 0; color: #8a7556; }
+@media (max-width: 360px) { .season-join { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.season-join span { display: flex; flex-direction: column; align-items: center; line-height: 1.1; white-space: nowrap; }
+.season-join small { margin: 0; }
+.season-rank li { flex-direction: column; gap: 2px; }
+.season-rank span { text-align: left; color: #6b4e00; font-weight: 700; }
