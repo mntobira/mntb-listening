@@ -22,7 +22,7 @@
  */
 
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { BattlePlayerScore, BattleQuestion, BattleRule } from '../core/types';
 import { BGM_FILES } from '../audio/bgmFiles';
@@ -83,9 +83,30 @@ export interface BattleLiveStageProps {
   offline?: boolean;
 }
 
+/**
+ * ★試合終了の「FINISH」（2026-10-04 ご要望）★
+ * 最後の問題の答え合わせを少し見せたあと、結果画面に移るまでの待ち時間に全画面で出す。
+ * 「固まった？」と思わせないため、待っている間ずっと表示し続ける。
+ */
+const FINISH_DELAY_MS = 1200;
+function FinishOverlay() {
+  return (
+    <div className="battle-finish-overlay" role="status" aria-live="assertive" data-battle-finish>
+      <p className="battle-finish-word">FINISH!</p>
+      <p className="battle-finish-sub">結果を集計中…</p>
+    </div>
+  );
+}
+
 export function BattleLiveStage(p: BattleLiveStageProps) {
   const playing = !p.finished;
   const counting = p.preStartMs > 0;
+  const [finishShown, setFinishShown] = useState(false);
+  useEffect(() => {
+    if (!p.finished) { setFinishShown(false); return; }
+    const t = window.setTimeout(() => setFinishShown(true), FINISH_DELAY_MS);
+    return () => window.clearTimeout(t);
+  }, [p.finished]);
 
   // ------------------------------------------------------------
   // 実況・演出
@@ -253,6 +274,7 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
       {!counting && p.reveal && myCorrect && <CorrectBurst burstKey={`q${p.index}`} combo={live.myStreak}
         extra={live.toast && (live.toast.kind === 'overtake' || live.toast.kind === 'caught-up') ? live.toast.text : undefined} />}
       <LiveToast toast={p.reveal && myCorrect && live.toast && (live.toast.kind === 'overtake' || live.toast.kind === 'caught-up') ? null : live.toast} />
+      {finishShown && <FinishOverlay />}
     </div>
   );
 }

@@ -253,40 +253,10 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "realTitle": "19章 名詞の語法"
       },
       {
-        "id": "eg4_1",
-        "problemCount": 1,
-        "abstractTitle": "⑮ 動詞の語法（自他・語形・型）",
-        "realTitle": "20章 語法（総合）"
-      },
-      {
-        "id": "eg4_2",
-        "problemCount": 1,
-        "abstractTitle": "⑯ 名詞・代名詞・冠詞の語法",
-        "realTitle": "20章 語法（総合）"
-      },
-      {
-        "id": "eg4_3",
-        "problemCount": 1,
-        "abstractTitle": "⑰ 形容詞・副詞の語法",
-        "realTitle": "20章 語法（総合）"
-      },
-      {
-        "id": "eg4_4",
-        "problemCount": 1,
-        "abstractTitle": "⑱ 前置詞の語法",
-        "realTitle": "20章 語法（総合）"
-      },
-      {
         "id": "eg6_20",
         "problemCount": 29,
-        "abstractTitle": "第21章 会話表現",
-        "realTitle": "21章 会話表現"
-      },
-      {
-        "id": "eg5_2",
-        "problemCount": 1,
-        "abstractTitle": "⑳ 会話表現と多義語・語い",
-        "realTitle": "22章 会話・語い"
+        "abstractTitle": "第20章 会話表現",
+        "realTitle": "20章 会話表現"
       }
     ]
   }
@@ -355,9 +325,9 @@ export const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = {
     "questions": 135
   },
   "english_grammar": {
-    "chapters": 25,
-    "questions": 243,
-    "marks": 1188
+    "chapters": 20,
+    "questions": 238,
+    "marks": 1163
   }
 };
 

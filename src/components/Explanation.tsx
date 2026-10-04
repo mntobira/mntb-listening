@@ -24,6 +24,7 @@ import {
 } from '../utils/explanationFormat';
 import {
   isScriptFirstExplanation,
+  stripScriptBox,
   listeningQuestionNumberOf,
   scopeListeningCommonToQuestion,
 } from '../utils/listeningExplanation';
@@ -1476,15 +1477,6 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 <div><dt>時間</dt><dd>{formatResultTime(resultTotalTimeSec ?? 0)}</dd></div>
               </dl>
             </div>
-            {/* ★マナコイン（2026-10-04）★ 一人で学ぶでも、1点以上取れた問題は +3マナコイン・+15XP（同じ問題は1日1回） */}
-            <p className="practice-reward-line" role="status" data-practice-reward>
-              <Coins size={16} aria-hidden="true" />
-              {isGuest
-                ? <span>ログインすると、正解した問題ごとにマナコインがもらえます</span>
-                : studyReward && studyReward.coins > 0
-                  ? <><b>＋{studyReward.coins}</b><span>マナコイン</span><b>＋{studyReward.xp}</b><span>XP</span></>
-                  : <span>正解した問題ごとに＋3マナコイン（同じ問題は1日1回まで）</span>}
-            </p>
             {/* あと少し：演習でもらえる称号のうち近いもの（無ければ出さない） */}
             <NextBadgeHint progress={growth} prefer="b_study" className="mt-2" />
 
@@ -1528,7 +1520,34 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         </div>
       )}
 
+      {/* ★結果のステージ（2026-10-04 ご要望）★ カードと下のボタンの間の空きに、とびらくんと今回もらったマナコインを大きく出す */}
+      {isResultView && resultStep === 'summary' && (() => {
+        const judge = resultTotalJudgeable ?? 0; const correct = resultTotalCorrect ?? 0;
+        const rate = judge ? correct / judge : 0;
+        const pose = judge > 0 && correct === judge ? 'trophy' : rate >= 0.6 ? 'happy' : rate > 0 ? 'cheering' : 'thinking';
+        const line = judge > 0 && correct === judge ? '全問正解！この調子で次の回へ行こう！'
+          : rate >= 0.6 ? 'いい感じ！まちがえた所だけ見直せば完ぺき！'
+          : rate > 0 ? 'ナイスチャレンジ！解説で「解くカギ」を確認しよう'
+          : 'ここからが伸びしろ！詳しい結果で1問ずつ確かめよう';
+        const coins = studyReward?.coins ?? 0;
+        return (
+          <section className="practice-stage" aria-label="とびらくんと今回のごほうび" data-practice-stage data-pose={pose}>
+            <div className="practice-stage-bubble" role="status">{line}</div>
+            <img className="practice-stage-tobira" src={`/mascots/${pose}.webp`} alt="" width={160} height={160} draggable={false} />
+            <div className="practice-stage-reward" data-practice-reward>
+              <Coins size={22} aria-hidden="true" />
+              {isGuest
+                ? <span>ログインすると、正解した問題ごとにマナコインがもらえます</span>
+                : coins > 0
+                  ? <><span>今回のごほうび</span><b>＋{coins}</b><span>マナコイン</span>{studyReward?.xp ? <small>＋{studyReward.xp}XP</small> : null}</>
+                  : <span>正解した問題ごとに<b className="is-inline">＋3</b>マナコイン<small>（同じ問題は1日1回）</small></span>}
+            </div>
+          </section>
+        );
+      })()}
+
       {/* ★結果（1画面目）の下のバー：主操作は「詳しい結果を確認する」1つだけ。親指の届く画面の下に置く★ */}
+      {isResultView && resultStep === 'summary' && <div className="practice-bottom-spacer" aria-hidden="true" />}
       {isResultView && resultStep === 'summary' && (
         <div className="practice-bottom-bar" data-practice-summary-actions>
           <button type="button" className="practice-detail-open" data-practice-open-detail
@@ -2135,8 +2154,10 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                         //   閉じたら閉じたまま（利用者の操作を優先）。スマホは従来どおり閉じて始める。
                         const explanationOpen = openExplanationBySq[sq.id] ?? !isMobile;
                         const thinkingOpen = openThinkingBySq[sq.id] ?? !isMobile;
-                        const sqSlice = sliceForSq(sq);
-                        const isScriptFirst = isScriptFirstExplanation(sqSlice);
+                        // ★スクリプト（英文＋和訳）を上に出しているときは、解説の中の同じ英文の枠は出さない（2026-10-04 ご要望）★
+                        const sqSliceRaw = sliceForSq(sq);
+                        const isScriptFirst = isScriptFirstExplanation(sqSliceRaw);
+                        const sqSlice = listeningTracks.length > 0 ? stripScriptBox(sqSliceRaw) : sqSliceRaw;
                         const relatedSteps = getRelatedSteps(sq.id, question);
                         const sqIndex = ((question?.subQuestions || []) as any[]).indexOf(sq);
                         const displayLabel = answerCardMarker(sq, sqIndex < 0 ? 0 : sqIndex, question);
@@ -2600,7 +2621,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                       </section>
                                     ))}
                                     {objectiveSqs.map((sq: any) => {
-                                      const slice = sliceForSq(sq);
+                                      const slice = stripScriptBox(sliceForSq(sq));
                                       const open = openExplanationBySq[sq.id] || false;
                                       const sqIdx = ((question?.subQuestions || []) as any[]).indexOf(sq);
                                       const marker = answerCardMarker(sq, sqIdx < 0 ? 0 : sqIdx, question);
@@ -2928,6 +2949,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
       </div>
       </div>
         {/* ★詳しい結果の下のバー（2026-10-04）★ 問題・スクリプト・解説の下に、次にすることをまとめる */}
+        {reviewNav && <div className="practice-bottom-spacer is-review" aria-hidden="true" />}
         {reviewNav && (
           <div className="practice-bottom-bar is-review" data-review-actions>
             {reviewNav.onRetryWrong

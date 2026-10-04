@@ -78,7 +78,7 @@
 
 .launch-emblem, .launch-announcement { height:100dvh; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:20px; background:#fcf5e9; color:#344451; font-family:var(--mt-font-body); }
 .launch-emblem img { width:min(260px,70vw); height:auto; }
-.launch-emblem h1 { font:800 clamp(20px,5.5vw,28px)/1.4 var(--mt-font-display); text-align:center; }
+.launch-emblem h1 { font:400 clamp(20px,5.5vw,28px)/1.6 var(--font-handwriting); text-align:center; letter-spacing:.04em; }
 .launch-emblem p { font-size:12px; letter-spacing:.2em; color:#6b6047; }
 .launch-emblem-mark { position:relative; display:grid; place-items:center; width:108px; height:118px; border:3px solid #b59c5d; border-radius:48% 48% 40% 40%; background:linear-gradient(#fffdf8,#f5e5bc); box-shadow:0 0 0 5px #fffaf0,0 0 0 6px #dfcc9d; }
 .launch-emblem-mark svg:first-child { width:56px; height:56px; color:#987735; }
@@ -105,3 +105,6 @@
 @keyframes launch-title-in { from { opacity:0; } to { opacity:1; } }
 @media (prefers-reduced-motion: reduce) { .launch-emblem-inner, .launch-screen { transition:none; animation:none; transform:none; } .launch-emblem[data-phase="hold"] .launch-emblem-inner { opacity:1; } }
 .launch-announcement p.launch-announcement-latest { font-weight:700; color:#3a4a59; }
+
+/* タイトル画面 → 「学びの扉」（理念）ページへの入口。主CTAの邪魔をしない文字リンク */
+.launch-philosophy { display: inline-flex; align-items: center; gap: 6px; min-height: var(--mt-tap); padding: 0 var(--mt-s3); border: 0; background: none; color: #8a5a3c; font: 400 15px/1.2 var(--font-handwriting); text-decoration: underline; text-decoration-color: #e0b98f; text-underline-offset: 4px; }

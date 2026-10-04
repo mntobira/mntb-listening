@@ -68,6 +68,7 @@
  * 新しい待ち時間の見え方を持ち込んでいない。
  */
 import React from 'react';
+import { applyReviewFocus, readReviewFocus } from '../utils/reviewFocus';
 import { Quiz } from './Quiz';
 import { Explanation } from './Explanation';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -110,6 +111,20 @@ interface QuizScreensProps {
   onHome?: () => void;
 }
 
+const focusCache = new WeakMap<object, { sig: string; value: any }>();
+/** 同じ章・同じ対象なら同じ写しを返す（毎回新しいオブジェクトにすると演習画面の状態が作り直される） */
+function focusedChapter(chapter: any, mode: string): any {
+  if (!chapter || mode === 'mini_test') return chapter;
+  const focus = readReviewFocus();
+  if (!focus || focus.chapterId !== chapter.id) return chapter;
+  const sig = JSON.stringify(focus);
+  const hit = focusCache.get(chapter);
+  if (hit && hit.sig === sig) return hit.value;
+  const value = { ...chapter, practiceProblems: applyReviewFocus(chapter.practiceProblems || [], chapter.id, focus) };
+  focusCache.set(chapter, { sig, value });
+  return value;
+}
+
 export function QuizScreens({
   screen,
   chapterId,
@@ -140,7 +155,8 @@ export function QuizScreens({
    * 元の App.tsx と同じ同期呼び出しのままなので、
    * 「探し方」も「見つからなかったときの挙動」も変わっていない。
    */
-  const chapter = findChapterById(chapterId);
+  // 復習ノートからの解き直し：その大問は「間違えた小問だけ」に絞る（2026-10-04 ご要望）
+  const chapter = focusedChapter(findChapterById(chapterId), mode);
 
   /*
    * 見つからないときは何も描かない。

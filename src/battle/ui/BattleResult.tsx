@@ -56,6 +56,7 @@ import { BattleReviewDetails } from './BattleReviewDetails';
 import { BattleGrowthReward, type GrowthReward } from './BattleGrowthReward';
 import { BattleGrowthCard } from './BattleGrowthCard';
 import { recordLocalBattle } from '../data/localBattleLog';
+import { recordStudyLog } from '../../utils/studyLog';
 import { auth } from '../../firebase';
 import { ShareButton } from './GrowthFx';
 import { equippedTitleLabel, levelOf, shareTextForMatch } from '../core/growth';
@@ -290,6 +291,21 @@ export function BattleResult({
       subject, chapterId, chapterTitle: chapterId ? chapterTitleOf(chapterId) : undefined,
       outcome: result.outcome, correct: result.me.correctCount, total: result.me.perQuestion.length,
       wrongIds, mode: maskOpponent ? 'national' : (opponent?.uid ? 'friend' : 'ai'), at: Date.now(),
+    });
+    // ★学習記録（直近3日）★ 対戦で解いた問題と○×も、一人で学ぶと同じ記録に残す
+    const modeLabel = maskOpponent ? '全国対戦' : (opponent?.uid ? 'フレンド対戦' : 'AIと対戦');
+    const outcomeLabel = result.outcome === 'win' ? '勝ち' : result.outcome === 'lose' ? '負け' : '引き分け';
+    recordStudyLog(auth.currentUser?.uid, {
+      key: `battle:${matchKey || `${subject}-${questions[0]?.id ?? ''}-${result.me.score}`}`,
+      kind: 'battle', at: Date.now(), subject, chapterId,
+      title: `${theme.label}${chapterId ? ` ${chapterTitleOf(chapterId)}` : ''}`,
+      sub: `${modeLabel}・${outcomeLabel}`, outcome: result.outcome,
+      items: result.me.perQuestion.map((pq) => {
+        const q = questions[pq.index];
+        return { id: q?.id ?? String(pq.index), label: `${pq.index + 1}問目`, correct: !!pq.correct,
+          prompt: q ? String(q.prompt || q.label || '').replace(/\s+/g, ' ').slice(0, 60) : undefined,
+          answer: !pq.correct && q && q.answerIndex >= 0 ? String(q.options[q.answerIndex] ?? '') : undefined };
+      }),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchKey]);

@@ -36,6 +36,8 @@ export interface QuizHeaderProps {
   run: { score: number; combo: number; [k: string]: any };
   /** いま何問目か（1 から数えた値）。 */
   progressPosition: number;
+  /** 1画面に2問以上（問34・35）あるときの最後の番号。「1〜2 / 2」と出す */
+  progressPositionEnd?: number;
   /** 全部で何問か。 */
   progressTotal: number;
   /** この単元で扱う内容（chapter.topics）。解く前・迷ったときに「ポイント」で見られる */
@@ -50,6 +52,7 @@ export function QuizHeader({
   handleExit,
   run,
   progressPosition,
+  progressPositionEnd,
   progressTotal,
   topics = [],
 }: QuizHeaderProps) {
@@ -153,7 +156,7 @@ export function QuizHeader({
               以前は4問まとめて1件だったので 1/1 のまま動かず、
               解いた実感がまったく残らなかった。 */}
           <div className="font-mono font-bold text-[#2C3E50] text-xs md:text-base">
-            <span className="text-sm md:text-lg">{progressPosition}</span>
+            <span className="text-sm md:text-lg">{progressPosition}{progressPositionEnd ? `〜${progressPositionEnd}` : ''}</span>
             <span className="text-gray-400 mx-1">/</span>
             <span>{progressTotal}</span>
           </div>

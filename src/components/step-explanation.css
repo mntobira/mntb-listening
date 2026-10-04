@@ -101,7 +101,7 @@
 }
 
 /* ===== 2026-10-04 演習の結果：ボタンはすべて画面の下（親指の届く所）にそろえる ===== */
-.practice-bottom-bar { flex-shrink: 0; width: 100%; box-sizing: border-box; position: sticky; bottom: 0; z-index: 40; margin-top: auto; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(to top, #fdfbf7 75%, #fdfbf700); }
+.practice-bottom-bar { flex-shrink: 0; box-sizing: border-box; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; margin-top: auto; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(to top, #fdfbf7 75%, #fdfbf700); }
 .practice-bottom-bar .practice-detail-open { margin: 0; max-width: 720px; display: flex; margin-inline: auto; }
 .practice-bottom-bar.is-review { display: grid; gap: 8px; border-top: 1px solid #ece4d3; background: #fffdf8; box-shadow: 0 -6px 18px #2c3e5014; }
 .practice-bottom-bar.is-review > * { max-width: 720px; width: 100%; margin-inline: auto; }
@@ -116,3 +116,21 @@
 .practice-pager.is-review .practice-pager-arrow { width: 40px; }
 .practice-pager.is-review .practice-pager-chips button { min-width: 40px; height: 40px; font-size: 14px; }
 @media (min-width: 768px) { .practice-pager.is-review .practice-pager-row { justify-content: center; } .practice-pager.is-review .practice-pager-chips { flex: 0 1 auto; } }
+
+/* 下のバーは position:fixed（iOS Safari の sticky が途中で止まる不具合を避ける）。本文の最後にバーの高さぶんの余白を置く */
+.practice-bottom-spacer { flex-shrink: 0; height: calc(84px + env(safe-area-inset-bottom)); }
+.practice-bottom-spacer.is-review { height: calc(140px + env(safe-area-inset-bottom)); }
+/* 結果のステージ：とびらくん＋吹き出し＋ごほうび（カードと下のボタンの間の空きを埋める） */
+.practice-stage { position: relative; z-index: 10; flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 14px 16px 4px; min-height: 230px; }
+.practice-stage-bubble { position: relative; max-width: 320px; padding: 10px 16px; border-radius: 18px; background: #fff; border: 2px solid #f1d58a; color: #5b4300; font: 400 16px/1.55 var(--font-handwriting); text-align: center; box-shadow: 0 4px 12px #b26b0014; animation: stage-pop .45s cubic-bezier(.2,1.4,.4,1) both; }
+.practice-stage-bubble::after { content: ''; position: absolute; left: 50%; bottom: -9px; width: 14px; height: 14px; background: #fff; border-right: 2px solid #f1d58a; border-bottom: 2px solid #f1d58a; transform: translateX(-50%) rotate(45deg); }
+.practice-stage-tobira { width: clamp(120px, 34vw, 170px); height: auto; filter: drop-shadow(0 8px 10px #2c3e5022); animation: stage-bounce 2.6s ease-in-out .5s infinite; }
+.practice-stage-reward { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 2px 6px; padding: 10px 18px; border-radius: 999px; background: linear-gradient(180deg, #fff7dc, #ffeeb8); border: 1.5px solid #f1d58a; color: #7a5200; font-size: 13px; font-weight: 700; box-shadow: 0 3px 0 #e8c868; }
+.practice-stage-reward svg { align-self: center; color: #d79a00; }
+.practice-stage-reward b { font-size: 28px; line-height: 1; color: #b26b00; font-family: var(--mt-font-display, inherit); }
+.practice-stage-reward b.is-inline { font-size: 18px; margin: 0 2px; }
+.practice-stage-reward small { font-size: 12px; color: #8a6a1f; }
+@keyframes stage-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes stage-pop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .practice-stage-tobira, .practice-stage-bubble { animation: none; } }
+@media (max-height: 700px) { .practice-stage { min-height: 0; } .practice-stage-tobira { width: 100px; } }

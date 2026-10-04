@@ -766,8 +766,12 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
    * 回をまたぐ通し番号にはしていない。1回＝4問と短いので、
    * 「この回のどこまで来たか」が分かるほうが達成感につながる。
    */
-  const progressTotal = perStep ? listeningSteps.length : rangeCount;
-  const progressPosition = perStep ? safeStepIndex + 1 : rangePosition;
+  // ★数え方を結果画面と合わせる（2026-10-05 ご指摘「1問なのに2問と出る」）★
+  //   第4問〜第6問は「音声1本に問34・35の2つの解答欄」なので、画面は1枚でも答えは2問。
+  //   以前は進捗が画面の枚数（1/1）、結果が答えの数（0/2）で食い違っていた。どちらも「答えの数」で数える。
+  const stepSubCounts = listeningSteps.map(st => Math.max(1, st.subQuestionIds.length));
+  const progressTotal = perStep ? stepSubCounts.reduce((a, b) => a + b, 0) : rangeCount;
+  const progressPosition = perStep ? stepSubCounts.slice(0, safeStepIndex).reduce((a, b) => a + b, 0) + 1 : rangePosition;
 
   /**
    * 「前へ」を押せるか。
@@ -1199,6 +1203,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
         handleExit={handleExit}
         run={run}
         progressPosition={progressPosition}
+        progressPositionEnd={perStep && (stepSubCounts[safeStepIndex] ?? 1) > 1 ? progressPosition + stepSubCounts[safeStepIndex] - 1 : undefined}
         progressTotal={progressTotal}
         topics={Array.isArray(chapter.topics) ? chapter.topics : []}
       />

@@ -878,3 +878,16 @@ export function buildListeningExplanation(problem: any): string {
   if (sections.length === 0) return '';
   return `${ENHANCED_MARK}${sections.join('\n\n')}`;
 }
+
+/**
+ * 解説の先頭に入れた「SCRIPT／実際に流れた英文」（英文法では「ANSWER／完成した英文」）の枠を取り除く。
+ * 答え合わせ画面ではスクリプト（英文＋和訳）をすぐ上に出しているので、詳しい解説で同じ英文を繰り返さない。
+ * 枠の中は div が2〜3個（見出し・英文・和訳）だけで入れ子は無い、という scriptBox の形に合わせて外す。
+ */
+export function stripScriptBox(text: string): string {
+  if (typeof text !== 'string' || !text.includes('background-color:#F2FBFA')) return text;
+  return text.replace(
+    /(?:<!--lsn-script-first-->)?\s*<div style="background-color:#F2FBFA;[^"]*">(?:\s*<div[^>]*>(?:(?!<div)[\s\S])*?<\/div>){1,3}\s*<\/div>/g,
+    '',
+  ).replace(/^\s*(<br\s*\/?>\s*)+/, '');
+}

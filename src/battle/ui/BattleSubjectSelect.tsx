@@ -49,7 +49,7 @@ const GRAMMAR_PARTS: readonly { id: GrammarPartId; n: number; label: string }[] 
 const egChapterNo = (id: string) => (/^eg6_(\d+)$/.exec(id) ? Number(/^eg6_(\d+)$/.exec(id)![1]) : 0);
 const grammarPartOf = (chapterId: string): GrammarPartId => {
   const n = egChapterNo(chapterId);
-  if (chapterId.startsWith('eg4_') || (n >= 17 && n <= 19)) return 'usage';
+  if (n >= 17 && n <= 19) return 'usage';
   if (chapterId.startsWith('eg5_') || n === 20) return 'expression';
   return 'grammar';
 };

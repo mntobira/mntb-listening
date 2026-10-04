@@ -412,7 +412,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         </section>
         <div className="game-home-utility arena-home-bottom">
           {onGrowth && <button type="button" onClick={() => onGrowth('missions')}><Target size={17} />ミッション</button>}
-          <button type="button" onClick={() => progressDialog.current?.showModal()} aria-haspopup="dialog"><BarChart3 size={17} />学習状況</button>
+          {/* 「学習状況」はやめ、直近3日の「学習記録」（どの問題をやって、どこを間違えたか）へ。マイページの学習記録と同じ画面 */}
+          <button type="button" onClick={() => (onGrowth ? onGrowth('stats') : progressDialog.current?.showModal())} data-home-record><BarChart3 size={17} />学習記録</button>
           <button type="button" aria-label="アプリ紹介を開く" onClick={onIntro}><ShieldCheck size={17} />使い方</button>
         </div>
         <section className="desktop-study-summary" aria-label="今日の学習状況">
@@ -424,7 +425,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           <div className="mt-progress" role="progressbar" aria-label={`${subjectLabel}の学習進捗`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}><i style={{ width: `${progressPercent}%` }} /></div>
           {/* ゼロには次の一手を */}
           {reviewDueCount === 0 && <p className="study-next">{solvedQuestions === 0 ? '最初の1問で、扉がひとつ開くよ' : '復習はゼロ。新しい大問に進もう'}</p>}
-          <button type="button" onClick={() => progressDialog.current?.showModal()}>学習記録を見る <ChevronRight size={16} /></button>
+          <button type="button" onClick={() => (onGrowth ? onGrowth('stats') : progressDialog.current?.showModal())}>学習記録を見る <ChevronRight size={16} /></button>
         </section>
       </div>
       <dialog ref={progressDialog} className="game-details-dialog" aria-labelledby="home-progress-title">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CinematicClip, CINEMATIC_CLIPS } from './CinematicClip';
-import { ArrowRight, Headphones, PenLine, Repeat2, Swords, Volume2, VolumeX } from 'lucide-react';
+import { ArrowRight, BookHeart, Headphones, PenLine, Repeat2, Swords, Volume2, VolumeX } from 'lucide-react';
+import { PhilosophyPage } from './PhilosophyPage';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc } from '../battle/core/growth';
 import { TobiraAccessories } from '../battle/ui/TobiraAccessories';
@@ -37,7 +38,7 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
 }) {
   const { progress } = useGrowthProgress();
   const [phase, setPhase] = useState<Phase>('intro');
-  const [gate, setGate] = useState<'emblem' | 'title' | 'announcement'>('emblem');
+  const [gate, setGate] = useState<'emblem' | 'title' | 'announcement' | 'philosophy'>('emblem');
   /** エンブレムの段階：in（白からふわっと）→ hold（表示）→ out（白へ消える）→ タイトルへ */
   const [emblemPhase, setEmblemPhase] = useState<'in' | 'hold' | 'out'>('in');
   const [emblemSkipped, setEmblemSkipped] = useState(false);
@@ -79,7 +80,8 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
   const walk = phase === 'done' && !played;
   const announce = (next: 'start' | 'guest') => { setEntry(next); setGate('announcement'); };
   const enter = () => { if (entry === 'guest' && onGuest) onGuest(); else onStart(); };
-  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label="マナトビ 起動エンブレム（タップで進む）" role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><div className="launch-emblem-mark" aria-hidden="true"><Swords/><Headphones/></div><img src="/brand/manatobi-logo.webp" alt="マナトビ" width={1008} height={321}/><h1>学んだぶんだけ、強くなる。</h1></div></main>;
+  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label="マナトビ 起動エンブレム（タップで進む）" role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><div className="launch-emblem-mark" aria-hidden="true"><Swords/><Headphones/></div><img src="/brand/manatobi-logo.webp" alt="マナトビ" width={1008} height={321}/><h1>何事も成し遂げるまでは<br/>いつも不可能に見える。</h1></div></main>;
+  if (gate === 'philosophy') return <PhilosophyPage onBack={() => setGate('title')} />;
   if (gate === 'announcement') return <main className="launch-announcement" aria-label="スタートのお知らせ"><section><p className="mt-kicker">WHAT’S NEW</p><h1>学ぶ入口を、もっと快適に。</h1><div className="launch-countdown"><Headphones size={24}/><span>共通テストまで<strong>{getDaysUntilExam()}<small>日</small></strong><small>{EXAM_DATE_LABEL}</small></span></div>{/* 最新のお知らせから自動で出す（固定文だと古い内容が残り続けるため） */}<p className="launch-announcement-latest">{LATEST_NOTICE?.title ?? '学習をもっと快適に整えました。'}</p><p>対戦の結果を復習につなげて、今日の「聞く力」を積み重ねよう。</p><div className="launch-announcement-actions"><button type="button" onClick={()=>setNotices(true)}>見てみる</button><button type="button" onClick={enter}>閉じる</button></div></section>{notices && <UpdateNoticeModal onClose={()=>setNotices(false)}/>}</main>;
   return <main className="launch-screen" aria-label="マナトビ タイトル画面" data-launch-screen>
     <div className="launch-content">
@@ -107,7 +109,7 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
             onActiveChange={active => { if (active) setPlayed(true); }} onComplete={finishIntro} />}
         </div>
       </div>
-      <p className="launch-copy">学んだぶんだけ、<br className="launch-copy-break" />強くなる。</p>
+      <p className="launch-copy">対戦する力を、<br className="launch-copy-break" />聞く力へ。</p>
       <ul className="launch-chips" aria-label="できること">
         <li><PenLine size={16} aria-hidden="true" />演習</li>
         <li><Repeat2 size={16} aria-hidden="true" />復習</li>
@@ -118,6 +120,7 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
         {onGuest
           ? <button type="button" className="launch-guest mt-btn mt-btn-text" onClick={()=>announce('guest')}>登録せずにゲストで試す</button>
           : <p className="launch-note">学習のつづきから始まります</p>}
+        <button type="button" className="launch-philosophy" data-open-philosophy onClick={() => setGate('philosophy')}><BookHeart size={16} aria-hidden="true" />学びの扉 ～私達に出来ることを～</button>
       </div>
     </div>
   </main>;
