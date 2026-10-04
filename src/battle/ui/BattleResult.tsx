@@ -53,7 +53,13 @@ import { useEffect, useRef, useState } from 'react';
 import './battle-result-review.css';
 import { BattleText } from './BattleText';
 import { BattleReviewDetails } from './BattleReviewDetails';
-import { BattleGrowthReward } from './BattleGrowthReward';
+import { BattleGrowthReward, type GrowthReward } from './BattleGrowthReward';
+import { BattleGrowthCard } from './BattleGrowthCard';
+import { recordLocalBattle } from '../data/localBattleLog';
+import { auth } from '../../firebase';
+import { ShareButton } from './GrowthFx';
+import { equippedTitleLabel, levelOf, shareTextForMatch } from '../core/growth';
+import { Home as HomeIcon, DoorOpen } from 'lucide-react';
 import { BattleMissions } from './BattleMissions';
 import { BattleProfile } from './BattleProfile';
 import type { CSSProperties, TouchEvent as ReactTouchEvent } from 'react';
@@ -162,6 +168,9 @@ export function BattleResult({
   retryMode = false,
   myAnsweredIndexes = [],
   matchKey,
+  onBackToRoom,
+  backToRoomLabel = '部屋に戻って問題を選ぶ',
+  onHome,
 }: {
   result: BattleResultSummary;
   questions: BattleQuestion[];
@@ -225,6 +234,15 @@ export function BattleResult({
   myAnsweredIndexes?: number[];
   /** XP を同じ試合で2回足さないための鍵（部屋IDなど） */
   matchKey?: string;
+  /**
+   * ★詳しい結果 → 「部屋に戻って問題を選ぶ」（2026-10-04）★
+   * 対戦の部屋（始まる前の画面：教科・単元・問題数・強さを選ぶところ）へ戻る。
+   * 次の問題はそこで選び直すので、結果画面には「同じ相手と」「強さを変える」「ほかの単元で」を並べない。
+   */
+  onBackToRoom?: () => void;
+  backToRoomLabel?: string;
+  /** 「ホームに戻る」（アプリのホーム）。無ければ onExit（対戦メニュー）を使う */
+  onHome?: () => void;
 }) {
   useBattleAudio('matching');
   /**
@@ -261,7 +279,20 @@ export function BattleResult({
     while (el) { if (el.scrollTop > 0) el.scrollTop = 0; el = el.parentElement; }
     document.scrollingElement && (document.scrollingElement.scrollTop = 0);
   }, [page]);
+  const [growth, setGrowth] = useState<GrowthReward | null>(null);
   const wrongIds = result.me.perQuestion.filter((q) => !q.correct).map((q) => questions[q.index]?.id).filter((id): id is string => !!id);
+  // 部屋（対戦前の画面）の「さいきんの対戦」に出すため、端末内に1件残す
+  useEffect(() => {
+    const chapterIds = [...new Set(questions.map((q) => q.chapterId).filter(Boolean))];
+    const chapterId = chapterIds.length === 1 ? chapterIds[0] : undefined;
+    recordLocalBattle(auth.currentUser?.uid, {
+      key: matchKey || `${subject}-${questions[0]?.id ?? ''}-${result.me.score}`,
+      subject, chapterId, chapterTitle: chapterId ? chapterTitleOf(chapterId) : undefined,
+      outcome: result.outcome, correct: result.me.correctCount, total: result.me.perQuestion.length,
+      wrongIds, mode: maskOpponent ? 'national' : (opponent?.uid ? 'friend' : 'ai'), at: Date.now(),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [matchKey]);
   const [answerLoadFailed, setAnswerLoadFailed] = useState(false);
   const [answerRetry, setAnswerRetry] = useState(0);
   // 1問ずつの答えあわせ：いま見ている問（最初は最初に間違えた問）
@@ -530,91 +561,104 @@ export function BattleResult({
   );
 
   // ミッション・プロフィールは結果の上に開く（もどると結果に戻る）
-  if (page === 'missions') return <BattleMissions onBack={() => setPage('summary')} />;
-  if (page === 'profile') return <BattleProfile onBack={() => setPage('summary')} onMissions={() => setPage('missions')} />;
+  if (page === 'missions') return <BattleMissions onBack={() => setPage('detail')} />;
+  if (page === 'profile') return <BattleProfile onBack={() => setPage('detail')} onMissions={() => setPage('missions')} />;
 
   const retryButton = onRetryWrong && wrongIds.length > 0 ? (
-    <BattleButton onClick={() => onRetryWrong(subject, wrongIds)} icon={<Swords size={18} />}>
+    <BattleButton variant="ghost" onClick={() => onRetryWrong(subject, wrongIds)} icon={<Swords size={18} />}>
       間違えた{wrongIds.length}問だけ再対戦
     </BattleButton>
   ) : null;
+  const goHome = onHome ?? onExit;
+  const margin = result.me.score - (result.opponent?.score ?? 0);
 
+  /**
+   * ★導線（2026-10-04 ご指示）★
+   *   対戦終わり（勝敗・とびら君・報酬・点数＝1画面）
+   *     → 「詳しい結果を確認する」だけ
+   *   詳しい結果（1問ずつの答えあわせ・解説・成長記録）
+   *     → 「部屋に戻って問題を選ぶ」（教科・単元・問題数・強さはそこで選ぶ）／「ホームに戻る」
+   */
   // ===== 詳しい結果（復習）ページ =====
   if (page === 'detail') return (
     <BattleShell
+      className="result-detail-shell"
       footer={
-        <div className="grid gap-2.5">
-          {retryButton}
-          <ResultActions
-            onRematch={undefined}
-            rematchLabel={rematchLabel}
-            onReview={onReview}
-            picks={picks}
-            subject={subject}
-            chapterTitleOf={chapterTitleOf}
-          />
-          <BattleButton variant="ghost" onClick={() => setPage('summary')} icon={<ArrowLeft size={18} />}>
-            結果にもどる
+        <div className="result-detail-actions" data-result-detail-actions>
+          {onBackToRoom && (
+            <BattleButton onClick={onBackToRoom} icon={<DoorOpen size={18} />} data-result-back-room>
+              {backToRoomLabel}
+            </BattleButton>
+          )}
+          <BattleButton variant="ghost" onClick={goHome} icon={<HomeIcon size={18} />} data-result-home>
+            ホームに戻る
           </BattleButton>
         </div>
       }
     >
-      <h1 className="mb-3 text-center font-handwriting text-2xl font-black" style={{ color: INK }} data-result-detail-title>詳しい結果{retryMode ? '（再対戦）' : ''}</h1>
+      <div className="result-detail-head">
+        <button type="button" className="result-detail-back" onClick={() => setPage('summary')} aria-label="勝敗の画面にもどる"><ArrowLeft size={18} /></button>
+        <h1 className="font-handwriting text-2xl font-black" style={{ color: INK }} data-result-detail-title>詳しい結果{retryMode ? '（再対戦）' : ''}</h1>
+      </div>
       {DETAIL_SECTIONS}
+      {(retryButton || (onReview && picks.length > 0)) && (
+        <section className="mb-4 grid gap-2" aria-label="復習">
+          {retryButton}
+          <ResultActions onRematch={undefined} rematchLabel={rematchLabel} onReview={onReview} picks={picks} subject={subject} chapterTitleOf={chapterTitleOf} />
+        </section>
+      )}
+      {/* 成長記録の詳しいカード（ミッション・称号・共有）は勝敗画面から移した */}
+      {growth && <section className="mb-4" aria-label="成長記録">
+        <BattleGrowthCard progress={growth.progress} delta={growth.delta}
+          onOpenProfile={onOpenProfile ? () => setPage('profile') : undefined}
+          onOpenMissions={onOpenMissions ? () => setPage('missions') : undefined} />
+        <ShareButton text={shareTextForMatch({ outcome: result.outcome, subjectLabel: theme.label,
+          myScore: result.me.score, theirScore: result.opponent?.score || 0, rating,
+          level: levelOf(growth.progress.xp).level, title: equippedTitleLabel(growth.progress) || '' })} />
+      </section>}
+      <ResultStats
+        result={result}
+        answeredIndexes={myAnsweredIndexes}
+        matchKey={matchKey || `${subject}-${result.me.score}-${result.opponent?.score ?? 0}-${questions[0]?.id ?? ''}`}
+      />
     </BattleShell>
   );
 
+  // ===== 対戦終わり（1画面に収める）=====
   return (
     <BattleShell
+      className="result-summary-shell"
       footer={
-        <div className="grid gap-2.5">
-          {/* ★まず「詳しい結果を確認する」★ 復習は次のページ（下へ長くスクロールさせない） */}
-          <BattleButton onClick={() => { setPage('detail'); window.scrollTo?.(0, 0); }} icon={<ClipboardList size={18} />}>
+        <div className="grid gap-2.5" data-result-summary-actions>
+          <BattleButton onClick={() => setPage('detail')} icon={<ClipboardList size={18} />} data-result-open-detail>
             詳しい結果を確認する{picks.length > 0 ? `（まちがい${picks.length}問）` : ''}
-          </BattleButton>
-          {retryButton}
-          <ResultActions
-            onRematch={onRematch}
-            rematchLabel={rematchLabel}
-            onReview={onReview}
-            picks={picks}
-            subject={subject}
-            chapterTitleOf={chapterTitleOf}
-          />
-          {(onPlayAgain || onChangeSubject) && (
-            <div className="grid grid-cols-2 gap-2" data-result-next>
-              {onPlayAgain && <BattleButton variant="ghost" onClick={onPlayAgain} icon={<RotateCcw size={16} />}>{playAgainLabel}</BattleButton>}
-              {onChangeSubject && <BattleButton variant="ghost" onClick={onChangeSubject} icon={<BookOpen size={16} />}>ほかの単元で</BattleButton>}
-            </div>
-          )}
-          <BattleButton variant="ghost" onClick={onExit} icon={<ArrowLeft size={18} />}>
-            対戦メニューにもどる
           </BattleButton>
         </div>
       }
     >
+      <div className="result-summary" data-result-summary data-outcome={result.outcome}>
       <OutcomeHero outcome={result.outcome} byForfeit={byForfeit} />
-      {/* E: とびら君が勝敗に合わせてひとこと（勝利・惜敗・負け・引き分け） */}
-      <TobiraBuddy className="battle-result-buddy" size="md" input={{ screen: 'result', outcome: result.outcome, margin: result.me.score - (result.opponent?.score ?? 0), seed: result.me.score }} />
-      {result.outcome === 'win' && <div className="victory-cinema"><CinematicClip src={CINEMATIC_CLIPS.victory.src} poster={CINEMATIC_CLIPS.victory.poster} label="とびら君の勝利動画" /></div>}
+      {/* 勝ったときはとびら君の動画、それ以外はとびら君のひとことを大きく */}
+      {result.outcome === 'win'
+        ? <div className="victory-cinema result-summary-stage" style={{ backgroundImage: `url(${CINEMATIC_CLIPS.victory.poster})` }}><CinematicClip src={CINEMATIC_CLIPS.victory.src} poster={CINEMATIC_CLIPS.victory.poster} label="とびら君の勝利動画" hold /></div>
+        : null}
+      <TobiraBuddy className="battle-result-buddy result-summary-buddy" size={result.outcome === 'win' ? 'sm' : 'md'} input={{ screen: 'result', outcome: result.outcome, margin, seed: result.me.score }} />
       {growthMatchId && growthOwnerUid && <BattleGrowthReward matchId={growthMatchId} ownerUid={growthOwnerUid}
         eligible={growthEligible} subject={subject} subjectLabel={theme.label} result={result} rating={rating}
-        onProfile={onOpenProfile ? () => setPage('profile') : undefined} onMissions={onOpenMissions ? () => setPage('missions') : undefined} />}
+        compact onLoaded={setGrowth} />}
 
       {byForfeit && (
         <p
-          className="mb-3 rounded-xl px-3 py-2 text-center text-xs font-bold"
+          className="mb-2 rounded-xl px-3 py-2 text-center text-xs font-bold"
           style={{ background: `${GOLD}2E`, color: AMBER }}
         >
-          相手の通信が切れたため、不戦勝あつかいになりました
-          <br />
-          （レートの変化は半分です）
+          相手の通信が切れたため、不戦勝あつかいになりました（レートの変化は半分です）
         </p>
       )}
 
       {result.decidedByTime && (
         <p
-          className="mb-3 rounded-xl px-3 py-2 text-center text-xs font-bold"
+          className="mb-2 rounded-xl px-3 py-2 text-center text-xs font-bold"
           style={{ background: '#2E86C114', color: '#2E86C1' }}
         >
           同点だったので、解答時間の合計で決まりました
@@ -659,67 +703,17 @@ export function BattleResult({
         </div>
       </section>
 
-      {/* ★統計と XP★ */}
-      <ResultStats
-        result={result}
-        answeredIndexes={myAnsweredIndexes}
-        matchKey={matchKey || `${subject}-${result.me.score}-${result.opponent?.score ?? 0}-${questions[0]?.id ?? ''}`}
-      />
-
-      {/* レート */}
-      <section
-        className="mb-4 flex items-center justify-between rounded-2xl border-2 px-4 py-3"
-        style={{ borderColor: `${title.color}44`, background: `${title.color}10` }}
-      >
-        <div>
-          <p className="text-xs font-black" style={{ color: INK_SUB }}>
-            レート
-          </p>
-          {rating ? (
-            <p className="flex items-baseline gap-1.5">
-              <span
-                className="text-sm font-bold tabular-nums"
-                style={{ color: INK_SUB }}
-              >
-                {rating.before}
-              </span>
-              <span style={{ color: INK_SUB }}>→</span>
-              <span
-                className="battle-pop text-2xl font-black tabular-nums"
-                style={{ color: title.color, '--pop-delay': '0.2s' } as CSSProperties}
-              >
-                {rating.after}
-              </span>
-            </p>
-          ) : (
-            <p className="text-xs font-bold" style={{ color: INK_SUB }}>
-              {ratingNote || '反映されませんでした（無効試合）'}
-            </p>
-          )}
-        </div>
-        {rating && (
-          <span
-            className="flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-black tabular-nums"
-            style={{ background: `${deltaColor}22`, color: deltaColor }}
-          >
-            {deltaIcon}
-            {delta > 0 ? `+${delta}` : delta}
-          </span>
-        )}
-      </section>
-
-
-
-      {!ratingNote && (
-        <p
-          className="mb-2 text-center text-xs font-bold leading-relaxed"
-          style={{ color: INK_SUB }}
-        >
-          点数は両方の端末で同じ計算をして、
-          <br />
-          一致したときだけレートに反映されます。
-        </p>
-      )}
+      {/* レート（1行）。統計（正解数・回答時間・コンボ・1問ごとのながれ）は「詳しい結果」へ */}
+      <p className="result-rate-line" style={{ borderColor: `${title.color}44`, background: `${title.color}10` }} data-result-rate>
+        <span className="result-rate-label">レート</span>
+        {rating ? <>
+          <span className="tabular-nums" style={{ color: INK_SUB }}>{rating.before}</span>
+          <span style={{ color: INK_SUB }}>→</span>
+          <b className="battle-pop tabular-nums" style={{ color: title.color, '--pop-delay': '0.2s' } as CSSProperties}>{rating.after}</b>
+          <span className="result-rate-delta tabular-nums" style={{ background: `${deltaColor}22`, color: deltaColor }}>{deltaIcon}{delta > 0 ? `+${delta}` : delta}</span>
+        </> : <span className="result-rate-note">{ratingNote || '反映されませんでした（無効試合）'}</span>}
+      </p>
+      </div>
     </BattleShell>
   );
 }

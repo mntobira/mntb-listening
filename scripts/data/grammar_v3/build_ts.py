@@ -40,7 +40,7 @@ for r in d:
                       k=marked(r, ans), km=meaning, th=theme, cm=lines, tl=r['timeLimit'], one=f"{ans}。{r['point']}"[:120]))
 out = os.path.join(ROOT, 'src/data/egV3Items.generated.ts')
 with open(out, 'w') as fp:
-    fp.write("/**\n * 英文法 第1〜16章 4択（全%d問）※自動生成・手で編集しないこと\n" % len(items))
+    fp.write("/**\n * 英文法 第1〜20章 4択（全%d問）※自動生成・手で編集しないこと\n" % len(items))
     fp.write(" * 元データ: scripts/data/grammar_v3/normalized.json（normalize.py → build_ts.py）\n */\n")
     fp.write("export type EgV3Item = { c: number; t: string; n: number; g: string; s: string; o: [string, string, string, string]; a: 0 | 1 | 2 | 3; f: string; tr: string; k: string; km: string; th: string; cm: string[]; tl: number; one: string };\n")
     fp.write("export const EG_V3_ITEMS: readonly EgV3Item[] = JSON.parse(%s);\n" % json.dumps(json.dumps(items, ensure_ascii=False), ensure_ascii=False))

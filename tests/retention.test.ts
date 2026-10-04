@@ -72,8 +72,12 @@ describe('対戦結果（2026-10-04）', () => {
   const src = readFileSync('src/battle/ui/BattleResult.tsx', 'utf8');
   it('勝敗の画面と詳しい結果（復習）は別ページ。ミッション・プロフィールは結果に戻れる', () => {
     expect(src).toContain('詳しい結果を確認する');
-    expect(src).toContain("if (page === 'missions') return <BattleMissions onBack={() => setPage('summary')} />");
-    expect(src).toContain("onMissions={onOpenMissions ? () => setPage('missions') : undefined}");
+    expect(src).toContain("if (page === 'missions') return <BattleMissions onBack={() => setPage('detail')} />");
+    expect(src).toContain("onOpenMissions={onOpenMissions ? () => setPage('missions') : undefined}");
+    // 勝敗の画面のボタンは「詳しい結果を確認する」だけ。詳しい結果には「部屋に戻る」「ホームに戻る」だけ
+    expect(src).toContain('data-result-open-detail');
+    expect(src).toContain('data-result-back-room');
+    expect(src).toContain('data-result-home');
     expect(src).not.toContain('<ReviewPicks');
   });
   it('詳しい解説はその1問だけ（大問の問1〜問5一覧を混ぜない）', async () => {

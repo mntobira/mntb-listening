@@ -80,7 +80,6 @@ import {
 } from 'lucide-react';
 import { useBattleAudioSettings } from '../hooks/useBattleAudio';
 import { auth } from '../../firebase';
-import { FriendOnlineStrip } from '../../components/FriendOnlineStrip';
 import { ConnectionCheckPanel } from './ConnectionCheckPanel';
 import { TobiraBuddy } from '../../components/TobiraBuddy';
 import { useGrowthProgress } from '../../hooks/useGrowthProgress';
@@ -183,7 +182,7 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
    {/* B13 サブ機能はメインの3択の下に「その他」としてまとめる（機能は削らない） */}
    <nav className="arena-lobby-sub" aria-label="その他の機能">
    <p className="arena-lobby-label" aria-hidden="true">その他</p>
-   <div className="arena-menu-links"><button type="button" onClick={()=>onChoose('history')}><History size={16}/>対戦履歴</button><button type="button" onClick={()=>onChoose('clan')}><Shield size={16}/>マナクラン</button>{user && <FriendOnlineStrip/>}</div>
+   <div className="arena-menu-links"><button type="button" onClick={()=>onChoose('history')}><History size={16}/>対戦履歴</button><button type="button" onClick={()=>onChoose('clan')}><Shield size={16}/>マナクラン</button></div>
    <div className="arena-lobby-help">
    <details className="arena-rules-help arena-connection-help"><summary><Activity size={14} aria-hidden="true"/>つながらないとき</summary><ConnectionCheckPanel compact/></details>
    <details className="arena-rules-help"><summary><BookOpen size={14} aria-hidden="true"/>配点と対戦ルール</summary><p>正解のみ加点。速さ点は残り時間の割合rに対して240×(0.7r²+0.3r³)。500ms単位に丸めます。3連続以上に小さな連続点。旧ルームでは作成時の配点を使用します。フレンドもお互い更新してから遊んでください。</p></details>

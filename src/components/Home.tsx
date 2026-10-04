@@ -6,7 +6,6 @@ import { auth } from '../firebase';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc, equippedFrameColor, equippedFramePattern, levelOf, equippedTitleLabel } from '../battle/core/growth';
 import { TobiraAccessories } from '../battle/ui/TobiraAccessories';
-import { FriendOnlineStrip } from './FriendOnlineStrip';
 import type { GrowthPage } from './GrowthHub';
 const GrowthHomeStrip = React.lazy(() => import('../battle/ui/GrowthHomeStrip').then(m => ({ default: m.GrowthHomeStrip })));
 /*
@@ -424,7 +423,6 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           {reviewDueCount === 0 && <p className="study-next">{solvedQuestions === 0 ? '最初の1問で、扉がひとつ開くよ' : '復習はゼロ。新しい大問に進もう'}</p>}
           <button type="button" onClick={() => progressDialog.current?.showModal()}>学習記録を見る <ChevronRight size={16} /></button>
         </section>
-        <FriendOnlineStrip />
       </div>
       <dialog ref={progressDialog} className="game-details-dialog" aria-labelledby="home-progress-title">
         <header><h2 id="home-progress-title">学習状況・その他</h2><button type="button" onClick={() => progressDialog.current?.close()} autoFocus>閉じる</button></header>

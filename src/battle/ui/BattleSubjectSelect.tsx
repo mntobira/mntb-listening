@@ -30,7 +30,9 @@ import type { BattleQuestion } from '../core/types';
 import { useEffect, useState } from 'react';
 import { getChapterIndexOfSubject } from '../../data/chapterIndex.generated';
 import { externalChapterTitleOf, externalSubjectOf } from '../../data/externalSubjects';
-import { ArrowLeft, Info } from 'lucide-react';
+import { ArrowLeft, Info, History as HistoryIcon, RotateCcw } from 'lucide-react';
+import { loadLocalBattleLog, type LocalBattleLogItem } from '../data/localBattleLog';
+import { auth } from '../../firebase';
 import { subjectTheme } from '../../data/subjectTheme';
 import type { SubjectKey } from '../../data/allChapters';
 import { POOL_FORMAT_COUNTS, poolCountOf, loadPool } from '../data/battlePool';
@@ -44,7 +46,13 @@ type GrammarPartId = 'grammar' | 'usage' | 'expression';
 const GRAMMAR_PARTS: readonly { id: GrammarPartId; n: number; label: string }[] = [
   { id: 'grammar', n: 1, label: '文法の幹' }, { id: 'usage', n: 2, label: '語法' }, { id: 'expression', n: 3, label: 'イディオム・表現' },
 ];
-const grammarPartOf = (chapterId: string): GrammarPartId => chapterId.startsWith('eg4_') ? 'usage' : chapterId.startsWith('eg5_') ? 'expression' : 'grammar';
+const egChapterNo = (id: string) => (/^eg6_(\d+)$/.exec(id) ? Number(/^eg6_(\d+)$/.exec(id)![1]) : 0);
+const grammarPartOf = (chapterId: string): GrammarPartId => {
+  const n = egChapterNo(chapterId);
+  if (chapterId.startsWith('eg4_') || (n >= 17 && n <= 19)) return 'usage';
+  if (chapterId.startsWith('eg5_') || n === 20) return 'expression';
+  return 'grammar';
+};
 
 /** 出題数に対して収録数が少ない教科の目印（1試合ぶんの3倍を下回るか） */
 const THIN_POOL_FACTOR = 3;
@@ -92,6 +100,8 @@ export function BattleSubjectSelect({
   onBack,
   allowQuestionCount = false,
   currentSubject,
+  showRecent = false,
+  onRetryWrong,
 }: {
   /** 「部屋をつくる」「相手をさがす」など、何のための選択かを出す */
   title: string;
@@ -109,6 +119,13 @@ export function BattleSubjectSelect({
   allowQuestionCount?: boolean;
   /** 本体で選択中の科目。該当カードの枠を濃くして「いま学習中の科目」を示す。 */
   currentSubject?: string;
+  /**
+   * ★部屋の「さいきんの対戦」（2026-10-04）★ 詳しい結果から「部屋に戻る」と、ここで次の問題を選べる。
+   * 渡されると、直近の対戦（教科・単元・正解数）を並べ、押すとその単元で始められる。
+   */
+  showRecent?: boolean;
+  /** さいきんの対戦の「間違えた問題だけ」 */
+  onRetryWrong?: (subject: string, ids: string[]) => void;
 }) {
   // 選んでいる問題数。既定は 10（教科の既定と同じものが大半）。
   const [questionCount, setQuestionCount] = useState<QuestionCountChoice>(10);
@@ -121,6 +138,7 @@ export function BattleSubjectSelect({
   const [rangeSize, setRangeSize] = useState<50 | 100>(100);
   const [unitError, setUnitError] = useState(false);
   const [retry, setRetry] = useState(0);
+  const [recent] = useState<LocalBattleLogItem[]>(() => showRecent ? loadLocalBattleLog(auth.currentUser?.uid).slice(0, 4) : []);
   useEffect(() => {
     if (!unitSubject) return;
     let alive = true;
@@ -286,7 +304,35 @@ export function BattleSubjectSelect({
       </details>
 
       {!allowQuestionCount && <p className="mb-3 text-xs font-bold" style={{ color: INK_SUB }}>全国対戦は全単元から出題します。単元を指定したいときはAI・フレンド対戦を選んでください。</p>}
-      <div className="grid gap-2.5">
+      {recent.length > 0 && (
+        <section className="battle-recent mb-2" aria-label="さいきんの対戦" data-battle-recent data-has-recent>
+          <h2 className="battle-recent-title"><HistoryIcon size={14} aria-hidden="true" />さいきんの対戦から選ぶ</h2>
+          <ul>
+            {recent.map((r) => {
+              const theme = subjectTheme(r.subject as SubjectKey);
+              const label = r.chapterTitle || '全単元';
+              const pick = () => allowQuestionCount ? onPick(r.subject, questionCount, r.chapterId) : onPick(r.subject);
+              return (
+                <li key={r.key}>
+                  <button type="button" className="battle-recent-main" onClick={pick} data-battle-recent-pick={r.subject}
+                    aria-label={`${theme.label} ${label}でもう一度（前回 ${r.correct}/${r.total}問正解）`}>
+                    <span className="battle-recent-mark" data-outcome={r.outcome}>{r.outcome === 'win' ? '勝' : r.outcome === 'lose' ? '負' : '分'}</span>
+                    <span className="battle-recent-body"><b style={{ color: theme.accent }}>{theme.label}</b><span>{label}</span></span>
+                    <span className="battle-recent-score tabular-nums">{r.correct}/{r.total}</span>
+                  </button>
+                  {onRetryWrong && r.wrongIds.length > 0 && (
+                    <button type="button" className="battle-recent-retry" onClick={() => onRetryWrong(r.subject, r.wrongIds)}
+                      aria-label={`${label}の間違えた${r.wrongIds.length}問だけ再対戦`} data-battle-recent-retry>
+                      <RotateCcw size={14} aria-hidden="true" /><span>間違い</span><span>{r.wrongIds.length}問</span>
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+      <div className={`grid gap-2.5 battle-subject-list${recent.length > 0 ? ' is-compact' : ''}`}>
         {entries.map(({ subject, count, kanaCount, rule }) => {
           const theme = subjectTheme(subject as SubjectKey);
           const note = formatNote(rule, count);

@@ -140,3 +140,13 @@
   .arena-menu .arena-vs-avatar { width: 44px; height: 44px; }
   .arena-menu .arena-vs-mark { font-size: 26px; }
 }
+
+/* 2026-10-04 PC：ランクの帯が「あなた VS 相手」に重なっていた（grid-column:1/-1 が1段目に入り込む）。
+   PC では帯を舞台の2段目に置き、名前・アバター・VS と重ならないようにする。 */
+@media (min-width: 900px) {
+  .arena-menu .arena-vs:has(.arena-vs-progress) { grid-template-columns: 1fr auto 1fr; grid-template-areas: "me vs foe" "say say say"; }
+  .arena-menu .arena-vs .arena-vs-progress { grid-area: say !important; grid-column: 1 / -1 !important; grid-row: 2 !important; width: 100%; box-sizing: border-box; grid-template-columns: auto minmax(120px,1fr) auto; position: relative; z-index: 1; }
+  .arena-menu .arena-vs .arena-vs-progress .arena-rank-bar { min-width: 120px; }
+  .arena-menu .arena-vs-me, .arena-menu .arena-vs-foe { position: relative; z-index: 2; min-width: 0; }
+  .arena-menu .arena-vs-me strong { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}

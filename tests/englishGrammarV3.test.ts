@@ -1,5 +1,6 @@
 /**
- * 英文法 第1〜16章（2026-10-03 改訂版・4択729問）の取り込み検査
+ * 英文法 第1〜20章（4択1163問）の取り込み検査
+ *   第1〜16章 729問（2026-10-03 改訂版）＋第17〜19章 290問・会話表現 144問（2026-10-04 追加）
  */
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -9,13 +10,23 @@ import { loadPool } from '../src/battle/data/battlePool';
 
 const MARKS = ['①', '②', '③', '④'];
 
-describe('英文法 改訂版（第1〜16章）', () => {
-  it('3つの納品の全729問が章ごとに入っている', () => {
-    expect(EG_V3_ITEMS).toHaveLength(729);
+describe('英文法 改訂版（第1〜20章）', () => {
+  it('6つの納品の全1163問が章ごとに入っている', () => {
+    expect(EG_V3_ITEMS).toHaveLength(1163);
     const count = (c: number) => EG_V3_ITEMS.filter((x) => x.c === c).length;
     expect([1, 2, 3, 4, 5, 6, 7].map(count)).toEqual([41, 15, 47, 39, 40, 29, 34]);
     expect([8, 9, 10, 11].map(count)).toEqual([58, 72, 74, 83]);
     expect([12, 13, 14, 15, 16].map(count)).toEqual([58, 24, 59, 42, 14]);
+    // 2026-10-04 追加：17章 動詞の語法／18章 形容詞・副詞の語法／19章 名詞の語法／20章 会話表現
+    expect([17, 18, 19, 20].map(count)).toEqual([175, 70, 45, 144]);
+  });
+
+  it('追加章は PART に正しく入る（17〜19章＝語法、20章＝イディオム・表現）', () => {
+    const all = getAllGrammarChapters();
+    const part = (id: string) => all.find((c) => c.id === id)?.questionGroup;
+    expect([17, 18, 19].map((n) => part(`eg6_${n}`))).toEqual(['語法', '語法', '語法']);
+    expect(part('eg6_20')).toBe('表現');
+    expect(part('eg6_16')).toBe('文法');
   });
 
   it('どの問題も 4択・正解1つ・選択肢の重複なし・空所1つ・完成文と和訳あり', () => {
@@ -51,6 +62,11 @@ describe('英文法 改訂版（第1〜16章）', () => {
     expect(Math.max(...nos(1, 7))).toBe(245);
     expect(Math.max(...nos(8, 11))).toBe(83);
     expect(Math.max(...nos(12, 16))).toBe(197);
+    //   17章：通し 1〜175 ／ 18・19章：章ごとに 1〜 ／ 20章（会話表現）：1〜144 に振り直し（教材の 246〜389 は持たない）
+    expect(Math.max(...nos(17, 17))).toBe(175);
+    expect(Math.max(...nos(18, 18))).toBe(70);
+    expect(Math.max(...nos(19, 19))).toBe(45);
+    expect(Math.max(...nos(20, 20))).toBe(144);
     for (const x of EG_V3_ITEMS) expect(Object.keys(x)).not.toContain('point');
     const src = readFileSync('src/data/egV3Items.generated.ts', 'utf8');
     expect(src).not.toMatch(/対応表|原番号|Point\s*\d{3}/);
@@ -59,7 +75,7 @@ describe('英文法 改訂版（第1〜16章）', () => {
 
   it('演習：1回5問・1問ずつ進む・完成文の正解部分に1か所だけマーカー', () => {
     const chapters = getAllGrammarChapters().filter((c) => c.id.startsWith('eg6_'));
-    expect(chapters).toHaveLength(16);
+    expect(chapters).toHaveLength(20);
     let subs = 0;
     for (const c of chapters) {
       for (const p of c.practiceProblems as any[]) {
@@ -74,17 +90,17 @@ describe('英文法 改訂版（第1〜16章）', () => {
         }
       }
     }
-    expect(subs).toBe(729);
+    expect(subs).toBe(1163);
   });
 
-  it('対戦：全729問が元の制限時間と試合後の1行解答つきで出る', async () => {
+  it('対戦：全1163問が元の制限時間と試合後の1行解答つきで出る', async () => {
     const pool = (await loadPool('english_grammar')).filter((q) => q.chapterId.startsWith('eg6_'));
-    expect(pool).toHaveLength(729);
+    expect(pool).toHaveLength(1163);
     for (const q of pool) {
       expect([15, 20, 25]).toContain(q.timeLimit);
       expect(q.options).toHaveLength(4);
     }
     const answers = readFileSync('src/battle/data/answer.english_grammar.generated.ts', 'utf8');
-    expect(answers).toContain('729 問');
+    expect(answers).toContain('1163 問');
   });
 });

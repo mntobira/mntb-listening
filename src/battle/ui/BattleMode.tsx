@@ -282,6 +282,7 @@ export function BattleMode({
             currentSubject={subject}
             title="部屋をつくる ／ 教科をえらぶ"
             allowQuestionCount
+            showRecent
             onPick={(pick, count, unit) => {
               setQuestionCount(count);
               setChapterId(unit);
@@ -297,6 +298,7 @@ export function BattleMode({
         <BattleSubjectSelect
             currentSubject={subject}
           title="全国対戦 ／ 教科をえらぶ"
+          showRecent
           // ★全国は問題数を選べない★ 待機列は教科だけでマッチさせている。
           onPick={(pick) => {
             setSubject(pick);
@@ -368,6 +370,8 @@ export function BattleMode({
             currentSubject={subject}
           title="AIと対戦 ／ 教科をえらぶ"
           allowQuestionCount
+          showRecent
+          onRetryWrong={retryWrong}
           onPick={(pick, count, unit) => {
             setSubject(pick);
             setQuestionCount(count);
@@ -413,6 +417,7 @@ export function BattleMode({
           }}
           onChangeLevel={() => { setGhost(null); setRetryIds(null); setScreen('ai-level'); }}
           onChangeSubject={() => { const wasGhost = !!ghost; setGhost(null); setRetryIds(null); setScreen(wasGhost ? 'subject-national' : 'subject-ai'); }}
+          onHome={onExit}
           onPractice={onPractice}
           onActiveChange={onActiveChange}
           onOpenProfile={() => setScreen('profile')}
@@ -445,6 +450,7 @@ export function BattleMode({
           onSwitchRoom={(next) => setRoomId(next)}
           onChangeSubject={(friend) => { setRoomId(null); setScreen(friend ? 'subject-friend' : 'subject-national'); }}
           onNationalAgain={() => { setRoomId(null); setScreen('matching'); }}
+          onHome={onExit}
           onPractice={onPractice}
           onActiveChange={onActiveChange}
           onOpenProfile={() => setScreen('profile')}

@@ -56,6 +56,7 @@ export function BattleRoomScreen({
   onRetryWrong,
   onChangeSubject,
   onNationalAgain,
+  onHome,
 }: {
   roomId: string;
   /** 部屋が変わったら画面ごと作り直す（前の部屋の状態を持ち越さない） */
@@ -83,6 +84,8 @@ export function BattleRoomScreen({
   onChangeSubject?: (friend: boolean) => void;
   /** 全国戦の結果から「もう1回 全国対戦」 */
   onNationalAgain?: () => void;
+  /** 詳しい結果の「ホームに戻る」（アプリのホーム） */
+  onHome?: () => void;
 }) {
   const uid = auth.currentUser?.uid || '';
   const {
@@ -281,20 +284,15 @@ export function BattleRoomScreen({
         rating={rating}
         byForfeit={byForfeit}
         maskOpponent={!room.joinCode}
-        onRematch={room.joinCode
-          ? onSwitchRoom
-            ? isHostHere
-              ? () => void hostMove({ subject: room.subject, questionCount: room.questionIds.length as FriendRoomSettings['questionCount'], mode: friendModeOfRules(room.rules).id })
-              : () => void guestFollow()
-            : onRematch ? () => onRematch(room.subject) : undefined
-          : undefined}
-        /* 同じ相手とそのまま次の対戦へ。合言葉の入力は要らない（相手は自動で次の部屋に入る） */
-        rematchLabel={onSwitchRoom
-          ? moving === 'host' ? '部屋を用意しています…' : moving === 'guest' ? '相手の部屋を待っています…' : isHostHere ? '同じ相手ともう1回（合言葉なし）' : '同じ相手ともう1回（相手の部屋に入る）'
-          : '同じ科目で新しい部屋を作る'}
-        onPlayAgain={!room.joinCode ? onNationalAgain : undefined}
-        playAgainLabel="もう1回 全国対戦"
-        onChangeSubject={onChangeSubject ? () => onChangeSubject(!!room.joinCode) : undefined}
+        onBackToRoom={room.joinCode && onSwitchRoom && isHostHere
+          ? () => void hostMove({ subject: room.subject, questionCount: room.questionIds.length as FriendRoomSettings['questionCount'], mode: friendModeOfRules(room.rules).id })
+          : room.joinCode && onSwitchRoom ? () => void guestFollow()
+          : onChangeSubject ? () => onChangeSubject(!!room.joinCode) : undefined}
+        backToRoomLabel={room.joinCode && onSwitchRoom
+          ? moving === 'host' ? '部屋を用意しています…' : moving === 'guest' ? '相手の部屋を待っています…'
+            : isHostHere ? '部屋に戻って問題を選ぶ（同じ相手と）' : '相手の部屋に戻る'
+          : '部屋に戻って教科を選ぶ'}
+        onHome={onHome}
         onExit={() => onExit()}
         onPractice={onPractice}
         growthMatchId={`online:${roomId}`}
