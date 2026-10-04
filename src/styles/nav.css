@@ -14,7 +14,7 @@
 .app-bottom-nav > button:focus-visible { outline: none; box-shadow: var(--mt-focus); }
 @media (min-width: 1100px) {
   .app-bottom-nav { padding: var(--mt-s5) var(--mt-s3) !important; gap: var(--mt-s1) !important; border-right: 1px solid var(--mt-line) !important; background: var(--mt-surface) !important; }
-  .app-bottom-nav::before { content: 'マナトビ'; font: 800 var(--mt-fs-xl)/1 var(--mt-font-display); color: var(--mt-brand); padding: var(--mt-s1) var(--mt-s3) var(--mt-s5); letter-spacing: .04em; }
+  .app-bottom-nav::before { content: ''; display: block; height: 46px; margin: 0 8px 24px; background: url('/brand/manatobi-logo.webp') left center / contain no-repeat; }
   .app-bottom-nav::after { content: '学ぶ、遊ぶ、成長する。'; margin-top: auto; padding-top: var(--mt-s4); font: 700 var(--mt-fs-xs)/1.4 var(--mt-font-body); color: var(--mt-ink-3); text-align: center; }
   .app-bottom-nav > button { flex: 0 0 auto !important; flex-direction: row !important; justify-content: flex-start !important; gap: var(--mt-s3) !important; min-height: 48px; padding: 0 var(--mt-s3) !important; }
   .app-bottom-nav > button > span { font-size: var(--mt-fs-sm) !important; }

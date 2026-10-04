@@ -24,8 +24,8 @@ it('exposes listening first, with English grammar and vocabulary as sub-features
     expect(normalizeRule(other,{enabled:true}).enabled).toBe(false);
   }
 });
-it('keeps English grammar (759: chapters 1-16 + usage/idioms) and vocabulary (9541) battle banks loadable', async () => {
-  expect(await loadPool('english_grammar')).toHaveLength(759);
+it('keeps English grammar (1193: chapters 1-20 + usage/idioms) and vocabulary (9541) battle banks loadable', async () => {
+  expect(await loadPool('english_grammar')).toHaveLength(1193);
   expect(await loadPool('english_vocab')).toHaveLength(9541);
   expect(getChaptersOfSubject('english_grammar').length).toBeGreaterThan(0);
   expect(normalizeRule('english_vocab',{}).enabled).toBe(true);

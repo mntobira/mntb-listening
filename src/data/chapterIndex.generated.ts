@@ -235,6 +235,24 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "realTitle": "16章 時制の一致と話法"
       },
       {
+        "id": "eg6_17",
+        "problemCount": 35,
+        "abstractTitle": "第17章 動詞の語法",
+        "realTitle": "17章 動詞の語法"
+      },
+      {
+        "id": "eg6_18",
+        "problemCount": 14,
+        "abstractTitle": "第18章 形容詞・副詞の語法",
+        "realTitle": "18章 形容詞・副詞の語法"
+      },
+      {
+        "id": "eg6_19",
+        "problemCount": 9,
+        "abstractTitle": "第19章 名詞の語法",
+        "realTitle": "19章 名詞の語法"
+      },
+      {
         "id": "eg4_1",
         "problemCount": 1,
         "abstractTitle": "⑮ 動詞の語法（自他・語形・型）",
@@ -257,6 +275,12 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "problemCount": 1,
         "abstractTitle": "⑱ 前置詞の語法",
         "realTitle": "10章 語法"
+      },
+      {
+        "id": "eg6_20",
+        "problemCount": 29,
+        "abstractTitle": "第20章 会話表現",
+        "realTitle": "20章 会話表現"
       },
       {
         "id": "eg5_1",
@@ -337,9 +361,9 @@ export const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = {
     "questions": 135
   },
   "english_grammar": {
-    "chapters": 22,
-    "questions": 157,
-    "marks": 759
+    "chapters": 26,
+    "questions": 244,
+    "marks": 1193
   }
 };
 

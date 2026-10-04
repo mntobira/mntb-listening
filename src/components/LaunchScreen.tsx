@@ -79,12 +79,12 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
   const walk = phase === 'done' && !played;
   const announce = (next: 'start' | 'guest') => { setEntry(next); setGate('announcement'); };
   const enter = () => { if (entry === 'guest' && onGuest) onGuest(); else onStart(); };
-  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label="マナトビ 起動エンブレム（タップで進む）" role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><div className="launch-emblem-mark" aria-hidden="true"><Swords/><Headphones/></div><img src="/brand/manatobi-logo.webp" alt="マナトビ" width={1008} height={321}/><h1>対戦する力を聞く力へ</h1><p>MANATOBI LISTENING</p></div></main>;
+  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label="マナトビ 起動エンブレム（タップで進む）" role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><div className="launch-emblem-mark" aria-hidden="true"><Swords/><Headphones/></div><img src="/brand/manatobi-logo.webp" alt="マナトビ" width={1008} height={321}/><h1>学んだぶんだけ、強くなる。</h1></div></main>;
   if (gate === 'announcement') return <main className="launch-announcement" aria-label="スタートのお知らせ"><section><p className="mt-kicker">WHAT’S NEW</p><h1>学ぶ入口を、もっと快適に。</h1><div className="launch-countdown"><Headphones size={24}/><span>共通テストまで<strong>{getDaysUntilExam()}<small>日</small></strong><small>{EXAM_DATE_LABEL}</small></span></div>{/* 最新のお知らせから自動で出す（固定文だと古い内容が残り続けるため） */}<p className="launch-announcement-latest">{LATEST_NOTICE?.title ?? '学習をもっと快適に整えました。'}</p><p>対戦の結果を復習につなげて、今日の「聞く力」を積み重ねよう。</p><div className="launch-announcement-actions"><button type="button" onClick={()=>setNotices(true)}>見てみる</button><button type="button" onClick={enter}>閉じる</button></div></section>{notices && <UpdateNoticeModal onClose={()=>setNotices(false)}/>}</main>;
   return <main className="launch-screen" aria-label="マナトビ タイトル画面" data-launch-screen>
     <div className="launch-content">
       <header className="launch-top">
-        <span className="launch-product">マナトビ<b>LISTENING</b></span>
+        <span aria-hidden="true" />
         <button type="button" className="launch-sound" aria-label={soundEnabled ? 'BGMをオフにする' : 'BGMをオンにする'} aria-pressed={soundEnabled} onClick={onToggleSound}>
           {soundEnabled ? <Volume2 size={18} aria-hidden="true" /> : <VolumeX size={18} aria-hidden="true" />}<span>BGM {soundEnabled ? 'ON' : 'OFF'}</span>
         </button>
@@ -107,7 +107,7 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
             onActiveChange={active => { if (active) setPlayed(true); }} onComplete={finishIntro} />}
         </div>
       </div>
-      <p className="launch-copy">聞く力を、<br className="launch-copy-break" />対戦する力に。</p>
+      <p className="launch-copy">学んだぶんだけ、<br className="launch-copy-break" />強くなる。</p>
       <ul className="launch-chips" aria-label="できること">
         <li><PenLine size={16} aria-hidden="true" />演習</li>
         <li><Repeat2 size={16} aria-hidden="true" />復習</li>

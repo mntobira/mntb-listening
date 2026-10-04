@@ -14,3 +14,4 @@ __pycache__/
 .secret.local
 .secret.*
 .private-clan-policy*
+/audit/

@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import './correct-burst.css';
 
 /**
@@ -27,7 +28,9 @@ function sideOf(key: string | number): 'left' | 'right' {
 export function CorrectBurst({ burstKey, combo = 0, label = '正解！', sub = 'CORRECT!', extra }: { burstKey: string | number; combo?: number; label?: string; sub?: string; extra?: string }) {
   const hot = combo >= 2;
   const bits = Array.from({ length: 28 }, (_, i) => i);
-  return (
+  // ★body 直下に出す（2026-10-04）★ iPhone（Safari）では、親に transform / will-change があると
+  //   position: fixed が画面ではなく親の箱基準になり、スクロールした解説画面では演出が画面外に出て見えなかった。
+  const node = (
     <div key={burstKey} className="cb-root" data-correct-burst data-hot={hot || undefined} aria-hidden="true">
       <i className="cb-edge" />
       <i className="cb-rays" />
@@ -58,4 +61,5 @@ export function CorrectBurst({ burstKey, combo = 0, label = '正解！', sub = '
       </div>
     </div>
   );
+  return typeof document !== 'undefined' ? createPortal(node, document.body) : node;
 }

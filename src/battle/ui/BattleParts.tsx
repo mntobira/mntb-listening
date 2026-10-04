@@ -363,12 +363,15 @@ export function BattleButton({
   disabled,
   variant = 'primary',
   icon,
+  ...rest
 }: {
   children: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   variant?: 'primary' | 'ghost' | 'danger';
   icon?: ReactNode;
+  /** テスト・計測用の data-* 属性はそのまま button に渡す */
+  [data: `data-${string}`]: string | boolean | undefined;
 }) {
   const styles =
     variant === 'primary'
@@ -385,6 +388,7 @@ export function BattleButton({
   return (
     <button
       type="button"
+      {...rest}
       onClick={onClick}
       disabled={disabled}
       className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 px-4 py-3.5 text-base font-black transition active:translate-y-[2px] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:translate-y-0"

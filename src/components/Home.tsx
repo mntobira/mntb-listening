@@ -6,7 +6,6 @@ import { auth } from '../firebase';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc, equippedFrameColor, equippedFramePattern, levelOf, equippedTitleLabel } from '../battle/core/growth';
 import { TobiraAccessories } from '../battle/ui/TobiraAccessories';
-import { FriendOnlineStrip } from './FriendOnlineStrip';
 import type { GrowthPage } from './GrowthHub';
 const GrowthHomeStrip = React.lazy(() => import('../battle/ui/GrowthHomeStrip').then(m => ({ default: m.GrowthHomeStrip })));
 /*
@@ -61,6 +60,7 @@ import {
 } from '../data/chapterIndex.generated';
 // 公開/非公開の判断は src/config/features.ts が唯一の出どころ
 import { isSubjectEnabled } from '../config/features';
+import { SakuraPetals } from './SakuraPetals';
 import { getDaysUntilExam, EXAM_DATE_LABEL } from '../utils/examCountdown';
 import { getDueCount } from '../utils/reviewList';
 import { TobiraBuddy } from './TobiraBuddy';
@@ -356,6 +356,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
   return (
     <div className="home-lobby arena-home game-home h-full min-h-0 relative">
       <div className="home-lobby-lines" aria-hidden="true" />
+      {/* 背景に桜を降らせる（2026-10-04 復活。操作の邪魔をしないよう最背面・pointer-events なし） */}
+      <SakuraPetals count={14} className="home-sakura" />
       <div className="game-home-viewport">
         <header className="game-home-header">
           <div><h1><img className="game-home-logo" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}>{greetingName}さんのホーム</p></div>
@@ -424,7 +426,6 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           {reviewDueCount === 0 && <p className="study-next">{solvedQuestions === 0 ? '最初の1問で、扉がひとつ開くよ' : '復習はゼロ。新しい大問に進もう'}</p>}
           <button type="button" onClick={() => progressDialog.current?.showModal()}>学習記録を見る <ChevronRight size={16} /></button>
         </section>
-        <FriendOnlineStrip />
       </div>
       <dialog ref={progressDialog} className="game-details-dialog" aria-labelledby="home-progress-title">
         <header><h2 id="home-progress-title">学習状況・その他</h2><button type="button" onClick={() => progressDialog.current?.close()} autoFocus>閉じる</button></header>

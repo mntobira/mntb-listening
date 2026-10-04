@@ -138,7 +138,7 @@ export const englishGrammarData: { parts: GrammarPart[] } = {
     {
       id: 'eg_grammar',
       title: '文法（第1〜16章・4択）',
-      chapters: egV3Chapters.map((c) =>
+      chapters: egV3Chapters.filter((c) => c.chapter <= 16).map((c) =>
         ch(egV3ChapterId(c.chapter), `${c.chapter}章 ${c.title}`, `第${c.chapter}章 ${c.title}`, '文法', c.topics),
       ),
     },
@@ -152,6 +152,9 @@ export const englishGrammarData: { parts: GrammarPart[] } = {
       id: 'eg_usage',
       title: '語法（動詞・名詞・形容詞・副詞・前置詞の使い方）',
       chapters: [
+        // 第17〜19章（4択・2026-10-04 追加）。中身は egV3Problems.ts
+        ...egV3Chapters.filter((c) => c.chapter >= 17 && c.chapter <= 19).map((c) =>
+          ch(egV3ChapterId(c.chapter), `${c.chapter}章 ${c.title}`, `第${c.chapter}章 ${c.title}`, '語法', c.topics)),
         ch('eg4_1', '10章 語法', '⑮ 動詞の語法（自他・語形・型）', '語法', [
           '混同しやすい自動詞と他動詞（rise / raise, lie / lay, sit / seat）',
           '第4文型をとらない動詞（explain / suggest には to が必要）',
@@ -184,15 +187,18 @@ export const englishGrammarData: { parts: GrammarPart[] } = {
     },
 
     // =================================================================
-    // PART 3　イディオム・会話表現・語い
+    // PART 3　会話表現（2026-10-04 イディオムは「熟語」教科に移したので題名を会話表現に）
     // （ネクステ PART3〜PART5 に対応）
     // ※ PART6「アクセント・発音」は共通テストで廃止されたため
     //   単元化せず、その枠を「語い・多義語」に振り替えている。
     // =================================================================
     {
       id: 'eg_expression',
-      title: 'イディオム・会話表現・語い',
+      title: '会話表現',
       chapters: [
+        // 会話表現（4択144問・2026-10-04 追加）。教材の「第8章」だが比較と重なるため第20章として扱う
+        ...egV3Chapters.filter((c) => c.chapter === 20).map((c) =>
+          ch(egV3ChapterId(c.chapter), `${c.chapter}章 ${c.title}`, `第${c.chapter}章 ${c.title}`, '表現', c.topics)),
         ch('eg5_1', '11章 イディオム', '⑲ 動詞を含む熟語・群動詞', '表現', [
           'put / take / get / make / come / go の句動詞',
           '「動詞＋副詞」と「動詞＋前置詞」の目的語の位置',

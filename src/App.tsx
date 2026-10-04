@@ -109,7 +109,7 @@ import { LogicalTree } from './components/LogicalTree';
 import { NoteDetail } from './components/NoteDetail';
 import { StudyHub, type StudyHubView } from './components/StudyHub';
 import { ScreenLoading, ScreenUnavailable } from './components/ScreenStatus';
-import { studyEntry, isLearningScreen, safeStudyResume } from './utils/studyNavigation';
+import { studyEntry, isLearningScreen } from './utils/studyNavigation';
 import { addStudySeconds } from './utils/studyTime';
 import { setFormatMathContext } from './utils/textFormatter';
 import { resolveReviewTarget } from './utils/reviewTarget';
@@ -1872,8 +1872,13 @@ export default function App() {
                 }}
                 items={[
                   { id: 'home', label: 'ホーム', ariaLabel: 'ホーム画面へ移動', current: appState === 'home', onClick: () => navigateMain('home') },
-                  { id: 'study', label: '学習', ariaLabel: '学習画面へ移動', current: isLearningScreen(appState), onClick: () => {
-                    if (!isLearningScreen(appState)) { const next = safeStudyResume(selectedSubject, lastLearnState, selectedChapterId); setFoundationBackTo('home'); navigateMain((next === 'mode_selection' ? 'study' : next) as AppState); }
+                  // ★「学習」は必ず教科の選択画面（演習する）へ（2026-10-04）★
+                  //   以前は「前回の学習画面（英文法の単元一覧など）」に戻していたため、押すたびに出る画面が違い、
+                  //   学習画面の中で押しても反応しなかった。いつ押しても同じ入口に着くようにする。
+                  { id: 'study', label: '学習', ariaLabel: '学習画面へ移動', current: appState === 'study', onClick: () => {
+                    setFoundationBackTo('home');
+                    navigateMain('study');
+                    requestAnimationFrame(() => document.querySelector('.app-shell')?.scrollTo?.({ top: 0 }));
                   } },
                   // 対戦はランキングより前（結果を見る画面より先）。FEATURES.battle が false なら席ごと消す
                   { id: 'battle', label: '対戦', ariaLabel: 'オンライン対戦へ移動', current: appState === 'battle', hidden: !FEATURES.battle, onClick: () => navigateMain('battle') },

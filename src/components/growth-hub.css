@@ -120,3 +120,33 @@
 .profile-standalone-head button { width:44px !important; height:44px !important; }
 .mana-rush .mana-rush-rules li, .mana-rush small, .mana-rush .mana-rush-coin,
 .mana-rush .mana-rush-best span, .mana-rush [class*="bottom-1.5"] { font-size: 12px !important; }
+
+/* ===== 2026-10-04 PC のマイページ（1024px 以上）=====
+   ・ヘッダーは「ホーム」を左、見出しを中央（ボタンと見出しがくっついていた）
+   ・タブと本文の幅をそろえ（最大 1040px）、とびら君の舞台を大きく・高さいっぱいに
+   ・右側は「着がえ」→「そのほか」を縦に並べ、余白を意図して取る */
+@media (min-width: 1024px) {
+  .mypage-hub { padding: 0 32px calc(var(--app-nav-h, 0px) + 24px); }
+  .mypage-hub .mana-hub-header { position: relative; display: flex; align-items: center; justify-content: center; max-width: 1040px; width: 100%; margin: 0 auto; padding: 20px 0 12px; min-height: 72px; }
+  .mypage-hub .mana-hub-header > button { position: absolute; left: 0; top: 50%; transform: translateY(-50%); min-height: 44px; }
+  .mypage-hub h1 { font-size: 28px; letter-spacing: .04em; }
+  .mypage-tabs { max-width: 1040px; width: 100%; margin: 0 auto; padding: 0 0 16px; gap: 8px; }
+  .mypage-tabs button { min-height: 48px; font-size: 14px; border-radius: 14px; transition: background .15s, border-color .15s, transform .15s; }
+  .mypage-tabs button:hover:not([aria-current=page]) { background: #fff6dc; border-color: #c9a85a; }
+  .mypage-body { max-width: 1040px; margin: 0 auto; }
+  .mypage-overview { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) !important; grid-template-rows: auto auto; gap: 20px 24px !important; padding: 0 !important; align-content: start; overflow: visible; }
+  .mypage-stage { grid-row: 1 / span 2 !important; gap: 14px; padding: 28px 24px 24px; border-radius: 28px; min-height: 0; height: 100%; box-shadow: 0 10px 30px rgba(120, 86, 20, .12), inset 0 0 0 6px #fff8e655; }
+  .mypage-stage-title { font-size: 15px; padding: 5px 16px; }
+  .mypage-stage-avatar { transform: scale(1.35); margin: 26px 0; }
+  .mypage-stage-meta { max-width: 360px; gap: 8px; }
+  .mypage-stage-meta strong { font-size: 24px; }
+  .mypage-parts { align-self: start; }
+  .mypage-parts h2 { font-size: 16px; margin-bottom: 10px; }
+  .mypage-parts ul { gap: 10px !important; }
+  .mypage-parts button { min-height: 52px !important; border-radius: 14px; transition: background .15s, border-color .15s; }
+  .mypage-parts button:hover { background: #fff6dc; border-color: #c9a85a; }
+  .mypage-more { grid-column: 2 !important; align-self: start; gap: 10px !important; padding-top: 14px; border-top: 1px dashed #e0cfa6; }
+  .mypage-more button { min-height: 72px !important; border-radius: 16px; font-size: 13px; transition: background .15s, transform .15s; }
+  .mypage-more button:hover { background: #fff6dc; transform: translateY(-1px); }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) { .mypage-more button:hover { transform: none; } }

@@ -1,4 +1,5 @@
-"""3つの納品データ（1-7章 / 8-11章 / 12-16章）を1つの形にそろえる。
+"""納品データ（1-7章 / 8-11章 / 12-16章 / 17章 / 18-19章 / 会話表現）を1つの形にそろえる。
+17章以降は 2026-10-04 追加。会話表現は教材上「第8章」だが、アプリでは第8章（比較）と重なるので第20章として入れる。
 内部用の番号対応表は読まない。出力: scripts/data/grammar_v3/normalized.json"""
 import json, glob, re, sys, os
 SRC = sys.argv[1]
@@ -53,8 +54,37 @@ for x in json.load(open(glob.glob(f'{SRC}/manatobi_grammar_ch12-16*/manatobi_gra
         full=fill(x['question'], x['answer']), hint='', point=x['point_summary'], plus='',
         body=x['explanation'], timeLimit=t, src='C'))
 
-# ---- 12〜16章の「→ Point 120」はアプリに無い番号なので「→ 第13章 No.x〜y」に置き換える ----
-C12 = json.load(open(glob.glob(f'{SRC}/manatobi_grammar_ch12-16*/manatobi_grammar_ch12-16.json')[0]))
+# ---- 17章 動詞の語法（12〜16章と同じ形）2026-10-04 ----
+C17_FILES = glob.glob(f'{SRC}/manatobi_grammar_ch17*/manatobi_grammar_ch17.json')
+C17 = json.load(open(C17_FILES[0])) if C17_FILES else []
+for x in C17:
+    t = 25 if x['originalFormat'] != '空所補充' else 20
+    out.append(dict(chapter=x['chapter'], chapterTitle=x['chapterTitle'], no=x['no'], grammar=x['pointTitle'],
+        prompt=blankify(x['question']), options=x['options'], answerIndex=x['answerIndex'],
+        why=[re.sub(r'^[○×]\s*', '', n) for n in x['optionNotes']], translation=x['japanese'],
+        full=fill(x['question'], x['answer']), hint='', point=x['point_summary'], plus='',
+        body=x['explanation'], timeLimit=t, src='C'))
+# ---- 18〜19章 形容詞・副詞／名詞の語法（8〜11章と同じ形）2026-10-04 ----
+for f in glob.glob(f'{SRC}/manatobi_grammar_ch18-19*/english_grammar_ch18-19_all.json'):
+    for x in json.load(open(f)):
+        ans = x['options'][x['answerIndex']]['text']
+        out.append(dict(chapter=x['chapter'], chapterTitle=x['chapterTitle'], no=x['number'], grammar=x['grammarPoint'],
+            prompt=blankify(x['prompt']), options=[o['text'] for o in x['options']], answerIndex=x['answerIndex'],
+            why=[o['why'] for o in x['options']], translation=x['translation'], full=fill(x['prompt'], ans),
+            hint=x['hint'], point=sect(x['explanation'], 'ポイント'), plus=x['plusNote'], timeLimit=x['timeLimit'], src='B'))
+# ---- 会話表現（1〜7章と同じ形）→ アプリでは第20章。番号は 1 から振り直す ----
+for f in glob.glob(f'{SRC}/manatobi_grammar_conv*/grammar_ch8/english_grammar.ch8.json'):
+    for i, x in enumerate(json.load(open(f))):
+        ex = x['explanation']
+        ans = next(o for o in x['options'] if o['correct'])['text']
+        out.append(dict(chapter=20, chapterTitle='会話表現', no=i + 1, grammar=x['grammar'],
+            prompt=blankify(x['prompt']), options=[o['text'] for o in x['options']],
+            answerIndex=[o['correct'] for o in x['options']].index(True),
+            why=[o['why'] for o in x['options']], translation=sect(ex, '訳'), full=fill(x['prompt'], ans),
+            hint='', point=sect(ex, 'ポイント'), plus=sect(ex, '注意'), timeLimit=x['timeLimit'], src='A'))
+
+# ---- 12〜17章の「→ Point 120」はアプリに無い番号なので「→ 第13章 No.x〜y」に置き換える ----
+C12 = json.load(open(glob.glob(f'{SRC}/manatobi_grammar_ch12-16*/manatobi_grammar_ch12-16.json')[0])) + C17
 pt = {}
 for x in C12:
     pt.setdefault(x['point'], []).append((x['chapter'], x['no']))

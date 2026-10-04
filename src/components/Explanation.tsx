@@ -1525,8 +1525,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
             : isMobile
             ? "grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 sm:p-6 md:p-8"
             : isResultView
-              ? "grid grid-cols-1 lg:grid-cols-[58%_42%] gap-6 p-0 items-start"
-              : "grid grid-cols-1 lg:grid-cols-[58%_42%] gap-6 p-0 h-full flex-1 overflow-hidden"
+              ? "grid grid-cols-1 lg:grid-cols-[minmax(0,1.38fr)_minmax(0,1fr)] gap-6 p-0 items-start"
+              : "grid grid-cols-1 lg:grid-cols-[minmax(0,1.38fr)_minmax(0,1fr)] gap-6 p-0 h-full flex-1 overflow-hidden"
           }>
             
             {/* LEFT COLUMN: Problem statements and flowcharts
@@ -1980,8 +1980,10 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                         // 灰色系の落ち着いた表示にする（赤い✕を出さない）。
                         const attempted = isAttempted(answers[sq.id]);
                         const isUnanswered = sq.type !== 'descriptive' && !attempted;
-                        const explanationOpen = openExplanationBySq[sq.id] || false;
-                        const thinkingOpen = openThinkingBySq[sq.id] || false;
+                        // ★PC（画面に余裕がある）では最初から開いておく（2026-10-04 ご要望）★
+                        //   閉じたら閉じたまま（利用者の操作を優先）。スマホは従来どおり閉じて始める。
+                        const explanationOpen = openExplanationBySq[sq.id] ?? !isMobile;
+                        const thinkingOpen = openThinkingBySq[sq.id] ?? !isMobile;
                         const sqSlice = sliceForSq(sq);
                         const isScriptFirst = isScriptFirstExplanation(sqSlice);
                         const relatedSteps = getRelatedSteps(sq.id, question);

@@ -51,6 +51,7 @@ export function BattleAiRoomScreen({
   onRematch,
   onChangeLevel,
   onChangeSubject,
+  onHome,
   onPractice,
   onOpenProfile, onOpenMissions, onActiveChange,
   onReview,
@@ -77,6 +78,8 @@ export function BattleAiRoomScreen({
   onChangeLevel: () => void;
   /** 教科・単元を選び直す */
   onChangeSubject?: () => void;
+  /** 詳しい結果の「ホームに戻る」（アプリのホーム） */
+  onHome?: () => void;
   onPractice?: (subject: string, chapterId: string, problemId?: string, subQuestionId?: string) => void;
   onActiveChange?: (active: boolean) => void;
   onOpenProfile?: () => void;
@@ -178,11 +181,9 @@ export function BattleAiRoomScreen({
         ratingNote={ghost ? 'この試合はレートに反映されませんでした' : 'AI対戦ではレートは動きません（練習用）'}
         byForfeit={false}
         maskOpponent={!!ghost}
-        onRematch={onRematch}
-        rematchLabel={ghost ? 'もう1回 全国対戦' : `同じ相手（${b.opponent?.nickname || 'AI'}）ともう1回`}
-        onPlayAgain={ghost ? undefined : onChangeLevel}
-        playAgainLabel="相手の強さを変える"
-        onChangeSubject={onChangeSubject}
+        onBackToRoom={onChangeSubject}
+        backToRoomLabel={ghost ? '部屋に戻って教科を選ぶ' : '部屋に戻って問題・強さを選ぶ'}
+        onHome={onHome}
         onExit={() => onExit()}
         onPractice={onPractice}
         growthMatchId={growthMatchId} growthOwnerUid={growthOwnerUid} growthEligible
