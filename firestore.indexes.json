@@ -63,6 +63,21 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "//": "放置部屋の掃除（functions sweepStaleBattleData）：waiting のまま古い部屋を探す",
+      "collectionGroup": "battle_rooms",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

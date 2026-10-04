@@ -59,6 +59,7 @@ import {
   where,
   setDoc,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import { mergedRules } from './helpers/battleRules';
 
@@ -354,6 +355,41 @@ describe('battle_rooms — 部屋を作る', () => {
     await assertSucceeds(setDoc(doc(ctxFor(HOST), 'battle_rooms', ROOM), roomPayload()));
   });
 
+  it('★並んでいない相手を入れた全国対戦の部屋は作れない（ブロックのすり抜け防止）★', async () => {
+    const payload = roomPayload({
+      mode: 'random', joinCode: '', players: [HOST, GUEST],
+      profiles: {
+        [HOST]: { uid: HOST, nickname: 'ホスト', photoURL: '', rating: 1500 },
+        [GUEST]: { uid: GUEST, nickname: 'ゲスト', photoURL: '', rating: 1500 },
+      },
+    });
+    await assertFails(setDoc(doc(ctxFor(HOST), 'battle_rooms', ROOM), payload));
+    // 相手が並んでいても、票を消さずに部屋だけ作るのは不可
+    await seed(['battle_queue', GUEST], { uid: GUEST, subject: `${SUBJECT}:speed2`, profile: { uid: GUEST, nickname: 'g', photoURL: '', rating: 1500 }, createdAt: new Date() });
+    await assertFails(setDoc(doc(ctxFor(HOST), 'battle_rooms', ROOM), payload));
+    // 両者の票を同じ書き込みで消費すれば作れる（findOrEnqueue と同じ）
+    await seed(['battle_queue', HOST], { uid: HOST, subject: `${SUBJECT}:speed2`, profile: { uid: HOST, nickname: 'h', photoURL: '', rating: 1500 }, createdAt: new Date() });
+    const db = ctxFor(HOST);
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'battle_queue', HOST));
+    batch.delete(doc(db, 'battle_queue', GUEST));
+    batch.set(doc(db, 'battle_rooms', ROOM), payload);
+    await assertSucceeds(batch.commit());
+  });
+
+  it('★別の教科で並んでいる相手は引き込めない★', async () => {
+    await seed(['battle_queue', GUEST], { uid: GUEST, subject: 'math_1a:speed2', profile: { uid: GUEST, nickname: 'g', photoURL: '', rating: 1500 }, createdAt: new Date() });
+    const db = ctxFor(HOST);
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'battle_queue', GUEST));
+    batch.set(doc(db, 'battle_rooms', ROOM), roomPayload({ mode: 'random', joinCode: '', players: [HOST, GUEST] }));
+    await assertFails(batch.commit());
+  });
+
+  it('★フレンド部屋を最初から2人で作れない（合言葉入室を飛ばせない）★', async () => {
+    await assertFails(setDoc(doc(ctxFor(HOST), 'battle_rooms', ROOM), roomPayload({ players: [HOST, GUEST] })));
+  });
+
   it('★他人をホストにした部屋は作れない★', async () => {
     await assertFails(
       setDoc(doc(ctxFor(GUEST), 'battle_rooms', ROOM), roomPayload({ hostUid: HOST })),
@@ -473,10 +509,11 @@ describe('battle_rooms — 読み取り', () => {
   // 読めることを確かめる。進行中・決着済み・満員の部屋は読めないままである
   // （そちらは相手の解答が入っているので覗けてはいけない）。
   // -----------------------------------------------------------------
-  it('★これから入る人は「待機中で1人だけの部屋」を読める（合言葉入室の前提）★', async () => {
+  it('★これから入るフレンドは「待機中で1人だけの部屋」を読める（合言葉入室の前提）★', async () => {
     await seed(['battle_rooms', ROOM], {
       ...roomPayload({ createdAt: new Date(), updatedAt: new Date() }),
     });
+    await seedFriendship();
     await assertSucceeds(getDoc(doc(ctxFor(GUEST), 'battle_rooms', ROOM)));
   });
 
@@ -518,12 +555,59 @@ describe('battle_rooms — 読み取り', () => {
 // ===================================================================
 // battle_rooms — 参加
 // ===================================================================
+/** HOST と GUEST を相互フレンドにする（フレンド対戦の前提） */
+async function seedFriendship(a: string = HOST, b: string = GUEST) {
+  await seed(['friends', a, 'items', b], { uid: b, nickname: 'b', photoURL: '', addedAt: new Date() });
+  await seed(['friends', b, 'items', a], { uid: a, nickname: 'a', photoURL: '', addedAt: new Date() });
+}
+
 describe('battle_rooms — 参加する', () => {
   async function seedWaitingRoom() {
     await seed(['battle_rooms', ROOM], {
       ...roomPayload({ createdAt: new Date(), updatedAt: new Date() }),
     });
+    await seedFriendship();
   }
+
+  it('★フレンドでない人は、合言葉を知っていてもフレンド対戦の部屋に入れない・覗けない★', async () => {
+    await seed(['battle_rooms', ROOM], { ...roomPayload({ createdAt: new Date(), updatedAt: new Date() }) });
+    await assertFails(getDoc(doc(ctxFor(OUTSIDER), 'battle_rooms', ROOM)));
+    await assertFails(
+      updateDoc(doc(ctxFor(OUTSIDER), 'battle_rooms', ROOM), {
+        players: [HOST, OUTSIDER],
+        profiles: {
+          [HOST]: { uid: HOST, nickname: 'ホスト', photoURL: '', rating: 1500 },
+          [OUTSIDER]: { uid: OUTSIDER, nickname: 'x', photoURL: '', rating: 1500 },
+        },
+        updatedAt: serverTimestamp(),
+      }),
+    );
+  });
+
+  it('クラン交流戦の部屋は、相手クランのメンバーならフレンドでなくても入れる（サーバーが登録した交流戦だけ）', async () => {
+    await seed(['battle_rooms', ROOM], { ...roomPayload({ createdAt: new Date(), updatedAt: new Date() }) });
+    await seed(['mana_duels', ROOM], { clanA: 'ca', clanB: 'cb', playersA: [HOST], playersB: [OUTSIDER], status: 'waiting' });
+    await assertSucceeds(getDoc(doc(ctxFor(OUTSIDER), 'battle_rooms', ROOM)));
+    await assertSucceeds(
+      updateDoc(doc(ctxFor(OUTSIDER), 'battle_rooms', ROOM), {
+        players: [HOST, OUTSIDER],
+        profiles: {
+          [HOST]: { uid: HOST, nickname: 'ホスト', photoURL: '', rating: 1500 },
+          [OUTSIDER]: { uid: OUTSIDER, nickname: 'x', photoURL: '', rating: 1500 },
+        },
+        answers: { [OUTSIDER]: {} },
+        updatedAt: serverTimestamp(),
+      }),
+    );
+    // 交流戦の記録はクライアントからは作れない（偽装できない）
+    await assertFails(setDoc(doc(ctxFor(OUTSIDER), 'mana_duels', 'room_x'), { playersB: [OUTSIDER] }));
+  });
+
+  it('★片方だけのフレンド登録（承認前）では入れない★', async () => {
+    await seed(['battle_rooms', ROOM], { ...roomPayload({ createdAt: new Date(), updatedAt: new Date() }) });
+    await seed(['friends', OUTSIDER, 'items', HOST], { uid: HOST, nickname: 'h', photoURL: '', addedAt: new Date() });
+    await assertFails(getDoc(doc(ctxFor(OUTSIDER), 'battle_rooms', ROOM)));
+  });
 
   it('待機中の部屋に2人目として入れる', async () => {
     await seedWaitingRoom();
@@ -959,14 +1043,29 @@ describe('battle_queue — マッチング待ち行列', () => {
     );
   });
 
-  it('相手の券は消せる（マッチング成立時に取り合いを解決するため）', async () => {
-    // ★ここだけ緩い理由★
-    // 相手を見つけた側が「相手の券を消す」ことで
-    // 二重マッチングを防いでいる。券には点数もレートの変更力も無く、
-    // 消されても再度並び直せるだけなので、
-    // 消せることによる被害は「マッチングし直し」に限られる。
+  it('マッチング成立時は、自分の券と一緒に相手の券を消せる', async () => {
     await seed(['battle_queue', GUEST], { ...queuePayload(GUEST), createdAt: new Date() });
-    await assertSucceeds(deleteDoc(doc(ctxFor(HOST), 'battle_queue', GUEST)));
+    await seed(['battle_queue', HOST], { ...queuePayload(HOST), createdAt: new Date() });
+    const db = ctxFor(HOST);
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'battle_queue', GUEST));
+    batch.delete(doc(db, 'battle_queue', HOST));
+    await assertSucceeds(batch.commit());
+  });
+
+  it('★並んでいない人が、他人の新しい券だけを消すことはできない（マッチング妨害の防止）★', async () => {
+    await seed(['battle_queue', GUEST], { ...queuePayload(GUEST), createdAt: new Date() });
+    await assertFails(deleteDoc(doc(ctxFor(OUTSIDER), 'battle_queue', GUEST)));
+  });
+
+  it('3分より古い放置券は、誰でも片付けられる', async () => {
+    await seed(['battle_queue', GUEST], { ...queuePayload(GUEST), createdAt: new Date(Date.now() - 4 * 60_000) });
+    await assertSucceeds(deleteDoc(doc(ctxFor(OUTSIDER), 'battle_queue', GUEST)));
+  });
+
+  it('自分の券は消せる', async () => {
+    await seed(['battle_queue', HOST], { ...queuePayload(HOST), createdAt: new Date() });
+    await assertSucceeds(deleteDoc(doc(ctxFor(HOST), 'battle_queue', HOST)));
   });
 
   it('★未ログインは券を消せない★', async () => {

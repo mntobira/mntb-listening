@@ -38,7 +38,7 @@
  */
 import { useMemo, useCallback } from 'react';
 import { isShortAnswerType, extractBlankToken, blankHighlightVariants } from '../utils/quizBlanks';
-import { requiresChemicalSymbols, requiresMathSymbols } from '../utils/quizPaletteRules';
+import { requiresMathSymbols } from '../utils/quizPaletteRules';
 import { buildListeningOptionTexts } from '../utils/listeningOptions';
 import { cleanQuestionText, isSubQuestionListRedundant, extractInlineQuestionRows } from '../utils/questionDisplay';
 
@@ -174,31 +174,6 @@ export function useQuestionDerived({
   // ────────────────────────────────────────────────────────────────
   // 要件1（解答入力方式）／要件4（化学記号パレットの出し分け）用の派生値
   // ────────────────────────────────────────────────────────────────
-
-  // この問題に含まれる「短答穴埋め（short_answer）」の設問リスト。
-  // フローティング入力バーの 前へ/次へ ナビゲーションで使う。
-  const shortAnswerSubs = useMemo(() => {
-    if (!currentQuestion) return [] as any[];
-    return (currentQuestion.subQuestions || []).filter((sq: any) => isShortAnswerType(sq));
-  }, [currentQuestion]);
-
-  // インライン穴埋め（問題文中に入力欄を埋め込む）モードを使うか。
-  // データ側で inlineBlanks が明示され、かつ短答穴埋めが存在する場合のみ有効。
-  const useInlineBlanks = useMemo(() => {
-    if (!currentQuestion) return false;
-    if (!(currentQuestion as any).inlineBlanks) return false;
-    return shortAnswerSubs.length > 0;
-  }, [currentQuestion, shortAnswerSubs]);
-
-  // この問題に化学記号パレットが必要か（要件4）。
-  // 「解答として実際に打ち込む文字列」が化学式・イオン式・反応式・上下付き文字を
-  // 含む設問が1つでもあれば true。問題データ側の明示 opt-in も尊重する。
-  const questionNeedsChemPalette = useMemo(() => {
-    if (!currentQuestion) return false;
-    if ((currentQuestion as any).requiresChemicalPalette) return true;
-    const subs = currentQuestion.subQuestions || [];
-    return subs.some((sq: any) => requiresChemicalSymbols(sq));
-  }, [currentQuestion]);
 
   // この問題に数学記号パレットが必要か。
   // データ側の明示 opt-in（requiresMathPalette）のみで判定する。

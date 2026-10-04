@@ -696,10 +696,39 @@ async function deliver(payload: FeedbackPayload, sinks: FeedbackSink[]): Promise
  *
  * @throws 入力が不正な場合は Error（メッセージは日本語・そのまま表示可）
  */
+const FEEDBACK_RATE_KEY = 'feedback_rate_v1';
+const FEEDBACK_PER_MINUTE = 3;
+const FEEDBACK_PER_DAY = 20;
+
+/**
+ * ★連続送信の歯止め（2026-10-04）★
+ * ゲストでも送れる窓口なので、ボタンの連打・スクリプトでの大量投函を端末側で止める。
+ * （本当の防御は firestore.rules の形式・サイズ検証。ここは通常利用を邪魔しない一次防御）
+ * 送れるなら記録して true、上限なら false を返す。
+ */
+export function takeFeedbackSlot(now: number = Date.now()): boolean {
+  try {
+    const ls = (globalThis as any)?.localStorage;
+    if (!ls) return true;
+    const raw = JSON.parse(ls.getItem(FEEDBACK_RATE_KEY) || '[]');
+    const recent = (Array.isArray(raw) ? raw : []).filter((t: unknown) => typeof t === 'number' && now - t < 86400000 && t <= now);
+    if (recent.length >= FEEDBACK_PER_DAY) return false;
+    if (recent.filter((t: number) => now - t < 60000).length >= FEEDBACK_PER_MINUTE) return false;
+    recent.push(now);
+    ls.setItem(FEEDBACK_RATE_KEY, JSON.stringify(recent));
+    return true;
+  } catch {
+    return true;
+  }
+}
+
 export async function submitFeedback(input: FeedbackInput): Promise<FeedbackResult> {
   const validation = validateFeedback(input);
   if (!validation.valid) {
     throw new Error(validation.errors.join('\n'));
+  }
+  if (!takeFeedbackSlot()) {
+    throw new Error('送信が続いています。少し時間をおいてから、もう一度送ってください。');
   }
   const payload = buildFeedbackPayload(input);
   return deliver(payload, activeSinks());

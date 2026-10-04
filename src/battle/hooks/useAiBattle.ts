@@ -131,16 +131,20 @@ export function useAiBattle(
   chapterId?: string,
   /** 全国対戦の AI プレイヤー（ghostProfileFor）。渡すと強さ・名前はこちらを使う */
   ghost?: AiProfile,
+  /** 「間違えた問題だけ再対戦」：この出題IDだけを、この順で出す（2026-10-04） */
+  fixedIds?: readonly string[],
 ): AiBattleState & AiBattleActions {
   const user = auth.currentUser;
   const uid = user?.uid || 'me';
   const profile = ghost ?? aiProfileOf(level);
   const aiUid = aiUidOf(level);
 
+  const fixedKey = fixedIds?.join(',') ?? '';
   const rules = useMemo(() => {
     const base = arenaRule(effectiveRule(subject));
+    if (fixedKey) return { ...base, questionCount: fixedKey.split(',').length };
     return questionCount ? { ...base, questionCount } : base;
-  }, [subject, questionCount]);
+  }, [subject, questionCount, fixedKey]);
 
   const [phase, setPhase] = useState<AiBattlePhase>('loading');
   const [error, setError] = useState<string | null>(null);
@@ -179,7 +183,7 @@ export function useAiBattle(
     setCurrentIndex(0);
     setDeadlineMs(0);
     (async () => {
-      const ids = await drawQuestionIds(subject, rules, seedRef.current, chapterId);
+      const ids = fixedKey ? fixedKey.split(',') : await drawQuestionIds(subject, rules, seedRef.current, chapterId);
       if (ids.length === 0) throw new Error('この教科は対戦できる問題がまだ足りません。');
       const pool = await loadPool(subject);
       const byId = new Map(pool.map((q) => [q.id, q]));
@@ -200,7 +204,7 @@ export function useAiBattle(
     };
     // level は profile 経由で使う。subject/level/matchNo が変わったら作り直す
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subject, level, rules, matchNo, chapterId, ghost]);
+  }, [subject, level, rules, matchNo, chapterId, ghost, fixedKey]);
 
   // ------------------------------------------------------------
   // 時計

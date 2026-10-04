@@ -38,3 +38,13 @@ test('missing peer proof, mismatched scores and self battles cannot earn grants'
 });
 
 test('missing and decreasing secret policies fail closed',()=>{assert.throws(()=>parsePowerPolicy(''));assert.throws(()=>clanPower([{rating:1500}]));assert.throws(()=>parsePowerPolicy({version:1,bands:[{rating:0,power:2},{rating:5000,power:1}]}));});
+
+import { aggregateAchievements, parseDeviceAchievements, levelFromXp } from './core.mjs';
+test('achievements: devices are summed; 3 perfects across devices clear a stage', () => {
+  const a = aggregateAchievements([{ xp: 100, stages: { s1: { p: 2, n: 3 }, s2: { p: 1, n: 1 } } }, { xp: 3100, stages: { s1: { p: 1, n: 1 } } }]);
+  assert.equal(a.stagesCleared, 1); assert.equal(a.xp, 3200); assert.equal(a.level, levelFromXp(3200)); assert.equal(a.level, 11);
+  assert.equal(parseDeviceAchievements({ deviceId: 'short', xp: 1, stages: {} }), null);
+  assert.equal(parseDeviceAchievements({ deviceId: 'abcdefgh12', xp: 1, stages: { 'a/b': { p: 0, n: 1 } } }), null);
+  assert.equal(parseDeviceAchievements({ deviceId: 'abcdefgh12', xp: 1, stages: { a: { p: 2, n: 1 } } }), null);
+  assert.ok(parseDeviceAchievements({ deviceId: 'abcdefgh12', xp: 1, stages: { 'eg6_1::q1': { p: 1, n: 2 } } }));
+});

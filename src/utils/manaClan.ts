@@ -9,7 +9,14 @@ export async function clanCall<T>(action: string, input: Record<string, unknown>
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) throw new Error('マナクランにはGoogleログインとオンライン設定が必要です。');
   try { return (await httpsCallable<Record<string, unknown>, T>(functions, 'manaClan')({ action, ...input })).data; }
   catch (e: any) {
-    if (e.code === 'functions/not-found' || e.code === 'functions/unavailable') throw new Error('マナクランの集計サーバーが未反映、または接続できません。運営者のサーバー設定後に利用できます。');
+    // ★サーバー未設定・停止中は、英語のコード（internal など）をそのまま見せない★
+    //   functions/internal は「関数が無い（CORS で弾かれた）」「設定（秘密値）が無い」ときにも返る。
+    if (['functions/not-found', 'functions/unavailable', 'functions/internal', 'functions/deadline-exceeded', 'functions/unknown'].includes(e.code)
+      || /^(internal|INTERNAL|unknown)$/i.test(String(e.message || '').trim())) {
+      throw new Error('マナクランの集計サーバーが未反映、または接続できません。運営者のサーバー設定後に利用できます。');
+    }
+    if (e.code === 'functions/unauthenticated') throw new Error('マナクランには Google / Apple でのログインが必要です。');
+    if (e.code === 'functions/resource-exhausted' && !e.message) throw new Error('操作が多すぎます。1分ほど待ってからもう一度お試しください。');
     throw new Error(e.message || '接続できませんでした。');
   }
 }

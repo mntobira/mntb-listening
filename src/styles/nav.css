@@ -23,10 +23,6 @@
   .app-bottom-nav > button[aria-current=page]::before { top: 10px; bottom: 10px; left: 0; right: auto; width: 3px; height: auto; border-radius: 0 3px 3px 0; }
 }
 /* 「スマホ版でプレビュー」ボタン（PCのみ）：ラベルを常に出し、ホームの主要ボタンと重ならない左下（サイドバー内）へ */
-.mt-preview-toggle { position: fixed; z-index: 70; left: var(--mt-s3); bottom: 56px; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 var(--mt-s3); border-radius: var(--mt-r-pill); background: var(--mt-paper); box-shadow: inset 0 0 0 1px var(--mt-line-strong); color: var(--mt-ink-2); font: 700 var(--mt-fs-xs)/1 var(--mt-font-body); }
-.mt-preview-toggle:hover { color: var(--mt-brand); box-shadow: inset 0 0 0 1px var(--mt-brand); }
-.mt-preview-toggle:focus-visible { outline: none; box-shadow: var(--mt-focus); }
-@media (max-width: 1099px) { .mt-preview-toggle { display: none; } }
 
 /* C19（2026-10-01）共通の BottomNavigation 用。全項目同じ文字・同じ色・同じ線幅。現在地だけ青＋上の線＋太字 */
 .app-bottom-nav { color: var(--mt-ink-2); }

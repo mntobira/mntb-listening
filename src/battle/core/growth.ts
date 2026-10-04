@@ -1454,6 +1454,31 @@ export function nextBadgeGoals(progress: GrowthProgress, max = 3): BadgeGoal[] {
   return out;
 }
 
+/**
+ * 結果画面の「あと少し」1行用：いま遊んだ種類（接頭辞）の称号を優先し、無ければ全体でいちばん近いもの。
+ * 達成済み・残りが大きすぎる（進捗3割未満）ものは出さない（「あと190」は動機にならない）。
+ */
+export function nearestBadgeGoal(progress: GrowthProgress, preferPrefix?: string): BadgeGoal | null {
+  const all = nextBadgeGoals(progress, BADGES.length).filter((g) => g.remain > 0 && g.ratio >= 0.3);
+  return (preferPrefix ? all.find((g) => g.id.startsWith(preferPrefix)) : undefined) ?? all[0] ?? null;
+}
+
+/** 積み上げの合計（記録画面用）。すでにある progress の数字をまとめるだけ */
+export function lifetimeTotals(progress: GrowthProgress) {
+  return {
+    loginDays: progress.loginDays,
+    studySolved: progress.studySolved,
+    holesFilled: progress.holesFilled,
+    matches: progress.matches,
+    wins: progress.wins,
+    correct: progress.correct,
+    rushBest: progress.rushBest,
+    badges: Object.keys(progress.badges).length,
+    badgeTotal: BADGES.length,
+    items: progress.owned.length,
+  };
+}
+
 /** つぎにレベルで解放される装備（無ければ null） */
 export function nextLevelUnlock(progress: GrowthProgress): { item: ItemDef; level: number } | null {
   const level = levelOf(progress.xp).level;

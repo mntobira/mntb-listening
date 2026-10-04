@@ -1,5 +1,6 @@
 // src/contexts/ThemeContext.tsx
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { safeSetItem } from '../utils/storageGuard';
 
 type Theme = 'light' | 'dark';
 type ThemePref = Theme | 'system';
@@ -57,7 +58,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setPreference = useCallback((p: ThemePref) => {
     setPreferenceState(p);
-    localStorage.setItem(STORAGE_KEY, p);
+    safeSetItem(STORAGE_KEY, p);
   }, []);
 
   const toggle = useCallback(() => {

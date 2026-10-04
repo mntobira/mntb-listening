@@ -19,7 +19,9 @@ import { UserSafetyMenu } from '../features/safety/UserSafetyMenu';
 import { isBlocked } from '../features/safety/userSafety';
 import { useBlockedTick } from '../features/safety/useBlockedFilter';
 import { safeAvatarUrl } from '../features/safety/avatarUrl';
-import { displaySafeNickname } from '../features/safety/nicknameFilter';
+import { displaySafeNickname, displaySafePublicText } from '../features/safety/nicknameFilter';
+import { watchPublicStudyProfiles, type PublicStudyProfile } from '../utils/publicStudyProfile';
+import { formatStudyTime } from '../utils/studyTime';
 
 export function FriendPanel() {
   const [profile, setProfile] = useState<FriendProfile | null>(null);
@@ -29,6 +31,13 @@ export function FriendPanel() {
   const blockedTick = useBlockedTick();
   const visibleRequests = useMemo(() => requests.filter((r) => !isBlocked(r.fromUid)), [requests, blockedTick]);
   const [friends, setFriends] = useState<Array<{ uid: string; nickname: string; photoURL?: string }>>([]);
+  /** フレンドの公開プロフィール（本人が公開にしている人だけ。志望校・志・達成ステージ・Lv） */
+  const [publicProfiles, setPublicProfiles] = useState<Record<string, PublicStudyProfile>>({});
+  const friendIds = friends.map(f => f.uid).sort().join(',');
+  useEffect(() => {
+    if (!friendIds) { setPublicProfiles({}); return; }
+    return watchPublicStudyProfiles(friendIds.split(','), setPublicProfiles);
+  }, [friendIds]);
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
@@ -208,7 +217,15 @@ export function FriendPanel() {
           friends.map((f) => (
             <div key={f.uid} className="flex items-center gap-3 bg-gray-50 border border-gray-150 rounded-2xl p-3">
               <Avatar name={f.nickname} url={f.photoURL} />
-              <span className="flex-1 text-sm font-bold text-[#1B2631] truncate">{displaySafeNickname(f.nickname)}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-bold text-[#1B2631] truncate">{displaySafeNickname(f.nickname)}</span>
+                {publicProfiles[f.uid] && (() => { const pp = publicProfiles[f.uid]; return <>
+                  <span className="block truncate text-xs font-bold text-[#425c6d]" data-friend-public>
+                    {displaySafePublicText(pp.targetSchool) || '志望校未設定'} · 学習 {formatStudyTime(pp.studySeconds)}{pp.stagesCleared != null ? ` · 達成 ${pp.stagesCleared}` : ''}{pp.level != null ? ` · Lv.${pp.level}` : ''}
+                  </span>
+                  {pp.motto && <span className="block truncate text-xs font-bold text-[#6b5a3a]">「{displaySafePublicText(pp.motto)}」</span>}
+                </>; })()}
+              </span>
               <UserSafetyMenu target={{ uid: f.uid, nickname: f.nickname, where: 'friend' }} />
               <button disabled={loading} onClick={() => { if (window.confirm(`${f.nickname} さんとのフレンド関係を解除しますか？`)) runAction(() => removeFriend(f.uid), 'フレンドを解除しました。'); }} className="text-xs font-bold text-red-500 hover:underline disabled:opacity-40">解除</button>
             </div>

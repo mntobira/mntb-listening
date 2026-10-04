@@ -135,6 +135,8 @@ export function BattleQuestionView({
   const pictureGrid = question.imageUrl && question.options.length === 4 && question.format !== 'kana' && question.format !== 'panel'
     ? PICTURE_GRID_SPLITS[question.imageUrl] : undefined;
   const isListening = question.subject === 'english_listening';
+  /** 問題文の上の欄が「英文」そのもの（英文法・英単語）。一人で学ぶと同じ太字で見せる */
+  const isEnglishSentence = question.subject === 'english_grammar' || question.subject === 'english_vocab';
   // 「（話者：女性（管理人））」のように、問題文の中身がすでに設問（label）に含まれているときは出さない（重複をなくす）
   const promptCore = (question.prompt || '').trim().replace(/^[（(]/, '').replace(/[）)]$/, '').replace(/^話者[:：]\s*/, '');
   const promptDuplicatesLabel = isListening && promptCore.length > 0 && (question.label || '').includes(promptCore);
@@ -184,8 +186,13 @@ export function BattleQuestionView({
       >
         {promptShown && !(isListening && pictureGrid) && !promptDuplicatesLabel && (
           <p
-            className="bq-scene mb-2 whitespace-pre-wrap text-[13px] leading-relaxed"
-            style={{ color: INK_SUB }}
+            // ★英文法・英単語は、この欄が「英文そのもの」★（リスニングの「場面」の小さな補足とは役割が違う）
+            //   以前は場面と同じ 13px・細字・灰色で、英文が読みにくかった（利用者の指摘）。
+            //   一人で学ぶ（ProblemPane の英文欄：16px・太字・濃い色）と同じ見た目にそろえる。
+            className={isEnglishSentence
+              ? 'bq-scene bq-english mb-2.5 whitespace-pre-wrap rounded-lg border border-gray-200 bg-white/80 px-3 py-2 text-[16px] font-bold leading-relaxed'
+              : 'bq-scene mb-2 whitespace-pre-wrap text-[13px] leading-relaxed'}
+            style={{ color: isEnglishSentence ? '#111827' : INK_SUB }}
             data-long={isListening && promptShown.length > 24 ? '' : undefined}
             onClick={(e) => e.currentTarget.toggleAttribute('data-open')}
           >
@@ -360,7 +367,8 @@ function ChoiceAnswer({
             type="button"
             disabled={answered || locked}
             onClick={() => onChoose(i)}
-            className="flex min-w-0 min-h-[58px] items-center justify-center gap-1.5 rounded-2xl border-2 px-3 py-2.5 text-center text-[13px] font-bold leading-snug shadow-sm transition active:scale-[0.97] disabled:active:scale-100"
+            // 英文法・英単語の選択肢は英語そのものなので、一人で学ぶと同じ 15px 太字で読みやすく
+            className={`flex min-w-0 min-h-[58px] items-center justify-center gap-1.5 rounded-2xl border-2 px-3 py-2.5 text-center ${(question.subject === 'english_grammar' || question.subject === 'english_vocab') ? 'text-[15px] font-extrabold' : 'text-[13px] font-bold'} leading-snug shadow-sm transition active:scale-[0.97] disabled:active:scale-100`}
             // ★圏外のときだけ薄くする★
             // 解答済み（answered）では自分の選択を見せ続けたいので薄くしない。
             // 押せない理由（圏外）のときは、見た目でも伝わる必要がある。

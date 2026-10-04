@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Smartphone } from 'lucide-react';
 import { BottomNavigation } from './components/ui/BottomNavigation';
 import { ListeningHome as Home } from './components/ListeningHome';
 import { ListeningSubjectSelection } from './components/ListeningSubjectSelection';
@@ -116,7 +115,7 @@ import { setFormatMathContext } from './utils/textFormatter';
 import { resolveReviewTarget } from './utils/reviewTarget';
 import { Onboarding } from './components/Onboarding';
 import { MockExam } from './components/MockExam';
-import { SubjectSelection, getSubjectLabel, isSubjectId, type SubjectId } from './components/SubjectSelection';
+import { getSubjectLabel, isSubjectId, type SubjectId } from './components/SubjectSelection';
 /*
  * 本体に教科データを持たない教科（高校入試 理科など）の登録簿。
  * ★何も import しない葉ファイルなので、ここから読んでも問題データは付いてこない★
@@ -185,6 +184,7 @@ import type { RikaTab } from './features/rika/RikaHome';
 //   この2つを使うだけで問題データ本体まで読み込み対象になっていた）
 import { ADVANCED_FIELDS, type AdvancedFieldId } from './data/advancedFields';
 import { readJsonArray } from './utils/safeLocalStorage';
+import { safeSetItem } from './utils/storageGuard';
 /*
   公開/非公開の判断は src/config/features.ts が唯一の出どころ。
 
@@ -205,7 +205,7 @@ import { isSubjectEnabled, fallbackSubjectId, FEATURES } from './config/features
   「経過ミリ秒 → 音量」の対応だけを別ファイルの純粋関数に置いてある
   （ブラウザを開かずに機械検査できるようにするため）。
 */
-import { appBgmVolume, isBgmFadeComplete, BGM_FADE_END_MS } from './utils/bgmFade';
+import { appBgmVolume, isBgmFadeComplete } from './utils/bgmFade';
 import { writeAudioPreferences, readAudioPreferences } from './battle/audio/audioPreferences';
 import { setTitleBgmVolume, unlockTitleBgm } from './battle/audio/titleMediaAudio';
 /*
@@ -226,7 +226,6 @@ import { setTitleBgmVolume, unlockTitleBgm } from './battle/audio/titleMediaAudi
 import { useGlobalClickSound } from './hooks/useGlobalClickSound';
 import { useIdleReset } from './hooks/useIdleReset';
 import { useIsMobile } from './hooks/useMediaQuery';
-import { MobileViewWrapper } from './components/MobileViewWrapper';
 import { countIncomingFriendRequests } from './utils/friends';
 import { applyOverviewViewport } from './utils/viewportControl';
 /*
@@ -420,6 +419,8 @@ export default function App() {
       const next = user?.uid || 'guest';
       if (next !== owner) { setBattleReturnActive(false); setRikaBattleTarget(null); }
       owner = next;
+      // 積み上げ（満点・レベル）を端末共通に（ほかの端末で解いたぶんも「満点 n/3」に反映）
+      if (user && !user.isAnonymous) void import('./utils/achievementsSync').then(m => m.scheduleAchievementsSync(1500)).catch(() => {});
     });
   }, []);
   const returnToBattle = () => {
@@ -463,7 +464,6 @@ export default function App() {
   // スマホ端末では常にスマホ向けレイアウトで表示するため、PC/スマホ切り替えは廃止。
   // 既存の判定ロジック（shouldForceDesktopUI / isMobileExplanation）との互換のため定数 false を保持する。
   const forceDesktop = false;
-  const [isMobilePreview, setIsMobilePreview] = useState(false);
   // ユーザーエージェントによるモバイル端末判定（初回のみ・不変）。
   // 画面幅の判定は共有フック useIsMobile に一元化する（C2）。
   const isMobileUserAgent = useRef(
@@ -509,6 +509,8 @@ export default function App() {
   });
   const [isExplanationView, setIsExplanationView] = useState(false);
   const [prevAppState, setPrevAppState] = useState<AppState>('home');
+  /** 設定を開いたとき最初に見せるページ（対戦から「フレンドを追加」で来たときだけ 'friends'） */
+  const [settingsTab, setSettingsTab] = useState<'general' | 'friends' | 'class'>('general');
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
   /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
   const [foundationTab, setFoundationTab] = useState<'words' | 'quiz' | 'grammar' | 'more'>('words');
@@ -651,31 +653,31 @@ export default function App() {
     return isAppState(saved) && isLearningScreen(saved) ? saved : 'study';
   });
 
-  useEffect(() => { localStorage.setItem('savedAppState', appState); }, [appState]);
-  useEffect(() => { localStorage.setItem('savedAppMode', appMode); }, [appMode]);
+  useEffect(() => { safeSetItem('savedAppState', appState); }, [appState]);
+  useEffect(() => { safeSetItem('savedAppMode', appMode); }, [appMode]);
   useEffect(() => {
     if (selectedChapterId) {
-      localStorage.setItem('savedSelectedChapterId', selectedChapterId);
+      safeSetItem('savedSelectedChapterId', selectedChapterId);
     } else {
       localStorage.removeItem('savedSelectedChapterId');
     }
   }, [selectedChapterId]);
   useEffect(() => {
     if (quizRange) {
-      localStorage.setItem('savedQuizRange', JSON.stringify(quizRange));
+      safeSetItem('savedQuizRange', JSON.stringify(quizRange));
     } else {
       localStorage.removeItem('savedQuizRange');
     }
   }, [quizRange]);
-  useEffect(() => { localStorage.setItem('savedQuizAnswers', JSON.stringify(quizAnswers)); }, [quizAnswers]);
-  useEffect(() => { localStorage.setItem('savedIsGuest', isGuest.toString()); }, [isGuest]);
-  useEffect(() => { localStorage.setItem(SELECTED_SUBJECT_KEY, selectedSubject); }, [selectedSubject]);
-  useEffect(() => { localStorage.setItem(SELECTED_FIELD_KEY, selectedField); }, [selectedField]);
+  useEffect(() => { safeSetItem('savedQuizAnswers', JSON.stringify(quizAnswers)); }, [quizAnswers]);
+  useEffect(() => { safeSetItem('savedIsGuest', isGuest.toString()); }, [isGuest]);
+  useEffect(() => { safeSetItem(SELECTED_SUBJECT_KEY, selectedSubject); }, [selectedSubject]);
+  useEffect(() => { safeSetItem(SELECTED_FIELD_KEY, selectedField); }, [selectedField]);
   
   useEffect(() => {
     if (isLearningScreen(appState)) {
       setLastLearnState(appState);
-      localStorage.setItem('savedLastLearnState', appState);
+      safeSetItem('savedLastLearnState', appState);
     }
   }, [appState]);
 
@@ -760,7 +762,7 @@ export default function App() {
   // （正誤一覧 → タップでその問の解説を開く。Explanation.tsx 側で実装）で表示する。
   // PC のレイアウトは一切変えない。
   const shouldForceDesktopUI = forceDesktop;
-  const isMobileView = ((isMobileDevice && !shouldForceDesktopUI) || isMobilePreview) && !shouldForceDesktopUI;
+  const isMobileView = isMobileDevice && !shouldForceDesktopUI;
 
   // PC版では「学習モードを選択」(mode_selection) 以外の全画面で外側余白をなくし、
   // ノート風背景を全幅に広げる。mode_selection だけは従来通り中央寄せ＋余白を維持。
@@ -787,7 +789,7 @@ export default function App() {
       setQuizRange(null);
       setLastQuizResult(null);
       setLastLearnState('chapters');
-      localStorage.setItem('savedLastLearnState', 'chapters');
+      safeSetItem('savedLastLearnState', 'chapters');
     }
     setSelectedSubject(subject);
     setAppMode('practice');
@@ -798,7 +800,7 @@ export default function App() {
   /** 演習する（B2〜B6）：コンテンツを押したら既存の画面へ。科目ごとの分岐はここ1か所だけ（データの action で決まる） */
   const openStudyContent = (content: import('./data/studyCatalog').StudyContent) => {
     setStudyLastContent(content.id);
-    localStorage.setItem('study_catalog_last_v1', content.id);
+    safeSetItem('study_catalog_last_v1', content.id);
     if (content.action.kind === 'units') {
       if (isSubjectId(content.action.subject)) openSubjectUnits(content.action.subject, 'study');
       return;
@@ -817,7 +819,7 @@ export default function App() {
   };
   const setStudySubject = (id: string | null) => {
     setStudyCatalogSubject(id);
-    if (id) localStorage.setItem('study_catalog_subject_v1', id); else localStorage.removeItem('study_catalog_subject_v1');
+    if (id) safeSetItem('study_catalog_subject_v1', id); else localStorage.removeItem('study_catalog_subject_v1');
   };
 
   const handleSelectSubject = (subject: SubjectId) => {
@@ -836,7 +838,7 @@ export default function App() {
       setQuizRange(null);
       setLastQuizResult(null);
       setLastLearnState(entry);
-      localStorage.setItem('savedLastLearnState', entry);
+      safeSetItem('savedLastLearnState', entry);
     }
     setSelectedSubject(subject);
     setAppMode('practice');
@@ -946,7 +948,7 @@ export default function App() {
   // localStorage が使えない環境でも起動を止めない。
   useEffect(() => {
     try {
-      localStorage.setItem(BGM_ENABLED_KEY, isBgmEnabled ? 'on' : 'off');
+      safeSetItem(BGM_ENABLED_KEY, isBgmEnabled ? 'on' : 'off');
     } catch {
       /* 保存できなくても今回のセッションでは効いているので続行する */
     }
@@ -1353,7 +1355,7 @@ export default function App() {
       localStorage.removeItem(quizRunKey(chapterId, targetMode));
       localStorage.removeItem(quizExplKey(chapterId, targetMode));
       localStorage.removeItem(quizStepKey(chapterId, targetMode));
-      localStorage.setItem(quizIndexKey(chapterId, targetMode), questionIndex.toString());
+      safeSetItem(quizIndexKey(chapterId, targetMode), questionIndex.toString());
     }
   };
 
@@ -1449,7 +1451,7 @@ export default function App() {
         const completed = readJsonArray<string>(key);
         if (!completed.includes(selectedChapterId)) {
           completed.push(selectedChapterId);
-          localStorage.setItem(key, JSON.stringify(completed));
+          safeSetItem(key, JSON.stringify(completed));
         }
       } catch (e) {
         console.error('Failed to save completion:', e);
@@ -1535,7 +1537,7 @@ export default function App() {
 
   return (
     <>
-      <MobileViewWrapper isMobileMode={isMobilePreview && !shouldForceDesktopUI} onClose={() => setIsMobilePreview(false)}>
+      <>
         {/*
           ===== アプリの外枠の高さについて =====
           ★以前は min-h-screen（＝100vh）だった。これが「1画面に収まらない」原因★
@@ -1633,7 +1635,7 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            {appState === 'settings' && <ProfileModal onClose={() => setAppState(prevAppState)} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} />}
+            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} />}
             {/* 先生ダッシュボード。戻る先を設定にしているのは、入ってきた経路と揃えるため。 */}
             {appState === 'teacher_dashboard' && <TeacherDashboard onBack={() => setAppState('settings')} />}
             {/* フィードバック管理（運営専用）。入口は設定内の運営専用ボタン。 */}
@@ -1670,7 +1672,7 @@ export default function App() {
                 onBattle={FEATURES.battle ? () => navigateMain('battle') : undefined}
                 onReview={() => { setStudyHubView({ tab: 'today', subjectTab: 'all' }); navigateMain('study_hub'); }} />
             </React.Suspense>}
-            {appState === 'leaderboard' && FEATURES.ranking && <Leaderboard onGacha={() => { setGrowthPage('gacha'); navigateMain('growth'); }} onBack={() => setAppState('home')} isGuest={isGuest} initialChapterId={selectedChapterId} initialSubject={selectedSubject} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
+            {appState === 'leaderboard' && FEATURES.ranking && <Leaderboard onBack={() => setAppState('home')} isGuest={isGuest} initialChapterId={selectedChapterId} initialSubject={selectedSubject} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
             {/* ★対戦モード（ルーティング側の門）★
                 ホームのボタンを隠すだけでは、localStorage に残った
                 appState='battle' から復元して入れてしまう。
@@ -1680,6 +1682,8 @@ export default function App() {
                 className={appState === 'battle' ? `h-full min-h-0 overflow-y-auto overscroll-contain ${battleActive ? 'battle-no-nav' : 'pb-app-nav'}` : 'hidden'}>
               <BattleMode
                 onExit={() => setAppState('home')}
+                /* ★フレンド対戦はフレンドどうしだけ★ 対戦画面の「フレンドを追加」から設定のフレンドを開く */
+                onOpenFriends={() => { setSettingsTab('friends'); navigateMain('settings'); }}
                 onRequireLogin={() => setAppState('onboarding')}
                 /* ★対戦 ⇒ 演習 の橋（請求⑦-A）★ */
                 onPractice={handlePracticeFromBattle}
@@ -1812,6 +1816,7 @@ export default function App() {
                   /* 結果画面の「次にすること」。どちらも通常の演習開始と同じ経路を通す。 */
                   onRetryWrong={(chapterId, firstWrongIndex) => handleSelectChapter(chapterId, firstWrongIndex, false, quizRange, appMode)}
                   onNextChapter={(chapterId) => handleSelectChapter(chapterId, 0, false, null, appMode)}
+                  onNextRound={(chapterId, index) => handleSelectChapter(chapterId, index, false, { startIndex: index, endIndex: index }, appMode)}
                 />
               </React.Suspense>
             )}
@@ -1872,7 +1877,7 @@ export default function App() {
                   } },
                   // 対戦はランキングより前（結果を見る画面より先）。FEATURES.battle が false なら席ごと消す
                   { id: 'battle', label: '対戦', ariaLabel: 'オンライン対戦へ移動', current: appState === 'battle', hidden: !FEATURES.battle, onClick: () => navigateMain('battle') },
-                  { id: 'gacha', label: 'ガチャ', ariaLabel: 'ガチャ画面へ移動', current: appState === 'growth' && growthPage === 'gacha' || appState === 'leaderboard', onClick: () => { setGrowthPage('gacha'); navigateMain('growth'); } },
+                  { id: 'gacha', label: 'ガチャ', ariaLabel: 'ガチャ画面へ移動', current: appState === 'growth' && growthPage === 'gacha', onClick: () => { setGrowthPage('gacha'); navigateMain('growth'); } },
                   { id: 'mypage', label: 'マイページ', ariaLabel: 'マイページへ移動', current: appState === 'growth' && growthPage !== 'gacha', onClick: () => { setGrowthPage('overview'); navigateMain('growth'); } },
                   { id: 'settings', label: '設定', ariaLabel: pendingFriendRequests > 0 ? `設定画面へ移動（フレンド申請が${pendingFriendRequests}件届いています）` : '設定画面へ移動',
                     current: appState === 'settings', badge: pendingFriendRequests, onClick: () => navigateMain('settings') },
@@ -1881,22 +1886,13 @@ export default function App() {
             )}
           </div>
         </div>
-      </MobileViewWrapper>
+      </>
 
       {/* ミッション達成のお知らせ（どの画面でも上に出る。受け取りはミッション画面で） */}
       <React.Suspense fallback={null}>
         <MissionToast onOpen={() => { setGrowthPage('missions'); navigateMain('growth'); }} />
       </React.Suspense>
 
-      {/* Desktop Toggle Button for Mobile Preview
-          aria-label / title を日本語で明示、アイコンには aria-hidden */}
-      {!isMobileDevice && !isMobilePreview && (
-        /* サイドバーの左下に置く（右下だとホームの復習ノート等のボタンに重なっていた）。ラベルも常に出す */
-        <button type="button" onClick={() => setIsMobilePreview(true)} className="mt-preview-toggle"
-          title="スマホ版でプレビュー（モバイル端末での見え方を確認）">
-          <Smartphone size={16} aria-hidden="true" />スマホ版で見る
-        </button>
-      )}
     </>
   );
 }

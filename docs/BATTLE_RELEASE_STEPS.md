@@ -302,7 +302,7 @@ Firestore が裏側で構築するため、数分かかる。
 Web アプリの API キーは公開前提の値なので、これは秘密ではない）
 
 ```
-https://firestore.googleapis.com/v1/projects/mntb-4ef06/databases/(default)/documents/battle_ranking?pageSize=1&key=AIzaSyCAzgkmwE77KMWt2gY1ca63DmIa-dZA5CY
+https://firestore.googleapis.com/v1/projects/mntb-4ef06/databases/(default)/documents/battle_ranking?pageSize=1&key=<WEB_API_KEY>
 ```
 
 | 返ってきたもの | 判定 |
@@ -327,7 +327,7 @@ https://firestore.googleapis.com/v1/projects/mntb-4ef06/databases/(default)/docu
 ### 併せて 403 も確認する（全部 200 は異常）
 
 ```
-https://firestore.googleapis.com/v1/projects/mntb-4ef06/databases/(default)/documents/battle_rooms?pageSize=1&key=AIzaSyCAzgkmwE77KMWt2gY1ca63DmIa-dZA5CY
+https://firestore.googleapis.com/v1/projects/mntb-4ef06/databases/(default)/documents/battle_rooms?pageSize=1&key=<WEB_API_KEY>
 ```
 
 これは **403 が正しい**。

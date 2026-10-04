@@ -7,7 +7,7 @@
  * 見せないもの：学年・実名・連絡先（App Store 1.2・プライバシーポリシー 3 と同じ範囲）。
  */
 import { useEffect, useState } from 'react';
-import { GraduationCap, Clock } from 'lucide-react';
+import { GraduationCap, Clock, Flag, Star } from 'lucide-react';
 import { leagueOf } from '../core/leagues';
 import { maskNickname } from '../../utils/nicknamePrivacy';
 import { displaySafeNickname, displaySafePublicText } from '../../features/safety/nicknameFilter';
@@ -29,6 +29,7 @@ export function OpponentCard({ uid, nickname, photoURL, rating, mask = false, is
   const name = mask ? maskNickname(displaySafeNickname(nickname)) : displaySafeNickname(nickname);
   const avatar = safeAvatarUrl(photoURL);
   const school = study ? displaySafePublicText(study.targetSchool) : '';
+  const motto = study ? displaySafePublicText(study.motto) : '';
   return (
     <section className="opponent-card" data-opponent-card aria-label="対戦相手のプロフィール" style={{ ['--league' as string]: league.color, ['--league-tint' as string]: league.tint }}>
       <span className="opponent-card-kicker">対戦相手</span>
@@ -43,8 +44,11 @@ export function OpponentCard({ uid, nickname, photoURL, rating, mask = false, is
         <dl className="opponent-card-facts">
           {school && <div><dt><GraduationCap size={14} aria-hidden />志望校</dt><dd>{school}</dd></div>}
           {study && <div><dt><Clock size={14} aria-hidden />学習時間</dt><dd>{formatStudyTime(study.studySeconds)}</dd></div>}
+          {study?.stagesCleared != null && <div><dt><Flag size={14} aria-hidden />達成ステージ</dt><dd>{study.stagesCleared}</dd></div>}
+          {study?.level != null && <div><dt><Star size={14} aria-hidden />とびら君</dt><dd>Lv.{study.level}</dd></div>}
         </dl>
       )}
+      {motto && <p className="opponent-card-motto" data-opponent-motto>「{motto}」</p>}
       {aiNote && <p className="opponent-card-note">{aiNote}</p>}
     </section>
   );

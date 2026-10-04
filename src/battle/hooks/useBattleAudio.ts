@@ -15,8 +15,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   BATTLE_AUDIO_STORAGE_KEY,
-  parseBattleAudioSettings,
-  serializeBattleAudioSettings,
   type BattleAudioSettings,
 } from '../core/audioSettings';
 import { battleAudio, type BattleSfx } from '../audio/battleAudio';

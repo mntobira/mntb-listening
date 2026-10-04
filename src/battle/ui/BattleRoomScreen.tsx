@@ -53,6 +53,7 @@ export function BattleRoomScreen({
   onPractice,
   onOpenProfile, onOpenMissions, onActiveChange,
   onReview,
+  onRetryWrong,
   onChangeSubject,
   onNationalAgain,
 }: {
@@ -76,6 +77,8 @@ export function BattleRoomScreen({
   onOpenMissions?: () => void;
   /** ★リザルトの「復習する」（間違えた問題を復習リストに入れて学習ノートへ）★ */
   onReview?: () => void;
+  /** 結果画面の「間違えた問題だけ再対戦」（AI 相手でその問題だけ） */
+  onRetryWrong?: (subject: string, ids: string[]) => void;
   /** 結果画面から「ほかの単元で」：部屋を出て教科選びへ */
   onChangeSubject?: (friend: boolean) => void;
   /** 全国戦の結果から「もう1回 全国対戦」 */
@@ -300,6 +303,7 @@ export function BattleRoomScreen({
         onOpenProfile={onOpenProfile}
         onOpenMissions={onOpenMissions}
         onReview={onReview}
+        onRetryWrong={onRetryWrong}
         myAnsweredIndexes={myAnsweredIndexes}
         matchKey={roomId}
       />

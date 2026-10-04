@@ -358,9 +358,6 @@ export function ListeningAudioPlayer({
     : 'border-[#5BC0BE]/55 bg-[#F2FBF9]';
   const headingClass = isDark ? 'text-[#A9E0D8]' : 'text-[#2F7C74]';
   const subTextClass = isDark ? 'text-[#E0E1DD]/70' : 'text-slate-500';
-  const badgeClass = isDark
-    ? 'border-[#5BC0BE]/40 bg-[#5BC0BE]/15 text-[#A9E0D8]'
-    : 'border-[#5BC0BE]/40 bg-white text-[#2F7C74]';
   const idleBtnClass = isDark
     ? 'border-[#5BC0BE]/45 bg-[#1C2541] text-[#E0E1DD] hover:bg-[#243056]'
     : 'border-[#5BC0BE]/50 bg-white text-[#2C3E50] hover:bg-[#E6F7F4]';

@@ -28,6 +28,7 @@ import {
   badgeProgress,
   ITEMS,
   levelOf,
+  lifetimeTotals,
   rankSubjects,
   type EquipKind,
   type GrowthProgress,
@@ -41,7 +42,6 @@ import { play, primeAudio, setSfxEnabled, sfxEnabled } from './feedback';
 import {
   AMBER,
   BattleButton,
-  BattleLoading,
   BattleNotice,
   BattleShell,
   BattleTitle,
@@ -52,6 +52,8 @@ import {
   WRONG,
 } from './BattleParts';
 import { GachaRoom } from '../../components/GachaRoom';
+import { auth } from '../../firebase';
+import { STAGE_CLEAR_PERFECTS, readStageHistory, stageSummary } from '../../utils/stageRecords';
 import { useGrowthProgress } from '../../hooks/useGrowthProgress';
 import { BadgeChip, GrowthAvatar, LevelBar, NextGoals, StatCard, TitleChip } from './GrowthParts';
 
@@ -136,7 +138,7 @@ export function BattleProfile({ onBack, initialTab = 'outfit', standalone = fals
   ];
 
   if (standalone) {
-    const heading = tab === 'badges' ? ['称号', 'バッジを集めて、つけたい称号を選べます'] : tab === 'stats' ? ['記録', '教科ごとの対戦成績'] : ['とびら君', ''];
+    const heading = tab === 'badges' ? ['称号', 'バッジを集めて、つけたい称号を選べます'] : tab === 'stats' ? ['記録', '積み上げ・ステージの履歴・対戦成績'] : ['とびら君', ''];
     return (
       <section className="profile-standalone" data-profile-standalone={tab}>
         <header className="profile-standalone-head">
@@ -486,17 +488,81 @@ function BadgesTab({ progress, busy, run }: { progress: GrowthProgress; busy: bo
 // 教科別成績（ジャンル別統計）
 // ============================================================
 
+/** これまでの積み上げ（演習・復習・ログインも含めた合計）。対戦しない人の記録も空にしない */
+function LifetimeTotals({ progress }: { progress: GrowthProgress }) {
+  const t = lifetimeTotals(progress);
+  const stages = stageSummary(auth.currentUser?.uid || 'guest');
+  return (
+    <section aria-label="これまでの積み上げ" data-lifetime-totals>
+      <h3 className="mb-1.5 text-xs font-black" style={{ color: INK_SUB }}>これまでの積み上げ</h3>
+      <div className="grid grid-cols-4 gap-1.5">
+        <StatCard label="来た日" value={t.loginDays} sub="日" />
+        <StatCard label="演習" value={t.studySolved} sub="大問" />
+        <StatCard label="復習" value={t.holesFilled} sub="問" />
+        <StatCard label="称号" value={t.badges} sub={`/ ${t.badgeTotal}`} color={AMBER} />
+        <StatCard label="対戦" value={t.matches} sub={`${t.wins}勝`} />
+        <StatCard label="対戦正解" value={t.correct} sub="問" />
+        <StatCard label="ラッシュ" value={t.rushBest.toLocaleString()} sub="最高点" />
+        <StatCard label="アイテム" value={t.items} sub="こ" />
+      </div>
+      <div className="mt-1.5 grid grid-cols-3 gap-1.5">
+        <StatCard label="達成ステージ" value={stages.cleared} sub={`満点${STAGE_CLEAR_PERFECTS}回で達成`} color={AMBER} />
+        <StatCard label="満点" value={stages.perfects} sub="回" />
+        <StatCard label="ステージ挑戦" value={stages.plays} sub="回" />
+      </div>
+    </section>
+  );
+}
+
+/** 最近あそんだステージ（一人で学ぶ）の履歴。新しい順 */
+function StageHistory() {
+  const items = readStageHistory(auth.currentUser?.uid || 'guest').slice(0, 12);
+  return (
+    <section aria-label="最近のステージ" data-stage-history>
+      <h3 className="mb-1.5 mt-1 text-xs font-black" style={{ color: INK_SUB }}>最近のステージ</h3>
+      {items.length === 0 ? (
+        <p className="rounded-2xl border px-3 py-3 text-center text-xs font-bold" style={{ borderColor: LINE, color: INK_SUB }}>
+          演習でステージを最後まで解くと、ここに残ります。
+        </p>
+      ) : (
+        <ol className="grid gap-1">
+          {items.map((e) => {
+            const perfect = e.c === e.j;
+            const d = new Date(e.t);
+            return (
+              <li key={`${e.k}:${e.t}`} className="flex items-center gap-2 rounded-xl border px-3 py-2" style={{ borderColor: LINE, background: '#FFFFFF' }}>
+                <span className="w-12 shrink-0 text-xs font-bold tabular-nums" style={{ color: INK_SUB }}>{d.getMonth() + 1}/{d.getDate()}</span>
+                <span className="min-w-0 flex-1 truncate text-xs font-black" style={{ color: INK }}>{e.title}</span>
+                <span className="shrink-0 text-xs font-black tabular-nums" style={{ color: perfect ? AMBER : INK_SUB }}>
+                  {perfect ? '満点 ' : ''}{e.c}/{e.j}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+    </section>
+  );
+}
+
 function StatsTab({ progress }: { progress: GrowthProgress }) {
   const rows = rankSubjects(progress);
   if (rows.length === 0) {
     return (
-      <p className="rounded-2xl border px-3 py-4 text-center text-xs font-bold" style={{ borderColor: LINE, color: INK_SUB }}>
-        まだ対戦の記録がありません。
-      </p>
+      <div className="grid gap-2">
+        <LifetimeTotals progress={progress} />
+        <StageHistory />
+        <p className="rounded-2xl border px-3 py-3 text-center text-xs font-bold" style={{ borderColor: LINE, color: INK_SUB }}>
+          教科ごとの成績は、対戦すると表示されます。
+        </p>
+      </div>
     );
   }
   return (
     <div className="grid gap-2">
+      <LifetimeTotals progress={progress} />
+      <StageHistory />
+      <h3 className="mt-1 text-xs font-black" style={{ color: INK_SUB }}>教科ごとの対戦成績</h3>
       {rows.map((r, i) => {
         const acc = r.accuracy ?? 0;
         const color = acc >= 80 ? AMBER : acc >= 60 ? '#3498DB' : WRONG;

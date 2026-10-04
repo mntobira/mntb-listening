@@ -75,6 +75,7 @@ type Screen =
   | 'matching'
   | 'room'
   | 'ranking'
+  | 'clan'
   | 'history'
   | 'profile'
   | 'missions';
@@ -85,8 +86,11 @@ export function BattleMode({
   onPractice,
   onActiveChange,
   onReview,
+  onOpenFriends,
   initialSubject = '',
 }: {
+  /** 設定のフレンドページを開く（フレンド対戦はフレンドどうしだけなので、その入口） */
+  onOpenFriends?: () => void;
   /** 対戦モードを抜けてアプリのホームに戻る */
   onExit: () => void;
   /** ログインしていないときにログイン画面へ送る */
@@ -165,6 +169,13 @@ export function BattleMode({
   const [aiMatchNo, setAiMatchNo] = useState(0);
   /** 全国対戦で相手がいなかったときの AI プレイヤー（ai-room を「全国対戦」として見せる） */
   const [ghost, setGhost] = useState<{ profile: AiProfile; reason: GhostReason } | null>(null);
+  /** 「間違えた問題だけ再対戦」の出題ID（AI 戦で、この問題だけを出す）。null なら通常の試合 */
+  const [retryIds, setRetryIds] = useState<string[] | null>(null);
+  const retryWrong = useCallback((pick: string, ids: string[]) => {
+    if (!ids.length) return;
+    setSubject(pick); setGhost(null); setChapterId(undefined); setRetryIds(ids.slice(0, 30));
+    setAiMatchNo((n) => n + 1); setScreen('ai-room');
+  }, []);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -199,6 +210,9 @@ export function BattleMode({
         break;
       case 'ranking':
         setScreen('ranking');
+        break;
+      case 'clan':
+        setScreen('clan');
         break;
       case 'history':
         setScreen('history');
@@ -312,6 +326,7 @@ export function BattleMode({
             setScreen('room');
           }}
           onBack={() => setScreen('home')}
+          onOpenFriends={onOpenFriends}
         />
       );
 
@@ -370,6 +385,7 @@ export function BattleMode({
           onPick={(level) => {
             setAiLevel(level);
             setGhost(null);
+            setRetryIds(null);
             setAiMatchNo((n) => n + 1);
             setScreen('ai-room');
           }}
@@ -386,14 +402,17 @@ export function BattleMode({
           chapterId={chapterId}
           level={ghost?.profile.level ?? aiLevel}
           ghost={ghost ?? undefined}
-          onExit={(m) => { setGhost(null); leaveRoom(m); }}
+          retryIds={retryIds ?? undefined}
+          onRetryWrong={retryWrong}
+          onExit={(m) => { setGhost(null); setRetryIds(null); leaveRoom(m); }}
           // ★AI プレイヤー戦の「もう1回」は、もう一度全国の人をさがす★（人が来ていればその人と組む）
           onRematch={() => {
             if (ghost) { setGhost(null); setScreen('matching'); return; }
+            setRetryIds(null);
             setAiMatchNo((n) => n + 1);
           }}
-          onChangeLevel={() => { setGhost(null); setScreen('ai-level'); }}
-          onChangeSubject={() => { const wasGhost = !!ghost; setGhost(null); setScreen(wasGhost ? 'subject-national' : 'subject-ai'); }}
+          onChangeLevel={() => { setGhost(null); setRetryIds(null); setScreen('ai-level'); }}
+          onChangeSubject={() => { const wasGhost = !!ghost; setGhost(null); setRetryIds(null); setScreen(wasGhost ? 'subject-national' : 'subject-ai'); }}
           onPractice={onPractice}
           onActiveChange={onActiveChange}
           onOpenProfile={() => setScreen('profile')}
@@ -431,6 +450,7 @@ export function BattleMode({
           onOpenProfile={() => setScreen('profile')}
           onOpenMissions={() => setScreen('missions')}
           onReview={onReview}
+          onRetryWrong={retryWrong}
         />
       );
 
@@ -441,10 +461,13 @@ export function BattleMode({
       return <BattleMissions onBack={() => setScreen('home')} onBattle={() => setScreen('subject-ai')} />;
 
     case 'ranking':
-      return <BattleRanking onBack={() => setScreen('home')} />;
+      return <BattleRanking onBack={() => setScreen('home')} onRequireLogin={onRequireLogin} />;
+
+    case 'clan':
+      return <BattleRanking initialTab="clan" onBack={() => setScreen('home')} onRequireLogin={onRequireLogin} />;
 
     case 'history':
-      return <BattleHistory onBack={() => setScreen('home')} />;
+      return <BattleHistory onBack={() => setScreen('home')} onRetryWrong={retryWrong} onStartAi={() => handleHomeChoice('ai')} />;
 
     case 'home':
     default:

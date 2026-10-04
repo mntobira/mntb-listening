@@ -6,7 +6,7 @@
  * ■ なぜ共通化したか
  *   これまで Google ログインの処理は
  *     - Onboarding.tsx
- *     - AuthButton.tsx
+ *     - （旧 AuthButton.tsx は未使用のため削除）
  *     - ProfileModal.tsx
  *   の3箇所にコピーされており、
  *     ・popup が失敗したときのフォールバックが揃っていない

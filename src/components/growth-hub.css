@@ -3,7 +3,6 @@
  * 同じ地・同じ見出し・同じカード・同じタブ（共通UI）にそろえる。機能・並びは変えない。
  */
 .mana-hub { background: var(--mt-bg-screen) !important; color: var(--mt-ink); font-family: var(--mt-font-body); }
-html[data-wallpaper] .mana-hub { background: linear-gradient(#fbf3eab8, #fbf3eaad), var(--app-wallpaper) !important; }
 /* ヘッダー：ホームへ戻る（共通の丸いピル） */
 .mana-hub-header button { border: var(--mt-border); border-radius: var(--mt-r-pill) !important; background: var(--mt-bg-card); box-shadow: var(--mt-shadow-press); color: var(--mt-ink); font: 700 14px/1 var(--mt-font-body) !important; padding: 0 14px 0 10px !important; }
 .growth-shared-label { font: var(--mt-text-xs); color: var(--mt-ink-muted); }
@@ -85,6 +84,7 @@ html[data-wallpaper] .mana-hub { background: linear-gradient(#fbf3eab8, #fbf3eaa
 .collection-grid li[data-owned=true] { border-color:#b9994e; background:#fffaf0; }
 .collection-grid h3 { font-size:14px; font-weight:800; }
 .collection-grid p,.collection-tag { font-size:12px; }
+.collection-gift-tag { display:inline-flex; align-items:center; gap:3px; align-self:flex-start; padding:1px 8px; border-radius:999px; background:#fff3d6; color:#8a5a00; font-size:12px; font-weight:800; }
 .collection-art { height:84px; display:flex; justify-content:center; align-items:center; }
 .collection-art img { height:80px; max-width:100%; object-fit:contain; }
 .collection-grid a { display:flex; align-items:center; justify-content:center; gap:5px; font-weight:800; color:#245e7a; text-decoration:none; }
@@ -116,3 +116,7 @@ html[data-wallpaper] .mana-hub { background: linear-gradient(#fbf3eab8, #fbf3eaa
 .mypage-more button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; min-height:58px; border:1px solid #d9cdbb; border-radius:14px; background:#f3f0e8; font-size:12px; font-weight:800; }
 @media(min-width:720px){ .mypage-overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-content:start;} .mypage-stage{grid-row:span 2;margin:0;justify-content:center;} .mypage-more{grid-column:2;} }
 @media(max-height:700px){ .mypage-stage-avatar{transform:scale(.8);margin:-12px 0;} .mypage-parts button{min-height:44px;} .mypage-more button{min-height:48px;} }
+/* 2026-10-04 セルフチェック：文字12px以上・操作44px以上をここでも保証 */
+.profile-standalone-head button { width:44px !important; height:44px !important; }
+.mana-rush .mana-rush-rules li, .mana-rush small, .mana-rush .mana-rush-coin,
+.mana-rush .mana-rush-best span, .mana-rush [class*="bottom-1.5"] { font-size: 12px !important; }

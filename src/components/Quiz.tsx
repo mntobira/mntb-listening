@@ -60,6 +60,9 @@ import { buildListeningSteps, isPerSubQuestionListening, stepSubQuestions } from
 import { useIsDesktop } from '../hooks/useMediaQuery';
 import { asMobileChoiceSub, useMathChoices } from '../utils/mathMobileChoices';
 import { mathCourseOfChapter } from '../data/mathNavigation';
+import { safeSetItem } from '../utils/storageGuard';
+import { recordStagePlay, stageKey } from '../utils/stageRecords';
+import { auth } from '../firebase';
 
 interface QuizProps {
   mode: 'mini_test' | 'practice';
@@ -176,19 +179,19 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   );
 
   useEffect(() => {
-    localStorage.setItem(quizAnswersKey(chapter.id, mode), JSON.stringify(answers));
+    safeSetItem(quizAnswersKey(chapter.id, mode), JSON.stringify(answers));
   }, [answers, chapter.id, mode]);
 
   useEffect(() => {
-    localStorage.setItem(quizStepKey(chapter.id, mode), stepIndex.toString());
+    safeSetItem(quizStepKey(chapter.id, mode), stepIndex.toString());
   }, [stepIndex, chapter.id, mode]);
 
   useEffect(() => {
-    localStorage.setItem(quizIndexKey(chapter.id, mode), currentQuestionIndex.toString());
+    safeSetItem(quizIndexKey(chapter.id, mode), currentQuestionIndex.toString());
   }, [currentQuestionIndex, chapter.id, mode]);
 
   useEffect(() => {
-    localStorage.setItem(quizExplKey(chapter.id, mode), showingExplanation.toString());
+    safeSetItem(quizExplKey(chapter.id, mode), showingExplanation.toString());
   }, [showingExplanation, chapter.id, mode]);
 
   // ────────────────────────────────────────────────────────────────
@@ -446,7 +449,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     if (currentQuestionIndex > 0 && elimHintOpen) {
       try {
         if (localStorage.getItem('quiz_elim_hint_seen') !== 'true') {
-          localStorage.setItem('quiz_elim_hint_seen', 'true');
+          safeSetItem('quiz_elim_hint_seen', 'true');
           setElimHintOpen(false);
         }
       } catch { /* 保存不可の環境ではそのまま */ }
@@ -655,10 +658,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   );
 
   /** 選択式の現在の選択内容を「表示専用チップ」用の文字列にする。 */
-  const describeChoiceAnswer = (sq: any): string => {
-    return answers[sq.id] || '';
-  };
-
   const questions = mode === 'mini_test' ? chapter.miniTest : (chapter.practiceProblems || []);
 
   // 章内の図版へ通し番号（図1・図2 …）を割り当てるためのマップ。
@@ -1027,6 +1026,14 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
         // 章全体が完了 → ランキング送信
         // run state は React 更新が非同期なので、ここでは保存済みの最新を取り直す
         const latest = loadRun(chapter.id, mode);
+        // ステージの挑戦記録（満点3回で達成・利用履歴）。回だけを選んだときはその回、それ以外は単元。
+        try {
+          const single = questionRange && rangeStart === rangeEnd ? questions[rangeStart] : null;
+          const unitTitle = String(chapter.abstractTitle || chapter.title || chapter.id);
+          recordStagePlay(auth.currentUser?.uid || 'guest', stageKey(chapter.id, single?.id),
+            single ? `${unitTitle} ${single.title || `第${rangeStart + 1}回`}` : unitTitle,
+            latest.totalCorrect, latest.totalJudgeable);
+        } catch { /* 記録の失敗で学習を止めない */ }
         finalizeChapterRun(latest);
         // 新たな挑戦のためにラン状態リセット
         clearRun(chapter.id, mode);

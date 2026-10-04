@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, LogIn } from 'lucide-react';
+import { ArrowLeft, LogIn, UserPlus } from 'lucide-react';
 import { abortRoom, joinRoomByCode } from '../data/battle';
 import { AMBER, BattleButton, BattleNotice, BattleShell, BattleTitle, INK, INK_SUB, LINE } from './BattleParts';
 import { ConnectionCheckPanel } from './ConnectionCheckPanel';
@@ -9,7 +9,9 @@ export function normalizeJoinCode(raw: string): string {
   return raw.normalize('NFKC').replace(/\s/g, '').toUpperCase();
 }
 
-export function BattleFriendJoin({ onJoined, onBack }: {
+export function BattleFriendJoin({ onJoined, onBack, onOpenFriends }: {
+  /** フレンドでない相手だったときの「フレンドを追加する」ボタンの行き先 */
+  onOpenFriends?: () => void;
   onJoined: (roomId: string) => void;
   onBack: () => void;
 }) {
@@ -65,7 +67,7 @@ export function BattleFriendJoin({ onJoined, onBack }: {
       <BattleTitle subtitle="合言葉で参加する" />
       <div className="flex flex-1 flex-col items-center justify-center gap-5 py-6">
         <p className="text-center text-sm font-bold leading-relaxed" style={{ color: INK_SUB }}>
-          相手の4文字の合言葉を入力して、<br />「部屋に入る」を押してください。
+          フレンドの4文字の合言葉を入力して、<br />「部屋に入る」を押してください。
         </p>
         <label htmlFor="battle-code-input" className="text-sm font-bold" style={{ color: INK }}>合言葉（4文字）</label>
         <input ref={inputRef} id="battle-code-input" value={raw}
@@ -86,7 +88,10 @@ export function BattleFriendJoin({ onJoined, onBack }: {
           小文字・全角英数字でも入力できます。入力後に確認して参加します。
         </p>
         {error && <BattleNotice message={error} />}
-        {error && !/見つかりません|合言葉/.test(error) && <ConnectionCheckPanel compact />}
+        {error && /フレンドどうし/.test(error) && onOpenFriends && (
+          <BattleButton variant="ghost" onClick={onOpenFriends} icon={<UserPlus size={18} />}>フレンドを追加する</BattleButton>
+        )}
+        {error && !/見つかりません|合言葉|フレンド/.test(error) && <ConnectionCheckPanel compact />}
         <p className="rounded-xl px-3 py-2 text-center text-xs font-bold" style={{ background: '#F1EDE4', color: INK_SUB }}>
           合言葉には<span style={{ color: AMBER }}> 0 / O / 1 / I / L </span>を使いません。
         </p>

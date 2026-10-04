@@ -48,7 +48,7 @@ describe('battle range and league revision',()=>{
     expect((await loadPool('english_listening')).every(q=>!!q.audioUrl)).toBe(true);
   });
   it('server aggregation is never imported by the frontend and nav has an independent My Page',()=>{
-    expect(readFileSync('src/components/Leaderboard.tsx','utf8')).not.toContain('clanPower');expect(readFileSync('src/App.tsx','utf8')).toContain("id: 'mypage'");expect(readFileSync('src/components/GrowthHub.tsx','utf8')).toContain('ガチャとランキング');
+    expect(readFileSync('src/components/Leaderboard.tsx','utf8')).not.toContain('clanPower');expect(readFileSync('src/App.tsx','utf8')).toContain("id: 'mypage'");expect(readFileSync('src/components/GrowthHub.tsx','utf8')).not.toContain('ガチャとランキング');expect(readFileSync('src/components/Home.tsx','utf8')).toContain('ランキングを見る');
   });
 });
 
@@ -57,8 +57,8 @@ describe('D publication boundary and vocabulary guidance',()=>{
   it('missing or false publication never exposes stored fields',()=>{
     for(const value of [null,{}, {targetSchool:'private school',studySeconds:3600}, {public:false,targetSchool:'private school',studySeconds:3600}]) expect(parsePublicStudyProfile(value)).toBeNull();
   });
-  it('valid consent permits only two public fields, rejecting corrupt totals',()=>{
-    expect(parsePublicStudyProfile({public:true,targetSchool:'  Example   University ',studySeconds:3725,email:'never returned'})).toEqual({public:true,targetSchool:'Example University',studySeconds:3725});
+  it('valid consent permits only the opted-in public fields, rejecting corrupt totals',()=>{
+    expect(parsePublicStudyProfile({public:true,targetSchool:'  Example   University ',studySeconds:3725,email:'never returned'})).toEqual({public:true,targetSchool:'Example University',studySeconds:3725,motto:'',stagesCleared:null,level:null});
     for(const seconds of [-1,NaN,Infinity,0.5,315360001])expect(parsePublicStudyProfile({public:true,targetSchool:'U',studySeconds:seconds})).toBeNull();
   });
   it('vocabulary IDs are preserved and labels state target-based guidance',()=>{

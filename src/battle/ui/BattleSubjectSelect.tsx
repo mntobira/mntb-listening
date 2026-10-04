@@ -35,8 +35,16 @@ import { subjectTheme } from '../../data/subjectTheme';
 import type { SubjectKey } from '../../data/allChapters';
 import { POOL_FORMAT_COUNTS, poolCountOf, loadPool } from '../data/battlePool';
 import { effectiveRule } from '../data/battle';
+import { VOCABULARY_COUNT } from '../../data/listeningVocabularyMeta.generated';
 import { AMBER, BattleButton, BattleShell, BattleTitle, INK, INK_SUB, LINE } from './BattleParts';
 import type { BattleAnswerFormat, BattleRule } from '../core/types';
+
+/** 英文法の3部（一人で学ぶの単元画面と同じ分け方・章IDの接頭辞で判定） */
+type GrammarPartId = 'grammar' | 'usage' | 'expression';
+const GRAMMAR_PARTS: readonly { id: GrammarPartId; n: number; label: string }[] = [
+  { id: 'grammar', n: 1, label: '文法の幹' }, { id: 'usage', n: 2, label: '語法' }, { id: 'expression', n: 3, label: 'イディオム・表現' },
+];
+const grammarPartOf = (chapterId: string): GrammarPartId => chapterId.startsWith('eg4_') ? 'usage' : chapterId.startsWith('eg5_') ? 'expression' : 'grammar';
 
 /** 出題数に対して収録数が少ない教科の目印（1試合ぶんの3倍を下回るか） */
 const THIN_POOL_FACTOR = 3;
@@ -108,6 +116,8 @@ export function BattleSubjectSelect({
   const [units, setUnits] = useState<{ id: string; title: string; count: number }[] | null>(null);
   const [vocabPool, setVocabPool] = useState<readonly BattleQuestion[]>([]);
   const [book, setBook] = useState<string | null>(null);
+  /** 英文法は「一人で学ぶ」と同じ 文法の幹／語法／イディオム・表現 の切り替え（2026-10-04） */
+  const [grammarPart, setGrammarPart] = useState<GrammarPartId>('grammar');
   const [rangeSize, setRangeSize] = useState<50 | 100>(100);
   const [unitError, setUnitError] = useState(false);
   const [retry, setRetry] = useState(0);
@@ -167,7 +177,9 @@ export function BattleSubjectSelect({
   if (unitSubject) {
     const theme = subjectTheme(unitSubject as SubjectKey);
     const split = unitSubject === 'english_vocab' && book;
-    const shownUnits = split ? vocabRanges(vocabPool, book, rangeSize) : units;
+    const grammarTabs = unitSubject === 'english_grammar';
+    const shownUnits = split ? vocabRanges(vocabPool, book, rangeSize)
+      : grammarTabs ? units?.filter(u => grammarPartOf(u.id) === grammarPart) ?? null : units;
     const pickUnit = (id: string) => {
       if (unitSubject === 'english_vocab' && !book) setBook(id);
       else onPick(unitSubject, questionCount, id);
@@ -178,13 +190,21 @@ export function BattleSubjectSelect({
       <p className="mb-2 text-sm font-bold" style={{ color: INK }}>出題範囲を選ぶ（最大{questionCount}問）</p>
       {unitSubject === 'english_vocab' && <p className="mb-2 text-xs">共通テスト目標・2次試験は学習範囲の目安です。得点や志望校の出題を保証しません。</p>}
       {split && <><p className="mb-2 text-sm font-bold">{externalChapterTitleOf(unitSubject, book)}</p><div className="mb-2 flex gap-2" aria-label="単語範囲の大きさ">{([50,100] as const).map(n => <button type="button" key={n} className="min-h-11 flex-1 rounded-xl border-2 bg-white text-sm font-bold" aria-pressed={rangeSize === n} onClick={() => setRangeSize(n)}>{n}語ずつ</button>)}</div></>}
+      {grammarTabs && <div className="mb-2 grid grid-cols-3 gap-1.5" role="tablist" aria-label="文法・語法・イディオムの切り替え" data-grammar-tabs>
+        {GRAMMAR_PARTS.map(p => <button key={p.id} type="button" role="tab" aria-selected={grammarPart === p.id}
+          onClick={() => setGrammarPart(p.id)} data-grammar-part={p.id}
+          className="min-h-11 rounded-xl border-2 px-1 text-xs font-black leading-tight"
+          style={{ borderColor: grammarPart === p.id ? theme.accent : LINE, background: grammarPart === p.id ? theme.surface : '#FFFFFF', color: INK }}>
+          <span className="block text-[12px] opacity-70">PART {p.n}</span>{p.label}
+        </button>)}
+      </div>}
       {unitError ? <div role="alert"><p>単元を読み込めませんでした。</p><BattleButton onClick={() => setRetry(n => n + 1)}>再読み込み</BattleButton></div>
         : !units ? <p role="status">単元を読み込んでいます…</p>
         : <div className="grid grid-cols-2 gap-2" aria-label="単元一覧">
-          <button type="button" data-battle-unit="all" onClick={() => onPick(unitSubject, questionCount, book ?? undefined)}
+          {<button type="button" data-battle-unit="all" onClick={() => onPick(unitSubject, questionCount, book ?? undefined)}
             className="col-span-2 min-h-[52px] rounded-2xl border-2 px-4 py-2 text-left font-black" style={{ borderColor: theme.accent, color: INK, background: theme.surface }}>
             {book ? 'この教材すべて' : '全単元から出題'}<span className="ml-2 text-xs">{Math.min(questionCount, units.filter(u => !book || u.id === book).reduce((n, u) => n + u.count, 0))}問</span>
-          </button>
+          </button>}
           {shownUnits?.map(unit => <button key={unit.id} type="button" data-battle-unit={unit.id}
             onClick={() => pickUnit(unit.id)}
             className="min-h-[52px] min-w-0 rounded-2xl border-2 bg-white px-3 py-2 text-left" style={{ borderColor: LINE, color: INK }}
@@ -306,11 +326,12 @@ export function BattleSubjectSelect({
               </div>
 
               <p className="mt-1 text-xs font-bold" style={{ color: INK_SUB }}>
+                {/* 英単語・英熟語は1語から「英→日」「日→英」の2問を作るので、問題数（9541）ではなく語数を出す */}
                 収録{' '}
                 <span className="tabular-nums font-black" style={{ color: INK }}>
-                  {count}
+                  {(subject === 'english_vocab' ? VOCABULARY_COUNT : count).toLocaleString()}
                 </span>{' '}
-                問
+                {subject === 'english_vocab' ? '語' : '問'}
                 {kanaPerMatch > 0 && (
                   <>
                     <span style={{ color: LINE }}> ｜ </span>

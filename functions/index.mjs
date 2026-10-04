@@ -5,7 +5,7 @@ import { onDocumentWritten } from 'firebase-functions/v2/firestore';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { randomBytes } from 'node:crypto';
 import { defineSecret } from 'firebase-functions/params';
-import { clanPower, parsePowerPolicy, seasonAt, rewardPlan, ranked, validAttestation, EPOCH, PERIOD, REWARD_ITEM } from './core.mjs';
+import { clanPower, parsePowerPolicy, seasonAt, rewardPlan, ranked, validAttestation, EPOCH, PERIOD, REWARD_ITEM, aggregateAchievements, parseDeviceAchievements } from './core.mjs';
 initializeApp();
 const db=getFirestore();
 const region='asia-northeast1';
@@ -92,7 +92,7 @@ export async function handleClan(req) {
   }
   fail('invalid-argument','操作を選び直してください。');
 }
-export const manaClan=onCall({region,maxInstances:5,timeoutSeconds:60,secrets:[powerPolicy]},handleClan);
+export const manaClan=onCall({region,maxInstances:10,timeoutSeconds:60,secrets:[powerPolicy]},handleClan);
 
 /** Recalculate privately, never trust a browser-supplied clan power or membership. */
 export async function refreshClan(uid) {
@@ -130,7 +130,7 @@ export async function recordSeasonRating(uid, after) {
     tx.set(db.collection('league_seasons').doc(season.id),{start:season.start,end:season.end},{merge:true});
   });
 }
-export const onManaRating=onDocumentWritten({document:'battle_ranking/{uid}',region,maxInstances:5,retry:true,secrets:[powerPolicy]},event=>event.data?.after.exists?recordRating(event.params.uid,event.data.before.data(),event.data.after.data()):undefined);
+export const onManaRating=onDocumentWritten({document:'battle_ranking/{uid}',region,maxInstances:20,retry:true,secrets:[powerPolicy]},event=>event.data?.after.exists?recordRating(event.params.uid,event.data.before.data(),event.data.after.data()):undefined);
 
 export async function recordDuel(roomId,room) {
   if(!validAttestation(room,room?.players?.[0])) return;
@@ -146,7 +146,10 @@ export async function recordDuel(roomId,room) {
     tx.update(ca.ref,{[field]:FieldValue.increment(1)});tx.update(cb.ref,{[other]:FieldValue.increment(1)});
   });
 }
-export const onManaDuel=onDocumentWritten({document:'battle_rooms/{roomId}',region,maxInstances:5,retry:true,secrets:[powerPolicy]},async event=>{
+// ★対戦の部屋は解答のたびに書き込まれる（1試合 約35回）。同時に大勢が対戦すると
+//   maxInstances:5 では処理待ちが積み上がり、クラン戦の結果反映が遅れる。
+//   決着していない書き込みはすぐ return するので、上限を上げても費用はほぼ増えない。
+export const onManaDuel=onDocumentWritten({document:'battle_rooms/{roomId}',region,maxInstances:30,retry:true,secrets:[powerPolicy]},async event=>{
   const room=event.data?.after.data();
   if(!validAttestation(room,room?.players?.[0])) return;
   await recordDuel(event.params.roomId,room);
@@ -183,3 +186,56 @@ export const settleManaLeagues=onSchedule({schedule:'0 1 * * *',timeZone:'Asia/T
   const states=await db.collection('league_seasons').where('end','<=',Date.now()-3600000).get();
   for(const s of states.docs) await settleSeason(s.id);
 });
+
+/**
+ * ★放置データの掃除（2026-10-03）★
+ *   画面を閉じた・電池切れなどで片付けられなかったものが溜まると、
+ *     ・合言葉（4文字＝約92万通り）が埋まって部屋が作りにくくなる
+ *     ・待機票の検索（50件）に放置票ばかり入る
+ *     ・保存料金が増える
+ *   1時間ごとに、古いものだけを少しずつ（各最大400件）消す。進行中の試合には触れない。
+ *     battle_codes      … 作成から 2 時間
+ *     battle_queue      … 作成から 30 分
+ *     battle_rooms      … waiting のまま 2 時間（だれも入らなかった部屋）は aborted にする
+ */
+export async function sweepStaleBattleData(now=Date.now()) {
+  const before=ms=>new Date(now-ms);
+  const out={codes:0,queue:0,rooms:0};
+  const codes=await db.collection('battle_codes').where('createdAt','<',before(2*3600000)).limit(400).get();
+  if(!codes.empty){const b=db.batch();codes.docs.forEach(d=>b.delete(d.ref));await b.commit();out.codes=codes.size;}
+  const queue=await db.collection('battle_queue').where('createdAt','<',before(30*60000)).limit(400).get();
+  if(!queue.empty){const b=db.batch();queue.docs.forEach(d=>b.delete(d.ref));await b.commit();out.queue=queue.size;}
+  const rooms=await db.collection('battle_rooms').where('status','==','waiting').where('createdAt','<',before(2*3600000)).limit(400).get();
+  if(!rooms.empty){const b=db.batch();rooms.docs.forEach(d=>b.update(d.ref,{status:'aborted',updatedAt:stamp()}));await b.commit();out.rooms=rooms.size;}
+  return out;
+}
+export const sweepStaleBattle=onSchedule({schedule:'every 60 minutes',timeZone:'Asia/Tokyo',region,maxInstances:1,timeoutSeconds:300},async()=>{await sweepStaleBattleData();});
+
+/**
+ * ★積み上げの集計（2026-10-04）★ 達成ステージ数・レベルを端末共通の数字にする。
+ *   端末ごとの記録を user_achievements/{uid}/devices/{deviceId} に置き（サーバーだけが書く）、
+ *   全端末を合算した値を user_achievements/{uid} と、公開している人の public_study_profiles/{uid} に書く。
+ *   公開プロフィールの stagesCleared / level はクライアントからは書けない（firestore.rules）。
+ */
+const MAX_ACHIEVEMENT_DEVICES=20;
+export async function handleAchievements(req) {
+  const uid=requireUid(req); await quota(uid);
+  const input=parseDeviceAchievements(req.data ?? {});
+  if(!input) fail('invalid-argument','記録の形式が正しくありません。');
+  const root=db.collection('user_achievements').doc(uid);
+  // 端末数の上限：deviceId を変えて大量に書かれる（保存量の水増し・集計の偏り）のを防ぐ
+  const devRef=root.collection('devices').doc(input.deviceId);
+  if(!(await devRef.get()).exists) {
+    const count=(await root.collection('devices').count().get()).data().count;
+    if(count>=MAX_ACHIEVEMENT_DEVICES) fail('resource-exhausted','登録できる端末の数を超えました。');
+  }
+  await devRef.set({xp:input.xp,stages:input.stages,updatedAt:stamp()});
+  const devices=await root.collection('devices').limit(MAX_ACHIEVEMENT_DEVICES).get();
+  const agg=aggregateAchievements(devices.docs.map(d=>d.data()));
+  await root.set({xp:agg.xp,level:agg.level,stagesCleared:agg.stagesCleared,devices:devices.size,updatedAt:stamp()});
+  const pub=db.collection('public_study_profiles').doc(uid);
+  await db.runTransaction(async tx=>{const s=await tx.get(pub); if(s.exists && s.get('public')===true) tx.update(pub,{stagesCleared:agg.stagesCleared,level:agg.level});});
+  const stages={}; for(const [k,v] of Object.entries(agg.stages)) if(v.n>0) stages[k]=v;
+  return {stages,stagesCleared:agg.stagesCleared,level:agg.level,xp:agg.xp};
+}
+export const achievements=onCall({region,maxInstances:20,timeoutSeconds:30},handleAchievements);

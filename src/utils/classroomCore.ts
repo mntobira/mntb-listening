@@ -65,7 +65,22 @@ export const JOIN_CODE_PATTERN = /^[ACDEFGHJKMNPQRSTWXYZ2345679]{6}$/;
  *
  * @param random 0以上1未満を返す関数（テストで固定するため差し替え可能）
  */
-export function generateJoinCode(random: () => number = Math.random): string {
+/**
+ * 既定の乱数は暗号論的乱数（crypto.getRandomValues）。
+ * ★Math.random は内部状態を数個の出力から推定できる★ため、
+ *   先生がクラスを作った直後のコードを第三者に予測されないようにする。
+ */
+export function secureRandom(): number {
+  const c = (globalThis as { crypto?: Crypto }).crypto;
+  if (c?.getRandomValues) {
+    const buf = new Uint32Array(1);
+    c.getRandomValues(buf);
+    return (buf[0] ?? 0) / 0x1_0000_0000;
+  }
+  return Math.random();
+}
+
+export function generateJoinCode(random: () => number = secureRandom): string {
   let code = '';
   for (let i = 0; i < JOIN_CODE_LENGTH; i += 1) {
     const index = Math.floor(random() * JOIN_CODE_ALPHABET.length) % JOIN_CODE_ALPHABET.length;

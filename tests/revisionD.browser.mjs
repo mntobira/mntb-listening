@@ -81,7 +81,7 @@ try {
     await page.screenshot({path:`shots/d-mypage-${w}.png`});
     await page.getByRole('button',{name:'オンライン対戦へ移動',exact:true}).click();await page.locator('.arena-menu').waitFor();
     await fit(page,'.arena-menu',`${w} battle`);
-    assert.deepEqual(await page.locator('.arena-menu-links button').allTextContents(),['対戦履歴']);
+    assert.deepEqual(await page.locator('.arena-menu-links button').allTextContents(),['対戦履歴','マナクラン']);
     await page.screenshot({path:`shots/d-battle-${w}.png`});
     await page.getByRole('button',{name:'ホーム画面へ移動',exact:true}).click();
     await page.getByRole('button',{name:'設定画面へ移動',exact:true}).click();

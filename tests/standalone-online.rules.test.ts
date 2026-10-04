@@ -12,7 +12,9 @@ let env:RulesTestEnvironment;
 const subject='english_listening';
 const login=(uid:string)=>{state.auth.currentUser={uid,photoURL:''};state.db=env.authenticatedContext(uid).firestore();};
 beforeAll(async()=>{env=await initializeTestEnvironment({projectId:'demo-listening-online',firestore:{host:'127.0.0.1',port:8080,rules:readFileSync('firestore.rules','utf8')}});await loadPool(subject);},30000);
-beforeEach(async()=>{await env.clearFirestore();login('listener-a');});
+// フレンド対戦はフレンドどうしだけ。テストで使う組を相互フレンドにしておく
+const befriend=async(a:string,b:string)=>env.withSecurityRulesDisabled(async ctx=>{const f=ctx.firestore();await setDoc(doc(f,'friends',a,'items',b),{uid:b,nickname:b,photoURL:'',addedAt:new Date()});await setDoc(doc(f,'friends',b,'items',a),{uid:a,nickname:a,photoURL:'',addedAt:new Date()});});
+beforeEach(async()=>{await env.clearFirestore();await befriend('listener-a','listener-b');login('listener-a');});
 afterAll(async()=>{await env?.cleanup();});
 it('two listening clients create/join/start and answer under security rules',async()=>{
  const created=await createFriendRoom(subject,{questionCount:3});
@@ -82,7 +84,31 @@ it('withdrawing removes metadata live, and a stale time refresh cannot recreate 
   expect((await getDoc(doc(state.db,'public_study_profiles','listener-a'))).exists()).toBe(false);
  }finally{stop();}
 },15000);
+it('public profile: motto is self-written, stagesCleared/level are server-only',async()=>{
+ const ref=doc(state.db,'public_study_profiles','listener-a');
+ const base={public:true,targetSchool:'A大',studySeconds:60,updatedAt:serverTimestamp()};
+ await assertFails(setDoc(ref,{...base,stagesCleared:3}));
+ await assertFails(setDoc(ref,{...base,level:12}));
+ await assertFails(setDoc(ref,{...base,motto:'x'.repeat(41)}));
+ await assertFails(setDoc(ref,{...base,email:'a@b.c'}));
+ await setDoc(ref,{...base,motto:'医者になる'});
+ // サーバー（Admin）が合算値を書いたあと、本人は志や時間を更新できるが、合算値は変えられない
+ await env.withSecurityRulesDisabled(async c=>{await updateDoc(doc(c.firestore(),'public_study_profiles','listener-a'),{stagesCleared:3,level:12});});
+ await setDoc(ref,{...base,motto:'先生になる'},{merge:true});
+ await assertFails(setDoc(ref,{...base,stagesCleared:99},{merge:true}));
+ await assertFails(updateDoc(ref,{level:99,updatedAt:serverTimestamp()}));
+ login('viewer');expect(parsePublicStudyProfile((await getDoc(ref)).data())).toMatchObject({motto:'先生になる',stagesCleared:3,level:12});
+ await assertFails(getDoc(doc(state.db,'user_achievements','listener-a')));
+ login('listener-a');await assertFails(setDoc(doc(state.db,'user_achievements','listener-a'),{level:99}));
+ await assertFails(getDoc(doc(state.db,'user_achievements','listener-a','devices','d1')));
+});
 it('unpublished metadata cannot be retrieved even if an admin seeded it',async()=>{
  await env.withSecurityRulesDisabled(async context=>{await setDoc(doc(context.firestore(),'public_study_profiles','private-user'),{public:false,targetSchool:'Hidden',studySeconds:999});});
  login('viewer');await assertFails(getDoc(doc(state.db,'public_study_profiles','private-user')));
 });
+
+it('フレンドでない人は合言葉を知っていてもフレンド対戦に入れない',async()=>{
+ const created=await createFriendRoom(subject,{questionCount:3});
+ login('stranger');
+ await expect(joinRoomByCode(created.joinCode)).rejects.toThrow(/フレンドどうし/);
+},30000);

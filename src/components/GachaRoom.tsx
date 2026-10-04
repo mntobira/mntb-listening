@@ -66,7 +66,6 @@ function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & 
  const [result,setResult]=useState<{item:ItemDef;rarity:GachaRarity;duplicate:boolean;refund:number}|null>(null);
  const [multi,setMulti]=useState<{item:ItemDef;rarity:GachaRarity;duplicate:boolean;refund:number}[]|null>(null);
  const bestRarity:GachaRarity|null=result?result.rarity:multi?bestOf(multi):null;
- const prints=items.filter(item=>item.kind==='print');
  const [collectionKind,setCollectionKind]=useState<CollectionKind>('body');
  const collectionList=items.filter(COLLECTION_KINDS.find(k=>k.id===collectionKind)!.match);
  const [confirmMulti,setConfirmMulti]=useState(false);
