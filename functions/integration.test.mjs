@@ -87,10 +87,15 @@ test('fortnight settlement and own-account gift claims are idempotent', async ()
   await settleSeason(s.id, EPOCH + PERIOD + 3600001);
   await settleSeason(s.id, EPOCH + PERIOD + 3600001);
   const gifts = (await call('winner', 'rewards')).rewards;
-  assert.equal(gifts.length, 1); assert.equal(gifts[0].itemId, 'frame_league_aurora');
+  // 参加賞（ゴールド：150コイン）＋リーグ1位（UR＋500コイン）
+  assert.equal(gifts.length, 2);
+  const top = gifts.find(g => g.kind === 'individual'); const join = gifts.find(g => g.kind === 'join');
+  assert.equal(top.itemId, 'frame_league_aurora'); assert.equal(top.coins, 500);
+  assert.equal(join.itemId, null); assert.equal(join.coins, 150);
   assert.equal((await call('ineligible', 'rewards')).rewards.length, 0);
-  await assert.rejects(call('other', 'claimReward', { rewardId: gifts[0].id }), { code: 'not-found' });
-  assert.equal((await call('winner', 'claimReward', { rewardId: gifts[0].id })).id, gifts[0].id);
+  await assert.rejects(call('other', 'claimReward', { rewardId: top.id }), { code: 'not-found' });
+  assert.equal((await call('winner', 'claimReward', { rewardId: top.id })).id, top.id);
+  assert.equal((await call('winner', 'claimReward', { rewardId: join.id })).coins, 150);
   assert.equal((await ref.get()).get('status'), 'settled');
 });
 

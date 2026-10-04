@@ -42,8 +42,16 @@ export async function savePublicStudyProfile(published: boolean, targetSchool: s
   const ref = doc(db, PUBLIC_STUDY_PROFILES, uid);
   if (!published) { await deleteDoc(ref); return; }
   // merge：サーバーが書いた 達成ステージ数・レベル は残す（ルールで本人の書き換えを禁止している）
-  await setDoc(ref, { public: true, targetSchool: normalizeTargetSchool(targetSchool), motto: normalizeMotto(motto),
-    studySeconds: Math.min(315360000, readStudyTime(uid).total), updatedAt: serverTimestamp() }, { merge: true });
+  const base = { public: true, targetSchool: normalizeTargetSchool(targetSchool),
+    studySeconds: Math.min(315360000, readStudyTime(uid).total), updatedAt: serverTimestamp() };
+  try {
+    await setDoc(ref, { ...base, motto: normalizeMotto(motto) }, { merge: true });
+  } catch (e) {
+    // 本番の Firestore ルールが「志（motto）」追加前のままだと、motto 付きの保存だけ拒否される。
+    // 公開設定そのものは保存できるよう、motto を外してもう一度だけ試す（ルールを更新すれば志も保存される）。
+    if ((e as { code?: string })?.code !== 'permission-denied') throw e;
+    await setDoc(ref, base, { merge: true });
+  }
   syncLater();
 }
 /** Recheck consent on the server before refreshing: another device may have

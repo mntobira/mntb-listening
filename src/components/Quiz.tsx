@@ -178,6 +178,11 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     parseStoredNonNegativeInteger(localStorage.getItem(quizStepKey(chapter.id, mode))),
   );
 
+  // 一人で学ぶ：この単元を開いてからもらったマナコイン・XP を数え直す（結果画面に出す）
+  useEffect(() => {
+    void import('../battle/data/growthStore').then(({ resetStudySession }) => resetStudySession()).catch(() => {});
+  }, [chapter.id, mode]);
+
   useEffect(() => {
     safeSetItem(quizAnswersKey(chapter.id, mode), JSON.stringify(answers));
   }, [answers, chapter.id, mode]);

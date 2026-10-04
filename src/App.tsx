@@ -1817,6 +1817,7 @@ export default function App() {
                   onRetryWrong={(chapterId, firstWrongIndex) => handleSelectChapter(chapterId, firstWrongIndex, false, quizRange, appMode)}
                   onNextChapter={(chapterId) => handleSelectChapter(chapterId, 0, false, null, appMode)}
                   onNextRound={(chapterId, index) => handleSelectChapter(chapterId, index, false, { startIndex: index, endIndex: index }, appMode)}
+                  onHome={() => navigateMain('home')}
                 />
               </React.Suspense>
             )}

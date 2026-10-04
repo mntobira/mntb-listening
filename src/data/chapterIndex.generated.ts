@@ -256,43 +256,37 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "id": "eg4_1",
         "problemCount": 1,
         "abstractTitle": "⑮ 動詞の語法（自他・語形・型）",
-        "realTitle": "10章 語法"
+        "realTitle": "20章 語法（総合）"
       },
       {
         "id": "eg4_2",
         "problemCount": 1,
         "abstractTitle": "⑯ 名詞・代名詞・冠詞の語法",
-        "realTitle": "10章 語法"
+        "realTitle": "20章 語法（総合）"
       },
       {
         "id": "eg4_3",
         "problemCount": 1,
         "abstractTitle": "⑰ 形容詞・副詞の語法",
-        "realTitle": "10章 語法"
+        "realTitle": "20章 語法（総合）"
       },
       {
         "id": "eg4_4",
         "problemCount": 1,
         "abstractTitle": "⑱ 前置詞の語法",
-        "realTitle": "10章 語法"
+        "realTitle": "20章 語法（総合）"
       },
       {
         "id": "eg6_20",
         "problemCount": 29,
-        "abstractTitle": "第20章 会話表現",
-        "realTitle": "20章 会話表現"
-      },
-      {
-        "id": "eg5_1",
-        "problemCount": 1,
-        "abstractTitle": "⑲ 動詞を含む熟語・群動詞",
-        "realTitle": "11章 イディオム"
+        "abstractTitle": "第21章 会話表現",
+        "realTitle": "21章 会話表現"
       },
       {
         "id": "eg5_2",
         "problemCount": 1,
         "abstractTitle": "⑳ 会話表現と多義語・語い",
-        "realTitle": "12章 会話・語い"
+        "realTitle": "22章 会話・語い"
       }
     ]
   }
@@ -361,9 +355,9 @@ export const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = {
     "questions": 135
   },
   "english_grammar": {
-    "chapters": 26,
-    "questions": 244,
-    "marks": 1193
+    "chapters": 25,
+    "questions": 243,
+    "marks": 1188
   }
 };
 

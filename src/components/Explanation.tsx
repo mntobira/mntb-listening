@@ -1,7 +1,7 @@
 import './step-explanation.css';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, CheckCircle2, XCircle, Lightbulb, BookOpen, AlertCircle, CheckSquare, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, Search, Network, Circle, Trophy, KeyRound, ListOrdered, Target } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Lightbulb, BookOpen, AlertCircle, CheckSquare, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, Search, Network, Circle, Trophy, KeyRound, ListOrdered, Target, ChevronLeft, ChevronRight, Coins, Home } from 'lucide-react';
 import { motion } from 'motion/react';
 import { formatText } from '../utils/textFormatter';
 import { ExplanationBody } from './ExplanationBody';
@@ -106,6 +106,10 @@ interface ExplanationProps {
    *   省略時は従来どおり大問まるごとの解説（化学基礎・化学はこちら）。
    */
   focusSubQuestionId?: string | null;
+  /** 結果の「詳しい結果」画面の下に置く「ホームに戻る」 */
+  onHome?: () => void;
+  /** 結果の「詳しい結果」から開いたとき：上に問題の切り替え、下に「ホーム／単元選択／間違えた問題」を出す */
+  reviewNav?: ReviewNav;
 }
 
 import { NodeData } from './InteractiveTree';
@@ -161,7 +165,20 @@ function formatResultTime(sec: number): string {
   return s < 60 ? `${s}秒` : `${Math.floor(s / 60)}分${s % 60 ? `${s % 60}秒` : ''}`;
 }
 
-export function Explanation({ mode: initialMode, chapter, answers, onBack, onReturnToBattle, isGuest, singleQuestionIndex, onNextQuestion, isLastQuestion, isMobileView, scoreBreakdown, scoreMeta, totalScore, runningCombo, resultTotalScore, resultTotalCorrect, resultTotalJudgeable, resultTotalTimeSec, questionRange, onRetryWrong, onNextChapter, nextChapterTitle, focusSubQuestionId }: ExplanationProps) {
+export interface ReviewNav {
+  pages: { state: string }[];
+  current: number;
+  onPage: (i: number) => void;
+  onSummary: () => void;
+  onHome?: () => void;
+  onChapters: () => void;
+  onRetryWrong?: () => void;
+  retryLabel?: string;
+  onNext?: () => void;
+  nextLabel?: string;
+}
+
+export function Explanation({ mode: initialMode, chapter, answers, onBack, onReturnToBattle, isGuest, singleQuestionIndex, onNextQuestion, isLastQuestion, isMobileView, scoreBreakdown, scoreMeta, totalScore, runningCombo, resultTotalScore, resultTotalCorrect, resultTotalJudgeable, resultTotalTimeSec, questionRange, onRetryWrong, onNextChapter, nextChapterTitle, focusSubQuestionId, onHome, reviewNav }: ExplanationProps) {
   const isPracticeMode = initialMode === 'practice';
   const { progress: growth } = useGrowthProgress();
   // Virtual mode is always 'mini_test' for bright style choices!
@@ -211,7 +228,58 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
     return Math.min(Math.max(0, questionRange.startIndex), last);
   }, [questionRange, allQuestions.length]);
 
+  // ★結果画面のページ送り（2026-10-04）★ 対戦の「詳しい結果」と同じく、解いた問題を矢印・番号で1問ずつ切り替える。
+  //   スクロールで全問を縦に並べない。中身の描き方（一人で学ぶの解説）はそのまま使い、表示する1問を絞るだけ。
+  const [resultPage, setResultPage] = useState(0);
+  /** 演習の結果は2画面：'summary'＝結果（1画面）→「詳しい結果を確認する」→ 'detail'＝矢印で1問ずつ答え合わせ（対戦と同じ流れ） */
+  const [resultStep, setResultStep] = useState<'summary' | 'detail'>('summary');
+  // 一人で学ぶでもらったマナコイン・XP（この単元を開いてからの合計）。ゲストはもらえないので案内だけ
+  const [studyReward, setStudyReward] = useState<{ coins: number; xp: number; count: number } | null>(null);
+  useEffect(() => {
+    if (singleQuestionIndex !== undefined) return;
+    let off = () => {};
+    let alive = true;
+    void import('../battle/data/growthStore').then(({ currentStudySession, subscribeStudySession }) => {
+      if (!alive) return;
+      setStudyReward(currentStudySession());
+      off = subscribeStudySession(setStudyReward);
+    }).catch(() => {});
+    return () => { alive = false; off(); };
+  }, [singleQuestionIndex]);
+  const baseQuestions = useMemo(() => {
+    if (singleQuestionIndex !== undefined) return [allQuestions[singleQuestionIndex]];
+    if (!questionRange) return allQuestions;
+    const last = Math.max(0, allQuestions.length - 1);
+    const end = Math.min(Math.max(rangeOffset, questionRange.endIndex), last);
+    return allQuestions.slice(rangeOffset, end + 1);
+  }, [allQuestions, singleQuestionIndex, questionRange, rangeOffset]);
+  /** ページ送りの1件＝小問1つ（音源1本に複数の小問がある第4問以降は、その音源の先頭の小問だけ） */
+  const resultPages = useMemo(() => {
+    if (singleQuestionIndex !== undefined) return [] as { qIndex: number; sq: any }[];
+    const out: { qIndex: number; sq: any }[] = [];
+    baseQuestions.forEach((q: any, qIndex: number) => {
+      const covered = new Set<string>();
+      const tracks: any[] = textTracksOf(q);
+      (q?.subQuestions || []).forEach((sq: any) => {
+        const id = String(sq?.id);
+        if (covered.has(id)) return;
+        const t = tracks.find((tr: any) => Array.isArray(tr?.subIds) && tr.subIds.map(String).includes(id));
+        if (t) t.subIds.forEach((x: any) => covered.add(String(x)));
+        out.push({ qIndex, sq });
+      });
+    });
+    return out;
+  }, [baseQuestions, singleQuestionIndex]);
+  const pagerOn = resultPages.length > 1;
+  const pageState = (pg: { sq: any }) => { const v = answers[pg.sq?.id]; return pg.sq?.type === 'descriptive' ? 'self' : !isAttempted(v) ? 'skip' : isAnswerCorrect(pg.sq, v) ? 'ok' : 'ng'; };
+  const firstWrongPage = resultPages.findIndex((pg) => pageState(pg) === 'ng');
+  const wrongCount = resultPages.filter((pg) => pageState(pg) === 'ng').length;
+  const safeResultPage = Math.min(resultPage, Math.max(0, resultPages.length - 1));
+  const effectiveFocusId: string | null = focusSubQuestionId
+    ?? (pagerOn ? String(resultPages[safeResultPage]?.sq?.id ?? '') || null : null);
+
   const questions = useMemo(() => {
+    const focusSubQuestionId = effectiveFocusId;
     const picked = (() => {
       if (singleQuestionIndex !== undefined) return [allQuestions[singleQuestionIndex]];
       if (!questionRange) return allQuestions;
@@ -273,7 +341,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           : { explanationTracks: focusedTracks.length > 0 ? focusedTracks : tracks }),
       };
     });
-  }, [allQuestions, singleQuestionIndex, questionRange, rangeOffset, focusSubQuestionId]);
+  }, [allQuestions, singleQuestionIndex, questionRange, rangeOffset, effectiveFocusId]);
 
   // 数学の章か（requiresMathPalette を立てた小問を含むか）。
   // 数学のときは解説・解答を数式フォント＋一回り大きい表示（.math-content）で描画し、
@@ -455,7 +523,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
   // \u81ea\u5df1\u63a1\u70b9\u306e\u30c1\u30a7\u30c3\u30af\u6570\u304b\u3089\u30dc\u30fc\u30ca\u30b9\u70b9\u3092\u30ea\u30a2\u30eb\u30bf\u30a4\u30e0\u8a08\u7b97
   const selfGradeBonus = useMemo(() => {
     let bonus = 0;
-    questions.forEach((q: any) => {
+    baseQuestions.forEach((q: any) => {
       (q.subQuestions || []).forEach((sq: any) => {
         if (sq.type === 'descriptive') {
           // gradingCriteria が string で書かれたデータ（旧 ⑤-7 二段階滴定）でも
@@ -467,7 +535,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
       });
     });
     return bonus;
-  }, [selfGrades, questions]);
+  }, [selfGrades, baseQuestions]);
 
   const baseDisplayScore = totalScore ?? resultTotalScore;
   const displayTotalScore = baseDisplayScore != null ? baseDisplayScore + selfGradeBonus : null;
@@ -627,7 +695,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
   const weakAreas = useMemo(() => {
     const analysis: Record<string, { total: number; correct: number }> = {};
 
-    questions.forEach((q: any) => {
+    baseQuestions.forEach((q: any) => {
       const category = q.category || 'その他';
       if (!analysis[category]) {
         analysis[category] = { total: 0, correct: 0 };
@@ -655,7 +723,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
       }))
       .filter(item => item.percentage < 100)
       .sort((a, b) => a.percentage - b.percentage);
-  }, [questions, answers, selfGrades]);
+  }, [baseQuestions, answers, selfGrades]);
 
   /**
    * 間違えた（＝解答したが不正解の）小問を含む最初の問題の、章内の通し番号。
@@ -664,11 +732,11 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
    */
   const firstWrongQuestionIndex = useMemo(() => {
     if (singleQuestionIndex !== undefined) return -1;
-    const idx = questions.findIndex((q: any) =>
+    const idx = baseQuestions.findIndex((q: any) =>
       (q.subQuestions || []).some((sq: any) =>
         sq.type !== 'descriptive' && isAttempted(answers[sq.id]) && !isAnswerCorrect(sq, answers[sq.id])));
     return idx < 0 ? -1 : rangeOffset + idx;
-  }, [questions, answers, singleQuestionIndex, rangeOffset]);
+  }, [baseQuestions, answers, singleQuestionIndex, rangeOffset]);
 
   const deepThoughtData = useMemo(() => {
     for (const q of questions) {
@@ -995,7 +1063,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
   // どこが弱点かを見るのにスクロールが必要だった。
   // スマホの結果表示では、スコア行を小さくまとめ、その直下に
   // 復習推奨エリアを1行ずつの薄いバーで並べて同じ画面に収める。
-  const compactResult = isMobile && isResultView;
+  // 2026-10-04：PCもスマホと同じく「成績・弱点・解き直し」を1枚のカードにまとめる（結果を1画面で見渡す）
+  const compactResult = isResultView;
 
   // スマホ結果画面用：復習推奨エリアのコンパクト表示（1行＝カテゴリ名＋％＋細いバー）
   const compactWeakAreas = compactResult && weakAreas.length > 0 ? (
@@ -1032,6 +1101,37 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
     </div>
   ) : null;
 
+  // ★詳しい結果（2026-10-04 ご指摘）★ 1問ずつの答え合わせと「同じ画面」を使う（問題・スクリプト・解説が1画面に揃う）。
+  //   独自のレイアウトを作らず、解いた直後の解答・解説画面をそのまま再利用して UI を一貫させる。
+  if (isResultView && resultStep === 'detail' && resultPages.length > 0) {
+    const pg = resultPages[safeResultPage];
+    const qIdx = rangeOffset + (pg?.qIndex ?? 0);
+    return (
+      <React.Fragment key={`review-${qIdx}-${pg?.sq?.id}`}><Explanation
+        mode={initialMode}
+        chapter={chapter}
+        answers={answers}
+        onBack={onBack}
+        isGuest={isGuest}
+        singleQuestionIndex={qIdx}
+        isMobileView={isMobileView}
+        focusSubQuestionId={pg?.sq?.id != null ? String(pg.sq.id) : null}
+        reviewNav={{
+          pages: resultPages.map((x) => ({ state: pageState(x) })),
+          current: safeResultPage,
+          onPage: setResultPage,
+          onSummary: () => setResultStep('summary'),
+          onHome,
+          onChapters: onBack,
+          onRetryWrong: firstWrongQuestionIndex >= 0 && onRetryWrong ? () => onRetryWrong(firstWrongQuestionIndex) : undefined,
+          retryLabel: '間違えた問題だけ解き直す',
+          onNext: onNextChapter,
+          nextLabel: nextChapterTitle ? (/^第\d+回$/.test(nextChapterTitle) ? `次の回へ（${nextChapterTitle}）` : `次の単元へ`) : '次へ進む',
+        }}
+      /></React.Fragment>
+    );
+  }
+
   const content = (
     <div
       // C6: 解答後に表示される解説領域をスクリーンリーダーが読み上げられるよう、
@@ -1053,7 +1153,27 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         : `fixed inset-0 w-full h-full flex flex-col bg-[#FDFBF7] overflow-hidden z-50`
     }>
       {onReturnToBattle && <button type="button" onClick={onReturnToBattle} className="sticky top-0 z-[55] min-h-11 shrink-0 border-b border-blue-200 bg-blue-50 px-3 py-2 text-sm font-bold text-blue-900">バトル結果・解説に戻る</button>}
-      <div className={isMobile ? "w-full min-h-full flex flex-col" : (isResultView ? "w-full min-h-full flex flex-col" : "w-full h-full flex flex-col")}>
+      {reviewNav && (
+        <nav className="practice-pager is-review" aria-label="解いた問題を切り替える" data-practice-pager>
+          <div className="practice-pager-row">
+            <button type="button" className="practice-pager-back" onClick={reviewNav.onSummary} aria-label="結果にもどる"><ChevronLeft size={16} aria-hidden="true" />結果</button>
+            <button type="button" className="practice-pager-arrow" aria-label="前の問題" disabled={reviewNav.current === 0}
+              onClick={() => reviewNav.onPage(Math.max(0, reviewNav.current - 1))}><ChevronLeft size={20} /></button>
+            <ol className="practice-pager-chips">
+              {reviewNav.pages.map((pg, i) => (
+                <li key={i}>
+                  <button type="button" data-state={pg.state} aria-current={i === reviewNav.current || undefined}
+                    aria-label={`${i + 1}問目（${pg.state === 'ok' ? '正解' : pg.state === 'ng' ? '不正解' : pg.state === 'skip' ? '未解答' : '自己採点'}）`}
+                    onClick={() => reviewNav.onPage(i)}>{i + 1}</button>
+                </li>
+              ))}
+            </ol>
+            <button type="button" className="practice-pager-arrow" aria-label="次の問題" disabled={reviewNav.current >= reviewNav.pages.length - 1}
+              onClick={() => reviewNav.onPage(Math.min(reviewNav.pages.length - 1, reviewNav.current + 1))}><ChevronRight size={20} /></button>
+          </div>
+        </nav>
+      )}
+      <div className={isMobile ? "w-full min-h-full flex flex-col" : (isResultView ? "w-full min-h-full flex flex-col" : reviewNav ? "w-full flex-1 min-h-0 flex flex-col" : "w-full h-full flex flex-col")}>
         {/*
           ★ご要望「解答解説と問題のフォントがあっていないので
             問題のフォントに合わせて」の本体はここ★
@@ -1082,12 +1202,12 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
             「問題文と読み比べる本文の書体」だけ。
         */}
         <div className={isMobile 
-          ? `w-full flex flex-col ${CARD_FONT_FAMILY} relative ${
+          ? `w-full flex flex-col ${isResultView || reviewNav ? 'flex-1' : ''} ${CARD_FONT_FAMILY} relative ${
               mode === 'mini_test' 
                 ? 'bg-white text-gray-800' 
                 : 'bg-[#0B132B] text-[#E0E1DD]'
             }`
-          : `${isResultView ? 'w-full min-h-full' : 'w-full h-full'} flex flex-col ${CARD_FONT_FAMILY} relative ${
+          : `${isResultView ? 'w-full flex-1' : 'w-full h-full'} flex flex-col ${CARD_FONT_FAMILY} relative ${
               mode === 'mini_test' 
                 ? 'bg-white text-gray-800' 
                 : 'bg-[#0B132B] text-[#E0E1DD]'
@@ -1106,7 +1226,10 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         </>
       )}
 
-      {/* Header（結果画面ではスクロールしても常に「単元選択に戻る」やスコアが見えるよう上部に固定） */}
+      {/* Header（結果画面ではスクロールしても常に「単元選択に戻る」やスコアが見えるよう上部に固定）
+          ★詳しい結果（reviewNav）では出さない：上の切り替えバーが見出しの代わり。
+            「答え合わせ / Q1 / 正答率」や上の「単元選択に戻る」は不要（2026-10-04 ご指摘）。 */}
+      {!reviewNav && (
       <div className={`p-4 md:p-6 border-b-2 z-30 flex items-start justify-between gap-4 flex-none ${
         // ★スマホの1問ごとの答え合わせ（reorderMobile）では、
         //   「解答・解説 / 章名」の右横に Score・答え合わせ・Q番号・ノートに保存・正答率を
@@ -1319,7 +1442,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
               <ArrowLeft size={18} className="rotate-180" />
             </button>
           </div>
-        ) : (
+        ) : isResultView ? null : (
           <button 
             onClick={onBack}
             className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border w-full md:w-auto justify-center ${
@@ -1333,8 +1456,9 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           </button>
         )}
       </div>
+      )}
 
-      {isResultView && displayTotalScore != null && (
+      {isResultView && displayTotalScore != null && resultStep === 'summary' && (
         <div className={`relative z-10 ${compactResult ? 'px-3 pt-3' : 'px-4 md:px-6 pt-4'}`}>
           <div className={`bg-gradient-to-br from-[#FFF8E1] via-white to-[#E8F4FD] border border-[#F4D03F]/60 shadow-lg ${
             compactResult ? 'rounded-2xl p-3' : 'rounded-3xl p-5 md:p-6'
@@ -1352,6 +1476,15 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 <div><dt>時間</dt><dd>{formatResultTime(resultTotalTimeSec ?? 0)}</dd></div>
               </dl>
             </div>
+            {/* ★マナコイン（2026-10-04）★ 一人で学ぶでも、1点以上取れた問題は +3マナコイン・+15XP（同じ問題は1日1回） */}
+            <p className="practice-reward-line" role="status" data-practice-reward>
+              <Coins size={16} aria-hidden="true" />
+              {isGuest
+                ? <span>ログインすると、正解した問題ごとにマナコインがもらえます</span>
+                : studyReward && studyReward.coins > 0
+                  ? <><b>＋{studyReward.coins}</b><span>マナコイン</span><b>＋{studyReward.xp}</b><span>XP</span></>
+                  : <span>正解した問題ごとに＋3マナコイン（同じ問題は1日1回まで）</span>}
+            </p>
             {/* あと少し：演習でもらえる称号のうち近いもの（無ければ出さない） */}
             <NextBadgeHint progress={growth} prefer="b_study" className="mt-2" />
 
@@ -1359,33 +1492,12 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 点数の直下に主操作を1つ置く。間違いがあれば「間違えた問題を解き直す」、
                 全問正解なら「次の単元へ」。どちらも無ければ何も出さない
                 （従来どおりヘッダーの「単元選択に戻る」を使う）。 */}
-            {(firstWrongQuestionIndex >= 0 && onRetryWrong) || (firstWrongQuestionIndex < 0 && onNextChapter) ? (
-              <div className={`${compactResult ? 'mt-3' : 'mt-4'} flex flex-col sm:flex-row gap-2`} data-result-actions>
-                {firstWrongQuestionIndex >= 0 && onRetryWrong ? (
-                  <button
-                    type="button"
-                    onClick={() => onRetryWrong(firstWrongQuestionIndex)}
-                    className="flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl bg-[#2C3E50] text-white font-bold text-sm px-4 hover:bg-[#1B2631] transition-colors"
-                  >
-                    <Target size={16} aria-hidden="true" />
-                    間違えた問題から解き直す（第{firstWrongQuestionIndex + 1}問）
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={onNextChapter}
-                    className="flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl bg-[#2C3E50] text-white font-bold text-sm px-4 hover:bg-[#1B2631] transition-colors"
-                  >
-                    <ArrowLeft size={16} className="rotate-180" aria-hidden="true" />
-                    {nextChapterTitle ? (/^第\d+回$/.test(nextChapterTitle) ? `次の回へ：${nextChapterTitle}` : `次の単元へ：${nextChapterTitle}`) : '次の単元へ'}
-                  </button>
-                )}
-              </div>
-            ) : null}
+            {/* 「間違えた問題を解き直す／次の回へ」は詳しい結果の下へ移した（2026-10-04 ご指摘） */}
 
             {/* ★スマホ：スコアの直下に復習推奨エリア（コンパクト版）を出し、
                 1画面で「点数」と「どこを復習すべきか」が同時に見えるようにする。 */}
             {compactWeakAreas}
+
 
 
             {/* ===== この単元についてのご意見（結果画面の意見収集入口）=====
@@ -1416,6 +1528,17 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         </div>
       )}
 
+      {/* ★結果（1画面目）の下のバー：主操作は「詳しい結果を確認する」1つだけ。親指の届く画面の下に置く★ */}
+      {isResultView && resultStep === 'summary' && (
+        <div className="practice-bottom-bar" data-practice-summary-actions>
+          <button type="button" className="practice-detail-open" data-practice-open-detail
+            onClick={() => { setResultStep('detail'); setResultPage(firstWrongPage >= 0 ? firstWrongPage : 0); }}>
+            <ListOrdered size={18} aria-hidden="true" />詳しい結果を確認する{wrongCount > 0 ? `（まちがい${wrongCount}問）` : ''}
+          </button>
+        </div>
+      )}
+
+      {!(isResultView && resultStep === 'summary') && (
       <div className={isMobile
         ? reorderMobile
           // スマホの1問ごとの答え合わせ：問題文ペインを sticky で上部に
@@ -1500,6 +1623,34 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           </div>
         )}
 
+        {/* ★解いた問題のページ送り（2026-10-04）★ 対戦の「1問ずつのけっか」と同じ操作。番号の色で正誤が分かる */}
+        {isResultView && resultStep === 'detail' && resultPages.length > 0 && (
+          <nav className="practice-pager" aria-label="解いた問題を切り替える" data-practice-pager>
+            <p className="practice-pager-title">
+              <button type="button" className="practice-pager-back" onClick={() => setResultStep('summary')} aria-label="結果にもどる"><ChevronLeft size={16} aria-hidden="true" />結果</button>
+              <span>1問ずつの答え合わせ</span><b>{safeResultPage + 1} / {resultPages.length}</b>
+            </p>
+            <div className="practice-pager-row">
+              <button type="button" className="practice-pager-arrow" aria-label="前の問題" disabled={safeResultPage === 0}
+                onClick={() => setResultPage(Math.max(0, safeResultPage - 1))}><ChevronLeft size={20} /></button>
+              <ol className="practice-pager-chips">
+                {resultPages.map((pg, i) => {
+                  const st = pageState(pg);
+                  return (
+                    <li key={`${pg.qIndex}-${pg.sq?.id}`}>
+                      <button type="button" data-state={st} aria-current={i === safeResultPage || undefined}
+                        aria-label={`${i + 1}問目（${st === 'ok' ? '正解' : st === 'ng' ? '不正解' : st === 'skip' ? '未解答' : '自己採点'}）`}
+                        onClick={() => setResultPage(i)}>{i + 1}</button>
+                    </li>
+                  );
+                })}
+              </ol>
+              <button type="button" className="practice-pager-arrow" aria-label="次の問題" disabled={safeResultPage >= resultPages.length - 1}
+                onClick={() => setResultPage(Math.min(resultPages.length - 1, safeResultPage + 1))}><ChevronRight size={20} /></button>
+            </div>
+          </nav>
+        )}
+
         {/* Unified Explanation Area
             ★ 修正：結果表示（isResultView）では固定高さ＋overflow-hidden を付けず、
               ページ自体を自然に縦スクロールさせる（PC・スマホともに全問が見えるように）。
@@ -1537,7 +1688,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                   下の解説をスクロールしても問題文が常に見える（ご要望
                   「解答と解説・問題は一緒に一画面で見える状態で出したい」）。 */}
             <div className={reorderMobile
-              ? 'sticky top-0 z-20 min-w-0 bg-white border-b-2 border-gray-200 shadow-md flex flex-col'
+              ? `sticky ${reviewNav ? 'top-[57px]' : 'top-0'} z-20 min-w-0 bg-white border-b-2 border-gray-200 shadow-md flex flex-col`
               : `space-y-6 pb-8 min-w-0 ${isResultView ? 'lg:pr-4' : 'lg:overflow-y-auto lg:h-full lg:pr-4'}`}>
               {/* スマホ：問題文ペインのヘッダー（演習画面と同じ「たたむ」付き） */}
               {reorderMobile && (
@@ -1580,7 +1731,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                       <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${mode === 'mini_test' ? 'border-gray-200' : 'border-[#3A506B]/30'}`}>
                         <div className="flex items-center gap-3">
                           <div className={`font-bold px-3 py-1 rounded-full text-xs md:text-sm shadow-sm border ${mode === 'mini_test' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'}`}>
-                            Q{(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + qIndex) + 1}
+                            Q{(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1}
                           </div>
                           <div className={`text-left font-bold text-sm md:text-base ${mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD]'}`}>
                             {question.category || '問題'}
@@ -2641,7 +2792,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                   <ExtraInner {...(foldExtras ? { className: 'lx-fold-body space-y-6' } : {})}>
                   <div className={`flex items-center gap-3 border-b pb-2 ${mode === 'mini_test' ? 'border-gray-200' : 'border-[#3A506B]/30'}`}>
                     <div className={`font-bold px-2 py-0.5 rounded text-xs shadow-sm border ${mode === 'mini_test' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'}`}>
-                      Q{(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + qIndex) + 1}
+                      Q{(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1}
                     </div>
                     <h4 className={`font-bold text-sm md:text-base ${mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD] opacity-80'}`}>
                       周辺知識・深掘り
@@ -2773,8 +2924,22 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
       </div>
       </div>
       </div>
+      )}
       </div>
       </div>
+        {/* ★詳しい結果の下のバー（2026-10-04）★ 問題・スクリプト・解説の下に、次にすることをまとめる */}
+        {reviewNav && (
+          <div className="practice-bottom-bar is-review" data-review-actions>
+            {reviewNav.onRetryWrong
+              ? <button type="button" className="pbb-main" onClick={reviewNav.onRetryWrong}><Target size={17} aria-hidden="true" />{reviewNav.retryLabel}</button>
+              : reviewNav.onNext && <button type="button" className="pbb-main" onClick={reviewNav.onNext}><ChevronRight size={17} aria-hidden="true" />{reviewNav.nextLabel}</button>}
+            <div className="pbb-sub">
+              <button type="button" onClick={reviewNav.onChapters}><ListOrdered size={16} aria-hidden="true" />単元選択に戻る</button>
+              {reviewNav.onHome && <button type="button" onClick={reviewNav.onHome}><Home size={16} aria-hidden="true" />ホームに戻る</button>}
+            </div>
+          </div>
+        )}
+
     </div>
   );
 

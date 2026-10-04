@@ -27,7 +27,7 @@
 import type { BattleAnswerFormat, BattleQuestion } from '../core/types';
 
 /** 教科ごとの収録数（UIで「この教科は◯問あります」と出すために使う） */
-export const POOL_COUNTS: Readonly<Record<string, number>> = {"english_listening":254,"english_grammar":1193,"english_vocab":9541};
+export const POOL_COUNTS: Readonly<Record<string, number>> = {"english_listening":254,"english_grammar":1188,"english_vocab":9541};
 
 /**
  * 教科ごと・回答形式ごとの収録数。
@@ -50,7 +50,7 @@ export const POOL_COUNTS: Readonly<Record<string, number>> = {"english_listening
  */
 export const POOL_FORMAT_COUNTS: Readonly<
   Record<string, Readonly<Partial<Record<BattleAnswerFormat, number>>>>
-> = {"english_listening":{"choice4":254},"english_grammar":{"choice4":1193},"english_vocab":{"choice4":9541}};
+> = {"english_listening":{"choice4":254},"english_grammar":{"choice4":1188},"english_vocab":{"choice4":9541}};
 
 /**
  * その教科で「指定の形式のうち」何問使えるかを数える。
