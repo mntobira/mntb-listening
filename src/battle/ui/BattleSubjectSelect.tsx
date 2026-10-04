@@ -44,7 +44,7 @@ import type { BattleAnswerFormat, BattleRule } from '../core/types';
 /** 英文法の3部（一人で学ぶの単元画面と同じ分け方・章IDの接頭辞で判定） */
 type GrammarPartId = 'grammar' | 'usage' | 'expression';
 const GRAMMAR_PARTS: readonly { id: GrammarPartId; n: number; label: string }[] = [
-  { id: 'grammar', n: 1, label: '文法の幹' }, { id: 'usage', n: 2, label: '語法' }, { id: 'expression', n: 3, label: 'イディオム・表現' },
+  { id: 'grammar', n: 1, label: '文法の幹' }, { id: 'usage', n: 2, label: '語法' }, { id: 'expression', n: 3, label: '会話表現' },
 ];
 const egChapterNo = (id: string) => (/^eg6_(\d+)$/.exec(id) ? Number(/^eg6_(\d+)$/.exec(id)![1]) : 0);
 const grammarPartOf = (chapterId: string): GrammarPartId => {
@@ -133,7 +133,7 @@ export function BattleSubjectSelect({
   const [units, setUnits] = useState<{ id: string; title: string; count: number }[] | null>(null);
   const [vocabPool, setVocabPool] = useState<readonly BattleQuestion[]>([]);
   const [book, setBook] = useState<string | null>(null);
-  /** 英文法は「一人で学ぶ」と同じ 文法の幹／語法／イディオム・表現 の切り替え（2026-10-04） */
+  /** 英文法は「一人で学ぶ」と同じ 文法の幹／語法／会話表現 の切り替え（2026-10-04） */
   const [grammarPart, setGrammarPart] = useState<GrammarPartId>('grammar');
   const [rangeSize, setRangeSize] = useState<50 | 100>(100);
   const [unitError, setUnitError] = useState(false);
@@ -208,7 +208,7 @@ export function BattleSubjectSelect({
       <p className="mb-2 text-sm font-bold" style={{ color: INK }}>出題範囲を選ぶ（最大{questionCount}問）</p>
       {unitSubject === 'english_vocab' && <p className="mb-2 text-xs">共通テスト目標・2次試験は学習範囲の目安です。得点や志望校の出題を保証しません。</p>}
       {split && <><p className="mb-2 text-sm font-bold">{externalChapterTitleOf(unitSubject, book)}</p><div className="mb-2 flex gap-2" aria-label="単語範囲の大きさ">{([50,100] as const).map(n => <button type="button" key={n} className="min-h-11 flex-1 rounded-xl border-2 bg-white text-sm font-bold" aria-pressed={rangeSize === n} onClick={() => setRangeSize(n)}>{n}語ずつ</button>)}</div></>}
-      {grammarTabs && <div className="mb-2 grid grid-cols-3 gap-1.5" role="tablist" aria-label="文法・語法・イディオムの切り替え" data-grammar-tabs>
+      {grammarTabs && <div className="mb-2 grid grid-cols-3 gap-1.5" role="tablist" aria-label="文法・語法・会話表現の切り替え" data-grammar-tabs>
         {GRAMMAR_PARTS.map(p => <button key={p.id} type="button" role="tab" aria-selected={grammarPart === p.id}
           onClick={() => setGrammarPart(p.id)} data-grammar-part={p.id}
           className="min-h-11 rounded-xl border-2 px-1 text-xs font-black leading-tight"

@@ -21,7 +21,7 @@ describe('英文法 改訂版（第1〜20章）', () => {
     expect([17, 18, 19, 20].map(count)).toEqual([175, 70, 45, 144]);
   });
 
-  it('追加章は PART に正しく入る（17〜19章＝語法、20章＝イディオム・表現）', () => {
+  it('追加章は PART に正しく入る（17〜19章＝語法、20章＝会話表現）', () => {
     const all = getAllGrammarChapters();
     const part = (id: string) => all.find((c) => c.id === id)?.questionGroup;
     expect([17, 18, 19].map((n) => part(`eg6_${n}`))).toEqual(['語法', '語法', '語法']);

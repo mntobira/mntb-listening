@@ -60,6 +60,7 @@ import {
 } from '../data/chapterIndex.generated';
 // 公開/非公開の判断は src/config/features.ts が唯一の出どころ
 import { isSubjectEnabled } from '../config/features';
+import { SakuraPetals } from './SakuraPetals';
 import { getDaysUntilExam, EXAM_DATE_LABEL } from '../utils/examCountdown';
 import { getDueCount } from '../utils/reviewList';
 import { TobiraBuddy } from './TobiraBuddy';
@@ -355,6 +356,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
   return (
     <div className="home-lobby arena-home game-home h-full min-h-0 relative">
       <div className="home-lobby-lines" aria-hidden="true" />
+      {/* 背景に桜を降らせる（2026-10-04 復活。操作の邪魔をしないよう最背面・pointer-events なし） */}
+      <SakuraPetals count={14} className="home-sakura" />
       <div className="game-home-viewport">
         <header className="game-home-header">
           <div><h1><img className="game-home-logo" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}>{greetingName}さんのホーム</p></div>

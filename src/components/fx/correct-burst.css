@@ -1,5 +1,5 @@
 /* 正解の全画面演出（CorrectBurst）。触れない・短い・読める */
-.cb-root { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; --cb: #3e8e63; --cb-soft: #7cd99255; }
+.cb-root { position: fixed; inset: 0; z-index: 9000; -webkit-transform: translateZ(0); pointer-events: none; overflow: hidden; --cb: #3e8e63; --cb-soft: #7cd99255; }
 .cb-root[data-hot] { --cb: #e08a00; --cb-soft: #ffd36b66; }
 .cb-edge { position: absolute; inset: 0; box-shadow: inset 0 0 0 6px var(--cb), inset 0 0 60px 18px var(--cb-soft); border-radius: 0; animation: cb-edge 1.2s ease-out both; }
 .cb-rays { position: absolute; left: 50%; top: 45%; width: 160vmax; height: 160vmax; translate: -50% -50%; background: repeating-conic-gradient(from 0deg, var(--cb-soft) 0 6deg, transparent 6deg 18deg); -webkit-mask: radial-gradient(circle, #000 0 8%, transparent 42%); mask: radial-gradient(circle, #000 0 8%, transparent 42%); animation: cb-rays 1s ease-out both; }

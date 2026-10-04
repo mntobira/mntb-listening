@@ -40,7 +40,7 @@ export function ListeningSubjectSelection({ onSelectSubject, currentSubject, onB
     <div className="lh-container">
       <header className="lh-header">
         {onBack ? <button className="ls-subjects-back" onClick={onBack} aria-label={backLabel}><ChevronLeft size={18} />{backLabel}</button> : <span />}
-        <div className="lh-brand"><img src="/brand/manatobi-logo.webp" alt="マナトビ" width={1008} height={321} /><span>LISTENING</span></div>
+        <div className="lh-brand"><img src="/brand/manatobi-logo.webp" alt="マナトビ" width={1008} height={321} /></div>
       </header>
 
       <section className="ls-subjects-title">

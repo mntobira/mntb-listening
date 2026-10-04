@@ -290,8 +290,8 @@ export function BattleRoomScreen({
           : onChangeSubject ? () => onChangeSubject(!!room.joinCode) : undefined}
         backToRoomLabel={room.joinCode && onSwitchRoom
           ? moving === 'host' ? '部屋を用意しています…' : moving === 'guest' ? '相手の部屋を待っています…'
-            : isHostHere ? '部屋に戻って問題を選ぶ（同じ相手と）' : '相手の部屋に戻る'
-          : '部屋に戻って教科を選ぶ'}
+            : isHostHere ? '部屋に戻って次の問題を選ぶ（同じ相手と再戦）' : '相手の部屋に戻って再戦を待つ'
+          : '部屋に戻って次の教科を選ぶ（相手は自動で決まります）'}
         onHome={onHome}
         onExit={() => onExit()}
         onPractice={onPractice}

@@ -383,7 +383,7 @@ export function SubjectSelection({ onSelectSubject, isGuest, onBack, onRika, cur
       description: '文型から会話表現までを単元別に網羅。ネクステージ型の4択演習で固めます。',
       highlights: [
         `全${grammarStats.chapters}単元・4択${grammarStats.marks}問を収録`,
-        '文法の幹→語法→イディオム・会話表現の順で積み上げ',
+        '文法の幹→語法→会話表現の順で積み上げ',
         '全問に完成文の音源・和訳・語句・誤答肢の理由つき',
       ],
       volume: `全${grammarStats.chapters}単元・4択${grammarStats.marks}問`,

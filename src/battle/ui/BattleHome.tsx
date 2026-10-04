@@ -136,7 +136,7 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
    <header className="arena-menu-header"><button type="button" onClick={onExit}>ホームへ</button><h1><Swords size={21}/>とびらバトル</h1><BgmButton /></header>
    {/* ★E（2026-10-01）対戦前の舞台★ 夜のアリーナに「あなた VS ？？？」。とびら君がひとこと（少し挑発）。
        機能は同じ。下の3択・その他・ルールの中身も同じ */}
-   <section className="arena-vs" aria-label="あなたの情報" data-arena-vs>
+   <section className={`arena-vs${row ? ' has-rank' : ''}`} aria-label="あなたの情報" data-arena-vs>
     <div className="arena-vs-me">
      <span className="arena-vs-avatar">{progress ? <GrowthAvatar progress={progress} size={56}/> : <UserRound aria-hidden="true"/>}</span>
      <strong>{user ? (user.displayName || 'あなた') : 'ゲスト'}</strong>

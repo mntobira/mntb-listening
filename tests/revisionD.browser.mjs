@@ -19,7 +19,7 @@ async function open(width,height,mobile=false) {
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base,{waitUntil:'domcontentloaded',timeout:120000});
   await page.locator('.launch-emblem').waitFor({timeout:120000});
-  assert.equal(await page.locator('.launch-emblem h1').textContent(),'対戦する力を聞く力へ');
+  assert.equal(await page.locator('.launch-emblem h1').textContent(),'学んだぶんだけ、強くなる。');
   await page.locator('.launch-start').click();
   await page.locator('.launch-announcement').waitFor();
   assert.match(await page.locator('.launch-countdown').innerText(),/共通テストまで.*日/s);

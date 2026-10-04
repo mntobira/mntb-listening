@@ -263,3 +263,13 @@
 /* 「相手は回答ずみ！」は進捗の行の真ん中。狭い幅では短い言い方だけ */
 .bq-progress-notice p { margin: 0; }
 @media (max-width: 380px) { .bq-notice-long { display: none; } }
+/* 2026-10-04：PCの STUDY DESK 下部（「学習記録を見る」）が見切れていた。中身を上から並べ、高さが足りないときは
+   進捗の補足を先に削って、ボタンは必ず見せる */
+@media (min-width: 1100px) {
+  .game-home .desktop-study-summary { justify-content: flex-start !important; overflow: visible !important; height: auto !important; align-self: start !important; }
+  .game-home .desktop-study-summary > button { flex-shrink: 0; }
+}
+@media (min-width: 1100px) and (max-height: 900px) {
+  .game-home .desktop-study-summary .study-next { display: none; }
+  .game-home .desktop-study-summary > p:first-child { display: none; }
+}

@@ -195,7 +195,7 @@ function getChapterGroups(subject: string): ReturnType<typeof buildChapterGroups
   return built;
 }
 
-const GRAMMAR_PART_LABEL: Record<string, string> = { eg_grammar: '文法の幹', eg_usage: '語法', eg_expression: 'イディオム・表現' };
+const GRAMMAR_PART_LABEL: Record<string, string> = { eg_grammar: '文法の幹', eg_usage: '語法', eg_expression: '会話表現' };
 let grammarPartGroups: ReturnType<typeof buildChapterGroups> | null = null;
 function getGrammarPartGroups(): ReturnType<typeof buildChapterGroups> {
   if (grammarPartGroups) return grammarPartGroups;
@@ -309,7 +309,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
       const parts = getPartsOfSubject('chemistry').filter((p: any) => !field || p.field === field);
       return buildChapterGroups(parts);
     }
-    // ★英文法は「PART（文法の幹／語法／イディオム・表現）」の3タブ★
+    // ★英文法は「PART（文法の幹／語法／会話表現）」の3タブ★
     //   章見出し（1章〜12章）でタブを作ると、1〜2単元しかないタブが12枚並び、
     //   スマホでは横スクロールしないと先が見えなかった。3タブにすると1画面で全体が見渡せる。
     if (isGrammar) return getGrammarPartGroups();
