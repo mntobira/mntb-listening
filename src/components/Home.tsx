@@ -1,7 +1,9 @@
 import './home-legibility.css';
 import './home-pillars.css';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { ChevronRight, Edit3, BarChart3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Trophy, Store, Shirt, Award, Target, Zap } from 'lucide-react';
+import { ChevronRight, Edit3, BarChart3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Trophy, Store, Shirt, Award, Target, Zap, BookHeart } from 'lucide-react';
+import { createPortal } from 'react-dom';
+const PhilosophyPage = React.lazy(() => import('./PhilosophyPage').then(m => ({ default: m.PhilosophyPage })));
 import { auth } from '../firebase';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc, equippedFrameColor, equippedFramePattern, levelOf, equippedTitleLabel } from '../battle/core/growth';
@@ -162,6 +164,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
   // ===== お知らせ（更新履歴）=====
   // 未読件数は localStorage を見るだけなので同期的に初期化できる。
   // モーダルを閉じたときに 0 件へ更新してバッジを消す。
+  const [showPhilosophy, setShowPhilosophy] = useState(false);
   const [showNotices, setShowNotices] = useState(false);
   const progressDialog = useRef<HTMLDialogElement>(null);
   const [unreadCount, setUnreadCount] = useState(() => unreadNoticeCount());
@@ -410,11 +413,13 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         </button>
           {onGrowth && <button type="button" className="home-rush-card" onClick={() => onGrowth('rush')} aria-label="マナラッシュ（60秒チャレンジ）を開く" data-home-rush><Zap size={20} /><span><strong>マナラッシュ</strong><small>60秒チャレンジ</small></span></button>}
         </section>
-        <div className="game-home-utility arena-home-bottom">
+        <div className="game-home-utility arena-home-bottom has-four">
           {onGrowth && <button type="button" onClick={() => onGrowth('missions')}><Target size={17} />ミッション</button>}
           {/* 「学習状況」はやめ、直近3日の「学習記録」（どの問題をやって、どこを間違えたか）へ。マイページの学習記録と同じ画面 */}
           <button type="button" onClick={() => (onGrowth ? onGrowth('stats') : progressDialog.current?.showModal())} data-home-record><BarChart3 size={17} />学習記録</button>
           <button type="button" aria-label="アプリ紹介を開く" onClick={onIntro}><ShieldCheck size={17} />使い方</button>
+          {/* ★開発者の想い「学びの扉」をホームからも（2026-10-05 ご要望「もう少し見やすいところに」）★ タイトル画面だけだと一度しか目に入らない */}
+          <button type="button" className="home-philosophy-entry" onClick={() => setShowPhilosophy(true)} aria-label="学びの扉（開発者の想い）を読む" data-open-philosophy><BookHeart size={17} />学びの扉</button>
         </div>
         <section className="desktop-study-summary" aria-label="今日の学習状況">
           <p>STUDY DESK</p><h2>今日の積み重ね</h2>
@@ -438,6 +443,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           {isGuest && !auth.currentUser && <GoogleLinkBanner variant="inline" dismissible />}
         </div>
       </dialog>
+      {showPhilosophy && createPortal(<React.Suspense fallback={null}><PhilosophyPage onBack={() => setShowPhilosophy(false)} backLabel="ホームへ" /></React.Suspense>, document.body)}
       {showNotices && <UpdateNoticeModal onClose={() => { setShowNotices(false); setUnreadCount(unreadNoticeCount()); }} />}
     </div>
   );

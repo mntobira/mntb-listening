@@ -31,11 +31,21 @@ function releaseCsp(enabled: boolean): Plugin {
   };
 }
 
+/**
+ * 宣伝用ページ（/message）の OGP は絶対URLが要るので、公開URLを VITE_SITE_URL で渡す（2026-10-05）。
+ * 未設定のときは Vercel が自動で入れる本番URL（VERCEL_PROJECT_PRODUCTION_URL）→ それも無ければ相対パス。
+ */
+function siteUrl(env: Record<string, string>): Plugin {
+  const fromVercel = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '';
+  const url = (env.VITE_SITE_URL || fromVercel).replace(/\/$/, '');
+  return { name: 'site-url', transformIndexHtml: html => html.replaceAll('%SITE_URL%', url) };
+}
+
 export default defineConfig(({mode}) => {
  const env = loadEnv(mode, process.cwd(), 'VITE_');
  const release = Boolean(env.VITE_FIREBASE_API_KEY) && env.VITE_USE_EMULATORS !== 'true';
  return {
-  plugins: [react(), tailwindcss(), releaseCsp(release)],
+  plugins: [react(), tailwindcss(), releaseCsp(release), siteUrl(env)],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
@@ -70,6 +80,8 @@ export default defineConfig(({mode}) => {
      */
     reportCompressedSize: false,
     rollupOptions: {
+      // ★入口は2つ★ アプリ本体（/）と、宣伝用の理念ページ（/message・アプリ本体を読み込まない軽いページ）
+      input: { main: path.resolve(__dirname, 'index.html'), message: path.resolve(__dirname, 'message/index.html') },
       // A successful build with a circular chunk can still crash before React mounts.
       // Reject that artifact instead of shipping another blank startup screen.
       onwarn(warning, warn) {
@@ -287,6 +299,8 @@ export default defineConfig(({mode}) => {
            *   ★入ってくる辺・出ていく辺の両方を数えて判断すること。★
            */
           if (id.includes('/src/data/subjectLabels')) return undefined;
+          // 理念の文章は宣伝用ページ（/message）からも読むので、1MB の data チャンクに入れない（2026-10-05）
+          if (id.includes('/src/data/philosophy')) return undefined;
 
           /*
            * ★まとめプリントのデータは data チャンクから切り離す★

@@ -7,6 +7,8 @@ import { useBattleAudioSettings } from '../battle/hooks/useBattleAudio';
 import { battleAudio } from '../battle/audio/battleAudio';
 import { FriendPanel } from './FriendPanel';
 import { ClassPanel } from './ClassPanel';
+import { ComingSoon } from './ComingSoon';
+import { SOCIAL_FEATURES } from '../config/features';
 import { DoorMascot } from './DoorMascot';
 import { GoogleMark } from './GoogleLinkBanner';
 import { AppleSignInButton } from '../features/auth/AppleSignInButton';
@@ -212,14 +214,16 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
           <button aria-pressed={tab === 'friends'} onClick={() => setTab('friends')} disabled={!auth.currentUser} type="button">
             <Users size={14} /> フレンド
           </button>
-          <button aria-pressed={tab === 'class'} onClick={() => setTab('class')} disabled={!auth.currentUser} type="button">
-            <School size={14} /> クラス
+          <button aria-pressed={tab === 'class'} onClick={() => setTab('class')} disabled={SOCIAL_FEATURES.classroom && !auth.currentUser} type="button">
+            <School size={14} /> クラス{!SOCIAL_FEATURES.classroom && <span className="soon-tag">準備中</span>}
           </button>
         </div>
 
         <main className="relative z-10 flex-1 min-h-0">
           {tab === 'friends' && auth.currentUser ? (
             <FriendPanel />
+          ) : tab === 'class' && !SOCIAL_FEATURES.classroom ? (
+            <ComingSoon title="クラス">先生が作ったクラスに参加して、課題や進み具合を共有できるようになります。もうすぐ公開します。</ComingSoon>
           ) : tab === 'class' && auth.currentUser ? (
             <div className="h-full overflow-y-auto no-scrollbar pb-4">
               <ClassPanel defaultDisplayName={name} />

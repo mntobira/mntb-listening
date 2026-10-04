@@ -25,7 +25,7 @@ export const PRESETS = [
   { id: 'common', label: '共通6〜8割', full: '共通テスト6〜8割を目標に', levels: ['lv1', 'lv2', 'ilv1'] },
   { id: 'national', label: '2次試験', full: '2次試験レベル', levels: ['lv1', 'lv2', 'lv3', 'ilv1', 'ilv2'] },
   { id: 'private', label: '2次＋追加', full: '2次試験の追加語彙まで', levels: Object.keys(VOCAB_LEVELS) },
-  { id: 'custom', label: '志望校別', full: '志望校別', levels: null },
+  { id: 'custom', label: '志望校別', full: '志望校別（レベルを選ぶ）', levels: null },
 ] as const;
 export type PresetId = typeof PRESETS[number]['id'];
 const PREF_KEY = VOCAB_PREF_KEY;
@@ -108,12 +108,13 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
     return () => { alive = false; controller.abort(); };
   }, [data, retry]);
 
-  const levels = useMemo(() => new Set<string>(PRESETS.find(x => x.id === prefs.preset)!.levels ?? prefs.custom), [prefs]);
+  // 「志望校別」は全レベルを並べ、覚えたいレベルを押して選ぶ（チェックボックスで先に選ばせない・2026-10-05）
+  const levels = useMemo(() => new Set<string>(PRESETS.find(x => x.id === prefs.preset)!.levels ?? Object.keys(VOCAB_LEVELS)), [prefs]);
   const countByPreset = useMemo(() => {
     const byLevel: Record<string, number> = {};
     for (const w of data?.words ?? []) byLevel[w.level] = (byLevel[w.level] ?? 0) + 1;
-    return Object.fromEntries(PRESETS.map(p => [p.id, ((p.levels ?? prefs.custom) as readonly string[]).reduce((n, l) => n + (byLevel[l] ?? 0), 0)]));
-  }, [data, prefs.custom]);
+    return Object.fromEntries(PRESETS.map(p => [p.id, ((p.levels ?? Object.keys(VOCAB_LEVELS)) as readonly string[]).reduce((n, l) => n + (byLevel[l] ?? 0), 0)]));
+  }, [data]);
   const needle = query.normalize('NFKC').toLowerCase().trim();
   const searching = needle.length > 0;
   /** 検索・絞り込み（「まだ覚えていない語だけ」以外）を通した語。章の区切りはこれで決めるので、覚えても章がずれない */
@@ -151,63 +152,56 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
     {loadError ? <>{loadError}<button type="button" onClick={() => setRetry(n => n + 1)}>もう一度読み込む</button></> : '単語・熟語を読み込んでいます…'}
   </section>;
 
-  const levelTotals = (ids: readonly string[]) => {
-    const all = (data.words ?? []).filter(w => ids.includes(w.level));
-    return { total: all.length, learned: all.reduce((n, w) => n + (known.has(w.id) ? 1 : 0), 0) };
-  };
   const presetNow = PRESETS.find(x => x.id === prefs.preset)!;
   /* ★2つの画面に分ける（2026-10-05 ご指摘「これじゃあ単語勉強できない」）★
        ① 絞る画面 … 目標・レベル・条件・検索をここで全部決める（単語は出さない）
        ② 学ぶ画面 … 単語だけ。上は「‹ 絞り込む」と今の範囲の1行、下は100語ずつめくるだけ
      絞り込みを単語帳の上に積むと単語が1〜2語しか見えなくなるので、同じ画面に置かない。 */
   if (stage === 'range') {
-    const startLabel = searching ? `「${query.trim()}」の検索結果を見る（${base.length.toLocaleString()}語）`
-      : curLevel ? `${curLevel.label}を覚える（${curLevel.ids.length.toLocaleString()}語）` : 'この範囲で覚える';
-    return <section className="fd-panel fd-words fd-range" aria-label="覚える単語を絞る" data-fd-range>
+    /* ★2026-10-05 ご指摘「ボタン多すぎてわかんない・飽きる」★
+         ① 目標は小さな4つの切り替え（1行〜2行）
+         ② その目標のレベルが「押したらすぐ覚え始める」大きな行で並ぶ（開始ボタンを別に置かない）
+         ③ 条件・検索・注意書きは「条件をつける」の中に畳む */
+    const go = (id?: string) => { stopSpeech(); if (id) pickLevel(id); setStage('book'); };
+    const condCount = [listenOnly, unlearned, !!chapter].filter(Boolean).length;
+    return <section className="fd-panel fd-words fd-range fd-range-simple" aria-label="覚える単語を選ぶ" data-fd-range>
       <div className="fd-range-scroll">
-        <header className="fd-range-head"><h2>覚える単語を絞る</h2><p>目標とレベルを選んで「覚える」を押すと、単語だけの画面になります。</p></header>
-        <fieldset className="fd-range-step"><legend><b>1</b>目標</legend>
-          <div className="fd-range-list" role="radiogroup" aria-label="目標">
-            {PRESETS.map(p => {
-              const lv = (p.levels ?? prefs.custom) as readonly string[];
-              const t = levelTotals(lv);
-              const pct = t.total ? Math.round(t.learned / t.total * 100) : 0;
-              return <button key={p.id} type="button" role="radio" aria-checked={prefs.preset === p.id} data-fd-range-pick={p.id}
-                onClick={() => { setPrefs(v => ({ ...v, preset: p.id })); setLevel(''); resetList(); }}>
-                <span className="fd-range-title"><strong>{p.full}</strong><small>{(countByPreset[p.id] ?? 0).toLocaleString()}語{p.id === 'custom' ? '・レベルを自分で選ぶ' : ''}・覚えた{pct}%</small></span>
-                <span className="fd-range-meter" aria-hidden="true"><i style={{ width: `${pct}%` }} /></span>
-              </button>;
-            })}
-          </div>
-          {prefs.preset === 'custom' && <div className="fd-level-grid fd-range-custom" role="group" aria-label="志望校のレベル">
-            {Object.entries(VOCAB_LEVELS).map(([id, label]) => <label key={id} className="fd-check"><input type="checkbox" checked={prefs.custom.includes(id)}
-              onChange={e => { const on = e.target.checked; setPrefs(v => { const s2 = new Set(v.custom); if (on) s2.add(id); else s2.delete(id); return { ...v, custom: s2.size ? [...s2] : [id] }; }); resetList(); }} />{label}</label>)}
-          </div>}
-        </fieldset>
-        {levelList.length > 0 && <fieldset className="fd-range-step"><legend><b>2</b>いま覚えるレベル</legend>
-          <div className="fd-range-levels" role="radiogroup" aria-label="レベル" data-fd-levels>
-            {levelList.map(l => <button key={l.id} type="button" role="radio" aria-checked={curLevel?.id === l.id} onClick={() => pickLevel(l.id)}>
-              <span>{l.label}</span><small>覚えた {l.learned.toLocaleString()} / {l.ids.length.toLocaleString()}</small>
-              <i aria-hidden="true" style={{ ['--p' as string]: `${Math.round(l.learned / l.ids.length * 100)}%` }} />
-            </button>)}
-          </div>
-        </fieldset>}
-        <fieldset className="fd-range-step"><legend><b>3</b>条件（なくてもよい）</legend>
+        <div className="fd-goal-seg" role="radiogroup" aria-label="目標" data-fd-goals>
+          {PRESETS.map(p => <button key={p.id} type="button" role="radio" aria-checked={prefs.preset === p.id} data-fd-range-pick={p.id}
+            onClick={() => { setPrefs(v => ({ ...v, preset: p.id })); setLevel(''); resetList(); }}>{p.label}</button>)}
+        </div>
+        <p className="fd-goal-now"><strong>{presetNow.full}</strong><span>{(countByPreset[presetNow.id] ?? 0).toLocaleString()}語{prefs.preset === 'custom' ? '・覚えたいレベルを選んでね' : ''}</span></p>
+        {searching
+          ? <button type="button" className="fd-level-go is-search" data-fd-start disabled={base.length === 0} onClick={() => go()}>
+              <Search size={20} aria-hidden="true" /><span><strong>「{query.trim()}」の検索結果</strong><small>{base.length.toLocaleString()}語</small></span><ChevronRight size={20} aria-hidden="true" />
+            </button>
+          : levelList.length === 0
+            ? <p className="fd-empty" role="status">条件に合う語がありません。「条件をつける」を見直してください。</p>
+            : <ul className="fd-level-list" aria-label="押すと覚え始める" data-fd-levels>
+              {levelList.map(l => {
+                const pct = Math.round(l.learned / l.ids.length * 100);
+                const [kind, name] = l.label.split('・');
+                return <li key={l.id}><button type="button" className="fd-level-go" data-fd-start={l.id} data-current={curLevel?.id === l.id || undefined} onClick={() => go(l.id)}>
+                  <span className="fd-level-kind" data-kind={kind === '熟語' ? 'idiom' : 'word'}>{kind}</span>
+                  <span className="fd-level-body"><strong>{name ?? l.label}</strong>
+                    <small>{l.ids.length.toLocaleString()}語・覚えた {pct}%</small>
+                    <i aria-hidden="true"><b style={{ width: `${pct}%` }} /></i></span>
+                  <Play size={18} aria-hidden="true" />
+                </button></li>;
+              })}
+            </ul>}
+        <details className="fd-cond-more" data-fd-conds>
+          <summary><SlidersHorizontal size={16} aria-hidden="true" />条件をつける・さがす{condCount + (searching ? 1 : 0) > 0 && <b>{condCount + (searching ? 1 : 0)}</b>}<ChevronDown size={16} aria-hidden="true" /></summary>
           <div className="fd-range-conds">
+            <label className="fd-search"><Search size={17} aria-hidden="true" /><input type="search" aria-label="英語・日本語で検索" placeholder="単語をさがす（英語・日本語）" value={query} onChange={e => { setQuery(e.target.value); resetList(); }} /></label>
             <label className="fd-check"><input type="checkbox" checked={listenOnly} onChange={e => { setListenOnly(e.target.checked); resetList(); }} /><Headphones size={15} aria-hidden="true" />リスニングに出る語だけ</label>
             <label className="fd-check"><input type="checkbox" checked={unlearned} onChange={e => { setUnlearned(e.target.checked); resetList(); }} />まだ覚えていない語だけ</label>
             <label className="fd-select">大問で探す<span><select aria-label="対応するリスニング大問" value={chapter} onChange={e => { setChapter(e.target.value); resetList(); }}>
               <option value="">すべての大問</option>{data.chapters.map(c => <option key={c.id} value={c.id}>{c.title}に登場</option>)}
             </select><ChevronDown size={16} aria-hidden="true" /></span></label>
-            <label className="fd-search"><Search size={17} aria-hidden="true" /><input type="search" aria-label="英語・日本語で検索" placeholder="単語をさがす（英語・日本語）" value={query} onChange={e => { setQuery(e.target.value); resetList(); }} /></label>
+            <p className="fd-goal-guide">目標は目安です。得点や志望校の出題範囲を保証するものではありません。</p>
           </div>
-        </fieldset>
-        <p className="fd-goal-guide">目標の目安です。得点や志望校の出題範囲を保証するものではありません。</p>
-      </div>
-      <div className="fd-range-start">
-        <button type="button" className="fd-range-go-btn" data-fd-start disabled={base.length === 0} onClick={() => { stopSpeech(); setStage('book'); }}>
-          <Play size={18} aria-hidden="true" />{base.length === 0 ? '条件に合う語がありません' : startLabel}
-        </button>
+        </details>
       </div>
     </section>;
   }
@@ -215,7 +209,7 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
   const condTags = [listenOnly && 'リスニング', unlearned && '未習得のみ', chapter && (data.chapters.find(c => c.id === chapter)?.title ?? ''), searching && `「${query.trim()}」`].filter(Boolean) as string[];
   return <section className="fd-panel fd-words fd-book" aria-label="単語を覚える" data-fd-book>
     <div className="fd-book-head">
-      <button type="button" className="fd-range-back" onClick={() => { stopSpeech(); setStage('range'); }} data-fd-range-back><SlidersHorizontal size={15} aria-hidden="true" />絞り込む</button>
+      <button type="button" className="fd-range-back" onClick={() => { stopSpeech(); setStage('range'); }} data-fd-range-back><ChevronLeft size={15} aria-hidden="true" />えらび直す</button>
       <span className="fd-book-title"><strong>{searching ? '検索結果' : curLevel?.label ?? presetNow.full}</strong>
         <small>{condTags.length ? condTags.join('・') : presetNow.full}</small></span>
       <span className="fd-book-count" data-fd-chapter>{searching || !curChapter ? `${filtered.length.toLocaleString()}語` : <>覚えた <b>{curChapter.learned}</b>/{curChapter.ids.length}</>}</span>

@@ -1,0 +1,11 @@
+/* バナー広告の枠（2026-10-05）。既定は 0px なので、広告 OFF の間は見た目が一切変わらない */
+:root { --ad-top-h: 0px; --ad-bottom-h: 0px; }
+.ad-banner-slot { position: fixed; left: 0; right: 0; z-index: 90; pointer-events: none; background: transparent; }
+.ad-banner-slot.is-top { top: var(--app-safe-top, 0px); height: var(--ad-top-h); }
+.ad-banner-slot.is-bottom { bottom: var(--app-safe-bottom, 0px); height: var(--ad-bottom-h); }
+/* バナーが有効なときだけ効く（data-ad-banner は AdBannerSlot が付ける）。
+   下のナビをバナーの上へ持ち上げ、各画面の基準 --app-nav-h にバナーの高さを足す → 画面は自動で詰まる。 */
+:root[data-ad-banner] .app-shell { padding-top: calc(var(--app-safe-top, 0px) + var(--ad-top-h)); }
+:root[data-ad-banner] .app-bottom-nav { bottom: var(--ad-bottom-h) !important; padding-bottom: .9rem !important; }
+:root[data-ad-banner] .ad-banner-slot.is-bottom { bottom: 0; height: calc(var(--ad-bottom-h) + var(--app-safe-bottom, 0px)); }
+@media (min-width: 1024px) { :root[data-ad-banner] .app-bottom-nav { bottom: 0 !important; } :root[data-ad-banner] .app-shell { padding-bottom: var(--ad-bottom-h); } }

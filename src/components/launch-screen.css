@@ -107,4 +107,4 @@
 .launch-announcement p.launch-announcement-latest { font-weight:700; color:#3a4a59; }
 
 /* タイトル画面 → 「学びの扉」（理念）ページへの入口。主CTAの邪魔をしない文字リンク */
-.launch-philosophy { display: inline-flex; align-items: center; gap: 6px; min-height: var(--mt-tap); padding: 0 var(--mt-s3); border: 0; background: none; color: #8a5a3c; font: 400 15px/1.2 var(--font-handwriting); text-decoration: underline; text-decoration-color: #e0b98f; text-underline-offset: 4px; }
+.launch-philosophy { display: inline-flex; align-items: center; gap: 8px; min-height: var(--mt-tap); margin-top: 4px; padding: 0 18px; border: 1px solid #e3c49a; border-radius: 999px; background: linear-gradient(135deg, #fff3e0, #e9f1fb); color: #6e4019; font: 700 14px/1.2 'Shippori Mincho', 'Hiragino Mincho ProN', serif; letter-spacing: .06em; box-shadow: 0 2px 0 #e8d3b2; }
