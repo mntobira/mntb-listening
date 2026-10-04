@@ -66,43 +66,28 @@ import {
   Coins,
   Target,
   Bot,
-  Clock,
-  Eye,
-  EyeOff,
   History,
   LogIn,
-  Shuffle,
   Swords,
-  TrendingUp,
   Trophy,
   UserRound,
   Users,
   Wifi,
-  X,
   Zap,
   Volume2,
   VolumeX,
+  Shield,
 } from 'lucide-react';
 import { useBattleAudioSettings } from '../hooks/useBattleAudio';
-import type { CSSProperties, ReactNode } from 'react';
 import { auth } from '../../firebase';
 import { FriendOnlineStrip } from '../../components/FriendOnlineStrip';
 import { ConnectionCheckPanel } from './ConnectionCheckPanel';
 import { TobiraBuddy } from '../../components/TobiraBuddy';
 import { useGrowthProgress } from '../../hooks/useGrowthProgress';
 import { GrowthAvatar } from './GrowthParts';
-import { GrowthHomeStrip } from './GrowthHomeStrip';
 import {
-  AMBER,
-  BattleButton,
-  BattleLoading,
   BattleNotice,
   BattleShell,
-  BattleTitle,
-  GOLD,
-  INK,
-  INK_SUB,
-  LINE,
 } from './BattleParts';
 import { fetchMyRankingRow, ratingProgress, ratingTitle } from '../data/battleRanking';
 import type { BattleRankingRow } from '../data/battleRanking';
@@ -113,160 +98,11 @@ export type BattleHomeChoice =
   | 'national'
   | 'ai'
   | 'ranking'
+  | 'clan'
   | 'history'
   | 'profile'
   | 'missions';
 
-/**
- * モードカードに並べる4項目。
- *
- * ★両モードで「同じ項目・同じ順番」にすることが仕様★
- * 片方だけ項目が多い／順番が違うと、読み手は差分を探すために
- * 2つのカードを行き来しなければならない。位置を揃えれば、
- * 目を横に動かすだけで違いが分かる。
- */
-interface ModeFact {
-  icon: ReactNode;
-  /** 項目名（両モード共通の見出し） */
-  key: string;
-  /** そのモードでの値 */
-  value: string;
-  /** 値を強調するか（そのモードの「売り」なら true） */
-  strong?: boolean;
-}
-
-const FRIEND_FACTS: ModeFact[] = [
-  { icon: <UserRound size={13} />, key: 'あいて', value: '合言葉を教えた人', strong: true },
-  { icon: <Clock size={13} />, key: 'まちじかん', value: 'なし（すぐ始まる）', strong: true },
-  { icon: <TrendingUp size={13} />, key: 'レート', value: 'うごく' },
-  { icon: <Eye size={13} />, key: 'なまえ', value: 'おたがいに見える' },
-];
-
-const NATIONAL_FACTS: ModeFact[] = [
-  { icon: <Shuffle size={13} />, key: 'あいて', value: '近いレートの知らない人', strong: true },
-  { icon: <Clock size={13} />, key: 'まちじかん', value: 'あり（数十秒〜数分）' },
-  { icon: <TrendingUp size={13} />, key: 'レート', value: 'うごく' },
-  { icon: <EyeOff size={13} />, key: 'なまえ', value: 'かくれる（マ＊＊＊）', strong: true },
-];
-
-/**
- * AI 対戦。
- * ★「まちじかん なし」と「レート うごかない」を強調する★
- * 全国対戦で待たされた人の受け皿がこれ。待たないことが売りで、
- * その代わりレートは動かない（動いたら全国で戦う理由が無くなる）。
- */
-const AI_FACTS: ModeFact[] = [
-  { icon: <Bot size={13} />, key: 'あいて', value: 'AI（強さを4段階からえらぶ）', strong: true },
-  { icon: <Clock size={13} />, key: 'まちじかん', value: 'なし（すぐ始まる）', strong: true },
-  { icon: <TrendingUp size={13} />, key: 'レート', value: 'うごかない（練習用）' },
-  { icon: <Eye size={13} />, key: 'なまえ', value: 'AIには見えない' },
-];
-
-/**
- * モードカード。
- *
- * ★カード全体をボタンにしていない理由★
- * フレンド対戦には「つくる」と「入る」の2つの動作がある。
- * カードごとタップにすると、どちらに進むのか決められない。
- * カードは「説明の器」、動作は中のボタンに限定する。
- */
-function ModeCard({
-  kind,
-  badge,
-  title,
-  lead,
-  facts,
-  accent,
-  facePaint,
-  children,
-  delay,
-}: {
-  kind: 'friend' | 'national' | 'ai';
-  /** 「おすすめ」などの札。無い場合は出さない */
-  badge?: string;
-  title: string;
-  /** カードの一行目。「何をする機能か」を1文で */
-  lead: string;
-  facts: ModeFact[];
-  /** カードの主色 */
-  accent: string;
-  /** 見出し行のアイコン */
-  facePaint: ReactNode;
-  /** 動作ボタン */
-  children: ReactNode;
-  /** 立ち上がりの遅延（上から順に出す） */
-  delay: string;
-}) {
-  return (
-    <section
-      className={`lobby-mode lobby-mode-${kind} battle-card-in rounded-3xl border-2 p-4`}
-      data-battle-mode={kind}
-      style={
-        {
-          borderColor: `${accent}66`,
-          background: '#FFFFFF',
-          boxShadow: `0 6px 0 ${accent}22`,
-          '--mode-accent': accent,
-          '--card-delay': delay,
-          '--sheen-delay': delay,
-        } as CSSProperties
-      }
-    >
-      {/* 見出し */}
-      <header className="relative z-[2] mb-2 flex items-center gap-2">
-        <span
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl"
-          style={{ background: `${accent}1F`, color: accent }}
-        >
-          {facePaint}
-        </span>
-        <h2 className="font-handwriting text-xl font-black" style={{ color: INK }}>
-          {title}
-        </h2>
-        {badge && (
-          <span
-            className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-xs font-black"
-            style={{ background: GOLD, color: INK }}
-          >
-            {badge}
-          </span>
-        )}
-      </header>
-
-      <p className="lobby-mode-caption">{kind === 'friend' ? '合言葉で、友だちと1対1。' : kind === 'national' ? '全国のライバルに挑もう。' : '待たずに、腕だめし。'}</p>
-      <div className="lobby-mode-tags"><span>{kind === 'ai' ? '強さは4段階' : 'レート変動あり'}</span><span>{kind === 'national' ? '近いレートでマッチ' : kind === 'friend' ? 'フレンド登録不要' : 'レート変動なし'}</span></div>
-      <div className="lobby-mode-actions">{children}</div>
-      <details className="lobby-mode-details">
-        <summary>ルール・相手の表示を確認</summary>
-        <p className="text-xs leading-relaxed mb-3" style={{ color: INK_SUB }}>{lead}</p>
-      {/* ★4項目の対比表★ 両モードで同じ位置・同じ順番 */}
-      <dl
-        className="relative z-[2] mb-3.5 grid gap-1 rounded-2xl px-3 py-2.5"
-        style={{ background: '#FAF8F3', border: `1px solid ${LINE}` }}
-      >
-        {facts.map((f) => (
-          <div key={f.key} className="flex items-baseline gap-2 text-xs">
-            <dt
-              className="flex w-[5.6rem] shrink-0 items-center gap-1 font-black"
-              style={{ color: INK_SUB }}
-            >
-              <span style={{ color: accent }}>{f.icon}</span>
-              {f.key}
-            </dt>
-            <dd
-              className="min-w-0 font-bold"
-              style={{ color: f.strong ? accent : INK }}
-            >
-              {f.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
-
-      </details>
-    </section>
-  );
-}
 
 /**
  * ★市販の対戦ゲームにならった「ランク帯」（2026-09-28）★
@@ -330,7 +166,7 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
      <span className="arena-lobby-cta">はじめる<Swords size={16} aria-hidden="true"/></span>
     </button>
     <div className="arena-lobby-card arena-lobby-side arena-lobby-friend" data-battle-mode="friend" data-tone="friend">
-     <span className="arena-lobby-icon"><Users aria-hidden="true"/></span><strong>フレンド</strong><small>合言葉で1対1</small>
+     <span className="arena-lobby-icon"><Users aria-hidden="true"/></span><strong>フレンド</strong><small>フレンドどうし・1対1</small>
      <div className="arena-lobby-actions">
       <button type="button" onClick={()=>user?onChoose('friend-create'):onRequireLogin?.()}>部屋をつくる</button>
       <button type="button" onClick={()=>user?onChoose('friend-join'):onRequireLogin?.()}>合言葉で入る</button>
@@ -347,7 +183,7 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
    {/* B13 サブ機能はメインの3択の下に「その他」としてまとめる（機能は削らない） */}
    <nav className="arena-lobby-sub" aria-label="その他の機能">
    <p className="arena-lobby-label" aria-hidden="true">その他</p>
-   <div className="arena-menu-links"><button type="button" onClick={()=>onChoose('history')}><History size={16}/>対戦履歴</button>{user && <FriendOnlineStrip/>}</div>
+   <div className="arena-menu-links"><button type="button" onClick={()=>onChoose('history')}><History size={16}/>対戦履歴</button><button type="button" onClick={()=>onChoose('clan')}><Shield size={16}/>マナクラン</button>{user && <FriendOnlineStrip/>}</div>
    <div className="arena-lobby-help">
    <details className="arena-rules-help arena-connection-help"><summary><Activity size={14} aria-hidden="true"/>つながらないとき</summary><ConnectionCheckPanel compact/></details>
    <details className="arena-rules-help"><summary><BookOpen size={14} aria-hidden="true"/>配点と対戦ルール</summary><p>正解のみ加点。速さ点は残り時間の割合rに対して240×(0.7r²+0.3r³)。500ms単位に丸めます。3連続以上に小さな連続点。旧ルームでは作成時の配点を使用します。フレンドもお互い更新してから遊んでください。</p></details>

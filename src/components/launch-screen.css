@@ -104,3 +104,4 @@
 .launch-screen { animation: launch-title-in .8s ease both; }
 @keyframes launch-title-in { from { opacity:0; } to { opacity:1; } }
 @media (prefers-reduced-motion: reduce) { .launch-emblem-inner, .launch-screen { transition:none; animation:none; transform:none; } .launch-emblem[data-phase="hold"] .launch-emblem-inner { opacity:1; } }
+.launch-announcement p.launch-announcement-latest { font-weight:700; color:#3a4a59; }

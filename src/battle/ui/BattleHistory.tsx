@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Minus, TrendingDown, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Minus, Swords, TrendingDown, TrendingUp } from 'lucide-react';
 import { labelOfSubject } from '../../data/subjectLabels';
 import { subjectTheme } from '../../data/subjectTheme';
 import type { SubjectKey } from '../../data/allChapters';
@@ -73,7 +73,7 @@ function formatDate(value: BattleHistoryItem['playedAt']): string {
   ).padStart(2, '0')}`;
 }
 
-export function BattleHistory({ onBack }: { onBack: () => void }) {
+export function BattleHistory({ onBack, onRetryWrong, onStartAi }: { onBack: () => void; onRetryWrong?: (subject: string, ids: string[]) => void; onStartAi?: () => void }) {
   const [items, setItems] = useState<BattleHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -107,14 +107,22 @@ export function BattleHistory({ onBack }: { onBack: () => void }) {
       {loading ? (
         <BattleLoading message="履歴を読みこんでいます…" />
       ) : items.length === 0 ? (
-        <p
-          className="py-12 text-center text-xs font-bold leading-relaxed"
-          style={{ color: INK_SUB }}
-        >
-          まだ対戦していません。
-          <br />
-          合言葉で友達と1戦してみましょう。
-        </p>
+        <div className="grid justify-items-center gap-3 py-10 text-center" data-history-empty>
+          <span className="grid h-14 w-14 place-items-center rounded-full" style={{ background: '#fff4dc', color: '#b07a1e' }} aria-hidden="true">
+            <Swords size={26} />
+          </span>
+          <p className="text-sm font-black" style={{ color: INK_SUB }}>まだ対戦の記録がありません</p>
+          <p className="text-xs font-bold leading-relaxed" style={{ color: INK_SUB }}>
+            フレンド・全国対戦の結果がここに残ります。
+            <br />
+            まずはAIと1戦して、腕だめししてみよう。
+          </p>
+          {onStartAi && (
+            <BattleButton onClick={onStartAi} icon={<Swords size={18} />}>
+              AIと対戦する
+            </BattleButton>
+          )}
+        </div>
       ) : (
         <ul className="grid gap-1.5">
           {items.map((item) => {
@@ -124,8 +132,8 @@ export function BattleHistory({ onBack }: { onBack: () => void }) {
             const applied = item.ratingBefore > 0 || item.ratingAfter > 0;
 
             return (
-              <li
-                key={item.roomId}
+              <li key={item.roomId} className="grid gap-1.5">
+              <div
                 className="flex items-center gap-2.5 rounded-2xl border-2 px-3 py-2.5"
                 style={{
                   borderColor: `${conf.color}44`,
@@ -189,6 +197,15 @@ export function BattleHistory({ onBack }: { onBack: () => void }) {
                     未反映
                   </span>
                 )}
+              </div>
+              {onRetryWrong && (item.wrongIds?.length ?? 0) > 0 && (
+                <button type="button" data-history-retry={item.roomId}
+                  onClick={() => onRetryWrong(item.subject, item.wrongIds!)}
+                  className="flex min-h-11 items-center justify-center gap-1.5 rounded-xl border-2 px-3 text-xs font-black"
+                  style={{ borderColor: `${AMBER}66`, background: '#FFFBEF', color: AMBER }}>
+                  <Swords size={14} aria-hidden />間違えた{item.wrongIds!.length}問だけ再対戦（AI）
+                </button>
+              )}
               </li>
             );
           })}

@@ -30,3 +30,5 @@
   .game-home .game-home-viewport > .arena-friends { display: none; }
 }
 .game-home .game-hud-label { font-style: normal; }
+/* 2026-10-04：左上は「ランキング」（5文字）。折り返すと下の「ショップ」に重なるので1行に収める */
+.game-home .game-stage-shortcuts .stage-gacha span { white-space: nowrap; letter-spacing: -.06em; }

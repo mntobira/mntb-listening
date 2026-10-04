@@ -149,8 +149,6 @@ function buildQ4A(set: Q4Set): ListeningProblem {
   const front = set.partA.front;
   const back = set.partA.back;
   const frontId = `q_el4_A_set${no}_front`;
-  const backId = `q_el4_A_set${no}_back`;
-
   const frontSubIds = front.blanks.map((b) => `q_el4_A_set${no}_${b.no}`);
   const backSubIds = back.blanks.map((b) => `q_el4_A_set${no}_${b.no}`);
 

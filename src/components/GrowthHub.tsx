@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Coins, Gift, Trophy, Award, Target, BarChart3, Zap, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Coins, Award, Target, BarChart3, Zap, ChevronRight } from 'lucide-react';
 import { itemById, equippedTitleLabel } from '../battle/core/growth';
 import { GachaRoom } from './GachaRoom';
 import { ManaRush } from './ManaRush';
@@ -19,10 +19,10 @@ export function GrowthHub({ page, onPage, onBack, onBattle, onReview, onRanking,
   const [outfitKind, setOutfitKind] = useState('all');
   const openPart = (kind: string) => { setOutfitKind(kind); onPage('outfit'); };
   const openTab = (id: GrowthPage) => { if (id === 'outfit') setOutfitKind('all'); onPage(id); };
-  if (page === 'gacha') return <section className="mana-hub mana-hub-gacha compact-gacha"><header className="mana-hub-header"><button onClick={onBack}><ArrowLeft size={18}/>ホーム</button><span>ガチャ</span></header><nav className="growth-shared-switch" aria-label="ガチャとランキング"><button aria-current="page"><Gift size={19}/>ガチャ</button><button onClick={onRanking}><Trophy size={19}/>ランキング</button></nav><GachaRoom embedded onBack={onBack} onMissions={()=>onPage('missions')}/></section>;
+  if (page === 'gacha') return <section className="mana-hub mana-hub-gacha compact-gacha"><header className="mana-hub-header"><button onClick={onBack}><ArrowLeft size={18}/>ホーム</button><span>ガチャ</span></header><GachaRoom embedded onBack={onBack} onMissions={()=>onPage('missions')}/></section>;
   return <section className="mana-hub mypage-hub" data-mypage>
     <header className="mana-hub-header"><button onClick={onBack}><ArrowLeft size={18}/>ホーム</button><h1>マイページ</h1></header>
-    <nav className="mypage-tabs" aria-label="マイページメニュー">{([['overview','マイページ'],['outfit','持ちもの'],['prints','マイPDF'],['shop','ショップ'],['rewards','プレゼント']] as const).map(([id,label]) => <button type="button" key={id} aria-current={page === id ? 'page' : undefined} onClick={()=>openTab(id)}>{label}</button>)}</nav>
+    <nav className="mypage-tabs" aria-label="マイページメニュー">{([['overview','マイページ'],['outfit','持ちもの'],['badges','称号'],['prints','マイPDF'],['shop','ショップ']] as const).map(([id,label]) => <button type="button" key={id} aria-current={page === id ? 'page' : undefined} onClick={()=>openTab(id)}>{label}</button>)}</nav>
     <div className="mypage-body">
     {page === 'overview' ? <main className="mypage-overview" data-mypage-overview>
       <section className="mypage-stage" aria-label="いまのとびら君">
@@ -35,7 +35,7 @@ export function GrowthHub({ page, onPage, onBack, onBattle, onReview, onRanking,
         <ul>{PARTS.map(([kind,label]) => { const id = progress?.equipped[kind as keyof typeof progress.equipped] || ''; const cur = id ? itemById(id)?.label : ''; return <li key={kind}><button type="button" data-part={kind} onClick={()=>openPart(kind)}><span className="mypage-part-label">{label}</span><span className="mypage-part-cur">{cur || 'なし'}</span><ChevronRight size={15} aria-hidden/></button></li>; })}</ul>
       </section>
       <nav className="mypage-more" aria-label="そのほか">{([['missions',Target,'ミッション'],['rush',Zap,'マナラッシュ'],['badges',Award,'称号'],['stats',BarChart3,'記録']] as const).map(([id,Icon,label]) => <button type="button" key={id} onClick={()=>onPage(id)}><Icon size={18}/>{label}</button>)}</nav>
-    </main> : page === 'outfit' || page === 'prints' || page === 'shop' || page === 'rewards' ? <MyCollection key={`${uid}:${page}:${outfitKind}`} view={page === 'outfit' ? 'owned' : page} initialKind={page === 'outfit' ? outfitKind : 'all'} onGacha={()=>onPage('gacha')}/>
+    </main> : page === 'outfit' || page === 'prints' || page === 'shop' || page === 'rewards' ? <MyCollection key={`${uid}:${page}:${outfitKind}`} view={page === 'outfit' || page === 'rewards' ? 'owned' : page} initialKind={page === 'outfit' ? outfitKind : 'all'} onGacha={()=>onPage('gacha')}/>
     : page === 'rush' ? <div className="mypage-extra-scroll"><ManaRush onBack={()=>onPage('overview')} defaultSubject={defaultSubject}/></div>
     : page === 'missions' ? <div className="mypage-extra-scroll"><BattleMissions key={uid} standalone onBack={()=>onPage('overview')} onBattle={onBattle} onReview={onReview} onShop={()=>onPage('shop')} onRush={()=>onPage('rush')}/></div>
     : <div className="mypage-extra-scroll"><BattleProfile key={`${uid}:${page}`} standalone initialTab={page} onBack={()=>onPage('overview')}/></div>}

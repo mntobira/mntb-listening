@@ -9,7 +9,7 @@ import { ADVANCED_FIELDS } from '../data/advancedFields';
 // 教科ごとの parts は data/allChapters.ts から引く
 // （以前はこのファイルで6教科ぶんを個別に import していた）
 import { getPartsOfSubject, type SubjectKey } from '../data/allChapters';
-import { ChevronRight, ArrowLeft, ChevronDown, GitBranch, TrendingUp, BarChart2, GraduationCap, X, Headphones } from 'lucide-react';
+import { ChevronRight, ArrowLeft, TrendingUp, BarChart2, GraduationCap, X, Headphones } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChapterFlowchartModal } from './ChapterFlowchartModal';
 import { TrendModal } from './TrendModal';
@@ -33,8 +33,9 @@ import { auth } from '../firebase';
 import { buildUnitSections } from '../data/unitSections';
 import { UnitCard } from './UnitCard';
 import './unit-select.css';
-import { accuracyOf, readUnitStats, unitStatus } from '../utils/unitStats';
-import { MATH_COURSE_LABELS, MATH_LEVELS, buildMathTopicGroups, mathCourseOfGroup, mathLevelOfCourse, type MathCourseKey, type MathStage } from '../data/mathNavigation';
+import { accuracyOf, readUnitStats } from '../utils/unitStats';
+import { STAGE_CLEAR_PERFECTS, isStageCleared, readStageRecords, stageKey } from '../utils/stageRecords';
+import { MATH_COURSE_LABELS, MATH_LEVELS, buildMathTopicGroups, mathCourseOfGroup, mathLevelOfCourse, type MathCourseKey } from '../data/mathNavigation';
 
 interface ChapterSelectionProps {
   mode: 'mini_test' | 'practice';
@@ -342,6 +343,12 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
   const solvedMap = useMemo(
     () => readSolvedMap(auth.currentUser?.uid || 'guest'),
     // 画面に入ったときの一度だけで十分（回を解いたら演習画面を経由して戻ってくる）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  /** ステージ（単元・回）ごとの満点回数（utils/stageRecords.ts。満点3回で達成） */
+  const stageRecords = useMemo(
+    () => readStageRecords(auth.currentUser?.uid || 'guest'),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
@@ -674,7 +681,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                         )}
                         <p className="mt-1 text-xs font-bold text-slate-600">
                           {rounds.length > 0
-                            ? `全${rounds.length}回 ／ 済 ${rounds.filter((r) => solvedMap[problemKey(chapter.id, r.questionId)]).length}回`
+                            ? `全${rounds.length}回 ／ 達成 ${rounds.filter((r) => isStageCleared(stageRecords[stageKey(chapter.id, r.questionId)])).length}回（満点${STAGE_CLEAR_PERFECTS}回で達成）`
                             : 'この大問の問題は準備中です'}
                         </p>
                       </div>
@@ -682,7 +689,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                       {rounds.length > 0 ? (
                         <div className="round-grid grid grid-cols-1 gap-1.5 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                           {rounds.map((round) => {
-                            const solved = solvedMap[problemKey(chapter.id, round.questionId)];
+                            const roundStage = stageRecords[stageKey(chapter.id, round.questionId)];
+                            const solved = isStageCleared(roundStage);
+                            const tried = !!solvedMap[problemKey(chapter.id, round.questionId)] || !!roundStage;
                             const audio = audioSets.find((s) => s.id === round.questionId);
                             return (
                               <div
@@ -716,7 +725,11 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                                     </span>
                                     {solved ? (
                                       <span className="round-done mt-status shrink-0" data-status="done">
-                                        完了
+                                        達成
+                                      </span>
+                                    ) : tried ? (
+                                      <span className="round-done mt-status shrink-0" data-status="doing">
+                                        満点 {roundStage?.p ?? 0}/{STAGE_CLEAR_PERFECTS}
                                       </span>
                                     ) : (
                                       <ChevronRight size={13} className="shrink-0 text-[#A9CCE3]" />
@@ -785,7 +798,17 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                 const audioSets = isListening || isGrammar ? collectAudioSets(chapter) : [];
                 const solvedCount = questions.filter((q: any) => solvedMap[problemKey(chapter.id, q.id)]).length;
                 const stat = unitStats[chapter.id];
-                const status = unitStatus(solvedCount, questions.length, hasSavedProgress || !!stat);
+                const stage = stageRecords[stageKey(chapter.id)];
+                // 達成＝この単元を満点で STAGE_CLEAR_PERFECTS 回。それまでは「満点 n/3」と数えて見せる
+                // ★英文法は「1回（5問）＝1ステージ」★ 単元まるごと通すと 5/5 の後も次の回へ進み、結果が出ない（2026-10-04）。
+                //   学習開始は「まだ達成していない最初の回」だけを始める。単元の達成＝全部の回を達成。
+                const roundCleared = isGrammar ? questions.map((q: any) => isStageCleared(stageRecords[stageKey(chapter.id, q.id)])) : [];
+                const clearedRounds = roundCleared.filter(Boolean).length;
+                const nextRound = isGrammar ? Math.max(0, roundCleared.findIndex((c: boolean) => !c)) : 0;
+                const roundTried = isGrammar && questions.some((q: any) => stageRecords[stageKey(chapter.id, q.id)]);
+                const status = isGrammar
+                  ? (questions.length > 0 && clearedRounds === questions.length ? 'done' : (solvedCount > 0 || hasSavedProgress || !!stat || roundTried) ? 'doing' : 'todo')
+                  : isStageCleared(stage) ? 'done' : (solvedCount > 0 || hasSavedProgress || !!stat || !!stage) ? 'doing' : 'todo';
 
                 // ★見出しつきの小分け（数学の段階・地理の単元演習/模試・準備中）★ src/data/unitSections.ts
                 const section = unitSectionByChapter.get(chapter.id);
@@ -809,12 +832,18 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
                     questionCount={questions.length}
                     status={status}
                     accuracy={accuracyOf(stat)}
+                    perfects={isGrammar ? undefined : stage?.p ?? 0}
+                    progressLabel={isGrammar && status === 'doing' ? `達成 ${clearedRounds}/${questions.length}回` : undefined}
                     hasSavedProgress={hasSavedProgress}
                     expanded={expanded}
                     accent={theme.accent}
                     onToggle={() => setExpandedChapterId(expanded ? null : chapter.id)}
-                    onStart={() => onSelectChapter(chapter.id, 0, false)}
-                    onResume={() => onSelectChapter(chapter.id, savedIndex, true)}
+                    onStart={() => isGrammar
+                      ? onSelectChapter(chapter.id, nextRound, false, { startIndex: nextRound, endIndex: nextRound })
+                      : onSelectChapter(chapter.id, 0, false)}
+                    onResume={() => isGrammar
+                      ? onSelectChapter(chapter.id, savedIndex, true, { startIndex: savedIndex, endIndex: savedIndex })
+                      : onSelectChapter(chapter.id, savedIndex, true)}
                     onAudio={audioSets.length > 0 ? () => setOpenAudioSetId(openAudioSetId === audioSets[0].id ? null : audioSets[0].id) : undefined}
                     audioOpen={audioSets.length > 0 && openAudioSetId === audioSets[0].id}
                     onExplain={hasQuestions ? () => setSelectedFlowchart({ id: chapter.id, title: chapter.abstractTitle, questions }) : undefined}

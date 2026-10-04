@@ -449,7 +449,7 @@ export async function createFriendRoom(
  * トランザクションの中で人数を確認してから追加する。
  */
 export async function joinRoomByCode(rawCode: string): Promise<string> {
-  const uid = requireUid();
+  requireUid();
   const joinCode = rawCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
   if (joinCode.length !== CODE_LENGTH) {
     throw new Error(`合言葉は${CODE_LENGTH}文字です。`);
@@ -463,8 +463,15 @@ export async function joinRoomByCode(rawCode: string): Promise<string> {
   }
   const roomId = String(codeSnap.get('roomId') || '');
   if (!roomId) throw new Error('その合言葉の部屋は見つかりませんでした。');
+  // ★フレンド対戦はフレンドどうしだけ（2026-10-03）★
+  //   判定の本体はルール（相互フレンド、またはクラン交流戦の相手クラン）。
+  //   クライアントで先に断ると交流戦に入れなくなるので、ここでは断らず、ルールの拒否を分かりやすい文言にする。
   return joinRoomById(roomId);
 }
+
+/** フレンドでない相手の部屋に入ろうとしたときの案内（画面でも同じ文言を使う） */
+export const NOT_FRIEND_MESSAGE = 'フレンド対戦は、フレンドどうしだけで遊べます。先に「設定 → フレンド」で相手とフレンドになってください。';
+
 
 /** 部屋IDで入室する（合言葉の入力なし。再戦・設定変更の追従で使う） */
 export async function joinRoomById(roomId: string): Promise<string> {
@@ -504,6 +511,8 @@ export async function joinRoomById(roomId: string): Promise<string> {
     if (message === 'ROOM_GONE') throw new Error('その部屋はもう存在しません。');
     if (message === 'ROOM_FULL') throw new Error('その部屋はもう満員です。');
     if (message === 'ROOM_STARTED') throw new Error('その部屋はもう対戦が始まっています。');
+    // ルールの拒否（permission-denied）＝フレンドでない／部屋が閉じた。フレンドでない可能性を先に伝える
+    if ((error as { code?: string }).code === 'permission-denied') throw new Error(`${NOT_FRIEND_MESSAGE}（部屋が閉じている場合もあります）`);
     throw friendlyError(error, '部屋に入れませんでした。');
   }
 
@@ -967,15 +976,6 @@ function withWriteTimeout<T>(promise: Promise<T>, ms = WRITE_TIMEOUT_MS): Promis
   });
 }
 
-async function timedWrite(run: () => Promise<void>): Promise<void> {
-  const sentAt = Date.now();
-  await withWriteTimeout(run());
-  // 応答が返った時刻を覚えておく。サーバが刻んだ時刻そのものは
-  // 購読側（watchRoom）で受け取るので、そこで突き合わせる。
-  const ackAt = Date.now();
-  lastWrite = { sentAt, ackAt };
-  reportRtt(ackAt - sentAt);
-}
 
 /**
  * ★通信が一瞬切れても諦めない書き込み★
@@ -1381,6 +1381,8 @@ export interface BattleHistoryItem {
   opponentNickname: string;
   ratingBefore: number;
   ratingAfter: number;
+  /** この試合で間違えた出題ID（「間違えた問題だけ再対戦」用・最大30） */
+  wrongIds?: string[];
   playedAt?: Timestamp | null;
 }
 

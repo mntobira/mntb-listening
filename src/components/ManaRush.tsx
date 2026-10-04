@@ -27,6 +27,7 @@ import { levelOf, rushRankOf, RUSH_COIN_PLAYS_PER_DAY } from '../battle/core/gro
 import type { BattleQuestion } from '../battle/core/types';
 import { subjectTheme } from '../data/subjectTheme';
 import type { SubjectKey } from '../data/allChapters';
+import { NextBadgeHint } from '../battle/ui/GrowthParts';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 
 export const RUSH_DURATION_MS = 60_000;
@@ -309,6 +310,7 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
       : <p className="mana-rush-reward" data-rush-reward>+{summary.reward?.xp ?? 0} XP{summary.reward && summary.reward.coins > 0 ? ` ／ +${summary.reward.coins} マナコイン` : '（今日のコイン報酬は終了）'}
         {summary.levelAfter > summary.levelBefore && <b> ・ レベルアップ！ Lv.{summary.levelAfter}</b>}</p>
       : <p role="status">記録を保存しています…</p>}
+    {summary && !summary.saveFailed && <NextBadgeHint progress={progress} prefer="b_rush" className="mt-1" />}
     {misses.length > 0 && <details className="mana-rush-misses"><summary>まちがえた問題を見る（{misses.length}問）</summary>
       <ul>{misses.map((m, i) => <li key={`${m.q.id}:${i}`}>
         <p><BattleText text={m.q.label} subject={m.q.subject} /></p>

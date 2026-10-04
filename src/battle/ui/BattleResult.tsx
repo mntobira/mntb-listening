@@ -54,10 +54,14 @@ import './battle-result-review.css';
 import { BattleText } from './BattleText';
 import { BattleReviewDetails } from './BattleReviewDetails';
 import { BattleGrowthReward } from './BattleGrowthReward';
+import { BattleMissions } from './BattleMissions';
+import { BattleProfile } from './BattleProfile';
 import type { CSSProperties, TouchEvent as ReactTouchEvent } from 'react';
 import {
   ArrowLeft,
   BookOpen,
+  ClipboardList,
+  Swords,
   ChevronLeft,
   ChevronRight,
   Lightbulb,
@@ -106,7 +110,6 @@ import {
   pickReviewQuestions,
   ResultActions,
   ResultStats,
-  ReviewPicks,
   useOutcomeJingle,
 } from './BattleResultLive';
 import { UserSafetyMenu } from '../../features/safety/UserSafetyMenu';
@@ -155,6 +158,8 @@ export function BattleResult({
   ratingNote,
   growthMatchId, growthOwnerUid, growthEligible = false, onOpenProfile, onOpenMissions,
   onReview,
+  onRetryWrong,
+  retryMode = false,
   myAnsweredIndexes = [],
   matchKey,
 }: {
@@ -212,6 +217,10 @@ export function BattleResult({
    * 渡されなければボタンを出さない。
    */
   onReview?: () => void;
+  /** 「間違えた問題だけ再対戦」（AI 相手で、間違えた問題だけをもう一度） */
+  onRetryWrong?: (subject: string, ids: string[]) => void;
+  /** いまの試合が「間違えた問題だけ再対戦」か */
+  retryMode?: boolean;
   /** 自分が回答した問題番号（平均回答時間は回答した問題だけで出す） */
   myAnsweredIndexes?: number[];
   /** XP を同じ試合で2回足さないための鍵（部屋IDなど） */
@@ -238,6 +247,21 @@ export function BattleResult({
    * 読み込み前・失敗時は空の Map なので、答えの行が出ないだけで
    * 点数・レート・内訳は今までどおり表示される。
    */
+  /**
+   * ★結果は2ページ（2026-10-04）★
+   *   summary … 勝敗・報酬・点数・レート（ここで止まる。下へ長くスクロールさせない）
+   *   detail  … 「詳しい結果を確認する」で開く復習（間違えた問題・1問ずつの答えあわせ・解説）
+   *   missions/profile … 結果の上に開く。もどると結果に戻る（以前は対戦メニューへ飛び、復習に戻れなかった）
+   */
+  const [page, setPage] = useState<'summary' | 'detail' | 'missions' | 'profile'>('summary');
+  // ページを切り替えたら必ず先頭から見せる（前のページのスクロール位置が残ると、途中から始まって見える）
+  useEffect(() => {
+    window.scrollTo?.(0, 0);
+    let el: HTMLElement | null = document.querySelector('[data-result-detail-title]') ?? document.querySelector('#battle-shell');
+    while (el) { if (el.scrollTop > 0) el.scrollTop = 0; el = el.parentElement; }
+    document.scrollingElement && (document.scrollingElement.scrollTop = 0);
+  }, [page]);
+  const wrongIds = result.me.perQuestion.filter((q) => !q.correct).map((q) => questions[q.index]?.id).filter((id): id is string => !!id);
   const [answerLoadFailed, setAnswerLoadFailed] = useState(false);
   const [answerRetry, setAnswerRetry] = useState(0);
   // 1問ずつの答えあわせ：いま見ている問（最初は最初に間違えた問）
@@ -328,10 +352,227 @@ export function BattleResult({
   //   アイボリーの上では #F4D03F の数字が読めない。琥珀に置き換える。
   const deltaColor = delta > 0 ? AMBER : delta < 0 ? WRONG : INK_SUB;
 
+  const DETAIL_SECTIONS = (
+    <>
+        {/* 以前の「今回まちがえた問題」の縦長リストは消した（2026-10-04）。1問ずつ切り替える答えあわせだけにする */}
+        {/* 1問ずつの内訳 ＋ ★試合後の答えとひと言の理由（請求⑦-A）★
+            2026-10-02 夜：縦に長くスクロールさせず、問の番号と ‹ › で1問ずつ切り替える（スマホ） */}
+        <section id="battle-result-detail" className="mb-4 result-review" data-result-review>
+          <div className="result-review-head">
+            <h2 className="text-xs font-black" style={{ color: INK_SUB }}>1問ずつのけっか（答えあわせ）</h2>
+            <span className="result-review-count">{reviewIndex + 1} / {result.me.perQuestion.length}</span>
+          </div>
+          {answerLoadFailed && <p role="alert" className="mb-2 text-sm text-red-700">解説の読み込みに失敗しました。<button type="button" className="min-h-11 underline" onClick={() => setAnswerRetry(n => n + 1)}>再読み込み</button></p>}
+          <div className="result-review-bar">
+            <button type="button" className="result-review-arrow" data-review-prev aria-label="前の問題" disabled={reviewIndex <= 0} onClick={() => setReviewIndex(i => Math.max(0, i - 1))}><ChevronLeft size={22} /></button>
+          <nav ref={chipsRef} className="result-review-chips" aria-label="問の番号">
+            {result.me.perQuestion.map((q, i) => (
+              <button key={q.index} type="button" data-review-chip={i} aria-current={i === reviewIndex ? 'true' : undefined}
+                data-ok={q.correct || undefined} data-none={(!q.correct && q.answered === false) || undefined}
+                aria-label={`第${q.index + 1}問 ${q.correct ? '正解' : q.answered === false ? '未回答' : '不正解'}`}
+                onClick={() => setReviewIndex(i)}>{q.index + 1}</button>
+            ))}
+          </nav>
+            <button type="button" className="result-review-arrow" data-review-next aria-label="次の問題" disabled={reviewIndex >= result.me.perQuestion.length - 1} onClick={() => setReviewIndex(i => Math.min(result.me.perQuestion.length - 1, i + 1))}><ChevronRight size={22} /></button>
+          </div>
+          <div className="result-review-stage" onTouchStart={onReviewTouchStart} onTouchEnd={onReviewTouchEnd}>
+            {result.me.perQuestion.filter((_, i) => i === reviewIndex).map((q) => {
+              const question = questions[q.index];
+              const other = result.opponent?.perQuestion.find((o) => o.index === q.index) || null;
+              /**
+               * ★正解の文字列★
+               * choice 系は options[answerIndex]、kana は panelOrder から組み立てる。
+               * （プールは答えの文字列そのものを持たない設計なので、ここで作る）
+               */
+              const correctText = !question ? '' : question.format === 'kana'
+                ? kanaTextOf(question.panelOrder)
+                : question.format === 'panel' ? question.panelOrder.map(i => question.options[i]).join('')
+                : question.options[question.answerIndex] || '';
+              /**
+               * ★ひと言の理由（oneLine）★
+               * 手書き問題だけが持つ。機械生成の問題では undefined になるので、
+               * その場合は理由の行を出さない（空の欄を出すと壊れて見える）。
+               */
+              const oneLine = question ? answers.get(question.id) : undefined;
+              return (
+                <div
+                  key={q.index}
+                  data-review-card={q.index}
+                  className="result-review-card min-w-0 flex-1 rounded-xl border-2 px-3 py-2"
+                  style={{
+                    borderColor: q.correct ? `${theme.accent}55` : LINE,
+                    background: q.correct ? `${theme.accent}12` : '#FFFFFF',
+                  }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span
+                        className="w-5 shrink-0 text-xs font-black tabular-nums"
+                        style={{ color: INK_SUB }}
+                      >
+                        {q.index + 1}
+                      </span>
+                      <span
+                        className="shrink-0 rounded-full px-2 py-1 text-xs font-black"
+                        style={{
+                          background: q.correct ? theme.accent : `${WRONG}14`,
+                          color: q.correct ? '#FFFFFF' : WRONG,
+                        }}
+                      >
+                        {q.correct ? '正解' : q.answered === false ? '未回答' : '不正解'}
+                      </span>
+  
+                    </span>
+                    <span
+                      className="shrink-0 text-right text-xs font-bold tabular-nums"
+                      style={{ color: INK_SUB }}
+                    >
+                      <span style={{ color: q.correct ? AMBER : INK_SUB }}>{q.total}</span>
+                      <span style={{ color: LINE }}> / </span>
+                      {other?.total ?? 0}
+                    </span>
+                  </div>
+                  {question && <div className="mt-2 text-sm leading-7 text-slate-800" data-result-question={question.id}>
+                    <BattleText text={[question.prompt, question.label].filter(Boolean).join('\n')} subject={question.subject} />
+                  </div>}
+                  {q.answered !== undefined && <p className="mt-2 text-sm font-bold" style={{ color: q.correct ? '#1E7D46' : WRONG }}>
+                    あなたの回答：{q.answered
+                      ? <BattleText text={q.submittedAnswer || ''} subject={question?.subject ?? subject} /> : '未回答'}
+                  </p>}
+                  <div className="mt-1 min-w-0 text-sm font-bold leading-relaxed" style={{ color: INK }}>
+                    正しい答え：<BattleText text={correctText} subject={question?.subject ?? subject} />
+                  </div>
+                  {q.correct && (
+                    <p className="mt-0.5 pl-7 text-xs font-bold" style={{ color: INK_SUB }}>
+                      {q.timeUsed.toFixed(1)}秒 ／ 速さ +{q.speed}
+                      {q.streak > 0 && ` ／ 連続 +${q.streak}`}
+                    </p>
+                  )}
+  
+                  {/*
+                    ★ひと言の理由（請求⑦-A）★
+                    「答えは分かったが、なぜそれが答えなのか」がここで埋まる。
+                    間違えた問題では枠を強めて、目が先にそこへ行くようにする。
+                  */}
+                  {oneLine && (
+                    <p
+                      className="mt-1.5 flex items-start gap-1.5 rounded-lg px-2 py-1.5 text-[12px] font-bold leading-relaxed"
+                      style={{
+                        background: q.correct ? '#FFFFFF' : `${AMBER}12`,
+                        color: INK,
+                        border: `1px solid ${q.correct ? LINE : `${AMBER}44`}`,
+                      }}
+                    >
+                      <Lightbulb
+                        size={12}
+                        className="mt-px shrink-0"
+                        style={{ color: q.correct ? INK_SUB : AMBER }}
+                      />
+                      <BattleText text={oneLine} subject={question?.subject ?? subject} />
+                    </p>
+                  )}
+                  {question && <p className="arena-review-answer">相手の回答 {answerNumber(question, result.opponent?.perQuestion.find(s=>s.index===q.index)?.submittedAnswer)}：<BattleText text={result.opponent?.perQuestion.find(s=>s.index===q.index)?.submittedAnswer || '無回答'} subject={subject}/></p>}
+                  {question && <BattleReviewDetails question={question} oneLine={oneLine} />}
+                  {question && onPractice && !isBattleOnlySubject(subject) && <button type="button" data-practice-question={question.id}
+                    onClick={() => onPractice(subject, question.chapterId, question.problemId, question.subQuestionId)}
+                    className="mt-3 min-h-11 w-full rounded-xl bg-blue-50 px-3 py-2 text-sm font-bold text-blue-900">
+                    この問題を演習する（結果に戻れます）
+                  </button>}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+  
+        {/*
+          ★★この単元を演習する（請求⑦-A の出口）★★
+  
+          ここが「① 対戦 ⇒ ② 演習」の橋である。
+          対戦で出た章を並べ、★間違えた章を先に★ 出す。
+          押すとその章の演習画面に飛ぶ（既存の単元選択と同じ入口を使う）。
+  
+          onPractice が渡されていないときは何も出さない。
+          押しても何も起きないボタンを出すのは、無いより悪い。
+        */}
+        {onPractice && chapterRows.length > 0 && (
+          <section className="mb-4">
+            <h2 className="mb-2 text-xs font-black" style={{ color: INK_SUB }}>
+              つづけて演習する
+            </h2>
+            <div className="grid gap-1.5">
+              {chapterRows.map((row) => (
+                <button
+                  key={row.chapterId}
+                  type="button"
+                  onClick={() => onPractice(subject, row.chapterId)}
+                  className="flex items-center gap-2 rounded-xl border-2 px-3 py-2.5 text-left transition active:scale-[0.99]"
+                  style={{
+                    borderColor: row.wrong ? `${AMBER}55` : LINE,
+                    background: row.wrong ? `${AMBER}0E` : '#FFFFFF',
+                  }}
+                >
+                  <BookOpen size={16} className="shrink-0" style={{ color: theme.accent }} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-xs font-black" style={{ color: INK }}>
+                      {chapterTitleOf(row.chapterId)}
+                    </span>
+                    <span className="block text-xs font-bold" style={{ color: INK_SUB }}>
+                      {row.wrong ? 'まちがえた問題がある単元・演習する' : 'この単元を演習する'}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+  
+      </>
+  );
+
+  // ミッション・プロフィールは結果の上に開く（もどると結果に戻る）
+  if (page === 'missions') return <BattleMissions onBack={() => setPage('summary')} />;
+  if (page === 'profile') return <BattleProfile onBack={() => setPage('summary')} onMissions={() => setPage('missions')} />;
+
+  const retryButton = onRetryWrong && wrongIds.length > 0 ? (
+    <BattleButton onClick={() => onRetryWrong(subject, wrongIds)} icon={<Swords size={18} />}>
+      間違えた{wrongIds.length}問だけ再対戦
+    </BattleButton>
+  ) : null;
+
+  // ===== 詳しい結果（復習）ページ =====
+  if (page === 'detail') return (
+    <BattleShell
+      footer={
+        <div className="grid gap-2.5">
+          {retryButton}
+          <ResultActions
+            onRematch={undefined}
+            rematchLabel={rematchLabel}
+            onReview={onReview}
+            picks={picks}
+            subject={subject}
+            chapterTitleOf={chapterTitleOf}
+          />
+          <BattleButton variant="ghost" onClick={() => setPage('summary')} icon={<ArrowLeft size={18} />}>
+            結果にもどる
+          </BattleButton>
+        </div>
+      }
+    >
+      <h1 className="mb-3 text-center font-handwriting text-2xl font-black" style={{ color: INK }} data-result-detail-title>詳しい結果{retryMode ? '（再対戦）' : ''}</h1>
+      {DETAIL_SECTIONS}
+    </BattleShell>
+  );
+
   return (
     <BattleShell
       footer={
         <div className="grid gap-2.5">
+          {/* ★まず「詳しい結果を確認する」★ 復習は次のページ（下へ長くスクロールさせない） */}
+          <BattleButton onClick={() => { setPage('detail'); window.scrollTo?.(0, 0); }} icon={<ClipboardList size={18} />}>
+            詳しい結果を確認する{picks.length > 0 ? `（まちがい${picks.length}問）` : ''}
+          </BattleButton>
+          {retryButton}
           <ResultActions
             onRematch={onRematch}
             rematchLabel={rematchLabel}
@@ -358,7 +599,7 @@ export function BattleResult({
       {result.outcome === 'win' && <div className="victory-cinema"><CinematicClip src={CINEMATIC_CLIPS.victory.src} poster={CINEMATIC_CLIPS.victory.poster} label="とびら君の勝利動画" /></div>}
       {growthMatchId && growthOwnerUid && <BattleGrowthReward matchId={growthMatchId} ownerUid={growthOwnerUid}
         eligible={growthEligible} subject={subject} subjectLabel={theme.label} result={result} rating={rating}
-        onProfile={onOpenProfile} onMissions={onOpenMissions} />}
+        onProfile={onOpenProfile ? () => setPage('profile') : undefined} onMissions={onOpenMissions ? () => setPage('missions') : undefined} />}
 
       {byForfeit && (
         <p
@@ -425,16 +666,6 @@ export function BattleResult({
         matchKey={matchKey || `${subject}-${result.me.score}-${result.opponent?.score ?? 0}-${questions[0]?.id ?? ''}`}
       />
 
-      {/* ★今回間違えた問題（相手は正解した問題を先に）★ */}
-      <ReviewPicks
-        picks={picks}
-        opponentScore={result.opponent}
-        oneLines={answers}
-        subject={subject}
-        onPractice={onPractice}
-        chapterTitleOf={chapterTitleOf}
-      />
-
       {/* レート */}
       <section
         className="mb-4 flex items-center justify-between rounded-2xl border-2 px-4 py-3"
@@ -478,177 +709,6 @@ export function BattleResult({
       </section>
 
 
-
-      {/* 1問ずつの内訳 ＋ ★試合後の答えとひと言の理由（請求⑦-A）★
-          2026-10-02 夜：縦に長くスクロールさせず、問の番号と ‹ › で1問ずつ切り替える（スマホ） */}
-      <section id="battle-result-detail" className="mb-4 result-review" data-result-review>
-        <div className="result-review-head">
-          <h2 className="text-xs font-black" style={{ color: INK_SUB }}>1問ずつのけっか（答えあわせ）</h2>
-          <span className="result-review-count">{reviewIndex + 1} / {result.me.perQuestion.length}</span>
-        </div>
-        {answerLoadFailed && <p role="alert" className="mb-2 text-sm text-red-700">解説の読み込みに失敗しました。<button type="button" className="min-h-11 underline" onClick={() => setAnswerRetry(n => n + 1)}>再読み込み</button></p>}
-        <div className="result-review-bar">
-          <button type="button" className="result-review-arrow" data-review-prev aria-label="前の問題" disabled={reviewIndex <= 0} onClick={() => setReviewIndex(i => Math.max(0, i - 1))}><ChevronLeft size={22} /></button>
-        <nav ref={chipsRef} className="result-review-chips" aria-label="問の番号">
-          {result.me.perQuestion.map((q, i) => (
-            <button key={q.index} type="button" data-review-chip={i} aria-current={i === reviewIndex ? 'true' : undefined}
-              data-ok={q.correct || undefined} data-none={(!q.correct && q.answered === false) || undefined}
-              aria-label={`第${q.index + 1}問 ${q.correct ? '正解' : q.answered === false ? '未回答' : '不正解'}`}
-              onClick={() => setReviewIndex(i)}>{q.index + 1}</button>
-          ))}
-        </nav>
-          <button type="button" className="result-review-arrow" data-review-next aria-label="次の問題" disabled={reviewIndex >= result.me.perQuestion.length - 1} onClick={() => setReviewIndex(i => Math.min(result.me.perQuestion.length - 1, i + 1))}><ChevronRight size={22} /></button>
-        </div>
-        <div className="result-review-stage" onTouchStart={onReviewTouchStart} onTouchEnd={onReviewTouchEnd}>
-          {result.me.perQuestion.filter((_, i) => i === reviewIndex).map((q) => {
-            const question = questions[q.index];
-            const other = result.opponent?.perQuestion.find((o) => o.index === q.index) || null;
-            /**
-             * ★正解の文字列★
-             * choice 系は options[answerIndex]、kana は panelOrder から組み立てる。
-             * （プールは答えの文字列そのものを持たない設計なので、ここで作る）
-             */
-            const correctText = !question ? '' : question.format === 'kana'
-              ? kanaTextOf(question.panelOrder)
-              : question.format === 'panel' ? question.panelOrder.map(i => question.options[i]).join('')
-              : question.options[question.answerIndex] || '';
-            /**
-             * ★ひと言の理由（oneLine）★
-             * 手書き問題だけが持つ。機械生成の問題では undefined になるので、
-             * その場合は理由の行を出さない（空の欄を出すと壊れて見える）。
-             */
-            const oneLine = question ? answers.get(question.id) : undefined;
-            return (
-              <div
-                key={q.index}
-                data-review-card={q.index}
-                className="result-review-card min-w-0 flex-1 rounded-xl border-2 px-3 py-2"
-                style={{
-                  borderColor: q.correct ? `${theme.accent}55` : LINE,
-                  background: q.correct ? `${theme.accent}12` : '#FFFFFF',
-                }}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <span
-                      className="w-5 shrink-0 text-xs font-black tabular-nums"
-                      style={{ color: INK_SUB }}
-                    >
-                      {q.index + 1}
-                    </span>
-                    <span
-                      className="shrink-0 rounded-full px-2 py-1 text-xs font-black"
-                      style={{
-                        background: q.correct ? theme.accent : `${WRONG}14`,
-                        color: q.correct ? '#FFFFFF' : WRONG,
-                      }}
-                    >
-                      {q.correct ? '正解' : q.answered === false ? '未回答' : '不正解'}
-                    </span>
-
-                  </span>
-                  <span
-                    className="shrink-0 text-right text-xs font-bold tabular-nums"
-                    style={{ color: INK_SUB }}
-                  >
-                    <span style={{ color: q.correct ? AMBER : INK_SUB }}>{q.total}</span>
-                    <span style={{ color: LINE }}> / </span>
-                    {other?.total ?? 0}
-                  </span>
-                </div>
-                {question && <div className="mt-2 text-sm leading-7 text-slate-800" data-result-question={question.id}>
-                  <BattleText text={[question.prompt, question.label].filter(Boolean).join('\n')} subject={question.subject} />
-                </div>}
-                {q.answered !== undefined && <p className="mt-2 text-sm font-bold" style={{ color: q.correct ? '#1E7D46' : WRONG }}>
-                  あなたの回答：{q.answered
-                    ? <BattleText text={q.submittedAnswer || ''} subject={question?.subject ?? subject} /> : '未回答'}
-                </p>}
-                <div className="mt-1 min-w-0 text-sm font-bold leading-relaxed" style={{ color: INK }}>
-                  正しい答え：<BattleText text={correctText} subject={question?.subject ?? subject} />
-                </div>
-                {q.correct && (
-                  <p className="mt-0.5 pl-7 text-xs font-bold" style={{ color: INK_SUB }}>
-                    {q.timeUsed.toFixed(1)}秒 ／ 速さ +{q.speed}
-                    {q.streak > 0 && ` ／ 連続 +${q.streak}`}
-                  </p>
-                )}
-
-                {/*
-                  ★ひと言の理由（請求⑦-A）★
-                  「答えは分かったが、なぜそれが答えなのか」がここで埋まる。
-                  間違えた問題では枠を強めて、目が先にそこへ行くようにする。
-                */}
-                {oneLine && (
-                  <p
-                    className="mt-1.5 flex items-start gap-1.5 rounded-lg px-2 py-1.5 text-[12px] font-bold leading-relaxed"
-                    style={{
-                      background: q.correct ? '#FFFFFF' : `${AMBER}12`,
-                      color: INK,
-                      border: `1px solid ${q.correct ? LINE : `${AMBER}44`}`,
-                    }}
-                  >
-                    <Lightbulb
-                      size={12}
-                      className="mt-px shrink-0"
-                      style={{ color: q.correct ? INK_SUB : AMBER }}
-                    />
-                    <BattleText text={oneLine} subject={question?.subject ?? subject} />
-                  </p>
-                )}
-                {question && <p className="arena-review-answer">相手の回答 {answerNumber(question, result.opponent?.perQuestion.find(s=>s.index===q.index)?.submittedAnswer)}：<BattleText text={result.opponent?.perQuestion.find(s=>s.index===q.index)?.submittedAnswer || '無回答'} subject={subject}/></p>}
-                {question && <BattleReviewDetails question={question} oneLine={oneLine} />}
-                {question && onPractice && !isBattleOnlySubject(subject) && <button type="button" data-practice-question={question.id}
-                  onClick={() => onPractice(subject, question.chapterId, question.problemId, question.subQuestionId)}
-                  className="mt-3 min-h-11 w-full rounded-xl bg-blue-50 px-3 py-2 text-sm font-bold text-blue-900">
-                  この問題を演習する（結果に戻れます）
-                </button>}
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/*
-        ★★この単元を演習する（請求⑦-A の出口）★★
-
-        ここが「① 対戦 ⇒ ② 演習」の橋である。
-        対戦で出た章を並べ、★間違えた章を先に★ 出す。
-        押すとその章の演習画面に飛ぶ（既存の単元選択と同じ入口を使う）。
-
-        onPractice が渡されていないときは何も出さない。
-        押しても何も起きないボタンを出すのは、無いより悪い。
-      */}
-      {onPractice && chapterRows.length > 0 && (
-        <section className="mb-4">
-          <h2 className="mb-2 text-xs font-black" style={{ color: INK_SUB }}>
-            つづけて演習する
-          </h2>
-          <div className="grid gap-1.5">
-            {chapterRows.map((row) => (
-              <button
-                key={row.chapterId}
-                type="button"
-                onClick={() => onPractice(subject, row.chapterId)}
-                className="flex items-center gap-2 rounded-xl border-2 px-3 py-2.5 text-left transition active:scale-[0.99]"
-                style={{
-                  borderColor: row.wrong ? `${AMBER}55` : LINE,
-                  background: row.wrong ? `${AMBER}0E` : '#FFFFFF',
-                }}
-              >
-                <BookOpen size={16} className="shrink-0" style={{ color: theme.accent }} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-xs font-black" style={{ color: INK }}>
-                    {chapterTitleOf(row.chapterId)}
-                  </span>
-                  <span className="block text-xs font-bold" style={{ color: INK_SUB }}>
-                    {row.wrong ? '★まちがえた単元★ この単元を演習する' : 'この単元を演習する'}
-                  </span>
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
 
       {!ratingNote && (
         <p

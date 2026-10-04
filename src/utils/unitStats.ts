@@ -53,7 +53,7 @@ export function recordUnitResult(uid: string | null | undefined, chapterId: stri
 }
 
 export type UnitStatus = 'todo' | 'doing' | 'done';
-export const UNIT_STATUS_LABEL: Record<UnitStatus, string> = { todo: '未着手', doing: '学習中', done: '完了' };
+export const UNIT_STATUS_LABEL: Record<UnitStatus, string> = { todo: '未着手', doing: '学習中', done: '達成' };
 
 /**
  * 単元の状態を決める。

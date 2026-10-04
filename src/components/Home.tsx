@@ -1,7 +1,7 @@
 import './home-legibility.css';
 import './home-pillars.css';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { BookOpen, ChevronRight, Edit3, ArrowRight, BarChart3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Microscope, Flame, Sparkles, Gift, Store, Shirt, Award, Target, Zap, Headphones, PenLine } from 'lucide-react';
+import { ChevronRight, Edit3, BarChart3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Trophy, Store, Shirt, Award, Target, Zap } from 'lucide-react';
 import { auth } from '../firebase';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc, equippedFrameColor, equippedFramePattern, levelOf, equippedTitleLabel } from '../battle/core/growth';
@@ -58,15 +58,11 @@ import type { SubjectKey } from '../data/allChapters';
 import {
   SUBJECT_INDEX,
   getChapterIndexOfSubject,
-  type ChapterIndexEntry,
 } from '../data/chapterIndex.generated';
 // 公開/非公開の判断は src/config/features.ts が唯一の出どころ
 import { isSubjectEnabled } from '../config/features';
-import { SakuraPetals } from './SakuraPetals';
-import { NotebookScenery } from './NotebookScenery';
 import { getDaysUntilExam, EXAM_DATE_LABEL } from '../utils/examCountdown';
 import { getDueCount } from '../utils/reviewList';
-import { DoorMascot } from './DoorMascot';
 import { TobiraBuddy } from './TobiraBuddy';
 import { SpinMascot } from './SpinMascot';
 import { streakDoors } from '../data/tobiraMood';
@@ -348,23 +344,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
   // 大問をすべて解き終えた章は飛ばし、まだ残っている最初の章を提示する。
   // （completed_ は「ミニテストを通した」履歴でしかなく、
   //   演習の進捗を反映しないため、台帳側の章ごと件数を併せて見る）
-  const nextChapter = useMemo((): ChapterIndexEntry | undefined => {
-    const remaining = allChaptersList.find((c) => {
-      // 索引が持っている大問数（数え方は countChapterProblems と同一）。
-      const total = c.problemCount;
-      if (total === 0) return false;
-      return (solvedByChapter[c.id] || 0) < total;
-    });
-    return remaining || allChaptersList.find((c) => !completedIds.includes(c.id));
-  }, [completedIds, allChaptersList, solvedByChapter]);
 
   // 「次のマイルストーン」を算出（連続学習カード用）
-  const nextMilestone = useMemo(() => {
-    const milestones = [3, 7, 14, 30, 60, 100];
-    const target = milestones.find(m => m > streak);
-    if (!target) return null;
-    return { target, remaining: target - streak };
-  }, [streak]);
 
   const greetingName = profile?.name || 'ゲスト';
 
@@ -390,7 +371,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         <section className="game-mascot-stage" aria-label="とびら君のホームステージ">
           <div className="game-stage-backdrop" aria-hidden="true"><i /><i /><i /></div>
           {/* ★とびら君は「住人」（2026-10-01）★ 状態（はじめて・久しぶり・復習待ち・連続）で言うことが変わる。しっぽ付きの吹き出し */}
-          <TobiraBuddy className="game-stage-say" figure={false} bubble="top" input={{ screen: 'home', streak, dueCount: reviewDueCount, solved: solvedQuestions, daysAway: Math.max(0, daysAway), firstVisit: daysAway < 0 || (streak <= 1 && solvedQuestions === 0 && !completedIds.length), isGuest, seed: new Date().getDate() }} />
+          <TobiraBuddy className="game-stage-say" figure={false} bubble="top" input={{ screen: 'home', streak, dueCount: reviewDueCount, solved: solvedQuestions, daysAway: Math.max(0, daysAway), firstVisit: (daysAway < 0 || (streak <= 1 && solvedQuestions === 0 && !completedIds.length)) && growth.loginDays <= 1 && growth.matches === 0 && growth.studySolved === 0 && growth.rushPlays === 0, isGuest, loginDays: growth.loginDays, seed: new Date().getDate() }} />
           {growth && equippedTitleLabel(growth) && <p className="game-stage-caption">{equippedTitleLabel(growth)}</p>}
           <div className="game-stage-floor" aria-hidden="true"><div className="game-equipped-ring" data-frame-pattern={growth ? equippedFramePattern(growth) : 'plain'} style={{borderColor: growth ? equippedFrameColor(growth) : undefined}} /><Swords /></div>
           {/* ★2026-10-01 D：とびら君をドラッグで回せる（モンスト風）★ ちょんと押すと今までどおり着せ替え */}
@@ -401,7 +382,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
             <span>MY TOBIRA <b>Lv.{levelOf(growth.xp).level}</b></span>
           </div>}
           {onGrowth && <div className="game-stage-shortcuts" aria-label="ゲームメニュー">
-            <button className="stage-gacha" type="button" onClick={() => onGrowth('gacha')}><Gift /><span>ガチャ</span></button>
+            {/* ガチャは下のナビにあるので、ここはランキング（2026-10-04） */}
+            <button className="stage-gacha" type="button" onClick={onLeaderboard} aria-label="ランキングを見る"><Trophy /><span>ランキング</span></button>
             <button className="stage-shop" type="button" onClick={() => onGrowth('shop')}><Store /><span>ショップ</span></button>
             <button className="stage-outfit" type="button" onClick={() => onGrowth('outfit')}><Shirt /><span>きせかえ</span></button>
             <button className="stage-badges" type="button" onClick={() => onGrowth('badges')}><Award /><span>称号</span></button>
@@ -452,7 +434,6 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           {onRika && <button type="button" onClick={onRika}>高校入試 理科を開く</button>}
           <FeedbackButton screen="title" variant="text" label="ご意見・ご要望" /><FeedbackReplyInbox />
           {isGuest && !auth.currentUser && <GoogleLinkBanner variant="inline" dismissible />}
-          <button type="button" onClick={onLeaderboard}>ランキングを見る</button>
         </div>
       </dialog>
       {showNotices && <UpdateNoticeModal onClose={() => { setShowNotices(false); setUnreadCount(unreadNoticeCount()); }} />}

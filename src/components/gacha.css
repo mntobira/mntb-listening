@@ -257,7 +257,7 @@
 /* Keep the weekly UR hero; remove only the three secondary SR/SR/R cards.
  * Draw actions precede the optional carousel. On short screens the complete
  * lineup remains available in the existing collection dialog. */
-.compact-gacha .gacha-featured { flex-shrink:0; padding:6px; gap:4px; }
+.compact-gacha .gacha-featured { flex-shrink:0; padding:6px; gap:4px; align-self:stretch; width:100%; box-sizing:border-box; }
 .compact-gacha .gacha-featured > .gacha-step { font-size:13px; line-height:18px; }
 .compact-gacha .gacha-hero { min-height:76px; padding:5px 8px; gap:8px; box-shadow:0 0 0 1px #fff,0 2px 0 2px #efd28d; }
 .compact-gacha .gacha-hero-art { width:48px; height:62px; }
@@ -266,7 +266,13 @@
 .compact-gacha .gacha-room > .gacha-machine { order:1; }
 .compact-gacha .gacha-foot { order:2; }
 @media(max-height:740px) {
+ /* 2026-10-04: 隠すと中央が空白になるため、短い画面では小さめのカルーセルで余白を埋める */
+ .compact-gacha .gacha-room > .gacha-machine { min-height:96px; max-height:200px; }
+ .compact-gacha .gacha-exhibit { top:4px; bottom:30px; }
+ .compact-gacha .gacha-exhibit > * { transform:scale(.8); }
+ .compact-gacha .gacha-lead { display:none; }
+}
+@media(max-height:610px) {
  .compact-gacha .gacha-room > .gacha-machine { display:none; }
  .compact-gacha .gacha-featured { margin-block:auto; }
- .compact-gacha .gacha-lead { display:none; }
 }

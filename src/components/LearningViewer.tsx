@@ -1,4 +1,4 @@
-import type { MouseEvent as ReactMouseEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { useState, useEffect, useMemo, useCallback, useRef, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowLeft, BookOpen, Eye, EyeOff, LayoutList, Printer, X, ChevronLeft, ChevronRight } from 'lucide-react';

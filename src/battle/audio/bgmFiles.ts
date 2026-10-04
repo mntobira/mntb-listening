@@ -63,8 +63,10 @@ export const BGM_FILES: Readonly<Partial<Record<BgmFileKey, BgmFileSpec>>> = {
   battle: { url: '/bgm/battle/battle.mp3', dropSec: 7, loopStartSec: 7, loopEndSec: 67.5, gain: battleFileGain('battle'),
     license: 'フリー音源「風の列車」作曲：坂田白／配布元：創作堂さくら紅葉（https://yukizakura.net/）。利用規約第6条：商用・非商用を問わず利用可、カット・ループ調整などの加工可、配布元とURLの記載が条件' },
   // 2026-10-03 利用者の指定：対戦曲の2曲目に「カナリアスキップ」（135bpm）。試合ごとに 50% で風の列車と入れ替わる。
-  //   原曲 22.32 秒から切り出し → 曲頭から 7 秒で本編（原曲 29.32 秒、バンドとフルートが一斉に入る所）＝ START! と同時。
-  //   ループは作曲者指定のループ区間（原曲 0:14.222〜3:36.888 = 114 小節）に合わせ、本編の頭 7 秒 → 209.667 秒。
+  //   2026-10-03 利用者の指定「一番の盛り上がるところから」：
+  //   原曲 49.889 秒から切り出し → 曲頭 0〜7 秒はサビ前の盛り上げ（Bメロ・ドラムフィル）、
+  //   ★7 秒ちょうど（原曲 56.889 秒＝32小節目の頭）でサビ★＝ START! と同時。
+  //   ループは 114 小節（作曲者指定のループ区間の長さ）＝ 7 秒 → 209.667 秒。原曲でもサビは 114 小節後に同じ形で戻る。
   battle2: { url: '/bgm/battle/battle2.mp3', dropSec: 7, loopStartSec: 7, loopEndSec: 209.667, gain: battleFileGain('battle2'),
     license: 'フリーBGM「カナリアスキップ」作曲：まんぼう二等兵／配布元：OpenTracks（旧DOVA-SYNDROME https://opentracks.com/bgm/detail/7312 ）。音源利用ライセンス：商用・非商用を問わずアプリのBGMとして利用可、カット・ループ・フェード等の加工可、クレジット不要（音源単体の再配布・AI学習は禁止）' },
 };

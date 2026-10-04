@@ -109,7 +109,6 @@ interface ExplanationProps {
 }
 
 import { NodeData } from './InteractiveTree';
-import { InteractiveLogicTree } from './InteractiveLogicTree';
 /*
  * 図データは図データのファイル（chemistryTreeData）から直接読む。
  * chemistryData 経由だと、この画面がここで必要としていない
@@ -123,6 +122,8 @@ import { hasChapterTree } from '../data/chapterTreeMap';
 import { PracticeExplanationTree } from './PracticeExplanationTree';
 import { IonizationEnergyChart } from './IonizationEnergyChart';
 import { readJsonArray } from '../utils/safeLocalStorage';
+import { useGrowthProgress } from '../hooks/useGrowthProgress';
+import { NextBadgeHint } from '../battle/ui/GrowthParts';
 
 // Substance Tree Data for Chapter 1 (Moved to chemistryData.ts)
 
@@ -162,6 +163,7 @@ function formatResultTime(sec: number): string {
 
 export function Explanation({ mode: initialMode, chapter, answers, onBack, onReturnToBattle, isGuest, singleQuestionIndex, onNextQuestion, isLastQuestion, isMobileView, scoreBreakdown, scoreMeta, totalScore, runningCombo, resultTotalScore, resultTotalCorrect, resultTotalJudgeable, resultTotalTimeSec, questionRange, onRetryWrong, onNextChapter, nextChapterTitle, focusSubQuestionId }: ExplanationProps) {
   const isPracticeMode = initialMode === 'practice';
+  const { progress: growth } = useGrowthProgress();
   // Virtual mode is always 'mini_test' for bright style choices!
   const mode = 'mini_test';
 
@@ -196,33 +198,6 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
   /** スマホ：解答・解説エリアを学習フローチャート表示に切り替える */
   const [showFlowchart, setShowFlowchart] = useState(false);
 
-  const stepColors: Record<string, string> = {
-    "1": "bg-red-500/20 text-red-700 border-red-500/50 hover:bg-red-500/30",
-    "2": "bg-blue-500/20 text-blue-700 border-blue-500/50 hover:bg-blue-500/30",
-    "3": "bg-green-500/20 text-green-700 border-green-500/50 hover:bg-green-500/30",
-    "4": "bg-yellow-500/20 text-yellow-800 border-yellow-500/50 hover:bg-yellow-500/30",
-    "5": "bg-purple-500/20 text-purple-700 border-purple-500/50 hover:bg-purple-500/30",
-    "6": "bg-pink-500/20 text-pink-700 border-pink-500/50 hover:bg-pink-500/30",
-    "7": "bg-cyan-500/20 text-cyan-700 border-cyan-500/50 hover:bg-cyan-500/30",
-  };
-  const markerColors: Record<string, string> = {
-    "1": "bg-red-500",
-    "2": "bg-blue-500",
-    "3": "bg-green-500",
-    "4": "bg-yellow-500",
-    "5": "bg-purple-500",
-    "6": "bg-pink-500",
-    "7": "bg-cyan-500",
-  };
-  const borderColors: Record<string, string> = {
-    "1": "border-red-500",
-    "2": "border-blue-500",
-    "3": "border-green-500",
-    "4": "border-yellow-500",
-    "5": "border-purple-500",
-    "6": "border-pink-500",
-    "7": "border-cyan-500",
-  };
 
   const allQuestions = initialMode === 'mini_test' ? chapter.miniTest : (chapter.practiceProblems || []);
   /**
@@ -1377,6 +1352,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 <div><dt>時間</dt><dd>{formatResultTime(resultTotalTimeSec ?? 0)}</dd></div>
               </dl>
             </div>
+            {/* あと少し：演習でもらえる称号のうち近いもの（無ければ出さない） */}
+            <NextBadgeHint progress={growth} prefer="b_study" className="mt-2" />
 
             {/* ===== 次にすること =====
                 点数の直下に主操作を1つ置く。間違いがあれば「間違えた問題を解き直す」、
@@ -1400,7 +1377,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                     className="flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl bg-[#2C3E50] text-white font-bold text-sm px-4 hover:bg-[#1B2631] transition-colors"
                   >
                     <ArrowLeft size={16} className="rotate-180" aria-hidden="true" />
-                    {nextChapterTitle ? `次の単元へ：${nextChapterTitle}` : '次の単元へ'}
+                    {nextChapterTitle ? (/^第\d+回$/.test(nextChapterTitle) ? `次の回へ：${nextChapterTitle}` : `次の単元へ：${nextChapterTitle}`) : '次の単元へ'}
                   </button>
                 )}
               </div>

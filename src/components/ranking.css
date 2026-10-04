@@ -81,5 +81,22 @@
 .league-rows li { border-left-width:4px; gap:6px; padding:8px; }
 .league-rows li > b { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; flex:0 0 30px; color:#72561d; }
 .league-rows .league-public-profile { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#425c6d; font-size:12px; line-height:1.5; }
+.league-rows .league-public-motto { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#6b5a3a; font-size:12px; font-weight:700; line-height:1.5; }
 .league-rows li[data-top=true] { background:linear-gradient(100deg,#fff9e9,#fff 60%); }
 .league-rows li[data-me=true] { background:#fff0c6; }
+
+/* マナクランの導線（2026-10-03） */
+.clan-steps { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.clan-steps li { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 4px 8px; border-radius: 10px; font-size: 13px; font-weight: 700; color: #6b5a43; background: #f7f1e3; }
+.clan-steps li b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #d8c9a6; color: #fff; font-size: 12px; flex: none; }
+.clan-steps li[data-active] { background: #fff1c9; color: #3d3222; box-shadow: inset 0 0 0 2px #e5b93c; }
+.clan-steps li[data-active] b { background: #b18434; }
+.clan-steps li[data-done] { opacity: .75; }
+.clan-steps li[data-done] b { background: #4caf7a; }
+.clan-invite { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; padding: 8px 10px; border-radius: 12px; background: #fff8e4; border: 1px dashed #d9b75a; }
+.clan-invite span { font-size: 12px; font-weight: 700; color: #6b5a43; }
+.clan-invite strong { font: 900 20px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; color: #2c3e50; }
+.clan-invite button { margin-left: auto; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; gap: 4px; padding: 0 12px; border-radius: 10px; font-weight: 800; }
+.clan-hint { font-size: 12px; color: #6b5a43; }
+.clan-notice { margin: 6px 0; padding: 8px 10px; border-radius: 10px; background: #e9f7ef; color: #1f6b44; font-size: 13px; font-weight: 700; }
+.league-error button { margin-left: 8px; min-height: 44px; display: inline-flex; align-items: center; gap: 4px; }

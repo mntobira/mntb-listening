@@ -92,7 +92,6 @@ export function circledNumber(index: number): string {
 // -------------------------------------------------------------------
 
 import type {
-  ThinkingStep,
   TrendInsight,
   UnitTeaching,
   UnitConversionWalk,

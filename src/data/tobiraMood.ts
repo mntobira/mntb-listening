@@ -14,6 +14,7 @@ export type TobiraMood =
   | 'away'       // 久しぶり（3日以上あいた）
   | 'review'     // 復習待ちあり
   | 'streak'     // 連続記録中（3日以上）
+  | 'milestone'  // 通算ログインの節目（7・30・100日…）
   | 'fresh'      // ふつうの日（何も待っていない）
   | 'prebattle'  // 対戦前
   | 'win'
@@ -35,6 +36,8 @@ export interface MoodInput {
   /** 自分 − 相手 の点差（結果画面） */
   margin?: number;
   isGuest?: boolean;
+  /** 通算ログイン日数（節目の日だけ特別なひとこと） */
+  loginDays?: number;
   /** 同じ状態で言い方を少し変えるための種（日付など）。省略時は0 */
   seed?: number;
 }
@@ -52,6 +55,7 @@ const POSE: Record<TobiraMood, string> = {
   away: '/mascots/walking.webp',
   review: '/mascots/studying.webp',
   streak: '/mascots/cheering.webp',
+  milestone: '/mascots/trophy.webp',
   fresh: '/mascots/basic.webp',
   prebattle: '/mascots/good.webp',
   win: '/mascots/trophy.webp',
@@ -65,6 +69,17 @@ const POSE: Record<TobiraMood, string> = {
 
 /** 惜敗とみなす点差（1問分の正解点ぐらい） */
 export const CLOSE_MARGIN = 120;
+
+/** 通算ログインの節目と、その日のひとこと */
+export const LOGIN_MILESTONES: Readonly<Record<number, string>> = {
+  7: '7日目だね！ 1週間いっしょに来てくれてありがとう',
+  14: '14日目！ もう立派な習慣だね',
+  30: '30日いっしょだね！ ここまで続けた自分をほめよう',
+  50: '50日目！ 扉がたくさん開いてきたね',
+  100: '100日目…！ きみは本物の努力家だよ',
+  200: '200日目！ ずっととなりにいるよ',
+  365: '1年いっしょだね！ 本当にありがとう',
+};
 
 const pick = (list: readonly string[], seed = 0) => list[Math.abs(Math.floor(seed)) % list.length];
 
@@ -93,6 +108,7 @@ export function tobiraMood(i: MoodInput): MoodOut {
       const due = i.dueCount ?? 0;
       const streak = i.streak ?? 0;
       if (i.firstVisit) return out('first', 'はじめまして！ ぼくと最初の1問、やってみよう', 'warm');
+      if (i.loginDays && LOGIN_MILESTONES[i.loginDays]) return out('milestone', LOGIN_MILESTONES[i.loginDays], 'cheer');
       if ((i.daysAway ?? 0) >= 3) return out('away', `${i.daysAway}日ぶり！ 待ってたよ。軽く1問からいこう`, 'warm');
       if (due > 0) return out('review', `${due}問、ぼくと片づけよう`, 'calm');
       if (streak >= 3) return out('streak', `${streak}日連続！ 扉がまたひとつ開いたよ`, 'cheer');

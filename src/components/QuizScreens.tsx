@@ -104,6 +104,8 @@ interface QuizScreensProps {
   subject?: string;
   onRetryWrong?: (chapterId: string, firstWrongIndex: number) => void;
   onNextChapter?: (chapterId: string) => void;
+  /** 1回だけ解いたとき、同じ単元の次の回を始める（英文法・リスニング） */
+  onNextRound?: (chapterId: string, index: number) => void;
 }
 
 export function QuizScreens({
@@ -125,6 +127,7 @@ export function QuizScreens({
   subject,
   onRetryWrong,
   onNextChapter,
+  onNextRound,
 }: QuizScreensProps) {
   /*
    * 章の解決はここで行う。
@@ -156,6 +159,13 @@ export function QuizScreens({
     if (at < 0) return null;
     const pool = mode === 'mini_test' ? 'miniTest' : 'practiceProblems';
     return list.slice(at + 1).find((c: any) => (c[pool] || []).length > 0) || null;
+  })();
+
+  // 1回だけ解いた → 同じ単元の次の回（無ければ単元一覧へ戻る）
+  const nextRoundIndex = (() => {
+    if (screen !== 'explanation' || !questionRange || questionRange.startIndex !== questionRange.endIndex) return -1;
+    const pool = mode === 'mini_test' ? (chapter.miniTest || []) : (chapter.practiceProblems || []);
+    return questionRange.endIndex + 1 < pool.length ? questionRange.endIndex + 1 : -1;
   })();
 
   if (screen === 'quiz') {
@@ -199,8 +209,9 @@ export function QuizScreens({
         // 解いていない回まで答え合わせに並ぶと、どこまでやったか分からなくなる。
         questionRange={questionRange}
         onRetryWrong={onRetryWrong ? (index) => onRetryWrong(chapter.id, index) : undefined}
-        onNextChapter={nextChapter && onNextChapter ? () => onNextChapter(nextChapter.id) : undefined}
-        nextChapterTitle={nextChapter?.abstractTitle || nextChapter?.realTitle || undefined}
+        onNextChapter={nextRoundIndex >= 0 && onNextRound ? () => onNextRound(chapter.id, nextRoundIndex)
+          : nextChapter && onNextChapter ? () => onNextChapter(nextChapter.id) : undefined}
+        nextChapterTitle={nextRoundIndex >= 0 && onNextRound ? `第${nextRoundIndex + 1}回` : nextChapter?.abstractTitle || nextChapter?.realTitle || undefined}
       />
     </ErrorBoundary>
   );

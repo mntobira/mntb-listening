@@ -23,7 +23,7 @@ import { answerNumber } from '../core/arenaRules';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { BookOpenCheck, Clock3, Flame, RotateCcw, Sparkles, Target } from 'lucide-react';
+import { BookOpenCheck, Clock3, Flame, RotateCcw, Target } from 'lucide-react';
 
 import { auth } from '../../firebase';
 import { captureWrongAnswers, loadReviewList, type WrongAnswerInput } from '../../utils/reviewList';
@@ -33,7 +33,7 @@ import {
   statsOf,
   type ReviewPick,
 } from '../core/battleSummary';
-import type { BattleQuestion, BattleResultSummary } from '../core/types';
+import type { BattleResultSummary } from '../core/types';
 import { battleAudio } from '../audio/battleAudio';
 import { AMBER, BattleButton, INK, INK_SUB, LINE, WRONG } from './BattleParts';
 import { BattleText } from './BattleText';

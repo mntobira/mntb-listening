@@ -58,3 +58,45 @@ export function rewardPlan(entries, powerPolicy) {
   for (const clan of clans.filter(c => c.rank <= 3)) for (const e of clan.members) gifts.push({ uid:e.uid, kind:'clan', rank:clan.rank, label:'マナクラン' });
   return { gifts, clans:clans.map(({members,...publicRow}) => publicRow) };
 }
+
+/** とびら君のレベル（src/battle/core/growth.ts の levelOf と同じ式。Lv.99 まで） */
+export function levelFromXp(xp) {
+  const need = (lv) => lv <= 1 ? 0 : Math.round(60 * Math.pow(lv - 1, 1.6) + 50 * (lv - 2));
+  const safe = Number.isFinite(xp) && xp > 0 ? Math.floor(xp) : 0;
+  let level = 1;
+  while (level < 99 && safe >= need(level + 1)) level += 1;
+  return level;
+}
+export const STAGE_CLEAR_PERFECTS = 3;
+/** 端末ごとの記録を合算する。満点・挑戦回数・XP は足し算（各端末の記録は独立しているため） */
+export function aggregateAchievements(devices) {
+  const stages = {};
+  let xp = 0;
+  for (const d of devices) {
+    xp += Number.isInteger(d?.xp) ? d.xp : 0;
+    for (const [k, v] of Object.entries(d?.stages ?? {})) {
+      const cur = stages[k] ?? { p: 0, n: 0 };
+      stages[k] = { p: cur.p + (v?.p ?? 0), n: cur.n + (v?.n ?? 0) };
+    }
+  }
+  const cleared = Object.values(stages).filter((s) => s.p >= STAGE_CLEAR_PERFECTS).length;
+  return { stages, xp, stagesCleared: Math.min(100000, cleared), level: levelFromXp(xp) };
+}
+/** 端末から届いた記録の検証（壊れた・大きすぎる値は受け取らない） */
+export function parseDeviceAchievements(data) {
+  if (!/^[A-Za-z0-9_-]{8,64}$/.test(String(data?.deviceId ?? ''))) return null;
+  const xp = data?.xp;
+  if (!Number.isInteger(xp) || xp < 0 || xp > 100000000) return null;
+  const raw = data?.stages;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const entries = Object.entries(raw);
+  if (entries.length > 2000) return null;
+  const stages = {};
+  for (const [k, v] of entries) {
+    if (!/^[A-Za-z0-9_:-]{1,200}$/.test(k)) return null;
+    const p = v?.p, n = v?.n;
+    if (!Number.isInteger(p) || !Number.isInteger(n) || p < 0 || n < 0 || p > n || n > 100000) return null;
+    stages[k] = { p, n };
+  }
+  return { deviceId: data.deviceId, xp, stages };
+}

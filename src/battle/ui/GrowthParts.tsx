@@ -26,6 +26,7 @@ import {
   equippedTitleLabel,
   levelOf,
   missionById,
+  nearestBadgeGoal,
   nextBadgeGoals,
   nextLevelUnlock,
   type GrowthProgress,
@@ -492,5 +493,22 @@ export function StatCard({ label, value, sub, color = INK }: { label: string; va
         </p>
       )}
     </div>
+  );
+}
+
+// ============================================================
+// あと少し（結果画面の1行）
+// ============================================================
+
+/** 結果画面に置く「称号『○○』まで あと N」の1行。近い目標が無ければ何も出さない。 */
+export function NextBadgeHint({ progress, prefer, className = '' }: { progress: GrowthProgress; prefer?: string; className?: string }) {
+  const g = nearestBadgeGoal(progress, prefer);
+  const b = g ? badgeById(g.id) : undefined;
+  if (!g || !b) return null;
+  return (
+    <p className={`flex items-center justify-center gap-1 text-xs font-bold ${className}`} style={{ color: INK_SUB }} data-next-badge-hint role="status">
+      <Flag size={13} aria-hidden="true" className="shrink-0" style={{ color: AMBER }} />
+      <span className="min-w-0 truncate">称号「<b style={{ color: INK }}>{b.label}</b>」まで <b style={{ color: AMBER }}>あと {g.remain}</b>（{b.desc}）</span>
+    </p>
   );
 }

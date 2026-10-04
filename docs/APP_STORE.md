@@ -37,7 +37,12 @@ App Store Review Guidelines で引っかかりやすい所と、このアプリ�
    名前の差し替え・ランキングからの削除は Firebase コンソール（Admin）で行う
 7. **アカウント削除依頼**：`[アカウント削除依頼] uid: …` が届いたら、Admin で
    `leaderboard_total/{uid}`・`leaderboard_chapter/*_{uid}`・`leaderboard_events`（uid 一致）・
-   `battle_ranking/{uid}`・`app_users/{uid}`・`league_rewards/{uid}` を 30日以内に削除（ルールでクライアントからは消せないため）
+   `battle_ranking/{uid}`・`app_users/{uid}`・`league_rewards/{uid}`・`battle_history/{uid}`（items 含む）・
+   `user_achievements/{uid}`（devices 含む）・`public_study_profiles/{uid}` を 30日以内に削除（ルールでクライアントからは消せないため）
+
+8. **本番デプロイは同時に**：`firestore.rules` と Functions（`achievements` を含む）を一緒に出す
+   （ルールが `stagesCleared`/`level` をサーバー専用にしているため、片方だけだと達成数が反映されない）。
+   リリースビルド `npm run build` には `VITE_FIREBASE_*` の環境変数が必要。
 
 ## 3. ネイティブ化するとき（Capacitor 等で包む場合）の注意
 

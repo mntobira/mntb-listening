@@ -1,10 +1,41 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig} from 'vite';
+import fs from 'fs';
+import {defineConfig, loadEnv, type Plugin} from 'vite';
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
+/**
+ * ★本番ビルドだけ CSP を <meta> でも入れる（2026-10-04）★
+ *   _headers / vercel.json の CSP は「Webで配信したとき」しか効かない。
+ *   ZIP にまとめてアプリとして包む・別ホスティングに置く場合でも、
+ *   スクリプト注入（XSS）や外部への送信を止められるよう HTML 自体に書く。
+ *   値は public/_headers と同じものを使う（片方だけ直して食い違う事故を防ぐ）。
+ *   frame-ancestors / upgrade-insecure-requests は <meta> では無視・警告になるので外す。
+ *   ローカル（エミュレータ・デモ）では 127.0.0.1 へ通信するので入れない。
+ */
+function releaseCsp(enabled: boolean): Plugin {
+  return {
+    name: 'release-csp-meta',
+    apply: 'build',
+    transformIndexHtml(html) {
+      if (!enabled) return html;
+      const headers = fs.readFileSync(path.resolve(__dirname, 'public/_headers'), 'utf8');
+      const line = headers.split('\n').find(l => l.trim().startsWith('Content-Security-Policy:'));
+      if (!line) throw new Error('public/_headers に Content-Security-Policy がありません');
+      const csp = line.split('Content-Security-Policy:')[1]
+        .split(';').map(d => d.trim())
+        .filter(d => d && !/^(frame-ancestors|upgrade-insecure-requests|report-uri|sandbox)\b/.test(d))
+        .join('; ');
+      return html.replace('<head>', `<head>\n    <meta http-equiv="Content-Security-Policy" content="${csp}">`);
+    },
+  };
+}
+
+export default defineConfig(({mode}) => {
+ const env = loadEnv(mode, process.cwd(), 'VITE_');
+ const release = Boolean(env.VITE_FIREBASE_API_KEY) && env.VITE_USE_EMULATORS !== 'true';
+ return {
+  plugins: [react(), tailwindcss(), releaseCsp(release)],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
@@ -508,4 +539,5 @@ export default defineConfig({
     // Watching them exhausts Linux inotify limits and crashes the dev preview.
     watch: { ignored: ['**/.npm-cache/**', '**/dist/**', '**/.delivery/**', '**/.tmpwork/**', '**/.tmp_ui/**', '**/functions/node_modules/**', '**/shots/**'] },
   },
+};
 });

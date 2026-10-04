@@ -1,7 +1,7 @@
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
-import { handleClan, recordRating, recordSeasonRating, recordDuel, settleSeason } from './index.mjs';
+import { handleClan, handleAchievements, recordRating, recordSeasonRating, recordDuel, settleSeason, sweepStaleBattleData } from './index.mjs';
 import { EPOCH, PERIOD, seasonAt } from './core.mjs';
 
 const project = process.env.GCLOUD_PROJECT;
@@ -92,4 +92,50 @@ test('fortnight settlement and own-account gift claims are idempotent', async ()
   await assert.rejects(call('other', 'claimReward', { rewardId: gifts[0].id }), { code: 'not-found' });
   assert.equal((await call('winner', 'claimReward', { rewardId: gifts[0].id })).id, gifts[0].id);
   assert.equal((await ref.get()).get('status'), 'settled');
+});
+
+test('sweepStaleBattleData removes only stale codes/tickets and aborts only old waiting rooms', async () => {
+  const now = Date.now(); const old = Timestamp.fromMillis(now - 3 * 3600000); const fresh = Timestamp.fromMillis(now - 60000);
+  await db.doc('battle_codes/OLD1').set({ roomId: 'r1', createdAt: old });
+  await db.doc('battle_codes/NEW1').set({ roomId: 'r2', createdAt: fresh });
+  await db.doc('battle_queue/u-old').set({ subject: 's', createdAt: old });
+  await db.doc('battle_queue/u-new').set({ subject: 's', createdAt: fresh });
+  await db.doc('battle_rooms/w-old').set({ status: 'waiting', createdAt: old });
+  await db.doc('battle_rooms/w-new').set({ status: 'waiting', createdAt: fresh });
+  await db.doc('battle_rooms/p-old').set({ status: 'playing', createdAt: old });
+  const out = await sweepStaleBattleData(now);
+  assert.deepEqual(out, { codes: 1, queue: 1, rooms: 1 });
+  assert.equal((await db.doc('battle_codes/OLD1').get()).exists, false);
+  assert.equal((await db.doc('battle_codes/NEW1').get()).exists, true);
+  assert.equal((await db.doc('battle_queue/u-new').get()).exists, true);
+  assert.equal((await db.doc('battle_rooms/w-old').get()).get('status'), 'aborted');
+  assert.equal((await db.doc('battle_rooms/w-new').get()).get('status'), 'waiting');
+  assert.equal((await db.doc('battle_rooms/p-old').get()).get('status'), 'playing');
+});
+
+test('achievements: two devices are merged server-side and written to the public profile', async () => {
+  const auth = { uid: 'a', token: { firebase: { sign_in_provider: 'google.com' } } };
+  await db.doc('public_study_profiles/a').set({ public: true, targetSchool: 'A', studySeconds: 0 });
+  await handleAchievements({ auth, data: { deviceId: 'device-one-1', xp: 100, stages: { s1: { p: 2, n: 2 } } } });
+  const r = await handleAchievements({ auth, data: { deviceId: 'device-two-2', xp: 3100, stages: { s1: { p: 1, n: 1 }, s2: { p: 1, n: 1 } } } });
+  assert.equal(r.stagesCleared, 1); assert.equal(r.level, 11); assert.deepEqual(r.stages.s1, { p: 3, n: 3 });
+  const pub = (await db.doc('public_study_profiles/a').get()).data();
+  assert.equal(pub.stagesCleared, 1); assert.equal(pub.level, 11);
+  // 同じ端末から送り直しても二重に数えない（端末ごとに上書き）
+  const again = await handleAchievements({ auth, data: { deviceId: 'device-one-1', xp: 100, stages: { s1: { p: 2, n: 2 } } } });
+  assert.equal(again.xp, 3200);
+  await assert.rejects(handleAchievements({ auth: null, data: {} }), { code: 'unauthenticated' });
+  await assert.rejects(handleAchievements({ auth, data: { deviceId: 'x', xp: 1, stages: {} } }), { code: 'invalid-argument' });
+  // 非公開の人の公開プロフィールは作らない
+  await handleAchievements({ auth: { ...auth, uid: 'b' }, data: { deviceId: 'device-b-01', xp: 1, stages: {} } });
+  assert.equal((await db.doc('public_study_profiles/b').get()).exists, false);
+});
+
+test('achievements: device count is capped so one user cannot flood storage', async () => {
+  const auth = { uid: 'flood', token: { firebase: { sign_in_provider: 'google.com' } } };
+  for (let i = 0; i < 20; i++) await db.doc(`user_achievements/flood/devices/dev-${String(i).padStart(6, '0')}`).set({ xp: 0, stages: {} });
+  await assert.rejects(handleAchievements({ auth, data: { deviceId: 'dev-new-device', xp: 1, stages: {} } }), { code: 'resource-exhausted' });
+  // 既存の端末からの更新は引き続きできる
+  const ok = await handleAchievements({ auth, data: { deviceId: 'dev-000003', xp: 5, stages: {} } });
+  assert.equal(ok.xp, 5);
 });

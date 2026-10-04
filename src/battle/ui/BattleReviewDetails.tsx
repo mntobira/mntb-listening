@@ -28,7 +28,24 @@ export async function loadReviewExplanation(question: BattleQuestion): Promise<s
   const problem = [...chapter.practiceProblems || [], ...mini].find((p: any) => p.id === question.problemId);
   const sub = problem?.subQuestions?.find((sq: any) => sq.id === question.subQuestionId);
   if (!sub) return '';
-  return [sub.explanation, problem.explanation].filter((text, i, all) => typeof text === 'string' && text.trim() && all.indexOf(text) === i).join('\n\n');
+  // ★この1問の解説だけを出す（2026-10-04）★ 大問の解説（problem.explanation）は「問1〜問5の解答一覧」なので、
+  //   対戦で出た1問と対応しない。小問ごとの解説（detailedExplanation / explanation）だけを使う。
+  return subQuestionExplanation(sub);
+}
+
+/** 小問1つぶんの解説テキスト（ポイント・考え方の手順）。無ければ空文字 */
+export function subQuestionExplanation(sub: any): string {
+  const d = sub?.detailedExplanation;
+  const parts: string[] = [];
+  if (d && typeof d === 'object') {
+    if (typeof d.theme === 'string' && d.theme.trim()) parts.push(`【ポイント】${d.theme.trim()}`);
+    if (Array.isArray(d.steps)) {
+      const steps = d.steps.filter((x: unknown) => typeof x === 'string' && x.trim());
+      if (steps.length) parts.push(steps.join('\n'));
+    }
+  }
+  if (typeof sub?.explanation === 'string' && sub.explanation.trim()) parts.push(sub.explanation.trim());
+  return parts.join('\n\n');
 }
 
 export function BattleReviewDetails({ question, oneLine }: { question: BattleQuestion; oneLine?: string }) {
@@ -50,7 +67,7 @@ export function BattleReviewDetails({ question, oneLine }: { question: BattleQue
     {open && <div className="min-w-0 break-words text-base leading-8" data-battle-explanation>
       {failed ? <div role="alert">解説を読み込めませんでした。<button type="button" className="ml-2 min-h-11 underline" onClick={() => setRetry(n => n + 1)}>再読み込み</button></div>
         : text === null ? <p role="status">解説を読み込んでいます…</p>
-        : text ? <><p className="mb-2 text-xs text-slate-500">{question.subject === 'rika' ? '元の教材の関連資料' : '元の演習問題の解説（関連する小問を含みます）'}</p><BattleText text={text} subject={question.subject} /></>
+        : text ? <><p className="mb-2 text-xs text-slate-500">{question.subject === 'rika' ? '元の教材の関連資料' : 'この問題の解説'}</p><BattleText text={text} subject={question.subject} /></>
         : oneLine ? <BattleText text={oneLine} subject={question.subject} />
         : <p>この問題には詳しい解説が登録されていません。上の問題文と正しい答えを確認し、対応する演習で復習できます。</p>}
     </div>}

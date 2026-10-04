@@ -55,6 +55,8 @@ export function BattleAiRoomScreen({
   onOpenProfile, onOpenMissions, onActiveChange,
   onReview,
   ghost,
+  retryIds,
+  onRetryWrong,
 }: {
   subject: string;
   level: AiLevel;
@@ -86,10 +88,14 @@ export function BattleAiRoomScreen({
    * 渡すと「全国対戦」として見せ、名前・レートは ghost.profile、試合は自動で始まる。
    */
   ghost?: { profile: AiProfile; reason: GhostReason };
+  /** 間違えた問題だけの再対戦（出題IDの一覧）。渡すとこの問題だけで試合をする */
+  retryIds?: readonly string[];
+  /** 結果画面の「間違えた問題だけ再対戦」 */
+  onRetryWrong?: (subject: string, ids: string[]) => void;
 }) {
   const theme = subjectTheme(subject as SubjectKey);
   const profile = ghost?.profile ?? aiProfileOf(level);
-  const b = useAiBattle(subject, level, matchNo, questionCount, chapterId, ghost?.profile);
+  const b = useAiBattle(subject, level, matchNo, questionCount, chapterId, ghost?.profile, retryIds);
   // ★開始前（読み込み・はじめる画面）も待合室の曲を鳴らし続ける（2026-10-02）★
   //   この画面は親（BattleMode）から「BGMは自分で持つ」と見なされるので、
   //   対戦ステージが始まるまで誰も曲を要求せず、無音になっていた。
@@ -182,6 +188,8 @@ export function BattleAiRoomScreen({
         growthMatchId={growthMatchId} growthOwnerUid={growthOwnerUid} growthEligible
         onOpenProfile={onOpenProfile} onOpenMissions={onOpenMissions}
         onReview={onReview}
+        onRetryWrong={onRetryWrong}
+        retryMode={!!retryIds}
         myAnsweredIndexes={b.myAnsweredIndexes}
         matchKey={`ai-${subject}-${level}-${matchNo}`}
       />

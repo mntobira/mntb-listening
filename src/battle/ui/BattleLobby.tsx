@@ -130,7 +130,7 @@ export function BattleLobby({
     try {
       await nav.share({
         title: 'マナトビ 対戦モード',
-        text: `マナトビの対戦しよう！ 合言葉は「${room.joinCode}」（${theme.label}）`,
+        text: `マナトビの対戦しよう！ 合言葉は「${room.joinCode}」（${theme.label}）※フレンドどうしだけ入れます`,
       });
     } catch {
       // 共有をキャンセルしただけなので無視する
@@ -237,7 +237,7 @@ export function BattleLobby({
             {room.joinCode}
           </p>
           <p className="relative z-[2] mb-3 text-xs font-bold" style={{ color: INK_SUB }}>
-            相手に伝えて「合言葉で参加する」から入ってもらってください
+            フレンドに伝えて「合言葉で入る」から入ってもらってください（フレンドどうしだけ入れます）
           </p>
           <div className="relative z-[2] flex justify-center gap-2">
             <button
@@ -337,7 +337,7 @@ export function BattleLobby({
                 </p>
                 {!isNational && (
                   <p className="text-xs font-bold" style={{ color: INK_SUB }}>
-                    合言葉を伝えましたか？
+                    フレンドに合言葉を伝えましたか？
                   </p>
                 )}
               </div>

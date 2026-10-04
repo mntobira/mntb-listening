@@ -108,8 +108,6 @@ export function ProblemPane({
   problemScrollRef,
 }: ProblemPaneProps) {
   // Quiz.tsx にあったときの呼び名をそのまま残す（下の JSX を書き換えないため）
-  const tracks = (currentQuestion as any)?.audioTracks;
-
   const materialTrack = listeningTracks.find(t => t.subId === activeStepSub?.id);
   useEffect(() => {
     const pane = problemScrollRef.current;

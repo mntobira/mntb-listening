@@ -2991,14 +2991,26 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 @media (prefers-reduced-motion: reduce) { .tobira-aura-bit { animation: none; } }
 
 /* ── ガチャで当てた壁紙（AppWallpaper が <html> に --app-wallpaper を入れる）──
-   背景の地だけを差し替え、その上に薄い紙のベールを重ねて文字の読みやすさを保つ。 */
+   ★2026-10-03 直した不具合：「大学ノートなどの壁紙を付けても出ない」★
+     以前はホーム・ガチャ・マイページだけに 70% の紙色のベールを重ねて描き、
+     学習・対戦・設定・復習ノートは各画面が自分の背景で全面を塗っていた。
+     大学ノートの罫線のような淡い柄は、70% のベールで見えなくなり、ほかの画面では塗りつぶされていた。
+   今は「全面の画面」すべてで、壁紙＋薄いベール（明るい壁紙 35%・暗い壁紙 50%）にする。
+   カード・問題文・ボタンの白地はそのままなので、文字の読みやすさは変わらない。 */
+html[data-wallpaper] { --wp-veil: #fffdf859; }
+html[data-wallpaper=dark] { --wp-veil: #fffdf880; }
 html[data-wallpaper] body { background: var(--app-wallpaper) fixed; }
-html[data-wallpaper] .game-home,
-html[data-wallpaper] .launch-screen { background: linear-gradient(#fffdf8b3,#fffdf8a6), var(--app-wallpaper); background-attachment: fixed; }
-html[data-wallpaper=dark] .game-home,
-html[data-wallpaper=dark] .launch-screen { background: linear-gradient(#fffdf899,#fffdf88c), var(--app-wallpaper); background-attachment: fixed; }
+html[data-wallpaper] :is(.game-home, .launch-screen, .sc-page, .mtb-page, .mtb-page.chapter-route, .mana-hub, .review-note, #battle-shell) {
+  background: linear-gradient(var(--wp-veil), var(--wp-veil)), var(--app-wallpaper) !important;
+  background-attachment: fixed !important;
+}
+/* 画面の中に入れ子になった「全面の紙」は透明にして、外側の壁紙を見せる */
+html[data-wallpaper] .mana-hub #battle-shell,
+html[data-wallpaper] #battle-shell > .notebook-paper.flex-1,
+html[data-wallpaper] #battle-shell .notebook-paper.flex-1:not(.rounded-2xl):not([class*="rounded-"]) { background: transparent !important; }
+/* ホームの罫線飾りは壁紙と重なるので消す */
+html[data-wallpaper] .home-lobby-lines { display: none; }
 .wallpaper-swatch { display: block; width: 100%; aspect-ratio: 3 / 4; border-radius: 12px; border: 2px solid #fff; box-shadow: 0 0 0 1px #d8cfbd; }
-html[data-wallpaper] .mana-hub { background: linear-gradient(#f4f1eab8,#f4f1eaad), var(--app-wallpaper); background-attachment: fixed; }
 .gacha-wallpaper-art { position: relative; display: inline-flex; flex: none; align-items: flex-end; justify-content: center; border-radius: 10px; border: 2px solid #fff; box-shadow: 0 0 0 1px #d8cfbd, 0 2px 8px #0002; overflow: hidden; }
 .gacha-wallpaper-art img { object-fit: contain; margin-bottom: 8%; filter: drop-shadow(0 3px 2px #0003); }
 .gacha-collection-kinds { flex-wrap: wrap; }

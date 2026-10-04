@@ -31,17 +31,6 @@ interface FloatingScoreAnimationProps {
   isVisible: boolean;
 }
 
-// \u624b\u66f8\u304d\u98a8\u30a2\u30cb\u30e1\u30fc\u30b7\u30e7\u30f3\u7528\u306e\u30e9\u30d9\u30eb\u30fb\u8272\u5b9a\u7fa9
-const SCORE_ITEMS_CONFIG = [
-  { id: 'base',        label: '\u57fa\u790e\u70b9',       bgClass: 'bg-rose-500' },
-  { id: 'time',        label: '\u6642\u9593\u30dc\u30fc\u30ca\u30b9',   bgClass: 'bg-blue-500' },
-  { id: 'combo',       label: '\u30b3\u30f3\u30dc\u30dc\u30fc\u30ca\u30b9', bgClass: 'bg-orange-500' },
-  { id: 'perfect',     label: '\u30d1\u30fc\u30d5\u30a7\u30af\u30c8',   bgClass: 'bg-amber-500' },
-  { id: 'descriptive', label: '\u8a18\u8ff0\u5f0f',     bgClass: 'bg-violet-500' },
-  { id: 'penalty',     label: '\u30da\u30ca\u30eb\u30c6\u30a3',   bgClass: 'bg-gray-500' },
-  { id: 'total',       label: '\u5408\u8a08',           bgClass: 'bg-emerald-600' },
-] as const;
-
 export function FloatingScoreAnimation({
   breakdown,
   totalScore,

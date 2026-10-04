@@ -24,7 +24,7 @@ describe('BGMの音量と1つのスイッチ（2026-10-01）', () => {
     expect(appBgmVolume(1)).toBeCloseTo(APP_BGM_GAIN);
   });
   it('実測値はファイルと一致する（音源差し替え時に必ず測り直す）', () => {
-    expect(BGM_MEASURED_LUFS).toEqual({ title: -13.4, waiting: -20.3, battle: -19.7, battle2: -20.4 });
+    expect(BGM_MEASURED_LUFS).toEqual({ title: -13.4, waiting: -20.3, battle: -19.7, battle2: -20.3 });
   });
   it('アプリBGMのON/OFFが対戦BGMにも写る（逆向きも）', () => {
     const app = readFileSync('src/App.tsx', 'utf8');
