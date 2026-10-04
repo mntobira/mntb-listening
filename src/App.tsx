@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { AdBannerSlot } from './ads/AdBannerSlot';
 import React, { useState, useEffect, useRef } from 'react';
 import { setReviewFocus } from './utils/reviewFocus';
 import { BottomNavigation } from './components/ui/BottomNavigation';
@@ -1876,7 +1877,8 @@ export default function App() {
                 ref={(node: HTMLElement | null) => {
                   if (!node) return;
                   const shell = node.closest<HTMLElement>('.app-shell');
-                  const measure = () => shell?.style.setProperty('--app-nav-h', `${node.getBoundingClientRect().height}px`);
+                  // バナー広告（src/ads）を下に出すときは、その高さも足す。広告OFFの間は --ad-bottom-h = 0px
+                  const measure = () => shell?.style.setProperty('--app-nav-h', `calc(${node.getBoundingClientRect().height}px + var(--ad-bottom-h, 0px))`);
                   measure();
                   const observer = new ResizeObserver(measure);
                   observer.observe(node);
@@ -1904,6 +1906,9 @@ export default function App() {
           </div>
         </div>
       </>
+
+      {/* バナー広告の場所（今は OFF なので何も描かない。src/ads/adConfig.ts で有効にする） */}
+      <AdBannerSlot screen={appState === 'battle' && battleActive ? 'battle_live' : appState} />
 
       {/* ミッション達成のお知らせ（どの画面でも上に出る。受け取りはミッション画面で） */}
       <React.Suspense fallback={null}>

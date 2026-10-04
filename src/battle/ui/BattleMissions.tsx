@@ -16,7 +16,7 @@
  * 1分ごとにしか更新しない（毎秒描き直す価値は無い）。
  */
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft, CalendarCheck, Clock, Coins, Gift, PartyPopper, Sparkles, Zap } from 'lucide-react';
 import { allMissionsClaimed, allMissionsForDate, chestOpenedToday, completeChestFor, currentCompleteStreak, localDateKey, missionsForDate, msUntilNextDay, rolloverDaily, type CompleteChest, type GrowthProgress } from '../core/growth';
 import { claimMissionReward, loadMyGrowth, openChest, subscribeGrowth } from '../data/growthStore';
@@ -31,7 +31,7 @@ function remainLabel(ms: number): string {
   return `${m}分`;
 }
 
-export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, standalone = false }: { onBack: () => void; onBattle?: () => void; onReview?: () => void; onShop?: () => void; onRush?: () => void; standalone?: boolean; key?: string }) {
+export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, standalone = false, extra }: { onBack: () => void; onBattle?: () => void; onReview?: () => void; onShop?: () => void; onRush?: () => void; standalone?: boolean; key?: string; /** ミッションの下に足す内容（マイページから開いたとき「レベルで手に入るもの」） */ extra?: React.ReactNode }) {
   const [progress, setProgress] = useState<GrowthProgress | null>(null);
   const [claiming, setClaiming] = useState<string | null>(null);
   const [justClaimed, setJustClaimed] = useState<string | null>(null);
@@ -297,6 +297,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
         ミッションは毎日0時に入れかわり、全員おなじ内容です。ボーナスミッションは演習（大問に得点）・英単語（4択・単語帳）・マナラッシュ・ガチャや着がえで進みます。達成すると、どの画面でも上にお知らせが出ます。コインは「プロフィール」でとびら君の装備と交換できます。
         復習リストの「できた」で進みます。同じ問題は1日1回までです。全部うけとると宝箱が開き、7日連続で大当たりです。
       </p>
+      {extra}
     </BattleShell>
   );
 }

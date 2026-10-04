@@ -13,7 +13,7 @@
     "gen:index": "tsx scripts/gen-chapter-index.mts && tsx scripts/scope-listening.mts",
     "gen:battle-pool": "tsx scripts/gen-battle-pool.mts",
     "gen:vocabulary": "tsx scripts/gen-listening-vocabulary.mts",
-    "test": "vitest run tests/standalone.test.ts tests/listeningExplanation.test.ts tests/updateNotices.test.ts tests/connectionCheck.test.ts tests/revision.test.ts tests/bgmUnify.test.ts tests/battleAudioLifecycle.test.ts tests/englishGrammarV3.test.ts tests/chunkRecovery.test.ts tests/battleBgmFiles.test.ts tests/polyfills.test.ts tests/storageGuard.test.ts tests/wallpaperCoverage.test.ts tests/retention.test.ts tests/vocabQuizMood.test.ts tests/study-log.test.ts tests/review-group.test.ts tests/strip-script-box.test.ts",
+    "test": "vitest run tests/standalone.test.ts tests/listeningExplanation.test.ts tests/updateNotices.test.ts tests/connectionCheck.test.ts tests/revision.test.ts tests/bgmUnify.test.ts tests/battleAudioLifecycle.test.ts tests/englishGrammarV3.test.ts tests/chunkRecovery.test.ts tests/battleBgmFiles.test.ts tests/polyfills.test.ts tests/storageGuard.test.ts tests/wallpaperCoverage.test.ts tests/retention.test.ts tests/vocabQuizMood.test.ts tests/study-log.test.ts tests/review-group.test.ts tests/strip-script-box.test.ts tests/rewarded-ad.test.ts",
     "firebase:check": "node scripts/check-firebase-setup.mjs",
     "test:rules": "firebase emulators:exec --only firestore --project demo-manatobi-listening \"vitest run tests/battle.rules.test.ts tests/friends.rules.test.ts tests/leaderboard.rules.test.ts tests/standalone-online.rules.test.ts\"",
     "test:browser": "node tests/standalone.browser.mjs",

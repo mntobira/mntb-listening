@@ -1,14 +1,15 @@
 import { RewardVideo } from './RewardVideo';
-import { useMemo, useRef, useState } from 'react';
+import { rewardedAdAvailable, preloadRewardedAd, showRewardedAd } from '../ads/rewardedAd';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { GachaReveal, RarityStars } from './GachaReveal';
 import { RARITY_STARS } from './gachaRevealSteps';
-import { Gift, Coins, ArrowLeft, ChevronLeft, ChevronRight, FileText, Download, Target } from 'lucide-react';
+import { Gift, Coins, ArrowLeft, ChevronLeft, PlayCircle, ChevronRight, FileText, Download, Target } from 'lucide-react';
 import { Badge, ItemCard, RarityBadge } from './ui';
 import { gachaFeatured } from '../battle/core/gachaFeatured';
 import './gacha.css';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
-import { GACHA_COST, GACHA_MULTI_COST, GACHA_DUPLICATE_REFUND_BY_RARITY, GACHA_RARITY_LABELS, GACHA_RARITY_ORDER, GACHA_RARITY_RATES, gachaItems, gachaItemsByRarity, gachaItemRate } from '../battle/core/arenaEconomy';
-import { drawVideoGacha, videoGachaPlaysLeft, drawGacha, drawGachaMulti, equip, GACHA_MULTI_COUNT } from '../battle/data/growthStore';
+import { VIDEO_GACHA_DAILY_LIMIT, GACHA_COST, GACHA_MULTI_COST, GACHA_DUPLICATE_REFUND_BY_RARITY, GACHA_RARITY_LABELS, GACHA_RARITY_ORDER, GACHA_RARITY_RATES, gachaItems, gachaItemsByRarity, gachaItemRate } from '../battle/core/arenaEconomy';
+import { completedVideoToken, drawVideoGacha, videoGachaPlaysLeft, drawGacha, drawGachaMulti, equip, GACHA_MULTI_COUNT } from '../battle/data/growthStore';
 import { GrowthAvatar } from '../battle/ui/GrowthParts';
 import { gachaRarityOf, printOf, type ItemDef, type GachaRarity, type GrowthProgress } from '../battle/core/growth';
 import { primeAudio } from '../battle/ui/feedback';
@@ -73,6 +74,28 @@ function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & 
  const [videoOpen,setVideoOpen]=useState(false);
  const [freeResult,setFreeResult]=useState(false);
  const videoLeft=videoGachaPlaysLeft();
+ /*
+  * ★「動画で1回」＝ アプリ公開後はリワード広告（2026-10-05）★
+  *   広告が使えるとき（src/ads/adConfig.ts で ON・SDK 登録済み）は広告を見せ、最後まで見たら1回引く。
+  *   使えないとき（今の Web 版・広告の在庫切れ・読み込み失敗）は、これまでどおりアプリ内の応援動画を出す。
+  *   どちらでも「途中で閉じたら回数を消費しない」「1日5回まで」は同じ。抽選は drawVideoGacha 1か所。
+  */
+ const adMode=rewardedAdAvailable();
+ useEffect(()=>{preloadRewardedAd();},[]);
+ const drawFree=async(token:object)=>{
+  if(lock.current)return;lock.current=true;setBusy(true);
+  try {const r=await drawVideoGacha(token,owner);if(!r?.result){setError('今日の上限に達したか、保存できませんでした。');return;}setFreeResult(true);setMulti(null);setResult(r.result);setRevealKey(k=>k+1);setRevealing(true);}finally{lock.current=false;setBusy(false);}
+ };
+ const startFree=async()=>{
+  setError('');
+  if(!adMode){setVideoOpen(true);return;}
+  setBusy(true);
+  const r=await showRewardedAd();
+  setBusy(false);
+  if(r.status==='rewarded'){await drawFree(completedVideoToken());return;}
+  if(r.status==='dismissed'){setError('最後まで見ると1回引けます。回数は消費していません。');return;}
+  setVideoOpen(true); // 広告が出せないときは応援動画で代わりに
+ };
  const drawMulti=async()=>{
   if(lock.current)return;lock.current=true;setBusy(true);setError('');setFreeResult(false);setConfirmMulti(false);primeAudio();
   try {const r=await drawGachaMulti(crypto.randomUUID(),owner);if(!r?.results){setError('抽選できませんでした。残高や保存設定を確認してください。');return;}setResult(null);setMulti(r.results);setRevealKey(k=>k+1);setRevealing(true);}
@@ -153,12 +176,9 @@ function GachaRoomContent({onBack,onMissions,owner,embedded=false}:GachaProps & 
        
        <button type="button" className="gacha-pull" disabled={busy || !progress || progress.coins<GACHA_COST} onClick={()=>setConfirm(true)}><Gift size={20} aria-hidden="true"/><span>1回引く<small>{GACHA_COST}枚</small></span></button>
        <button type="button" className="gacha-pull gacha-pull-multi" disabled={busy || !progress || progress.coins<multiCost} onClick={()=>setConfirmMulti(true)} data-gacha-multi-pull><Gift size={20} aria-hidden="true"/><span>10＋1連<small>{multiCost}枚・R以上1つ確定</small></span></button>
-       <button type="button" className="gacha-pull" disabled={busy || !progress || videoLeft === 0} onClick={()=>setVideoOpen(true)} data-video-gacha><Gift size={20}/><span>動画で1回<small>無料・今日あと{videoLeft} / 5回</small></span></button>
+       <button type="button" className="gacha-pull gacha-pull-video" disabled={busy || !progress || videoLeft === 0} onClick={()=>void startFree()} data-video-gacha data-ad-mode={adMode ? 'rewarded' : 'clip'}><PlayCircle size={20} aria-hidden="true"/><span>動画で1回<small>無料・今日あと{videoLeft} / {VIDEO_GACHA_DAILY_LIMIT}回</small></span></button>
       </div>}
-  {videoOpen && <RewardVideo onCancel={()=>setVideoOpen(false)} onComplete={async token=>{
-    setVideoOpen(false); if(lock.current)return;lock.current=true;setBusy(true);
-    try {const r=await drawVideoGacha(token,owner);if(!r?.result){setError('今日の上限に達したか、保存できませんでした。');return;}setFreeResult(true);setMulti(null);setResult(r.result);setRevealKey(k=>k+1);setRevealing(true);}finally{lock.current=false;setBusy(false);}
-  }}/>}
+  {videoOpen && <RewardVideo onCancel={()=>setVideoOpen(false)} onComplete={async token=>{ setVideoOpen(false); await drawFree(token); }}/>}
   {error && <p role="status" className="gacha-message">{error}</p>}
   {!busyView && <div className="gacha-foot">
    {progress && progress.coins<GACHA_COST && <button type="button" className="gacha-foot-link" onClick={onMissions}><Target size={16} aria-hidden="true"/>ミッションでコインをためる</button>}

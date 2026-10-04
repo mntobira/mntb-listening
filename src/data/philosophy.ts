@@ -2,7 +2,12 @@
 export const PHILOSOPHY_TITLE = '学びの扉';
 export const PHILOSOPHY_SUBTITLE = '～私達に出来ることを～';
 
-export interface PhilosophySection { heading?: string; paragraphs: string[]; highlight?: number[] }
+/**
+ * highlight … 軽い強調（細いオレンジの下線）
+ * core      … 核心メッセージ（段落番号 → その段落の中で大きく見せる一文。'' なら段落まるごと）。
+ *             文章は変えず、見せ方だけを変える（前半は普通の文、核心の一文だけを中央・大きめに）。
+ */
+export interface PhilosophySection { heading?: string; paragraphs: string[]; highlight?: number[]; core?: Record<number, string> }
 
 export const PHILOSOPHY_SECTIONS: PhilosophySection[] = [
   {
@@ -28,7 +33,8 @@ export const PHILOSOPHY_SECTIONS: PhilosophySection[] = [
       'それが失われるのはあまりにも耐え難い。',
       '私は若者のポテンシャルを、可能性を潰させないために活動をしています。',
     ],
-    highlight: [8, 10],
+    highlight: [10],
+    core: { 8: '何でもできる。何にだってなれる。' },
   },
   {
     paragraphs: [
@@ -38,7 +44,8 @@ export const PHILOSOPHY_SECTIONS: PhilosophySection[] = [
       '私はインプットに逃げたためになかなか成績が伸びずに上手くいきませんでした。',
       '同じような思いをしてほしくない、というと傲慢ですね。笑 とにかく、自分自身を試し続けてください。',
     ],
-    highlight: [1, 4],
+    highlight: [4],
+    core: { 1: 'ひたすらに実践すること。それだけです。' },
   },
   {
     paragraphs: [
@@ -56,6 +63,6 @@ export const PHILOSOPHY_SECTIONS: PhilosophySection[] = [
       'このアプリで、日々の学習から得られたものを背負い、人生ごとぶつけて、至高の回答時間を味わってください。',
       'その回答用紙の中で誰よりも点を取れば全て解決します。',
     ],
-    highlight: [3],
+    core: { 3: '' },
   },
 ];

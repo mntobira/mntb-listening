@@ -4,7 +4,11 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!assets/).*)",
+      "source": "/message",
+      "destination": "/message/index.html"
+    },
+    {
+      "source": "/((?!assets/|message/).*)",
       "destination": "/index.html"
     }
   ],

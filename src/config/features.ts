@@ -157,3 +157,11 @@ export function fallbackSubjectId(candidates: readonly string[]): string | null 
   }
   return null;
 }
+
+/**
+ * まだ公開しない「みんなで」系の機能（2026-10-05）。false の間は入口に「準備中」を出し、中身は開かない。
+ *   classroom … 設定 › クラス（先生が作ったクラスに参加）
+ *   manaClan  … 対戦 › マナクラン／ランキングのマナクランタブ
+ * 理由：サーバー側（Cloud Functions・ルール）の公開準備がまだのため。公開するときは true にするだけ。
+ */
+export const SOCIAL_FEATURES = { classroom: false, manaClan: false } as const;

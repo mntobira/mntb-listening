@@ -3174,3 +3174,16 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 /* ホーム背景の桜：中身の後ろに置く */
 .game-home > .home-sakura { z-index: 0; }
 .game-home > .game-home-viewport { position: relative; z-index: 1; }
+
+/* 準備中の札（クラス・マナクラン｜2026-10-05） */
+.coming-soon { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 16px auto; max-width: 420px; padding: 28px 20px; border: 1.5px dashed #d8c7a6; border-radius: 20px; background: #fffaf0; text-align: center; color: #3e4c5b; }
+.coming-soon-icon { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 999px; background: #fdeedb; color: #8a4b00; }
+.coming-soon h3 { margin: 0; font: 900 17px/1.4 var(--mt-font-display, inherit); color: #1c2a39; }
+.coming-soon p { margin: 0; font-size: 13px; line-height: 1.7; }
+.soon-tag { display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 999px; background: #eef0f2; color: #5a6573; font-size: 12px; font-weight: 800; line-height: 1.4; vertical-align: middle; }
+
+/* ホーム下の帯：ミッション／学習記録／使い方／学びの扉（2026-10-05）。4つ並べても1行に収める */
+.game-home .game-home-utility.has-four { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+.game-home .game-home-utility.has-four button { flex-direction: column; gap: 2px; padding: 4px 2px; white-space: nowrap; }
+.game-home .game-home-utility .home-philosophy-entry { background: linear-gradient(135deg, #fff3e0, #e9f1fb); border-color: #e3c49a; color: #7a4a1c; font-weight: 800; }
+@media (min-width: 1024px) { .game-home .game-home-utility.has-four { grid-template-columns: 1fr; } .game-home .game-home-utility.has-four button { flex-direction: row; gap: 5px; } }
