@@ -30,7 +30,7 @@
 import type { BattleAudioSettings, BattleBgmTrack } from '../core/audioSettings';
 import { DEFAULT_BATTLE_AUDIO } from '../core/audioSettings';
 import { playSample, preloadSamples } from './sfxSamples';
-import { BGM_FILES, bgmFileKeyOf, introDelaySec, introOffsetSec, pickBattleVariant, BATTLE_BGM_VARIANTS, type BattleBgmVariant, type BgmFileKey } from './bgmFiles';
+import { BGM_FILES, bgmFileKeyOf, introDelaySec, introOffsetSec, pickBattleVariant, isBattleVariantKey, BATTLE_BGM_VARIANTS, type BattleBgmVariant, type BgmFileKey } from './bgmFiles';
 import { BATTLE_BGM_BUS_GAIN } from './bgmLoudness';
 import { sharedAudioContext } from './sharedAudioContext';
 
@@ -275,7 +275,9 @@ export class BattleAudioEngine {
     const spec = BGM_FILES[key]!;
     const req = ++this.fileRequest;
     this.fileKey = key;
-    const requestedAt = this.ctx?.currentTime ?? 0;
+    // ★経過は壁時計で測る★ iPhone では AudioContext が止まっている間 currentTime が進まず、
+    //   読み込み待ちの時間を数えられないため、サビが START! より遅れていた（2026-10-05）
+    const requestedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
     void this.loadFile(key).then((buffer) => {
       const ctx = this.ctx;
       if (req !== this.fileRequest || !ctx || !this.bgmGain || !this.track) return;
@@ -287,9 +289,10 @@ export class BattleAudioEngine {
         return;
       }
       // 読み込みにかかった時間ぶん、カウントダウンは進んでいる
-      const waited = (ctx.currentTime - requestedAt) * 1000;
+      const waited = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - requestedAt;
       const remainMs = startInMs == null ? null : startInMs - waited;
-      const offset = remainMs == null ? 0 : introOffsetSec(spec.dropSec, remainMs);
+      // 試合が始まってから入った（再接続・カウントダウンが無い）ときは、前奏ではなくサビから鳴らす
+      const offset = remainMs == null ? (isBattleVariantKey(key) ? spec.dropSec : 0) : introOffsetSec(spec.dropSec, remainMs);
       const delay = remainMs == null ? 0 : introDelaySec(spec.dropSec, remainMs);
       const src = ctx.createBufferSource();
       src.buffer = buffer;

@@ -1,5 +1,7 @@
 # マナトビ リスニング — 独立コピー
 
+> **公開・App Store 申請までの残り作業は [`docs/RELEASE_STEPS_2026-10-05.md`](docs/RELEASE_STEPS_2026-10-05.md) に上から順にまとめています。** Firestore ルールはコンソールに貼り付けるだけで反映できます（`firestore.rules` の全文、または同じ内容の `docs/firestore.rules.copy.txt`）。
+
 > **音源：374 / 374 本が商用の新音源（ElevenLabs・運営者が有料契約中に直接生成、と申告）。** 状況は `COMMERCIAL_AUDIO_STATUS.json`、1本ずつの生成元と sha256 は `listening_audio_ledger.json`。旧音源が1本でも残っていると `npm run build` は止まります（`build:demo` は内部確認専用）。ElevenLabs の領収書3件を `license_evidence/` に同梱しています。公開前に運営者が契約条件（商用利用の可否）を最終確認してください。
 
 統合版から複製した、リスニング専用のWebアプリ（React / Vite / Firebase）です。
