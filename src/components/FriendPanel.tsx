@@ -15,7 +15,7 @@ import {
 } from '../utils/friends';
 import { auth } from '../firebase';
 import { DoorMascot } from './DoorMascot';
-import { FriendCodeInput, friendCodeFromBody } from './FriendCodeInput';
+import { FriendCodeInput, friendCodeFromRaw } from './FriendCodeInput';
 import { UserSafetyMenu } from '../features/safety/UserSafetyMenu';
 import { isBlocked } from '../features/safety/userSafety';
 import { useBlockedTick } from '../features/safety/useBlockedFilter';
@@ -92,8 +92,9 @@ export function FriendPanel() {
   if (!auth.currentUser) return null;
 
   const submitCode = async () => {
-    const full = friendCodeFromBody(code);
-    if (!full || loading) return;
+    if (loading) return;
+    const full = friendCodeFromRaw(code);
+    if (!full) { setIsError(true); setMessage('フレンドコードは「MNTB-」のあとに英数字8文字です（例：MNTB-AB12-CD34）。'); return; }
     setMessage(''); setIsError(false); setLoading(true);
     try { setMessage(await sendFriendRequest(full)); setCode(''); await load(); }
     catch (e: any) { setIsError(true); setMessage(e?.message || '申請に失敗しました。'); }
@@ -101,7 +102,7 @@ export function FriendPanel() {
   };
 
   return (
-    <div className="bg-white border border-gray-150 p-3 sm:p-4 rounded-2xl shadow-sm space-y-3 h-full overflow-hidden flex flex-col">
+    <div className="bg-white border border-gray-150 p-3 sm:p-4 rounded-2xl shadow-sm space-y-3 h-full overflow-y-auto overscroll-contain flex flex-col friend-panel">
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
           <UserPlus size={15} />
@@ -142,20 +143,20 @@ export function FriendPanel() {
         </p>
       </div>
 
-      {/* ★合言葉と同じ入力（2026-10-05）★ MNTB- は表示済み、打つのは8文字だけ */}
+      {/* ★フレンドコード入力（2026-10-05 再修正）★ 普通の入力欄＋貼り付けボタン。整形は送信時だけ */}
       <div className="friend-code-row">
         <FriendCodeInput value={code} onChange={setCode} disabled={loading} onSubmit={() => void submitCode()} />
         <button
           type="button"
           onClick={() => void submitCode()}
-          disabled={loading || code.length !== 8}
+          disabled={loading || !code.trim()}
           className="friend-code-send"
         >
           <Send size={16} aria-hidden="true" />
           申請
         </button>
       </div>
-      <p className="friend-code-hint">英字は小文字・全角でも大丈夫です。コードをまるごと貼り付けてもOK。</p>
+      <p className="friend-code-hint">長押しペースト・「貼り付け」OK。小文字や「MNTB-」なしでも送れます。</p>
 
       {message && (
         <p
@@ -203,7 +204,7 @@ export function FriendPanel() {
         </div>
       )}
 
-      <div className="space-y-2 min-h-0 flex-1 overflow-y-auto pr-1">
+      <div className="space-y-2 min-h-[96px] flex-1 overflow-y-auto pr-1">
         <p className="text-[11px] text-gray-400 font-bold sticky top-0 bg-white z-10">フレンド一覧（{friends.length}人）</p>
         {friends.length === 0 ? (
           <div className="text-xs text-gray-400 bg-gray-50 rounded-2xl p-3 flex items-center gap-2"><DoorMascot showSpeech={false} size="mini" className="w-auto" /><span>まだフレンドはいません。コードで追加してみましょう。</span></div>

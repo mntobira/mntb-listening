@@ -3194,16 +3194,12 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 
 /* フレンドコード入力（合言葉と同じ見た目・2026-10-05） */
 .friend-code-row { display: flex; flex-direction: column; gap: 8px; }
-.friend-code-input { position: relative; width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 6px; min-height: 60px; padding: 8px 10px; border: 2px solid #e3d9c8; border-radius: 16px; background: #fff; cursor: text; overflow: hidden; }
-.friend-code-input:focus-within { border-color: #f29a1f; box-shadow: 0 0 0 3px #fdf0db; }
-.friend-code-prefix { flex-shrink: 0; font: 900 13px/1 var(--mt-font-display, inherit); color: #8a96a3; letter-spacing: .02em; }
-.friend-code-cells { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 3px; }
-.friend-code-cells i { flex: 1 1 0; min-width: 0; max-width: 32px; height: 40px; display: grid; place-items: center; border-radius: 8px; background: #f6efe2; font: 900 19px/1 var(--mt-font-display, inherit); font-style: normal; color: #1c2a39; }
-.friend-code-cells i[data-filled] { background: #fffaf0; box-shadow: inset 0 0 0 1.5px #e3c49a; }
-.friend-code-input:focus-within .friend-code-cells i[data-cursor] { box-shadow: inset 0 -3px 0 #f29a1f; }
-.friend-code-cells b { flex-shrink: 0; color: #b0a690; font-weight: 900; }
-.friend-code-hidden { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; font-size: 16px; caret-color: transparent; color: transparent; background: transparent; border: 0; }
+.friend-code-input { display: flex; align-items: stretch; gap: 8px; width: 100%; min-width: 0; }
+.friend-code-field { flex: 1; min-width: 0; height: 52px; box-sizing: border-box; padding: 0 12px; border: 2px solid #e3d9c8; border-radius: 14px; background: #fff; color: #1c2a39; font: 900 17px/1 var(--mt-font-display, inherit); letter-spacing: .06em; text-transform: uppercase; outline: none; -webkit-user-select: text; user-select: text; }
+.friend-code-field::placeholder { color: #b3aa99; letter-spacing: .04em; text-transform: none; }
+.friend-code-field:focus { border-color: #f29a1f; box-shadow: 0 0 0 3px #fdf0db; }
+.friend-code-paste { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 52px; min-height: 52px; padding: 0 10px; border: 2px solid #e3d9c8; border-radius: 14px; background: #fffaf0; color: #2c3e50; font-weight: 800; font-size: 12px; }
 .friend-code-send { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background: #2c3e50; color: #fff; font-weight: 800; font-size: 15px; box-shadow: 0 3px 0 #1b2631; }
 .friend-code-send:disabled { background: #b8c0c6; box-shadow: none; }
+@media (max-width: 374px) { .friend-code-field { font-size: 16px; padding: 0 10px; letter-spacing: .03em; } .friend-code-paste span { display: none; } }
 .friend-code-hint { margin: 4px 2px 0; font-size: 12px; color: #5a6573; }
-@media (max-width: 374px) { .friend-code-cells i { height: 36px; font-size: 16px; } .friend-code-cells { gap: 2px; } .friend-code-input { padding: 8px 8px; gap: 4px; } }
