@@ -18,6 +18,7 @@ import { Bot, LogOut, Play, X } from 'lucide-react';
 import { subjectTheme } from '../../data/subjectTheme';
 import type { SubjectKey } from '../../data/allChapters';
 import { aiProfileOf, type AiLevel, type AiProfile } from '../core/aiOpponent';
+import { fetchMyRankingRow } from '../data/battleRanking';
 import type { GhostReason } from '../core/matchFallback';
 import { ArenaFighters } from './ArenaFighters';
 import { useAiBattle } from '../hooks/useAiBattle';
@@ -120,6 +121,14 @@ export function BattleAiRoomScreen({
   }, [b.phase, onActiveChange]);
 
   const [growthOwnerUid] = useState(() => auth.currentUser?.uid || 'guest');
+  // ★AI 対戦ではレートは動かない★ 表示は「いまのレート」をそのまま出す
+  //   （以前は 1500 固定で、自分のレートが変わったように見えていた）
+  const [myRating, setMyRating] = useState(1500);
+  useEffect(() => {
+    let alive = true;
+    void fetchMyRankingRow().then((r) => { if (alive && r && Number.isFinite(r.rating)) setMyRating(r.rating); }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
   const growthMatchId = useMemo(() => `ai:${crypto.randomUUID()}`, [matchNo, subject, level, chapterId]);
   const [resultMatchNo, setResultMatchNo] = useState(-1);
   const [showResult, setShowResult] = useState(false);
@@ -178,7 +187,8 @@ export function BattleAiRoomScreen({
         meNickname={b.me.nickname}
         mePhotoURL={b.me.photoURL}
         rating={null}
-        ratingNote={ghost ? 'この試合はレートに反映されませんでした' : 'AI対戦ではレートは動きません（練習用）'}
+        myRating={myRating}
+        ratingNote={ghost ? 'この試合はレートに反映されませんでした' : `AI対戦ではレートは動きません（${myRating}のまま・練習用）`}
         byForfeit={false}
         maskOpponent={!!ghost}
         onBackToRoom={onChangeSubject}
@@ -236,7 +246,7 @@ export function BattleAiRoomScreen({
           style={{ borderColor: `${profile.color}66`, background: '#FFFFFF' }}
         >
           <div className="flex items-center gap-2">
-            <PlayerBadge nickname={b.me.nickname} photoURL={b.me.photoURL} rating={1500} isMe />
+            <PlayerBadge nickname={b.me.nickname} photoURL={b.me.photoURL} rating={myRating} isMe />
             <span
               className="battle-vs-pulse shrink-0 rounded-lg px-1.5 py-0.5 text-xs font-black"
               style={{ background: GOLD, color: INK }}

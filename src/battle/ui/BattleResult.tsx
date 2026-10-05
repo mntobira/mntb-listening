@@ -163,6 +163,7 @@ export function BattleResult({
   onExit,
   onPractice: onPracticeProp,
   ratingNote,
+  myRating,
   growthMatchId, growthOwnerUid, growthEligible = false, onOpenProfile, onOpenMissions,
   onReview,
   onRetryWrong,
@@ -216,6 +217,8 @@ export function BattleResult({
    * 「無効試合」と出すと、利用者は何か失敗したと受け取る。
    */
   ratingNote?: string;
+  /** レートが動かない試合（AI など）で見せる、いまのレート */
+  myRating?: number;
   growthMatchId?: string;
   growthOwnerUid?: string;
   growthEligible?: boolean;
@@ -690,7 +693,7 @@ export function BattleResult({
           <PlayerBadge
             nickname={meNickname}
             photoURL={mePhotoURL}
-            rating={rating?.before ?? 1500}
+            rating={rating?.before ?? myRating ?? 1500}
             isMe
           />
           <span

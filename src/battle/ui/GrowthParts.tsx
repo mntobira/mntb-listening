@@ -13,7 +13,7 @@
 
 import { useEffect, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
-import { Check, Coins, Flag, Lock, Sparkles } from 'lucide-react';
+import { Check, ChevronRight, Coins, Flag, Lock, Sparkles } from 'lucide-react';
 import { TobiraAccessories } from './TobiraAccessories';
 import {
   badgeById,
@@ -26,6 +26,9 @@ import {
   equippedTitleLabel,
   levelOf,
   missionById,
+  missionDestination,
+  MISSION_DESTINATION_LABEL,
+  type MissionDestination,
   nearestBadgeGoal,
   nextBadgeGoals,
   nextLevelUnlock,
@@ -340,11 +343,14 @@ export function MissionRow({
   onClaim,
   claiming,
   justClaimed = false,
+  onGo,
 }: {
   id: string;
   progress: number;
   claimed: boolean;
   onClaim?: () => void;
+  /** 未達成のとき「○○へ」ボタンで該当の画面へ（2026-10-05） */
+  onGo?: (to: MissionDestination) => void;
   claiming?: boolean;
   /** 直前に受け取った行（報酬を強調する） */
   justClaimed?: boolean;
@@ -408,6 +414,17 @@ export function MissionRow({
           style={{ background: GOLD, borderColor: '#E5B93C', color: INK, boxShadow: '0 2px 0 #D9A72E' }}
         >
           {claiming ? '…' : 'うけとる'}
+        </button>
+      ) : state === 'going' && onGo ? (
+        <button
+          type="button"
+          onClick={() => onGo(missionDestination(m.kind))}
+          data-mission-go={missionDestination(m.kind)}
+          aria-label={`${m.label}：${MISSION_DESTINATION_LABEL[missionDestination(m.kind)]}`}
+          className="inline-flex min-h-11 shrink-0 items-center gap-0.5 rounded-xl border-2 px-2.5 text-[13px] font-black transition active:translate-y-[1px]"
+          style={{ background: '#FFFFFF', borderColor: LINE, color: INK }}
+        >
+          {MISSION_DESTINATION_LABEL[missionDestination(m.kind)]}<ChevronRight size={14} aria-hidden />
         </button>
       ) : null}
     </div>

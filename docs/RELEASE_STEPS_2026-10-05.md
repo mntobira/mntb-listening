@@ -205,3 +205,13 @@ npx cap open ios      # Xcode が開く → Signing で Team を選ぶ → Produ
   原曲（OpenTracks 配布ファイル）を小節ごとに解析し、**1番サビ＝原曲 30.222 秒（17小節目）** から START! と重なるよう切り出し直した。
   音量 -20.3 LUFS は以前と同じ。ループは 114 小節で、継ぎ目の和音一致 0.998。
 - iPhone で読み込み待ちのあいだ AudioContext が止まっていると、待った時間を数えられずサビが遅れることがあった → 壁時計で数えるように修正。
+
+## 追記（2026-10-05 夕）Firebase をまだ作っていない場合の順番
+1. Firebase コンソールでプロジェクト作成 → ウェブアプリ追加 → 表示された設定値を `.env`（`VITE_FIREBASE_*`）に入れる
+2. Authentication → Google と Apple を有効化、承認済みドメインに公開URLを追加
+3. Firestore を作成（本番モード・asia-northeast1）→ ルールに `docs/firestore.rules.copy.txt` を全文貼って公開
+4. `firebase deploy --only firestore:indexes`（インデックス）
+5. Blaze プランにして `firebase deploy --only functions`
+6. Vercel に同じ環境変数を入れて再デプロイ（CSP の connect-src にプロジェクトIDのドメインが入っているか確認）
+7. 2台の端末で、フレンド申請（新しい8マス入力）・全国対戦・フレンド対戦のレート変動、AI対戦でレートが変わらないことを確認
+8. 問題なければ Capacitor で iOS ビルド → App Store 申請

@@ -790,7 +790,7 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
     ratedRef.current = true;
     const opponentRating = opponent?.rating ?? 1500;
 
-    void applyRatingResult(roomId, opponentRating, result.outcome, forfeit).then((change) => {
+    void applyRatingResult(roomId, opponentRating, result.outcome, forfeit, opponentUid).then((change) => {
       if (change) setRating(change);
       void saveHistory({
         roomId,

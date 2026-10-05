@@ -109,6 +109,15 @@ export interface RatingChange {
 }
 
 /**
+ * レートを動かしてよい相手か（AI・ボット相手は練習扱いで常に動かさない）。
+ * 相手 uid が空のとき（古い呼び出し）は判定できないので true。
+ */
+export function isRatedOpponent(opponentUid: string | null | undefined): boolean {
+  const uid = String(opponentUid || '');
+  return !(uid.startsWith('ai:') || uid.startsWith('bot'));
+}
+
+/**
  * 対戦結果をレートに反映する。
  *
  * ★トランザクションにする理由★
@@ -126,9 +135,12 @@ export async function applyRatingResult(
   opponentRating: number,
   outcome: BattleOutcome,
   forfeit = false,
+  opponentUid = '',
 ): Promise<RatingChange | null> {
   const user = auth.currentUser;
   if (!user) return null;
+  // ★AI との試合はレートを動かさない（2026-10-05 ご指示）★
+  if (!isRatedOpponent(opponentUid) || roomId.startsWith('ai:')) return null;
 
   const ref = doc(db, COL_RANKING, user.uid);
   const nickname = resolveNickname();

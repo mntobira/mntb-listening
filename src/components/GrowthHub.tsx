@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Coins, ChevronRight } from 'lucide-react';
 import { StudyRecord } from './StudyRecord';
 import { LevelRewards } from './LevelRewards';
-import { itemById, equippedTitleLabel } from '../battle/core/growth';
+import { itemById, equippedTitleLabel, type MissionDestination } from '../battle/core/growth';
 import { GachaRoom } from './GachaRoom';
 import { ManaRush } from './ManaRush';
 import { MyCollection } from './MyCollection';
@@ -13,13 +13,26 @@ import { BattleProfile } from '../battle/ui/BattleProfile';
 import './growth-hub.css';
 const PARTS = [['pose','ポーズ'],['frame','フレーム'],['hat','帽子'],['glasses','メガネ'],['cheek','ほっぺ'],['aura','オーラ'],['wallpaper','壁紙']] as const;
 export type GrowthPage = 'overview' | 'gacha' | 'shop' | 'outfit' | 'prints' | 'rewards' | 'badges' | 'stats' | 'missions' | 'rush';
-export function GrowthHub({ page, onPage, onBack, onBattle, onReview, onRanking, defaultSubject }: {
+export function GrowthHub({ page, onPage, onBack, onBattle, onReview, onRanking, defaultSubject, onStudy, onFoundation }: {
   page: GrowthPage; onPage: (page: GrowthPage) => void; onBack: () => void;
+  /** ミッションの行き先：演習する（教科選び）／英単語の4択・単語帳 */
+  onStudy?: () => void; onFoundation?: (tab: 'words' | 'quiz') => void;
   onBattle?: () => void; onReview: () => void; onRanking?: () => void; defaultSubject?: string;
 }) {
   const { progress, uid } = useGrowthProgress();
   const [outfitKind, setOutfitKind] = useState('all');
   const openPart = (kind: string) => { setOutfitKind(kind); onPage('outfit'); };
+  // ★ミッションの「○○へ」★ マイページの中で済むものはここで、ほかの画面は App に任せる
+  const goMission = (to: MissionDestination) => {
+    if (to === 'rush') onPage('rush');
+    else if (to === 'gacha') onPage('gacha');
+    else if (to === 'outfit') { setOutfitKind('all'); onPage('outfit'); }
+    else if (to === 'review') onReview();
+    else if (to === 'study') (onStudy ?? onBack)();
+    else if (to === 'vocab_quiz') onFoundation ? onFoundation('quiz') : onBack();
+    else if (to === 'wordbook') onFoundation ? onFoundation('words') : onBack();
+    else (onBattle ?? onBack)();
+  };
   const openTab = (id: GrowthPage) => { if (id === 'outfit') setOutfitKind('all'); onPage(id); };
   // ★マナラッシュはマイページの中ではなく、それだけの画面にする（2026-10-04 ご要望）★
   if (page === 'rush') return <section className="mana-hub mana-hub-rush" data-rush-page><div className="mypage-extra-scroll"><ManaRush onBack={onBack} defaultSubject={defaultSubject}/></div></section>;
@@ -43,7 +56,7 @@ export function GrowthHub({ page, onPage, onBack, onBattle, onReview, onRanking,
       {/* 「レベルで手に入るもの」はミッションの中へ移した（マイページをスクロールなしで1画面に収める・2026-10-05） */}
     </main> : page === 'outfit' || page === 'prints' || page === 'shop' || page === 'rewards' ? <MyCollection key={`${uid}:${page}:${outfitKind}`} view={page === 'outfit' || page === 'rewards' ? 'owned' : page} initialKind={page === 'outfit' ? outfitKind : 'all'} onGacha={()=>onPage('gacha')}/>
     : page === 'stats' ? <div className="mypage-extra-scroll"><StudyRecord embedded onBack={()=>onPage('overview')} onReview={onReview}/></div>
-    : page === 'missions' ? <div className="mypage-extra-scroll"><BattleMissions key={uid} standalone onBack={()=>onPage('overview')} onBattle={onBattle} onReview={onReview} onShop={()=>onPage('shop')} onRush={()=>onPage('rush')} extra={progress ? <LevelRewards progress={progress} /> : null}/></div>
+    : page === 'missions' ? <div className="mypage-extra-scroll"><BattleMissions key={uid} standalone onBack={()=>onPage('overview')} onBattle={onBattle} onReview={onReview} onShop={()=>onPage('shop')} onRush={()=>onPage('rush')} extra={progress ? <LevelRewards progress={progress} /> : null} onGo={goMission}/></div>
     : <div className="mypage-extra-scroll"><BattleProfile key={`${uid}:${page}`} standalone initialTab={page} onBack={()=>onPage('overview')}/></div>}
     </div>
   </section>;

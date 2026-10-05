@@ -464,7 +464,7 @@ export function BattleMode({
       return <BattleProfile onBack={() => setScreen('home')} onMissions={() => setScreen('missions')} />;
 
     case 'missions':
-      return <BattleMissions onBack={() => setScreen('home')} onBattle={() => setScreen('subject-ai')} />;
+      return <BattleMissions onBack={() => setScreen('home')} onBattle={() => setScreen('subject-ai')} onGo={to => { if (to === 'battle') setScreen('home'); }} />;
 
     case 'ranking':
       return <BattleRanking onBack={() => setScreen('home')} onRequireLogin={onRequireLogin} />;
