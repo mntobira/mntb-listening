@@ -1,42 +1,49 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
+import { ClipboardPaste } from 'lucide-react';
 
 /**
- * フレンドコードの入力欄（2026-10-05：合言葉の入力と同じ感じに）。
- *   ・「MNTB-」は最初から表示し、打つのは後ろの8文字だけ（4文字＋4文字の2マス表示）
- *   ・自動で大文字・自動修正なし・予測変換なし（スマホで同じ文字が勝手に入る／アルファベットが打ちにくい対策）
- *   ・全角・小文字・ハイフン・空白も受け付ける。「MNTB-XXXX-XXXX」をまるごと貼り付けてもよい
- * 返す値は送信用の正規形 MNTB-XXXX-XXXX（8文字そろうまでは ''）。
+ * フレンドコードの入力欄（2026-10-05 再修正）。
+ *
+ * ★1つの普通の入力欄にしている理由★
+ *   前回の「8マス表示＋透明な入力欄を重ねる」作りは、スマホで
+ *   ・長押しの「ペースト」が出ない（透明な欄は押せない扱いになる）
+ *   ・入力中に値を書き換えるため、変換中の文字が消えて打てない
+ *   という不具合があった。対戦の合言葉と同じく、見えている普通の入力欄に
+ *   打った文字をそのまま入れ、整える（大文字・全角→半角・ハイフン補完）のは送信時だけにする。
+ *
+ * 受け付ける形：「MNTB-AB12-CD34」「mntb ab12 cd34」「AB12CD34」（MNTB- 省略）、全角も可。
  */
-export function friendCodeBody(raw: string): string {
+export function friendCodeFromRaw(raw: string): string {
   let s = (raw || '').normalize('NFKC').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  if (s.startsWith('MNTB') && s.length > 8) s = s.slice(4);
-  return s.slice(0, 8);
-}
-export function friendCodeFromBody(body: string): string {
-  return body.length === 8 ? `MNTB-${body.slice(0, 4)}-${body.slice(4)}` : '';
+  if (s.length === 12 && s.startsWith('MNTB')) s = s.slice(4);
+  return /^[A-Z0-9]{8}$/.test(s) ? `MNTB-${s.slice(0, 4)}-${s.slice(4)}` : '';
 }
 
 export function FriendCodeInput({ value, onChange, onSubmit, disabled }: {
-  /** 8文字の本体（MNTB- を除く） */
-  value: string; onChange: (body: string) => void; onSubmit?: () => void; disabled?: boolean;
+  /** 入力されたそのままの文字列 */
+  value: string; onChange: (raw: string) => void; onSubmit?: () => void; disabled?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
-  const [composing, setComposing] = useState(false);
-  const cells = Array.from({ length: 8 }, (_, i) => value[i] ?? '');
-  return <div className="friend-code-input" onClick={() => ref.current?.focus()} data-friend-code-input>
-    <span className="friend-code-prefix" aria-hidden="true">MNTB-</span>
-    <span className="friend-code-cells" aria-hidden="true">
-      {cells.slice(0, 4).map((c, i) => <i key={i} data-filled={!!c || undefined} data-cursor={i === value.length || undefined}>{c}</i>)}
-      <b>-</b>
-      {cells.slice(4).map((c, i) => <i key={i + 4} data-filled={!!c || undefined} data-cursor={i + 4 === value.length || undefined}>{c}</i>)}
-    </span>
+  const composingRef = useRef(false);
+  const canPaste = typeof navigator !== 'undefined' && !!navigator.clipboard?.readText;
+  return <div className="friend-code-input" data-friend-code-input>
     <input ref={ref} value={value} disabled={disabled}
-      onChange={e => { if (!composing) onChange(friendCodeBody(e.currentTarget.value)); }}
-      onCompositionStart={() => setComposing(true)}
-      onCompositionEnd={e => { setComposing(false); onChange(friendCodeBody(e.currentTarget.value)); }}
-      onPaste={e => { e.preventDefault(); onChange(friendCodeBody(e.clipboardData.getData('text'))); }}
-      onKeyDown={e => { if (e.key === 'Enter' && !composing && value.length === 8) { e.preventDefault(); onSubmit?.(); } }}
+      onChange={e => onChange(e.currentTarget.value)}
+      onCompositionStart={() => { composingRef.current = true; }}
+      onCompositionEnd={e => { composingRef.current = false; onChange(e.currentTarget.value); }}
+      onKeyDown={e => {
+        if (e.key === 'Enter' && !e.nativeEvent.isComposing && e.keyCode !== 229 && !composingRef.current) {
+          e.preventDefault(); onSubmit?.();
+        }
+      }}
       type="text" inputMode="text" autoCapitalize="characters" autoCorrect="off" autoComplete="off" spellCheck={false}
-      enterKeyHint="send" maxLength={14} aria-label="フレンドコード（MNTB- の後ろの8文字）" className="friend-code-hidden" />
+      enterKeyHint="send" maxLength={40} placeholder="MNTB-XXXX-XXXX"
+      aria-label="フレンドコード" className="friend-code-field" />
+    {canPaste && <button type="button" className="friend-code-paste" disabled={disabled} aria-label="コピーしたコードを貼り付け"
+      onClick={async () => {
+        try { const t = await navigator.clipboard.readText(); if (t) onChange(t.trim()); } catch { ref.current?.focus(); }
+      }}>
+      <ClipboardPaste size={16} /><span>貼り付け</span>
+    </button>}
   </div>;
 }
