@@ -1682,7 +1682,9 @@ export default function App() {
             {appState === 'growth' && <React.Suspense fallback={<ScreenLoading />}>
               <GrowthHub onRanking={() => navigateMain('leaderboard')} page={growthPage} onPage={setGrowthPage} onBack={() => navigateMain('home')} defaultSubject={selectedSubject}
                 onBattle={FEATURES.battle ? () => navigateMain('battle') : undefined}
-                onReview={() => { setStudyHubView({ tab: 'today', subjectTab: 'all' }); navigateMain('study_hub'); }} />
+                onReview={() => { setStudyHubView({ tab: 'today', subjectTab: 'all' }); navigateMain('study_hub'); }}
+                onStudy={() => { setFoundationBackTo('home'); navigateMain('study'); }}
+                onFoundation={tab => { setFoundationTab(tab); setFoundationBackTo('home'); navigateMain('foundation'); }} />
             </React.Suspense>}
             {appState === 'leaderboard' && FEATURES.ranking && <Leaderboard onBack={() => setAppState('home')} isGuest={isGuest} initialChapterId={selectedChapterId} initialSubject={selectedSubject} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
             {/* ★対戦モード（ルーティング側の門）★

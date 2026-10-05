@@ -22,6 +22,7 @@ import { allMissionsClaimed, allMissionsForDate, chestOpenedToday, completeChest
 import { claimMissionReward, loadMyGrowth, openChest, subscribeGrowth } from '../data/growthStore';
 import { play, primeAudio } from './feedback';
 import { AMBER, BattleButton, BattleLoading, BattleNotice, BattleShell, BattleTitle, GOLD, INK, INK_SUB, LINE } from './BattleParts';
+import type { MissionDestination } from '../core/growth';
 import { GrowthAvatar, LevelBar, MissionRow } from './GrowthParts';
 
 function remainLabel(ms: number): string {
@@ -31,7 +32,7 @@ function remainLabel(ms: number): string {
   return `${m}分`;
 }
 
-export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, standalone = false, extra }: { onBack: () => void; onBattle?: () => void; onReview?: () => void; onShop?: () => void; onRush?: () => void; standalone?: boolean; key?: string; /** ミッションの下に足す内容（マイページから開いたとき「レベルで手に入るもの」） */ extra?: React.ReactNode }) {
+export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, standalone = false, extra, onGo }: { onBack: () => void; onBattle?: () => void; onReview?: () => void; onShop?: () => void; onRush?: () => void; standalone?: boolean; key?: string; /** ミッションの下に足す内容（マイページから開いたとき「レベルで手に入るもの」） */ extra?: React.ReactNode; /** 各ミッションの「○○へ」で該当画面へ */ onGo?: (to: MissionDestination) => void }) {
   const [progress, setProgress] = useState<GrowthProgress | null>(null);
   const [claiming, setClaiming] = useState<string | null>(null);
   const [justClaimed, setJustClaimed] = useState<string | null>(null);
@@ -205,6 +206,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
             claiming={claiming === m.id}
             justClaimed={justClaimed === m.id}
             onClaim={() => void claim(m.id)}
+            onGo={onGo}
           />
         ))}
       </div>
@@ -220,6 +222,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
             claiming={claiming === m.id}
             justClaimed={justClaimed === m.id}
             onClaim={() => void claim(m.id)}
+            onGo={onGo}
           />
         ))}
       </div>

@@ -479,6 +479,29 @@ export const MISSION_POOL: readonly MissionDef[] = [
 ];
 
 /** 1日に出すミッション数 */
+/**
+ * ミッションを押したときの行き先（2026-10-05 ご要望「各ミッションから該当ページに飛べるように」）。
+ *   battle … 対戦メニュー／battle_listening・battle_grammar … 対戦メニュー（その教科を選ぶ）
+ *   study … 演習する（教科選び）／review … 復習ノート／rush … マナラッシュ
+ *   gacha … ガチャ／outfit … きせかえ（持ちもの）／vocab_quiz … 英単語の4択／wordbook … 英単語帳
+ */
+export type MissionDestination = 'battle' | 'study' | 'review' | 'rush' | 'gacha' | 'outfit' | 'vocab_quiz' | 'wordbook';
+export function missionDestination(kind: MissionKind): MissionDestination {
+  switch (kind) {
+    case 'holes': return 'review';
+    case 'study': case 'study_streak': return 'study';
+    case 'rush_play': case 'rush_score': case 'rush_combo': return 'rush';
+    case 'gacha': return 'gacha';
+    case 'equip': return 'outfit';
+    case 'vocab_quiz': case 'vocab_perfect': return 'vocab_quiz';
+    case 'vocab_learn': return 'wordbook';
+    default: return 'battle';
+  }
+}
+export const MISSION_DESTINATION_LABEL: Record<MissionDestination, string> = {
+  battle: '対戦へ', study: '演習へ', review: '復習へ', rush: 'ラッシュへ', gacha: 'ガチャへ', outfit: '着がえる', vocab_quiz: '4択へ', wordbook: '単語帳へ',
+};
+
 export const MISSIONS_PER_DAY = 3;
 
 /** 決定論的ハッシュ（日付から同じ組を選ぶため） */

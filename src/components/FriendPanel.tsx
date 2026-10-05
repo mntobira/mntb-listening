@@ -15,6 +15,7 @@ import {
 } from '../utils/friends';
 import { auth } from '../firebase';
 import { DoorMascot } from './DoorMascot';
+import { FriendCodeInput, friendCodeFromBody } from './FriendCodeInput';
 import { UserSafetyMenu } from '../features/safety/UserSafetyMenu';
 import { isBlocked } from '../features/safety/userSafety';
 import { useBlockedTick } from '../features/safety/useBlockedFilter';
@@ -90,6 +91,15 @@ export function FriendPanel() {
 
   if (!auth.currentUser) return null;
 
+  const submitCode = async () => {
+    const full = friendCodeFromBody(code);
+    if (!full || loading) return;
+    setMessage(''); setIsError(false); setLoading(true);
+    try { setMessage(await sendFriendRequest(full)); setCode(''); await load(); }
+    catch (e: any) { setIsError(true); setMessage(e?.message || '申請に失敗しました。'); }
+    finally { setLoading(false); }
+  };
+
   return (
     <div className="bg-white border border-gray-150 p-3 sm:p-4 rounded-2xl shadow-sm space-y-3 h-full overflow-hidden flex flex-col">
       <div className="flex items-center justify-between gap-3">
@@ -132,36 +142,20 @@ export function FriendPanel() {
         </p>
       </div>
 
-      <div className="flex gap-2">
-        <input
-          value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
-          placeholder="MNTB-XXXX-XXXX"
-          className="flex-1 min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#A9CCE3] outline-none text-sm font-bold font-modern"
-        />
+      {/* ★合言葉と同じ入力（2026-10-05）★ MNTB- は表示済み、打つのは8文字だけ */}
+      <div className="friend-code-row">
+        <FriendCodeInput value={code} onChange={setCode} disabled={loading} onSubmit={() => void submitCode()} />
         <button
-          onClick={async () => {
-            setMessage('');
-            setIsError(false);
-            setLoading(true);
-            try {
-              setMessage(await sendFriendRequest(code));
-              setCode('');
-              await load();
-            } catch (e: any) {
-              setIsError(true);
-              setMessage(e?.message || '申請に失敗しました。');
-            } finally {
-              setLoading(false);
-            }
-          }}
-          disabled={loading || !code.trim()}
-          className="px-3 py-2.5 rounded-xl bg-[#2C3E50] text-white font-bold hover:bg-[#1B2631] disabled:opacity-50 flex items-center gap-1.5"
+          type="button"
+          onClick={() => void submitCode()}
+          disabled={loading || code.length !== 8}
+          className="friend-code-send"
         >
-          <Send size={14} />
+          <Send size={16} aria-hidden="true" />
           申請
         </button>
       </div>
+      <p className="friend-code-hint">英字は小文字・全角でも大丈夫です。コードをまるごと貼り付けてもOK。</p>
 
       {message && (
         <p
