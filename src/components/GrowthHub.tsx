@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Coins, ChevronRight } from 'lucide-react';
 import { StudyRecord } from './StudyRecord';
 import { LevelRewards } from './LevelRewards';
-import { itemById, equippedTitleLabel, type MissionDestination } from '../battle/core/growth';
+import { itemById, equippedTitleLabel, canUnequip, type EquipKind, type MissionDestination } from '../battle/core/growth';
+import { unequip } from '../battle/data/growthStore';
+import { X } from 'lucide-react';
 import { GachaRoom } from './GachaRoom';
 import { ManaRush } from './ManaRush';
 import { MyCollection } from './MyCollection';
@@ -51,7 +53,7 @@ export function GrowthHub({ page, onPage, onBack, onBattle, onReview, onRanking,
       </section>
       <section className="mypage-parts" aria-label="部位ごとに着がえる">
         <h2>部位ごとに着がえる</h2>
-        <ul>{PARTS.map(([kind,label]) => { const id = progress?.equipped[kind as keyof typeof progress.equipped] || ''; const cur = id ? itemById(id)?.label : ''; return <li key={kind}><button type="button" data-part={kind} onClick={()=>openPart(kind)}><span className="mypage-part-label">{label}</span><span className="mypage-part-cur">{cur || 'なし'}</span><ChevronRight size={15} aria-hidden/></button></li>; })}</ul>
+        <ul>{PARTS.map(([kind,label]) => { const id = progress?.equipped[kind as keyof typeof progress.equipped] || ''; const cur = id ? itemById(id)?.label : ''; const removable = !!(progress && id && canUnequip(progress, { id, kind })); return <li key={kind} data-removable={removable || undefined}><button type="button" data-part={kind} onClick={()=>openPart(kind)}><span className="mypage-part-label">{label}</span><span className="mypage-part-cur">{cur || 'なし'}</span>{!removable && <ChevronRight size={15} aria-hidden/>}</button>{removable && <button type="button" className="mypage-part-off" data-part-off={kind} aria-label={`${label}（${cur}）を外す`} onClick={()=>void unequip(kind as EquipKind)}><X size={14} aria-hidden/>外す</button>}</li>; })}</ul>
       </section>
       {/* 「レベルで手に入るもの」はミッションの中へ移した（マイページをスクロールなしで1画面に収める・2026-10-05） */}
     </main> : page === 'outfit' || page === 'prints' || page === 'shop' || page === 'rewards' ? <MyCollection key={`${uid}:${page}:${outfitKind}`} view={page === 'outfit' || page === 'rewards' ? 'owned' : page} initialKind={page === 'outfit' ? outfitKind : 'all'} onGacha={()=>onPage('gacha')}/>

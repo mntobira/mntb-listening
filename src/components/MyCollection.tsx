@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { FileText, Download, Coins, Gift, Shirt } from 'lucide-react';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
-import { ITEMS, gachaRarityOf, printOf, type ItemDef } from '../battle/core/growth';
-import { buyItem, equip, importLeagueReward, leagueRewardClaimed } from '../battle/data/growthStore';
+import { ITEMS, gachaRarityOf, printOf, canUnequip, type EquipKind, type ItemDef } from '../battle/core/growth';
+import { buyItem, equip, unequip, importLeagueReward, leagueRewardClaimed } from '../battle/data/growthStore';
 import { GrowthAvatar } from '../battle/ui/GrowthParts';
 import { clanCall, type LeagueReward } from '../utils/manaClan';
 import { auth } from '../firebase';
@@ -36,6 +36,15 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all' }: {
       else if ('coins' in item.unlock) { const r = await buyItem(item.id); setMessage(r?.ok ? '購入して装備しました。' : r?.reason || '購入できませんでした。'); }
     } catch { setMessage('保存に失敗しました。'); } finally { setBusy(false); }
   };
+  // ★装備を外す（2026-10-06）★ ポーズ・フレームは基本に戻る、それ以外は「なし」になる
+  const takeOff = async (item: ItemDef) => {
+    if (busy) return;
+    setBusy(true); setMessage('');
+    try {
+      const r = await unequip(item.kind as EquipKind);
+      setMessage(r ? (item.kind === 'pose' || item.kind === 'frame' ? `${item.label}を外しました（基本に戻しました）。` : `${item.label}を外しました。`) : '保存できませんでした。');
+    } catch { setMessage('保存に失敗しました。'); } finally { setBusy(false); }
+  };
   return <section className="my-collection" data-my-collection={view}>
     <header><h2>{view === 'prints' ? <FileText size={22}/> : <Shirt size={22}/>} {titles[view]}</h2><b><Coins size={18}/>{progress.coins.toLocaleString()}</b></header>
     {message && <p role="status" className="collection-message">{message}</p>}
@@ -55,7 +64,7 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all' }: {
       <ul className="collection-grid">{list.map(item => { const owned = progress.owned.includes(item.id); const print = printOf(item.id); const equipped = progress.equipped[item.kind] === item.id; return <li key={item.id} data-owned={owned}>
         <div className="collection-art">{print ? <img src={print.thumb} alt="PDFの表紙" loading="lazy"/> : <GrowthAvatar progress={{...progress,equipped:{...progress.equipped,[item.kind]:item.id}}} size={68} showLevel={false}/>}</div>
         <span className="collection-tag">{gachaRarityOf(item)} · {equipped ? '装備中' : owned ? '所持済み' : '未所持'}</span>{owned && item.id === LEAGUE_GIFT_ITEM && <span className="collection-gift-tag" data-gift-item><Gift size={12} aria-hidden/>プレゼントで獲得</span>}<h3>{item.label}</h3>
-        {print && owned ? <><p>{print.category} · {print.pages}ページ</p><a href={print.file} target="_blank" rel="noopener"><FileText size={16}/>PDFを開く</a><a href={print.file} download><Download size={16}/>保存する</a></> : owned ? <button type="button" disabled={busy || equipped} onClick={() => void perform(item)}>{equipped ? '装備中' : '装備する'}</button> : 'coins' in item.unlock ? <><p>{item.unlock.coins} マナコイン</p><button type="button" disabled={busy || progress.coins < item.unlock.coins} onClick={() => void perform(item)}>{progress.coins < item.unlock.coins ? `あと${item.unlock.coins-progress.coins}枚` : '購入する'}</button></> : <p>{item.id === 'frame_league_aurora' ? '隔週リーグ限定UR' : 'level' in item.unlock ? `Lv.${item.unlock.level}で解放` : 'badge' in item.unlock ? '称号で解放' : 'ガチャで獲得'}</p>}
+        {print && owned ? <><p>{print.category} · {print.pages}ページ</p><a href={print.file} target="_blank" rel="noopener"><FileText size={16}/>PDFを開く</a><a href={print.file} download><Download size={16}/>保存する</a></> : owned ? (equipped ? (canUnequip(progress, item) ? <button type="button" className="collection-unequip" data-unequip={item.id} disabled={busy} onClick={() => void takeOff(item)}>外す</button> : <button type="button" disabled>装備中</button>) : <button type="button" disabled={busy} onClick={() => void perform(item)}>装備する</button>) : 'coins' in item.unlock ? <><p>{item.unlock.coins} マナコイン</p><button type="button" disabled={busy || progress.coins < item.unlock.coins} onClick={() => void perform(item)}>{progress.coins < item.unlock.coins ? `あと${item.unlock.coins-progress.coins}枚` : '購入する'}</button></> : <p>{item.id === 'frame_league_aurora' ? '隔週リーグ限定UR' : 'level' in item.unlock ? `Lv.${item.unlock.level}で解放` : 'badge' in item.unlock ? '称号で解放' : 'ガチャで獲得'}</p>}
       </li>; })}</ul>{!list.length && <p className="collection-empty">{view === 'prints' ? '獲得したPDFはここに並びます。ガチャのURで学習プリントを手に入れよう。' : 'この条件のアイテムはありません。絞り込みを変えてみてください。'}</p>}
     </div>
     <p className="collection-storage">所有アイテム・コインはこの端末のアカウント別に保存。リーグの配布記録はサーバーに保存され、受け取り直せます。</p>
