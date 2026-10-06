@@ -249,7 +249,11 @@ export function useAiBattle(
       startsRef.current.set(index, startMs);
       setCurrentIndex(index);
       setDeadlineMs(startMs + limit * 1000);
-      setNow(startMs);
+      // ★時計は「いま」に合わせる（2026-10-06）★
+      //   以前は setNow(startMs) で時計をカウントダウン終了時刻（＝未来）まで進めていた。
+      //   すると最初の1フレームだけ「カウントダウンはもう終わった」扱いになり、
+      //   対戦BGMが前奏を飛ばしてサビから鳴り始め、盛り上がりが START! の約7秒前に来ていた。
+      setNow(Date.now());
       advancingRef.current = false;
     },
     [questions, rules],

@@ -170,3 +170,9 @@
 .level-road li[data-rarity=UR] .lr-label b { color: #8b3fb8; }
 .level-road-note { margin: 8px 0 0; font-size: 12px; color: #6b7a86; }
 @media (min-width: 720px) { .mypage-overview .level-road { grid-column: 2; margin: 0; } .mypage-overview .mypage-stage { grid-row: span 3; } }
+/* ★装備を外す（2026-10-06）★ */
+.collection-grid button.collection-unequip { background:#fff; color:#7a4b12; border:1.5px solid #c9a85a; }
+.mypage-parts li { position:relative; }
+.mypage-parts li[data-removable] > button[data-part] { padding-right:72px; min-height:54px; }
+.mypage-parts button.mypage-part-off { position:absolute; top:50%; right:5px; transform:translateY(-50%); width:auto; min-height:44px; min-width:60px; padding:0 8px; justify-content:center; gap:2px; border:1.5px solid #c9a85a; border-radius:11px; background:#fff; color:#7a4b12; font-size:12px; font-weight:800; }
+@media (min-width: 720px) { .mypage-parts button.mypage-part-off { min-height:40px !important; right:6px; } }

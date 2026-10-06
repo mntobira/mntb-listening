@@ -1066,10 +1066,25 @@ export function equipItem(progress: GrowthProgress, id: string): GrowthProgress 
   return { ...progress, equipped: { ...progress.equipped, [item.kind]: id } };
 }
 
-/** アクセサリ・壁紙を外す（ポーズ・枠・称号は外せない） */
+/**
+ * 装備を外す（2026-10-06：一度付けた装備を外せるように）。
+ *   ・帽子・メガネ・ほっぺ・オーラ・壁紙 → 何も付けない（''）
+ *   ・ポーズ・フレーム → 「なし」は無いので最初の基本（基本ポーズ・紙のフレーム）に戻す
+ *   ・称号は equipTitle('') で外す（ここでは扱わない）
+ */
 export function unequipKind(progress: GrowthProgress, kind: EquipKind): GrowthProgress {
-  if (!REMOVABLE_KINDS.includes(kind) || !progress.equipped[kind]) return progress;
-  return { ...progress, equipped: { ...progress.equipped, [kind]: '' } };
+  const fallback = kind === 'pose' ? DEFAULT_POSE : kind === 'frame' ? DEFAULT_FRAME : '';
+  if (!REMOVABLE_KINDS.includes(kind) && kind !== 'pose' && kind !== 'frame') return progress;
+  if ((progress.equipped[kind] || '') === fallback) return progress;
+  return { ...progress, equipped: { ...progress.equipped, [kind]: fallback } };
+}
+
+/** その装備を外せるか（いま付けていて、外すと見た目が変わるもの） */
+export function canUnequip(progress: GrowthProgress, item: { id: string; kind: string }): boolean {
+  if (progress.equipped[item.kind as EquipKind] !== item.id) return false;
+  if (item.kind === 'pose') return item.id !== DEFAULT_POSE;
+  if (item.kind === 'frame') return item.id !== DEFAULT_FRAME;
+  return REMOVABLE_KINDS.includes(item.kind as EquipKind);
 }
 
 /** 装備中のアクセサリの見た目（'形:色'）。持っていない・種類が違うものは無視 */
