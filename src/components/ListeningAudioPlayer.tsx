@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Headphones, Play, Pause, RotateCcw, Repeat2, FileText, ChevronDown } from 'lucide-react';
 import { locateListeningEvidence } from '../utils/listeningExplanation';
 import type { ListeningAudioTrack } from '../data/englishListeningQ1AProblems';
+import { ScriptReading } from '../features/readAlong/ScriptReading';
 import {
   hasRealAudio,
   isSpeechSupported,
@@ -70,9 +71,12 @@ export function ListeningEvidenceScript({track, collapsiblePhrases = false, show
     </li>)}</ol>;
   return <div ref={root} className="listening-script-evidence">
     {showHint && <p className="listening-evidence-hint">番号つきの黄色い部分が対応する英文です。下の表現を押すと、その箇所へ移動します。</p>}
-    {track.turns?.length ? <ul className="space-y-2">{track.turns.map((turn,index)=><li key={index} className="flex gap-2"><b className="shrink-0 text-xs">{turn.who}</b><span className="listening-script-text">{renderScript(turn.text)}</span></li>)}</ul>
+    {/* 2026-10-08 スクリプトに読み方（強弱・アクセント・区切り・つながり・上げ下げ・発音記号）を重ねて表示。
+        時刻データが無い音源では従来どおりのスクリプト */}
+    <ScriptReading track={track} compact={collapsiblePhrases} fallback={track.turns?.length
+      ? <ul className="space-y-2">{track.turns.map((turn,index)=><li key={index} className="flex gap-2"><b className="shrink-0 text-xs">{turn.who}</b><span className="listening-script-text">{renderScript(turn.text)}</span></li>)}</ul>
       : <p className="listening-script-text">{renderScript(track.script)}</p>}
-    <p className="mt-3 text-xs leading-relaxed">{track.translation}</p>
+      after={<p className="mt-3 text-xs leading-relaxed">{track.translation}</p>} />
     {track.keyPhrases.length > 0 && (collapsiblePhrases
       ? <details className="listening-evidence-list listening-evidence-fold"><summary>押さえたい表現（{track.keyPhrases.length}）</summary>{phraseList}</details>
       : <div className="listening-evidence-list"><h3>押さえたい表現</h3>{phraseList}</div>)}
