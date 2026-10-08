@@ -9,6 +9,7 @@ import { auth } from '../firebase';
 import { FeedbackButton } from './FeedbackButton';
 import { QuestionFigure } from './QuestionFigure';
 import { ListeningAudioPlayer, ListeningEvidenceScript } from './ListeningAudioPlayer';
+import { LISTENING_PICTURE_ASPECT } from '../data/listeningPictureAspect';
 import './listening-explanation.css';
 import { buildFigureNumberMap, getFigureNumber } from '../utils/figureNumbering';
 import { isAnswerCorrect } from '../utils/answerJudge';
@@ -177,6 +178,18 @@ export interface ReviewNav {
   retryLabel?: string;
   onNext?: () => void;
   nextLabel?: string;
+}
+
+/**
+ * 絵の問題（第1問B・第2問）：問題のイラストは ①〜④ の4コマが 2×2 に並んだ1枚の絵。
+ * 選択肢 oi のコマを背景の位置で切り出す（画像を新しく作らずに、同じ絵を使い回す）。
+ */
+function pictureCellOf(sq: any, oi: number, n: number): React.CSSProperties | null {
+  const url: string | undefined = sq?.imageUrl;
+  if (!url || n !== 4 || oi < 0 || oi > 3 || !/^\/listening_(q1b|q2)\//.test(url)) return null;
+  const col = oi % 2, row = Math.floor(oi / 2);
+  const aspect = LISTENING_PICTURE_ASPECT[url] ?? 1;
+  return { backgroundImage: `url("${url}")`, backgroundSize: '200% 200%', backgroundPosition: `${col * 100}% ${row * 100}%`, aspectRatio: String(aspect) };
 }
 
 export function Explanation({ mode: initialMode, chapter, answers, onBack, onReturnToBattle, isGuest, singleQuestionIndex, onNextQuestion, isLastQuestion, isMobileView, scoreBreakdown, scoreMeta, totalScore, runningCombo, resultTotalScore, resultTotalCorrect, resultTotalJudgeable, resultTotalTimeSec, questionRange, onRetryWrong, onNextChapter, nextChapterTitle, focusSubQuestionId, onHome, reviewNav }: ExplanationProps) {
@@ -2301,6 +2314,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                           : (mode === 'mini_test' ? 'bg-white border-red-200 text-red-600 line-through opacity-80' : 'bg-[#D9A0A0]/10 border-[#D9A0A0]/30 text-[#D9A0A0] line-through opacity-80')
                                   }${mathBodyClass}`}>
                                     {formatText(answers[sq.id] || '未解答')}
+                                    {/* 2026-10-08 絵の問題：選んだ絵のコマも出す（記号だけでは復習で何の絵か分からない） */}
+                                    {(() => { const oi = Array.isArray(sq.options) ? sq.options.indexOf(String(answers[sq.id] ?? '')) : -1; const pic = pictureCellOf(sq, oi, sq.options?.length ?? 0); return pic ? <span className="lx-answer-pic" role="img" aria-label="あなたが選んだイラスト" style={pic} /> : null; })()}
                                   </div>
                                 </div>
                                 <div>
@@ -2324,6 +2339,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                   */}
                                   <div className={`font-bold text-sm md:text-base p-3 rounded-lg border break-words${mathBodyClass} ${mode === 'mini_test' ? 'text-emerald-700 bg-white border-emerald-200' : 'text-[#5BC0BE] bg-[#5BC0BE]/10 border-[#5BC0BE]/30'}`}>
                                     {formatText(sq.correctAnswer)}
+                                    {(() => { const oi = Array.isArray(sq.options) ? sq.options.indexOf(String(sq.correctAnswer ?? '')) : -1; const pic = pictureCellOf(sq, oi, sq.options?.length ?? 0); return pic ? <span className="lx-answer-pic" role="img" aria-label="正解のイラスト" style={pic} /> : null; })()}
                                   </div>
                                 </div>
                               </div>
@@ -2587,15 +2603,20 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                             <span className="lx-result-verdict">{status === 'none' ? '未解答' : ok ? '正解' : '不正解'}</span>
                                           </header>
                                           {options.length > 0 && !hasImages ? (
-                                            <ol className="lx-choice-list">
+                                            <ol className={`lx-choice-list${pictureCellOf(sq, 0, options.length) ? ' is-pics' : ''}`}>
                                               {options.map((opt, oi) => {
                                                 const isRight = opt.trim() === right.trim();
                                                 const isMine = attempted && opt.trim() === mine.trim();
                                                 const tone = isRight ? 'right' : isMine ? 'wrong' : 'plain';
                                                 const body = texts?.[oi];
                                                 const mark = optionCircledMark(opt, oi);
+                                                // ★2026-10-08 絵の問題（第1問B・第2問）★ 選択肢は①〜④の記号だけなので、
+                                                //   復習のときに「どんな問題だったか」が分からなかった。
+                                                //   問題のイラスト（2×2 の4コマ）から、その選択肢の1コマを切り出して並べる。
+                                                const pic = pictureCellOf(sq, oi, options.length);
                                                 return (
-                                                  <li key={opt + oi} className="lx-choice" data-tone={tone} data-mine={isMine || undefined}>
+                                                  <li key={opt + oi} className={`lx-choice${pic ? ' has-pic' : ''}`} data-tone={tone} data-mine={isMine || undefined}>
+                                                    {pic && <span className="lx-choice-pic" role="img" aria-label={`${mark || opt} のイラスト`} style={pic} />}
                                                     <span className="lx-choice-mark">{mark ? `${mark} ` : ''}{formatText(opt)}</span>
                                                     {body && <span className="lx-choice-text">{formatText(body, [], { prose: true })}</span>}
                                                     {(isRight || isMine) && (
