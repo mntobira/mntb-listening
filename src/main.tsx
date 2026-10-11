@@ -10,22 +10,35 @@ import './index.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppWallpaper } from './components/AppWallpaper';
 import { installChunkRecovery } from './utils/chunkRecovery';
+import { initializeAdMob } from './utils/adService';
+
+import { isNativeApp, getAppPlatform } from './native/platform';
 
 installChunkRecovery();
+initializeAdMob();
+if (typeof document !== 'undefined') {
+  document.documentElement.dataset.platform = getAppPlatform();
+}
 
-// PWA Service Worker 登録（パート8で sw.js を用意）
+// PWA Service Worker 登録（アプリの中では使わない）
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js', { updateViaCache: 'none' })
-      .then((reg) => {
-        // 画面を開いたまま新しい版が出たときも、戻ってきたときに更新を確認する
-        document.addEventListener('visibilitychange', () => {
-          if (document.visibilityState === 'visible') reg.update().catch(() => undefined);
-        });
-      })
-      .catch((err) => console.warn('[SW] registration failed:', err));
-  });
+  if (isNativeApp()) {
+    navigator.serviceWorker.getRegistrations().then((regs) => {
+      regs.forEach((r) => r.unregister());
+    }).catch(() => {});
+  } else {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/sw.js', { updateViaCache: 'none' })
+        .then((reg) => {
+          // 画面を開いたまま新しい版が出たときも、戻ってきたときに更新を確認する
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') reg.update().catch(() => undefined);
+          });
+        })
+        .catch((err) => console.warn('[SW] registration failed:', err));
+    });
+  }
 }
 
 createRoot(document.getElementById('root')!).render(

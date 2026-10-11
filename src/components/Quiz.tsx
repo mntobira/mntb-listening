@@ -705,7 +705,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
       <div className="w-full bg-white rounded-2xl shadow-xl p-6 md:p-12 border border-gray-100 text-center relative">
         <button 
           onClick={onBack}
-          className="absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-2 text-gray-500 hover:text-[#2C3E50] transition-colors font-bold bg-gray-50 px-4 py-2 rounded-full shadow-sm"
+          className="absolute top-[calc(1rem+env(safe-area-inset-top,0px))] left-4 md:top-6 md:left-6 flex items-center gap-2 text-gray-500 hover:text-[#2C3E50] transition-colors font-bold bg-gray-50 px-4 py-2 rounded-full shadow-sm"
         >
           <ArrowLeft size={20} />
           <span>戻る</span>

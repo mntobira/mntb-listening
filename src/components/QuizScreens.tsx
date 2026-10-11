@@ -67,13 +67,14 @@
  * つまり「読み込み中は何も出ない」は元からの挙動と同じであり、
  * 新しい待ち時間の見え方を持ち込んでいない。
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { applyReviewFocus, readReviewFocus } from '../utils/reviewFocus';
 import { Quiz } from './Quiz';
 import { Explanation } from './Explanation';
 import { ErrorBoundary } from './ErrorBoundary';
 import { ScreenUnavailable } from './ScreenStatus';
 import { findChapterById, getChaptersOfSubject } from '../data/allChapters';
+import { showInterstitialAd } from '../utils/adService';
 
 /** Quiz が結果として返す採点内容（App.tsx 側の onFinish にそのまま渡す） */
 type QuizFinishResult = Parameters<React.ComponentProps<typeof Quiz>['onFinish']>[1];
@@ -205,6 +206,12 @@ export function QuizScreens({
     );
   }
 
+  // 結果・解説画面からの画面遷移（区切り）時に頻度制限付きインタースティシャル広告を試行
+  const triggerAdAndAction = (action?: () => void) => {
+    showInterstitialAd().catch(() => {});
+    action?.();
+  };
+
   return (
     /* 結果・ランキング画面は問題データを一括で描画するため、
        1問でもデータ不備があると全体が表示できなくなる。
@@ -214,8 +221,8 @@ export function QuizScreens({
         mode={mode}
         chapter={chapter}
         answers={answers}
-        onBack={onBack}
-        onReturnToBattle={onReturnToBattle}
+        onBack={() => triggerAdAndAction(onBack)}
+        onReturnToBattle={onReturnToBattle ? () => triggerAdAndAction(onReturnToBattle) : undefined}
         isGuest={isGuest}
         // スマホではスマホ専用レイアウト（正誤一覧→タップで解説）で表示する。
         // PC は従来どおり（isMobileView=false → 2カラムレイアウト）。
@@ -227,10 +234,10 @@ export function QuizScreens({
         // 1回分（例：第3回演習）だけを解いたときは、その回だけを振り返る。
         // 解いていない回まで答え合わせに並ぶと、どこまでやったか分からなくなる。
         questionRange={questionRange}
-        onRetryWrong={onRetryWrong ? (index) => onRetryWrong(chapter.id, index) : undefined}
-        onNextChapter={nextRoundIndex >= 0 && onNextRound ? () => onNextRound(chapter.id, nextRoundIndex)
-          : nextChapter && onNextChapter ? () => onNextChapter(nextChapter.id) : undefined}
-        onHome={onHome}
+        onRetryWrong={onRetryWrong ? (index) => { triggerAdAndAction(); onRetryWrong(chapter.id, index); } : undefined}
+        onNextChapter={nextRoundIndex >= 0 && onNextRound ? () => { triggerAdAndAction(); onNextRound(chapter.id, nextRoundIndex); }
+          : nextChapter && onNextChapter ? () => { triggerAdAndAction(); onNextChapter(nextChapter.id); } : undefined}
+        onHome={onHome ? () => triggerAdAndAction(onHome) : undefined}
         nextChapterTitle={nextRoundIndex >= 0 && onNextRound ? `第${nextRoundIndex + 1}回` : nextChapter?.abstractTitle || nextChapter?.realTitle || undefined}
       />
     </ErrorBoundary>

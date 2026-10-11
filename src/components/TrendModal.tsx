@@ -48,7 +48,7 @@ export function TrendModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/50 backdrop-blur-sm p-2 md:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/50 backdrop-blur-sm p-2 pt-[calc(0.5rem+env(safe-area-inset-top,0px))] pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] md:p-4 md:pt-[calc(1rem+env(safe-area-inset-top,0px))] overflow-y-auto">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl my-4 overflow-hidden">
         {/* ヘッダー */}
         <div className="bg-gradient-to-r from-[#2C3E50] to-[#34495E] text-white p-4 md:p-6 flex items-center justify-between">

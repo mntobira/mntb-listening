@@ -1,11 +1,53 @@
-/* バナー広告の枠（2026-10-05）。既定は 0px なので、広告 OFF の間は見た目が一切変わらない */
-:root { --ad-top-h: 0px; --ad-bottom-h: 0px; }
-.ad-banner-slot { position: fixed; left: 0; right: 0; z-index: 90; pointer-events: none; background: transparent; }
-.ad-banner-slot.is-top { top: var(--app-safe-top, 0px); height: var(--ad-top-h); }
-.ad-banner-slot.is-bottom { bottom: var(--app-safe-bottom, 0px); height: var(--ad-bottom-h); }
-/* バナーが有効なときだけ効く（data-ad-banner は AdBannerSlot が付ける）。
-   下のナビをバナーの上へ持ち上げ、各画面の基準 --app-nav-h にバナーの高さを足す → 画面は自動で詰まる。 */
-:root[data-ad-banner] .app-shell { padding-top: calc(var(--app-safe-top, 0px) + var(--ad-top-h)); }
-:root[data-ad-banner] .app-bottom-nav { bottom: var(--ad-bottom-h) !important; padding-bottom: .9rem !important; }
-:root[data-ad-banner] .ad-banner-slot.is-bottom { bottom: 0; height: calc(var(--ad-bottom-h) + var(--app-safe-bottom, 0px)); }
-@media (min-width: 1024px) { :root[data-ad-banner] .app-bottom-nav { bottom: 0 !important; } :root[data-ad-banner] .app-shell { padding-bottom: var(--ad-bottom-h); } }
+/* バナー広告の枠。下部バナーが有効なときは最初から 50px + 隙間 10px を確保して、
+ * 広告ロード瞬間のガタつき（レイアウトシフト）と誤タップを完全に防止する */
+:root {
+  --ad-top-h: 0px;
+  --ad-bottom-h: 50px;
+  --ad-gap: 10px; /* 広告と操作ボタンの間の安全な隙間（誤タップ防止） */
+}
+
+/* 広告を出さない画面（quiz, explanation, battle_live等）では 0px に縮小 */
+:root[data-ad-banner="false"] {
+  --ad-bottom-h: 0px;
+  --ad-gap: 0px;
+}
+
+.ad-banner-slot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: transparent;
+}
+.ad-banner-slot.is-top {
+  top: var(--app-safe-top, 0px);
+  height: var(--ad-top-h);
+}
+
+/* 下部バナー枠：画面最下部のナビバー（高さ約71.4px + セーフエリア）のすぐ上に配置 */
+.ad-banner-slot.is-bottom {
+  bottom: calc(71.4px + env(safe-area-inset-bottom, 0px));
+  height: var(--ad-bottom-h, 50px);
+  background: var(--mt-surface, #fdfbf7);
+  border-top: 1px solid var(--mt-line, #e5e7eb);
+  border-bottom: 1px solid var(--mt-line, #e5e7eb);
+  transition: height 0.15s ease-out;
+}
+
+/* バナーが有効なとき（data-ad-banner 属性あり）：
+ * 1. ナビバーは画面最下部に固定のまま（親指で押しやすい定位置）。
+ * 2. 画面最上部のみ、上部バナーがある場合は押し下げる。
+ */
+:root[data-ad-banner] .app-shell {
+  padding-top: calc(var(--app-safe-top, 0px) + var(--ad-top-h, 0px));
+}
+
+@media (min-width: 1024px) {
+  .ad-banner-slot.is-bottom {
+    bottom: 0;
+  }
+  :root[data-ad-banner] .app-shell {
+    padding-bottom: var(--ad-bottom-h);
+  }
+}

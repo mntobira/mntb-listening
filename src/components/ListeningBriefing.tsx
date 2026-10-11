@@ -58,9 +58,9 @@ export function ListeningBriefing({
   const difficulty = extractListeningDifficulty(lead);
   return (
     <div className="fixed inset-0 w-full flex flex-col bg-gray-50 overflow-hidden z-40">
-      {onReturnToBattle && <button type="button" onClick={onReturnToBattle} className="min-h-11 shrink-0 bg-blue-50 px-3 py-2 text-sm font-bold text-blue-900">バトル結果・解説に戻る</button>}
+      {onReturnToBattle && <button type="button" onClick={onReturnToBattle} className="min-h-11 shrink-0 bg-blue-50 px-3 pt-[calc(0.5rem+env(safe-area-inset-top,0px))] pb-2 text-sm font-bold text-blue-900 border-b border-blue-200">バトル結果・解説に戻る</button>}
       {/* ヘッダー（戻る＝単元選択へ） */}
-      <div className="flex-none flex items-center gap-2 md:gap-4 p-3 md:p-4 bg-white border-b border-gray-200">
+      <div className={`flex-none flex items-center gap-2 md:gap-4 px-3 pb-3 md:px-4 md:pb-4 ${onReturnToBattle ? 'pt-3 md:pt-4' : 'pt-[calc(0.75rem+env(safe-area-inset-top,0px))] md:pt-[calc(1rem+env(safe-area-inset-top,0px))]'} bg-white border-b border-gray-200`}>
         <button
           onClick={handleExit}
           title="単元選択に戻る"

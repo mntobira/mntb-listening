@@ -195,7 +195,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   };
 
   return (
-    <div className="mtb-page mt-screen profile-journal w-full h-[100dvh] overflow-hidden pb-20 sm:pb-24" data-settings>
+    <div className="mtb-page mt-screen profile-journal w-full h-[calc(100dvh-env(safe-area-inset-top,0px))] overflow-hidden pb-[calc(var(--app-nav-h,120px)+24px)] sm:pb-24" data-settings>
       <div className="max-w-4xl h-full mx-auto px-3 sm:px-5 py-3 sm:py-5 flex flex-col relative">
         <div className="absolute top-4 right-8 w-40 h-40 bg-[#A9CCE3]/15 rounded-full blur-3xl pointer-events-none" />
 

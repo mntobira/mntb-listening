@@ -56,24 +56,49 @@ function cacheFor(ctx: BaseAudioContext): Cache {
 /** 全効果音を先読みする（2回目以降は何もしない） */
 export function preloadSamples(ctx: BaseAudioContext): void {
   const c = cacheFor(ctx);
-  if (c.loading || typeof fetch !== 'function') return;
+  if (c.loading) return;
   c.loading = true;
   const missing = SAMPLE_SFX.filter((n) => !c.buffers.has(n));
   pendingCount.set(ctx, missing.length);
+
+  const fetchBuffer = async (url: string): Promise<ArrayBuffer> => {
+    try {
+      if (typeof fetch === 'function') {
+        const r = await fetch(url);
+        if (r.ok) return await r.arrayBuffer();
+      }
+    } catch { /* fetch failed, try XHR */ }
+
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+      if (typeof XMLHttpRequest === 'undefined') {
+        return reject(new Error(`fetch failed for ${url} and XMLHttpRequest is unavailable`));
+      }
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = () => {
+        if ((xhr.status >= 200 && xhr.status < 300) || (xhr.status === 0 && xhr.response)) {
+          resolve(xhr.response as ArrayBuffer);
+        } else {
+          reject(new Error(`XHR ${xhr.status} fetching ${url}`));
+        }
+      };
+      xhr.onerror = (e) => reject(e);
+      xhr.send();
+    });
+  };
+
   for (const name of missing) {
-    void fetch(sampleUrl(name))
-      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+    void fetchBuffer(sampleUrl(name))
       .then((buf) => ctx.decodeAudioData(buf))
       .then((ab) => {
         c.buffers.set(name, ab);
       })
       .catch(() => {
-        /* 読み込めなければ合成音で鳴る */
+        /* ロード失敗 */
       })
       .finally(() => {
         // ★1つでも読めなかったら、あとで読み直せるようにする★
-        //   最初の読み込みが圏外・通信の瞬断と重なると、以前はそのまま
-        //   その端末ではずっと合成音になっていた。次に鳴らすときにもう一度読む。
         if (SAMPLE_SFX.every((n) => c.buffers.has(n))) return;
         pendingCount.set(ctx, (pendingCount.get(ctx) ?? 1) - 1);
         if ((pendingCount.get(ctx) ?? 0) <= 0) {

@@ -116,7 +116,7 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
         切り替わるので、見た目を変えずに一番上まで読める。
         （定義は index.css 13.5 節） */
   return (
-    <div className="fixed inset-0 z-[100] flex items-safe-center justify-center overflow-y-auto bg-gradient-to-b from-[#FFF1F5] via-[#FDFBF7] to-[#F8E7EE] p-4 font-handwriting">
+    <div className="fixed inset-0 z-[100] flex items-safe-center justify-center overflow-y-auto bg-gradient-to-b from-[#FFF1F5] via-[#FDFBF7] to-[#F8E7EE] p-4 pt-[calc(1rem+env(safe-area-inset-top,0px))] pb-[calc(1rem+env(safe-area-inset-bottom,0px))] font-handwriting">
       {/* ノート罫線の背景 */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.18]"

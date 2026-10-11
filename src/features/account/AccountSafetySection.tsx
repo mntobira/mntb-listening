@@ -5,12 +5,12 @@
  *   - アカウントの削除（App Store 5.1.1(v)：アプリ内で削除できること）
  */
 import { useEffect, useState } from 'react';
-import { Trash2, Loader2, Ban, AlertTriangle, FileText, Shield, Mail } from 'lucide-react';
+import { Trash2, Loader2, Ban, AlertTriangle, FileText, Shield, Mail, Bug } from 'lucide-react';
 import { auth } from '../../firebase';
 import { listBlockedUsers, subscribeBlocked, unblockUser, type BlockedUser } from '../safety/userSafety';
 import { deleteAccount } from './accountDeletion';
 import { LegalDialog, type LegalDoc } from '../legal/LegalDialog';
-import { SUPPORT_EMAIL } from '../legal/legalText';
+import { SUPPORT_EMAIL, BUG_REPORT_FORM_URL } from '../legal/legalText';
 import { ListItem } from '../../components/ui';
 
 export function AccountSafetySection({ onDeleted }: { onDeleted?: () => void }) {
@@ -49,6 +49,7 @@ export function AccountSafetySection({ onDeleted }: { onDeleted?: () => void }) 
         <ListItem icon={<FileText size={16} />} title="利用規約" onClick={() => setLegal('terms')} />
         <ListItem icon={<Shield size={16} />} title="プライバシー" onClick={() => setLegal('privacy')} />
         <ListItem icon={<Mail size={16} />} title="お問い合わせ" sub={SUPPORT_EMAIL} href={`mailto:${SUPPORT_EMAIL}`} />
+        <ListItem icon={<Bug size={16} />} title="不具合報告フォーム" sub="Googleフォームが開きます" href={BUG_REPORT_FORM_URL} external />
       </div>
       <div className="mt-card space-y-2">
 

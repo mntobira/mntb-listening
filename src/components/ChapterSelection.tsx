@@ -982,7 +982,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[80] flex flex-col bg-black/45 backdrop-blur-sm"
+            className="fixed inset-0 z-[80] flex flex-col bg-black/45 backdrop-blur-sm pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] px-2"
             onClick={() => setTutorialOpen(false)}
           >
             <motion.div
@@ -990,7 +990,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'che
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 24, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="mx-auto my-3 flex h-[calc(100dvh-1.5rem)] w-[min(60rem,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl bg-[#fbf8ff] shadow-2xl"
+              className="mx-auto my-auto flex h-full max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))] w-[min(60rem,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl bg-[#fbf8ff] shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[#c9bce6] bg-white/90 px-4 py-3">

@@ -15,3 +15,32 @@ __pycache__/
 .secret.*
 .private-clan-policy*
 /audit/
+
+# ---- アプリ版（Capacitor）: 作り直されるもの ----
+ios/App/App/public
+android/app/src/main/assets/public
+ios/App/App/capacitor.config.json
+ios/App/App/config.xml
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/app/src/main/res/xml/config.xml
+android/.gradle
+android/build
+android/app/build
+android/capacitor-cordova-android-plugins
+ios/capacitor-cordova-ios-plugins
+ios/App/build
+ios/App/Pods
+ios/App/output
+ios/DerivedData
+xcuserdata/
+android/local.properties
+
+# ---- 秘密のファイル（絶対に GitHub に上げない。カサニマロの手元にだけ置く） ----
+*.p8
+*.jks
+*.keystore
+android/key.properties
+ios/App/App/GoogleService-Info.plist
+android/app/google-services.json
+.DS_Store

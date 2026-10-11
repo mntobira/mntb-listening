@@ -31,3 +31,10 @@
 .app-bottom-nav > button[aria-current=page] .app-nav-label { font-weight: 800; }
 .app-nav-icon { display: inline-grid; place-items: center; }
 .app-nav-badge { position: absolute; top: -6px; right: -9px; min-width: 18px; height: 18px; padding: 0 4px; border: 2px solid var(--mt-paper); border-radius: 999px; background: var(--mt-danger); color: #fff; font: 800 12px/14px var(--mt-font-body); font-style: normal; text-align: center; }
+
+/* Android 専用：選択インジケーター（青線）がナビバー枠外（-12px）に飛び出して広告に被るのを防止（iOSは変更なし） */
+[data-platform="android"] .app-bottom-nav > button[aria-current=page]::before {
+  top: 0px !important;
+  left: 20%;
+  right: 20%;
+}

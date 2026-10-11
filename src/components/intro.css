@@ -37,6 +37,7 @@
 .intro-credit dl > div { display: grid; grid-template-columns: 9em 1fr; gap: 8px; font-size: 13px; }
 .intro-credit dt { color: #7a6a4c; font-weight: 700; }
 .intro-credit dd { margin: 0; overflow-wrap: anywhere; }
+.intro-build { margin: 8px 0 0; font-size: 12px; color: #8a7a5c; text-align: right; }
 .intro-credit a { color: #2458a6; text-decoration: underline; }
 @media (max-width: 400px) { .intro-credit dl > div { grid-template-columns: 1fr; gap: 0; } }
 

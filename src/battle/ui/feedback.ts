@@ -41,71 +41,6 @@ export type SfxName =
   | 'gacha' // ガチャの結果
   | 'tick'; // カウントアップの刻み
 
-type Note = { f: number; t: number; d: number; type?: OscillatorType; g?: number };
-
-/** 各音の「周波数・開始(ms)・長さ(ms)」 */
-const SFX: Record<SfxName, Note[]> = {
-  tap: [{ f: 880, t: 0, d: 30, type: 'square', g: 0.05 }],
-  tick: [{ f: 1320, t: 0, d: 18, type: 'square', g: 0.03 }],
-  correct: [
-    { f: 880, t: 0, d: 70 },
-    { f: 1320, t: 70, d: 110 },
-  ],
-  wrong: [{ f: 220, t: 0, d: 160, type: 'sawtooth', g: 0.08 }],
-  win: [
-    { f: 659, t: 0, d: 90 },
-    { f: 784, t: 90, d: 90 },
-    { f: 988, t: 180, d: 90 },
-    { f: 1319, t: 270, d: 260 },
-  ],
-  lose: [
-    { f: 392, t: 0, d: 160 },
-    { f: 330, t: 160, d: 260, type: 'triangle' },
-  ],
-  draw: [
-    { f: 523, t: 0, d: 120 },
-    { f: 523, t: 160, d: 200 },
-  ],
-  levelup: [
-    { f: 523, t: 0, d: 80 },
-    { f: 659, t: 80, d: 80 },
-    { f: 784, t: 160, d: 80 },
-    { f: 1047, t: 240, d: 160 },
-    { f: 1319, t: 400, d: 320 },
-  ],
-  badge: [
-    { f: 1047, t: 0, d: 60 },
-    { f: 1568, t: 60, d: 200 },
-  ],
-  coin: [
-    { f: 1568, t: 0, d: 50, type: 'square', g: 0.06 },
-    { f: 2093, t: 50, d: 120, type: 'square', g: 0.06 },
-  ],
-  rankup: [
-    { f: 784, t: 0, d: 100 },
-    { f: 988, t: 100, d: 100 },
-    { f: 1175, t: 200, d: 100 },
-    { f: 1568, t: 300, d: 400 },
-    { f: 1976, t: 300, d: 400, g: 0.05 },
-  ],
-  chest: [
-    { f: 784, t: 0, d: 80 },
-    { f: 1047, t: 80, d: 80 },
-    { f: 1568, t: 160, d: 240 },
-  ],
-  jackpot: [
-    { f: 1047, t: 0, d: 70 },
-    { f: 1319, t: 70, d: 70 },
-    { f: 1568, t: 140, d: 70 },
-    { f: 2093, t: 210, d: 400 },
-  ],
-  gacha: [
-    { f: 1319, t: 0, d: 40, type: 'square', g: 0.04 },
-    { f: 1480, t: 90, d: 40, type: 'square', g: 0.04 },
-    { f: 2093, t: 220, d: 260 },
-  ],
-};
-
 const VIBE: Partial<Record<SfxName, number | number[]>> = {
   tap: 8,
   correct: 20,
@@ -147,30 +82,9 @@ export function primeAudio(): void {
 export function play(name: SfxName, vibrate = true): void {
   if (!sfxEnabled()) return;
   const ac = context();
-  // 効果音ファイルが読めていればそれを鳴らす（音量は対戦の音量設定に合わせる）
-  if (ac && playSample(ac, ac.destination, name, 0.5 * readAudioPreferences().volume)) {
-    /* 鳴らせた */
-  } else if (ac) {
-    try {
-      const now = ac.currentTime;
-      for (const n of SFX[name]) {
-        const osc = ac.createOscillator();
-        const gain = ac.createGain();
-        osc.type = n.type ?? 'sine';
-        osc.frequency.value = n.f;
-        const start = now + n.t / 1000;
-        const end = start + n.d / 1000;
-        const peak = n.g ?? 0.09;
-        gain.gain.setValueAtTime(0.0001, start);
-        gain.gain.exponentialRampToValueAtTime(peak, start + 0.008);
-        gain.gain.exponentialRampToValueAtTime(0.0001, end);
-        osc.connect(gain).connect(ac.destination);
-        osc.start(start);
-        osc.stop(end + 0.02);
-      }
-    } catch {
-      /* 音は無くても進む */
-    }
+  // 効果音ファイル（public/sfx/battle/*.mp3）を鳴らす
+  if (ac) {
+    playSample(ac, ac.destination, name, 0.5 * readAudioPreferences().volume);
   }
   if (vibrate) {
     const pattern = VIBE[name];

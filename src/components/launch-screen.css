@@ -108,3 +108,9 @@
 
 /* タイトル画面 → 「学びの扉」（理念）ページへの入口。主CTAの邪魔をしない文字リンク */
 .launch-philosophy { display: inline-flex; align-items: center; gap: 8px; min-height: var(--mt-tap); margin-top: 4px; padding: 0 18px; border: 1px solid #e3c49a; border-radius: 999px; background: linear-gradient(135deg, #fff3e0, #e9f1fb); color: #6e4019; font: 700 14px/1.2 'Shippori Mincho', 'Hiragino Mincho ProN', serif; letter-spacing: .06em; box-shadow: 0 2px 0 #e8d3b2; }
+
+/* ===== 2026-10-07 アプリ版：起動エンブレムはアプリのロゴ（白背景のまま・透過しない）＋新しい主コピー ===== */
+.launch-emblem-applogo { width: min(280px, 70vw); height: auto; }
+.launch-emblem h1 { font: 900 clamp(22px, 6vw, 30px)/1.4 var(--mt-font-display); letter-spacing: .02em; color: var(--mt-ink, #1f2d3d); }
+.launch-emblem h1 em, .launch-copy em { font-style: normal; color: #c25a0c; }
+.launch-copy-break { display: inline; }

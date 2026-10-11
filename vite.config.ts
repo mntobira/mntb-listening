@@ -46,6 +46,8 @@ export default defineConfig(({mode}) => {
  const release = Boolean(env.VITE_FIREBASE_API_KEY) && env.VITE_USE_EMULATORS !== 'true';
  return {
   plugins: [react(), tailwindcss(), releaseCsp(release), siteUrl(env)],
+  // アプリ版キット：どのビルドが入っているか画面（使い方の一番下）で確かめるための日時
+  define: { __KIT_BUILD__: JSON.stringify(new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 16).replace('T', ' ') + ' JST') },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
@@ -115,7 +117,9 @@ export default defineConfig(({mode}) => {
         manualChunks: (id: string) => {
           // node_modules は変更頻度が低いので、用途ごとに固定チャンクへ。
           if (id.includes('node_modules')) {
-            if (id.includes('/firebase/') || id.includes('/@firebase/')) return 'vendor-firebase';
+            // アプリ版：@capacitor-firebase は firebase を使うので firebase と同じチャンクへ（vendor との循環を防ぐ）
+            if (id.includes('/firebase/') || id.includes('/@firebase/') || id.includes('/@capacitor-firebase/')) return 'vendor-firebase';
+            if (id.includes('/@capacitor/') || id.includes('/@capacitor-community/')) return 'vendor-firebase';
             if (id.includes('/katex/')) return 'vendor-katex';
             if (id.includes('/motion') || id.includes('/framer-motion')) return 'vendor-motion';
             if (id.includes('/lucide-react/')) return 'vendor-icons';

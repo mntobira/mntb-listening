@@ -5,6 +5,7 @@
 
 import { AdBannerSlot } from './ads/AdBannerSlot';
 import React, { useState, useEffect, useRef } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { setReviewFocus } from './utils/reviewFocus';
 import { BottomNavigation } from './components/ui/BottomNavigation';
 import { ListeningHome as Home } from './components/ListeningHome';
@@ -332,7 +333,17 @@ const SELECTED_FIELD_KEY = 'savedSelectedAdvancedField';
 const IDLE_RESET_MS = 30 * 60 * 1000;
 
 export default function App() {
-  const [hasEntered, setHasEntered] = useState(false);
+  const [hasEntered, setHasEntered] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const p = new URLSearchParams(window.location.search);
+        if (p.get('screenshot') === '1' || localStorage.getItem('screenshot_mode') === 'true') {
+          return true;
+        }
+      } catch {}
+    }
+    return false;
+  });
   useGlobalClickSound();
   useEffect(() => installFriendPresence(), []);
   useEffect(() => {
@@ -344,7 +355,16 @@ export default function App() {
 
   const [appState, setAppState] = useState<AppState>(() => {
     const saved = localStorage.getItem('savedAppState');
-    return isAppState(saved) ? saved : 'onboarding';
+    if (isAppState(saved)) return saved;
+    if (typeof window !== 'undefined') {
+      try {
+        const p = new URLSearchParams(window.location.search);
+        if (p.get('screenshot') === '1' || localStorage.getItem('screenshot_mode') === 'true' || localStorage.getItem('hasCompletedOnboarding') === 'true') {
+          return 'home';
+        }
+      } catch {}
+    }
+    return 'onboarding';
   });
   const [appMode, setAppMode] = useState<AppMode>(() => {
     const saved = localStorage.getItem('savedAppMode');
@@ -1539,6 +1559,46 @@ export default function App() {
    *   同じ引数で同期に呼んでいる）。見つからないときに何も描かないのも同じ。
    */
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).__ENTER_APP__ = () => {
+        setHasInteracted(true);
+        setHasEntered(true);
+      };
+      (window as any).__SET_APP_STATE__ = (s: AppState) => {
+        setHasInteracted(true);
+        setHasEntered(true);
+        setAppState(s);
+      };
+      (window as any).__SET_GROWTH_PAGE__ = (g: GrowthPage) => {
+        setHasInteracted(true);
+        setHasEntered(true);
+        setGrowthPage(g);
+      };
+      (window as any).__SELECT_CHAPTER__ = (c: any, idx = 0) => {
+        setHasInteracted(true);
+        setHasEntered(true);
+        handleSelectChapter(c, idx, false, { startIndex: idx, endIndex: idx }, 'practice');
+      };
+      (window as any).__NAVIGATE_QUIZ__ = (chapterId = 'el1_A') => {
+        setHasInteracted(true);
+        setHasEntered(true);
+        setSelectedChapterId(chapterId);
+        setAppMode('practice');
+        setQuizRange({ startIndex: 0, endIndex: 0 });
+        setAppState('quiz');
+      };
+      (window as any).__NAVIGATE_EXPLANATION__ = (chapterId = 'el1_A') => {
+        setHasInteracted(true);
+        setHasEntered(true);
+        setSelectedChapterId(chapterId);
+        setAppMode('practice');
+        setQuizAnswers({ el1_A_q1: '1' });
+        setAppState('explanation');
+      };
+    }
+  }, []);
+
   if (!hasEntered) {
     const enter = () => { battleAudio().unlock(); setHasInteracted(true); setHasEntered(true); };
     // 副CTA「ゲストで試す」は、まだゲストでもログイン済みでもない人（＝次にログイン画面が出る人）にだけ出す
@@ -1879,8 +1939,11 @@ export default function App() {
                 ref={(node: HTMLElement | null) => {
                   if (!node) return;
                   const shell = node.closest<HTMLElement>('.app-shell');
-                  // バナー広告（src/ads）を下に出すときは、その高さも足す。広告OFFの間は --ad-bottom-h = 0px
-                  const measure = () => shell?.style.setProperty('--app-nav-h', `calc(${node.getBoundingClientRect().height}px + var(--ad-bottom-h, 0px))`);
+                  const measure = () => {
+                    const isAndroid = Capacitor.getPlatform() === 'android';
+                    const adGap = isAndroid ? ' + var(--ad-gap, 16px)' : '';
+                    shell?.style.setProperty('--app-nav-h', `calc(${node.getBoundingClientRect().height}px + var(--ad-bottom-h, 0px)${adGap})`);
+                  };
                   measure();
                   const observer = new ResizeObserver(measure);
                   observer.observe(node);

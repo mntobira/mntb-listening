@@ -328,7 +328,7 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
   // ---------------------------------------------------------------
   if (!uid) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] px-5 py-6">
+      <div className="min-h-screen bg-[#FDFBF7] px-5 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6">
         <button
           onClick={onBack}
           className="flex items-center gap-2 text-[#4B5563] hover:text-[#1B2631] transition-colors mb-8"
@@ -350,7 +350,7 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] px-4 sm:px-6 py-6">
+    <div className="min-h-screen bg-[#FDFBF7] px-4 sm:px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6">
       {/* ヘッダー */}
       <div className="max-w-5xl mx-auto">
         <button

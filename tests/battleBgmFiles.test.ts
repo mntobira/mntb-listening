@@ -33,6 +33,12 @@ describe('対戦BGM（音源ファイル）', () => {
       if (key === 'battle' || key === 'battle2') expect(spec!.dropSec).toBe(7);
     }
   });
+  it('AI対戦の1問目は時計を未来に進めない（BGMの盛り上がりがSTART!より早く来ないため・2026-10-06）', () => {
+    const ai = readFileSync('src/battle/hooks/useAiBattle.ts', 'utf8');
+    // setNow(startMs) だと最初の1フレームでカウントダウンが「終わった」扱いになり、曲がサビから鳴り始める
+    expect(ai).not.toMatch(/^\s*setNow\(startMs\);/m);
+    expect(ai).toContain('setNow(Date.now());');
+  });
   it('対戦画面はカウントダウン中から対戦曲を渡し、リスニングは問題中に鳴らさない', () => {
     const stage = readFileSync('src/battle/ui/BattleLiveStage.tsx', 'utf8');
     expect(stage).toContain("counting && BGM_FILES.battle ? 'normal' : track");

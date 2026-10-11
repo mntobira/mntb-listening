@@ -2,7 +2,10 @@
  * 設定 › 基本設定（ProfileModal）。ホームと同じクリーム地・細い線・やわらかい影。
  * ★UIの決まり★ 文字12px以上・タップ44px以上・つまみはトラックの内側。
  */
-.profile-journal { --ps-line: #e5dccc; --ps-card: #fffdf5; --ps-ink: #344451; --ps-ink-2: #5a6573; }
+.profile-journal { --ps-line: #e5dccc; --ps-card: #fffdf5; --ps-ink: #344451; --ps-ink-2: #5a6573; padding-bottom: calc(var(--app-nav-h, 120px) + 24px); }
+@media (min-width: 640px) {
+  .profile-journal { padding-bottom: 6rem; }
+}
 .profile-journal .mtb-kicker { font-size: 12px; }
 .profile-journal .profile-tabs button { min-height: 44px; font-size: 13px; }
 .profile-workspace .ps-card, .profile-workspace .ps-preview, .profile-workspace .ps-sound { padding: 12px; }
@@ -91,7 +94,7 @@
 
 /* 保存バー：スマホでは画面の下に貼り付ける（スクロールの途中でも押せる） */
 @media (max-width: 767px) {
-  .ps-savebar { position: sticky; bottom: 0; z-index: 5; margin-inline: -4px; padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, #fff8f3 75%, rgba(255, 248, 243, 0)); }
+  .ps-savebar { position: sticky; bottom: 0; z-index: 5; margin-inline: -4px; padding: 10px 4px calc(12px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, #fff8f3 80%, rgba(255, 248, 243, 0)); }
 }
 .ps-benefits > summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; list-style: none; }
 .ps-benefits > summary::-webkit-details-marker { display: none; }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BookOpen, ChevronDown, ChevronLeft, Coins, Headphones, Heart, Music, PenLine, Repeat2, Swords, Target, Trophy } from 'lucide-react';
 import { TobiraBuddy } from './TobiraBuddy';
+import { BGM_FILES, BGM_LOGIC_VERSION } from '../battle/audio/bgmFiles';
 import './intro.css';
 
 /**
@@ -89,6 +90,8 @@ export function Intro({ onBack, onBattle }: { onBack: () => void; onBattle?: () 
         <div><dt>配布元</dt><dd>創作堂さくら紅葉 <a href="https://yukizakura.net/" target="_blank" rel="noopener noreferrer">https://yukizakura.net/</a></dd></div>
         <div><dt>対戦中 BGM</dt><dd>「カナリアスキップ」作曲：まんぼう二等兵（OpenTracks）</dd></div>
       </dl>
+      <p className="intro-build" data-kit-build>ビルド {typeof __KIT_BUILD__ !== 'undefined' ? __KIT_BUILD__ : 'dev'}</p>
+      <p className="intro-build" data-kit-bgm>BGM {BGM_LOGIC_VERSION}（{Object.keys(BGM_FILES).length}曲：{Object.keys(BGM_FILES).join('・')}）</p>
     </section>
 
     <div className="intro-cta">

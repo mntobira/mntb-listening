@@ -64,13 +64,13 @@ export function ChapterFlowchartModal({
         safe 付きで「収まるときは中央・はみ出すときは上端」にする。
         （定義は index.css 13.5 節） */
   return (
-    <div className="fixed inset-0 bg-[#1B2631]/60 backdrop-blur-xs flex items-safe-center justify-center p-3 sm:p-6 z-[100] overflow-y-auto font-handwriting">
+    <div className="fixed inset-0 bg-[#1B2631]/60 backdrop-blur-xs flex items-safe-center justify-center p-3 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:p-6 sm:pt-[calc(1.5rem+env(safe-area-inset-top,0px))] z-[100] overflow-y-auto font-handwriting">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="bg-white rounded-3xl shadow-2xl border border-gray-150 w-full max-w-4xl md:max-w-6xl max-h-[90vh] flex flex-col overflow-hidden font-handwriting"
+        className="bg-white rounded-3xl shadow-2xl border border-gray-150 w-full max-w-4xl md:max-w-6xl max-h-[min(90vh,calc(100dvh-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)-1.5rem))] flex flex-col overflow-hidden font-handwriting"
       >
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between bg-white text-[#2C3E50] shrink-0 font-handwriting">

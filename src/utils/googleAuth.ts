@@ -39,6 +39,8 @@ import {
 import { auth, provider, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey } from './userStorageKeys';
+import { isNativeApp } from '../native/platform';
+import { nativeSignIn, nativeSignOut } from '../native/nativeAuth';
 
 /** サインイン結果 */
 export interface GoogleSignInOutcome {
@@ -121,6 +123,11 @@ function providerFor(method: SignInMethod): AuthProvider {
  * popup が使えない環境では自動で redirect に切り替える。
  */
 export async function signInWith(method: SignInMethod): Promise<GoogleSignInOutcome> {
+  // アプリ（Capacitor ネイティブ環境）のときは端末のログイン画面を使用する
+  if (isNativeApp()) {
+    return nativeSignIn(method);
+  }
+
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) return { ok: false, message: 'オンライン機能は初期設定が必要です。運営者はREADMEに従って専用Firebaseを設定してください。ゲストで演習・AI対戦を試せます。' };
   const label = method === 'apple' ? 'Apple' : 'Google';
   if (isInAppBrowser()) {
@@ -180,6 +187,9 @@ export async function consumeGoogleRedirectResult(): Promise<User | null> {
 
 /** ログアウト（プロフィールのローカルキャッシュも掃除する） */
 export async function signOutGoogle(): Promise<void> {
+  if (isNativeApp()) {
+    nativeSignOut().catch(() => {});
+  }
   const uid = auth.currentUser?.uid;
   await signOut(auth);
   if (uid) {

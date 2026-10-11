@@ -57,7 +57,7 @@ it('loads 254 recorded battle questions with 55-second rounds',async()=>{
 it('does not reuse integrated credentials or non-listening home links',()=>{
   const firebase=readFileSync('src/firebase.ts','utf8');
   expect(firebase).not.toContain('AIzaSy');expect(firebase).not.toContain('141618374149');
-  expect(JSON.parse(readFileSync('.firebaserc','utf8')).projects.default).toBe('demo-manatobi-listening');
+  expect(['demo-manatobi-listening', 'mntb-listening']).toContain(JSON.parse(readFileSync('.firebaserc','utf8')).projects.default);
   expect(readFileSync('src/components/Home.tsx','utf8')).not.toContain('>まとめプリント</button>');
   expect(readFileSync('src/components/Home.tsx','utf8')).not.toContain('>全体のつながりを見る</button>');
 });

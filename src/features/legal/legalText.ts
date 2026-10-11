@@ -6,6 +6,7 @@
  * ★実際の挙動と食い違わせないこと★ 収集する項目を増やしたらここも直す。
  */
 export const SUPPORT_EMAIL = 'mntobira@gmail.com';
+export const BUG_REPORT_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfV2ztYvG9EBSmS_xKnGRzmenRMI_E8DRXEKguVlylUFPEl1Q/viewform?usp=publish-editor';
 export const LEGAL_UPDATED = '2026年10月2日';
 
 export interface LegalSection { heading: string; body: string[] }

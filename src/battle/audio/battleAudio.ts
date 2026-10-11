@@ -1,16 +1,13 @@
 /**
  * ===================================================================
- * battleAudio — 対戦専用の BGM と効果音（WebAudio で合成）
+ * battleAudio — 対戦専用の BGM と効果音（音源ファイル MP3 再生）
  * ===================================================================
  *
- * ■ なぜ音源ファイルではなく合成なのか
- *   ・音源ファイルを増やすと初回読み込みが重くなる（既存の BGM は 1 曲で数MB）
- *   ・ライセンスの確認が要る
- *   ・「残り3問でテンポを上げる」「最終問題で強める」を、同じ素材の
- *     パラメータ（テンポ・音程・音色）を変えるだけで作れる
- *   短い音階のループを OscillatorNode で鳴らすので、ファイルは 0 個。
- *   長時間聞いても疲れないよう、音量は控えめ・音色は柔らかい三角波/正弦波にし、
- *   高音の連打を避けている。
+ * ■ 音源について
+ *   BGM（waiting, battle, battle2）および効果音（public/sfx/battle/*.mp3）は
+ *   すべて実ファイルから読み込んで再生する。
+ *   ピコピコ合成音へのフォールバックは廃止済み。
+ *
  *
  * ■ 既存の BGM（App.tsx の <audio>）との関係
  *   既存の BGM とは独立した AudioContext を持つ。
@@ -60,58 +57,6 @@ export type BattleSfx =
 
 type Ctx = AudioContext;
 
-/** 半音 → 周波数（A4=440） */
-function hz(semitoneFromA4: number): number {
-  return 440 * Math.pow(2, semitoneFromA4 / 12);
-}
-
-/** トラックごとの譜面（半音・A4基準）とテンポ */
-interface TrackSpec {
-  bpm: number;
-  /** 1ループぶんの音列。null は休符 */
-  melody: (number | null)[];
-  /** ベース（メロディの半分のテンポで鳴る） */
-  bass: (number | null)[];
-  type: OscillatorType;
-  /** 全体の相対音量 */
-  gain: number;
-}
-
-const TRACKS: Record<Exclude<BattleBgmTrack, null>, TrackSpec> = {
-  // 期待感：ゆったり、明るいメジャー
-  matching: {
-    bpm: 96,
-    melody: [0, 4, 7, 12, 7, 4, 0, null, 2, 5, 9, 12, 9, 5, 2, null],
-    bass: [-24, null, -17, null, -22, null, -17, null],
-    type: 'triangle',
-    gain: 0.55,
-  },
-  // 通常：テンポよく、でも同じ音を繰り返す（読解を邪魔しない）
-  normal: {
-    bpm: 112,
-    melody: [0, null, 7, null, 5, null, 7, null, 0, null, 7, null, 9, null, 7, null],
-    bass: [-24, -24, -19, -19, -24, -24, -17, -17],
-    type: 'triangle',
-    gain: 0.5,
-  },
-  // 残り3問：半音上げ、少し速く、マイナー寄り
-  closing: {
-    bpm: 124,
-    melody: [1, null, 8, null, 6, null, 8, null, 1, null, 8, null, 10, 8, 6, null],
-    bass: [-23, -23, -18, -18, -23, -23, -16, -16],
-    type: 'triangle',
-    gain: 0.55,
-  },
-  // 最終問題：さらに上げ、ベースを刻む
-  final: {
-    bpm: 136,
-    melody: [3, null, 10, 8, 10, null, 3, null, 3, null, 10, 12, 10, 8, 6, null],
-    bass: [-21, -21, -21, -21, -16, -16, -14, -14],
-    type: 'square',
-    gain: 0.42,
-  },
-};
-
 export class BattleAudioEngine {
   private ctx: Ctx | null = null;
   private master: GainNode | null = null;
@@ -138,9 +83,6 @@ export class BattleAudioEngine {
     this.playBgm(request?.track ?? null, { startInMs: request?.startInMs });
   }
   private track: BattleBgmTrack = null;
-  private bgmTimer: number | null = null;
-  private step = 0;
-  private nextNoteAt = 0;
 
   /** AudioContext を作れる環境か */
   static supported(): boolean {
@@ -202,7 +144,6 @@ export class BattleAudioEngine {
     }
     const fileKey = track ? bgmFileKeyOf(track, this.battleVariant) : null;
     if (fileKey && BGM_FILES[fileKey] && prev && this.fileKey === fileKey) return;
-    this.clearBgmTimer();
     this.stopFile();
     if (!track) return;
     const ctx = this.ensure();
@@ -212,13 +153,10 @@ export class BattleAudioEngine {
       this.playFile(fileKey, opts.startInMs);
       return;
     }
-    this.nextNoteAt = ctx.currentTime + 0.05;
-    this.schedule();
   }
 
   stopBgm(): void {
     this.track = null;
-    this.clearBgmTimer();
     this.stopFile();
   }
 
@@ -246,13 +184,60 @@ export class BattleAudioEngine {
   private loadFile(key: BgmFileKey): Promise<AudioBuffer | null> {
     const ctx = this.ctx;
     const spec = BGM_FILES[key];
-    if (!ctx || !spec || typeof fetch !== 'function') return Promise.resolve(null);
+    if (!ctx || !spec) return Promise.resolve(null);
     let p = this.fileBuffers.get(key);
     if (!p) {
-      p = fetch(spec.url)
-        .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
-        .then((b) => ctx.decodeAudioData(b))
-        .catch(() => { this.fileBuffers.delete(key); return null; });
+      const url = spec.url;
+      const getArrayBuffer = async (): Promise<ArrayBuffer> => {
+        try {
+          if (typeof fetch === 'function') {
+            const r = await fetch(url);
+            if (r.ok) return await r.arrayBuffer();
+          }
+        } catch { /* fetch が失敗した場合は XHR で再試行 */ }
+
+        // WKWebView で fetch が失敗した場合に備えて XHR で再試行
+        return new Promise<ArrayBuffer>((resolve, reject) => {
+          if (typeof XMLHttpRequest === 'undefined') {
+            return reject(new Error(`fetch failed for ${url} and XMLHttpRequest is unavailable`));
+          }
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', url, true);
+          xhr.responseType = 'arraybuffer';
+          xhr.onload = () => {
+            if ((xhr.status >= 200 && xhr.status < 300) || (xhr.status === 0 && xhr.response)) {
+              resolve(xhr.response as ArrayBuffer);
+            } else {
+              reject(new Error(`XHR ${xhr.status} fetching ${url}`));
+            }
+          };
+          xhr.onerror = (e) => reject(e);
+          xhr.send();
+        });
+      };
+
+      p = getArrayBuffer()
+        .then((b) => {
+          return new Promise<AudioBuffer>((resolve, reject) => {
+            const copy = b.slice(0);
+            let settled = false;
+            const ok = (ab: AudioBuffer) => { if (!settled) { settled = true; resolve(ab); } };
+            const fail = (err: any) => { if (!settled) { settled = true; reject(err); } };
+            try {
+              const res = ctx.decodeAudioData(copy, ok, fail);
+              if (res && typeof res.then === 'function') {
+                res.then(ok).catch(fail);
+              }
+            } catch (e) {
+              fail(e);
+            }
+          });
+        })
+        .catch((err) => {
+          console.error(`[battleAudio] ❌ BGMロード失敗: "${key}" (${spec.url}):`, err);
+          this.fileBuffers.delete(key);
+          return null;
+        });
       this.fileBuffers.set(key, p);
     }
     return p;
@@ -282,12 +267,12 @@ export class BattleAudioEngine {
       const ctx = this.ctx;
       if (req !== this.fileRequest || !ctx || !this.bgmGain || !this.track) return;
       if (!buffer) {
-        // 読めなかった → 従来の合成音で鳴らす（無音にしない）
+        // ロード失敗時は無音にする。ピコピコ音へのフォールバックは完全削除。
+        console.error(`[battleAudio] ❌ BGM "${key}" (${spec.url}) のバッファ取得失敗。フォールバックは無効化されているため再生しません。`);
         this.fileKey = null;
-        this.nextNoteAt = ctx.currentTime + 0.05;
-        this.schedule();
         return;
       }
+      console.log(`[battleAudio] 🎵 BGMファイル "${key}" (${spec.url}) 再生開始`);
       // 読み込みにかかった時間ぶん、カウントダウンは進んでいる
       const waited = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - requestedAt;
       const remainMs = startInMs == null ? null : startInMs - waited;
@@ -330,35 +315,6 @@ export class BattleAudioEngine {
     } catch { /* 止められなくても次の曲は鳴る */ }
   }
 
-  private clearBgmTimer(): void {
-    if (this.bgmTimer != null) {
-      window.clearTimeout(this.bgmTimer);
-      this.bgmTimer = null;
-    }
-  }
-
-  /** 先読みスケジューリング（100ms ごとに次の 200ms ぶんを予約する） */
-  private schedule(): void {
-    const ctx = this.ctx;
-    const track = this.track;
-    if (!ctx || !track || !this.bgmGain) return;
-    const spec = TRACKS[track];
-    const beat = 60 / spec.bpm / 2; // 8分音符
-    const horizon = ctx.currentTime + 0.25;
-
-    while (this.nextNoteAt < horizon) {
-      const m = spec.melody[this.step % spec.melody.length];
-      const b = spec.bass[Math.floor(this.step / 2) % spec.bass.length];
-      if (m != null) this.tone(this.bgmGain, hz(m), this.nextNoteAt, beat * 0.9, spec.type, 0.18 * spec.gain);
-      if (this.step % 2 === 0 && b != null) {
-        this.tone(this.bgmGain, hz(b), this.nextNoteAt, beat * 1.6, 'sine', 0.22 * spec.gain);
-      }
-      this.nextNoteAt += beat;
-      this.step += 1;
-    }
-    this.bgmTimer = window.setTimeout(() => this.schedule(), 100);
-  }
-
   // ------------------------------------------------------------
   // 効果音
   // ------------------------------------------------------------
@@ -368,93 +324,7 @@ export class BattleAudioEngine {
     const ctx = this.ensure();
     if (!ctx || !this.sfxGain) return;
     if (ctx.state !== 'running' && ctx.state !== 'closed') void ctx.resume().catch(() => {});
-    const t = ctx.currentTime;
-    const g = this.sfxGain;
-
-    // 効果音ファイル（public/sfx/battle）が読み込めていればそれを鳴らす。
-    // まだなら下の合成音で代わりに鳴らす。
-    if (playSample(ctx, g, sfx, SAMPLE_GAIN)) return;
-
-    switch (sfx) {
-      case 'tap':
-        this.tone(g, 880, t, 0.04, 'sine', 0.12);
-        break;
-      case 'correct':
-        // 明るい上昇2音
-        this.tone(g, hz(3), t, 0.09, 'triangle', 0.3);
-        this.tone(g, hz(10), t + 0.09, 0.16, 'triangle', 0.3);
-        break;
-      case 'wrong':
-        // 低い下降
-        this.tone(g, 220, t, 0.12, 'sawtooth', 0.12);
-        this.tone(g, 165, t + 0.1, 0.18, 'sawtooth', 0.1);
-        break;
-      case 'opponent-answered':
-        // 相手の合図は控えめな1音（頻繫に鳴るので小さく・短く）
-        this.tone(g, 660, t, 0.05, 'sine', 0.1);
-        break;
-      case 'opponent-correct':
-        this.tone(g, hz(-2), t, 0.08, 'triangle', 0.18);
-        this.tone(g, hz(3), t + 0.08, 0.1, 'triangle', 0.16);
-        break;
-      case 'combo':
-        // 3音アルペジオ
-        this.tone(g, hz(0), t, 0.07, 'triangle', 0.26);
-        this.tone(g, hz(4), t + 0.07, 0.07, 'triangle', 0.26);
-        this.tone(g, hz(7), t + 0.14, 0.16, 'triangle', 0.28);
-        break;
-      case 'overtake':
-        this.tone(g, hz(-5), t, 0.08, 'square', 0.12);
-        this.tone(g, hz(2), t + 0.08, 0.08, 'square', 0.12);
-        this.tone(g, hz(7), t + 0.16, 0.2, 'square', 0.14);
-        break;
-      case 'overtaken':
-        this.tone(g, hz(7), t, 0.12, 'triangle', 0.16);
-        this.tone(g, hz(-2), t + 0.12, 0.24, 'triangle', 0.14);
-        break;
-      case 'caught-up':
-        this.tone(g, hz(5), t, 0.08, 'triangle', 0.22);
-        this.tone(g, hz(12), t + 0.08, 0.16, 'triangle', 0.24);
-        break;
-      case 'timeup':
-        this.tone(g, hz(0), t, 0.16, 'triangle', 0.2);
-        this.tone(g, hz(-12), t + 0.16, 0.3, 'triangle', 0.18);
-        break;
-      case 'matched':
-        // 見つかった！ 明るい上昇3音
-        this.tone(g, hz(0), t, 0.08, 'triangle', 0.26);
-        this.tone(g, hz(5), t + 0.08, 0.08, 'triangle', 0.26);
-        this.tone(g, hz(12), t + 0.16, 0.24, 'triangle', 0.3);
-        break;
-      case 'hurry':
-        // 残り3秒の「コッ」。1秒ごとに鳴るので小さく短く
-        this.tone(g, 520, t, 0.035, 'square', 0.06);
-        break;
-      case 'countdown':
-        this.tone(g, 740, t, 0.1, 'sine', 0.24);
-        break;
-      case 'start':
-        this.tone(g, 1100, t, 0.28, 'sine', 0.3);
-        this.tone(g, 1480, t + 0.02, 0.26, 'triangle', 0.14);
-        break;
-      case 'final':
-        this.tone(g, hz(-9), t, 0.14, 'square', 0.12);
-        this.tone(g, hz(-9), t + 0.18, 0.14, 'square', 0.12);
-        this.tone(g, hz(3), t + 0.36, 0.34, 'square', 0.14);
-        break;
-      case 'win':
-        [0, 4, 7, 12].forEach((s, i) => this.tone(g, hz(s), t + i * 0.11, 0.14, 'triangle', 0.3));
-        this.tone(g, hz(12), t + 0.44, 0.5, 'triangle', 0.32);
-        this.tone(g, hz(7), t + 0.44, 0.5, 'sine', 0.2);
-        break;
-      case 'lose':
-        [7, 5, 3, 0].forEach((s, i) => this.tone(g, hz(s - 12), t + i * 0.16, 0.2, 'triangle', 0.22));
-        break;
-      case 'draw':
-        this.tone(g, hz(0), t, 0.18, 'triangle', 0.22);
-        this.tone(g, hz(0), t + 0.22, 0.3, 'triangle', 0.22);
-        break;
-    }
+    playSample(ctx, this.sfxGain, sfx, SAMPLE_GAIN);
   }
 
   // ------------------------------------------------------------
@@ -484,34 +354,6 @@ export class BattleAudioEngine {
       return ctx;
     } catch {
       return null;
-    }
-  }
-
-  /** 1音。アタック/リリースを付けてクリックノイズを避ける */
-  private tone(
-    out: GainNode,
-    freq: number,
-    at: number,
-    dur: number,
-    type: OscillatorType,
-    peak: number,
-  ): void {
-    const ctx = this.ctx;
-    if (!ctx) return;
-    try {
-      const osc = ctx.createOscillator();
-      const env = ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, at);
-      env.gain.setValueAtTime(0.0001, at);
-      env.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), at + 0.012);
-      env.gain.exponentialRampToValueAtTime(0.0001, at + dur);
-      osc.connect(env);
-      env.connect(out);
-      osc.start(at);
-      osc.stop(at + dur + 0.02);
-    } catch {
-      /* 音が出ないだけ */
     }
   }
 

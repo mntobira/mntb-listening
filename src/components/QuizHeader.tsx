@@ -108,7 +108,7 @@ export function QuizHeader({
           「完了」でキーボードが閉じれば即座に元に戻る。
       PC（isDesktop）には一切かからない条件にしてある。
     */}
-    <div data-quiz-header className={`flex-none px-2 py-1 md:p-6 border-b border-[#EADFC8] bg-[#FFFAF0] shadow-sm z-10 flex items-center justify-between gap-2 md:gap-4 ${
+    <div data-quiz-header className={`flex-none px-2 pt-[calc(0.35rem+env(safe-area-inset-top,0px))] pb-1 md:p-6 md:pt-6 border-b border-[#EADFC8] bg-[#FFFAF0] shadow-sm z-10 flex items-center justify-between gap-2 md:gap-4 ${
       !isDesktop && keyboardVisible ? 'hidden' : ''
     }`}>
       <div className="flex items-center text-left gap-2 md:gap-4 min-w-0">

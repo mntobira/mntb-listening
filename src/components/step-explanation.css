@@ -65,7 +65,7 @@
 .practice-reward-line b { font-size:18px; color:#b26b00; font-family: var(--mt-font-display, inherit); }
 .practice-reward-line svg { color:#d79a00; flex-shrink:0; }
 /* 解いた問題のページ送り（対戦の「1問ずつのけっか」と同じ操作感・一人で学ぶの配色） */
-.practice-pager { position: sticky; top: 0; z-index: 30; margin: 12px 16px 0; padding: 8px 10px; border-radius: 18px; background: #ffffffee; border: 1px solid #dfe7da; box-shadow: 0 4px 14px #2c3e5014; backdrop-filter: blur(6px); }
+.practice-pager { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; margin: 12px 16px 0; padding: 8px 10px; border-radius: 18px; background: #ffffffee; border: 1px solid #dfe7da; box-shadow: 0 4px 14px #2c3e5014; backdrop-filter: blur(6px); }
 .practice-pager-title { display:flex; justify-content:space-between; align-items:center; margin:0 4px 6px; font-size:12px; font-weight:800; color:#4b5d55; }
 .practice-pager-title b { color:#2c3e50; }
 .practice-pager-row { display:flex; align-items:center; gap:6px; }
@@ -110,7 +110,7 @@
 .pbb-sub button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; border: 1.5px solid #d6dfd2; background: #fff; color: #2c3e50; font-weight: 700; font-size: 13px; }
 .pbb-sub button:only-child { grid-column: 1 / -1; }
 /* 詳しい結果の上：結果へ戻る＋問題の切り替えを1行に */
-.practice-pager.is-review { position: sticky; top: 0; z-index: 56; margin: 0; width: 100%; max-width: none; box-sizing: border-box; flex-shrink: 0; border-radius: 0; border-width: 0 0 1px; padding: 6px 8px; box-shadow: 0 2px 10px #2c3e5010; }
+.practice-pager.is-review { position: sticky; top: 0; z-index: 56; margin: 0; width: 100%; max-width: none; box-sizing: border-box; flex-shrink: 0; border-radius: 0; border-width: 0 0 1px; padding: calc(6px + env(safe-area-inset-top, 0px)) 8px 6px; box-shadow: 0 2px 10px #2c3e5010; }
 .practice-pager.is-review .practice-pager-row { gap: 4px; }
 .practice-pager.is-review .practice-pager-back { flex-shrink: 0; min-height: 44px; }
 .practice-pager.is-review .practice-pager-arrow { width: 40px; }

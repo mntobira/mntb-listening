@@ -4,9 +4,9 @@
  * ===================================================================
  *
  * ■ 何のためか
- *   対戦のBGMは今まで battleAudio.ts の合成音（ファイル0個）だった。
- *   商用利用できる作曲済みBGM（ElevenLabs Music を有料契約中に生成したもの等）を
- *   置けるように、ファイルがあればファイルを、無ければ従来の合成音を鳴らす。
+ *   対戦のBGMを音源ファイル（MP3）で鳴らすための設定。
+ *   実ファイル（waiting, battle, battle2）から読み込んで再生する。
+ *   ピコピコ合成音へのフォールバックは廃止済み。
  *
  * ■ 曲は3本（対戦曲は2本から試合ごとに1本を選ぶ）
  *   waiting … 待合室・相手さがし・対戦メニュー（'matching'）。ループ。
@@ -18,11 +18,16 @@
  *
  * ■ ここに登録するのは「実在して、商用の根拠があるファイル」だけ
  *   ・音源は public/bgm/battle/ に置き、license を必ず書く（台帳は docs/BATTLE_BGM.md）。
- *   ・未登録（undefined）なら合成音のまま。ファイルが読めなかったときも合成音に戻る。
  *   ・架空のファイル名や仮の音源は登録しない。
  */
 
 import { battleFileGain } from './bgmLoudness';
+
+/**
+ * BGM の仕組みの版（2026-10-08）。アプリの「使い方」→ クレジットの下に表示する。
+ * ここが「2026-10-06」でなければ、古いBGMのコード（START! より約7秒早くサビが来る）が入っている。
+ */
+export const BGM_LOGIC_VERSION = '2026-10-06';
 
 export type BgmFileKey = 'waiting' | 'battle' | 'battle2';
 
@@ -74,7 +79,7 @@ export const BGM_FILES: Readonly<Partial<Record<BgmFileKey, BgmFileSpec>>> = {
 
 /**
  * 対戦曲を1曲選ぶ（登録されている候補から等確率）。
- * rand は 0〜1 の乱数（テスト用に差し替え可）。候補が無ければ 'battle'（＝合成音へ戻る）。
+ * rand は 0〜1 の乱数（テスト用に差し替え可）。候補が無ければ 'battle'。
  */
 export function pickBattleVariant(rand: number = Math.random()): BattleBgmVariant {
   const list = BATTLE_BGM_VARIANTS.filter((k) => BGM_FILES[k]);

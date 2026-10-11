@@ -63,6 +63,7 @@ import { equippedTitleLabel, levelOf, shareTextForMatch } from '../core/growth';
 import { Home as HomeIcon, DoorOpen } from 'lucide-react';
 import { BattleMissions } from './BattleMissions';
 import { BattleProfile } from './BattleProfile';
+import { showInterstitialAd } from '../../utils/adService';
 import type { CSSProperties, TouchEvent as ReactTouchEvent } from 'react';
 import {
   ArrowLeft,
@@ -599,22 +600,32 @@ export function BattleResult({
    *     → 「部屋に戻って問題を選ぶ」（教科・単元・問題数・強さはそこで選ぶ）／「ホームに戻る」
    */
   // ===== 詳しい結果（復習）ページ =====
-  if (page === 'detail') return (
-    <BattleShell
-      className="result-detail-shell"
-      footer={
-        <div className="result-detail-actions" data-result-detail-actions>
-          {onBackToRoom && (
-            <BattleButton onClick={onBackToRoom} icon={<DoorOpen size={18} />} data-result-back-room>
-              {backToRoomLabel}
+  if (page === 'detail') {
+    const handleBackToRoom = () => {
+      showInterstitialAd().catch(() => {});
+      onBackToRoom?.();
+    };
+    const handleGoHome = () => {
+      showInterstitialAd().catch(() => {});
+      goHome();
+    };
+
+    return (
+      <BattleShell
+        className="result-detail-shell"
+        footer={
+          <div className="result-detail-actions" data-result-detail-actions>
+            {onBackToRoom && (
+              <BattleButton onClick={handleBackToRoom} icon={<DoorOpen size={18} />} data-result-back-room>
+                {backToRoomLabel}
+              </BattleButton>
+            )}
+            <BattleButton variant="ghost" onClick={handleGoHome} icon={<HomeIcon size={18} />} data-result-home>
+              ホームに戻る
             </BattleButton>
-          )}
-          <BattleButton variant="ghost" onClick={goHome} icon={<HomeIcon size={18} />} data-result-home>
-            ホームに戻る
-          </BattleButton>
-        </div>
-      }
-    >
+          </div>
+        }
+      >
       <div className="result-detail-head">
         <button type="button" className="result-detail-back" onClick={() => setPage('summary')} aria-label="勝敗の画面にもどる"><ArrowLeft size={18} /></button>
         <h1 className="font-handwriting text-2xl font-black" style={{ color: INK }} data-result-detail-title>詳しい結果{retryMode ? '（再対戦）' : ''}</h1>
@@ -642,6 +653,7 @@ export function BattleResult({
       />
     </BattleShell>
   );
+}
 
   // ===== 対戦終わり（1画面に収める）=====
   return (

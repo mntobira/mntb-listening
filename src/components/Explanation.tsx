@@ -9,6 +9,7 @@ import { auth } from '../firebase';
 import { FeedbackButton } from './FeedbackButton';
 import { QuestionFigure } from './QuestionFigure';
 import { ListeningAudioPlayer, ListeningEvidenceScript } from './ListeningAudioPlayer';
+import { InlineAdSlot } from './InlineAdSlot';
 import './listening-explanation.css';
 import { buildFigureNumberMap, getFigureNumber } from '../utils/figureNumbering';
 import { isAnswerCorrect } from '../utils/answerJudge';
@@ -1153,7 +1154,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         ? `fixed inset-0 w-full h-full flex flex-col bg-[#FDFBF7] overflow-y-auto z-50`
         : `fixed inset-0 w-full h-full flex flex-col bg-[#FDFBF7] overflow-hidden z-50`
     }>
-      {onReturnToBattle && <button type="button" onClick={onReturnToBattle} className="sticky top-0 z-[55] min-h-11 shrink-0 border-b border-blue-200 bg-blue-50 px-3 py-2 text-sm font-bold text-blue-900">バトル結果・解説に戻る</button>}
+      {onReturnToBattle && <button type="button" onClick={onReturnToBattle} className="sticky top-0 z-[55] min-h-11 shrink-0 border-b border-blue-200 bg-blue-50 px-3 pt-[calc(0.5rem+env(safe-area-inset-top,0px))] pb-2 text-sm font-bold text-blue-900">バトル結果・解説に戻る</button>}
       {reviewNav && (
         <nav className="practice-pager is-review" aria-label="解いた問題を切り替える" data-practice-pager>
           <div className="practice-pager-row">
@@ -1231,7 +1232,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           ★詳しい結果（reviewNav）では出さない：上の切り替えバーが見出しの代わり。
             「答え合わせ / Q1 / 正答率」や上の「単元選択に戻る」は不要（2026-10-04 ご指摘）。 */}
       {!reviewNav && (
-      <div className={`p-4 md:p-6 border-b-2 z-30 flex items-start justify-between gap-4 flex-none ${
+      <div className={`p-4 md:p-6 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] md:pt-6 border-b-2 z-30 flex items-start justify-between gap-4 flex-none ${
         // ★スマホの1問ごとの答え合わせ（reorderMobile）では、
         //   「解答・解説 / 章名」の右横に Score・答え合わせ・Q番号・ノートに保存・正答率を
         //   横並びで置き、縦方向の占有を減らす（上部の1行に集約する）。
@@ -1707,7 +1708,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                   下の解説をスクロールしても問題文が常に見える（ご要望
                   「解答と解説・問題は一緒に一画面で見える状態で出したい」）。 */}
             <div className={reorderMobile
-              ? `sticky ${reviewNav ? 'top-[57px]' : 'top-0'} z-20 min-w-0 bg-white border-b-2 border-gray-200 shadow-md flex flex-col`
+              ? `sticky ${reviewNav ? 'top-[calc(57px+env(safe-area-inset-top,0px))]' : 'top-[env(safe-area-inset-top,0px)]'} z-20 min-w-0 bg-white border-b-2 border-gray-200 shadow-md flex flex-col`
               : `space-y-6 pb-8 min-w-0 ${isResultView ? 'lg:pr-4' : 'lg:overflow-y-auto lg:h-full lg:pr-4'}`}>
               {/* スマホ：問題文ペインのヘッダー（演習画面と同じ「たたむ」付き） */}
               {reorderMobile && (
@@ -2902,6 +2903,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 );
               })
             }
+            {/* 妙案3: 解説画面スクロール末尾のインライン広告枠 */}
+            <InlineAdSlot />
           </div>
         </div>
 

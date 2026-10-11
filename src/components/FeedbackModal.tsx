@@ -135,7 +135,7 @@ export function FeedbackModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-[#1B2631]/45 backdrop-blur-sm px-0 sm:px-4 py-0 sm:py-6"
+        className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-[#1B2631]/45 backdrop-blur-sm px-0 sm:px-4 py-0 sm:py-6 pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]"
         role="dialog"
         aria-modal="true"
         aria-label="フィードバックを送る"
@@ -147,7 +147,7 @@ export function FeedbackModal({
           exit={{ opacity: 0, y: 20, scale: 0.98 }}
           transition={{ type: 'spring', stiffness: 320, damping: 30 }}
           onClick={(event: React.MouseEvent) => event.stopPropagation()}
-          className="w-full sm:max-w-lg flex flex-col max-h-[100dvh] sm:max-h-[min(88dvh,720px)] overflow-hidden bg-[#FDFBF7] rounded-t-[26px] sm:rounded-[26px] border border-[#F4A9C4]/50 shadow-[0_24px_60px_-20px_rgba(217,70,110,0.5)] font-handwriting"
+          className="w-full sm:max-w-lg flex flex-col max-h-[calc(100dvh-env(safe-area-inset-top,0px))] sm:max-h-[min(88dvh,720px)] overflow-hidden bg-[#FDFBF7] rounded-t-[26px] sm:rounded-[26px] border border-[#F4A9C4]/50 shadow-[0_24px_60px_-20px_rgba(217,70,110,0.5)] font-handwriting"
         >
           {/* ヘッダー（固定） */}
           <div className="shrink-0 flex items-start gap-3 px-5 pt-5 pb-3 bg-gradient-to-b from-[#FFF1F5] to-[#FDFBF7] border-b border-[#F4A9C4]/35 rounded-t-[26px]">

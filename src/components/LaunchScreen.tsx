@@ -14,6 +14,8 @@ import { getDaysUntilExam, EXAM_DATE_LABEL } from '../utils/examCountdown';
  * タイトル画面（2026-09-30 作り直し）。保存された画面やアカウントには一切触れない（見た目だけ）。
  *
  * 1画面（スクロールなし）に ロゴ → とびら君 → 主コピー → 3つのチップ → はじめる を収める。
+ *  - 主コピー「聞いて、解いて、競って、これ1本で。」（2026-10-06・ストア画像と同じ）。
+ *  - 起動エンブレムはアプリのロゴ（白背景のまま。透過版はストア画像だけで使う）。
  *  - ロゴは背景を透過した /brand/manatobi-logo.webp（白い四角を残さない）。
  *  - とびら君は全身を見せ、足元に楕円の接地影を置く。背後は「閉じた円」の光背にする（途中で切れた弧にしない）。
  *  - 意味のない飾り（◆・罫線）は置かない。
@@ -80,7 +82,7 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
   const walk = phase === 'done' && !played;
   const announce = (next: 'start' | 'guest') => { setEntry(next); setGate('announcement'); };
   const enter = () => { if (entry === 'guest' && onGuest) onGuest(); else onStart(); };
-  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label="マナトビ 起動エンブレム（タップで進む）" role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><div className="launch-emblem-mark" aria-hidden="true"><Swords/><Headphones/></div><img src="/brand/manatobi-logo.webp" alt="マナトビ" width={1008} height={321}/><h1>何事も成し遂げるまでは<br/>いつも不可能に見える。</h1></div></main>;
+  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label="マナトビ 起動エンブレム（タップで進む）" role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><img className="launch-emblem-applogo" src="/brand/app-icon-logo.webp" alt="マナトビ" width={640} height={640}/><h1>聞いて、解いて、<br/>競って、<em>これ1本</em>で。</h1></div></main>;
   if (gate === 'philosophy') return <PhilosophyPage onBack={() => setGate('title')} />;
   if (gate === 'announcement') return <main className="launch-announcement" aria-label="スタートのお知らせ"><section><p className="mt-kicker">WHAT’S NEW</p><h1>学ぶ入口を、もっと快適に。</h1><div className="launch-countdown"><Headphones size={24}/><span>共通テストまで<strong>{getDaysUntilExam()}<small>日</small></strong><small>{EXAM_DATE_LABEL}</small></span></div>{/* 最新のお知らせから自動で出す（固定文だと古い内容が残り続けるため） */}<p className="launch-announcement-latest">{LATEST_NOTICE?.title ?? '学習をもっと快適に整えました。'}</p><p>対戦の結果を復習につなげて、今日の「聞く力」を積み重ねよう。</p><div className="launch-announcement-actions"><button type="button" onClick={()=>setNotices(true)}>見てみる</button><button type="button" onClick={enter}>閉じる</button></div></section>{notices && <UpdateNoticeModal onClose={()=>setNotices(false)}/>}</main>;
   return <main className="launch-screen" aria-label="マナトビ タイトル画面" data-launch-screen>
@@ -109,7 +111,7 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
             onActiveChange={active => { if (active) setPlayed(true); }} onComplete={finishIntro} />}
         </div>
       </div>
-      <p className="launch-copy">対戦する力を、<br className="launch-copy-break" />聞く力へ。</p>
+      <p className="launch-copy">聞いて、解いて、<br className="launch-copy-break" />競って、<em>これ1本</em>で。</p>
       <ul className="launch-chips" aria-label="できること">
         <li><PenLine size={16} aria-hidden="true" />演習</li>
         <li><Repeat2 size={16} aria-hidden="true" />復習</li>

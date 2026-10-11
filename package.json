@@ -8,6 +8,9 @@
     "build": "node scripts/check-release.mjs && vite build",
     "build:vercel": "node scripts/check-release.mjs --vercel && vite build",
     "build:demo": "vite build",
+    "app:build": "vite build && cap sync",
+    "app:ios": "npm run app:build && cap open ios",
+    "app:android": "npm run app:build && cap open android",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
     "gen:index": "tsx scripts/gen-chapter-index.mts && tsx scripts/scope-listening.mts",
@@ -27,6 +30,12 @@
     "audio:purge-legacy": "node scripts/purge-legacy-listening-audio.mjs"
   },
   "dependencies": {
+    "@capacitor-community/admob": "^8.2.0",
+    "@capacitor-firebase/authentication": "^8.5.2",
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
     "@tailwindcss/vite": "^4.1.14",
     "@vercel/analytics": "^2.0.1",
     "@vitejs/plugin-react": "^5.0.4",
