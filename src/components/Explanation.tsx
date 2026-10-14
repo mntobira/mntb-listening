@@ -16,6 +16,7 @@ import { MobileAnswerNav, ReviewBottomBar } from './explanation/BottomBars';
 import { ListeningCompactAnswers } from './explanation/ListeningCompactAnswers';
 import { MobileResultChips } from './explanation/MobileResultChips';
 import { UnitKataAccordion } from './explanation/UnitKataAccordion';
+import { ResultScoreCard, ResultStage, ResultSummaryActions, WeakAreasPanel, ResultPager } from './explanation/ResultSummary';
 // 画面に依存しない小さな関数（isAttempted / getDifficulty / textTracksOf / formatResultTime / pictureCellOf）
 import { isAttempted, getDifficulty, textTracksOf, formatResultTime, pictureCellOf } from './explanation/helpers';
 import './listening-explanation.css';
@@ -1417,101 +1418,30 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
       )}
 
       {isResultView && displayTotalScore != null && resultStep === 'summary' && (
-        <div className={`relative z-10 ${compactResult ? 'px-3 pt-3' : 'px-4 md:px-6 pt-4'}`}>
-          <div className={`bg-gradient-to-br from-[#FFF8E1] via-white to-[#E8F4FD] border border-[#F4D03F]/60 shadow-lg ${
-            compactResult ? 'rounded-2xl p-3' : 'rounded-3xl p-5 md:p-6'
-          }`}>
-            {/* スマホ（compactResult）ではスコアと Correct/Rate/Time を1行に圧縮して、
-                直下の「復習推奨エリア」まで同じ画面に収める。 */}
-            {/* 2026-10-02：演習ではポイントを出さない（対戦と分ける）。正解数・正答率・時間だけ */}
-            <div className="practice-result-summary" data-practice-result>
-              <div className="practice-result-main">
-                <span className="practice-result-badge">演習の結果</span>
-                <p><strong>{resultTotalCorrect ?? 0}</strong><span>/ {resultTotalJudgeable ?? 0} 問 正解</span></p>
-              </div>
-              <dl className="practice-result-stats">
-                <div><dt>正答率</dt><dd>{resultTotalJudgeable ? Math.round(((resultTotalCorrect ?? 0) / resultTotalJudgeable) * 100) : 0}%</dd></div>
-                <div><dt>時間</dt><dd>{formatResultTime(resultTotalTimeSec ?? 0)}</dd></div>
-              </dl>
-            </div>
-            {/* あと少し：演習でもらえる称号のうち近いもの（無ければ出さない） */}
-            <NextBadgeHint progress={growth} prefer="b_study" className="mt-2" />
-
-            {/* ===== 次にすること =====
-                点数の直下に主操作を1つ置く。間違いがあれば「間違えた問題を解き直す」、
-                全問正解なら「次の単元へ」。どちらも無ければ何も出さない
-                （従来どおりヘッダーの「単元選択に戻る」を使う）。 */}
-            {/* 「間違えた問題を解き直す／次の回へ」は詳しい結果の下へ移した（2026-10-04 ご指摘） */}
-
-            {/* ★スマホ：スコアの直下に復習推奨エリア（コンパクト版）を出し、
-                1画面で「点数」と「どこを復習すべきか」が同時に見えるようにする。 */}
-            {compactWeakAreas}
-
-
-
-            {/* ===== この単元についてのご意見（結果画面の意見収集入口）=====
-                解いた直後は「ここが分かりにくい」が一番鮮明なタイミングなので、
-                スコアカードの直下に常設する。単元ID・スコア・正答数を自動で添付する。 */}
-            <div className="mt-4 pt-4 border-t border-[#F4D03F]/40 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-              <p className="text-[11px] text-[#4B5563]/80 font-modern leading-snug flex-1">
-                この単元の問題文・解説で気づいたこと（分かりにくい、誘導が欲しい、誤字・表示崩れなど）をお寄せください。
-              </p>
-              <FeedbackButton
-                screen="chapter_result"
-                variant="inline"
-                label="この単元にご意見"
-                description={`${chapter.title || chapter.id}の問題・解説についてのご意見をお聞かせください`}
-                context={{
-                  chapterId: chapter.id,
-                  chapterTitle: chapter.title || '',
-                  mode,
-                  totalScore: displayTotalScore,
-                  correct: resultTotalCorrect ?? 0,
-                  judgeable: resultTotalJudgeable ?? 0,
-                  timeSec: resultTotalTimeSec ?? 0,
-                }}
-                className="shrink-0 self-start sm:self-auto"
-              />
-            </div>
-          </div>
-        </div>
+        <ResultScoreCard
+          compactResult={compactResult}
+          resultTotalCorrect={resultTotalCorrect}
+          resultTotalJudgeable={resultTotalJudgeable}
+          resultTotalTimeSec={resultTotalTimeSec}
+          growth={growth}
+          compactWeakAreas={compactWeakAreas}
+          chapter={chapter}
+          mode={mode}
+          displayTotalScore={displayTotalScore}
+        />
       )}
 
       {/* ★結果のステージ（2026-10-04 ご要望）★ カードと下のボタンの間の空きに、とびらくんと今回もらったマナコインを大きく出す */}
-      {isResultView && resultStep === 'summary' && (() => {
-        const judge = resultTotalJudgeable ?? 0; const correct = resultTotalCorrect ?? 0;
-        const rate = judge ? correct / judge : 0;
-        const pose = judge > 0 && correct === judge ? 'trophy' : rate >= 0.6 ? 'happy' : rate > 0 ? 'cheering' : 'thinking';
-        const line = judge > 0 && correct === judge ? '全問正解！この調子で次の回へ行こう！'
-          : rate >= 0.6 ? 'いい感じ！まちがえた所だけ見直せば完ぺき！'
-          : rate > 0 ? 'ナイスチャレンジ！解説で「解くカギ」を確認しよう'
-          : 'ここからが伸びしろ！詳しい結果で1問ずつ確かめよう';
-        const coins = studyReward?.coins ?? 0;
-        return (
-          <section className="practice-stage" aria-label="とびらくんと今回のごほうび" data-practice-stage data-pose={pose}>
-            <div className="practice-stage-bubble" role="status">{line}</div>
-            <img className="practice-stage-tobira" src={`/mascots/${pose}.webp`} alt="" width={160} height={160} draggable={false} />
-            <div className="practice-stage-reward" data-practice-reward>
-              <Coins size={22} aria-hidden="true" />
-              {isGuest
-                ? <span>ログインすると、正解した問題ごとにマナコインがもらえます</span>
-                : coins > 0
-                  ? <><span>今回のごほうび</span><b>＋{coins}</b><span>マナコイン</span>{studyReward?.xp ? <small>＋{studyReward.xp}XP</small> : null}</>
-                  : <span>正解した問題ごとに<b className="is-inline">＋3</b>マナコイン<small>（同じ問題は1日1回）</small></span>}
-            </div>
-          </section>
-        );
-      })()}
+      {isResultView && resultStep === 'summary' && (
+        <ResultStage resultTotalJudgeable={resultTotalJudgeable} resultTotalCorrect={resultTotalCorrect} studyReward={studyReward} isGuest={isGuest} />
+      )}
 
       {/* ★結果（1画面目）の下のバー：主操作は「詳しい結果を確認する」1つだけ。親指の届く画面の下に置く★ */}
-      {isResultView && resultStep === 'summary' && <div className="practice-bottom-spacer" aria-hidden="true" />}
       {isResultView && resultStep === 'summary' && (
-        <div className="practice-bottom-bar" data-practice-summary-actions>
-          <button type="button" className="practice-detail-open" data-practice-open-detail
-            onClick={() => { setResultStep('detail'); setResultPage(firstWrongPage >= 0 ? firstWrongPage : 0); }}>
-            <ListOrdered size={18} aria-hidden="true" />詳しい結果を確認する{wrongCount > 0 ? `（まちがい${wrongCount}問）` : ''}
-          </button>
-        </div>
+        <ResultSummaryActions
+          onOpenDetail={() => { setResultStep('detail'); setResultPage(firstWrongPage >= 0 ? firstWrongPage : 0); }}
+          wrongCount={wrongCount}
+        />
       )}
 
       {!(isResultView && resultStep === 'summary') && (
@@ -1532,99 +1462,18 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         {/* ★スマホの結果画面（compactResult）では、この大きな復習推奨エリアは
             上のスコアカード内にコンパクト表示へ移したので重複表示しない。 */}
         {singleQuestionIndex === undefined && weakAreas.length > 0 && !compactResult && (
-          <div className={`rounded-2xl p-5 md:p-6 shadow-lg border relative flex flex-col flex-none ${
-            mode === 'mini_test' ? 'bg-gray-50 border-gray-100' : 'bg-[#1C2541]/50 border-[#3A506B]/50'
-          }`}>
-            <h3 className={`text-lg md:text-xl font-bold mb-4 md:mb-6 flex items-center gap-2 flex-none ${
-              mode === 'mini_test' ? 'text-[#2C3E50]' : 'text-[#D9A0A0]'
-            }`}>
-              <TrendingUp className="w-5 h-5 md:w-6 md:h-6" />
-              <span>分析結果：復習推奨エリア</span>
-            </h3>
-            
-            <div className={isMobile
-              // スマホでは内部スクロール（40vh固定）を設けず、全カードをそのまま並べて
-              // ページ全体の縦スクロールで閲覧できるようにする（途中でクリップしない）。
-              ? "grid grid-cols-1 gap-4"
-              : "grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 overflow-y-auto max-h-[40vh] md:max-h-[34vh] pr-1 -mr-1"}>
-              {weakAreas.map((area) => (
-                <div key={area.category} className={`p-4 md:p-5 rounded-xl border shadow-sm ${
-                  mode === 'mini_test' ? 'bg-white border-gray-100' : 'bg-[#0B132B]/80 border-[#1C2541]'
-                }`}>
-                  <div className="flex justify-between items-end mb-2 md:mb-3">
-                    <div className={`flex items-center gap-1.5 md:gap-2 font-bold text-sm md:text-base ${
-                      mode === 'mini_test' ? 'text-[#2C3E50]' : 'text-[#E0E1DD]'
-                    }`}>
-                      <AlertTriangle className={`w-4 h-4 md:w-[18px] md:h-[18px] ${
-                        mode === 'mini_test' ? 'text-[#D9A0A0]' : 'text-[#D9A0A0]'
-                      }`} />
-                      <span>{area.category}</span>
-                    </div>
-                    <span className={`font-mono font-bold text-xl md:text-2xl ${
-                      mode === 'mini_test' ? 'text-[#D9A0A0]' : 'text-[#D9A0A0]'
-                    }`}>
-                      {area.percentage}<span className="text-xs md:text-sm ml-0.5">%</span>
-                    </span>
-                  </div>
-                  
-                  {/* Gauge/Slider UI */}
-                  <div className={`relative h-3 md:h-4 rounded-full overflow-hidden shadow-inner ${
-                    mode === 'mini_test' ? 'bg-gray-100' : 'bg-[#1C2541]'
-                  }`}>
-                    <div 
-                      className={`absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out ${
-                        mode === 'mini_test' ? 'bg-gradient-to-r from-[#D9A0A0] to-[#FFB7B2]' : 'bg-gradient-to-r from-[#D9A0A0] to-[#FFB7B2]'
-                      }`}
-                      style={{ width: `${area.percentage}%` }}
-                    />
-                    <div className="absolute inset-0 opacity-30" 
-                         style={{ backgroundImage: 'linear-gradient(45deg,rgba(255,255,255,.2) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.2) 75%,transparent 75%,transparent)', backgroundSize: '1rem 1rem' }} 
-                    />
-                  </div>
-                  <div className={`flex justify-between mt-1 text-[10px] md:text-xs font-mono ${
-                    mode === 'mini_test' ? 'text-gray-400' : 'text-[#7A8B99]'
-                  }`}>
-                    <span>0%</span>
-                    <span>50%</span>
-                    <span>100%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <p className={`text-xs md:text-sm mt-4 text-right ${
-              mode === 'mini_test' ? 'text-gray-400' : 'text-[#7A8B99]'
-            }`}>
-              ※ 記述問題は自己採点チェックを入れるとスコアに反映されます
-            </p>
-          </div>
+          <WeakAreasPanel weakAreas={weakAreas} isMobile={isMobile} mode={mode} />
         )}
 
         {/* ★解いた問題のページ送り（2026-10-04）★ 対戦の「1問ずつのけっか」と同じ操作。番号の色で正誤が分かる */}
         {isResultView && resultStep === 'detail' && resultPages.length > 0 && (
-          <nav className="practice-pager" aria-label="解いた問題を切り替える" data-practice-pager>
-            <p className="practice-pager-title">
-              <button type="button" className="practice-pager-back" onClick={() => setResultStep('summary')} aria-label="結果にもどる"><ChevronLeft size={16} aria-hidden="true" />結果</button>
-              <span>1問ずつの答え合わせ</span><b>{safeResultPage + 1} / {resultPages.length}</b>
-            </p>
-            <div className="practice-pager-row">
-              <button type="button" className="practice-pager-arrow" aria-label="前の問題" disabled={safeResultPage === 0}
-                onClick={() => setResultPage(Math.max(0, safeResultPage - 1))}><ChevronLeft size={20} /></button>
-              <ol className="practice-pager-chips">
-                {resultPages.map((pg, i) => {
-                  const st = pageState(pg);
-                  return (
-                    <li key={`${pg.qIndex}-${pg.sq?.id}`}>
-                      <button type="button" data-state={st} aria-current={i === safeResultPage || undefined}
-                        aria-label={`${i + 1}問目（${st === 'ok' ? '正解' : st === 'ng' ? '不正解' : st === 'skip' ? '未解答' : '自己採点'}）`}
-                        onClick={() => setResultPage(i)}>{i + 1}</button>
-                    </li>
-                  );
-                })}
-              </ol>
-              <button type="button" className="practice-pager-arrow" aria-label="次の問題" disabled={safeResultPage >= resultPages.length - 1}
-                onClick={() => setResultPage(Math.min(resultPages.length - 1, safeResultPage + 1))}><ChevronRight size={20} /></button>
-            </div>
-          </nav>
+          <ResultPager
+            resultPages={resultPages}
+            safeResultPage={safeResultPage}
+            pageState={pageState}
+            setResultPage={setResultPage}
+            onBackToSummary={() => setResultStep('summary')}
+          />
         )}
 
         {/* Unified Explanation Area
