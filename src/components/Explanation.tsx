@@ -1,8 +1,7 @@
 import './step-explanation.css';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, CheckCircle2, Lightbulb, BookOpen, AlertCircle, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, Network, Trophy, ListOrdered, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion } from 'motion/react';
+import { CheckCircle2, Lightbulb, BookOpen, AlertCircle, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, Network, ListOrdered } from 'lucide-react';
 import { formatText } from '../utils/textFormatter';
 import { ExplanationBody } from './ExplanationBody';
 import { auth } from '../firebase';
@@ -16,6 +15,8 @@ import { MobileResultChips } from './explanation/MobileResultChips';
 import { UnitKataAccordion } from './explanation/UnitKataAccordion';
 import { ResultScoreCard, ResultStage, ResultSummaryActions, WeakAreasPanel, ResultPager } from './explanation/ResultSummary';
 import { renderSubQuestionCard } from './explanation/SubQuestionCard';
+import { ExplanationHeader } from './explanation/ExplanationHeader';
+import { ReviewTopNav } from './explanation/ReviewTopNav';
 import { renderFlowchartSubQuestionCheck } from './explanation/FlowchartSubQuestionCheck';
 import { buildExplanationSlices } from './explanation/explanationSlices';
 // 画面に依存しない小さな関数（isAttempted / getDifficulty / textTracksOf / formatResultTime / pictureCellOf）
@@ -963,26 +964,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         : `fixed inset-0 w-full h-full flex flex-col bg-[#FDFBF7] overflow-hidden z-50`
     }>
       {onReturnToBattle && <button type="button" onClick={onReturnToBattle} className="sticky top-0 z-[55] min-h-11 shrink-0 border-b border-blue-200 bg-blue-50 px-3 pt-[calc(0.5rem+env(safe-area-inset-top,0px))] pb-2 text-sm font-bold text-blue-900">バトル結果・解説に戻る</button>}
-      {reviewNav && (
-        <nav className="practice-pager is-review" aria-label="解いた問題を切り替える" data-practice-pager>
-          <div className="practice-pager-row">
-            <button type="button" className="practice-pager-back" onClick={reviewNav.onSummary} aria-label="結果にもどる"><ChevronLeft size={16} aria-hidden="true" />結果</button>
-            <button type="button" className="practice-pager-arrow" aria-label="前の問題" disabled={reviewNav.current === 0}
-              onClick={() => reviewNav.onPage(Math.max(0, reviewNav.current - 1))}><ChevronLeft size={20} /></button>
-            <ol className="practice-pager-chips">
-              {reviewNav.pages.map((pg, i) => (
-                <li key={i}>
-                  <button type="button" data-state={pg.state} aria-current={i === reviewNav.current || undefined}
-                    aria-label={`${i + 1}問目（${pg.state === 'ok' ? '正解' : pg.state === 'ng' ? '不正解' : pg.state === 'skip' ? '未解答' : '自己採点'}）`}
-                    onClick={() => reviewNav.onPage(i)}>{i + 1}</button>
-                </li>
-              ))}
-            </ol>
-            <button type="button" className="practice-pager-arrow" aria-label="次の問題" disabled={reviewNav.current >= reviewNav.pages.length - 1}
-              onClick={() => reviewNav.onPage(Math.min(reviewNav.pages.length - 1, reviewNav.current + 1))}><ChevronRight size={20} /></button>
-          </div>
-        </nav>
-      )}
+      {reviewNav && <ReviewTopNav reviewNav={reviewNav} />}
       <div className={isMobile ? "w-full min-h-full flex flex-col" : (isResultView ? "w-full min-h-full flex flex-col" : reviewNav ? "w-full flex-1 min-h-0 flex flex-col" : "w-full h-full flex flex-col")}>
         {/*
           ★ご要望「解答解説と問題のフォントがあっていないので
@@ -1040,232 +1022,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           ★詳しい結果（reviewNav）では出さない：上の切り替えバーが見出しの代わり。
             「答え合わせ / Q1 / 正答率」や上の「単元選択に戻る」は不要（2026-10-04 ご指摘）。 */}
       {!reviewNav && (
-      <div className={`p-4 md:p-6 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] md:pt-6 border-b-2 z-30 flex items-start justify-between gap-4 flex-none ${
-        // ★スマホの1問ごとの答え合わせ（reorderMobile）では、
-        //   「解答・解説 / 章名」の右横に Score・答え合わせ・Q番号・ノートに保存・正答率を
-        //   横並びで置き、縦方向の占有を減らす（上部の1行に集約する）。
-        reorderMobile ? 'flex-row' : 'flex-col md:flex-row md:items-center'
-      } ${
-        isResultView ? 'sticky top-0 backdrop-blur-md' : 'relative'
-      } ${
-        mode === 'mini_test' ? 'bg-white/95 border-gray-100' : 'bg-[#0B132B]/95 border-[#1C2541]'
-      }`}>
-        <div className={`flex flex-1 min-w-0 ${
-          reorderMobile
-            ? 'flex-row items-start justify-between gap-2 w-full'
-            : 'flex-col sm:flex-row sm:items-center gap-4 w-full md:w-auto'
-        }`}>
-          <div className="flex-shrink-0">
-            <h3 className={`font-bold tracking-wider ${reorderMobile ? 'text-base' : 'text-lg md:text-xl'} ${
-              mode === 'mini_test' ? 'text-[#2C3E50]' : 'text-[#5BC0BE]'
-            }`}>
-              解答・解説
-            </h3>
-            <div className={`mt-0.5 md:mt-1 ${reorderMobile ? 'text-[10px]' : 'text-xs md:text-sm'} ${
-              mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'
-            }`}>
-              {chapter.realTitle}
-            </div>
-          </div>
-
-          {/* ★スマホの1問ごとの答え合わせでは、Score とメタ情報（答え合わせ / Q番号 /
-              カテゴリ / ノートに保存 / 正答率）を右寄せの1ブロックにまとめる。
-              PC・結果表示では従来のレイアウトを崩さないよう display:contents で素通しする。
-
-              ★ご要望「解答と解説って書いてあるところの右のトロフィーとか
-                ☑️答え合わせとかをもう少し横に並べる感じに」★
-
-              ■ 実測（Playwright / 390x844・化学基礎「ろ過」の解答・解説）
-                ヘッダーの高さ 106px。右側のチップが3段に折り返していた。
-                  y=16 … 🏆0pt
-                  y=40 … ☑答え合わせ / Q1 / カテゴリ
-                  y=67 … ノートに保存 / 正答率
-                合計幅は 50+84+30+92+47+カテゴリ ≒ 380px あり、
-                右側に使える幅（約265px）に対して flex-wrap が2回折り返していた。
-
-              ■ 直し方＝「並べる」ために幅を削る（要素は消さない）
-                折り返しを禁止（flex-nowrap）したうえで、
-                スマホでは文字ラベルを落としてアイコン＋数値だけにする。
-                  ☑答え合わせ → ☑（アイコンのみ・aria-label で読み上げは維持）
-                  ノートに保存 → 💾（同上）
-                  正答率: 0%   → 0%（「正答率:」の見出しを省く）
-                これで 50+24+30+30+26+カテゴリ ≒ 240px になり1行に収まる。
-                カテゴリだけは可変なので min-w-0 + truncate で余りに合わせて縮む。
-                PC（reorderMobile=false）はラベルもレイアウトも従来のまま。 */}
-          <div className={reorderMobile
-            ? 'flex flex-nowrap items-center justify-end gap-1 min-w-0 flex-1'
-            : 'contents'
-          }>
-          {/* 固定ヘッダーの Score 表示は削除。
-              結果表示画面（isResultView）では下部の「RESULT SCORE」カード内にのみ Score を表示し、
-              固定ヘッダーには「単元選択に戻る」ボタンのみを残す。
-              1問ごとの答え合わせ（!isResultView）でのみ、進行中スコアを従来どおりヘッダーに表示する。 */}
-          {/* 2026-10-02：演習ではポイントを出さない */}
-          {false && !isResultView && displayTotalScore != null && (
-            <motion.div
-              key={scorePulse ? 'a' : 'b'}
-              initial={{ scale: 1.15 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className={`flex items-center border shadow-sm ${
-                // スマホでは小さめのピル型にして、右横に並べても窮屈にならないようにする
-                reorderMobile ? 'shrink-0 gap-0.5 px-1.5 py-0.5 rounded-full' : 'gap-2 px-3 py-2 rounded-2xl'
-              } ${
-                mode === 'mini_test'
-                  ? 'bg-[#F4D03F]/15 text-[#1B2631] border-[#F4D03F]/40'
-                  : 'bg-[#F4D03F]/20 text-[#F9E79F] border-[#F4D03F]/40'
-              }`}
-            >
-              <Trophy size={reorderMobile ? 12 : 16} className="text-[#D4A017]" />
-              {reorderMobile ? (
-                <div className="font-handwriting font-bold text-xs tabular-nums leading-none">
-                  {displayTotalScore}
-                  <span className="text-xs ml-0.5 opacity-70">pt</span>
-                </div>
-              ) : (
-                <div className="leading-none">
-                  <div className="text-[10px] font-bold opacity-70 font-modern">Score</div>
-                  <div className="font-handwriting font-bold text-base md:text-lg tabular-nums">
-                    {displayTotalScore}
-                    <span className="text-[10px] ml-1 opacity-70">pt</span>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {singleQuestionIndex !== undefined && questions[0] && (
-            <div className={reorderMobile
-              ? 'flex flex-nowrap items-center justify-end gap-1 min-w-0 flex-1'
-              : `flex flex-wrap items-center gap-2 sm:gap-3 sm:border-l sm:pl-4 md:pl-6 lg:pl-8 ${
-                  mode === 'mini_test' ? 'border-gray-200' : 'border-[#3A506B]/50'
-                } w-full sm:w-auto`
-            }>
-              {/* 「答え合わせ」チップ。
-                  スマホでは文字を落としてチェックアイコンだけにする
-                  （aria-label を付けるので読み上げは「答え合わせ」のまま）。 */}
-              <div
-                aria-label="答え合わせ"
-                title="答え合わせ"
-                className={`flex items-center font-bold rounded-full border shrink-0 ${
-                  reorderMobile ? 'gap-0 text-[10px] px-1 py-0.5' : 'gap-1 text-[11px] md:text-xs px-2.5 py-1'
-                } ${
-                mode === 'mini_test' 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                  : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'
-              }`}>
-                <CheckCircle2 className={reorderMobile ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
-                {!reorderMobile && <span>答え合わせ</span>}
-              </div>
-
-              <div className={`font-bold rounded-full shadow-sm border shrink-0 ${
-                reorderMobile ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2.5 py-0.5'
-              } ${
-                mode === 'mini_test' 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                  : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'
-              }`}>
-                Q{singleQuestionIndex + 1}
-              </div>
-
-              {/* カテゴリだけは長さが可変なので、1行に収める調整役にする。
-                  min-w-0 + truncate で「余った幅ぶんだけ表示」になる。 */}
-              <div className={`font-bold truncate ${
-                reorderMobile ? 'text-[10px] min-w-0 flex-1' : 'text-xs md:text-sm max-w-[120px] sm:max-w-[200px]'
-              } ${
-                mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD]'
-              }`}>
-                {questions[0].category || '問題'}
-              </div>
-
-              {/* 「ノートに保存」も同様に、スマホではアイコンだけにする。 */}
-              <button
-                onClick={(e) => { e.stopPropagation(); handleSaveNote(questions[0], singleQuestionIndex); }}
-                aria-label={savingNote[questions[0].id] ? 'ノートに保存中' : 'ノートに保存'}
-                title={savingNote[questions[0].id] ? '保存中...' : 'ノートに保存'}
-                className={`flex items-center rounded-full font-bold transition-colors border shrink-0 ${
-                  reorderMobile ? 'gap-0 text-[10px] px-1 py-0.5' : 'gap-1 text-[11px] px-2.5 py-1'
-                } ${
-                  savingNote[questions[0].id] 
-                    ? (mode === 'mini_test' ? 'bg-gray-100 text-gray-500 border-gray-200' : 'bg-[#1C2541] text-[#7A8B99] border-[#1C2541]') 
-                    : (mode === 'mini_test' ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100' : 'bg-[#F9E79F]/20 text-[#F9E79F] border-[#F9E79F]/30 hover:bg-[#F9E79F]/30')
-                }`}
-                disabled={savingNote[questions[0].id]}
-              >
-                <Save size={reorderMobile ? 12 : 12} />
-                {!reorderMobile && <span>{savingNote[questions[0].id] ? '保存中...' : 'ノートに保存'}</span>}
-              </button>
-
-              {(() => {
-                const scorePercentage = calculateScore(questions[0]);
-                return (
-                  <div
-                    className={`flex items-center gap-1 shrink-0 ${reorderMobile ? '' : 'ml-auto sm:ml-0'}`}
-                    aria-label={`正答率 ${scorePercentage}%`}
-                    title={`正答率 ${scorePercentage}%`}
-                  >
-                    {/* スマホでは「正答率:」の見出しを省き、数値だけを出す
-                        （aria-label / title で意味は残す）。 */}
-                    {!reorderMobile && (
-                      <span className={`font-bold text-[10px] md:text-xs ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>正答率:</span>
-                    )}
-                    <span className={`font-mono font-bold ${reorderMobile ? 'text-[11px]' : 'text-xs md:text-sm'} ${
-                      scorePercentage >= 80 
-                        ? (mode === 'mini_test' ? 'text-emerald-600' : 'text-[#5BC0BE]') 
-                        : scorePercentage <= 40 
-                          ? (mode === 'mini_test' ? 'text-red-500' : 'text-[#D9A0A0]') 
-                          : (mode === 'mini_test' ? 'text-amber-500' : 'text-[#F9E79F]')
-                    }`}>
-                      {scorePercentage}%
-                    </span>
-                  </div>
-                );
-              })()}
-            </div>
-          )}
-          </div>
-        </div>
-        {singleQuestionIndex !== undefined && onNextQuestion ? (
-          // ★スマホの1問ごとの答え合わせでは、このボタン行は画面下部の
-          //   固定ナビ（親指の届く位置・演習画面と同じ操作感）に移すため隠す。
-          <div className={`${reorderMobile ? 'hidden' : 'flex'} items-center gap-3 w-full md:w-auto`}>
-            <button 
-              onClick={onBack}
-              className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border flex-1 md:flex-none justify-center ${
-                mode === 'mini_test' 
-                  ? 'text-gray-500 hover:text-[#2C3E50] border-gray-200 hover:border-[#2C3E50] bg-gray-50' 
-                  : 'text-[#7A8B99] hover:text-[#5BC0BE] border-[#1C2541] hover:border-[#5BC0BE] bg-[#1C2541]/50'
-              }`}
-            >
-              <ArrowLeft size={18} />
-              <span>問題に戻る</span>
-            </button>
-            <button 
-              onClick={onNextQuestion}
-              className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border flex-1 md:flex-none justify-center ${
-                mode === 'mini_test' 
-                  ? 'text-white bg-[#2C3E50] hover:bg-[#1a252f] border-[#2C3E50]' 
-                  : 'text-[#0B132B] bg-[#5BC0BE] hover:bg-[#4A9D9C] border-[#5BC0BE]'
-              }`}
-            >
-              <span>{isLastQuestion ? '結果を見る' : '次の問題へ'}</span>
-              <ArrowLeft size={18} className="rotate-180" />
-            </button>
-          </div>
-        ) : isResultView ? null : (
-          <button 
-            onClick={onBack}
-            className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border w-full md:w-auto justify-center ${
-              mode === 'mini_test' 
-                ? 'text-gray-500 hover:text-[#2C3E50] border-gray-200 hover:border-[#2C3E50] bg-gray-50' 
-                : 'text-[#7A8B99] hover:text-[#5BC0BE] border-[#1C2541] hover:border-[#5BC0BE] bg-[#1C2541]/50'
-            }`}
-          >
-            <ArrowLeft size={18} />
-            <span>単元選択に戻る</span>
-          </button>
-        )}
-      </div>
+      <ExplanationHeader mode={mode} chapter={chapter} questions={questions} singleQuestionIndex={singleQuestionIndex} reorderMobile={reorderMobile} isResultView={isResultView} scorePulse={scorePulse} displayTotalScore={displayTotalScore} savingNote={savingNote} handleSaveNote={handleSaveNote} calculateScore={calculateScore} onBack={onBack} onNextQuestion={onNextQuestion} isLastQuestion={isLastQuestion} />
       )}
 
       {isResultView && displayTotalScore != null && resultStep === 'summary' && (
