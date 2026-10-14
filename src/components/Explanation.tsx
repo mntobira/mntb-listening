@@ -14,6 +14,8 @@ import { StumblingPoints } from './explanation/StumblingPoints';
 import { ExtrasSection } from './explanation/ExtrasSection';
 import { MobileAnswerNav, ReviewBottomBar } from './explanation/BottomBars';
 import { ListeningCompactAnswers } from './explanation/ListeningCompactAnswers';
+import { MobileResultChips } from './explanation/MobileResultChips';
+import { UnitKataAccordion } from './explanation/UnitKataAccordion';
 // 画面に依存しない小さな関数（isAttempted / getDifficulty / textTracksOf / formatResultTime / pictureCellOf）
 import { isAttempted, getDifficulty, textTracksOf, formatResultTime, pictureCellOf } from './explanation/helpers';
 import './listening-explanation.css';
@@ -463,40 +465,13 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
   const kataIsOpen = kataOpen || (pcListening && !kataClosedByUser);
 
   const kataAccordion = unitKataBlock ? (
-    <div className={`rounded-xl border overflow-hidden ${mode === 'mini_test' ? 'border-pink-200 bg-pink-50/40' : 'border-[#D9466E]/40 bg-[#D9466E]/10'}`}>
-      <button
-        type="button"
-        onClick={() => { if (kataIsOpen) { setKataOpen(false); setKataClosedByUser(true); } else { setKataOpen(true); } }}
-        aria-expanded={kataIsOpen}
-        aria-label={`この単元の思考の型を${kataIsOpen ? '閉じる' : '開く'}`}
-        className={`w-full flex items-center justify-between text-left transition-colors ${kataCompact ? 'gap-2 px-2.5 py-1.5' : 'gap-3 px-3 py-2.5 md:px-4 md:py-3'} ${mode === 'mini_test' ? 'hover:bg-pink-100/70' : 'hover:bg-[#D9466E]/20'}`}
-      >
-        <span className={`font-bold flex items-center flex-wrap ${kataCompact ? 'gap-1.5 text-[11px]' : 'gap-2 text-xs md:text-sm'} ${mode === 'mini_test' ? 'text-[#B03A5B]' : 'text-[#F4A9C4]'}`}>
-          <BookOpen size={kataCompact ? 13 : 16} className="shrink-0" />
-          <span>この単元の思考の型</span>
-          {!kataCompact && (
-            <span className={`font-normal text-[10px] md:text-xs ${mode === 'mini_test' ? 'text-[#B03A5B]/70' : 'text-[#F4A9C4]/70'}`}>
-              （この単元の全問に共通・必要なときだけ開く）
-            </span>
-          )}
-        </span>
-        <span className={`flex items-center gap-1 shrink-0 font-bold ${kataCompact ? 'text-[10px]' : 'text-[10px] md:text-xs'} ${mode === 'mini_test' ? 'text-[#B03A5B]' : 'text-[#F4A9C4]'}`}>
-          {!kataCompact && <span>{kataIsOpen ? '閉じる' : '開く'}</span>}
-          <ChevronDown size={kataCompact ? 14 : 16} className={`transition-transform duration-300 ${kataIsOpen ? 'rotate-180' : ''}`} />
-        </span>
-      </button>
-      {kataIsOpen && (
-        <div className={`px-3 pb-3 md:px-4 md:pb-4 border-t ${mode === 'mini_test' ? 'border-pink-200 bg-white' : 'border-[#D9466E]/30 bg-[#0B132B]/50'}`}>
-          <ExplanationBody
-            text={unitKataBlock}
-            tone={mode === 'mini_test' ? 'light' : 'dark'}
-            /* 本文なので、問題画面と同じゴシック（font-modern）にそろえる。
-               ここだけ手書き体で残すと、同じ解説画面の中で書体が2種類になる。 */
-            className={`font-modern text-xs md:text-sm leading-relaxed pt-3 ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}
-          />
-        </div>
-      )}
-    </div>
+    <UnitKataAccordion
+      unitKataBlock={unitKataBlock}
+      isOpen={kataIsOpen}
+      onToggle={() => { if (kataIsOpen) { setKataOpen(false); setKataClosedByUser(true); } else { setKataOpen(true); } }}
+      compact={kataCompact}
+      mode={mode}
+    />
   ) : null;
 
   // 章内の図版へ通し番号（図1・図2 …）を割り当てるマップ。
@@ -2568,53 +2543,14 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                   />
                                 ) : reorderMobile ? (
                                   <>
-                                    <div className="grid grid-cols-4 gap-2">
-                                      {objectiveSqs.map((sq: any) => {
-                                        const ok = isAnswerCorrect(sq, answers[sq.id]);
-                                        const attempted = isAttempted(answers[sq.id]);
-                                        const active = selectedSqId === sq.id;
-                                        const sqIdx = ((question?.subQuestions || []) as any[]).indexOf(sq);
-                                        const marker = answerCardMarker(sq, sqIdx < 0 ? 0 : sqIdx, question);
-                                        // マーカーが長い場合（係数グループなど）は先頭だけ出す
-                                        const shortMarker = marker.length > 7 ? `${marker.slice(0, 6)}…` : marker;
-                                        return (
-                                          <button
-                                            key={`chip-${sq.id}`}
-                                            type="button"
-                                            onClick={() => {
-                                              if (active) {
-                                                setSelectedSqId(null);
-                                              } else {
-                                                setSelectedSqId(sq.id);
-                                                // 「解答と解説が出るように」：チップを押したら
-                                                // 解説アコーディオンも開いた状態で表示する。
-                                                setOpenExplanationBySq(prev => ({ ...prev, [sq.id]: true }));
-                                              }
-                                            }}
-                                            aria-pressed={active}
-                                            aria-label={`${marker} ${!attempted ? '未解答' : ok ? '正解' : '不正解'}の解答・解説を${active ? '閉じる' : '見る'}`}
-                                            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 px-1 py-2 min-h-[3.25rem] transition-all ${
-                                              !attempted
-                                                ? (active ? 'bg-gray-200 border-gray-400' : 'bg-gray-50 border-gray-200')
-                                                : ok
-                                                  ? (active ? 'bg-emerald-100 border-emerald-500 shadow-sm' : 'bg-emerald-50 border-emerald-200')
-                                                  : (active ? 'bg-red-100 border-red-500 shadow-sm' : 'bg-red-50 border-red-200')
-                                            }`}
-                                          >
-                                            <span className={`font-bold text-[13px] leading-tight break-all ${
-                                              !attempted ? 'text-gray-500' : ok ? 'text-emerald-700' : 'text-red-600'
-                                            }`}>
-                                              {formatText(shortMarker)}
-                                            </span>
-                                            {!attempted
-                                              ? <Circle size={16} className="text-gray-400" />
-                                              : ok
-                                                ? <CheckCircle2 size={16} className="text-emerald-600" />
-                                                : <XCircle size={16} className="text-red-500" />}
-                                          </button>
-                                        );
-                                      })}
-                                    </div>
+                                    <MobileResultChips
+                                      question={question}
+                                      objectiveSqs={objectiveSqs}
+                                      answers={answers}
+                                      selectedSqId={selectedSqId}
+                                      setSelectedSqId={setSelectedSqId}
+                                      setOpenExplanationBySq={setOpenExplanationBySq}
+                                    />
                                     {/* タップした問だけ詳細カード（解答・解説）を出す */}
                                     {(() => {
                                       const sel = objectiveSqs.find((sq: any) => sq.id === selectedSqId);
