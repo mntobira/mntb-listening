@@ -4,7 +4,6 @@ import { createPortal } from 'react-dom';
 import { CheckCircle2, BookOpen, AlertCircle, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3 } from 'lucide-react';
 import { auth } from '../firebase';
 import { ListeningAudioPlayer } from './ListeningAudioPlayer';
-import { StumblingPoints } from './explanation/StumblingPoints';
 import { ExtrasSection } from './explanation/ExtrasSection';
 import { MobileAnswerNav, ReviewBottomBar } from './explanation/BottomBars';
 import { ListeningCompactAnswers } from './explanation/ListeningCompactAnswers';
@@ -17,10 +16,9 @@ import { ProblemStatement } from './explanation/ProblemStatement';
 import { ScoreHead } from './explanation/ScoreHead';
 import { SharedExplanation } from './explanation/SharedExplanation';
 import { ReviewTopNav } from './explanation/ReviewTopNav';
-import { renderFlowchartSubQuestionCheck } from './explanation/FlowchartSubQuestionCheck';
 import { buildExplanationSlices } from './explanation/explanationSlices';
-import { computeQuestionScore, computeWeakAreas, findRelatedSteps, buildResultPages, scopeQuestionsToFocus } from './explanation/explanationLogic';
-// 画面に依存しない小さな関数（isAttempted / getDifficulty / textTracksOf / formatResultTime / pictureCellOf）
+import { computeQuestionScore, computeWeakAreas, buildResultPages, scopeQuestionsToFocus } from './explanation/explanationLogic';
+// 画面に依存しない小さな関数（isAttempted / textTracksOf / formatResultTime / pictureCellOf）
 import { isAttempted, textTracksOf } from './explanation/helpers';
 import './listening-explanation.css';
 import { buildFigureNumberMap } from '../utils/figureNumbering';
@@ -49,10 +47,7 @@ interface ExplanationProps {
   onNextQuestion?: () => void;
   isLastQuestion?: boolean;
   isMobileView?: boolean;
-  scoreBreakdown?: ScoreBreakdown | null;
-  scoreMeta?: { timeLimit: number; timeUsed: number } | null;
   totalScore?: number;
-  runningCombo?: number;
   resultTotalScore?: number;
   resultTotalCorrect?: number;
   resultTotalJudgeable?: number;
@@ -77,7 +72,7 @@ interface ExplanationProps {
    *   「答え合わせ」に出てきてしまい、自分がどこまでやったのか分からない。
    *   そこで「今回解いた範囲だけ」を振り返れるようにする。
    *
-   *   省略時は従来どおり章の全問を振り返る（化学基礎・化学は従来のまま）。
+   *   省略時は章の全問を振り返る。
    */
   questionRange?: { startIndex: number; endIndex: number } | null;
   /**
@@ -96,7 +91,7 @@ interface ExplanationProps {
    *   ・採点結果／解説アコーディオン
    *   に絞り込む。
    *
-   *   省略時は従来どおり大問まるごとの解説（化学基礎・化学はこちら）。
+   *   省略時は大問まるごとの解説。
    */
   focusSubQuestionId?: string | null;
   /** 結果の「詳しい結果」画面の下に置く「ホームに戻る」 */
@@ -105,28 +100,9 @@ interface ExplanationProps {
   reviewNav?: ReviewNav;
 }
 
-/*
- * （2026-10-14：図データの import は、使う側の explanation/explanationLogic.ts へ移した）
- * 図データは図データのファイル（chemistryTreeData）から直接読む。
- * chemistryData 経由だと、この画面がここで必要としていない
- * 問題データまで全部ついてきてしまう。
- * 再公開しているだけなので、直接読んでも同一オブジェクトが得られる
- * （17 ツリーすべて `===` で同一参照であることを確認済み）。
- */
-// 「その章にフローチャートがあるか」の判定は data/chapterTreeMap.ts の対応表に集約している
-import { hasChapterTree } from '../data/chapterTreeMap';
-import { PracticeExplanationTree } from './PracticeExplanationTree';
 import { readJsonArray } from '../utils/safeLocalStorage';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 
-// Substance Tree Data for Chapter 1 (Moved to chemistryData.ts)
-
-// ここには filterTree（ツリーを関連ノードだけに絞る関数）があったが、
-// 自分自身の再帰以外どこからも呼ばれていなかったため削除した。
-// utils/logicTreeUtils.ts にも export の有無以外まったく同一のコピーが
-// あり、そちらも未使用だったので同時に消してある。
-// ツリーの絞り込みが再び必要になった場合は logicTreeUtils.ts に
-// 1つだけ置くこと（画面側に実装を戻さない）。
 
 export interface ReviewNav {
   pages: { state: string }[];
@@ -141,23 +117,12 @@ export interface ReviewNav {
   nextLabel?: string;
 }
 
-export function Explanation({ mode: initialMode, chapter, answers, onBack, onReturnToBattle, isGuest, singleQuestionIndex, onNextQuestion, isLastQuestion, isMobileView, scoreBreakdown, scoreMeta, totalScore, runningCombo, resultTotalScore, resultTotalCorrect, resultTotalJudgeable, resultTotalTimeSec, questionRange, onRetryWrong, onNextChapter, nextChapterTitle, focusSubQuestionId, onHome, reviewNav }: ExplanationProps) {
+export function Explanation({ mode: initialMode, chapter, answers, onBack, onReturnToBattle, isGuest, singleQuestionIndex, onNextQuestion, isLastQuestion, isMobileView, totalScore, resultTotalScore, resultTotalCorrect, resultTotalJudgeable, resultTotalTimeSec, questionRange, onRetryWrong, onNextChapter, nextChapterTitle, focusSubQuestionId, onHome, reviewNav }: ExplanationProps) {
   const isPracticeMode = initialMode === 'practice';
   const { progress: growth } = useGrowthProgress();
-  // Virtual mode is always 'mini_test' for bright style choices!
-  const mode = 'mini_test';
 
-  const [selfGrades, setSelfGrades] = useState<Record<string, boolean>>({});
-  const [descriptiveScoreDelta, setDescriptiveScoreDelta] = useState(0);
-  const prevDescriptiveScore = useRef(0);
-  const [scorePulse, setScorePulse] = useState(false);
-  const [expandedSq, setExpandedSq] = useState<string | null>(null);
   const [openExplanationBySq, setOpenExplanationBySq] = useState<Record<string, boolean>>({});
   const [openThinkingBySq, setOpenThinkingBySq] = useState<Record<string, boolean>>({});
-  const [expandedStep, setExpandedStep] = useState<string | null>(null);
-  const [expandedNodeId, setExpandedNodeId] = useState<string | null>(null);
-  const [scrollTrigger, setScrollTrigger] = useState<number>(0);
-  const [expandedCorrectQuestions, setExpandedCorrectQuestions] = useState<Record<string, boolean>>({});
   // 要件①「この単元の思考の型」は単元につき1回だけ・採点結果の直後・折りたたみで出す。
   // 初期状態は閉じる（画面を圧迫させず、必要な人だけ開ける）。
   const [kataOpen, setKataOpen] = useState(false);
@@ -171,14 +136,11 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
   // ─── スマホ専用（1問ごとの答え合わせ）の表示状態 ───
   // ご要望：「全ての問いのあってるか間違ってるかだけ出して、その正誤ボタンを
   //          押したらその問の解答と解説が出るようにしてほしい。
-  //          フローチャートは邪魔にならない位置に切り替えボタンを設置。
   //          問題文は上・解答は下（演習画面と同じ2画面）。PC版は変えない。」
   /** 正誤一覧でいま選ばれている小問ID（null＝未選択。既定は最初の不正解） */
   const [selectedSqId, setSelectedSqId] = useState<string | null>(null);
   /** スマホ：問題文ペインを見出しだけにたたむ（演習画面と同じ操作感） */
   const [mobileProblemCollapsed, setMobileProblemCollapsed] = useState(false);
-  /** スマホ：解答・解説エリアを学習フローチャート表示に切り替える */
-  const [showFlowchart, setShowFlowchart] = useState(false);
 
 
   const allQuestions = initialMode === 'mini_test' ? chapter.miniTest : (chapter.practiceProblems || []);
@@ -223,7 +185,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
     return buildResultPages(baseQuestions, singleQuestionIndex);
   }, [baseQuestions, singleQuestionIndex]);
   const pagerOn = resultPages.length > 1;
-  const pageState = (pg: { sq: any }) => { const v = answers[pg.sq?.id]; return pg.sq?.type === 'descriptive' ? 'self' : !isAttempted(v) ? 'skip' : isAnswerCorrect(pg.sq, v) ? 'ok' : 'ng'; };
+  const pageState = (pg: { sq: any }) => { const v = answers[pg.sq?.id]; return !isAttempted(v) ? 'skip' : isAnswerCorrect(pg.sq, v) ? 'ok' : 'ng'; };
   const firstWrongPage = resultPages.findIndex((pg) => pageState(pg) === 'ng');
   const wrongCount = resultPages.filter((pg) => pageState(pg) === 'ng').length;
   const safeResultPage = Math.min(resultPage, Math.max(0, resultPages.length - 1));
@@ -259,16 +221,6 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
     return scopeQuestionsToFocus(picked, focusSubQuestionId);
   }, [allQuestions, singleQuestionIndex, questionRange, rangeOffset, effectiveFocusId]);
 
-  // 数学の章か（requiresMathPalette を立てた小問を含むか）。
-  // 数学のときは解説・解答を数式フォント＋一回り大きい表示（.math-content）で描画し、
-  // ∫Σ√分数などが教科書と同じ形で読めるようにする。
-  const isMathChapter = useMemo(() => {
-    return allQuestions.some((q: any) =>
-      (q?.subQuestions || []).some((sq: any) => sq?.requiresMathPalette)
-    );
-  }, [allQuestions]);
-  // 数学のときだけ付け足すクラス（非数学は空文字＝従来と完全に同じ見た目）
-  const mathBodyClass = isMathChapter ? ' font-math math-content' : '';
 
   /**
    * ★ご要望8「解説と問題のフォントが違うところがあるのでそれを直したい」★
@@ -307,7 +259,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
    */
   // 親側に置く基準サイズ（問題文ペインの text-[15px] leading-[1.85] と同一）
   const MOBILE_BODY_BASE = 'text-[15px] leading-[1.85]';
-  const DESKTOP_BODY_FONT = isMathChapter ? 'text-sm md:text-base leading-relaxed' : 'text-xs md:text-sm leading-relaxed';
+  const DESKTOP_BODY_FONT = 'text-xs md:text-sm leading-relaxed';
   /**
    * ★ご要望「化学基礎・化学含め様々な科目で解答解説と問題のフォントが
    *   あっていないので問題のフォントに合わせて。」★
@@ -350,7 +302,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
     });
   }, [allQuestions]);
 
-  const BODY_FONT_FAMILY = isMathChapter ? 'font-math math-content' : 'font-modern';
+  const BODY_FONT_FAMILY = 'font-modern';
 
   /**
    * 解説カード全体の既定書体（下位はこれを継承する）。
@@ -413,7 +365,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
       isOpen={kataIsOpen}
       onToggle={() => { if (kataIsOpen) { setKataOpen(false); setKataClosedByUser(true); } else { setKataOpen(true); } }}
       compact={kataCompact}
-      mode={mode}
+     
     />
   ) : null;
 
@@ -421,25 +373,9 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
   // 単問表示でも通し番号が一貫するよう、章の全問題（allQuestions）を基準に採番する。
   const figureNumberMap = useMemo(() => buildFigureNumberMap(allQuestions), [allQuestions]);
 
-  // \u81ea\u5df1\u63a1\u70b9\u306e\u30c1\u30a7\u30c3\u30af\u6570\u304b\u3089\u30dc\u30fc\u30ca\u30b9\u70b9\u3092\u30ea\u30a2\u30eb\u30bf\u30a4\u30e0\u8a08\u7b97
-  const selfGradeBonus = useMemo(() => {
-    let bonus = 0;
-    baseQuestions.forEach((q: any) => {
-      (q.subQuestions || []).forEach((sq: any) => {
-        if (sq.type === 'descriptive') {
-          // gradingCriteria が string で書かれたデータ（旧 ⑤-7 二段階滴定）でも
-          // 例外を出さないよう、必ず配列へ正規化してから集計する。
-          const { ratio } = gradingCriteriaProgress(sq, selfGrades);
-          // 1\u9805\u76ee\u6e80\u70b9\u3092MAX 10\u70b9\u3068\u3057\u3066\u6bd4\u4f8b\u914d\u5206
-          bonus += Math.round(ratio * 10);
-        }
-      });
-    });
-    return bonus;
-  }, [selfGrades, baseQuestions]);
 
   const baseDisplayScore = totalScore ?? resultTotalScore;
-  const displayTotalScore = baseDisplayScore != null ? baseDisplayScore + selfGradeBonus : null;
+  const displayTotalScore = baseDisplayScore != null ? baseDisplayScore : null;
   const isResultView = singleQuestionIndex === undefined;
 
   // 【俯瞰UI（width=1024 の縮小表示）はタブレット以上のみ】
@@ -463,10 +399,9 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
     const q: any = questions[0];
     const subs: any[] = (q?.subQuestions || []);
     const firstIncorrect = subs.find(
-      (sq: any) => sq.type !== 'descriptive' && isAttempted(answers[sq.id]) && !isAnswerCorrect(sq, answers[sq.id]),
+      (sq: any) => isAttempted(answers[sq.id]) && !isAnswerCorrect(sq, answers[sq.id]),
     );
     setSelectedSqId(firstIncorrect ? firstIncorrect.id : null);
-    setShowFlowchart(false);
     setMobileProblemCollapsed(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [singleQuestionIndex, chapter.id, isMobile]);
@@ -521,123 +456,22 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
     }
   };
 
-  const handleQuestionClick = (questionId: string) => {
-    // Map q_id to p_id for practice mode
-    const idMap: Record<string, string> = {
-      'q1_a': 'p1_a', 'q1_b': 'p1_i', 'q1_c': 'p1_u', 'q1_d': 'p1_e', 'q1_e': 'p1_o', 'q1_f': 'p1_ka',
-      'q2_1': 'p2_1', 'q2_2': 'p2_2', 'q2_3': 'p2_3', 'q2_4': 'p2_4', 'q2_5': 'p2_5', 'q2_6': 'p2_6',
-      'q3_1': 'p3_1', 'q3_2': 'p3_2', 'q3_3': 'p3_3', 'q3_4': 'p3_4',
-      'q4_1': 'p4_1', 'q4_2': 'p4_2', 'q4_3': 'p4_3',
-    };
-
-    const reverseIdMap: Record<string, string> = Object.entries(idMap).reduce((acc, [k, v]) => {
-      acc[v] = k;
-      return acc;
-    }, {} as Record<string, string>);
-
-    let targetId = questionId;
-    if (isPracticeMode) {
-      targetId = idMap[questionId] || questionId.replace(/^q/, 'p');
-    } else if (mode === 'mini_test') {
-      targetId = reverseIdMap[questionId] || questionId.replace(/^p/, 'q');
-    }
-    
-    setExpandedSq(targetId);
-    
-    setTimeout(() => {
-      const element = document.getElementById(`sq-${targetId}`);
-      if (element) {
-        // Calculate the exact Y position to center the element in the viewport
-        const rect = element.getBoundingClientRect();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const targetY = rect.top + scrollTop - (window.innerHeight / 2) + (rect.height / 2);
-        
-        try {
-          window.scrollTo({ top: targetY, behavior: 'smooth' });
-        } catch (e) {
-          window.scrollTo(0, targetY);
-        }
-        
-        // Secondary fallback using scrollIntoView just in case
-        setTimeout(() => {
-          const newRect = element.getBoundingClientRect();
-          if (newRect.top < 0 || newRect.bottom > window.innerHeight) {
-            try {
-              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } catch (e) {
-              element.scrollIntoView();
-            }
-          }
-        }, 100);
-        
-        // Add a temporary highlight effect
-        const originalTransition = element.style.transition;
-        element.style.transition = 'all 0.5s ease';
-        element.style.boxShadow = '0 0 0 4px rgba(91, 192, 190, 0.5)';
-        setTimeout(() => {
-          element.style.boxShadow = '';
-          setTimeout(() => {
-            element.style.transition = originalTransition;
-          }, 500);
-        }, 2000);
-      }
-    }, 400);
-  };
-
-  const toggleGrade = (criteriaId: string) => {
-    setSelfGrades(prev => {
-      const next = { ...prev, [criteriaId]: !prev[criteriaId] };
-      // リアルタイムスコア更新のためのシグナル
-      setTimeout(() => setScorePulse(p => !p), 0);
-      return next;
-    });
-  };
-
   const weakAreas = useMemo(() => {
-    return computeWeakAreas(baseQuestions, answers, selfGrades);
-  }, [baseQuestions, answers, selfGrades]);
+    return computeWeakAreas(baseQuestions, answers);
+  }, [baseQuestions, answers]);
 
   /**
    * 間違えた（＝解答したが不正解の）小問を含む最初の問題の、章内の通し番号。
    * 未解答は「間違えた」に数えない（isAttempted と同じ考え方）。
-   * 記述問題は自己採点なので対象外。無ければ -1。
+   * 無ければ -1。
    */
   const firstWrongQuestionIndex = useMemo(() => {
     if (singleQuestionIndex !== undefined) return -1;
     const idx = baseQuestions.findIndex((q: any) =>
       (q.subQuestions || []).some((sq: any) =>
-        sq.type !== 'descriptive' && isAttempted(answers[sq.id]) && !isAnswerCorrect(sq, answers[sq.id])));
+        isAttempted(answers[sq.id]) && !isAnswerCorrect(sq, answers[sq.id])));
     return idx < 0 ? -1 : rangeOffset + idx;
   }, [baseQuestions, answers, singleQuestionIndex, rangeOffset]);
-
-  const deepThoughtData = useMemo(() => {
-    for (const q of questions) {
-      try {
-        const parsed = JSON.parse(q.explanation);
-        if (parsed && parsed.type === 'logic_thought') {
-          return parsed;
-        }
-      } catch (e) {
-        // ignore
-      }
-    }
-    return null;
-  }, [questions]);
-
-  // ロジックツリーの節を探す本体は explanation/explanationLogic.ts（元のコードのまま）
-  const getRelatedSteps = (sqId: string, currentQuestion: any) => findRelatedSteps(sqId, currentQuestion, chapter);
-
-  const isGroupAllCorrect = (sq: any, currentQuestion: any) => {
-    if (!sq.group || !currentQuestion) return false;
-    const sameGroupSqs = (currentQuestion.subQuestions || []).filter((item: any) => item.group === sq.group);
-    return sameGroupSqs.every((item: any) => isAnswerCorrect(item, answers[item.id]));
-  };
-
-  // 学習フローチャートの中の小問チェック。中身は explanation/FlowchartSubQuestionCheck.tsx（元の JSX のまま）。
-  // PracticeExplanationTree に渡す関数の形（(sq, currentQuestion) => 要素）は変えていない。
-  const renderSubQuestionCheck = (sq: any, currentQuestion: any) => renderFlowchartSubQuestionCheck({
-    mode, answers, expandedSq, setExpandedSq, isPracticeMode, mathBodyClass, getRelatedSteps, isGroupAllCorrect,
-  }, sq, currentQuestion);
 
   if (questions.length === 0) {
     return (
@@ -650,45 +484,10 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
   }
 
   const calculateScore = useCallback((question: any) => {
-    return computeQuestionScore(question, answers, selfGrades);
-  }, [answers, selfGrades]);
+    return computeQuestionScore(question, answers);
+  }, [answers]);
 
-  const toggleCorrectExpanded = (id: string) => {
-    setExpandedCorrectQuestions(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  // 学習フローチャート（ロジックツリー）ブロック。
-  // ・PC/結果表示: 左カラムの問題文の下に表示する。
-  // ・スマホの「1問ごとの答え合わせ（!isResultView）」: 縦積み1カラムで
-  //   「問題文 → 採点結果 → 学習フローチャート」の順にするため、
-  //   採点結果より後ろ（order-3）に配置し直す。
-  // 「その章にフローチャートがあるか」は data/chapterTreeMap.ts の対応表から導く。
-  // （以前はここに17章ぶんの章IDを直接並べた3つめのコピーがあり、
-  //   章を追加したときに「ツリーはあるのにブロックが出ない」という
-  //   食い違いが起きうる状態だった）
-  const hasFlowchart = hasChapterTree(chapter?.id);
-  const flowchartBlock = hasFlowchart ? (
-    <div className="mt-6 border-t pt-4 border-gray-200">
-      <PracticeExplanationTree
-        deepThoughtData={deepThoughtData}
-        chapter={chapter}
-        questions={questions}
-        handleQuestionClick={handleQuestionClick}
-        expandedStep={expandedStep}
-        setExpandedStep={setExpandedStep}
-        expandedNodeId={expandedNodeId}
-        scrollTrigger={scrollTrigger}
-        isMobile={isMobile}
-        renderSubQuestionCheck={renderSubQuestionCheck}
-        zoom={isMobile ? 'normal' : 'far'}
-        collapsible
-      />
-    </div>
-  ) : null;
-
-  // スマホの1問ごとの答え合わせ（!isResultView）だけ、縦積みの並び順を
-  // 「問題文 → 採点結果 → 学習フローチャート」に組み替える。
-  // それ以外（PC、結果表示画面）は従来どおり左カラム内にフローチャートを表示する。
+  // スマホの1問ごとの答え合わせ（!isResultView）だけ、縦積みの上下2ペイン（問題文 → 採点結果）にする。
   const reorderMobile = isMobile && !isResultView;
 
   // ご要望8のフォント統一：解説本文の className をここ1本に集約する。
@@ -842,7 +641,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           ★詳しい結果（reviewNav）では出さない：上の切り替えバーが見出しの代わり。
             「答え合わせ / Q1 / 正答率」や上の「単元選択に戻る」は不要（2026-10-04 ご指摘）。 */}
       {!reviewNav && (
-      <ExplanationHeader mode={mode} chapter={chapter} questions={questions} singleQuestionIndex={singleQuestionIndex} reorderMobile={reorderMobile} isResultView={isResultView} scorePulse={scorePulse} displayTotalScore={displayTotalScore} savingNote={savingNote} handleSaveNote={handleSaveNote} calculateScore={calculateScore} onBack={onBack} onNextQuestion={onNextQuestion} isLastQuestion={isLastQuestion} />
+      <ExplanationHeader chapter={chapter} questions={questions} singleQuestionIndex={singleQuestionIndex} reorderMobile={reorderMobile} isResultView={isResultView} displayTotalScore={displayTotalScore} savingNote={savingNote} handleSaveNote={handleSaveNote} calculateScore={calculateScore} onBack={onBack} onNextQuestion={onNextQuestion} isLastQuestion={isLastQuestion} />
       )}
 
       {isResultView && displayTotalScore != null && resultStep === 'summary' && (
@@ -854,7 +653,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           growth={growth}
           compactWeakAreas={compactWeakAreas}
           chapter={chapter}
-          mode={mode}
+         
           displayTotalScore={displayTotalScore}
         />
       )}
@@ -890,7 +689,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         {/* ★スマホの結果画面（compactResult）では、この大きな復習推奨エリアは
             上のスコアカード内にコンパクト表示へ移したので重複表示しない。 */}
         {singleQuestionIndex === undefined && weakAreas.length > 0 && !compactResult && (
-          <WeakAreasPanel weakAreas={weakAreas} isMobile={isMobile} mode={mode} />
+          <WeakAreasPanel weakAreas={weakAreas} isMobile={isMobile} />
         )}
 
         {/* ★解いた問題のページ送り（2026-10-04）★ 対戦の「1問ずつのけっか」と同じ操作。番号の色で正誤が分かる */}
@@ -935,7 +734,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 : "grid grid-cols-1 lg:grid-cols-[minmax(0,1.38fr)_minmax(0,1fr)] gap-6 p-0 h-full flex-1 overflow-hidden"
           }>
             
-            {/* LEFT COLUMN: Problem statements and flowcharts
+            {/* LEFT COLUMN: Problem statements
                 結果表示では独自スクロール（lg:h-full/overflow-y-auto）を付けず、
                 ページ全体のスクロールに任せる。
                 ★スマホの1問ごとの答え合わせ（reorderMobile）では、演習画面と同じ
@@ -981,18 +780,12 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 questions.map((question: any, qIndex: number) => {
                 const scorePercentage = calculateScore(question);
                 return (
-                  <ProblemStatement key={question.id} question={question} qIndex={qIndex} scorePercentage={scorePercentage} mode={mode} singleQuestionIndex={singleQuestionIndex} rangeOffset={rangeOffset} pagerOn={pagerOn} resultPages={resultPages} safeResultPage={safeResultPage} savingNote={savingNote} handleSaveNote={handleSaveNote} reorderMobile={reorderMobile} mathBodyClass={mathBodyClass} isEnglishChapter={isEnglishChapter} figureNumberMap={figureNumberMap} />
+                  <ProblemStatement key={question.id} question={question} qIndex={qIndex} scorePercentage={scorePercentage} singleQuestionIndex={singleQuestionIndex} rangeOffset={rangeOffset} pagerOn={pagerOn} resultPages={resultPages} safeResultPage={safeResultPage} savingNote={savingNote} handleSaveNote={handleSaveNote} reorderMobile={reorderMobile} isEnglishChapter={isEnglishChapter} figureNumberMap={figureNumberMap} />
                 );
               })
               ) : null}
               </div>
               
-              {/* Flowchart (Logical Tree) - 問題文の下に表示（左カラム内）。
-                  ※ 専用のフローチャートが用意されている章のみ表示する。
-                     （c5 酸と塩基 / c6 酸化還元 などは専用ツリーが無いため、別単元のツリーを誤表示しない）
-                  ※ スマホの1問ごとの答え合わせ（reorderMobile）では、採点結果の後ろ（order-3）に
-                     別途表示するため、ここ（左カラム内）では表示しない。 */}
-              {!reorderMobile && flowchartBlock}
             </div>
 
             {/* RIGHT COLUMN: Answers, grading, and explanations
@@ -1008,10 +801,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                   <div key={`right-${question.id}`} className={reorderMobile ? 'space-y-2' : pcListening ? 'space-y-6 lx-pc-flat' : 'space-y-6'}>
                     <div className={reorderMobile ? 'space-y-2' : pcListening ? 'space-y-6 md:space-y-8 lx-pc-flat' : 'space-y-6 md:space-y-8'}>
                       {(() => {
-                        const selfGradeSqs = question.subQuestions.filter((sq: any) => sq.type === 'descriptive');
-                        // 客観問題は「元の並び順（ア→イ→ウ…）」のまま表示する。
-                        // （以前は間違いを上・正解を折りたたみにしていたが、丸付けは上から順に行うため自然な並び順に統一）
-                        const objectiveSqs = question.subQuestions.filter((sq: any) => sq.type !== 'descriptive');
+                        // 小問は「元の並び順（ア→イ→ウ…）」のまま表示する（収録データはすべて選択式）。
+                        const objectiveSqs = question.subQuestions;
 
                         /* ★B-2：音源・スクリプトを変数に束ねる（描く場所を出し分けるため）★
                            スマホでは正誤ボタンの後、PC では従来位置で描く。
@@ -1060,25 +851,14 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                         // 小問1つぶんのカード。中身は explanation/SubQuestionCard.tsx（元の JSX のまま）。
                         // 呼び出し方（renderSq(sq, isCorrect)）と、開閉などの状態の持ち主（この Explanation）は変えていない。
                         const renderSq = (sq: any, isCorrect: boolean) => renderSubQuestionCard({
-                          mode, question, answers, isMobile, isPracticeMode, isEnglishChapter, listeningTracks,
-                          mathBodyClass, answerBoxBaseClass, explBodyBaseClass, explBodyFontClass,
-                          selfGrades, openExplanationBySq, openThinkingBySq, setOpenExplanationBySq, setOpenThinkingBySq,
-                          setExpandedNodeId, setExpandedStep, setScrollTrigger,
-                          sliceForSq, getRelatedSteps, isGroupAllCorrect, toggleGrade,
+                          question, answers, isMobile, isPracticeMode, isEnglishChapter, listeningTracks,
+                          answerBoxBaseClass, explBodyBaseClass, explBodyFontClass,
+                          openExplanationBySq, openThinkingBySq, setOpenExplanationBySq, setOpenThinkingBySq,
+                          sliceForSq,
                         }, sq, isCorrect);
 
                         return (
                           <>
-                            {selfGradeSqs.length > 0 && (
-                              <div className="space-y-3 md:space-y-4">
-                                <h4 className={`font-bold flex items-center gap-2 ${'text-blue-600'}`}>
-                                  <Edit3 size={18} />
-                                  <span>記述問題（自己採点）</span>
-                                </h4>
-                                {selfGradeSqs.map(sq => renderSq(sq, false))}
-                              </div>
-                            )}
-
                             {/* 客観問題が無い大問（記述のみ）でも、要件①の型は必ず1回出す */}
                             {qIndex === 0 && objectiveSqs.length === 0 && kataAccordion && (
                               <div className="mt-6">{kataAccordion}</div>
@@ -1103,7 +883,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                   として高さを詰める。項目は1つも消さない。
                                   PC（!reorderMobile）は従来のクラスをそのまま使う。
                                 */}
-                                <ScoreHead reorderMobile={reorderMobile} listeningTracks={listeningTracks} objectiveSqs={objectiveSqs} correctSqs={correctSqs} incorrectSqs={incorrectSqs} unansweredSqs={unansweredSqs} mode={mode} flowchartBlock={flowchartBlock} showFlowchart={showFlowchart} setShowFlowchart={setShowFlowchart} />
+                                <ScoreHead reorderMobile={reorderMobile} listeningTracks={listeningTracks} objectiveSqs={objectiveSqs} correctSqs={correctSqs} incorrectSqs={incorrectSqs} unansweredSqs={unansweredSqs} />
 
                                 {/* 要件①：「この単元の思考の型」を採点結果の直後に1回だけ（折りたたみ） */}
                                 {qIndex === 0 && !pcListening && kataAccordion}
@@ -1227,7 +1007,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                               </div>
                             )}
 
-                            <SharedExplanation sharedExplanation={sharedExplanation} reorderMobile={reorderMobile} pcListening={pcListening} listeningTracks={listeningTracks} mode={mode} isEnglishChapter={isEnglishChapter} explBodyBaseClass={explBodyBaseClass} explBodyFontClass={explBodyFontClass} />
+                            <SharedExplanation sharedExplanation={sharedExplanation} reorderMobile={reorderMobile} pcListening={pcListening} listeningTracks={listeningTracks} isEnglishChapter={isEnglishChapter} explBodyBaseClass={explBodyBaseClass} explBodyFontClass={explBodyFontClass} />
                           </>
                         );
                       })()}
@@ -1245,33 +1025,18 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
               </div>
             )}
 
-          {/* Stumbling Points (from logic_thought) */}
-          <StumblingPoints deepThoughtData={deepThoughtData} mode={mode} />
-
           {/* Surrounding Knowledge / Deep Dive (from all questions) */}
           <ExtrasSection
             wrapClassName={reorderMobile ? 'lx-extra-wrap pb-3 space-y-2' : pcListening ? 'lx-pc-side' : 'p-4 sm:p-6 md:p-8 space-y-8'}
             leading={pcListening && kataAccordion}
             questions={questions}
-            mode={mode}
+           
             isEnglishChapter={isEnglishChapter}
             foldable={reorderMobile || pcListening}
             openByDefault={pcListening}
             qNumberOf={(qIndex) => (singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1}
           />
         </div>
-
-        {/* 学習フローチャート（スマホの1問ごとの答え合わせのみ）
-            縦積み順を「問題文 → 採点結果 → 学習フローチャート」にするため、
-            order-3 として採点結果（RIGHT COLUMN）の後ろに配置する。 */}
-        {/* ★スマホでは常設せず、採点結果ヘッダーの「フローチャート」チップで
-            開閉する（ご要望「邪魔にならない位置に切り替えのボタンを設置」）。
-            表示時は画面全幅を使えるので、縮小2カラム時代より読みやすい。 */}
-        {reorderMobile && flowchartBlock && showFlowchart && (
-          <div className="order-3 min-w-0 px-3 pb-4">
-            {flowchartBlock}
-          </div>
-        )}
 
         {/* ★スマホ：下部固定ナビ（問題に戻る / 次の問題へ）。
             演習画面の「前へ / 解答と解説を見る」と同じ位置・同じ操作感にして、

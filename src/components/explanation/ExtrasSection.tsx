@@ -14,11 +14,10 @@ import { textTracksOf } from './helpers';
  *   foldable      … スマホ or PC のリスニング（＝周辺知識を折りたたみの details で包む条件の前半）
  *   openByDefault … PC のリスニング（details を最初から開く）
  */
-export function ExtrasSection({ wrapClassName, leading, questions, mode, isEnglishChapter, foldable, openByDefault, qNumberOf }: {
+export function ExtrasSection({ wrapClassName, leading, questions, isEnglishChapter, foldable, openByDefault, qNumberOf }: {
   wrapClassName: string;
   leading: React.ReactNode;
   questions: any[];
-  mode: string;
   isEnglishChapter: boolean;
   foldable: boolean;
   openByDefault: boolean;

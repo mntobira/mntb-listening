@@ -16,7 +16,7 @@ import { formatResultTime } from './helpers';
  *   ResultPager          … 詳しい結果の「1問ずつの答え合わせ」ページ送り
  */
 
-export function ResultScoreCard({ compactResult, resultTotalCorrect, resultTotalJudgeable, resultTotalTimeSec, growth, compactWeakAreas, chapter, mode, displayTotalScore }: {
+export function ResultScoreCard({ compactResult, resultTotalCorrect, resultTotalJudgeable, resultTotalTimeSec, growth, compactWeakAreas, chapter, displayTotalScore }: {
   compactResult: boolean;
   resultTotalCorrect?: number;
   resultTotalJudgeable?: number;
@@ -24,7 +24,6 @@ export function ResultScoreCard({ compactResult, resultTotalCorrect, resultTotal
   growth: any;
   compactWeakAreas: React.ReactNode;
   chapter: any;
-  mode: string;
   displayTotalScore: number | null | undefined;
 }) {
   return (
@@ -75,7 +74,7 @@ export function ResultScoreCard({ compactResult, resultTotalCorrect, resultTotal
                 context={{
                   chapterId: chapter.id,
                   chapterTitle: chapter.title || '',
-                  mode,
+                  mode: 'mini_test',
                   totalScore: displayTotalScore,
                   correct: resultTotalCorrect ?? 0,
                   judgeable: resultTotalJudgeable ?? 0,
@@ -144,10 +143,9 @@ export function ResultSummaryActions({ onOpenDetail, wrongCount }: { onOpenDetai
  *     - ブロック自体は flex-none（縮まない）
  *     - 見出しは固定し、カードのグリッド部分だけを max-height 付きで縦スクロール可能にする
  */
-export function WeakAreasPanel({ weakAreas, isMobile, mode }: {
+export function WeakAreasPanel({ weakAreas, isMobile }: {
   weakAreas: { category: string; percentage: number }[];
   isMobile: boolean;
-  mode: string;
 }) {
   return (
           <div className={`rounded-2xl p-5 md:p-6 shadow-lg border relative flex flex-col flex-none ${

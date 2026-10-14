@@ -4,7 +4,6 @@ import { formatText } from '../../utils/textFormatter';
 import { ExplanationBody } from '../ExplanationBody';
 import { QuestionFigure } from '../QuestionFigure';
 import { ListeningAudioPlayer } from '../ListeningAudioPlayer';
-import { IonizationEnergyChart } from '../IonizationEnergyChart';
 import { getFigureNumber } from '../../utils/figureNumbering';
 import { buildSubQuestionList, isSubQuestionListRedundant, extractInlineQuestionRows, extractListeningQuestionRows, cleanQuestionText, findSubQuestionSentence } from '../../utils/questionDisplay';
 
@@ -20,7 +19,6 @@ export interface ProblemStatementProps {
   question: any;
   qIndex: number;
   scorePercentage: number;
-  mode: string;
   singleQuestionIndex?: number;
   rangeOffset: number;
   pagerOn: boolean;
@@ -29,7 +27,6 @@ export interface ProblemStatementProps {
   savingNote: Record<string, boolean>;
   handleSaveNote: (question: any, index: number) => void;
   reorderMobile: boolean;
-  mathBodyClass: string;
   isEnglishChapter: boolean;
   figureNumberMap: any;
   // このリポジトリは @types/react を導入していないため、JSX の key が
@@ -37,7 +34,7 @@ export interface ProblemStatementProps {
   key?: React.Key;
 }
 
-export function ProblemStatement({ question, qIndex, scorePercentage, mode, singleQuestionIndex, rangeOffset, pagerOn, resultPages, safeResultPage, savingNote, handleSaveNote, reorderMobile, mathBodyClass, isEnglishChapter, figureNumberMap }: ProblemStatementProps) {
+export function ProblemStatement({ question, qIndex, scorePercentage, singleQuestionIndex, rangeOffset, pagerOn, resultPages, safeResultPage, savingNote, handleSaveNote, reorderMobile, isEnglishChapter, figureNumberMap }: ProblemStatementProps) {
   return (
                   <div className="space-y-4 md:space-y-6">
                     {singleQuestionIndex === undefined && (
@@ -72,16 +69,11 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
                     {/* Problem Restatement
                         表示ルール1・2：左側の「問題文」欄には共通リード文に加えて、
                         続く全小問の設問文を順番に表示する（左側だけで全問いが理解できる）。 */}
-                    {/* ★数学章では問題文にも font-math math-content を当てる（ご指摘：
-                        「問題文と解答解説での数式の表記が異なっている」）。
-                        演習画面（Quiz）の問題文は数式フォント＋拡大表示なのに、
-                        解説画面の同じ問題文だけ通常フォントで分数・√の見た目が
-                        変わってしまっていた。非数学章は空文字なので従来と同じ見た目。 */}
                     <div className={`${reorderMobile
                       // スマホの1問ごとの答え合わせ：枠なし・演習画面と同じ文字サイズ
                       //（親ペインの text-[15px] leading-[1.85] を継承）。
                       ? ''
-                      : 'p-4 rounded-lg border text-sm md:text-base leading-relaxed'}${mathBodyClass} ${
+                      : 'p-4 rounded-lg border text-sm md:text-base leading-relaxed'} ${
                       (reorderMobile ? 'text-gray-800' : 'bg-white border-gray-200 text-gray-800')
                     }`}>
                       {/* ★英語リスニング：復習用の音源をここに置く。
@@ -245,11 +237,6 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
                           </div>
                         );
                       })()}
-                      {question.text.includes('図6') && (
-                        <div className="mt-4">
-                          <IonizationEnergyChart showDetails={true} />
-                        </div>
-                      )}
                       {/* 問題に付随する図・イラスト（PDF由来の図版など） */}
                       {(question as any).imageUrl && (
                         <QuestionFigure

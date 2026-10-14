@@ -19,22 +19,6 @@ export function isAttempted(answer: string | undefined | null): boolean {
 }
 
 /**
- * 小問IDから難易度（★の数）を返す。
- * ※判定表は統合版の化学の問題ID（p1_a など）だけ。それ以外のIDはすべて 1 になる。
- */
-export const getDifficulty = (sqId: string) => {
-  const id = sqId.replace(/^q/, 'p');
-  const level1 = ['p1_a', 'p1_i', 'p1_u', 'p1_e', 'p1_o', 'p1_ki', 'p1_ku', 'p2_1', 'p2_2', 'p2_3', 'p2_5', 'p2_6', 'p2_8', 'p2_11', 'p2_14'];
-  const level2 = ['p1_ka', 'p1_ke', 'p1_ko', 'p2_4', 'p2_7', 'p2_9', 'p2_10', 'p2_12', 'p2_13', 'p2_15'];
-  const level3 = ['p3_1', 'p3_2', 'p3_3', 'p3_4', 'p3_5', 'p3_6', 'p3_7', 'p3_8', 'p3_9', 'p3_10'];
-  
-  if (level1.includes(id)) return 1;
-  if (level2.includes(id)) return 2;
-  if (level3.includes(id)) return 3;
-  return 1;
-};
-
-/**
  * 解説の1画面表示（結果 → 英文 → 解説）に使う英文トラック。
  * リスニングは音源つき（audioTracks）、英文法は音を出さない文字だけ（explanationTracks）。
  */

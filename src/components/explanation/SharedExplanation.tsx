@@ -13,13 +13,12 @@ export interface SharedExplanationProps {
   reorderMobile: boolean;
   pcListening: boolean;
   listeningTracks: any[];
-  mode: string;
   isEnglishChapter: boolean;
   explBodyBaseClass: string;
   explBodyFontClass: string;
 }
 
-export function SharedExplanation({ sharedExplanation, reorderMobile, pcListening, listeningTracks, mode, isEnglishChapter, explBodyBaseClass, explBodyFontClass }: SharedExplanationProps) {
+export function SharedExplanation({ sharedExplanation, reorderMobile, pcListening, listeningTracks, isEnglishChapter, explBodyBaseClass, explBodyFontClass }: SharedExplanationProps) {
   return (
     <>
                             {sharedExplanation.trim() && (reorderMobile || pcListening) && listeningTracks.length > 0 && (

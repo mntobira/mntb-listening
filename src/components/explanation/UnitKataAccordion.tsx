@@ -13,14 +13,12 @@ import { ExplanationBody } from '../ExplanationBody';
  *   そのため「開いているか（isOpen）」と「押したとき（onToggle）」を受け取るだけにしている。
  *
  *   compact … スマホの1問ごとの答え合わせ（副題と「開く／閉じる」の文字を出さず、余白を詰める）
- *   mode    … 親で常に 'mini_test' に固定されている値（元の三項をそのまま残すため受け取る）
  */
-export function UnitKataAccordion({ unitKataBlock, isOpen, onToggle, compact, mode }: {
+export function UnitKataAccordion({ unitKataBlock, isOpen, onToggle, compact }: {
   unitKataBlock: string;
   isOpen: boolean;
   onToggle: () => void;
   compact: boolean;
-  mode: string;
 }) {
   const kataIsOpen = isOpen;
   const kataCompact = compact;

@@ -1,22 +1,17 @@
 import React from 'react';
-import { ArrowLeft, CheckCircle2, Save, Trophy } from 'lucide-react';
-import { motion } from 'motion/react';
+import { ArrowLeft, CheckCircle2, Save } from 'lucide-react';
 
 /**
  * 解答・解説画面の上部ヘッダー（「解答・解説 / 章名」＋答え合わせ・Q番号・カテゴリ・ノートに保存・正答率＋戻る/次へ）。
  * 2026-10-14 のリファクタリングで Explanation.tsx から切り出した。JSX・クラス名・文言・条件は元のまま。
  * 状態は持たない（値と関数は親から受け取る）。表示する条件（!reviewNav）は呼び出し側に残している。
- * 注：{false && …} の Score 表示は元から無効（2026-10-02：演習ではポイントを出さない）。削除候補だが元のまま残す。
  */
 export interface ExplanationHeaderProps {
-  mode: string;
   chapter: any;
   questions: any[];
   singleQuestionIndex?: number;
   reorderMobile: boolean;
   isResultView: boolean;
-  scorePulse: boolean;
-  displayTotalScore: number | null;
   savingNote: Record<string, boolean>;
   handleSaveNote: (question: any, index: number) => void;
   calculateScore: (question: any) => number;
@@ -25,7 +20,7 @@ export interface ExplanationHeaderProps {
   isLastQuestion?: boolean;
 }
 
-export function ExplanationHeader({ mode, chapter, questions, singleQuestionIndex, reorderMobile, isResultView, scorePulse, displayTotalScore, savingNote, handleSaveNote, calculateScore, onBack, onNextQuestion, isLastQuestion }: ExplanationHeaderProps) {
+export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reorderMobile, isResultView, savingNote, handleSaveNote, calculateScore, onBack, onNextQuestion, isLastQuestion }: ExplanationHeaderProps) {
   return (
       <div className={`p-4 md:p-6 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] md:pt-6 border-b-2 z-30 flex items-start justify-between gap-4 flex-none ${
         // ★スマホの1問ごとの答え合わせ（reorderMobile）では、
@@ -83,42 +78,6 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
             ? 'flex flex-nowrap items-center justify-end gap-1 min-w-0 flex-1'
             : 'contents'
           }>
-          {/* 固定ヘッダーの Score 表示は削除。
-              結果表示画面（isResultView）では下部の「RESULT SCORE」カード内にのみ Score を表示し、
-              固定ヘッダーには「単元選択に戻る」ボタンのみを残す。
-              1問ごとの答え合わせ（!isResultView）でのみ、進行中スコアを従来どおりヘッダーに表示する。 */}
-          {/* 2026-10-02：演習ではポイントを出さない */}
-          {false && !isResultView && displayTotalScore != null && (
-            <motion.div
-              key={scorePulse ? 'a' : 'b'}
-              initial={{ scale: 1.15 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className={`flex items-center border shadow-sm ${
-                // スマホでは小さめのピル型にして、右横に並べても窮屈にならないようにする
-                reorderMobile ? 'shrink-0 gap-0.5 px-1.5 py-0.5 rounded-full' : 'gap-2 px-3 py-2 rounded-2xl'
-              } ${
-                'bg-[#F4D03F]/15 text-[#1B2631] border-[#F4D03F]/40'
-              }`}
-            >
-              <Trophy size={reorderMobile ? 12 : 16} className="text-[#D4A017]" />
-              {reorderMobile ? (
-                <div className="font-handwriting font-bold text-xs tabular-nums leading-none">
-                  {displayTotalScore}
-                  <span className="text-xs ml-0.5 opacity-70">pt</span>
-                </div>
-              ) : (
-                <div className="leading-none">
-                  <div className="text-[10px] font-bold opacity-70 font-modern">Score</div>
-                  <div className="font-handwriting font-bold text-base md:text-lg tabular-nums">
-                    {displayTotalScore}
-                    <span className="text-[10px] ml-1 opacity-70">pt</span>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          )}
-
           {singleQuestionIndex !== undefined && questions[0] && (
             <div className={reorderMobile
               ? 'flex flex-nowrap items-center justify-end gap-1 min-w-0 flex-1'

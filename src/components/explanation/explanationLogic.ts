@@ -1,69 +1,27 @@
-import type { NodeData } from '../InteractiveTree';
-/*
- * 図データは図データのファイル（chemistryTreeData）から直接読む（元の Explanation.tsx と同じ読み方）。
- */
-import { substanceTreeData, separationTreeData, thermalMotionTreeData, atomicStructureTreeData, ionTreeData, ionGenerationTreeData, ionSizeTreeData, chemicalBondTreeData } from '../../data/chemistryTreeData';
 import { isAnswerCorrect } from '../../utils/answerJudge';
-import { gradingCriteriaProgress } from '../../utils/gradingCriteria';
 import { listeningQuestionNumberOf } from '../../utils/listeningExplanation';
 import { sliceListeningQuestionBlock } from '../../utils/listeningOptions';
 import { textTracksOf } from './helpers';
 
 /**
  * 解答・解説画面の「画面に依存しない計算」。
- * 2026-10-14 のリファクタリングで Explanation.tsx から切り出した。本体は元のコードのまま
- * （インデントだけ1段浅くした）。useMemo / useCallback と依存配列は呼び出し側に残しているので、
- * 再計算されるタイミング・フックの順番は変わらない。
+ * useMemo / useCallback と依存配列は呼び出し側（Explanation.tsx）に置いている。
+ *
+ * 2026-10-14：統合版（化学・数学）由来の「記述問題の自己採点」「係数のグループ完答」
+ * 「化学ロジックツリーの節探し」を外した。リスニング版の収録データ（選択式 1717 問）は
+ * どれも使っていなかったので、計算結果は変わらない。
  */
 
-/** 大問1つの正答率（%）。グループ化された小問はまとめて1問と数える。 */
-export function computeQuestionScore(question: any, answers: Record<string, any>, selfGrades: Record<string, boolean>) {
-  let totalScore = 0;
-  
-  // Group subquestions to see how many effective tasks there are
-  const groups: Record<string, { sqs: any[], allCorrect: boolean }> = {};
-  let singleQuestionsCount = 0;
-
-  (question.subQuestions || []).forEach((sq: any) => {
-    const isCorrect = sq.type === 'descriptive'
-      ? false // grading criteria handles descriptive
-      : isAnswerCorrect(sq, answers[sq.id]);
-
-    if (sq.group) {
-      if (!groups[sq.group]) {
-        groups[sq.group] = { sqs: [], allCorrect: true };
-      }
-      groups[sq.group].sqs.push(sq);
-      if (!isCorrect) {
-        groups[sq.group].allCorrect = false;
-      }
-    } else {
-      singleQuestionsCount++;
-      if (sq.type === 'descriptive') {
-        totalScore += gradingCriteriaProgress(sq, selfGrades).ratio;
-      } else {
-        if (isCorrect) {
-          totalScore += 1;
-        }
-      }
-    }
-  });
-
-  const groupCounts = Object.keys(groups).length;
-  const maxScore = singleQuestionsCount + groupCounts;
-
-  Object.values(groups).forEach(g => {
-    if (g.allCorrect) {
-      totalScore += 1;
-    }
-  });
-
-  if (maxScore === 0) return 0;
-  return Math.round((totalScore / maxScore) * 100);
+/** 大問1つの正答率（%） */
+export function computeQuestionScore(question: any, answers: Record<string, any>) {
+  const subs: any[] = question.subQuestions || [];
+  if (subs.length === 0) return 0;
+  const correct = subs.filter((sq: any) => isAnswerCorrect(sq, answers[sq.id])).length;
+  return Math.round((correct / subs.length) * 100);
 }
 
 /** 復習推奨エリア（カテゴリごとの正答率・100%未満を低い順） */
-export function computeWeakAreas(baseQuestions: any[], answers: Record<string, any>, selfGrades: Record<string, boolean>) {
+export function computeWeakAreas(baseQuestions: any[], answers: Record<string, any>) {
   const analysis: Record<string, { total: number; correct: number }> = {};
 
   baseQuestions.forEach((q: any) => {
@@ -71,18 +29,10 @@ export function computeWeakAreas(baseQuestions: any[], answers: Record<string, a
     if (!analysis[category]) {
       analysis[category] = { total: 0, correct: 0 };
     }
-
     q.subQuestions.forEach((sq: any) => {
       analysis[category].total += 1;
-
-      if (sq.type === 'descriptive') {
-         // 記述問題は自己採点チェックの達成率をそのまま得点扱いにする。
-         // （基準が string / 未設定のデータでも安全に 0〜1 の比率が返る）
-         analysis[category].correct += gradingCriteriaProgress(sq, selfGrades).ratio;
-      } else {
-        if (isAnswerCorrect(sq, answers[sq.id])) {
-          analysis[category].correct += 1;
-        }
+      if (isAnswerCorrect(sq, answers[sq.id])) {
+        analysis[category].correct += 1;
       }
     });
   });
@@ -94,53 +44,6 @@ export function computeWeakAreas(baseQuestions: any[], answers: Record<string, a
     }))
     .filter(item => item.percentage < 100)
     .sort((a, b) => a.percentage - b.percentage);
-}
-
-/** 小問に対応するロジックツリーの節（無ければ logic_thought の Step）。chapterId は元の chapter?.id */
-export function findRelatedSteps(sqId: string, currentQuestion: any, chapter: any) {
-  const steps: { step: number | string | null, label: string, id: string }[] = [];
-  
-  // Always check logic trees first as they are the primary logic structures
-  const findInTree = (node: NodeData) => {
-    if (node.relatedQuestions?.some(q => q.id === sqId)) {
-      steps.push({ step: node.step, label: node.label, id: node.id });
-    }
-    if (node.children) {
-      node.children.forEach(findInTree);
-    }
-  };
-  
-  if (chapter?.id === 'c1_2_A' && separationTreeData) findInTree(separationTreeData);
-  else if (chapter?.id === 'c1_3' && thermalMotionTreeData) findInTree(thermalMotionTreeData);
-  else if (chapter?.id === 'c2_1' && atomicStructureTreeData) findInTree(atomicStructureTreeData);
-  else if (chapter?.id === 'c2_2' && ionTreeData) findInTree(ionTreeData);
-  else if (chapter?.id === 'c2_3' && ionGenerationTreeData) findInTree(ionGenerationTreeData);
-  else if (chapter?.id === 'c2_4' && ionSizeTreeData) findInTree(ionSizeTreeData);
-  else if (chapter?.id === 'c3_1' && chemicalBondTreeData) findInTree(chemicalBondTreeData);
-  else if (substanceTreeData) findInTree(substanceTreeData);
-  
-  if (steps.length > 0) return steps;
-
-  // Fallback to logic_thought JSON in the current question's explanation
-  if (!currentQuestion.explanation) return [];
-  try {
-    const parsed = JSON.parse(currentQuestion.explanation);
-    if (parsed.type === 'logic_thought' && parsed.phase2 && parsed.phase2.explanations) {
-      return parsed.phase2.explanations
-        .filter((ex: any) => ex.subQuestionIds.includes(sqId))
-        .map((ex: any) => {
-          const stepMatch = ex.step.match(/Step (\d+)/);
-          return {
-            step: stepMatch ? stepMatch[1] : ex.step,
-            label: ex.tag,
-            id: ex.step
-          };
-        });
-    }
-  } catch (e) {
-    // Not JSON
-  }
-  return [];
 }
 
 /** 結果画面のページ送りの一覧（小問1つ＝1ページ。音源1本に複数の小問がある場合はその先頭だけ） */
