@@ -26,7 +26,9 @@ const PLAYER = read('src/components/ListeningAudioPlayer.tsx');
 const QUIZ = read('src/components/Quiz.tsx');
 // 問題文ペイン（左58%／スマホ上）の JSX は components/ProblemPane.tsx へ切り出した。
 const PROBLEM = read('src/components/ProblemPane.tsx');
-const EXPLANATION = read('src/components/Explanation.tsx');
+// 解答・解説の JSX は 2026-10-14 のリファクタリングで一部を components/explanation/ へ切り出した。
+// 左カラムの問題文ブロック（復習用の音源を含む）は explanation/ProblemStatement.tsx にある。
+const EXPLANATION = read('src/components/Explanation.tsx') + read('src/components/explanation/ProblemStatement.tsx');
 // 設問から作る「表示用の派生値」（useMemo 17個）は
 // hooks/useQuestionDerived.ts へ切り出した。
 const DERIVED = read('src/hooks/useQuestionDerived.ts');
@@ -327,7 +329,8 @@ describe('音源ボタンが「わかりやすい場所」に置かれている'
      * 実際に learningPrint.test.ts でこの事故が起きた
      * （詳細は tests/helpers/sourceScan.ts の冒頭）。
      */
-    const code = readCode('src/components/Explanation.tsx');
+    // 問題文ブロックは explanation/ProblemStatement.tsx へ移した（音源→問題文の順は同じファイル内で確かめる）
+    const code = readCode('src/components/explanation/ProblemStatement.tsx');
     const playerAt = code.indexOf('<ListeningAudioPlayer');
     const bodyAt = code.indexOf('text={cleanQuestionText(question.text)}');
     expect(playerAt).toBeGreaterThan(-1);

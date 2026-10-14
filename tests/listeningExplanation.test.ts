@@ -114,7 +114,8 @@ describe('リスニングの解説：スクリプトを最初に出す（C3）',
 
   it('画面側は「スクリプト先出し」のときだけ道すじの重複表示を止めている', () => {
     // ここが外れると、全問共通の一般論がスクリプトより前に4問ぶん並んでしまう。
-    const source = read('src/components/Explanation.tsx');
+    // 小問カードは 2026-10-14 のリファクタリングで explanation/SubQuestionCard.tsx へ移した（中身は同じ）
+    const source = read('src/components/Explanation.tsx') + read('src/components/explanation/SubQuestionCard.tsx');
     expect(source).toContain('isScriptFirstExplanation');
     expect(source).toContain('const isScriptFirst = isScriptFirstExplanation(sqSliceRaw)');
     expect(source).toContain('{!isScriptFirst && isPracticeMode && sq.detailedExplanation?.steps?.length > 0');
