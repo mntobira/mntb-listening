@@ -1,15 +1,13 @@
 import './step-explanation.css';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, CheckCircle2, XCircle, Lightbulb, BookOpen, AlertCircle, CheckSquare, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, Search, Network, Circle, Trophy, KeyRound, ListOrdered, Target, ChevronLeft, ChevronRight, Coins, Home } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Lightbulb, BookOpen, AlertCircle, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3, Save, Network, Trophy, ListOrdered, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { formatText } from '../utils/textFormatter';
 import { ExplanationBody } from './ExplanationBody';
 import { auth } from '../firebase';
-import { FeedbackButton } from './FeedbackButton';
 import { QuestionFigure } from './QuestionFigure';
-import { ListeningAudioPlayer, ListeningEvidenceScript } from './ListeningAudioPlayer';
-import { InlineAdSlot } from './InlineAdSlot';
+import { ListeningAudioPlayer } from './ListeningAudioPlayer';
 import { StumblingPoints } from './explanation/StumblingPoints';
 import { ExtrasSection } from './explanation/ExtrasSection';
 import { MobileAnswerNav, ReviewBottomBar } from './explanation/BottomBars';
@@ -19,26 +17,21 @@ import { UnitKataAccordion } from './explanation/UnitKataAccordion';
 import { ResultScoreCard, ResultStage, ResultSummaryActions, WeakAreasPanel, ResultPager } from './explanation/ResultSummary';
 import { renderSubQuestionCard } from './explanation/SubQuestionCard';
 import { renderFlowchartSubQuestionCheck } from './explanation/FlowchartSubQuestionCheck';
+import { buildExplanationSlices } from './explanation/explanationSlices';
 // 画面に依存しない小さな関数（isAttempted / getDifficulty / textTracksOf / formatResultTime / pictureCellOf）
-import { isAttempted, getDifficulty, textTracksOf, formatResultTime, pictureCellOf } from './explanation/helpers';
+import { isAttempted, textTracksOf } from './explanation/helpers';
 import './listening-explanation.css';
 import { buildFigureNumberMap, getFigureNumber } from '../utils/figureNumbering';
 import { isAnswerCorrect } from '../utils/answerJudge';
-import { gradingCriteriaProgress, resolveGradingCriteria } from '../utils/gradingCriteria';
+import { gradingCriteriaProgress } from '../utils/gradingCriteria';
 // cleanQuestionText は演習画面（Quiz.tsx）と同じ実装が必要なので
 // questionDisplay.ts の1つだけを使う（以前はここにも同じ実装があった）。
-import { answerCardMarker, buildSubQuestionList, isSubQuestionListRedundant, extractInlineQuestionRows, extractListeningQuestionRows, cleanQuestionText, findSubQuestionSentence, optionCircledMark } from '../utils/questionDisplay';
+import { buildSubQuestionList, isSubQuestionListRedundant, extractInlineQuestionRows, extractListeningQuestionRows, cleanQuestionText, findSubQuestionSentence } from '../utils/questionDisplay';
 import {
   buildUnitKataBlock,
-  sliceEnhancedByQuestion,
-  sliceEnhancedBySubQuestion,
-  questionGroupKey,
 } from '../utils/explanationFormat';
 import {
-  isScriptFirstExplanation,
-  stripScriptBox,
   listeningQuestionNumberOf,
-  scopeListeningCommonToQuestion,
 } from '../utils/listeningExplanation';
 import { sliceListeningQuestionBlock, buildListeningOptionTexts } from '../utils/listeningOptions';
 import { getUnitTeaching } from '../data/unitTeaching';
@@ -128,7 +121,6 @@ import { PracticeExplanationTree } from './PracticeExplanationTree';
 import { IonizationEnergyChart } from './IonizationEnergyChart';
 import { readJsonArray } from '../utils/safeLocalStorage';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
-import { NextBadgeHint } from '../battle/ui/GrowthParts';
 
 // Substance Tree Data for Chapter 1 (Moved to chemistryData.ts)
 
@@ -1757,60 +1749,9 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                         );
                         const unansweredSqs = objectiveSqs.filter((sq: any) => !isAttempted(answers[sq.id]));
 
-                        // ─────────────────────────────────────────────
-                        // 各小問は、常時表示する採点結果の直下に
-                        //   1. 解説
-                        //   2. 思考手順・答えの核心
-                        // の独立したアコーディオンを並べる。
-                        //
-                        // 解説本文は既存の機械可読マーカーで切り分けるだけで、
-                        // 教材本文の表現や順番は変更しない。小問固有の本文は各「解説」へ、
-                        // common/shared は大問末尾へ1回だけ配置し、重複と情報欠落を防ぐ。
-                        const enhancedText: string =
-                          (question as any).explanationSupplement || question.explanation || '';
-                        const questionSlices = sliceEnhancedByQuestion(enhancedText);
-                        // 小問（(ア)/(1)/a …）単位の切り出し。
-                        // 教材データのラベルは「問N」形式が少数派で、これが無いと
-                        // 全174大問のうち9割でアコーディオンを開いても解説が出てこなかった。
-                        const subSlices = sliceEnhancedBySubQuestion(enhancedText);
-                        const sliceForSq = (sq: any): string => {
-                          // 小問マーカーがある教材では、その小問自身の本文だけを返す。
-                          // common/shared は下で1回だけ表示し、各小問へ重複させない。
-                          if (subSlices) {
-                            const key = String(sq?.id ?? '');
-                            return subSlices.subs
-                              .filter((item) => item.id === key)
-                              .map((item) => item.body)
-                              .join('\n');
-                          }
-
-                          // 旧形式の「問N」マーカーにも対応する。
-                          if (questionSlices) {
-                            const key = questionGroupKey(sq?.label);
-                            if (!key) return '';
-                            return questionSlices.groups
-                              .filter((group) => group.key === key)
-                              .map((group) => group.text)
-                              .join('\n');
-                          }
-
-                          // マーカーを持たない従来教材は、本文を削らずそのまま解説へ入れる。
-                          return enhancedText;
-                        };
-
-                        const sharedExplanationRaw = subSlices
-                          ? [subSlices.common, subSlices.shared].filter((part) => part.trim()).join('\n')
-                          : questionSlices?.common || '';
-                        // ★問ごと表示（focusSubQuestionId）のときは、共通解説の
-                        //   「解 答」一覧から他の問の答えを除く（ネタバレ防止）。
-                        //   ご指摘：「問1の問題なのになぜ右側の共通ポイントの
-                        //   ところに問4までの答えがあるのか」
-                        const sharedExplanation = focusSubQuestionId
-                          ? scopeListeningCommonToQuestion(
-                              sharedExplanationRaw,
-                              listeningQuestionNumberOf((question.subQuestions || [])[0]),
-                            )
-                          : sharedExplanationRaw;
+                        // 解説本文を「小問ごとの本文（sliceForSq）」と「大問全体の共通部分（sharedExplanation）」に切り分ける。
+                        // 計算は explanation/explanationSlices.ts（元のコードのまま移した）。
+                        const { sliceForSq, sharedExplanation } = buildExplanationSlices(question, focusSubQuestionId);
 
                         // 小問1つぶんのカード。中身は explanation/SubQuestionCard.tsx（元の JSX のまま）。
                         // 呼び出し方（renderSq(sq, isCorrect)）と、開閉などの状態の持ち主（この Explanation）は変えていない。
