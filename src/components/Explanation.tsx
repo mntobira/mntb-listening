@@ -10,6 +10,9 @@ import { FeedbackButton } from './FeedbackButton';
 import { QuestionFigure } from './QuestionFigure';
 import { ListeningAudioPlayer, ListeningEvidenceScript } from './ListeningAudioPlayer';
 import { InlineAdSlot } from './InlineAdSlot';
+import { StumblingPoints } from './explanation/StumblingPoints';
+import { ExtrasSection } from './explanation/ExtrasSection';
+import { MobileAnswerNav, ReviewBottomBar } from './explanation/BottomBars';
 // 画面に依存しない小さな関数（isAttempted / getDifficulty / textTracksOf / formatResultTime / pictureCellOf）
 import { isAttempted, getDifficulty, textTracksOf, formatResultTime, pictureCellOf } from './explanation/helpers';
 import './listening-explanation.css';
@@ -2753,150 +2756,19 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
             )}
 
           {/* Stumbling Points (from logic_thought) */}
-          {deepThoughtData && deepThoughtData.phase2.stumblingPoints && deepThoughtData.phase2.stumblingPoints.length > 0 && (
-            <div className={`p-4 sm:p-6 md:p-8 border-b ${mode === 'mini_test' ? 'border-gray-200 bg-gray-50' : 'border-[#3A506B]/50 bg-[#1C2541]/20'}`}>
-              <h4 className={`font-bold mb-4 text-base md:text-lg flex items-center gap-2 ${mode === 'mini_test' ? 'text-red-600' : 'text-[#D9A0A0]'}`}>
-                <AlertTriangle className="w-5 h-5 md:w-6 md:h-6" />
-                つまずきポイント
-              </h4>
-              {/* 【横幅確保のため縦積み1カラムに統一】
-                  つまずきポイントはこのブロック自体が右カラム（俯瞰レイアウト時は
-                  全幅の42% ≈ 430px）の中に置かれるため、さらに2カラムへ分割すると
-                  1カラムあたり約200pxしかなく、文章が縦に細長く折り返されて
-                  非常に読みにくくなっていた。カードを縦積み1カラムにして
-                  1カラムあたりの横幅を十分に確保し、俯瞰の縮小表示でも
-                  文章の形が把握できる可読性を保つ。 */}
-              <div className="grid grid-cols-1 gap-4 md:gap-5">
-                {deepThoughtData.phase2.stumblingPoints.map((point: any, idx: number) => (
-                  <div key={idx} className={`p-5 sm:p-6 pl-6 sm:pl-7 rounded-2xl border shadow-sm relative overflow-hidden ${mode === 'mini_test' ? 'bg-red-50 border-red-200' : 'bg-[#D9A0A0]/10 border-[#D9A0A0]/30'}`}>
-                    <div className={`absolute top-0 left-0 w-2 h-full ${mode === 'mini_test' ? 'bg-red-500' : 'bg-[#D9A0A0]'}`}></div>
-                    <div className="flex items-center flex-wrap gap-2 mb-2.5">
-                      <div className={`text-xs md:text-sm font-bold px-2.5 py-1 rounded-lg border ${mode === 'mini_test' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-[#D9A0A0]/20 text-[#D9A0A0] border-[#D9A0A0]/30'}`}>
-                        {formatText(String(point.step))}
-                      </div>
-                      <h5 className={`font-bold text-base md:text-lg leading-snug ${mode === 'mini_test' ? 'text-red-700' : 'text-[#D9A0A0]'}`}>{formatText(point.type || point.point)}</h5>
-                    </div>
-                    <div className={`text-sm md:text-base leading-relaxed md:leading-loose whitespace-pre-wrap ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}>
-                      {formatText(point.content || point.reason)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <StumblingPoints deepThoughtData={deepThoughtData} mode={mode} />
 
           {/* Surrounding Knowledge / Deep Dive (from all questions) */}
-          <div className={reorderMobile ? 'lx-extra-wrap pb-3 space-y-2' : pcListening ? 'lx-pc-side' : 'p-4 sm:p-6 md:p-8 space-y-8'}>
-            {/* PC のリスニング：この単元の思考の型は右列の先頭に（開いた状態で） */}
-            {pcListening && kataAccordion}
-            {questions.map((question: any, qIndex: number) => {
-              const hasKnowledge = question.surroundingKnowledge && question.surroundingKnowledge.length > 0;
-              const hasDeepDive = question.deepDiveTopics && question.deepDiveTopics.length > 0;
-              
-              if (!hasKnowledge && !hasDeepDive) return null;
-
-              // ★スマホのリスニング解説：周辺知識・深掘りも「押したら開く」（1画面で完結させる）
-              const foldExtras = (reorderMobile || pcListening) && textTracksOf(question).length > 0;
-              const ExtraWrap: any = foldExtras ? 'details' : 'div';
-              const ExtraInner: any = foldExtras ? 'div' : React.Fragment;
-              return (
-                <ExtraWrap key={`extra-${question.id}`} className={foldExtras ? 'lx-fold lx-fold-extra' : 'space-y-6'} {...(foldExtras && pcListening ? { open: true } : {})}>
-                  {foldExtras && <summary><BookOpen size={16} aria-hidden="true" /><span className="lx-lbl-long">周辺知識・深掘り</span><span className="lx-lbl-short">周辺知識</span><ChevronDown size={18} aria-hidden="true" /></summary>}
-                  <ExtraInner {...(foldExtras ? { className: 'lx-fold-body space-y-6' } : {})}>
-                  <div className={`flex items-center gap-3 border-b pb-2 ${mode === 'mini_test' ? 'border-gray-200' : 'border-[#3A506B]/30'}`}>
-                    <div className={`font-bold px-2 py-0.5 rounded text-xs shadow-sm border ${mode === 'mini_test' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'}`}>
-                      Q{(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1}
-                    </div>
-                    <h4 className={`font-bold text-sm md:text-base ${mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD] opacity-80'}`}>
-                      周辺知識・深掘り
-                    </h4>
-                  </div>
-
-                  {hasKnowledge && (
-                    <div>
-                      <h5 className={`font-bold text-xs md:text-sm mb-3 md:mb-4 flex items-center gap-1.5 md:gap-2 ${mode === 'mini_test' ? 'text-blue-600' : 'text-[#A9CCE3]'}`}>
-                        <BookOpen className="w-4 h-4 md:w-5 md:h-5" />
-                        <span>周辺知識・類似問題</span>
-                      </h5>
-                      <div className="space-y-3 md:space-y-4">
-                        {question.surroundingKnowledge.map((k: string, idx: number) => {
-                          const titleMatch = k.match(/^(【.*?】)(.*)/s);
-                          if (titleMatch) {
-                            return (
-                              <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${mode === 'mini_test' ? 'bg-blue-50 border-blue-200' : 'bg-[#1C2541]/50 border-[#A9CCE3]/30'}`}>
-                                <div className={`absolute top-0 left-0 w-1.5 h-full ${mode === 'mini_test' ? 'bg-blue-400' : 'bg-[#A9CCE3]'}`}></div>
-                                <div className={`inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${mode === 'mini_test' ? 'bg-white text-blue-600 border-blue-200' : 'bg-[#A9CCE3]/10 text-[#A9CCE3] border-[#A9CCE3]/20'}`}>
-                                  <BookOpen size={14} />
-                                  {/* 見出しバッジも prose 対象。英語では見出しに英単語が
-                                      そのまま入ることがあり、ここを素の formatText に
-                                      すると見出しだけセリフ体に化けてしまう。 */}
-                                  {formatText(titleMatch[1].replace(/[【】]/g, ''), [], { prose: isEnglishChapter })}
-                                </div>
-                                <div className={`text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}>
-                                  {/* 英語は prose で組む（英単語がセリフ体の化学式に化けるのを防ぐ） */}
-                                  {formatText(titleMatch[2].trim(), [], { prose: isEnglishChapter })}
-                                </div>
-                              </div>
-                            );
-                          }
-                          return (
-                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${mode === 'mini_test' ? 'bg-gray-50 border-gray-200 text-gray-700' : 'bg-[#1C2541]/50 border-[#3A506B]/50 text-[#E0E1DD]/90'}`}>
-                              {formatText(k, [], { prose: isEnglishChapter })}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {hasDeepDive && (
-                    <div className="mt-6 md:mt-8">
-                      <h5 className={`font-bold text-xs md:text-sm mb-3 md:mb-4 flex items-center gap-1.5 md:gap-2 ${mode === 'mini_test' ? 'text-amber-600' : 'text-[#D9A0A0]'}`}>
-                        <Search className="w-4 h-4 md:w-5 md:h-5" />
-                        <span>さらに深掘り</span>
-                      </h5>
-                      <div className="space-y-3 md:space-y-4">
-                        {question.deepDiveTopics.map((topic: string, idx: number) => {
-                          const titleMatch = topic.match(/^(【.*?】)(.*)/s);
-                          let title = "";
-                          let content = topic;
-                          
-                          if (titleMatch) {
-                            title = titleMatch[1].replace(/[【】]/g, '');
-                            content = titleMatch[2].trim();
-                          } else {
-                            const parts = topic.split('\n');
-                            title = parts[0];
-                            content = parts.slice(1).join('\n');
-                          }
-
-                          return (
-                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${mode === 'mini_test' ? 'bg-amber-50 border-amber-200' : 'bg-[#D9A0A0]/10 border-[#D9A0A0]/30'}`}>
-                              <div className={`absolute top-0 left-0 w-1.5 h-full ${mode === 'mini_test' ? 'bg-amber-400' : 'bg-[#D9A0A0]'}`}></div>
-                              <div className={`inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${mode === 'mini_test' ? 'bg-white text-amber-600 border-amber-200' : 'bg-[#D9A0A0]/20 text-[#D9A0A0] border-[#D9A0A0]/30'}`}>
-                                <Lightbulb size={14} />
-                                {/* 【】が無い深掘りでは title = 1行目まるごとになり、
-                                    英文（usually / on weekdays など）を含みうる。
-                                    そのためここも prose で組む。 */}
-                                {formatText(title, [], { prose: isEnglishChapter })}
-                              </div>
-                              <div className={`text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}>
-                                {formatText(content, [], { prose: isEnglishChapter })}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                  </ExtraInner>
-                  </ExtraWrap>
-                );
-              })
-            }
-            {/* 妙案3: 解説画面スクロール末尾のインライン広告枠 */}
-            <InlineAdSlot />
-          </div>
+          <ExtrasSection
+            wrapClassName={reorderMobile ? 'lx-extra-wrap pb-3 space-y-2' : pcListening ? 'lx-pc-side' : 'p-4 sm:p-6 md:p-8 space-y-8'}
+            leading={pcListening && kataAccordion}
+            questions={questions}
+            mode={mode}
+            isEnglishChapter={isEnglishChapter}
+            foldable={reorderMobile || pcListening}
+            openByDefault={pcListening}
+            qNumberOf={(qIndex) => (singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1}
+          />
         </div>
 
         {/* 学習フローチャート（スマホの1問ごとの答え合わせのみ）
@@ -2915,26 +2787,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
             演習画面の「前へ / 解答と解説を見る」と同じ位置・同じ操作感にして、
             親指だけで「解く→答え合わせ→次を解く」を回せるようにする。 */}
         {reorderMobile && onNextQuestion && (
-          <div className="order-4 fixed left-0 right-0 bottom-0 z-50 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.10)] px-3 pt-2.5 pb-[calc(0.6rem+env(safe-area-inset-bottom))]">
-            <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
-              <button
-                onClick={onBack}
-                title="問題に戻る"
-                aria-label="問題に戻る"
-                className="flex items-center justify-center p-3 rounded-xl font-bold transition-all duration-200 border-2 shrink-0 cursor-pointer border-[#A9CCE3] text-[#2C3E50] active:bg-[#A9CCE3] active:text-white bg-white shadow-sm"
-              >
-                <ArrowLeft size={18} className="stroke-[2.5]" aria-hidden="true" />
-                <span className="ml-1 text-xs">問題に戻る</span>
-              </button>
-              <button
-                onClick={onNextQuestion}
-                className="flex shadow-md active:translate-y-0.5 items-center justify-center gap-1.5 px-5 py-3 rounded-xl font-bold tracking-wider transition-all duration-200 text-sm bg-[#2C3E50] text-white active:bg-[#1B2631] flex-1 cursor-pointer"
-              >
-                <span>{isLastQuestion ? '結果を見る' : '次の問題へ'}</span>
-                <ArrowLeft size={16} className="rotate-180 stroke-[2.5]" />
-              </button>
-            </div>
-          </div>
+          <MobileAnswerNav onBack={onBack} onNextQuestion={onNextQuestion} isLastQuestion={isLastQuestion} />
         )}
       </div>
       </div>
@@ -2943,18 +2796,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
       </div>
       </div>
         {/* ★詳しい結果の下のバー（2026-10-04）★ 問題・スクリプト・解説の下に、次にすることをまとめる */}
-        {reviewNav && <div className="practice-bottom-spacer is-review" aria-hidden="true" />}
-        {reviewNav && (
-          <div className="practice-bottom-bar is-review" data-review-actions>
-            {reviewNav.onRetryWrong
-              ? <button type="button" className="pbb-main" onClick={reviewNav.onRetryWrong}><Target size={17} aria-hidden="true" />{reviewNav.retryLabel}</button>
-              : reviewNav.onNext && <button type="button" className="pbb-main" onClick={reviewNav.onNext}><ChevronRight size={17} aria-hidden="true" />{reviewNav.nextLabel}</button>}
-            <div className="pbb-sub">
-              <button type="button" onClick={reviewNav.onChapters}><ListOrdered size={16} aria-hidden="true" />単元選択に戻る</button>
-              {reviewNav.onHome && <button type="button" onClick={reviewNav.onHome}><Home size={16} aria-hidden="true" />ホームに戻る</button>}
-            </div>
-          </div>
-        )}
+        {reviewNav && <ReviewBottomBar reviewNav={reviewNav} />}
 
     </div>
   );
