@@ -1,0 +1,49 @@
+import React from 'react';
+import { Lightbulb, ChevronDown } from 'lucide-react';
+import { ExplanationBody } from '../ExplanationBody';
+
+/**
+ * 右カラムの「大問全体の流れ・共通ポイント」。
+ *   リスニング（スマホ・PCの3列）では折りたたみ（details）、それ以外は枠付きの箱で出す。
+ * 2026-10-14 のリファクタリングで Explanation.tsx から切り出した。JSX・クラス名・文言・条件は元のまま。
+ * 2つの分岐は元どおり「それぞれ独立した条件」で並べている（Fragment で返す）。
+ */
+export interface SharedExplanationProps {
+  sharedExplanation: string;
+  reorderMobile: boolean;
+  pcListening: boolean;
+  listeningTracks: any[];
+  mode: string;
+  isEnglishChapter: boolean;
+  explBodyBaseClass: string;
+  explBodyFontClass: string;
+}
+
+export function SharedExplanation({ sharedExplanation, reorderMobile, pcListening, listeningTracks, mode, isEnglishChapter, explBodyBaseClass, explBodyFontClass }: SharedExplanationProps) {
+  return (
+    <>
+                            {sharedExplanation.trim() && (reorderMobile || pcListening) && listeningTracks.length > 0 && (
+                              <details className="lx-fold lx-fold-shared" open={pcListening || undefined}>
+                                <summary><Lightbulb size={16} aria-hidden="true" /><span className="lx-lbl-long">大問全体の流れ・共通ポイント</span><span className="lx-lbl-short">大問の流れ</span><ChevronDown size={18} aria-hidden="true" /></summary>
+                                <div className={`lx-fold-body ${explBodyBaseClass}`}>
+                                  <ExplanationBody text={sharedExplanation} tone="light" prose={isEnglishChapter} className={`${explBodyFontClass} text-gray-700`} />
+                                </div>
+                              </details>
+                            )}
+                            {sharedExplanation.trim() && !((reorderMobile || pcListening) && listeningTracks.length > 0) && (
+                              <div className={`mt-6 rounded-xl border p-4 md:p-5 ${explBodyBaseClass} ${mode === 'mini_test' ? 'bg-gray-50 border-gray-200' : 'bg-[#0B132B]/80 border-[#3A506B]/50'}`}>
+                                <h4 className={`text-sm md:text-base mb-3 flex items-center gap-2 border-b-2 pb-2 ${mode === 'mini_test' ? 'text-emerald-700 border-emerald-200' : 'text-[#5BC0BE] border-[#3A506B]/50'}`}>
+                                  <Lightbulb className={`w-4 h-4 ${mode === 'mini_test' ? 'text-amber-500' : 'text-[#F9E79F]'}`} />
+                                  <span>大問全体の流れ・共通ポイント</span>
+                                </h4>
+                                <ExplanationBody
+                                  text={sharedExplanation}
+                                  tone={mode === 'mini_test' ? 'light' : 'dark'}
+                                  prose={isEnglishChapter}
+                                  className={`${explBodyFontClass} ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}
+                                />
+                              </div>
+                            )}
+    </>
+  );
+}

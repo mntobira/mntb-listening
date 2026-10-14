@@ -1,8 +1,7 @@
 import './step-explanation.css';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { CheckCircle2, Lightbulb, BookOpen, AlertCircle, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3, Network } from 'lucide-react';
-import { ExplanationBody } from './ExplanationBody';
+import { CheckCircle2, BookOpen, AlertCircle, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Edit3 } from 'lucide-react';
 import { auth } from '../firebase';
 import { ListeningAudioPlayer } from './ListeningAudioPlayer';
 import { StumblingPoints } from './explanation/StumblingPoints';
@@ -15,6 +14,8 @@ import { ResultScoreCard, ResultStage, ResultSummaryActions, WeakAreasPanel, Res
 import { renderSubQuestionCard } from './explanation/SubQuestionCard';
 import { ExplanationHeader } from './explanation/ExplanationHeader';
 import { ProblemStatement } from './explanation/ProblemStatement';
+import { ScoreHead } from './explanation/ScoreHead';
+import { SharedExplanation } from './explanation/SharedExplanation';
 import { ReviewTopNav } from './explanation/ReviewTopNav';
 import { renderFlowchartSubQuestionCheck } from './explanation/FlowchartSubQuestionCheck';
 import { buildExplanationSlices } from './explanation/explanationSlices';
@@ -1281,48 +1282,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                   として高さを詰める。項目は1つも消さない。
                                   PC（!reorderMobile）は従来のクラスをそのまま使う。
                                 */}
-                                <div data-score-head className={`flex items-center justify-between gap-2 ${reorderMobile ? '' : 'flex-wrap'}`} data-lx-single={(reorderMobile && listeningTracks.length > 0 && objectiveSqs.length <= 1) || undefined}>
-                                  <h4 className={`font-bold flex items-center ${reorderMobile ? 'min-w-0 gap-1.5 text-[13px]' : 'gap-2'} ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]'}`}>
-                                    <CheckCircle2 size={reorderMobile ? 15 : 18} className={`${reorderMobile ? 'shrink-0 ' : ''}${mode === 'mini_test' ? 'text-emerald-600' : 'text-[#5BC0BE]'}`} />
-                                    <span className={reorderMobile ? 'truncate' : ''}>採点結果</span>
-                                  </h4>
-                                  <div className={`flex items-center ${reorderMobile ? 'shrink-0 gap-1.5' : 'gap-2'}`}>
-                                    {/* 問が1つだけのリスニングでは、下の「問1 不正解 ①→②」と同じ内容になるので出さない（同じものを2つ置かない） */}
-                                    {!(reorderMobile && listeningTracks.length > 0 && objectiveSqs.length <= 1) && <span className={`font-bold ${reorderMobile ? 'whitespace-nowrap text-xs' : 'text-xs'} ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>
-                                      <span className={mode === 'mini_test' ? 'text-emerald-600' : 'text-[#5BC0BE]'}>正解 {correctSqs.length}</span>
-                                      <span className="mx-1 opacity-50">/</span>
-                                      <span className={mode === 'mini_test' ? 'text-red-500' : 'text-[#D9A0A0]'}>不正解 {incorrectSqs.length}</span>
-                                      {unansweredSqs.length > 0 && (
-                                        <>
-                                          <span className="mx-1 opacity-50">/</span>
-                                          <span className={mode === 'mini_test' ? 'text-gray-400' : 'text-[#7A8B99]'}>未解答 {unansweredSqs.length}</span>
-                                        </>
-                                      )}
-                                    </span>}
-                                    {/* ★スマホ：学習フローチャートの切り替えボタン。
-                                        「フローチャートは消したくない＋邪魔にならない位置に
-                                          切り替えのボタンを設置」（ご要望）。
-                                        常設表示はせず、このチップで開閉する。 */}
-                                    {reorderMobile && flowchartBlock && (
-                                      <button
-                                        type="button"
-                                        onClick={() => setShowFlowchart(v => !v)}
-                                        aria-expanded={showFlowchart}
-                                        aria-label={`学習フローチャートを${showFlowchart ? '閉じる' : '開く'}`}
-                                        /* コンパクト化：ラベルは残し、余白と字だけ詰める。
-                                           「正解/不正解/未解答」と同じ行に必ず収めたい。 */
-                                        className={`flex items-center gap-0.5 rounded-md border px-1.5 py-0.5 text-[10px] font-bold whitespace-nowrap transition-colors ${
-                                          showFlowchart
-                                            ? 'bg-[#2C3E50] border-[#2C3E50] text-white'
-                                            : 'bg-white border-gray-300 text-gray-600 active:bg-gray-50'
-                                        }`}
-                                      >
-                                        <Network size={12} />
-                                        フローチャート
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
+                                <ScoreHead reorderMobile={reorderMobile} listeningTracks={listeningTracks} objectiveSqs={objectiveSqs} correctSqs={correctSqs} incorrectSqs={incorrectSqs} unansweredSqs={unansweredSqs} mode={mode} flowchartBlock={flowchartBlock} showFlowchart={showFlowchart} setShowFlowchart={setShowFlowchart} />
 
                                 {/* 要件①：「この単元の思考の型」を採点結果の直後に1回だけ（折りたたみ） */}
                                 {qIndex === 0 && !pcListening && kataAccordion}
@@ -1446,28 +1406,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                               </div>
                             )}
 
-                            {sharedExplanation.trim() && (reorderMobile || pcListening) && listeningTracks.length > 0 && (
-                              <details className="lx-fold lx-fold-shared" open={pcListening || undefined}>
-                                <summary><Lightbulb size={16} aria-hidden="true" /><span className="lx-lbl-long">大問全体の流れ・共通ポイント</span><span className="lx-lbl-short">大問の流れ</span><ChevronDown size={18} aria-hidden="true" /></summary>
-                                <div className={`lx-fold-body ${explBodyBaseClass}`}>
-                                  <ExplanationBody text={sharedExplanation} tone="light" prose={isEnglishChapter} className={`${explBodyFontClass} text-gray-700`} />
-                                </div>
-                              </details>
-                            )}
-                            {sharedExplanation.trim() && !((reorderMobile || pcListening) && listeningTracks.length > 0) && (
-                              <div className={`mt-6 rounded-xl border p-4 md:p-5 ${explBodyBaseClass} ${mode === 'mini_test' ? 'bg-gray-50 border-gray-200' : 'bg-[#0B132B]/80 border-[#3A506B]/50'}`}>
-                                <h4 className={`text-sm md:text-base mb-3 flex items-center gap-2 border-b-2 pb-2 ${mode === 'mini_test' ? 'text-emerald-700 border-emerald-200' : 'text-[#5BC0BE] border-[#3A506B]/50'}`}>
-                                  <Lightbulb className={`w-4 h-4 ${mode === 'mini_test' ? 'text-amber-500' : 'text-[#F9E79F]'}`} />
-                                  <span>大問全体の流れ・共通ポイント</span>
-                                </h4>
-                                <ExplanationBody
-                                  text={sharedExplanation}
-                                  tone={mode === 'mini_test' ? 'light' : 'dark'}
-                                  prose={isEnglishChapter}
-                                  className={`${explBodyFontClass} ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}
-                                />
-                              </div>
-                            )}
+                            <SharedExplanation sharedExplanation={sharedExplanation} reorderMobile={reorderMobile} pcListening={pcListening} listeningTracks={listeningTracks} mode={mode} isEnglishChapter={isEnglishChapter} explBodyBaseClass={explBodyBaseClass} explBodyFontClass={explBodyFontClass} />
                           </>
                         );
                       })()}
