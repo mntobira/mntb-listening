@@ -829,28 +829,14 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         */}
         <div className={isMobile 
           ? `w-full flex flex-col ${isResultView || reviewNav ? 'flex-1' : ''} ${CARD_FONT_FAMILY} relative ${
-              mode === 'mini_test' 
-                ? 'bg-white text-gray-800' 
-                : 'bg-[#0B132B] text-[#E0E1DD]'
+              'bg-white text-gray-800'
             }`
           : `${isResultView ? 'w-full flex-1' : 'w-full h-full'} flex flex-col ${CARD_FONT_FAMILY} relative ${
-              mode === 'mini_test' 
-                ? 'bg-white text-gray-800' 
-                : 'bg-[#0B132B] text-[#E0E1DD]'
+              'bg-white text-gray-800'
             }`
         }>
       {/* Background effects */}
-      {mode !== 'mini_test' && (
-        <>
-          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
-            backgroundImage: 'radial-gradient(circle at 50% 0%, #3A506B 0%, transparent 70%)'
-          }}></div>
-          <div className="absolute inset-0 opacity-15 pointer-events-none" style={{
-            backgroundImage: 'linear-gradient(#1C2541 1px, transparent 1px)',
-            backgroundSize: '100% 2rem'
-          }}></div>
-        </>
-      )}
+      
 
       {/* Header（結果画面ではスクロールしても常に「単元選択に戻る」やスコアが見えるよう上部に固定）
           ★詳しい結果（reviewNav）では出さない：上の切り替えバーが見出しの代わり。
@@ -891,11 +877,11 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         ? reorderMobile
           // スマホの1問ごとの答え合わせ：問題文ペインを sticky で上部に
           // 固定するため、外側の余白は付けない（全幅の上下2ペイン）。
-          ? `relative z-10 ${mode === 'mini_test' ? 'bg-white' : ''}`
-          : `p-4 md:p-6 relative z-10 space-y-6 md:space-y-8 ${mode === 'mini_test' ? 'bg-white' : ''}`
+          ? `relative z-10 ${'bg-white'}`
+          : `p-4 md:p-6 relative z-10 space-y-6 md:space-y-8 ${'bg-white'}`
         : isResultView
-          ? `p-4 md:p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] relative z-10 space-y-6 md:space-y-8 ${mode === 'mini_test' ? 'bg-white' : ''}`
-          : `p-4 md:p-6 relative z-10 flex-1 overflow-hidden flex flex-col ${mode === 'mini_test' ? 'bg-white' : ''}`
+          ? `p-4 md:p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] relative z-10 space-y-6 md:space-y-8 ${'bg-white'}`
+          : `p-4 md:p-6 relative z-10 flex-1 overflow-hidden flex flex-col ${'bg-white'}`
       }>
       {/* Weak Areas Analysis
           ★ 修正：問題数が多い場合（弱点エリアが多数）に desktop で潜在的にはみ出してスクロールできなかった不具合を解消。
@@ -926,8 +912,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           ? reorderMobile
             // 1問ごとの答え合わせ（スマホ）：問題文ペインを sticky にするため
             // 枠・角丸を付けず全幅で使う。
-            ? `${mode === 'mini_test' ? 'bg-white' : 'bg-[#1C2541]/40'}`
-            : `rounded-2xl shadow-lg border ${mode === 'mini_test' ? 'bg-white border-gray-200' : 'bg-[#1C2541]/40 border-[#3A506B]/50'}`
+            ? `${'bg-white'}`
+            : `rounded-2xl shadow-lg border ${'bg-white border-gray-200'}`
           : isResultView
             // 結果表示（全問の解答・解説一覧）はページ全体スクロールに任せる。
             // ここで flex-1 / h-full / overflow-hidden を付けると、スコアパネルに圧迫されて
@@ -980,7 +966,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 </div>
               )}
               {singleQuestionIndex === undefined && (
-                <h3 className={`text-base md:text-lg font-bold mb-4 md:mb-6 flex items-center gap-2 ${mode === 'mini_test' ? 'text-emerald-700' : 'text-[#5BC0BE]'}`}>
+                <h3 className={`text-base md:text-lg font-bold mb-4 md:mb-6 flex items-center gap-2 ${'text-emerald-700'}`}>
                   <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />
                   <span>答え合わせ</span>
                 </h3>
@@ -1048,7 +1034,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                                          PC は compact を渡さないので不変。 */
                                       compact={reorderMobile}
                                       orientation="horizontal"
-                                      tone={mode === 'mini_test' ? 'light' : 'dark'}
+                                      tone={'light'}
                                       readCount={(question as any).readCount || 2}
                                       /* ★ご要望11「スクリプトを押さなくても直で下に出てるようにしたい」
                                            「☑️採点結果のしたはスクリプトってことね」★
@@ -1085,7 +1071,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                           <>
                             {selfGradeSqs.length > 0 && (
                               <div className="space-y-3 md:space-y-4">
-                                <h4 className={`font-bold flex items-center gap-2 ${mode === 'mini_test' ? 'text-blue-600' : 'text-[#A9CCE3]'}`}>
+                                <h4 className={`font-bold flex items-center gap-2 ${'text-blue-600'}`}>
                                   <Edit3 size={18} />
                                   <span>記述問題（自己採点）</span>
                                 </h4>
@@ -1251,7 +1237,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 );
               })
             ) : (
-              <div className={`p-12 text-center rounded-2xl border-2 border-dashed ${mode === 'mini_test' ? 'bg-gray-50 border-gray-200 text-gray-500' : 'bg-[#1C2541]/30 border-[#3A506B]/50 text-[#7A8B99]'}`}>
+              <div className={`p-12 text-center rounded-2xl border-2 border-dashed ${'bg-gray-50 border-gray-200 text-gray-500'}`}>
                 <div className="flex flex-col items-center gap-4">
                   <AlertCircle size={48} className="text-amber-500" />
                   <p className="text-lg font-bold">問題がありません。</p>

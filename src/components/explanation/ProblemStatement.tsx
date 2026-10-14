@@ -41,27 +41,27 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
   return (
                   <div className="space-y-4 md:space-y-6">
                     {singleQuestionIndex === undefined && (
-                      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${mode === 'mini_test' ? 'border-gray-200' : 'border-[#3A506B]/30'}`}>
+                      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${'border-gray-200'}`}>
                         <div className="flex items-center gap-3">
-                          <div className={`font-bold px-3 py-1 rounded-full text-xs md:text-sm shadow-sm border ${mode === 'mini_test' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'}`}>
+                          <div className={`font-bold px-3 py-1 rounded-full text-xs md:text-sm shadow-sm border ${'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
                             Q{(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1}
                           </div>
-                          <div className={`text-left font-bold text-sm md:text-base ${mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD]'}`}>
+                          <div className={`text-left font-bold text-sm md:text-base ${'text-gray-800'}`}>
                             {question.category || '問題'}
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
                           <button
                             onClick={(e) => { e.stopPropagation(); handleSaveNote(question, qIndex); }}
-                            className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-colors border ${savingNote[question.id] ? (mode === 'mini_test' ? 'bg-gray-100 text-gray-500 border-gray-200' : 'bg-[#1C2541] text-[#7A8B99] border-[#1C2541]') : (mode === 'mini_test' ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100' : 'bg-[#F9E79F]/20 text-[#F9E79F] border-[#F9E79F]/30 hover:bg-[#F9E79F]/30')}`}
+                            className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-colors border ${savingNote[question.id] ? ('bg-gray-100 text-gray-500 border-gray-200') : ('bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100')}`}
                             disabled={savingNote[question.id]}
                           >
                             <Save size={14} />
                             {savingNote[question.id] ? '保存中...' : 'ノートに保存'}
                           </button>
                           <div className="flex flex-col items-end">
-                            <div className={`text-[10px] md:text-xs font-bold mb-0.5 ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>あなたの正答率</div>
-                            <div className={`font-mono font-bold text-base md:text-lg ${scorePercentage >= 80 ? (mode === 'mini_test' ? 'text-emerald-600' : 'text-[#5BC0BE]') : scorePercentage <= 40 ? (mode === 'mini_test' ? 'text-red-500' : 'text-[#D9A0A0]') : (mode === 'mini_test' ? 'text-amber-500' : 'text-[#F9E79F]')}`}>
+                            <div className={`text-[10px] md:text-xs font-bold mb-0.5 ${'text-gray-500'}`}>あなたの正答率</div>
+                            <div className={`font-mono font-bold text-base md:text-lg ${scorePercentage >= 80 ? ('text-emerald-600') : scorePercentage <= 40 ? ('text-red-500') : ('text-amber-500')}`}>
                               {scorePercentage}%
                             </div>
                           </div>
@@ -82,7 +82,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
                       //（親ペインの text-[15px] leading-[1.85] を継承）。
                       ? ''
                       : 'p-4 rounded-lg border text-sm md:text-base leading-relaxed'}${mathBodyClass} ${
-                      mode === 'mini_test' ? (reorderMobile ? 'text-gray-800' : 'bg-white border-gray-200 text-gray-800') : 'bg-[#0B132B]/60 border-[#3A506B]/50 text-[#E0E1DD]/90'
+                      (reorderMobile ? 'text-gray-800' : 'bg-white border-gray-200 text-gray-800')
                     }`}>
                       {/* ★英語リスニング：復習用の音源をここに置く。
                           採点直後の画面なので、「聞き取れなかった箇所を
@@ -123,7 +123,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
                             mode={reorderMobile ? 'practice' : 'review'}
                             variant={reorderMobile ? 'inline' : 'panel'}
                             orientation={reorderMobile ? 'horizontal' : 'vertical'}
-                            tone={mode === 'mini_test' ? 'light' : 'dark'}
+                            tone={'light'}
                             readCount={(question as any).readCount || 2}
                             /* ★ご要望11「パソコン版の方も、スクリプトとかは
                                  絶対に出して欲しい。今たたまれとるけど」★
@@ -210,7 +210,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
                           return (
                             <ExplanationBody
                               text={cleanQuestionText(question.text)}
-                              tone={mode === 'mini_test' ? 'light' : 'dark'}
+                              tone={'light'}
                               prose={isEnglishChapter}
                             />
                           );
@@ -220,7 +220,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
                             {inline.lead && (
                               <ExplanationBody
                                 text={inline.lead}
-                                tone={mode === 'mini_test' ? 'light' : 'dark'}
+                                tone={'light'}
                                 prose={isEnglishChapter}
                               />
                             )}
@@ -256,7 +256,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
                           src={(question as any).imageUrl}
                           caption={(question as any).imageCaption}
                           figureNumber={getFigureNumber(figureNumberMap, (question as any).id)}
-                          tone={mode === 'mini_test' ? 'light' : 'dark'}
+                          tone={'light'}
                           className="mt-4"
                         />
                       )}
@@ -287,8 +287,8 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
                            「一画面に収める」ためにも、重複する側を出さない。 */
                         if (reorderMobile && isEnglishChapter && extractListeningQuestionRows(question)) return null;
                         return (
-                          <div className={`mt-4 pt-3 border-t border-dashed ${mode === 'mini_test' ? 'border-gray-300' : 'border-[#3A506B]'}`}>
-                            <div className={`text-[11px] font-bold mb-2 flex items-center gap-1.5 ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>
+                          <div className={`mt-4 pt-3 border-t border-dashed ${'border-gray-300'}`}>
+                            <div className={`text-[11px] font-bold mb-2 flex items-center gap-1.5 ${'text-gray-500'}`}>
                               <ListOrdered size={13} />
                               <span>設問一覧</span>
                             </div>
@@ -297,7 +297,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, mode, sing
                                 <li key={sIdx} className="flex items-start gap-2">
                                   {item.marker && (
                                     <span className={`shrink-0 font-bold text-xs px-2 py-0.5 rounded-md border mt-0.5 ${
-                                      mode === 'mini_test' ? 'bg-gray-50 text-gray-600 border-gray-200' : 'bg-[#0B132B] text-[#A9CCE3] border-[#3A506B]'
+                                      'bg-gray-50 text-gray-600 border-gray-200'
                                     }`}>
                                       {formatText(item.marker)}
                                     </span>

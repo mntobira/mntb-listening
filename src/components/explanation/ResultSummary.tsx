@@ -151,10 +151,10 @@ export function WeakAreasPanel({ weakAreas, isMobile, mode }: {
 }) {
   return (
           <div className={`rounded-2xl p-5 md:p-6 shadow-lg border relative flex flex-col flex-none ${
-            mode === 'mini_test' ? 'bg-gray-50 border-gray-100' : 'bg-[#1C2541]/50 border-[#3A506B]/50'
+            'bg-gray-50 border-gray-100'
           }`}>
             <h3 className={`text-lg md:text-xl font-bold mb-4 md:mb-6 flex items-center gap-2 flex-none ${
-              mode === 'mini_test' ? 'text-[#2C3E50]' : 'text-[#D9A0A0]'
+              'text-[#2C3E50]'
             }`}>
               <TrendingUp className="w-5 h-5 md:w-6 md:h-6" />
               <span>分析結果：復習推奨エリア</span>
@@ -167,19 +167,19 @@ export function WeakAreasPanel({ weakAreas, isMobile, mode }: {
               : "grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 overflow-y-auto max-h-[40vh] md:max-h-[34vh] pr-1 -mr-1"}>
               {weakAreas.map((area) => (
                 <div key={area.category} className={`p-4 md:p-5 rounded-xl border shadow-sm ${
-                  mode === 'mini_test' ? 'bg-white border-gray-100' : 'bg-[#0B132B]/80 border-[#1C2541]'
+                  'bg-white border-gray-100'
                 }`}>
                   <div className="flex justify-between items-end mb-2 md:mb-3">
                     <div className={`flex items-center gap-1.5 md:gap-2 font-bold text-sm md:text-base ${
-                      mode === 'mini_test' ? 'text-[#2C3E50]' : 'text-[#E0E1DD]'
+                      'text-[#2C3E50]'
                     }`}>
                       <AlertTriangle className={`w-4 h-4 md:w-[18px] md:h-[18px] ${
-                        mode === 'mini_test' ? 'text-[#D9A0A0]' : 'text-[#D9A0A0]'
+                        'text-[#D9A0A0]'
                       }`} />
                       <span>{area.category}</span>
                     </div>
                     <span className={`font-mono font-bold text-xl md:text-2xl ${
-                      mode === 'mini_test' ? 'text-[#D9A0A0]' : 'text-[#D9A0A0]'
+                      'text-[#D9A0A0]'
                     }`}>
                       {area.percentage}<span className="text-xs md:text-sm ml-0.5">%</span>
                     </span>
@@ -187,11 +187,11 @@ export function WeakAreasPanel({ weakAreas, isMobile, mode }: {
                   
                   {/* Gauge/Slider UI */}
                   <div className={`relative h-3 md:h-4 rounded-full overflow-hidden shadow-inner ${
-                    mode === 'mini_test' ? 'bg-gray-100' : 'bg-[#1C2541]'
+                    'bg-gray-100'
                   }`}>
                     <div 
                       className={`absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out ${
-                        mode === 'mini_test' ? 'bg-gradient-to-r from-[#D9A0A0] to-[#FFB7B2]' : 'bg-gradient-to-r from-[#D9A0A0] to-[#FFB7B2]'
+                        'bg-gradient-to-r from-[#D9A0A0] to-[#FFB7B2]'
                       }`}
                       style={{ width: `${area.percentage}%` }}
                     />
@@ -200,7 +200,7 @@ export function WeakAreasPanel({ weakAreas, isMobile, mode }: {
                     />
                   </div>
                   <div className={`flex justify-between mt-1 text-[10px] md:text-xs font-mono ${
-                    mode === 'mini_test' ? 'text-gray-400' : 'text-[#7A8B99]'
+                    'text-gray-400'
                   }`}>
                     <span>0%</span>
                     <span>50%</span>
@@ -210,7 +210,7 @@ export function WeakAreasPanel({ weakAreas, isMobile, mode }: {
               ))}
             </div>
             <p className={`text-xs md:text-sm mt-4 text-right ${
-              mode === 'mini_test' ? 'text-gray-400' : 'text-[#7A8B99]'
+              'text-gray-400'
             }`}>
               ※ 記述問題は自己採点チェックを入れるとスコアに反映されます
             </p>

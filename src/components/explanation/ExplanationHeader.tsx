@@ -35,7 +35,7 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
       } ${
         isResultView ? 'sticky top-0 backdrop-blur-md' : 'relative'
       } ${
-        mode === 'mini_test' ? 'bg-white/95 border-gray-100' : 'bg-[#0B132B]/95 border-[#1C2541]'
+        'bg-white/95 border-gray-100'
       }`}>
         <div className={`flex flex-1 min-w-0 ${
           reorderMobile
@@ -44,12 +44,12 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
         }`}>
           <div className="flex-shrink-0">
             <h3 className={`font-bold tracking-wider ${reorderMobile ? 'text-base' : 'text-lg md:text-xl'} ${
-              mode === 'mini_test' ? 'text-[#2C3E50]' : 'text-[#5BC0BE]'
+              'text-[#2C3E50]'
             }`}>
               解答・解説
             </h3>
             <div className={`mt-0.5 md:mt-1 ${reorderMobile ? 'text-[10px]' : 'text-xs md:text-sm'} ${
-              mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'
+              'text-gray-500'
             }`}>
               {chapter.realTitle}
             </div>
@@ -98,9 +98,7 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
                 // スマホでは小さめのピル型にして、右横に並べても窮屈にならないようにする
                 reorderMobile ? 'shrink-0 gap-0.5 px-1.5 py-0.5 rounded-full' : 'gap-2 px-3 py-2 rounded-2xl'
               } ${
-                mode === 'mini_test'
-                  ? 'bg-[#F4D03F]/15 text-[#1B2631] border-[#F4D03F]/40'
-                  : 'bg-[#F4D03F]/20 text-[#F9E79F] border-[#F4D03F]/40'
+                'bg-[#F4D03F]/15 text-[#1B2631] border-[#F4D03F]/40'
               }`}
             >
               <Trophy size={reorderMobile ? 12 : 16} className="text-[#D4A017]" />
@@ -125,7 +123,7 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
             <div className={reorderMobile
               ? 'flex flex-nowrap items-center justify-end gap-1 min-w-0 flex-1'
               : `flex flex-wrap items-center gap-2 sm:gap-3 sm:border-l sm:pl-4 md:pl-6 lg:pl-8 ${
-                  mode === 'mini_test' ? 'border-gray-200' : 'border-[#3A506B]/50'
+                  'border-gray-200'
                 } w-full sm:w-auto`
             }>
               {/* 「答え合わせ」チップ。
@@ -137,9 +135,7 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
                 className={`flex items-center font-bold rounded-full border shrink-0 ${
                   reorderMobile ? 'gap-0 text-[10px] px-1 py-0.5' : 'gap-1 text-[11px] md:text-xs px-2.5 py-1'
                 } ${
-                mode === 'mini_test' 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                  : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'
+                'bg-emerald-50 text-emerald-700 border-emerald-200'
               }`}>
                 <CheckCircle2 className={reorderMobile ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
                 {!reorderMobile && <span>答え合わせ</span>}
@@ -148,9 +144,7 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
               <div className={`font-bold rounded-full shadow-sm border shrink-0 ${
                 reorderMobile ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2.5 py-0.5'
               } ${
-                mode === 'mini_test' 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                  : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'
+                'bg-emerald-50 text-emerald-700 border-emerald-200'
               }`}>
                 Q{singleQuestionIndex + 1}
               </div>
@@ -160,7 +154,7 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
               <div className={`font-bold truncate ${
                 reorderMobile ? 'text-[10px] min-w-0 flex-1' : 'text-xs md:text-sm max-w-[120px] sm:max-w-[200px]'
               } ${
-                mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD]'
+                'text-gray-800'
               }`}>
                 {questions[0].category || '問題'}
               </div>
@@ -174,8 +168,8 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
                   reorderMobile ? 'gap-0 text-[10px] px-1 py-0.5' : 'gap-1 text-[11px] px-2.5 py-1'
                 } ${
                   savingNote[questions[0].id] 
-                    ? (mode === 'mini_test' ? 'bg-gray-100 text-gray-500 border-gray-200' : 'bg-[#1C2541] text-[#7A8B99] border-[#1C2541]') 
-                    : (mode === 'mini_test' ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100' : 'bg-[#F9E79F]/20 text-[#F9E79F] border-[#F9E79F]/30 hover:bg-[#F9E79F]/30')
+                    ? ('bg-gray-100 text-gray-500 border-gray-200') 
+                    : ('bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100')
                 }`}
                 disabled={savingNote[questions[0].id]}
               >
@@ -194,14 +188,14 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
                     {/* スマホでは「正答率:」の見出しを省き、数値だけを出す
                         （aria-label / title で意味は残す）。 */}
                     {!reorderMobile && (
-                      <span className={`font-bold text-[10px] md:text-xs ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>正答率:</span>
+                      <span className={`font-bold text-[10px] md:text-xs ${'text-gray-500'}`}>正答率:</span>
                     )}
                     <span className={`font-mono font-bold ${reorderMobile ? 'text-[11px]' : 'text-xs md:text-sm'} ${
                       scorePercentage >= 80 
-                        ? (mode === 'mini_test' ? 'text-emerald-600' : 'text-[#5BC0BE]') 
+                        ? ('text-emerald-600') 
                         : scorePercentage <= 40 
-                          ? (mode === 'mini_test' ? 'text-red-500' : 'text-[#D9A0A0]') 
-                          : (mode === 'mini_test' ? 'text-amber-500' : 'text-[#F9E79F]')
+                          ? ('text-red-500') 
+                          : ('text-amber-500')
                     }`}>
                       {scorePercentage}%
                     </span>
@@ -219,9 +213,7 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
             <button 
               onClick={onBack}
               className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border flex-1 md:flex-none justify-center ${
-                mode === 'mini_test' 
-                  ? 'text-gray-500 hover:text-[#2C3E50] border-gray-200 hover:border-[#2C3E50] bg-gray-50' 
-                  : 'text-[#7A8B99] hover:text-[#5BC0BE] border-[#1C2541] hover:border-[#5BC0BE] bg-[#1C2541]/50'
+                'text-gray-500 hover:text-[#2C3E50] border-gray-200 hover:border-[#2C3E50] bg-gray-50'
               }`}
             >
               <ArrowLeft size={18} />
@@ -230,9 +222,7 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
             <button 
               onClick={onNextQuestion}
               className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border flex-1 md:flex-none justify-center ${
-                mode === 'mini_test' 
-                  ? 'text-white bg-[#2C3E50] hover:bg-[#1a252f] border-[#2C3E50]' 
-                  : 'text-[#0B132B] bg-[#5BC0BE] hover:bg-[#4A9D9C] border-[#5BC0BE]'
+                'text-white bg-[#2C3E50] hover:bg-[#1a252f] border-[#2C3E50]'
               }`}
             >
               <span>{isLastQuestion ? '結果を見る' : '次の問題へ'}</span>
@@ -243,9 +233,7 @@ export function ExplanationHeader({ mode, chapter, questions, singleQuestionInde
           <button 
             onClick={onBack}
             className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border w-full md:w-auto justify-center ${
-              mode === 'mini_test' 
-                ? 'text-gray-500 hover:text-[#2C3E50] border-gray-200 hover:border-[#2C3E50] bg-gray-50' 
-                : 'text-[#7A8B99] hover:text-[#5BC0BE] border-[#1C2541] hover:border-[#5BC0BE] bg-[#1C2541]/50'
+              'text-gray-500 hover:text-[#2C3E50] border-gray-200 hover:border-[#2C3E50] bg-gray-50'
             }`}
           >
             <ArrowLeft size={18} />

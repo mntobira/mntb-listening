@@ -31,16 +31,16 @@ export function SharedExplanation({ sharedExplanation, reorderMobile, pcListenin
                               </details>
                             )}
                             {sharedExplanation.trim() && !((reorderMobile || pcListening) && listeningTracks.length > 0) && (
-                              <div className={`mt-6 rounded-xl border p-4 md:p-5 ${explBodyBaseClass} ${mode === 'mini_test' ? 'bg-gray-50 border-gray-200' : 'bg-[#0B132B]/80 border-[#3A506B]/50'}`}>
-                                <h4 className={`text-sm md:text-base mb-3 flex items-center gap-2 border-b-2 pb-2 ${mode === 'mini_test' ? 'text-emerald-700 border-emerald-200' : 'text-[#5BC0BE] border-[#3A506B]/50'}`}>
-                                  <Lightbulb className={`w-4 h-4 ${mode === 'mini_test' ? 'text-amber-500' : 'text-[#F9E79F]'}`} />
+                              <div className={`mt-6 rounded-xl border p-4 md:p-5 ${explBodyBaseClass} ${'bg-gray-50 border-gray-200'}`}>
+                                <h4 className={`text-sm md:text-base mb-3 flex items-center gap-2 border-b-2 pb-2 ${'text-emerald-700 border-emerald-200'}`}>
+                                  <Lightbulb className={`w-4 h-4 ${'text-amber-500'}`} />
                                   <span>大問全体の流れ・共通ポイント</span>
                                 </h4>
                                 <ExplanationBody
                                   text={sharedExplanation}
-                                  tone={mode === 'mini_test' ? 'light' : 'dark'}
+                                  tone={'light'}
                                   prose={isEnglishChapter}
-                                  className={`${explBodyFontClass} ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}
+                                  className={`${explBodyFontClass} ${'text-gray-700'}`}
                                 />
                               </div>
                             )}

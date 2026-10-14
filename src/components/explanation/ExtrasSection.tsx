@@ -42,18 +42,18 @@ export function ExtrasSection({ wrapClassName, leading, questions, mode, isEngli
                 <ExtraWrap key={`extra-${question.id}`} className={foldExtras ? 'lx-fold lx-fold-extra' : 'space-y-6'} {...(foldExtras && openByDefault ? { open: true } : {})}>
                   {foldExtras && <summary><BookOpen size={16} aria-hidden="true" /><span className="lx-lbl-long">周辺知識・深掘り</span><span className="lx-lbl-short">周辺知識</span><ChevronDown size={18} aria-hidden="true" /></summary>}
                   <ExtraInner {...(foldExtras ? { className: 'lx-fold-body space-y-6' } : {})}>
-                  <div className={`flex items-center gap-3 border-b pb-2 ${mode === 'mini_test' ? 'border-gray-200' : 'border-[#3A506B]/30'}`}>
-                    <div className={`font-bold px-2 py-0.5 rounded text-xs shadow-sm border ${mode === 'mini_test' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border-[#5BC0BE]/30'}`}>
+                  <div className={`flex items-center gap-3 border-b pb-2 ${'border-gray-200'}`}>
+                    <div className={`font-bold px-2 py-0.5 rounded text-xs shadow-sm border ${'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
                       Q{qNumberOf(qIndex)}
                     </div>
-                    <h4 className={`font-bold text-sm md:text-base ${mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD] opacity-80'}`}>
+                    <h4 className={`font-bold text-sm md:text-base ${'text-gray-800'}`}>
                       周辺知識・深掘り
                     </h4>
                   </div>
 
                   {hasKnowledge && (
                     <div>
-                      <h5 className={`font-bold text-xs md:text-sm mb-3 md:mb-4 flex items-center gap-1.5 md:gap-2 ${mode === 'mini_test' ? 'text-blue-600' : 'text-[#A9CCE3]'}`}>
+                      <h5 className={`font-bold text-xs md:text-sm mb-3 md:mb-4 flex items-center gap-1.5 md:gap-2 ${'text-blue-600'}`}>
                         <BookOpen className="w-4 h-4 md:w-5 md:h-5" />
                         <span>周辺知識・類似問題</span>
                       </h5>
@@ -62,16 +62,16 @@ export function ExtrasSection({ wrapClassName, leading, questions, mode, isEngli
                           const titleMatch = k.match(/^(【.*?】)(.*)/s);
                           if (titleMatch) {
                             return (
-                              <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${mode === 'mini_test' ? 'bg-blue-50 border-blue-200' : 'bg-[#1C2541]/50 border-[#A9CCE3]/30'}`}>
-                                <div className={`absolute top-0 left-0 w-1.5 h-full ${mode === 'mini_test' ? 'bg-blue-400' : 'bg-[#A9CCE3]'}`}></div>
-                                <div className={`inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${mode === 'mini_test' ? 'bg-white text-blue-600 border-blue-200' : 'bg-[#A9CCE3]/10 text-[#A9CCE3] border-[#A9CCE3]/20'}`}>
+                              <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${'bg-blue-50 border-blue-200'}`}>
+                                <div className={`absolute top-0 left-0 w-1.5 h-full ${'bg-blue-400'}`}></div>
+                                <div className={`inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-blue-600 border-blue-200'}`}>
                                   <BookOpen size={14} />
                                   {/* 見出しバッジも prose 対象。英語では見出しに英単語が
                                       そのまま入ることがあり、ここを素の formatText に
                                       すると見出しだけセリフ体に化けてしまう。 */}
                                   {formatText(titleMatch[1].replace(/[【】]/g, ''), [], { prose: isEnglishChapter })}
                                 </div>
-                                <div className={`text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}>
+                                <div className={`text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${'text-gray-700'}`}>
                                   {/* 英語は prose で組む（英単語がセリフ体の化学式に化けるのを防ぐ） */}
                                   {formatText(titleMatch[2].trim(), [], { prose: isEnglishChapter })}
                                 </div>
@@ -79,7 +79,7 @@ export function ExtrasSection({ wrapClassName, leading, questions, mode, isEngli
                             );
                           }
                           return (
-                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${mode === 'mini_test' ? 'bg-gray-50 border-gray-200 text-gray-700' : 'bg-[#1C2541]/50 border-[#3A506B]/50 text-[#E0E1DD]/90'}`}>
+                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${'bg-gray-50 border-gray-200 text-gray-700'}`}>
                               {formatText(k, [], { prose: isEnglishChapter })}
                             </div>
                           );
@@ -90,7 +90,7 @@ export function ExtrasSection({ wrapClassName, leading, questions, mode, isEngli
 
                   {hasDeepDive && (
                     <div className="mt-6 md:mt-8">
-                      <h5 className={`font-bold text-xs md:text-sm mb-3 md:mb-4 flex items-center gap-1.5 md:gap-2 ${mode === 'mini_test' ? 'text-amber-600' : 'text-[#D9A0A0]'}`}>
+                      <h5 className={`font-bold text-xs md:text-sm mb-3 md:mb-4 flex items-center gap-1.5 md:gap-2 ${'text-amber-600'}`}>
                         <Search className="w-4 h-4 md:w-5 md:h-5" />
                         <span>さらに深掘り</span>
                       </h5>
@@ -110,16 +110,16 @@ export function ExtrasSection({ wrapClassName, leading, questions, mode, isEngli
                           }
 
                           return (
-                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${mode === 'mini_test' ? 'bg-amber-50 border-amber-200' : 'bg-[#D9A0A0]/10 border-[#D9A0A0]/30'}`}>
-                              <div className={`absolute top-0 left-0 w-1.5 h-full ${mode === 'mini_test' ? 'bg-amber-400' : 'bg-[#D9A0A0]'}`}></div>
-                              <div className={`inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${mode === 'mini_test' ? 'bg-white text-amber-600 border-amber-200' : 'bg-[#D9A0A0]/20 text-[#D9A0A0] border-[#D9A0A0]/30'}`}>
+                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${'bg-amber-50 border-amber-200'}`}>
+                              <div className={`absolute top-0 left-0 w-1.5 h-full ${'bg-amber-400'}`}></div>
+                              <div className={`inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-amber-600 border-amber-200'}`}>
                                 <Lightbulb size={14} />
                                 {/* 【】が無い深掘りでは title = 1行目まるごとになり、
                                     英文（usually / on weekdays など）を含みうる。
                                     そのためここも prose で組む。 */}
                                 {formatText(title, [], { prose: isEnglishChapter })}
                               </div>
-                              <div className={`text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}>
+                              <div className={`text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${'text-gray-700'}`}>
                                 {formatText(content, [], { prose: isEnglishChapter })}
                               </div>
                             </div>

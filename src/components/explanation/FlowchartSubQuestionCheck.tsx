@@ -101,13 +101,13 @@ export function renderFlowchartSubQuestionCheck(ctx: FlowchartSubQuestionCheckCo
               <div className="text-xs text-[#7A8B99] mb-1">
                 {sq.type === 'descriptive' ? '📝 自己採点記入内容' : 'あなたの解答'}
               </div>
-              <div className={`p-3 rounded-lg border ${sq.type === 'descriptive' ? (mode === 'mini_test' ? 'bg-blue-50 border-blue-200' : 'bg-[#A9CCE3]/10 border-[#A9CCE3]/30 text-[#A9CCE3]') : (isCorrect ? 'bg-[#5BC0BE]/10 border-[#5BC0BE]/30 text-[#5BC0BE]' : isUnanswered ? 'bg-[#0B132B]/30 border-[#3A506B]/40 text-[#7A8B99]' : 'bg-[#D9A0A0]/10 border-[#D9A0A0]/30 text-[#D9A0A0]')}`}>
+              <div className={`p-3 rounded-lg border ${sq.type === 'descriptive' ? ('bg-blue-50 border-blue-200') : (isCorrect ? 'bg-[#5BC0BE]/10 border-[#5BC0BE]/30 text-[#5BC0BE]' : isUnanswered ? 'bg-[#0B132B]/30 border-[#3A506B]/40 text-[#7A8B99]' : 'bg-[#D9A0A0]/10 border-[#D9A0A0]/30 text-[#D9A0A0]')}`}>
                 {formatText(answers[sq.id] || '未解答')}
               </div>
             </div>
             {sq.detailedExplanation ? (
-              <div className={`p-4 rounded-lg border text-sm ${mode === 'mini_test' ? 'bg-gray-50 border-gray-200 text-gray-800' : 'bg-[#0B132B]/60 border-[#3A506B]/50 text-[#E0E1DD]'}`}>
-                <h5 className={`font-bold ${mode === 'mini_test' ? 'text-emerald-700' : 'text-[#5BC0BE]'} mb-2`}>【{formatText(sq.detailedExplanation.theme)}】</h5>
+              <div className={`p-4 rounded-lg border text-sm ${'bg-gray-50 border-gray-200 text-gray-800'}`}>
+                <h5 className={`font-bold ${'text-emerald-700'} mb-2`}>【{formatText(sq.detailedExplanation.theme)}】</h5>
                 {isPracticeMode && (
                   <p className="text-xs text-[#7A8B99] mb-2">【難易度】: {'★'.repeat(getDifficulty(sq.id)) + '☆'.repeat(5 - getDifficulty(sq.id))}</p>
                 )}

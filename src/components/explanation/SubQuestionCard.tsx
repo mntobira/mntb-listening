@@ -76,10 +76,10 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                         );
 
                         const thinkingBody = hasThinking ? (
-                          <div className={`border-t p-4 md:p-5 space-y-4 ${mode === 'mini_test' ? 'border-amber-200 bg-amber-50/40' : 'border-[#F9E79F]/30 bg-[#F9E79F]/5'}`}>
+                          <div className={`border-t p-4 md:p-5 space-y-4 ${'border-amber-200 bg-amber-50/40'}`}>
                             {sq.detailedExplanation?.theme && (
                               <div>
-                                <h5 className={`font-bold mb-1.5 flex items-center gap-1.5 ${mode === 'mini_test' ? 'text-amber-700' : 'text-[#F9E79F]'}`}>
+                                <h5 className={`font-bold mb-1.5 flex items-center gap-1.5 ${'text-amber-700'}`}>
                                   <KeyRound size={15} />
                                   <span>答えの核心（ここだけは押さえる）</span>
                                   {isPracticeMode && (
@@ -88,7 +88,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                                     </span>
                                   )}
                                 </h5>
-                                <p className={`font-bold leading-relaxed ${mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD]'}`}>
+                                <p className={`font-bold leading-relaxed ${'text-gray-800'}`}>
                                   {formatText(sq.detailedExplanation.theme)}
                                 </p>
                               </div>
@@ -96,14 +96,14 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
 
                             {!isScriptFirst && isPracticeMode && sq.detailedExplanation?.steps?.length > 0 && (
                               <div>
-                                <h5 className={`font-bold mb-2 flex items-center gap-1.5 ${mode === 'mini_test' ? 'text-emerald-700' : 'text-[#5BC0BE]'}`}>
+                                <h5 className={`font-bold mb-2 flex items-center gap-1.5 ${'text-emerald-700'}`}>
                                   <Target size={15} />
                                   <span>正解までの道すじ</span>
                                 </h5>
                                 <ol className="list-none space-y-2">
                                   {sq.detailedExplanation.steps.map((step: string, idx: number) => (
                                     <li key={idx} className="flex items-start gap-2.5">
-                                      <span className={`shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold ${mode === 'mini_test' ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-[#5BC0BE]/20 text-[#5BC0BE] border border-[#5BC0BE]/40'}`}>
+                                      <span className={`shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold ${'bg-emerald-100 text-emerald-700 border border-emerald-300'}`}>
                                         {idx + 1}
                                       </span>
                                       {/* 書体は直書きせず土台から継承する（(C) 書体統一）。
@@ -116,8 +116,8 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                             )}
 
                             {!isCorrect && isPracticeMode && relatedSteps.length > 0 && (
-                              <div className={`p-3 rounded-lg border ${mode === 'mini_test' ? 'bg-blue-50/60 border-blue-200' : 'bg-[#A9CCE3]/10 border-[#A9CCE3]/30'}`}>
-                                <h5 className={`font-bold mb-2 text-xs ${mode === 'mini_test' ? 'text-blue-700' : 'text-[#A9CCE3]'}`}>
+                              <div className={`p-3 rounded-lg border ${'bg-blue-50/60 border-blue-200'}`}>
+                                <h5 className={`font-bold mb-2 text-xs ${'text-blue-700'}`}>
                                   間違えた原因はここ — 関連ステップを復習
                                 </h5>
                                 <div className="flex flex-wrap gap-2">
@@ -148,48 +148,48 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                             key={sq.id}
                             className={`rounded-xl border overflow-hidden shadow-sm ${
                               sq.type === 'descriptive'
-                                ? (mode === 'mini_test' ? 'border-blue-200' : 'border-[#A9CCE3]/30')
+                                ? ('border-blue-200')
                                 : isCorrect
-                                  ? (mode === 'mini_test' ? 'border-emerald-200' : 'border-[#5BC0BE]/30')
+                                  ? ('border-emerald-200')
                                   : isUnanswered
-                                    ? (mode === 'mini_test' ? 'border-gray-200' : 'border-[#3A506B]/40')
-                                    : (mode === 'mini_test' ? 'border-red-200' : 'border-[#D9A0A0]/30')
+                                    ? ('border-gray-200')
+                                    : ('border-red-200')
                             }`}
                           >
                             {/* 正誤・自分の解答・正解は、アコーディオンに入れず常に表示する。 */}
                             <div className={`p-3 md:p-4 space-y-3 ${answerBoxBaseClass} ${
                               sq.type === 'descriptive'
-                                ? (mode === 'mini_test' ? 'bg-blue-50' : 'bg-[#A9CCE3]/10')
+                                ? ('bg-blue-50')
                                 : isCorrect
-                                  ? (mode === 'mini_test' ? 'bg-emerald-50' : 'bg-[#5BC0BE]/10')
+                                  ? ('bg-emerald-50')
                                   : isUnanswered
-                                    ? (mode === 'mini_test' ? 'bg-gray-50' : 'bg-[#0B132B]/30')
-                                    : (mode === 'mini_test' ? 'bg-red-50' : 'bg-[#D9A0A0]/10')
+                                    ? ('bg-gray-50')
+                                    : ('bg-red-50')
                             }`}>
                               <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div className="flex items-center gap-3 min-w-0">
-                                  <div className={`font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border shadow-xs ${mode === 'mini_test' ? 'text-gray-700 bg-white border-gray-200' : 'text-[#E0E1DD] bg-[#0B132B]/50 border-[#3A506B]/50'}`}>
+                                  <div className={`font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border shadow-xs ${'text-gray-700 bg-white border-gray-200'}`}>
                                     {formatText(displayLabel)}
                                   </div>
                                   {sq.type === 'descriptive' ? (
-                                    <div className={`text-xs md:text-sm font-bold flex items-center gap-1 ${mode === 'mini_test' ? 'text-blue-600' : 'text-[#A9CCE3]'}`}>
+                                    <div className={`text-xs md:text-sm font-bold flex items-center gap-1 ${'text-blue-600'}`}>
                                       <Edit3 size={16} />
                                       <span>記述問題</span>
                                     </div>
                                   ) : isUnanswered ? (
-                                    <div className={`flex items-center gap-1.5 font-bold text-sm ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>
+                                    <div className={`flex items-center gap-1.5 font-bold text-sm ${'text-gray-500'}`}>
                                       <Circle size={18} />
                                       <span>未解答 — まだ解いていない問です</span>
                                     </div>
                                   ) : (
-                                    <div className={`flex items-center gap-1.5 font-bold text-sm ${isCorrect ? (mode === 'mini_test' ? 'text-emerald-700' : 'text-[#5BC0BE]') : (mode === 'mini_test' ? 'text-red-600' : 'text-[#D9A0A0]')}`}>
+                                    <div className={`flex items-center gap-1.5 font-bold text-sm ${isCorrect ? ('text-emerald-700') : ('text-red-600')}`}>
                                       {isCorrect ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
                                       <span>{isCorrect ? '正解！' : '不正解 — ここが伸びしろ'}</span>
                                     </div>
                                   )}
                                 </div>
-                                <div className={`font-bold text-sm md:text-base${mathBodyClass} ${mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD]'}`}>
-                                  <span className={`text-xs mr-1 font-modern ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>
+                                <div className={`font-bold text-sm md:text-base${mathBodyClass} ${'text-gray-800'}`}>
+                                  <span className={`text-xs mr-1 font-modern ${'text-gray-500'}`}>
                                     {sq.type === 'descriptive' ? '模範解答:' : '正解:'}
                                   </span>
                                   {formatText(sq.correctAnswer)}
@@ -198,15 +198,15 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
 
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                  <div className={`text-[10px] md:text-xs mb-1 ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>あなたの解答</div>
+                                  <div className={`text-[10px] md:text-xs mb-1 ${'text-gray-500'}`}>あなたの解答</div>
                                   <div className={`font-bold text-sm md:text-base p-3 rounded-lg border break-words whitespace-pre-wrap ${
                                     sq.type === 'descriptive'
-                                      ? (mode === 'mini_test' ? 'bg-white border-blue-200 text-gray-800' : 'bg-[#1C2541]/50 border-[#A9CCE3]/30 text-[#E0E1DD]')
+                                      ? ('bg-white border-blue-200 text-gray-800')
                                       : isCorrect
-                                        ? (mode === 'mini_test' ? 'bg-white border-emerald-200 text-emerald-700' : 'bg-[#5BC0BE]/10 border-[#5BC0BE]/30 text-[#5BC0BE]')
+                                        ? ('bg-white border-emerald-200 text-emerald-700')
                                         : isUnanswered
-                                          ? (mode === 'mini_test' ? 'bg-white border-gray-200 text-gray-400' : 'bg-[#0B132B]/40 border-[#3A506B]/40 text-[#7A8B99]')
-                                          : (mode === 'mini_test' ? 'bg-white border-red-200 text-red-600 line-through opacity-80' : 'bg-[#D9A0A0]/10 border-[#D9A0A0]/30 text-[#D9A0A0] line-through opacity-80')
+                                          ? ('bg-white border-gray-200 text-gray-400')
+                                          : ('bg-white border-red-200 text-red-600 line-through opacity-80')
                                   }${mathBodyClass}`}>
                                     {formatText(answers[sq.id] || '未解答')}
                                     {/* 2026-10-08 絵の問題：選んだ絵のコマも出す（記号だけでは復習で何の絵か分からない） */}
@@ -214,7 +214,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                                   </div>
                                 </div>
                                 <div>
-                                  <div className={`text-[10px] md:text-xs mb-1 ${mode === 'mini_test' ? 'text-gray-500' : 'text-[#7A8B99]'}`}>{sq.type === 'descriptive' ? '模範解答' : '正解'}</div>
+                                  <div className={`text-[10px] md:text-xs mb-1 ${'text-gray-500'}`}>{sq.type === 'descriptive' ? '模範解答' : '正解'}</div>
                                   {/*
                                     ★「正解」と「自分の解答」で書体が違っていた★
                                     ご要望「化学基礎・化学含め様々な科目で解答解説と
@@ -232,7 +232,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                                     mathBodyClass に揃える。数式の単元だけ font-math が
                                     付き、それ以外は土台（font-modern）を継承する。
                                   */}
-                                  <div className={`font-bold text-sm md:text-base p-3 rounded-lg border break-words${mathBodyClass} ${mode === 'mini_test' ? 'text-emerald-700 bg-white border-emerald-200' : 'text-[#5BC0BE] bg-[#5BC0BE]/10 border-[#5BC0BE]/30'}`}>
+                                  <div className={`font-bold text-sm md:text-base p-3 rounded-lg border break-words${mathBodyClass} ${'text-emerald-700 bg-white border-emerald-200'}`}>
                                     {formatText(sq.correctAnswer)}
                                     {(() => { const oi = Array.isArray(sq.options) ? sq.options.indexOf(String(sq.correctAnswer ?? '')) : -1; const pic = pictureCellOf(sq, oi, sq.options?.length ?? 0); return pic ? <span className="lx-answer-pic" role="img" aria-label="正解のイラスト" style={pic} /> : null; })()}
                                   </div>
@@ -251,8 +251,8 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                             </div>
 
                             {sq.type === 'descriptive' && (
-                              <div className={`p-3 md:p-4 border-t ${mode === 'mini_test' ? 'bg-white border-blue-200' : 'bg-[#1C2541]/50 border-[#A9CCE3]/30'}`}>
-                                <div className={`text-xs md:text-sm font-bold mb-3 flex items-center gap-2 ${mode === 'mini_test' ? 'text-blue-600' : 'text-[#A9CCE3]'}`}>
+                              <div className={`p-3 md:p-4 border-t ${'bg-white border-blue-200'}`}>
+                                <div className={`text-xs md:text-sm font-bold mb-3 flex items-center gap-2 ${'text-blue-600'}`}>
                                   <CheckSquare size={16} />
                                   <span>自己採点チェック（部分点基準）</span>
                                 </div>
@@ -265,7 +265,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                                         <span className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center shrink-0 ${isChecked ? 'bg-blue-500 border-blue-500' : 'border-gray-300 bg-white'}`}>
                                           {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
                                         </span>
-                                        <span className={`text-xs md:text-sm leading-tight ${isChecked ? (mode === 'mini_test' ? 'text-gray-800' : 'text-[#E0E1DD]') : 'text-[#7A8B99]'}`}>
+                                        <span className={`text-xs md:text-sm leading-tight ${isChecked ? ('text-gray-800') : 'text-[#7A8B99]'}`}>
                                           {formatText(criteria)}
                                         </span>
                                       </label>
@@ -275,24 +275,24 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                               </div>
                             )}
 
-                            <div className={`border-t p-2.5 space-y-2 ${mode === 'mini_test' ? 'bg-white border-gray-200' : 'bg-[#0B132B]/30 border-[#3A506B]/30'}`}>
+                            <div className={`border-t p-2.5 space-y-2 ${'bg-white border-gray-200'}`}>
                               <button
                                 type="button"
                                 onClick={() => setOpenExplanationBySq(prev => ({ ...prev, [sq.id]: !explanationOpen }))}
                                 aria-expanded={explanationOpen}
-                                className={`w-full flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left font-bold ${mode === 'mini_test' ? 'bg-sky-50 border-sky-200 text-sky-700 hover:bg-sky-100' : 'bg-[#A9CCE3]/15 border-[#A9CCE3]/30 text-[#A9CCE3]'}`}
+                                className={`w-full flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left font-bold ${'bg-sky-50 border-sky-200 text-sky-700 hover:bg-sky-100'}`}
                               >
                                 <span className="flex items-center gap-2"><BookOpen size={16} />解説</span>
                                 <ChevronDown size={18} className={`transition-transform ${explanationOpen ? 'rotate-180' : ''}`} />
                               </button>
                               {explanationOpen && (
-                                <div className={`rounded-lg border p-3 md:p-4 ${explBodyBaseClass} ${mode === 'mini_test' ? 'bg-sky-50/40 border-sky-100' : 'bg-[#0B132B]/60 border-[#A9CCE3]/20'}`}>
+                                <div className={`rounded-lg border p-3 md:p-4 ${explBodyBaseClass} ${'bg-sky-50/40 border-sky-100'}`}>
                                   {sqSlice.trim() ? (
                                     <ExplanationBody
                                       text={sqSlice}
-                                      tone={mode === 'mini_test' ? 'light' : 'dark'}
+                                      tone={'light'}
                                       prose={isEnglishChapter}
-                                      className={`${explBodyFontClass} ${mode === 'mini_test' ? 'text-gray-700' : 'text-[#E0E1DD]/90'}`}
+                                      className={`${explBodyFontClass} ${'text-gray-700'}`}
                                     />
                                   ) : (
                                     <p className="text-xs text-gray-500">この小問の解説は「思考手順・答えの核心」にまとめています。</p>
@@ -304,7 +304,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                                 type="button"
                                 onClick={() => setOpenThinkingBySq(prev => ({ ...prev, [sq.id]: !thinkingOpen }))}
                                 aria-expanded={thinkingOpen}
-                                className={`w-full flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left font-bold ${mode === 'mini_test' ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100' : 'bg-[#F9E79F]/10 border-[#F9E79F]/30 text-[#F9E79F]'}`}
+                                className={`w-full flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left font-bold ${'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100'}`}
                               >
                                 <span className="flex items-center gap-2"><KeyRound size={16} />思考手順・答えの核心</span>
                                 <ChevronDown size={18} className={`transition-transform ${thinkingOpen ? 'rotate-180' : ''}`} />
@@ -315,7 +315,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: any, isCo
                             </div>
 
                             {sq.partialCreditCriteria && (
-                              <div className={`border-t text-[10px] md:text-xs p-3 flex items-start gap-2 ${mode === 'mini_test' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-[#F9E79F]/10 text-[#F9E79F] border-[#F9E79F]/30'}`}>
+                              <div className={`border-t text-[10px] md:text-xs p-3 flex items-start gap-2 ${'bg-amber-50 text-amber-700 border-amber-200'}`}>
                                 <AlertCircle className="shrink-0 mt-0.5 w-4 h-4" />
                                 <span className="leading-relaxed">{formatText(sq.partialCreditCriteria)}</span>
                               </div>
