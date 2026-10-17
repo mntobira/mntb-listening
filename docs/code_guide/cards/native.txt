@@ -1,0 +1,8 @@
+android/app/src/main/java/com/manatobi/listening/MainActivity.java|設定|高|Androidアプリの起動時に、音声配信を直す仕組みを差し込む係|Capacitor の BridgeActivity を継承した16行。onCreate で WebView の通信係を RangeAwareWebViewClient に差し替える（Google Play 版だけの音声劣化の修正とコメントにある）。
+android/app/src/main/java/com/manatobi/listening/RangeAwareWebViewClient.java|音声・画像|高|Androidアプリで音声の途中から再生を正しく返し、音割れを防ぐ係|Capacitor の BridgeWebViewClient を拡張し、アプリ内の音源への Range 要求に指定位置のバイトを返す214行。先頭コメントに Google Play 版の音声劣化・音割れの修正（2026-10-16）とある。scripts/android-range-check で検査される。
+ios/App/App/AppDelegate.swift|設定|中|iPhoneアプリの起動と、外部からのリンクの受け取りを担う係|Capacitor のひな形どおりの AppDelegate（44行）。URL を開く・ユニバーサルリンクの受け取りを ApplicationDelegateProxy に渡す。独自の処理は見当たらない。
+ios/App/App/SceneDelegate.swift|設定|高|iPhoneアプリの画面（ウィンドウ）を作り、Web画面を載せる係|24行。UIWindow を作って CAPBridgeViewController を最初の画面にし、URL やユーザー操作の受け取りを SceneDelegateProxy に渡す。
+scripts/data/grammar_v3/build_ts.py|データ|高|そろえた英文法データから、アプリ用の問題ファイルを作る係|normalized.json を読み、src/data/egV3Items.generated.ts を書き出す81行。解説を【着眼点】→【ポイント】→選択肢ごとの理由→【プラス】の順にそろえ、元データに無い段は作らないとコメントにある。
+scripts/data/grammar_v3/exam_tips.py|データ|高|英文法の解説に「入試ではここ」のひと言を足すための表の係|文法事項ごとに手で書いた、よく出る形・ひっかけ・言いかえのひと言（176行）。上から順に正規表現で当てはめ、元データに【プラス】がある問はそちらを優先する。
+scripts/data/grammar_v3/ja_gloss.py|データ|高|英語だけだった英文法の解説に、日本語を添える対訳表の係|POINT（問題ID→ポイントの書き直し）・WHY（選択肢の理由）・KM（押さえたい表現の意味）の3つの表を持つ101行。2026-10-11 の大改訂で手で書いたとある。
+scripts/data/grammar_v3/normalize.py|データ|高|何回かに分けて届いた英文法の問題を、1つの形にそろえる係|1-7章・8-11章・12-16章・17章・18-19章・会話表現の納品データを1つの形にし normalized.json に出力する108行。会話表現はアプリでは第20章として入れる。
