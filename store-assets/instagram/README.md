@@ -42,7 +42,7 @@ YouTube 版は上に加えて、第2問をパソコンとスマホを並べて�
 ## 音の権利
 | 音 | 出どころ | 動画での利用 |
 |---|---|---|
-| BGM「誕生」 | `public/tanjou.mp3`（アプリのホーム画面の曲。Suno で作成） | **Suno の有料プラン（Pro / Premier）で作った曲なら商用利用可**。無料プランで作った曲は商用不可なので、作った時の契約を確認してください |
+| BGM「誕生」 | `public/tanjou.mp3`（アプリのホーム画面の曲。Suno で作成） | Suno の有料プランで作った曲（2026-10-17 確認済み）→ **商用利用可**（宣伝動画・アプリに使える） |
 | BGM「夕凪」 | 作曲 やっすん／配布元 創作堂さくら紅葉 https://yukizakura.net/ | 商用可・加工可。**配布元「創作堂さくら紅葉」と URL を、見る人が見られる所に書くことが条件**（YouTube の概要欄・Instagram の投稿文。`CAPTIONS.md` に入れてあります。YouTube 版は動画の最後にも表示） |
 | BGM「カナリアスキップ」 | 作曲 まんぼう二等兵／OpenTracks https://opentracks.com/bgm/detail/7312 | 商用可・加工可・クレジット任意（書いています）。**Content ID には登録しないこと**（他人の曲として申し立てが起きる原因になる） |
 | 効果音 | `public/sfx/battle/*.mp3`、冒頭の3つは `store-assets/_tools/promo_sfx.py`（どちらも数式だけで作った音） | 商用・動画OK・表記不要 |

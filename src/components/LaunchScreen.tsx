@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CinematicClip, CINEMATIC_CLIPS } from './CinematicClip';
 import { ArrowRight, BookHeart, Headphones, PenLine, Repeat2, Swords, Volume2, VolumeX } from 'lucide-react';
 import { PhilosophyPage } from './PhilosophyPage';
@@ -9,6 +9,9 @@ import './launch-screen.css';
 import { UpdateNoticeModal } from './UpdateNoticeModal';
 import { LATEST_NOTICE } from '../data/updateNotices';
 import { getDaysUntilExam, EXAM_DATE_LABEL } from '../utils/examCountdown';
+import { fadeOutLaunchSfx, launchCueSchedule, playLaunchSfx, preloadLaunchSfx, type LaunchSfx } from '../battle/audio/launchSfx';
+import { resumeSharedAudio } from '../battle/audio/sharedAudioContext';
+import { readAudioPreferences } from '../battle/audio/audioPreferences';
 
 /**
  * タイトル画面（2026-09-30 作り直し）。保存された画面やアカウントには一切触れない（見た目だけ）。
@@ -54,6 +57,19 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
       3.4秒      タイトル画面がフェードインで現れる
     画面のどこを押しても飛ばせる（飛ばすときも0.4秒だけフェードアウトしてから切り替える）。
   */
+  /*
+    起動の効果音（宣伝動画の冒頭と同じ・2026-10-17）
+      エンブレムが出たら「きらきら」→ タイトルの1.3秒前から「すーっ」→ タイトルが出た瞬間に「ふわっ」
+    右上の「BGM ON/OFF」が OFF のときは鳴らさない。音量は設定の音量。
+    ブラウザが自動再生を止めている時は鳴らない（あとでまとめて鳴らすこともしない）。launchSfx.ts を参照。
+  */
+  const soundRef = useRef(soundEnabled);
+  soundRef.current = soundEnabled;
+  const sfxTimers = useRef<number[]>([]);
+  const bloomDone = useRef(false);
+  // cue は ref 経由で最新の ON/OFF を読むので、effect の依存に入れなくてよい
+  const cue = (name: LaunchSfx) => { if (soundRef.current) playLaunchSfx(name, readAudioPreferences().volume); };
+  const clearSfxTimers = () => { sfxTimers.current.forEach(t => window.clearTimeout(t)); sfxTimers.current = []; };
   useEffect(() => {
     if (gate !== 'emblem') return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -63,11 +79,35 @@ export function LaunchScreen({ onStart, onGuest, soundEnabled, onToggleSound }: 
       window.setTimeout(() => setEmblemPhase('out'), at.out),
       window.setTimeout(() => setGate(g => (g === 'emblem' ? 'title' : g)), at.title),
     ];
-    return () => timers.forEach(t => window.clearTimeout(t));
+    // 効果音：読み込みが間に合った音だけ鳴らす（「ふわっ」はタイトルに切り替わった時に鳴らす）
+    const t0 = performance.now();
+    let alive = true;
+    resumeSharedAudio();
+    void preloadLaunchSfx().then(() => {
+      if (!alive) return; // 片付け後（StrictMode の2回目・飛ばした後）に予約しない
+      for (const c of launchCueSchedule(at.title)) {
+        if (c.name === 'title_bloom') continue;
+        const wait = c.at - (performance.now() - t0);
+        if (wait < -500) continue; // 大きく遅れた音は鳴らさない
+        sfxTimers.current.push(window.setTimeout(() => cue(c.name), Math.max(0, wait)));
+      }
+    });
+    return () => { alive = false; timers.forEach(t => window.clearTimeout(t)); clearSfxTimers(); };
   }, [gate]);
+  useEffect(() => {
+    if (gate !== 'title' || bloomDone.current) return;
+    bloomDone.current = true;
+    cue('title_bloom');
+  }, [gate]);
+  // タイトルから先へ進んだら起動音はすっと消す（このあと鳴る「誕生」と重ねない）
+  useEffect(() => { if (gate === 'announcement' || gate === 'philosophy') fadeOutLaunchSfx(); }, [gate]);
+  useEffect(() => () => fadeOutLaunchSfx(), []);
+  useEffect(() => { if (!soundEnabled) fadeOutLaunchSfx(150); }, [soundEnabled]);
   const skipEmblem = () => {
     if (emblemPhase === 'out') return;
     setEmblemSkipped(true); setEmblemPhase('out');
+    // 飛ばしたら「すーっ」は鳴らさず、タイトルで「ふわっ」だけ（タップの中なので音も解禁される）
+    clearSfxTimers(); resumeSharedAudio();
     window.setTimeout(() => setGate(g => (g === 'emblem' ? 'title' : g)), 450);
   };
   const [played, setPlayed] = useState(false);

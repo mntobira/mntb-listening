@@ -7,6 +7,7 @@ import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { stopSpeech, isSpeechSupported } from '../utils/listeningSpeech';
 import { say } from './foundationShared';
 import { VOCAB_PREF_KEY } from '../utils/vocabGoal';
+import { wordNumbers } from '../data/vocabQuiz';
 import { pauseAllAudio } from '../utils/audioElements';
 
 /**
@@ -124,6 +125,8 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
       && (!chapter || w.chapterIds.includes(chapter))
       && (!needle || (w.word + ' ' + w.fullMeaning).normalize('NFKC').toLowerCase().includes(needle))), [data, levels, listenOnly, chapter, needle]);
   const wordById = useMemo(() => new Map((data?.words ?? []).map(w => [w.id, w])), [data]);
+  /** 語の番号（レベルごとに 1 から）。4択のステージ（No.1〜10 …）と同じ番号 */
+  const numbers = useMemo(() => wordNumbers(data?.words ?? []), [data]);
   /** ★分け方★ レベル → 100語のまとまり → 20語の章。章番号はレベルごとに1から */
   const levelList = useMemo(() => Object.keys(VOCAB_LEVELS).filter(l => levels.has(l)).map(id => {
     const ids = base.filter(w => w.level === id).map(w => w.id);
@@ -239,6 +242,7 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
                 if (hide !== 'none' && !peek.has(w.id) && !open) { setPeek(v => new Set(v).add(w.id)); return; }
                 setOpenWord(open ? null : w.id);
               }}>
+                <span className="fd-word-no" aria-label={`No.${numbers.get(w.id)}`}>{numbers.get(w.id)}</span>
                 <span className="fd-word-en" lang="en" data-hidden={(hide === 'en' && !open && !peek.has(w.id)) || undefined}>{w.word}</span>
                 <span className="fd-word-ja" data-hidden={(hide === 'ja' && !open && !peek.has(w.id)) || undefined}>{w.meaning}</span>
                 {(searching || w.examples.length > 0) && <span className="fd-word-tags">{searching && <i>{VOCAB_LEVELS[w.level]}</i>}{w.examples.length > 0 && <i className="fd-tag-listen">リスニング</i>}</span>}
