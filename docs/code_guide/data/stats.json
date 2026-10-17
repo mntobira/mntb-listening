@@ -1,0 +1,87 @@
+{
+ "asOf": "2026年10月時点",
+ "commit": "1bbb6c5",
+ "commitDate": "2026-10-17",
+ "branch": "genspark_ai_developer",
+ "tracked": 2577,
+ "srcFiles": 393,
+ "srcLines": 95310,
+ "screens": 18,
+ "testCases": 807,
+ "testFiles": 69,
+ "listening": {
+  "label": "英語リスニング",
+  "chapters": 9,
+  "problems": 135,
+  "subQuestions": 554,
+  "viaProblemCount": 135
+ },
+ "grammar": {
+  "label": "英文法",
+  "chapters": 20,
+  "problems": 238,
+  "subQuestions": 1163,
+  "viaProblemCount": 238
+ },
+ "vocab": 5713,
+ "battlePool": {
+  "english_listening": 254,
+  "english_grammar": 1163,
+  "english_vocab": 9541
+ },
+ "battleTotal": 10958,
+ "audio": 374,
+ "cardsFile": 609,
+ "cardsBundle": 28,
+ "bundledFiles": 1968,
+ "folders": {
+  "public": 1247,
+  "audio_sources": 492,
+  "src": 401,
+  "scripts": 156,
+  "tests": 78,
+  "docs": 71,
+  "android": 54,
+  "(ルート)": 26,
+  "ios": 25,
+  "store-assets": 16,
+  "functions": 6,
+  "license_evidence": 4,
+  "message": 1
+ },
+ "tags": {
+  "設定": 126,
+  "音声・画像": 1367,
+  "データ": 593,
+  "文書": 169,
+  "通信": 40,
+  "テスト": 97,
+  "画面": 53,
+  "部品": 132
+ },
+ "conf": {
+  "高": 628,
+  "中": 4,
+  "低": 5
+ },
+ "sys": {
+  "native": 89,
+  "tools": 156,
+  "docs": 93,
+  "server": 8,
+  "test": 96,
+  "boot": 8,
+  "content": 49,
+  "assets": 1738,
+  "screen": 142,
+  "battle": 104,
+  "logic": 76,
+  "net": 18
+ },
+ "flow": {
+  "solve": 77,
+  "learn": 40,
+  "review": 19,
+  "compete": 115
+ }
+}

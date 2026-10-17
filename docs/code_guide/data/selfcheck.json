@@ -1,0 +1,102 @@
+{
+ "errors": [],
+ "warnings": [],
+ "secretsChecked": 21,
+ "secretsFound": [],
+ "contrast": [
+  [
+   "文字 ink / 地 paper",
+   14.29
+  ],
+  [
+   "補足 ink-3 / 地 paper",
+   5.16
+  ],
+  [
+   "補足 ink-3 / 白",
+   5.47
+  ],
+  [
+   "補足 ink-3 / 淡青 paper-2",
+   5.09
+  ],
+  [
+   "本文 ink-2 / 白",
+   8.66
+  ],
+  [
+   "強調 orange / 白",
+   5.4
+  ],
+  [
+   "強調 orange / 淡橙",
+   4.89
+  ],
+  [
+   "青 blue / 白",
+   6.95
+  ],
+  [
+   "青 blue / 淡青",
+   6.05
+  ],
+  [
+   "白 / 紺 navy",
+   14.59
+  ],
+  [
+   "文字 ink / タグ media",
+   13.74
+  ],
+  [
+   "警告文 / 淡橙",
+   7.23
+  ],
+  [
+   "要確認 orange / 薄橙地",
+   5.2
+  ]
+ ],
+ "lowConf": [
+  [
+   "public/flowcharts/chem-basic-acid-redox-flowchart.html",
+   "化学基礎の酸・塩基と酸化還元のフローチャートを見せるページの係"
+  ],
+  [
+   "public/化学基礎_フローチャート集.html",
+   "化学基礎のフローチャート集を見せる単体ページだが、使い道が未確認の係"
+  ],
+  [
+   "public/化学基礎_フローチャート集_v2.html",
+   "化学基礎のフローチャート集の第2版の単体ページだが、使い道が未確認の係"
+  ],
+  [
+   "src/assets/mntb_logo.png",
+   "マナトビのロゴ画像を持つが、使う側が見つからない係"
+  ],
+  [
+   "public/ 以下 6か所",
+   "統合版から残った図や画像で、使われている場所が未確認の係"
+  ]
+ ],
+ "midConf": [
+  [
+   "ios/App/App/AppDelegate.swift",
+   "iPhoneアプリの起動と、外部からのリンクの受け取りを担う係"
+  ],
+  [
+   "scripts/gacha-prints/dump-grammar.mts",
+   "学習プリント用に、アプリの英文法データを書き出す係"
+  ],
+  [
+   "scripts/readalong/dump_tracks.ts",
+   "音読データ作りのために、リスニングの音源一覧を書き出す係"
+  ],
+  [
+   "src/battle/core/vocabRanges.ts",
+   "英単語の出題範囲を表す名前を作り、範囲内か調べる係"
+  ]
+ ],
+ "cards": 637,
+ "files": 2577
+}

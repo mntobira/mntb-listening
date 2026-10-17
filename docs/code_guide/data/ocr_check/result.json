@@ -1,0 +1,64 @@
+{
+ "tot": {
+  "tiles": 217,
+  "name": 212,
+  "dir": 217,
+  "lines": 217,
+  "nBy": 217,
+  "nImp": 217,
+  "missing": 0,
+  "extra": 0
+ },
+ "errs": [
+  [
+   "11-logic-2",
+   "name",
+   "reportError.ts",
+   "→",
+   "errorReport.ts"
+  ],
+  [
+   "11-logic-2",
+   "order",
+   "transcription order differs from map order"
+  ],
+  [
+   "13-content",
+   "name",
+   "egProblemsExpr1.ts",
+   "→",
+   "egProblemExpr1.ts"
+  ],
+  [
+   "13-content",
+   "name",
+   "egProblemsExpr2.ts",
+   "→",
+   "egProblemExpr2.ts"
+  ],
+  [
+   "13-content",
+   "name",
+   "tobiraMood.ts",
+   "→",
+   "tobiramood.ts"
+  ],
+  [
+   "13-content",
+   "order",
+   "transcription order differs from map order"
+  ],
+  [
+   "21-test-2",
+   "name",
+   "bgmPlayError.test.ts",
+   "→",
+   "bgmPlayerError.test.ts"
+  ],
+  [
+   "21-test-2",
+   "order",
+   "transcription order differs from map order"
+  ]
+ ]
+}

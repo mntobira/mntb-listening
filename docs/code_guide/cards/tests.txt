@@ -1,0 +1,78 @@
+tests/ai-no-rating.test.ts|テスト|高|AIやボットとの対戦では、レートが変わらないことを確かめる係
+tests/androidBgmCrackle.test.ts|テスト|高|AndroidでBGMが音割れしないための設定を確かめる係
+tests/androidRangeServer.test.ts|テスト|高|Androidで音声の指定した位置から正しく返すかを確かめる係
+tests/audioElements.test.ts|テスト|高|音声の二重再生を防ぐ「まとめて止める」処理を確かめる係
+tests/battle.rules.test.ts|テスト|高|対戦のデータを誰が読み書きできるかのルールを確かめる係
+tests/battleAudioLifecycle.test.ts|テスト|高|画面の切り替わりで、対戦BGMが正しく鳴り止まるかを確かめる係
+tests/battleBgmFiles.test.ts|テスト|高|対戦の場面ごとに、決まったBGMの曲が選ばれるかを確かめる係
+tests/battleNoNav.test.ts|テスト|高|試合中は下のナビを出さないという決まりを確かめる係
+tests/battlePictureListening.test.ts|テスト|高|対戦画面が問題の絵を表示し、先読みしているかを確かめる係
+tests/bgmUnify.test.ts|テスト|高|すべてのBGMの音量と、1つのスイッチの決まりを確かめる係
+tests/chunkRecovery.test.ts|テスト|高|新しい版の配信直後の読み込み失敗を、正しく見分けるか確かめる係
+tests/cinematicClips.test.ts|テスト|高|とびら君の演出動画が置かれていて、1MB未満かを確かめる係
+tests/cinematics.browser.mjs|テスト|高|実際のブラウザで、演出動画とタイトルが正しく出るかを確かめる係|Playwright の検査スクリプト（it は無い）。開発版と本番版のアプリを開き、タイトル画面（.launch-start）や着せかえポーズでの演出動画の再生を確かめる。
+tests/connectionCheck.test.ts|テスト|高|通信チェックが、止まっている場所を正しく示すかを確かめる係
+tests/dialog.test.ts|テスト|高|お知らせと確認の窓口が、決まりどおり動くかを確かめる係
+tests/englishGrammarV3.test.ts|テスト|高|英文法の改訂版1,163問が、章ごとにそろっているかを確かめる係
+tests/englishListeningData.test.ts|テスト|高|英語リスニングの単元の並びと構成が正しいかを確かめる係
+tests/englishListeningQ1A.test.ts|テスト|高|リスニング第1問Aの問題と解説の中身を確かめる係
+tests/englishListeningQ1Sets.test.ts|テスト|高|第1問A・Bの類題集が、PDFどおりの数だけ入っているか確かめる係
+tests/englishListeningQ2Sets.test.ts|テスト|高|第2問の問題データの整合と、正解位置の偏りを確かめる係
+tests/englishListeningQ3.test.ts|テスト|高|第3問の15セット90問がそろい、音声が正しいかを確かめる係
+tests/friend-code-input.test.ts|テスト|高|いろいろな入れ方のフレンドコードを、1つの形にそろえるか確かめる係
+tests/friends.rules.test.ts|テスト|高|フレンドのデータを誰が読み書きできるかのルールを確かめる係
+tests/gachaFeatured.test.ts|テスト|高|ガチャの「注目アイテム」が、実際のガチャの中から選ばれるか確かめる係
+tests/gachaPrintsQuality.test.ts|テスト|高|学習プリントの台帳のページ数とファイルが、実物と合うか確かめる係
+tests/gachaReveal.test.ts|テスト|高|ガチャの演出が、引いたレア度の色で止まるかを確かめる係
+tests/helpers/battleRules.ts|テスト|高|テスト用に、本番と同じ1枚のデータ利用ルールを組み立てる係
+tests/helpers/sourceScan.ts|テスト|高|ソースコードを文字として読み、検査するための共通の道具の係
+tests/leaderboard.rules.test.ts|テスト|高|ランキングのデータを誰が読み書きできるかのルールを確かめる係
+tests/listeningAudioLedger.test.ts|テスト|高|リスニング音源台帳が374行で重複なく、正しく分かれているか確かめる係
+tests/listeningExplanation.test.ts|テスト|高|リスニングの解説でスクリプトが最初に出るかなどを確かめる係
+tests/listeningMaterials.browser.mjs|テスト|高|実際のブラウザで、リスニングの印刷資料が正しく出るか確かめる係|Playwright の検査スクリプト。リスニングの印刷資料のペイン（data-listening-material-pane）が正しく表示されるかをブラウザで確かめる。
+tests/listeningMaterials.test.ts|テスト|高|第4問以降の印刷資料の表や空欄が、元のとおり残るか確かめる係
+tests/listeningOptions.test.ts|テスト|高|問題文から選択肢①〜④の本文を、正しく取り出せるか確かめる係
+tests/listeningPostProcess.test.ts|テスト|高|英語2教科の解説の後処理を共通にしても、結果が同じか確かめる係
+tests/listeningRounds.test.ts|テスト|高|大問の中から「第N回」の番号と内容を正しく読み取るか確かめる係
+tests/listeningSteps.test.ts|テスト|高|リスニングが「1画面に1問」で正しく進むかを確かめる係
+tests/matchFallback.test.ts|テスト|高|相手がいない・サーバーが使えないとき、AIに切り替わるか確かめる係
+tests/mission-claim.test.ts|テスト|高|達成したミッションの報酬は、1回だけ受け取れるかを確かめる係
+tests/moduleGraph.test.ts|テスト|高|ファイルどうしの読み込みに、ぐるぐる回る参照が無いか確かめる係
+tests/noSilentCatch.test.ts|テスト|高|理由を書かずに失敗を握りつぶしている箇所が無いか確かめる係
+tests/polyfills.test.ts|テスト|高|古い端末に足りない機能を、正しく補っているかを確かめる係
+tests/publicTextFilter.test.ts|テスト|高|志望校など公開される入力に、不適切な言葉が無いか確かめる係
+tests/quizHookOrder.test.ts|テスト|高|演習画面の内部の呼び出し順が、問題0件でも崩れないか確かめる係
+tests/quotaGhost.test.ts|テスト|高|サーバーの無料枠を使い切ったとき、AI対戦に切り替わるか確かめる係
+tests/readAlong.test.ts|テスト|高|音読・ディクテーションの時刻データが正しく扱われるか確かめる係
+tests/reportError.test.ts|テスト|高|握りつぶしていた失敗が、場所と時刻つきで記録されるか確かめる係
+tests/retention.test.ts|テスト|高|「あと少し」の目標や積み上げの記録が、正しく出るか確かめる係
+tests/review-group.test.ts|テスト|高|復習ノートが、間違えた小問だけを1枚にまとめるかを確かめる係
+tests/revision.browser.mjs|テスト|高|実際のブラウザで、4つの画面の大きさでの表示を確かめる係|Playwright の検査スクリプト。320×568・375×667・390×844・1280×800 の4つの大きさでアプリを開き、表示とエラーの有無を確かめる。
+tests/revision.test.ts|テスト|高|ガチャの値段や対戦の範囲など、見直した決まりを確かめる係
+tests/revisionD.browser.mjs|テスト|高|実際のブラウザで、ホームやガチャが1画面に収まるか確かめる係|Playwright の検査スクリプト。同じ4つの大きさで、ホーム・ガチャ・マイページ・対戦の画面が縦横にはみ出さないかを確かめ、画面写真を残す。
+tests/rewarded-ad.test.ts|テスト|高|広告が初期状態では出ず、ガチャがアプリ内の動画を使うか確かめる係
+tests/security.test.ts|テスト|高|ご意見の連続送信を止めるなど、安全の決まりを確かめる係
+tests/stagePlay.test.ts|テスト|高|ステージの挑戦の記録と、送信の予約が正しく分かれているか確かめる係
+tests/standalone-online.rules.test.ts|テスト|高|リスニング版で2人が対戦部屋を使えるか、ルール込みで確かめる係
+tests/standalone.browser.mjs|テスト|高|実際のブラウザで、ホームの3本柱と導線が正しいかを確かめる係|Playwright の検査スクリプト。外部への通信を止めた状態で本番ビルドを開き、1画面ホームの3本柱（演習する／対戦する＋復習ノート）と導線を確かめる。
+tests/standalone.test.ts|テスト|高|リスニング版で、リスニングが主役になっているかを確かめる係
+tests/storageGuard.test.ts|テスト|高|端末の保存領域が満杯でも、アプリが落ちないかを確かめる係
+tests/strip-script-box.test.ts|テスト|高|英語の解説から、重複したスクリプトの枠だけを消すか確かめる係
+tests/study-log.test.ts|テスト|高|学習記録が、同じ問題をまとめて直近3日だけ残すか確かめる係
+tests/study-time-idle.test.ts|テスト|高|1分操作がなければ、学習時間を数えないことを確かめる係
+tests/subjectRegistry.test.ts|テスト|高|教科データと索引が、教科の登録簿と同じ顔ぶれか確かめる係
+tests/unequip.test.ts|テスト|高|着せかえを外すと「なし」や基本の姿に戻るかを確かめる係
+tests/updateNotices.test.ts|テスト|高|サーバーから届くお知らせを、正しく読み取れるか確かめる係
+tests/usePreventZoom.test.ts|テスト|高|ダブルタップの見分け方が、決めた間隔どおりかを確かめる係
+tests/vocab-meanings.test.ts|テスト|高|単語の意味に「第／の」のような表記くずれが無いか確かめる係
+tests/vocabChapters.test.ts|テスト|高|英単語が、レベル・100語・20語に正しく分かれるか確かめる係
+tests/vocabQuizMood.test.ts|テスト|高|英単語の4択の出し方と、とびら君の気分の決まりを確かめる係
+tests/wallpaperCoverage.test.ts|テスト|高|ガチャの壁紙が、すべての全面画面に出るかを確かめる係
+tests/__snapshots__/sharedHash.test.ts.snap|テスト|高|日付ごとのミッションの組を、比べる用に記録しておく係|vitest のスナップショット。sharedHash.test.ts が「共通化前に記録した値」と比べるために使う。
+tests/bgmPlayError.test.ts|テスト|高|タイトルBGMの再生失敗時のログと無音切替を確かめる係
+tests/firestoreErrors.test.ts|テスト|高|保存先エラーの日本語化が、以前と同じ結果か確かめる係
+tests/motion.test.ts|テスト|高|文字の分け方と、動きを減らす設定の決まりを確かめる係
+tests/noExplicitAny.test.ts|テスト|高|手書きのコードに any 型が増えていないかを見張る係
+tests/sharedHash.test.ts|テスト|高|共通化したハッシュ関数の結果が、以前と同じか確かめる係
+tests/helpers/fixture.ts|テスト|高|テスト用の一部だけ書いた教材データを、正しい型で渡す係
+tests/hookDepsReasons.test.ts|テスト|高|フックの依存の抑制が増えておらず、理由つきか確かめる係

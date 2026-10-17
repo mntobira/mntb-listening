@@ -1,0 +1,139 @@
+.env.example|設定|高|接続先の設定値を入れる欄の見本を示す、中身が空の雛形の係|Firebase などの設定を書く欄の名前だけを並べた見本（12行）。値はすべて空欄で、新しい Firebase プロジェクトを使うよう注意書きがある。具体的な項目名と値は図鑑には載せない。
+.firebaserc|設定|高|どのFirebaseプロジェクトに反映するかを指定する設定の係|Firebase CLI が使う既定のプロジェクトを指定する4行のファイル。プロジェクトの識別名は図鑑には載せない。
+.gitignore|設定|高|Gitに入れないファイル（依存部品・ビルド結果・秘密）を決める係|49行。node_modules/・dist/・.env*（.env.example は除外しない）・ログ・作業用フォルダ（.tmpwork/ .delivery/ など）を Git の対象から外す。
+APP_CAPACITOR_README.md|文書|高|スマホアプリ版（Capacitor）の作り方と、Web版との違いを説明する係
+CLAUDE.md|文書|高|画面を作るときに守るUIの決まりを、AIの作業者向けに書いた係
+COMMERCIAL_AUDIO_MIGRATION.md|文書|高|リスニング音源を商用で使える音声へ移した経緯を記録する係
+COMMERCIAL_AUDIO_STATUS.json|データ|高|商用音源への置き換えが何曲済んだかの状況を持つ係
+DERIVATIVE_HANDOFF.md|文書|高|統合版からリスニング版を分けたときの引き継ぎを記録する係
+EXPORT_MANIFEST.json|データ|高|統合版から書き出したときの元の版と、含めたファイルの一覧を持つ係
+README.md|文書|高|マナトビ リスニングの中身と、手元で試す手順を説明する係
+capacitor.config.ts|設定|高|スマホアプリ版の名前やWeb画面の置き場所を決める設定の係|Capacitor の設定（appId・appName・webDir など）を default で書き出す17行。広告のアプリIDなどの値は図鑑には載せない。
+docs/ADDING_SUBJECT.md|文書|高|新しい教科を追加するときの手順を、順番に説明する係
+docs/APP_STORE.md|文書|高|App Storeへ申請する前に確かめる項目を表にまとめる係
+docs/APP_SYNC.md|文書|高|Web版とアプリ版の中身をそろえるための決まりを書く係
+docs/BATTLE.md|文書|高|対戦モードの設計と、なぜそうしたかを詳しく説明する係
+docs/BATTLE_BGM.md|文書|高|対戦BGMの音源ファイルと、その仕様・利用条件を記録する台帳の係
+docs/BATTLE_RELEASE_STEPS.md|文書|高|対戦モードを公開するまでの作業を、順番どおりに書いた手順の係
+docs/BUILD.md|文書|高|ビルドがメモリ不足で止まる理由と、その対処法を説明する係
+docs/CINEMATICS.md|文書|高|とびら君の演出動画が何本あり、どう点検したかを記録する台帳の係
+docs/CINEMATICS_PROMPTS.md|文書|高|とびら君の演出動画を作るときに使った指示文を集めた係
+docs/DEPLOY_FIRESTORE_RULES.md|文書|高|データ保存先の利用ルールを本番に反映する手順を説明する係
+docs/FEEDBACK_SETUP.md|文書|高|ご意見を表計算シートで受け取るしくみの準備手順を説明する係
+docs/FIRESTORE_RULES_DEPLOY.md|文書|高|管理者向けに、データ保存先のルールを反映する手順を書いた係
+docs/FRIEND_SYSTEM.md|文書|高|フレンド機能のデータの形と設計の理由を説明する係
+docs/LISTENING_AS_PRODUCT.md|文書|高|英語リスニングを「売れる教材」として扱うための考えを整理した係
+docs/LISTENING_AUDIO_REPLACE.md|文書|高|録り直したリスニング音源を差し替える手順を説明する係
+docs/LISTENING_AUDIO_VS_SPEECH.md|文書|高|作った音源ファイルとブラウザの読み上げの違いを説明する係
+docs/LISTENING_DERIVATIVE.md|文書|高|統合版とリスニング版の分岐と引き継ぎを記録した控えの係
+docs/RELEASE_STEPS_2026-10-05.md|文書|高|公開とApp Store申請までに残った作業をまとめた係
+docs/UI_REVAMP_2026-09-30.md|文書|高|2026年9月30日のUI見直しで決めたことを記録する係
+docs/UI参考_画面と導線.md|文書|高|ホームや科目選択の画面と導線の参考をまとめた係
+docs/app_review/BLOCK_FEATURE_FOR_APPLE.md|文書|高|Appleの審査に、通報・ブロック機能の場所を答える資料の係
+docs/business_overview/index.html|文書|高|事業の概要をスライド形式で見せる、単体のWebページの係|約639行の単体HTML。先頭のコメントに、コンテスト審査員向けに書体・色・文字サイズを3段に絞る決まりが書かれている。アプリ本体からは読み込まれない。
+docs/deploy-firestore-rules.workflow.yml|設定|高|ルール変更を本番へ自動反映する、GitHubの作業手順の見本の係|.github/workflows/ へコピーすると main の firestore.rules 変更時に自動デプロイされる、とコメントにある。Bot の権限では workflows を直接置けないため docs/ に置いている。
+docs/feedback-gas.js|通信|高|送られたご意見を表計算シートで受け取る、Google側の受け口の係
+docs/listening_q4-6/q4/README.md|文書|高|リスニング第4問の素材一式に、何が入っているかを説明する係
+docs/listening_q4-6/q4/データの決まり.md|文書|高|リスニング第4問の問題データの形と決まりを説明する係
+docs/listening_q4-6/q4/問題の作り方.md|文書|高|リスニング第4問の問題を、本番の形に合わせて作る方法の係
+docs/listening_q4-6/q4/既存ファイルの変更点.md|文書|高|第4問を加えるときに直す既存ファイルを指示する係
+docs/listening_q4-6/q5/README.md|文書|高|リスニング第5問の素材一式に、何が入っているかを説明する係
+docs/listening_q4-6/q5/データの決まり.md|文書|高|リスニング第5問の問題データの形と決まりを説明する係
+docs/listening_q4-6/q5/問題の作り方.md|文書|高|リスニング第5問の問題を、本番の形に合わせて作る方法の係
+docs/listening_q4-6/q5/既存ファイルの変更点.md|文書|高|第5問を加えるときに直す既存ファイルを指示する係
+docs/listening_q4-6/q6/README.md|文書|高|リスニング第6問の素材一式に、何が入っているかを説明する係
+docs/listening_q4-6/q6/データの決まり.md|文書|高|リスニング第6問の問題データの形と決まりを説明する係
+docs/listening_q4-6/q6/問題の作り方.md|文書|高|リスニング第6問の問題を、本番の形に合わせて作る方法の係
+docs/listening_q4-6/q6/既存ファイルの変更点.md|文書|高|第6問を加えるときに直す既存ファイルを指示する係
+firebase.json|設定|高|Firebaseの公開場所・ルール・サーバー関数の設定をまとめる係|firestore（ルールと索引）・hosting（公開フォルダ・書き換え・ヘッダー）・emulators・functions の4項目を持つ125行。
+firestore.indexes.json|設定|高|データ保存先で、並べ替えや絞り込みに使う索引を決める係|indexes と fieldOverrides を持つ99行のJSON。Firestore の複合索引を定義する。firebase.json から参照される。
+firestore.rules|設定|高|データ保存先で、誰がどのデータを読み書きできるかを決める係|2,126行の Firestore セキュリティルール。冒頭にマナクランの名簿や集計はサーバーだけが書けるという注記がある。対戦・フレンド・ランキングなどのルールは tests/*.rules.test.ts で検査される。
+functions/core.mjs|通信|高|マナクランとリーグの集計に使う、サーバー専用の計算の係
+functions/core.test.mjs|テスト|高|サーバー側のクラン集計の計算が正しいかを確かめる係
+functions/index.mjs|通信|高|クラン・レート・定期集計などのサーバー処理を用意する係|manaClan・achievements（呼び出し型）、onManaRating・onManaDuel（データ変更時）、settleManaLeagues（毎日）・sweepStaleBattle（60分ごと）の6つを書き出す。地域は asia-northeast1 で、秘密値は名前だけを参照する。
+functions/integration.test.mjs|テスト|高|試験用の環境で、サーバー処理の流れを通して確かめる係
+functions/package.json|設定|高|サーバー関数が使う部品とNode.jsの版を決める係|Node.js 22 を指定し、firebase-admin と firebase-functions を使う。テストは node --test core.test.mjs。
+index.html|設定|高|アプリを開いたとき最初に読まれる、画面の土台のページの係|36行のHTML。/src/main.tsx を読み込んでアプリを起動し、manifest.json・アイコン・ファビコンを指定する。ピンチによる誤リロードの扱いについての注記もある。
+license_evidence/README.md|文書|高|音声サービスの有料契約の証拠が何かを説明する係|ElevenLabs の有料契約の証拠（利用者提供・2026-09-29）について説明する18行。証拠の中身（領収番号など）は図鑑には載せない。
+listening_audio_ledger.json|データ|高|リスニング音源374件の出どころと状態を記録する台帳の係|374件の配列。1件ごとに audioUrl・status・provider・license・importedAt・sourceFile・sha256・durationSec などを持つ。tests/listeningAudioLedger.test.ts で重複が無いことを確かめている。
+message/index.html|画面|高|宣伝用ページ「学びの扉」の土台となるページの係|35行のHTML。/src/message.tsx を読み込み、タイトルと説明文（OGP含む）に「学びの扉 ～私達に出来ることを～」を設定する。
+metadata.json|設定|高|アプリの名前と短い説明文を持つ、3行の情報の係|name（マナトビ リスニング）と description（英語リスニングの演習・解説・復習・オンライン対戦。）の2項目だけを持つ。
+package.json|設定|高|アプリが使う部品と、ビルドやテストの命令を決める係|71行。scripts にビルド・テスト・生成（gen:battle-pool など）の命令を、dependencies に React・Firebase・Capacitor などを持つ。
+public/.keep|設定|高|public フォルダを消さずに残しておくための目印の係|2行の目印ファイル。public フォルダを存在させる目的だけを持つとコメントにある。
+public/_headers|設定|高|配信するページに、安全のための決まり（ヘッダー）をつける係|37行。Cloudflare Pages / Netlify 形式で、全ページに Content-Security-Policy などの安全のためのヘッダーをつける。vite.config.ts が本番ビルドで同じ内容を <meta> にも入れる。
+public/data/listeningVocabulary.json|データ|高|単語帳と対戦で使う英単語データを、まとめて持つ係|1行の大きなJSON（wordCount・questionCount・words などを持つ）。scripts/gen-listening-vocabulary.mts が生成し、単語帳・4択・UR学習プリントの作成で使われる。
+public/flowcharts/chem-basic-acid-redox-flowchart.html|文書|低|化学基礎の酸・塩基と酸化還元のフローチャートを見せるページの係|8,187行の単体HTML。手書き風フォントの指定がある。リスニング版のアプリからこのページへのリンクが見つからず、使われているかは要確認。
+public/manifest.json|設定|高|ホーム画面に追加したときの名前・色・アイコンを決める係
+public/sfx/battle/LICENSE_SFX.md|文書|高|対戦の効果音ファイルのライセンスを説明する係
+public/sw.js|設定|高|電波が弱い時やオフラインでも画面と音を出せるよう保存する係
+public/化学基礎_フローチャート集.html|文書|低|化学基礎のフローチャート集を見せる単体ページだが、使い道が未確認の係|2,561行の単体HTML。リスニング版のアプリから参照する箇所が見つからず、使われているかは要確認。
+public/化学基礎_フローチャート集_v2.html|文書|低|化学基礎のフローチャート集の第2版の単体ページだが、使い道が未確認の係|前のファイルと同じ2,561行の単体HTML。アプリから参照する箇所が見つからず要確認。
+scripts/android-range-check/Check.java|テスト|高|Androidの音声の途中再生の修正を、端末なしで確かめる係|16行。RangeAwareWebViewClient に偽物の Android 環境を渡し、指定した範囲のバイトが返るかを確かめる。run.sh から使われる。
+scripts/android-range-check/Javac.java|テスト|高|上の検査用Javaを、Android SDKなしで組み立てる小さな係|1行。JDK の標準コンパイラを呼び出して Java を組み立てるだけの小さな入口。
+scripts/android-range-check/run.sh|テスト|高|Androidの音声配信の修正の検査を、まとめて実行する係
+scripts/apply-android-assets.py|音声・画像|高|Android版のアイコンと起動画面の画像を差し替える係
+scripts/apply-new-icon.py|音声・画像|高|新しいアプリアイコンを、iOS・Web・Androidに配る係
+scripts/build-listening-prompts-pdf.py|文書|高|リスニング音源を作るための台本をPDFにまとめる係
+scripts/build-q2-rerecord-pdf.py|文書|高|リスニング第2問を録り直すための台本PDFを作る係
+scripts/build.sh|設定|高|ビルドの前にメモリ不足を見つけ、理由と対処を先に示す係
+scripts/check-firebase-setup.mjs|設定|高|新しいFirebaseプロジェクトにつなぐ設定が済んだかを確かめる係
+scripts/check-release.mjs|設定|高|本番でゲスト専用の版が黙って公開されないよう止める係|17行。冒頭の説明：「Production must never silently publish a guest-only build」。本番ビルドで設定が欠けていたら止める。
+scripts/concat_listening_audio.sh|音声・画像|高|古い配布ZIPの、分かれたリスニング音声をつなげる係
+scripts/export-listening-audio-prompts.mts|文書|高|リスニング音源の生成の指示文だけを書き出す係|冒頭の説明：「Export instructions only: never calls a paid API or modifies runtime assets.」。englishListeningData.ts から台本を集めて書き出す。
+scripts/extract_q2_illustrations.py|音声・画像|高|配布PDFから第2問のイラストを取り出し、正しい名前で置く係
+scripts/fix-vocab-meanings.py|データ|高|英単語の意味に残った「第／の」などの表記くずれを直す係
+scripts/fix_q2_text_to_figures.py|データ|高|第2問の選択肢の文を、配布PDFのイラストに合わせて直す係
+scripts/gacha-prints/README.md|文書|高|ガチャで当たる学習プリントの作り直し方を説明する係
+scripts/gacha-prints/build-grammar-ur.py|文書|高|学習プリント「英文法 全20単元 総合100題」を作る係
+scripts/gacha-prints/build-level-ur.py|文書|高|レベル報酬の学習プリント「リスニングの聞き方」を作る係
+scripts/gacha-prints/build-science-ur.py|文書|高|化学・数学・理科の学習プリント3冊を作り直す係
+scripts/gacha-prints/build-vocab-ur.py|文書|高|学習プリント「英単語／英熟語 100語テスト」を作る係
+scripts/gacha-prints/dump-grammar.mts|データ|中|学習プリント用に、アプリの英文法データを書き出す係|8行。英文法データの組み立て時に呼ばれる __egCapture を差し込み、集めた中身を書き出す。コメントは無く、build-grammar-ur.py の入力の説明と合わせて判断した。
+scripts/gacha-prints/dump-science.mts|データ|高|学習プリント用に、理科・化学・数学のデータを書き出す係
+scripts/gacha-prints/fonts.py|文書|高|学習プリントに埋め込む日本語フォントと疑似太字を用意する係
+scripts/gacha-prints/ur_common.py|文書|高|理科・化学・数学の学習プリントに共通の割り付けを持つ係
+scripts/gen-battle-pool.mts|データ|高|教科のデータから、対戦で出す問題の一覧を作る係
+scripts/gen-chapter-index.mts|データ|高|単元の軽い索引ファイルを、問題データから作る係
+scripts/gen-listening-vocabulary.mts|データ|高|リスニングの台本から、単語帳用の英単語データを作る係|src/data/listeningVocabularySource.json とリスニングの全音源の台本を読み、語ごとに例文を結びつけて単語データを書き出す。VOCABULARY_COUNT を公開する。
+scripts/gen_listening_data.py|データ|高|PDFから取り出した第1問A・Bの中身を、アプリのデータにする係
+scripts/gen_listening_q2_data.py|データ|高|PDFから取り出した第2問の中身を、アプリのデータにする係
+scripts/gen_listening_q3_data.py|データ|高|PDFから取り出した第3問の中身を、アプリのデータにする係
+scripts/kasa-diff.sh|設定|高|協力者に送る、前回からの差分だけのZIPを作る係
+scripts/listening-audio.mts|音声・画像|高|リスニング音源の一覧・検査・取り込みを1つで行う道具の係
+scripts/listening-split.py|音声・画像|高|まとめて録ったリスニング音声を、1問1ファイルに切り出す係
+scripts/make-icons.py|音声・画像|高|もとの正方形の絵から、アプリのアイコン一式を作る係
+scripts/parse_listening_pdf.py|データ|高|第1問A・Bの類題集PDFを、整理されたJSONに変える係
+scripts/parse_listening_q2_pdf.py|データ|高|第2問の類題集PDFを、突き合わせつきでJSONに変える係
+scripts/parse_listening_q3_pdf.py|データ|高|第3問の類題集PDFを、突き合わせつきでJSONに変える係
+scripts/purge-legacy-listening-audio.mjs|音声・画像|高|商用の根拠がない古い音源を一掃し、残りを確かめる係
+scripts/q2_figure_fixes.py|データ|高|第2問をイラストに合わせて直す中身を、1問ずつ根拠つきで持つ係
+scripts/q2_img_to_public.py|音声・画像|高|第2問のイラストを、縦横比を変えずに配信用に整える係
+scripts/readalong/add_prosody.py|音声・画像|高|音源から各語の強弱を測り、音読用データに足す係
+scripts/readalong/align_readalong.py|音声・画像|高|音読・ディクテーション用に、単語ごとの時刻を作る係
+scripts/readalong/dump_tracks.ts|データ|中|音読データ作りのために、リスニングの音源一覧を書き出す係|7行。全リスニング単元の音源（audioTracks）を重複なしで集めて出力する。コメントは無く、align_readalong.py の入力の説明と合わせて判断した。
+scripts/shuffle_listening_q2_options.py|データ|高|第2問の正解の位置が偏らないよう、選択肢の並びを入れ替える係
+scripts/shuffle_listening_q3_options.py|データ|高|第3問の正解の位置が偏らないよう、選択肢の並びを入れ替える係
+scripts/shuffle_q1b_options.py|データ|高|第1問Bで正解が①に偏った回の、選択肢を入れ替える係
+scripts/strip_genspark_logo.py|音声・画像|高|第1問Bのイラストから、右下に入ったロゴを取り除く係
+scripts/verify_q2_single_gender.py|テスト|高|第2問の音源で、先に話す人の性別が台本どおりか測る係
+scripts/verify_q2_tts_speakers.py|テスト|高|まとめ録りの音声が、ちゃんと3人の声になっているか測る係
+store-assets/_tools/edit_instagram.py|音声・画像|高|録画した操作画面に見出しや音をつけ、Instagram用に書き出す係|冒頭の説明：「Instagram 用動画の編集（録画した本物の操作画面 → 見出し・スマホ枠・効果音・BGM をつけて書き出す）」。画面は record_scenes.py の録画だけを使い、色はブランドの3色に限るとある。
+store-assets/_tools/grammar_answers.json|データ|高|宣伝動画の録画で使う、英文法1,163問の答えの一覧の係|1,163件の配列を持つJSON。同じフォルダの record_scenes.py が読み込み、録画中の操作で正しい答えを選ぶために使う（instagram/README.md にも記載）。
+store-assets/_tools/peek.py|テスト|高|宣伝素材の下見用に、主な画面をスマホの大きさで撮る係|27行。Playwright でアプリを開き、指定した主要画面をスマホの実寸（430×932）で撮影する。
+store-assets/_tools/record_scenes.py|音声・画像|高|宣伝動画用に、本物のアプリの操作を場面ごとに録画する係|Playwright で本物のアプリ（vite preview のビルド）を操作し、場面ごとに録画する（スマホ実寸／REC_DEVICE=pc でパソコン版）。動画生成AIは使わないと明記されている。2026年10月に場面が増えた（201→340行）。
+store-assets/instagram/ELEVENLABS_PROMPTS.md|文書|高|Instagram動画のナレーションを作るときの指示文を集めた係
+store-assets/instagram/README.md|文書|高|Instagram用の動画が、何でどう作られたかを説明する係
+tsconfig.json|設定|高|アプリ本体のTypeScriptの型チェックのやり方を決める係|compilerOptions・include・exclude を持つ36行。型チェックの対象は src/。
+tsconfig.scripts.json|設定|高|作業用スクリプトのTypeScriptの型チェックのやり方を決める係|本体の tsconfig.json は src/ だけを対象にするため、scripts/ の .mts を型チェックする別の設定として置いたとコメントにある。
+vercel.json|設定|高|Vercelで公開するときのビルド・行き先・ヘッダーを決める係
+vite.config.ts|設定|高|アプリを組み立てる道具の設定と、安全の決まりの埋め込みを持つ係
+vitest.config.ts|設定|高|自動テストの対象ファイルと待ち時間の上限を決める係|tests/**/*.test.ts を対象にし、テスト20秒・準備30秒の上限、ファイルは1つずつ順に実行する設定の2行。
+リスニングの部屋へ_これ1つで全部.md|文書|高|リスニング版の全部入りZIPに、何が入っているかを説明する係
+store-assets/instagram/CAPTIONS.md|文書|高|InstagramとYouTubeに投稿するときの説明文を置く係
+tsconfig.tests.json|設定|高|テストのコードも型の検査にかけるための、型検査の設定係
+store-assets/_tools/promo_cut.py|音声・画像|高|宣伝動画の台本として、場面の並びと尺を決める係|Instagram リール・フィードと YouTube 16:9 の台本。起動→第2問→解説→全国対戦→決着→しめの順に、場面と曲（誕生・夕凪・カナリアスキップ）を並べる（冒頭の説明より）。
+store-assets/_tools/promo_engine.py|音声・画像|高|録画した画面を1コマずつ合成し、宣伝動画に仕上げる係|素材は record_scenes.py／record_duo.py で録った実際のアプリ画面だけ（動画生成AIは使わない）。ズーム・切り替え・字幕を重ね、問題の音声が鳴る間だけBGMを下げて ffmpeg で書き出す。
+store-assets/_tools/promo_sfx.py|音声・画像|高|宣伝動画の冒頭で鳴らす効果音を、数式だけで作る係|numpy の数式だけで、エンブレムのきらきら・タイトルへの盛り上がり・タイトルが出た瞬間の音を作る（素材・AIは使わない）。
+store-assets/_tools/record_duo.py|音声・画像|高|スマホとパソコンの2台で対戦しているところを録画する係|本番の Firebase にはつながず、demo- プロジェクトとローカルのエミュレータで本物のアプリを2つ動かし、全国対戦で実際にマッチングさせて録画する。2本の録画を同じ時刻にそろえる。
+store-assets/youtube/CHAPTERS.txt|文書|高|YouTube 動画の見出し（チャプター）の時刻を並べた係|0:00 オープニングから 1:53 エンディングまで、7つの見出しと時刻。
+store-assets/youtube/youtube_16x9.mp4|音声・画像|高|YouTube に載せる横長（16:9）の宣伝動画の係|promo_cut.py の youtube 版として書き出した完成動画（約30MB）。
