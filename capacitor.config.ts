@@ -5,6 +5,10 @@ const config: CapacitorConfig = {
   appName: 'マナトビ',
   webDir: 'dist',
   plugins: {
+    FirebaseAuthentication: {
+      skipNativeAuth: true,
+      providers: ['apple.com', 'google.com'],
+    },
     AdMob: {
       appId: {
         android: 'ca-app-pub-9838177330528377~5499323313',

@@ -27,6 +27,13 @@ function isAdDisabled(): boolean {
 }
 
 /**
+ * インタースティシャル広告フラグ（演習終了・結果画面遷移時）
+ * - false: 一時非表示（最初の大々的な告知までは引っこめる）
+ * - true : 表示（いつでも true に切り替えるだけで元通りに復活します）
+ */
+export const ENABLE_INTERSTITIAL_AD = false;
+
+/**
  * 解説画面末尾のインライン広告枠フラグ
  * - false: 完全非表示（DOM自体レンダリングされません）
  * - true : 表示（いつでもtrueに切り替えるだけで元通りに復活します）
@@ -35,7 +42,7 @@ export const ENABLE_INLINE_AD = false;
 
 export const AD_TOGGLES = {
   /** 妙案1: インタースティシャル広告（演習終了・結果画面遷移時） */
-  get enableInterstitial(): boolean { return !isAdDisabled(); },
+  get enableInterstitial(): boolean { return ENABLE_INTERSTITIAL_AD && !isAdDisabled(); },
 
   /** 妙案2: 画面下部バナー広告（CSS変数でフッター・ナビを自動押し上げ） */
   get enableBottomBanner(): boolean { return !isAdDisabled(); },

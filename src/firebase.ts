@@ -1,5 +1,12 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, connectAuthEmulator } from 'firebase/auth';
+import {
+  getAuth,
+  initializeAuth,
+  indexedDBLocalPersistence,
+  browserLocalPersistence,
+  GoogleAuthProvider,
+  connectAuthEmulator
+} from 'firebase/auth';
 import { getFirestore, initializeFirestore, connectFirestoreEmulator, disableNetwork, type Firestore } from 'firebase/firestore';
 const env = import.meta.env;
 export const FIREBASE_CONFIGURED = Boolean(env.VITE_FIREBASE_API_KEY && env.VITE_FIREBASE_PROJECT_ID && env.VITE_FIREBASE_AUTH_DOMAIN && env.VITE_FIREBASE_APP_ID);
@@ -12,7 +19,17 @@ const app = initializeApp({
   appId: FIREBASE_CONFIGURED ? env.VITE_FIREBASE_APP_ID : '1:123:web:listening',
   storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET, messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
 }, 'manatobi-listening');
-export const auth = getAuth(app);
+
+function initAuth() {
+  try {
+    return initializeAuth(app, {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+    });
+  } catch {
+    return getAuth(app);
+  }
+}
+export const auth = initAuth();
 export const provider = new GoogleAuthProvider();
 // 統合版と同じ：学校・塾の Wi-Fi などでストリーム通信が詰まる環境だけ、自動でロングポーリングに切り替える
 function createDb(): Firestore {

@@ -22,10 +22,14 @@ export async function nativeSignIn(method: SignInMethod): Promise<GoogleSignInOu
     let rawNonce: string | undefined;
 
     if (method === 'google') {
-      const res = await FirebaseAuthentication.signInWithGoogle();
+      const res = await FirebaseAuthentication.signInWithGoogle({
+        skipNativeAuth: true,
+      });
       idToken = res.credential?.idToken;
     } else if (method === 'apple') {
-      const res = await FirebaseAuthentication.signInWithApple();
+      const res = await FirebaseAuthentication.signInWithApple({
+        skipNativeAuth: true,
+      });
       idToken = res.credential?.idToken;
       rawNonce = res.credential?.nonce;
     }
@@ -46,8 +50,13 @@ export async function nativeSignIn(method: SignInMethod): Promise<GoogleSignInOu
     const error = asErrorLike(rawError);
     const code = String(error?.code || error?.message || '');
 
-    // ユーザーによるキャンセル
-    if (code.includes('canceled') || code.includes('cancelled') || code.includes('12501')) {
+    // ユーザーによるキャンセル（Google: 12501, Apple: 1001）
+    if (
+      code.includes('canceled') ||
+      code.includes('cancelled') ||
+      code.includes('12501') ||
+      code.includes('1001')
+    ) {
       return { ok: false, message: `${label} ログインがキャンセルされました。` };
     }
 

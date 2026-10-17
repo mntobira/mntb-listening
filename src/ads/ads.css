@@ -54,3 +54,11 @@
     padding-bottom: var(--ad-bottom-h);
   }
 }
+
+/* バナー広告表示時：ログインボーナス等のシートがバナー広告・ナビバーに被らないよう中央配置 */
+:root[data-ad-banner="true"] .growth-sheet-backdrop {
+  align-items: center !important;
+  padding-bottom: calc(var(--ad-bottom-h, 50px) + 72px + env(safe-area-inset-bottom, 0px)) !important;
+  padding-top: calc(var(--app-safe-top, 0px) + var(--ad-top-h, 0px) + 16px) !important;
+}
+
