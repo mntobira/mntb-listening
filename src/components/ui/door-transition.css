@@ -1,0 +1,10 @@
+.door-transition { position: fixed; inset: 0; z-index: 9000; pointer-events: none; display: flex; }
+.door-transition > i { flex: 1; background: linear-gradient(90deg, #fdf3dc, #f6e6c2); will-change: transform; animation: dt-open .36s cubic-bezier(.6, 0, .25, 1) both; }
+.door-transition-l { transform-origin: left center; box-shadow: inset -2px 0 0 #e2cf9f; }
+.door-transition-r { transform-origin: right center; box-shadow: inset 2px 0 0 #e2cf9f; }
+/* 取っ手 */
+.door-transition > i::after { content: ''; position: absolute; top: 50%; width: 8px; height: 8px; border-radius: 50%; background: #e0b54a; }
+.door-transition-l::after { right: 14px; } .door-transition-l { position: relative; }
+.door-transition-r::after { left: 14px; } .door-transition-r { position: relative; }
+@keyframes dt-open { from { transform: scaleX(1); opacity: 1; } 70% { opacity: 1; } to { transform: scaleX(0); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .door-transition { display: none; } }

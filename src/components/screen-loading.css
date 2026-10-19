@@ -1,0 +1,11 @@
+/* 読み込み中の扉（ScreenLoading） */
+.screen-loading { display: grid; justify-items: center; gap: 2px; animation: sl-in .2s ease-out .3s both; }
+.screen-loading-door { position: relative; display: block; width: 46px; height: 62px; margin-bottom: 10px; border: 3px solid #2a4a7f; border-bottom-width: 4px; border-radius: 24px 24px 4px 4px; background: #fdf1d6; perspective: 160px; }
+.screen-loading-door > i { position: absolute; inset: 2px; border-radius: 20px 20px 2px 2px; background: linear-gradient(90deg, #4f86c6, #3a6fb0); transform-origin: left center; animation: sl-door 1.6s cubic-bezier(.45, 0, .3, 1) infinite; }
+.screen-loading-door > i::after { content: ''; position: absolute; right: 6px; top: 50%; width: 5px; height: 5px; border-radius: 50%; background: #f2c14e; }
+@keyframes sl-door { 0%, 12% { transform: rotateY(0); } 50%, 62% { transform: rotateY(-62deg); } 100% { transform: rotateY(0); } }
+@keyframes sl-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .screen-loading { animation: none; }
+  .screen-loading-door > i { animation: none; transform: rotateY(-40deg); }
+}

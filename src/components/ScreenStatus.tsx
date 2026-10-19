@@ -1,5 +1,13 @@
+import './screen-loading.css';
+
+/**
+ * 画面の読み込み中（2026-10-19）：文字だけだったのを「扉が少しずつ開く」小さな絵に。
+ * 扉の開き閉じは transform（rotateY）だけ。動きを減らす設定では止まった半開きの扉。
+ * 0.3秒より早く読み込めたときは出さない（チラつき防止）。
+ */
 export function ScreenLoading() {
-  return <section role="status" aria-live="polite" className="notebook-paper p-6 text-center font-handwriting text-[#2C3E50]">
+  return <section role="status" aria-live="polite" className="screen-loading notebook-paper p-6 text-center font-handwriting text-[#2C3E50]">
+    <span className="screen-loading-door" aria-hidden="true"><i /></span>
     <p className="font-bold">読み込んでいます…</p>
     <p className="mt-2 text-sm">そのままお待ちください。</p>
   </section>;
