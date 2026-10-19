@@ -13,8 +13,8 @@ android {
         applicationId "com.manatobi.listening"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
-        versionName "1.0.2"
+        versionCode 13
+        versionName "1.0.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // 音源・動画は APK 内で無圧縮にする（RangeAwareWebViewClient が openFd で長さを取り、途中から読めるように）
         // ※ mp3/mp4 は既定でも無圧縮だが、念のため明示する
