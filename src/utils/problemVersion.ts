@@ -89,29 +89,7 @@ export function parseProblemId(id: string | null | undefined): ParsedProblemId {
   };
 }
 
-/**
- * 版数を指定してIDを作る。
- * version が 1 のときは接尾辞を付けない（既存IDと同じ形になる）。
- */
-export function withProblemVersion(baseId: string, version: number): string {
-  const base = parseProblemId(baseId).base;
-  if (!Number.isFinite(version) || version <= 1) return base;
-  return `${base}-v${Math.floor(version)}`;
-}
 
-/**
- * 2つのIDが「同じ問題の別の版」かどうか。
- * 進捗の引き継ぎ判断などに使える（現時点では判定のみを提供する）。
- */
-export function isSameProblemLineage(
-  a: string | null | undefined,
-  b: string | null | undefined,
-): boolean {
-  const pa = parseProblemId(a);
-  const pb = parseProblemId(b);
-  if (!pa.base || !pb.base) return false;
-  return pa.base === pb.base;
-}
 
 // ============================================================
 // 問題本文の指紋（ハッシュ）

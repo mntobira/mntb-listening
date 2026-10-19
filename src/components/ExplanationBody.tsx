@@ -98,10 +98,6 @@ export function parseExplanationBlocks(text: string): Block[] {
   return blocks;
 }
 
-/** 解説テキストに Markdown テーブルが含まれるか判定する（軽量チェック）。 */
-export function hasMarkdownTable(text: string): boolean {
-  return parseExplanationBlocks(text).some((b) => b.kind === 'table');
-}
 
 const alignClass: Record<Alignment, string> = {
   left: 'text-left',

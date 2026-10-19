@@ -5,6 +5,7 @@ import { auth, db } from '../firebase';
 import { normalizeTargetSchool } from './vocabGoal';
 import { profileKey } from './userStorageKeys';
 import { readStudyTime } from './studyTime';
+import { logRejection } from './reportError';
 export const PUBLIC_STUDY_PROFILES = 'public_study_profiles';
 export const MOTTO_MAX = 40;
 export interface PublicStudyProfile {
@@ -29,7 +30,7 @@ export function parsePublicStudyProfile(value: unknown): PublicStudyProfile | nu
   };
 }
 /** 達成ステージ数・レベルはサーバー（achievements 関数）が全端末を合算して書く。ここでは送らない */
-const syncLater = () => { void import('./achievementsSync').then(m => m.syncAchievements()).catch(() => {}); };
+const syncLater = () => { void import('./achievementsSync').then(m => m.syncAchievements()).catch(logRejection('achievements.sync')); };
 export async function readOwnPublicStudyProfile(): Promise<PublicStudyProfile | null> {
   const uid = auth.currentUser?.uid;
   if (!uid) return null;

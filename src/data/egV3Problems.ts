@@ -96,10 +96,11 @@ export const egV3Chapters: EgV3Chapter[] = [...byChapter.keys()]
           chunk.map(toEgItem),
         ),
       );
-      const built = problems[problems.length - 1] as any;
+      // keyPhrasesOnly は GrammarProblem には無い項目（画面側の Problem 型にはある）なので、ここで足す
+      const built = problems[problems.length - 1] as GrammarProblem & { keyPhrasesOnly?: boolean };
       built.keyPhrasesOnly = true;
       // 対戦用：元データの制限時間と、試合後に出す1行解答（答え＋ひと言）
-      built.subQuestions.forEach((sq: any, si: number) => {
+      built.subQuestions.forEach((sq, si) => {
         sq.battleTimeLimit = chunk[si].tl;
         sq.oneLine = chunk[si].one;
       });

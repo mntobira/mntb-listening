@@ -61,6 +61,7 @@ import {
 // 解説の後処理は listeningPostProcess.ts に1つだけ置いている
 // （整形関数・リスニング専用の組み立ても、その中で使う）。
 import { applyListeningPostProcess } from './listeningPostProcess';
+import type { Problem } from '../types/curriculum';
 
 /** 1つの単元（アプリ上の1単元）。他科目の chapter と同形。 */
 export interface ListeningChapter {
@@ -86,9 +87,9 @@ export interface ListeningChapter {
   /** 扱う内容 */
   topics: string[];
   /** 演習問題（今回は未収録。問題を入れると自動で「最初から」ボタンが出る） */
-  practiceProblems: any[];
+  practiceProblems: Problem[];
   /** 小テスト（未収録） */
-  miniTest: any[];
+  miniTest: Problem[];
   // ---- ここから下はリスニング固有の情報（他科目には無いが、任意項目なので既存処理を壊さない） ----
   /** 大問単位の配点（A・B に分かれる大問は共通の値） */
   points: number;
@@ -236,7 +237,7 @@ export const englishListeningData: { parts: ListeningPart[] } = {
 // 回（第1回・第2回…）を増やすときは問題ファイル側の配列に足すだけでよい。
 
 /** 単元ID → 演習問題。収録済みの単元だけを列挙する。 */
-const LISTENING_PROBLEMS: Record<string, any[]> = {
+const LISTENING_PROBLEMS: Record<string, Problem[]> = {
   // 第1問A：手作りの第1回 ＋ 配布PDF由来の13セット（第2回〜第14回）
   el1_A: [...EL1_A_PROBLEMS, ...EL1_A_EXTRA_PROBLEMS],
   // 第1問B：配布PDF（スクリプト側）＋ イラストPDF を対応させた15セット

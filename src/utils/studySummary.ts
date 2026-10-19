@@ -511,11 +511,3 @@ export function buildStudentCsv(rows: StudentSummary[], withBom = true): string 
 
 export const CHAPTER_CSV_HEADERS = ['単元', '大問数', 'クラス平均到達率(%)', '未処理の復習(合計)'] as const;
 
-/** 章別の到達状況を CSV に（クラス全体の弱点把握用） */
-export function buildChapterCsv(rows: ChapterProgressRow[], withBom = true): string {
-  return buildCsvText(
-    CHAPTER_CSV_HEADERS,
-    rows.map((row) => [row.chapterTitle, row.totalProblems, row.ratePercent, row.pendingReviews]),
-    withBom,
-  );
-}

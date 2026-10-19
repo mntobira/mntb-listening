@@ -85,8 +85,8 @@ describe('音読・ディクテーション（2026-10-08）', () => {
 
   it('絵の問題：第1問B・第2問のイラストはすべて実在し、答え合わせで1コマずつ切り出せる', async () => {
     const { englishListeningData } = await import('../src/data/englishListeningData');
-    const subs = englishListeningData.parts.flatMap((p: any) => p.chapters ?? []).flatMap((c: any) => c.practiceProblems ?? c.problems ?? [])
-      .flatMap((pb: any) => pb.subQuestions ?? []).filter((sq: any) => /^\/listening_(q1b|q2)\//.test(sq.imageUrl ?? ''));
+    const subs = englishListeningData.parts.flatMap((p) => p.chapters ?? []).flatMap((c) => c.practiceProblems ?? [])
+      .flatMap((pb) => pb.subQuestions ?? []).filter((sq) => /^\/listening_(q1b|q2)\//.test(sq.imageUrl ?? ''));
     expect(subs.length).toBeGreaterThanOrEqual(100);
     for (const sq of subs) {
       expect(existsSync(join(__dirname, '..', 'public', sq.imageUrl))).toBe(true);

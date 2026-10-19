@@ -6,7 +6,7 @@ import {
   RewardAdPluginEvents,
 } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
-import { AD_TOGGLES, ADMOB_IDS, getEffectiveBannerId, getEffectiveInterstitialId, getEffectiveRewardedId } from './adConfig';
+import { AD_TOGGLES, getEffectiveBannerId, getEffectiveInterstitialId, getEffectiveRewardedId } from './adConfig';
 import { registerRewardedAdProvider } from '../ads/rewardedAd';
 
 let isInitialized = false;
@@ -54,13 +54,14 @@ export async function initializeAdMob(): Promise<void> {
               rewarded = true;
             });
             const dismissSub = AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
+              // リスナーの解除失敗はプラグイン側の問題で、結果の通知には影響しない（下も同じ）
               rewardSub.then((s) => s.remove()).catch(() => {});
               dismissSub.then((s) => s.remove()).catch(() => {});
               resolve(rewarded ? { status: 'rewarded' } : { status: 'dismissed' });
             });
             AdMob.showRewardVideoAd().catch((e) => {
-              rewardSub.then((s) => s.remove()).catch(() => {});
-              dismissSub.then((s) => s.remove()).catch(() => {});
+              rewardSub.then((s) => s.remove()).catch(() => {}); // 解除失敗は結果の通知に影響しない
+              dismissSub.then((s) => s.remove()).catch(() => {}); // 同上
               resolve({ status: 'unavailable', reason: String(e) });
             });
           });
@@ -164,7 +165,9 @@ export async function showInterstitialAtBreakpoint(): Promise<void> {
     await AdMob.showInterstitial();
     try {
       localStorage.setItem(LAST_SHOWN_TIME_KEY, String(Date.now()));
-    } catch {}
+    } catch {
+      // 表示時刻を保存できない環境では、頻度制限なしで続ける（広告の表示自体は成功している）
+    }
     preloadInterstitial();
   } catch (error) {
     console.warn('[AdMob] Interstitial show at breakpoint failed/skipped:', error);

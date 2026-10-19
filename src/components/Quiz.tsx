@@ -1,3 +1,5 @@
+import { useLatest } from '../hooks/useLatest';
+import { useMountEffect } from '../hooks/useMountEffect';
 import React, { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { ArrowLeft } from 'lucide-react';
 // 記号パレット（解答入力の補助キーボード）は components/SymbolPalette.tsx にある。
@@ -30,7 +32,6 @@ import { ListeningBriefing } from './ListeningBriefing';
 // 「解答と解説を見る」を押した瞬間の採点処理（137行）は utils/quizScoring.ts へ
 import { createScoreCurrentQuestion } from '../utils/quizScoring';
 import { QuizTimerBar } from './QuizTimerBar';
-import { FloatingScoreAnimation } from './FloatingScoreAnimation';
 import { calcQuestionTimeLimit, type ScoreBreakdown } from '../utils/scoring';
 import { submitChapterScore } from '../utils/leaderboard';
 import {
@@ -56,17 +57,19 @@ import { scrollInputIntoView } from '../utils/quizInputScroll';
 import { isShortAnswerType } from '../utils/quizBlanks';
 // cleanQuestionText は解説画面（Explanation.tsx）と同じ実装が必要なので
 // questionDisplay.ts の1つだけを使う。呼ぶ場所は派生値フックへ移った。
-import { buildListeningSteps, isPerSubQuestionListening, stepSubQuestions } from '../utils/listeningSteps';
+import { buildListeningSteps, buildProgressPill, isPerSubQuestionListening, stepSubQuestions } from '../utils/listeningSteps';
+import { usePreventZoom } from '../hooks/usePreventZoom';
 import { useIsDesktop } from '../hooks/useMediaQuery';
-import { asMobileChoiceSub, useMathChoices } from '../utils/mathMobileChoices';
-import { mathCourseOfChapter } from '../data/mathNavigation';
 import { safeSetItem } from '../utils/storageGuard';
-import { recordStagePlay, stageKey } from '../utils/stageRecords';
+import { stageKey } from '../utils/stageRecords';
+import { recordStagePlayAndSync } from '../utils/stagePlay';
 import { auth } from '../firebase';
+import { logRejection } from '../utils/reportError';
+import type { Chapter, Problem, SubQuestion } from '../types/curriculum';
 
 interface QuizProps {
   mode: 'mini_test' | 'practice';
-  chapter: any;
+  chapter: Chapter;
   onFinish: (answers: Record<string, string>, result?: ChapterRunState) => void;
   onBack: () => void;
   onReturnToBattle?: () => void;
@@ -180,7 +183,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
 
   // 一人で学ぶ：この単元を開いてからもらったマナコイン・XP を数え直す（結果画面に出す）
   useEffect(() => {
-    void import('../battle/data/growthStore').then(({ resetStudySession }) => resetStudySession()).catch(() => {});
+    void import('../battle/data/growthStore').then(({ resetStudySession }) => resetStudySession()).catch(logRejection('growth.resetStudySession'));
   }, [chapter.id, mode]);
 
   useEffect(() => {
@@ -213,7 +216,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     eliminated,
     isEliminated,
     restoreOption,
-    clearEliminated,
     strikeOptionAnimated,
     justStruck,
     beginLongPress,
@@ -304,7 +306,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
       (key) => key.startsWith(`${q.id}::`),
     );
     if (scoredAsQuestion || scoredAsStep) return; // 採点済みは残す
-    const subIds: string[] = (q.subQuestions || []).map((sq: any) => sq.id);
+    const subIds: string[] = (q.subQuestions || []).map((sq) => sq.id);
     if (subIds.length === 0) return;
     setAnswers(prev => {
       let changed = false;
@@ -331,6 +333,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
       clearAnswersForQuestionIfUnscored(leftIndex);
       prevQuestionIndexRef.current = currentQuestionIndex;
     }
+    // 問題が替わったときだけ表示状態をリセットする（ほかの値の更新ではリセットしない）
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestionIndex]);
 
@@ -342,10 +345,12 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   // localStorage から showingExplanation=true で復元された場合（リロード/再開時）
   // に App 側と状態がズレ、初回表示だけレイアウトと viewport の組み合わせが
   // 不整合になる問題があった。effect で常に同期させて確実に一致させる。
+  // 親の onExplanationChange は描画ごとに作り直されるので、最新のものを ref から読む
+  // （関数が変わっただけでは通知し直さない＝以前と同じ）。
+  const onExplanationChangeRef = useLatest(onExplanationChange);
   useEffect(() => {
-    if (onExplanationChange) onExplanationChange(showingExplanation);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showingExplanation]);
+    if (onExplanationChangeRef.current) onExplanationChangeRef.current(showingExplanation);
+  }, [showingExplanation, onExplanationChangeRef]);
 
   // 問題解答画面ではズーム（ピンチ／ダブルタップ）を一切禁止する。
   //
@@ -358,34 +363,11 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   // App / Explanation と 3箇所で競合して初回表示時のスクロール不能の原因と
   // なっていたため廃止し、viewport 制御は App.tsx に一元化した。
   // （解説表示中は上の同期 effect 経由で App が俯瞰用 viewport を適用する）
+  // 解答中だけピンチ・ダブルタップズームを抑止する（ボタンも含めて止める：従来どおり）
+  usePreventZoom({ enabled: !showingExplanation, blockGesture: true });
+  // 解説へ移る瞬間: スクロール位置を最上部へ（viewport は App 側が制御）
   useEffect(() => {
-    // ピンチズーム（iOS の gesture イベント）を抑止
-    const preventGesture = (e: Event) => { e.preventDefault(); };
-    // ダブルタップズームを抑止（前回タップから300ms以内の2回目タップをキャンセル）
-    let lastTouchEnd = 0;
-    const preventDoubleTapZoom = (e: TouchEvent) => {
-      const now = Date.now();
-      if (now - lastTouchEnd <= 300) {
-        e.preventDefault();
-      }
-      lastTouchEnd = now;
-    };
-
-    if (showingExplanation) {
-      // 解説へ移る瞬間: スクロール位置を最上部へ（viewport は App 側が制御）
-      window.scrollTo(0, 0);
-    } else {
-      // 解答中のみズーム抑止リスナーを登録する
-      document.addEventListener('gesturestart', preventGesture, { passive: false });
-      document.addEventListener('gesturechange', preventGesture, { passive: false });
-      document.addEventListener('touchend', preventDoubleTapZoom, { passive: false });
-    }
-
-    return () => {
-      document.removeEventListener('gesturestart', preventGesture);
-      document.removeEventListener('gesturechange', preventGesture);
-      document.removeEventListener('touchend', preventDoubleTapZoom);
-    };
+    if (showingExplanation) window.scrollTo(0, 0);
   }, [showingExplanation]);
 
   useEffect(() => {
@@ -398,7 +380,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   // キーボードが閉じたら、フローティング入力欄も閉じて「問題文全体＋入力欄」を
   // 同時に見られる通常表示に戻す（要件1）。
   useEffect(() => {
-    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    const vv: VisualViewport | null | undefined = window.visualViewport;
     if (!vv) return;
     // 初期のフル高さ。キーボード表示で vv.height はこれより小さくなる。
     const baseline = () => Math.max(vv.height, window.innerHeight || 0);
@@ -425,7 +407,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
         setFocusedSubId((prev) => {
           if (!prev) return prev;
           const cur = (currentQuestionRef.current?.subQuestions || []).find(
-            (sq: any) => sq.id === prev
+            (sq) => sq.id === prev
           );
           const isText = cur && (isShortAnswerType(cur) || cur.type === 'descriptive');
           return isText ? null : prev;
@@ -459,6 +441,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
         }
       } catch { /* 保存不可の環境ではそのまま */ }
     }
+    // 問題が替わったときだけ表示状態をリセットする（ほかの値の更新ではリセットしない）
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestionIndex]);
 
@@ -474,7 +457,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     // テキスト非入力（選択式・並べ替え）はキーボードを開かないため
     // フォーカス移動は不要。
     {
-      const cur = (currentQuestionRef.current?.subQuestions || []).find((sq: any) => sq.id === focusedSubId);
+      const cur = (currentQuestionRef.current?.subQuestions || []).find((sq) => sq.id === focusedSubId);
       const isText = cur && (isShortAnswerType(cur) || cur.type === 'descriptive');
       if (!isText) return;
     }
@@ -486,7 +469,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
       el.focus({ preventScroll: true });
       try {
         const len = (el.value || '').length;
-        (el as any).setSelectionRange?.(len, len);
+        el.setSelectionRange?.(len, len);
       } catch {
         /* noop */
       }
@@ -510,7 +493,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     if (!focusedSubId) return;
     // テキスト非入力（選択式・並べ替え）はキーボードを開かないため、
     // カードのスクロールのみ行いフォーカス移動はしない。
-    const curSub = (currentQuestionRef.current?.subQuestions || []).find((sq: any) => sq.id === focusedSubId);
+    const curSub = (currentQuestionRef.current?.subQuestions || []).find((sq) => sq.id === focusedSubId);
     const isTextFocus = curSub && (isShortAnswerType(curSub) || curSub.type === 'descriptive');
     if (!isTextFocus) {
       const card = document.getElementById(`ans-card-${focusedSubId}`);
@@ -528,7 +511,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
         el.focus({ preventScroll: true });
         try {
           const len = (el.value || '').length;
-          (el as any).setSelectionRange?.(len, len);
+          el.setSelectionRange?.(len, len);
         } catch {
           /* noop */
         }
@@ -607,10 +590,8 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
    * 記号パレットで式を打つのはスマホだと時間がかかり、計算より入力で疲れてしまう。
    * 選択肢が用意できない設問だけは、スマホでも入力のままにする。
    */
-  const mathMobileChoices = useMathChoices(!isDesktop && mathCourseOfChapter(String(chapter.id)) != null);
-  const mobileChoiceSub = (sq: any) => (mathMobileChoices ? asMobileChoiceSub(sq, mathMobileChoices) : null);
 
-  const renderMultipleChoiceControl = (sq: any) => (
+  const renderMultipleChoiceControl = (sq: SubQuestion) => (
     <MultipleChoiceControl
       sq={sq}
       answers={answers}
@@ -647,7 +628,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
    * 問題切り替え時のリセットが下の useEffect にあるので Quiz 側に残し、
    * props で渡している。
    */
-  const renderSortingControl = (sq: any) => (
+  const renderSortingControl = (sq: SubQuestion) => (
     <SortingControl
       sq={sq}
       answers={answers}
@@ -663,7 +644,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   );
 
   /** 選択式の現在の選択内容を「表示専用チップ」用の文字列にする。 */
-  const questions = mode === 'mini_test' ? chapter.miniTest : (chapter.practiceProblems || []);
+  const questions: Problem[] = mode === 'mini_test' ? chapter.miniTest : (chapter.practiceProblems || []);
 
   // 章内の図版へ通し番号（図1・図2 …）を割り当てるためのマップ。
   const figureNumberMap = useMemo(() => buildFigureNumberMap(questions), [questions]);
@@ -700,31 +681,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     Math.max(1, currentQuestionIndex - rangeStart + 1),
   );
 
-  if (questions.length === 0) {
-    return (
-      <div className="w-full bg-white rounded-2xl shadow-xl p-6 md:p-12 border border-gray-100 text-center relative">
-        <button 
-          onClick={onBack}
-          className="absolute top-[calc(1rem+env(safe-area-inset-top,0px))] left-4 md:top-6 md:left-6 flex items-center gap-2 text-gray-500 hover:text-[#2C3E50] transition-colors font-bold bg-gray-50 px-4 py-2 rounded-full shadow-sm"
-        >
-          <ArrowLeft size={20} />
-          <span>戻る</span>
-        </button>
-        <h2 className="text-xl md:text-2xl font-modern font-bold text-gray-800 mb-4 mt-12 md:mt-8">
-          {chapter.abstractTitle}
-        </h2>
-        <p className="text-sm md:text-base text-gray-500 font-modern mb-8">
-          この単元の問題はまだ追加されていません。
-        </p>
-        <button
-          onClick={onBack}
-          className="bg-[#1B2631] text-white px-6 py-3 rounded-xl font-bold w-full sm:w-auto"
-        >
-          単元選択に戻る
-        </button>
-      </div>
-    );
-  }
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -749,7 +705,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
    * ステップが持つ subQuestionIds から引く。以前の「subQuestions[safeStepIndex]」は
    * ステップ数＝小問数のときしか成り立たなかった。
    */
-  const activeStepSubs: any[] = perStep
+  const activeStepSubs: SubQuestion[] = perStep
     ? stepSubQuestions(currentQuestion, listeningSteps[safeStepIndex])
     : [];
   /** いま表示している小問（先頭）。音源・採点キー・解説の絞り込みはこれをキーにする */
@@ -757,21 +713,10 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   /** この回の最後の問まで来たか */
   const isLastStep = !perStep || safeStepIndex >= listeningSteps.length - 1;
 
-  /**
-   * 進捗ピルの分子・分母。
-   *
-   * ・1問ずつモード（リスニング）… その回の中の「問」を数える（例 2/4）
-   * ・従来モード（化学など）      … 範囲内の「大問」を数える（例 3/14）
-   *
-   * 回をまたぐ通し番号にはしていない。1回＝4問と短いので、
-   * 「この回のどこまで来たか」が分かるほうが達成感につながる。
-   */
-  // ★数え方を結果画面と合わせる（2026-10-05 ご指摘「1問なのに2問と出る」）★
-  //   第4問〜第6問は「音声1本に問34・35の2つの解答欄」なので、画面は1枚でも答えは2問。
-  //   以前は進捗が画面の枚数（1/1）、結果が答えの数（0/2）で食い違っていた。どちらも「答えの数」で数える。
-  const stepSubCounts = listeningSteps.map(st => Math.max(1, st.subQuestionIds.length));
-  const progressTotal = perStep ? stepSubCounts.reduce((a, b) => a + b, 0) : rangeCount;
-  const progressPosition = perStep ? stepSubCounts.slice(0, safeStepIndex).reduce((a, b) => a + b, 0) + 1 : rangePosition;
+  // 進捗ピルの分子・分母（数え方は utils/listeningSteps.ts の buildProgressPill）
+  const progressPill = buildProgressPill({
+    perStep, steps: listeningSteps, stepIndex: safeStepIndex, rangeCount, rangePosition,
+  });
 
   /**
    * 「前へ」を押せるか。
@@ -793,7 +738,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
 
   // visualViewport の resize ハンドラ（マウント時登録・依存なし）から
   // 最新の currentQuestion を参照するための ref。
-  const currentQuestionRef = useRef<any>(currentQuestion);
+  const currentQuestionRef = useRef<Problem | undefined>(currentQuestion);
   useEffect(() => {
     currentQuestionRef.current = currentQuestion;
   }, [currentQuestion]);
@@ -802,7 +747,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   const questionTimeLimit = useMemo(() => {
     if (!currentQuestion) return 60;
     // 問題側で明示された制限時間（リスニング第4問以降：音声長＋解答時間）を優先
-    const explicit = Number((currentQuestion as any).timeLimitSec);
+    const explicit = Number(currentQuestion.timeLimitSec);
     if (Number.isFinite(explicit) && explicit > 0) return Math.round(explicit);
     return calcQuestionTimeLimit(currentQuestion.subQuestions || []);
   }, [currentQuestion]);
@@ -859,22 +804,21 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   //              →問1のページに行く→問1の解説のページに行く」
   // Quiz は回（演習）を選ぶたびにマウントされるので、マウント時に
   // リスニングの回であれば説明ページから始める。化学などは従来どおり。
-  useEffect(() => {
+  useMountEffect(() => {
     if (listeningTracks.length > 0) setShowingBriefing(true);
     // 回のマウント時のみ（問の移動では再表示しない）
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   // 現在フォーカス中の設問オブジェクト（全形式対象）。
   const focusedSub = useMemo(() => {
     if (!focusedSubId) return null;
-    return inputNavSubs.find((sq: any) => sq.id === focusedSubId) || null;
+    return inputNavSubs.find((sq) => sq.id === focusedSubId) || null;
   }, [focusedSubId, inputNavSubs]);
 
   // inputNavSubs 内での現在フォーカスのインデックス（前へ/次へ判定用）。
   const focusedIndex = useMemo(() => {
     if (!focusedSubId) return -1;
-    return inputNavSubs.findIndex((sq: any) => sq.id === focusedSubId);
+    return inputNavSubs.findIndex((sq) => sq.id === focusedSubId);
   }, [focusedSubId, inputNavSubs]);
 
   /**
@@ -930,8 +874,8 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   };
 
   /** この設問がテキスト入力ナビ（前へ/次へ）の最後か。Enter キーのヒントに使う。 */
-  const isLastNavSub = (sq: any) => {
-    const idx = inputNavSubs.findIndex((s: any) => s.id === sq.id);
+  const isLastNavSub = (sq: SubQuestion) => {
+    const idx = inputNavSubs.findIndex((s) => s.id === sq.id);
     return idx < 0 || idx >= inputNavSubs.length - 1;
   };
 
@@ -943,11 +887,11 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
    * 入力欄はカード内の1か所だけなので、ここで移動すれば
    * 「解答欄が2つ出る」ことはない（ご指摘対応）。
    */
-  const handleMobileCardKeyDown = (sq: any) => (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleMobileCardKeyDown = (sq: SubQuestion) => (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (e.key !== 'Enter') return;
     if (sq.type === 'descriptive') return; // 記述は改行を許可
     e.preventDefault();
-    const idx = inputNavSubs.findIndex((s: any) => s.id === sq.id);
+    const idx = inputNavSubs.findIndex((s) => s.id === sq.id);
     if (idx >= 0 && idx < inputNavSubs.length - 1) {
       moveFocus(1);
     } else {
@@ -1003,7 +947,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
       const scored = scoreCurrentQuestionIfNeeded();
       
       // スコアアニメーションのデータを取得
-      const currentQuestion = questions[currentQuestionIndex];
       if (scored) {
         const scoreData = scored.breakdown;
         setScoreAnimationData({
@@ -1039,7 +982,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
         try {
           const single = questionRange && rangeStart === rangeEnd ? questions[rangeStart] : null;
           const unitTitle = String(chapter.abstractTitle || chapter.title || chapter.id);
-          recordStagePlay(auth.currentUser?.uid || 'guest', stageKey(chapter.id, single?.id),
+          recordStagePlayAndSync(auth.currentUser?.uid || 'guest', stageKey(chapter.id, single?.id),
             single ? `${unitTitle} ${single.title || `第${rangeStart + 1}回`}` : unitTitle,
             latest.totalCorrect, latest.totalJudgeable);
         } catch { /* 記録の失敗で学習を止めない */ }
@@ -1107,6 +1050,36 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     // handleNext/handlePrevious は毎レンダー再生成されるため依存に含める。
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showingExplanation, currentQuestionIndex, answers]);
+
+  // ★早期 return は全フック呼び出しの後に置く（Rules of Hooks）★
+  //   以前はこの return が useRef / useMemo / useQuestionDerived より前にあり、
+  //   問題が空 → 非空に変わるとフックの数が変わってクラッシュする構造だった。
+  //   ここより前の計算は currentQuestion が undefined でも安全に動く（?. と既定値で受けている）。
+  if (questions.length === 0) {
+    return (
+      <div className="w-full bg-white rounded-2xl shadow-xl p-6 md:p-12 border border-gray-100 text-center relative">
+        <button 
+          onClick={onBack}
+          className="absolute top-[calc(1rem+env(safe-area-inset-top,0px))] left-4 md:top-6 md:left-6 flex items-center gap-2 text-gray-500 hover:text-[#2C3E50] transition-colors font-bold bg-gray-50 px-4 py-2 rounded-full shadow-sm"
+        >
+          <ArrowLeft size={20} />
+          <span>戻る</span>
+        </button>
+        <h2 className="text-xl md:text-2xl font-modern font-bold text-gray-800 mb-4 mt-12 md:mt-8">
+          {chapter.abstractTitle}
+        </h2>
+        <p className="text-sm md:text-base text-gray-500 font-modern mb-8">
+          この単元の問題はまだ追加されていません。
+        </p>
+        <button
+          onClick={onBack}
+          className="bg-[#1B2631] text-white px-6 py-3 rounded-xl font-bold w-full sm:w-auto"
+        >
+          単元選択に戻る
+        </button>
+      </div>
+    );
+  }
 
   /**
    * クイズから離脱（単元選択に戻る）するときのハンドラ。
@@ -1202,9 +1175,9 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
         keyboardVisible={keyboardVisible}
         handleExit={handleExit}
         run={run}
-        progressPosition={progressPosition}
-        progressPositionEnd={perStep && (stepSubCounts[safeStepIndex] ?? 1) > 1 ? progressPosition + stepSubCounts[safeStepIndex] - 1 : undefined}
-        progressTotal={progressTotal}
+        progressPosition={progressPill.position}
+        progressPositionEnd={progressPill.positionEnd}
+        progressTotal={progressPill.total}
         topics={Array.isArray(chapter.topics) ? chapter.topics : []}
       />
 
@@ -1223,15 +1196,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
           resetKey={`${chapter.id}_${currentQuestionIndex}`}
         />
       </div>
-
-      {/* Score Animation Overlay（演習では出さない：2026-10-02 D2） */}
-      {false && scoreAnimationData && (
-        <FloatingScoreAnimation
-          breakdown={scoreAnimationData.breakdown}
-          totalScore={scoreAnimationData.totalScore}
-          isVisible={showScoreAnimation}
-        />
-      )}
 
       {/* Main Content Area (Split on Desktop, Stacked on Mobile)
 
@@ -1312,7 +1276,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
           isLastNavSub={isLastNavSub}
           renderedAnswerGroups={renderedAnswerGroups}
           renderMultipleChoiceControl={renderMultipleChoiceControl}
-          mobileChoiceSub={mobileChoiceSub}
           renderSortingControl={renderSortingControl}
           questionNeedsMathPalette={questionNeedsMathPalette}
           isProblemExpanded={isProblemExpanded}

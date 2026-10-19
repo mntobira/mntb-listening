@@ -7,6 +7,7 @@ import {
   LINK_LABEL, loadReadAlong, toIpa, wordAt,
 } from './readAlong';
 import './read-along.css';
+import { pauseAllAudio } from '../../utils/audioElements';
 
 /**
  * 音読練習（2026-10-08）
@@ -56,7 +57,7 @@ export function ReadAlongStudio({ track, onClose }: { track: Track; onClose: () 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
-    document.querySelectorAll('audio').forEach(el => { if (el !== audioRef.current && !el.paused) el.pause(); });
+    pauseAllAudio(audioRef.current);
     return () => { window.removeEventListener('keydown', onKey); if (turnTimer.current) window.clearTimeout(turnTimer.current); };
   }, [onClose]);
 
@@ -73,6 +74,7 @@ export function ReadAlongStudio({ track, onClose }: { track: Track; onClose: () 
     if (data) { const k = wordAt(data.words, ms); repeatDone.current = k >= 0 ? data.words[k].chunk - (ms <= data.words[k].start + 200 ? 1 : 0) : -1; }
     el.currentTime = Math.max(0, ms / 1000);
     el.playbackRate = rate;
+    // 自動再生の制限で拒まれたら、利用者が再生ボタンを押せばよい（以下の play() も同じ）
     void el.play().catch(() => undefined);
   }, [rate, data]);
   const pause = () => { audioRef.current?.pause(); clearTurn(); };
@@ -107,7 +109,7 @@ export function ReadAlongStudio({ track, onClose }: { track: Track; onClose: () 
             turnTimer.current = window.setTimeout(() => {
               setYourTurn(null);
               const nx = data.chunks[c.i + 1];
-              if (nx && audioRef.current) { audioRef.current.currentTime = Math.max(0, (nx.start - 80) / 1000); void audioRef.current.play().catch(() => undefined); }
+              if (nx && audioRef.current) { audioRef.current.currentTime = Math.max(0, (nx.start - 80) / 1000); void audioRef.current.play().catch(() => undefined); } // 自動再生の制限で拒まれたら再生ボタンで再開できる
             }, wait);
           }
         }
@@ -129,7 +131,7 @@ export function ReadAlongStudio({ track, onClose }: { track: Track; onClose: () 
 
   const curChunk = cur >= 0 ? words[cur]?.chunk ?? -1 : -1;
   const back3 = () => { const el = audioRef.current; if (el) playFrom(Math.max(0, el.currentTime * 1000 - 3000)); };
-  const toggle = () => { const el = audioRef.current; if (!el) return; if (el.paused) { if (yourTurn) clearTurn(); void el.play().catch(() => undefined); el.playbackRate = rate; } else pause(); };
+  const toggle = () => { const el = audioRef.current; if (!el) return; if (el.paused) { if (yourTurn) clearTurn(); void el.play().catch(() => undefined); el.playbackRate = rate; } else pause(); }; // 自動再生の制限で拒まれたら再生ボタンで再開できる
   const repeatChunk = () => {
     const c = chunks[curChunk >= 0 ? curChunk : 0]; if (!c) return;
     playSeg(c.start, c.end);

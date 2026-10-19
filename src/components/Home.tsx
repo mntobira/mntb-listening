@@ -74,7 +74,6 @@ import { FeedbackReplyInbox } from './FeedbackReplyInbox';
 import { GoogleLinkBanner } from './GoogleLinkBanner';
 import {
   isLegacyProgressBackfilled,
-  countSolvedByChapter,
   countSolvedProblemsIn,
 } from '../utils/progress';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
@@ -83,6 +82,7 @@ import { loadSchoolBrand } from '../utils/classroom';
 import { UpdateNoticeModal } from './UpdateNoticeModal';
 import { unreadNoticeCount, refreshRemoteNotices } from '../utils/updateNotices';
 import { readJsonArray } from '../utils/safeLocalStorage';
+import { KineticText } from '../motion';
 
 interface HomeProps {
   onStart: () => void;
@@ -93,26 +93,9 @@ interface HomeProps {
   onStudyMode?: (mode: 'practice' | 'learning' | 'mini_test') => void;
   onIntro: () => void;
   onNoteList: () => void;
-  onLogicalTree: () => void;
   onLeaderboard?: () => void;
   /** 対戦モードを開く。FEATURES.battle が false のときは渡されない */
   onBattle?: () => void;
-  /**
-   * 高校入試 理科（演習・まとめ・出題傾向）を開く。
-   *
-   * ★科目カードではなくホームの入口にした理由★
-   *   理科は本体の「章→大問→小問」の形を持っていない。
-   *   単元の絞り込みも問題の出し方も理科の画面が自分で持っているので、
-   *   科目選択のカードに並べると、押した先で1問も出せない状態になる。
-   *   （詳しくは src/features/rika/RikaHome.tsx）
-   *
-   * ★省略可にしてある理由★
-   *   Home はテストやプレビューからも描画される。
-   *   必須にすると呼び出し側すべてに手を入れることになる。
-   *   渡されなければカードを出さない（＝従来どおりの見た目）。
-   *   FEATURES.rika が false のときは App 側で渡さない。
-   */
-  onRika?: () => void;
   onReviewList?: () => void;
   /** 科目選択（タイトル）画面へ戻る */
   onChangeSubject?: () => void;
@@ -120,7 +103,7 @@ interface HomeProps {
   onFoundation?: () => void;
   /** 現在選択中の科目名（表示用） */
   subjectLabel?: string;
-  /** 現在選択中の科目。省略時は従来どおり化学基礎として振る舞う。 */
+  /** 現在選択中の科目。省略時は英語リスニング（SUBJECTS の先頭）。 */
   subject?: SubjectKey;
   isGuest: boolean;
   /*
@@ -144,13 +127,13 @@ interface HomeProps {
   onToggleBgm?: (enabled: boolean) => void;
 }
 
-export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLogicalTree, onLeaderboard, onBattle, onRika, onChangeSubject, onFoundation, subjectLabel = '化学基礎', subject = 'chemistry_basic', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm }: HomeProps) {
+export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLeaderboard, onBattle, onChangeSubject, onFoundation, subjectLabel = '英語リスニング', subject = 'english_listening', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm }: HomeProps) {
   const { progress: growth } = useGrowthProgress();
   const reviewDueCount = useMemo(() => {
     const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
     return getDueCount(uid);
   }, [isGuest]);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<{ name?: string } | null>(null);
 
   /**
    * ホワイトレーベル：クラスに参加している生徒には学校名を掲げる。
@@ -198,8 +181,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
   //   以前は miniTest の「小問」数だけを分母にしていたため、
   //   演習（practiceProblems＝大問の大多数）が丸ごと抜け落ちていた。
   // 分子：1点でも獲得した大問の数（utils/progress の台帳を参照）。
-  // 科目に応じて集計対象の章を切り替える（化学基礎の振る舞いは従来のまま）。
-  // 未知の科目IDが来た場合は化学基礎の章が返る（従来の if 連鎖の既定分岐と同じ）。
+  // 科目に応じて集計対象の章を切り替える。
+  // 未知の科目IDが来た場合は先頭の教科（英語リスニング）の章が返る。
   //
   // 中身は軽い索引（章ID・章名・大問数のみ）。教科データ本体は読まない。
   const allChaptersList = useMemo(() => getChapterIndexOfSubject(subject), [subject]);
@@ -208,8 +191,6 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
     [allChaptersList],
   );
   const [solvedQuestions, setSolvedQuestions] = useState(0);
-  /** 章ID → その章で解いた大問数（「次の章」の算出に使う） */
-  const [solvedByChapter, setSolvedByChapter] = useState<Record<string, number>>({});
 
   // ===== 科目ごとの進捗（「何問中何問」を教科別に見せる） =====
   // 従来は選択中の科目の1本だけを表示していたため、
@@ -322,7 +303,6 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         setSolvedQuestions(
           Math.min(countSolvedProblemsIn(uid, currentChapterIds), totalQuestions),
         );
-        setSolvedByChapter(countSolvedByChapter(uid));
 
         // 科目ごとの進捗（教科別に「何問中何問」を並べて出すため）
         const perSubject: Record<string, { solved: number; total: number }> = {};
@@ -380,11 +360,11 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
       <SakuraPetals count={14} className="home-sakura" />
       <div className="game-home-viewport">
         <header className="game-home-header">
-          <div><h1><img className="game-home-logo" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}>{greetingName}さんのホーム</p></div>
+          <div><h1><img className="game-home-logo" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}><KineticText text={`${greetingName}さんのホーム`} delay={350} step={30} /></p></div>
           {/* ★ロゴの横に本番までの日数（2026-10-11 ご要望）★ 共通テストと2次（前期）の2つ */}
           <dl className="game-home-countdown" aria-label="本番までの日数" data-home-countdown>
-            <div title={`共通テスト ${EXAM_DATE_LABEL}`}><dt>共通テスト</dt><dd><b>{daysUntilExam}</b>日</dd></div>
-            <div title={`2次試験（前期） ${SECOND_EXAM_DATE_LABEL}`}><dt>2次(前期)</dt><dd><b>{daysUntilSecond}</b>日</dd></div>
+            <div title={`共通テスト ${EXAM_DATE_LABEL}`}><dt>共通テスト</dt><dd><b><CountUp value={daysUntilExam} fromZero duration={1100} delay={300} /></b>日</dd></div>
+            <div title={`2次試験（前期） ${SECOND_EXAM_DATE_LABEL}`}><dt>2次(前期)</dt><dd><b><CountUp value={daysUntilSecond} fromZero duration={1100} delay={420} /></b>日</dd></div>
           </dl>
           <div className="game-home-tools">
             <button type="button" onClick={() => onToggleBgm?.(!isBgmEnabled || !!isBgmFadedOut)} aria-label={bgmLabel}>{bgmPlaying ? <Volume2 size={19} /> : <VolumeX size={19} />}</button>
@@ -444,11 +424,11 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           <button type="button" className="home-philosophy-entry" onClick={() => setShowPhilosophy(true)} aria-label="学びの扉（開発者の想い）を読む" data-open-philosophy><BookHeart size={17} />学びの扉</button>
         </div>
         <section className="desktop-study-summary" aria-label="今日の学習状況">
-          <p>STUDY DESK</p><h2>今日の積み重ね</h2>
-          <div><span>連続学習<strong><CountUp value={streak} /><small>日</small></strong></span><span>復習待ち<strong><CountUp value={reviewDueCount} /><small>問</small></strong></span></div>
+          <p>STUDY DESK</p><h2><KineticText text="今日の積み重ね" delay={200} /></h2>
+          <div><span>連続学習<strong><CountUp value={streak} fromZero duration={900} delay={400} /><small>日</small></strong></span><span>復習待ち<strong><CountUp value={reviewDueCount} fromZero duration={900} delay={500} /><small>問</small></strong></span></div>
           {/* ★連続日数は炎ではなく「開いた扉」で★ 1日＝扉1枚。7枚より先は数字で */}
           <p className="study-doors" aria-label={`連続学習 ${streak}日`}>{Array.from({ length: 7 }, (_, i) => <i key={i} data-open={i < streakDoors(streak).doors || undefined} />)}{streakDoors(streak).extra > 0 && <b>+{streakDoors(streak).extra}</b>}</p>
-          <label>{subjectLabel}の進捗 <b>{solvedQuestions} / {totalQuestions} 大問</b></label>
+          <label>{subjectLabel}の進捗 <b><CountUp value={solvedQuestions} fromZero duration={1000} delay={450} /> / {totalQuestions} 大問</b></label>
           <div className="mt-progress" role="progressbar" aria-label={`${subjectLabel}の学習進捗`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}><i style={{ width: `${progressPercent}%` }} /></div>
           {/* ゼロには次の一手を */}
           {reviewDueCount === 0 && <p className="study-next">{solvedQuestions === 0 ? '最初の1問で、扉がひとつ開くよ' : '復習はゼロ。新しい大問に進もう'}</p>}
@@ -460,7 +440,6 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         <div className="game-details-body arena-home-more"><p>連続学習 {streak}日 ／ {todayFormatted}</p><p>{EXAM_DATE_LABEL}まで {daysUntilExam}日</p>{schoolBrand && <p>{schoolBrand.schoolName}</p>}
           <div className="game-study-progress"><span>{subjectLabel} {solvedQuestions}/{totalQuestions}大問</span><div role="progressbar" aria-label="学習進捗" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}><i style={{ width: `${progressPercent}%` }} /></div></div>
           <details className="home-all-progress"><summary>リスニングの進捗を見る</summary>{subjectProgressDefs.map(def => <p key={def.id}>{def.label} {subjectProgress[def.id]?.solved ?? 0}/{subjectProgress[def.id]?.total ?? 0}大問</p>)}</details>
-          {onRika && <button type="button" onClick={onRika}>高校入試 理科を開く</button>}
           <FeedbackButton screen="title" variant="text" label="ご意見・ご要望" /><FeedbackReplyInbox />
           {isGuest && !auth.currentUser && <GoogleLinkBanner variant="inline" dismissible />}
         </div>

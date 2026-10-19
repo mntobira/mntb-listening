@@ -44,6 +44,8 @@
  *   ・英文は読み返せる問題文ペインに置いた方が視線移動が少ない
  */
 
+import type { SubQuestion } from '../types/curriculum';
+
 /** 音源トラック（リスニングの ListeningAudioTrack と同形にする） */
 export type GrammarAudioTrack = {
   /** 対応する小問の id（★subQuestions[].id と一致させる★） */
@@ -67,7 +69,7 @@ export type GrammarProblem = {
   id: string;
   category: string;
   text: string;
-  subQuestions: any[];
+  subQuestions: SubQuestion[];
   explanation: string;
   surroundingKnowledge: string[];
   deepDiveTopics: string[];

@@ -48,10 +48,10 @@ describe('セキュリティ：配信ヘッダーと CSP', () => {
   it('Firebase Hosting・Vercel・_headers のすべてで同じ CSP を配信する', () => {
     const value = csp.split('Content-Security-Policy:')[1].trim();
     const vercel = JSON.parse(fs.readFileSync('vercel.json', 'utf8'));
-    const v = vercel.headers[0].headers.find((h: any) => h.key === 'Content-Security-Policy').value;
+    const v = vercel.headers[0].headers.find((h) => h.key === 'Content-Security-Policy').value;
     expect(v).toBe(value);
     const fb = JSON.parse(fs.readFileSync('firebase.json', 'utf8'));
-    const f = fb.hosting.headers[0].headers.find((h: any) => h.key === 'Content-Security-Policy').value;
+    const f = fb.hosting.headers[0].headers.find((h) => h.key === 'Content-Security-Policy').value;
     expect(f).toBe(value);
   });
 

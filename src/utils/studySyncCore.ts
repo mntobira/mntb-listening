@@ -88,7 +88,7 @@ export function mergeSolvedMaps(a: SolvedMap | null | undefined, b: SolvedMap | 
     if (!source || typeof source !== 'object') return;
     Object.keys(source).forEach((key) => {
       if (!key) return;
-      const raw = Number((source as any)[key]);
+      const raw = Number((source as Record<string, unknown>)[key]);
       const time = Number.isFinite(raw) && raw > 0 ? raw : 0;
       const current = result[key];
       if (current === undefined) {

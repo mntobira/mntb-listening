@@ -4,7 +4,7 @@ import { recordStudyLog, loadStudyLog, groupStudyLogByDay } from '../src/utils/s
 const store: Record<string, string> = {};
 beforeEach(() => {
   for (const k of Object.keys(store)) delete store[k];
-  (globalThis as any).localStorage = { getItem: (k: string) => store[k] ?? null, setItem: (k: string, v: string) => { store[k] = v; }, removeItem: (k: string) => { delete store[k]; } };
+  (globalThis as { localStorage?: unknown }).localStorage = { getItem: (k: string) => store[k] ?? null, setItem: (k: string, v: string) => { store[k] = v; }, removeItem: (k: string) => { delete store[k]; } };
 });
 
 describe('study log (recent 3 days, study + battle)', () => {

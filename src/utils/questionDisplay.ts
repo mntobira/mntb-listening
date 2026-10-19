@@ -23,6 +23,7 @@
  *   （枝番は body 側からは取り除くので、左側の設問一覧では
  *     マーカー "(3)①" ＋ 本文 "非共有電子対を…" と並ぶ）
  */
+import type { ProblemLike, SubQuestionLike } from '../types/curriculum';
 
 /**
  * 表示上の問題番号（問1／【問1】／第1問／先頭の「1.」など）を消して、
@@ -209,8 +210,8 @@ export function optionCircledMark(option: string, index: number): string {
  *    「今どちらを入力しているのか分からない」状態を防ぐことを優先する。
  * ③ 重複が無ければ従来どおりマーカーのみ（表示は変わらない）。
  */
-export function resolveAnswerMarkers(question: any): Map<any, string> {
-  const subs: any[] = question?.subQuestions || [];
+export function resolveAnswerMarkers(question: ProblemLike): Map<SubQuestionLike, string> {
+  const subs: SubQuestionLike[] = question?.subQuestions || [];
 
   const base = subs.map((sq, i) => {
     const fallback = `問${i + 1}`;
@@ -228,7 +229,7 @@ export function resolveAnswerMarkers(question: any): Map<any, string> {
   for (const b of base) if ((counts.get(b.full) || 0) === 1) taken.add(b.full);
 
   const seq = new Map<string, number>();
-  const out = new Map<any, string>();
+  const out = new Map<SubQuestionLike, string>();
   for (const b of base) {
     const duplicated = (counts.get(b.full) || 0) > 1;
     if (duplicated) {
@@ -258,7 +259,7 @@ export function resolveAnswerMarkers(question: any): Map<any, string> {
  *
  * @param question 同じ問題の全設問。渡すと重複マーカーの自動採番まで行う。
  */
-export function answerCardMarker(sq: any, index: number, question?: any): string {
+export function answerCardMarker(sq: SubQuestionLike, index: number, question?: ProblemLike): string {
   const fallback = `問${index + 1}`;
   let full: string;
 
@@ -282,8 +283,8 @@ export function answerCardMarker(sq: any, index: number, question?: any): string
  * 設問文本体を持たない（マーカーのみ＝リード文中の空欄）設問は除外する。
  * グループ設問（係数入力など）はグループ名を1件として代表表示する。
  */
-export function buildSubQuestionList(question: any): { marker: string; body: string }[] {
-  const subs: any[] = question?.subQuestions || [];
+export function buildSubQuestionList(question: ProblemLike): { marker: string; body: string }[] {
+  const subs: SubQuestionLike[] = question?.subQuestions || [];
   const list: { marker: string; body: string }[] = [];
   const seenGroups = new Set<string>();
 
@@ -344,7 +345,7 @@ export function buildSubQuestionList(question: any): { marker: string; body: str
  *
  * @returns true = 一覧は問題文の繰り返しなので省略して良い
  */
-export function isSubQuestionListRedundant(question: any): boolean {
+export function isSubQuestionListRedundant(question: ProblemLike): boolean {
   const list = buildSubQuestionList(question);
   // 一覧が空なら「省略する/しない」を語る意味が無い（呼び出し側も描画しない）
   if (list.length === 0) return false;
@@ -558,7 +559,7 @@ export function extractInlineQuestionRows(text: string): InlineQuestionRows | nu
 const LISTENING_BODY_MAX_LEN = 80;
 
 export function extractListeningQuestionRows(
-  question: any
+  question: ProblemLike
 ): { marker: string; body: string }[] | null {
   const rows = buildSubQuestionList(question);
   if (rows.length === 0) return null;
@@ -616,7 +617,7 @@ export function extractListeningQuestionRows(
  *
  * @returns 小問番号（"1","2",…）→ 英文 の Map。1本も取れなければ null。
  */
-export function extractSubQuestionSentences(question: any): Map<string, string> | null {
+export function extractSubQuestionSentences(question: ProblemLike): Map<string, string> | null {
   const text = String(question?.text || '');
   if (!text) return null;
 
@@ -659,7 +660,7 @@ export function extractSubQuestionSentences(question: any): Map<string, string> 
  * 番号が読めない・その番号の本文行が無い場合は null を返し、
  * 呼び出し側は「英文は出さない」＝従来の表示のままになる（安全側）。
  */
-export function findSubQuestionSentence(question: any, sub: any): string | null {
+export function findSubQuestionSentence(question: ProblemLike, sub: SubQuestionLike): string | null {
   if (!sub) return null;
   const sentences = extractSubQuestionSentences(question);
   if (!sentences) return null;

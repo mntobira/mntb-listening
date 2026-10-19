@@ -8,6 +8,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Activity, ExternalLink, Trash2 } from 'lucide-react';
 import { readUsage, flushUsageNow, clearUsage, FREE_DAILY_LIMITS, type UsageDay } from '../utils/firestoreMetered';
+import { confirmAction } from '../utils/dialog';
 
 const AREA_LABELS: Record<string, string> = {
   battle_rooms: '対戦の部屋',
@@ -143,7 +144,7 @@ export function UsageMeterPanel() {
 
           <div className="flex justify-end">
             <button
-              onClick={() => { if (window.confirm('この端末の使用量の記録を消しますか？')) { clearUsage(); reload(); } }}
+              onClick={() => { if (confirmAction('この端末の使用量の記録を消しますか？')) { clearUsage(); reload(); } }}
               className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-[#C0392B]"
             >
               <Trash2 size={12} /> 記録を消す

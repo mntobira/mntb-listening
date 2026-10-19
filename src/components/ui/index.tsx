@@ -9,6 +9,7 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { KineticText } from '../../motion/KineticText';
 export { BottomNavigation, type BottomNavItem, type BottomNavId } from './BottomNavigation';
 
 type Rarity = 'N' | 'R' | 'SR' | 'UR';
@@ -25,7 +26,7 @@ export function AppHeader({ title, kicker, subtitle, backLabel, onBack, actions,
       {onBack && <BackButton label={backLabel ?? '戻る'} onClick={onBack} />}
       <div className="mt-app-header-title">
         {kicker && <span className="mt-kicker">{kicker}</span>}
-        <H>{title}</H>
+        <H>{typeof title === 'string' ? <KineticText text={title} /> : title}</H>
         {subtitle && <p>{subtitle}</p>}
       </div>
       {actions && <div className="mt-app-header-actions">{actions}</div>}

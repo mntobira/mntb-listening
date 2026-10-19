@@ -75,7 +75,6 @@ import {
   ChevronRight,
   Lightbulb,
   Minus,
-  RotateCcw,
   TrendingDown,
   TrendingUp,
 } from 'lucide-react';
@@ -312,6 +311,7 @@ export function BattleResult({
           answer: !pq.correct && q && q.answerIndex >= 0 ? String(q.options[q.answerIndex] ?? '') : undefined };
       }),
     });
+    // 学習記録は1試合につき1回だけ書く（結果の表示が更新されても書き直さない）
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchKey]);
   const [answerLoadFailed, setAnswerLoadFailed] = useState(false);
@@ -603,12 +603,13 @@ export function BattleResult({
    */
   // ===== 詳しい結果（復習）ページ =====
   if (page === 'detail') {
+    // 広告の失敗（在庫なし・頻度制限・Web）で画面遷移を止めない
     const handleBackToRoom = () => {
       showInterstitialAd().catch(() => {});
       onBackToRoom?.();
     };
     const handleGoHome = () => {
-      showInterstitialAd().catch(() => {});
+      showInterstitialAd().catch(() => {}); // 同上：広告の失敗で遷移を止めない
       goHome();
     };
 

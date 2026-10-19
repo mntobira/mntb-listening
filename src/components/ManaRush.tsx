@@ -29,6 +29,7 @@ import { subjectTheme } from '../data/subjectTheme';
 import type { SubjectKey } from '../data/allChapters';
 import { NextBadgeHint } from '../battle/ui/GrowthParts';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
+import { KineticText } from '../motion';
 
 export const RUSH_DURATION_MS = 60_000;
 export const RUSH_MAX_MS = 90_000;
@@ -101,7 +102,6 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
   const [lives, setLives] = useState(RUSH_LIVES);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
-  const [maxCombo, setMaxCombo] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [answered, setAnswered] = useState(0);
   const [remain, setRemain] = useState(RUSH_DURATION_MS);
@@ -141,7 +141,7 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
       const pool = (await loadPool(subject)).filter(isRushQuestion);
       if (pool.length < 5) { setError('この科目は出せる問題が足りません。別の科目を選んでください。'); setPhase('menu'); return; }
       setQueue(shuffle(pool).slice(0, 120));
-      setQi(0); setLives(RUSH_LIVES); setScore(0); setCombo(0); setMaxCombo(0); setCorrect(0); setAnswered(0);
+      setQi(0); setLives(RUSH_LIVES); setScore(0); setCombo(0); setCorrect(0); setAnswered(0);
       setMisses([]); setSummary(null); setFlash(null); setRemain(RUSH_DURATION_MS);
       stats.current = { score: 0, correct: 0, answered: 0, maxCombo: 0 };
       ended.current = false; busy.current = false;
@@ -188,7 +188,7 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
         bonus = true;
         deadline.current = Math.min(deadline.current + RUSH_TIME_BONUS_MS, Date.now() + RUSH_MAX_MS);
       }
-      setCombo(nextCombo); setMaxCombo(s.maxCombo); setCorrect(s.correct);
+      setCombo(nextCombo); setCorrect(s.correct);
       play('correct');
     } else {
       nextLives = lives - 1;
@@ -223,7 +223,7 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
     return <section className="mana-rush mana-hub-main" data-mana-rush="menu">
       <button type="button" className="arena-back" onClick={onBack}><ArrowLeft size={18} />もどる</button>
       <p className="mana-eyebrow">60 SECOND CHALLENGE</p>
-      <h1 className="mana-rush-title"><Zap aria-hidden="true" /> マナラッシュ</h1>
+      <h1 className="mana-rush-title"><Zap aria-hidden="true" /> <KineticText text="マナラッシュ" step={45} variant="pop" /></h1>
       <p className="text-sm text-slate-600">60秒で何問とける？ 正解を続けてコンボをつなごう。</p>
       <ul className="mana-rush-rules" aria-label="ルール">
         <li><Timer size={16} />制限時間60秒（5コンボごとに＋3秒）</li>
@@ -296,7 +296,7 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
   return <section className="mana-rush mana-hub-main mana-rush-result" data-mana-rush="result">
     {summary?.newBest && <Confetti count={24} />}
     <p className="mana-eyebrow">{summary?.reason === 'lives' ? 'LIFE OUT' : 'TIME UP'}</p>
-    <h1 className="mana-rush-title">結果発表</h1>
+    <h1 className="mana-rush-title"><KineticText text="結果発表" step={70} variant="pop" /></h1>
     <div className="mana-rush-rank" data-rank={rank}><span>RANK</span><strong>{rank}</strong></div>
     <p className="mana-rush-final">{(summary?.score ?? stats.current.score).toLocaleString()}<small>点</small></p>
     {summary?.newBest ? <p className="mana-rush-newbest"><Trophy size={18} />自己ベスト更新！</p>

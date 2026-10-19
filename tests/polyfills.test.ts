@@ -3,16 +3,14 @@ import { readFileSync } from 'node:fs';
 
 describe('古い端末向けの補い（polyfills）', () => {
   it('無い環境では randomUUID / Array.at / throwIfAborted を足す', async () => {
-    const c = globalThis.crypto as any;
+    const c = globalThis.crypto as Crypto & { randomUUID?: () => string };
     const savedUUID = c.randomUUID;
     const savedAt = Array.prototype.at;
     const savedThrow = AbortSignal.prototype.throwIfAborted;
     try {
       Object.defineProperty(c, 'randomUUID', { value: undefined, configurable: true, writable: true });
-      // @ts-expect-error テストで消す
-      delete Array.prototype.at;
-      // @ts-expect-error テストで消す
-      delete AbortSignal.prototype.throwIfAborted;
+      delete (Array.prototype as { at?: unknown }).at; // テストで消す
+      delete (AbortSignal.prototype as { throwIfAborted?: unknown }).throwIfAborted; // テストで消す
       const { installPolyfills } = await import('../src/utils/polyfills');
       installPolyfills();
       const id = c.randomUUID();

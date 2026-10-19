@@ -43,59 +43,35 @@
 // 基本パーツ
 // -------------------------------------------------------------------
 
-/**
- * 解答マーカー（ピンクの蛍光ペン）。
- *
- * 以前は文字全体を塗りつぶす背景色だったが、まとめプリントの黄色マーカーと同じ
- * 「文字の下だけに引くアンダーライン型」に変更した。
- * 文字の下 40% にだけグラデーションを敷くので、文字そのものは読みやすいまま残る。
- * 文字色は指定しない（＝テーマの文字色を継承する）。ダークテーマでは明るい文字、
- * ライトテーマでは濃い文字のまま、下線だけがピンクに光る。
- */
-export const ANS_STYLE =
-  'background-image:linear-gradient(to top, rgba(233,104,142,0.85) 0%, rgba(244,169,196,0.75) 55%, rgba(244,169,196,0) 100%); background-repeat:no-repeat; background-size:100% 40%; background-position:0 100%; font-weight:bold; padding:0 3px 1px; border-radius:2px;';
-
-export const ANS = (text: string): string =>
-  `<span style="${ANS_STYLE}">${text}</span>`;
-
-/**
- * キーワード強調。
- *
- * 以前はオレンジの塗りつぶしだったが、「大事な要素の下に黒い波線を引く」形に変更。
- * 色は currentColor（＝本文の文字色）にしてある。ダークテーマ（練習モード）では
- * 明るい波線、ライトテーマ（小テスト）では黒に近い波線になり、どちらでも必ず見える。
- */
-export const KEY_STYLE =
-  'font-weight:bold; -webkit-text-decoration:underline wavy currentColor; text-decoration:underline wavy currentColor; text-decoration-thickness:1.5px; text-underline-offset:5px; text-decoration-skip-ink:none;';
-
-export const KEY = (text: string): string =>
-  `<span style="${KEY_STYLE}">${text}</span>`;
-
-/** 見出しラベル（枠線のみ・地味め）。セクションの切れ目を作る。 */
-export const LABEL = (text: string): string =>
-  `<span style="display:inline-block; border:1.5px solid #D9466E; color:#D9466E; background-color:#FFF1F5; font-weight:bold; font-size:0.86em; padding:1px 10px; border-radius:999px;">${text}</span>`;
-
-/** 「共通テスト出題傾向」特設ボックスの外枠 */
-export const BOX = (body: string): string =>
-  `<div style="background-color:#FFF4E5; border:2px solid #FB8C00; border-left:9px solid #FB8C00; border-radius:10px; padding:10px 14px; margin-top:14px; color:#3E2723;">${body}</div>`;
-
-/** 丸数字（①〜⑮）。思考手順の番号に使う。 */
-const CIRCLED = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮'];
-
-/** n 番目（0始まり）の丸数字。範囲外は (n+1) で代用する。 */
-export function circledNumber(index: number): string {
-  return CIRCLED[index] || `(${index + 1})`;
-}
-
-// -------------------------------------------------------------------
-// 型
-// -------------------------------------------------------------------
-
 import type {
   TrendInsight,
   UnitTeaching,
   UnitConversionWalk,
 } from '../data/teachingTypes';
+import {
+  ANS,
+  ANS_STYLE,
+  BOX,
+  KEY,
+  KEY_STYLE,
+  LABEL,
+  buildFlowchartSteps,
+  circledNumber,
+  extractFlowchartSteps,
+  type FlowchartStepLike,
+} from './explanationSupplement';
+export {
+  ANS,
+  ANS_STYLE,
+  BOX,
+  KEY,
+  KEY_STYLE,
+  LABEL,
+  buildFlowchartSteps,
+  circledNumber,
+  extractFlowchartSteps,
+  type FlowchartStepLike,
+};
 
 // 指導テンプレート・単位変換の「データの形」は data/teachingTypes.ts に置いている。
 // （実際にその形のデータを持っているのが data 側のため。理由はそのファイルの冒頭コメント）
@@ -316,21 +292,6 @@ function formatTeachingSteps(teaching: UnitTeaching): string {
     .join('\n');
 }
 
-/**
- * 「この単元の思考の型」ブロックを組み立てる。
- *
- * ■ なぜ独立した関数にするのか
- * 従来はこのブロックを *問題ごとに* 解説文へ埋め込んでいたため、
- * 同じ単元の中で何度も同じ内容が繰り返し表示され、画面を圧迫していた。
- * 単元につき1回だけ「採点結果の直後」にアコーディオンで見せる方式に変えるため、
- * 画面側（Explanation.tsx）から直接呼べる形に切り出す。
- *
- * ★内容・表現・順番・解説は従来の出力と1文字も変えていない★
- */
-export function buildUnitKataBlock(teaching?: UnitTeaching): string {
-  if (!teaching?.steps?.length) return '';
-  return `${LABEL(UNIT_KATA_TITLE)}\n${formatTeachingSteps(teaching)}`;
-}
 
 export function buildStepsBlock(
   question: QuestionLike,
@@ -1349,55 +1310,6 @@ export function isStructuredExplanation(explanation: string): boolean {
  * @param teaching   単元別の指導テンプレート（無い単元は省略可）
  * @returns 整形後の解説文字列（対象外なら元の値をそのまま返す）
  */
-/** フローチャート（logic_thought）1ステップぶんの最小形 */
-interface FlowchartStepLike {
-  step?: string;
-  target?: string;
-  purpose?: string;
-  content?: string;
-}
-
-/** 「Step 3」「STEP3」「3」などの表記ゆれから番号だけを取り出す */
-function flowchartStepLabel(raw: unknown, index: number): string {
-  const text = String(raw ?? '').trim();
-  const matched = text.match(/(\d+)/);
-  return `STEP ${matched ? matched[1] : index + 1}`;
-}
-
-/** タグ混じりの短文を、丸数字の見出しに載せられる素の文にする */
-function plainSentence(value: unknown): string {
-  return String(value ?? '')
-    .replace(/<\/?[a-z][a-z0-9]*[^>]*>/gi, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-/**
- * フローチャートを持つ問題の思考手順を、フローチャートの各STEPに紐づけて組み立てる。
- *
- * ■ 記号の使い分け（要件どおり）
- *   ・「STEP」… 画面上のフローチャートの箇所を *参照* するときだけ使う
- *   ・「①②③」… 正解に至る思考の順番を示すときに使う
- * この関数は「① フローチャートの STEP 1 で〜を判定する」という形で両者を併用する。
- */
-export function buildFlowchartSteps(steps: FlowchartStepLike[]): string {
-  const rows = steps
-    .map((step, index) => {
-      const label = flowchartStepLabel(step?.step, index);
-      const target = plainSentence(step?.target);
-      const reason = plainSentence(step?.purpose) || plainSentence(step?.content);
-      if (!target && !reason) return '';
-      const head = target
-        ? `フローチャートの ${label} にあるように、${target}を確認する`
-        : `フローチャートの ${label} をたどる`;
-      return `<b>${circledNumber(index)} ${head}</b>${reason ? `\n　└ ${reason}` : ''}`;
-    })
-    .filter(Boolean);
-
-  if (rows.length === 0) return '';
-  return `${LABEL('解法の思考手順')}\n上のフローチャートを ${flowchartStepLabel(steps[0]?.step, 0)} から順にたどると、次の順番で答えが決まります。\n${rows.join('\n')}`;
-}
-
 /**
  * ロジックツリー（logic_thought JSON）の問題向けの「補足ブロック」を組み立てる。
  *
@@ -1500,20 +1412,6 @@ export function buildSupplement(
 
   if (sections.length === 0) return '';
   return `${ENHANCED_MARK}${sections.join('\n\n')}`;
-}
-
-/**
- * logic_thought JSON から phase1.steps を安全に取り出す。
- * パースできない・形が違う場合は空配列を返す。
- */
-export function extractFlowchartSteps(explanation: string): FlowchartStepLike[] {
-  try {
-    const parsed = JSON.parse(explanation);
-    const steps = parsed?.phase1?.steps;
-    return Array.isArray(steps) ? steps : [];
-  } catch {
-    return [];
-  }
 }
 
 export function enhanceExplanation(

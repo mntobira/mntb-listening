@@ -23,6 +23,7 @@ import { safeAvatarUrl } from '../features/safety/avatarUrl';
 import { displaySafeNickname, displaySafePublicText } from '../features/safety/nicknameFilter';
 import { watchPublicStudyProfiles, type PublicStudyProfile } from '../utils/publicStudyProfile';
 import { formatStudyTime } from '../utils/studyTime';
+import { confirmAction } from '../utils/dialog';
 
 export function FriendPanel() {
   const [profile, setProfile] = useState<FriendProfile | null>(null);
@@ -61,7 +62,7 @@ export function FriendPanel() {
       setRequests(reqs);
       setSentRequests(sent);
       setFriends(list);
-    } catch (e: any) {
+    } catch (e: unknown) {
       // ここに到達するのは想定外の例外のみ。
       console.error('フレンド情報の取得に失敗しました:', e);
     } finally {
@@ -81,9 +82,9 @@ export function FriendPanel() {
       await action();
       setMessage(success);
       await load();
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsError(true);
-      setMessage(error?.message || '操作に失敗しました。通信状態を確認してください。');
+      setMessage(error instanceof Error && error.message ? error.message : '操作に失敗しました。通信状態を確認してください。');
     } finally {
       setLoading(false);
     }
@@ -97,7 +98,7 @@ export function FriendPanel() {
     if (!full) { setIsError(true); setMessage('フレンドコードは「MNTB-」のあとに英数字8文字です（例：MNTB-AB12-CD34）。'); return; }
     setMessage(''); setIsError(false); setLoading(true);
     try { setMessage(await sendFriendRequest(full)); setCode(''); await load(); }
-    catch (e: any) { setIsError(true); setMessage(e?.message || '申請に失敗しました。'); }
+    catch (e: unknown) { setIsError(true); setMessage(e instanceof Error && e.message ? e.message : '申請に失敗しました。'); }
     finally { setLoading(false); }
   };
 
@@ -222,7 +223,7 @@ export function FriendPanel() {
                 </>; })()}
               </span>
               <UserSafetyMenu target={{ uid: f.uid, nickname: f.nickname, where: 'friend' }} />
-              <button disabled={loading} onClick={() => { if (window.confirm(`${f.nickname} さんとのフレンド関係を解除しますか？`)) runAction(() => removeFriend(f.uid), 'フレンドを解除しました。'); }} className="text-xs font-bold text-red-500 hover:underline disabled:opacity-40">解除</button>
+              <button disabled={loading} onClick={() => { if (confirmAction(`${f.nickname} さんとのフレンド関係を解除しますか？`)) runAction(() => removeFriend(f.uid), 'フレンドを解除しました。'); }} className="text-xs font-bold text-red-500 hover:underline disabled:opacity-40">解除</button>
             </div>
           ))
         )}

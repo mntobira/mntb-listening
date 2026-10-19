@@ -26,7 +26,8 @@ import { getAllListeningChapters } from '../src/data/englishListeningData';
 const ROOT = path.resolve(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(ROOT, p), 'utf-8');
 
-const PLAYER = read('src/components/ListeningAudioPlayer.tsx');
+// 復習用のスクリプト表示（ListeningEvidenceScript）は ListeningEvidenceScript.tsx へ分離したため合わせて読む
+const PLAYER = read('src/components/ListeningAudioPlayer.tsx') + '\n' + read('src/components/ListeningEvidenceScript.tsx');
 const SPEECH = read('src/utils/listeningSpeech.ts');
 const CHAPTER = read('src/components/ChapterSelection.tsx');
 
@@ -60,7 +61,7 @@ describe('F1 第3問：PDF の15セット（90問）が入っている', () => {
 
   it('選択肢はマーク（①〜④）で、正解は必ずそのどれか', () => {
     EL3_PROBLEMS.forEach((p) => {
-      p.subQuestions.forEach((sq: any) => {
+      p.subQuestions.forEach((sq) => {
         expect(sq.type).toBe('multiple_choice');
         expect(sq.options).toEqual(MARKS);
         expect(MARKS).toContain(sq.correctAnswer);
@@ -71,7 +72,7 @@ describe('F1 第3問：PDF の15セット（90問）が入っている', () => {
   it('小問 id と音源 subId が1対1で対応している（音源の取り違えを防ぐ）', () => {
     EL3_PROBLEMS.forEach((p) => {
       const subIds = p.audioTracks.map((t) => t.subId);
-      const sqIds = p.subQuestions.map((sq: any) => sq.id);
+      const sqIds = p.subQuestions.map((sq) => sq.id);
       expect(subIds).toEqual(sqIds);
       // id は全問でユニークでなければ進捗が混ざる
       expect(new Set(sqIds).size).toBe(sqIds.length);
@@ -93,7 +94,7 @@ describe('F1 第3問：PDF の15セット（90問）が入っている', () => {
   it('解説の「問N　正解は ○」が subQuestions の正解と一致している', () => {
     // 解説を読んだら正解が違う、という最悪の不整合を防ぐ命綱。
     EL3_PROBLEMS.forEach((p) => {
-      p.subQuestions.forEach((sq: any, i: number) => {
+      p.subQuestions.forEach((sq, i) => {
         const line = new RegExp(`^問${i + 1}　正解は ${sq.correctAnswer}$`, 'mu');
         expect(p.explanation).toMatch(line);
       });
@@ -105,7 +106,7 @@ describe('F1 第3問：PDF の15セット（90問）が入っている', () => {
     // scripts/shuffle_listening_q3_options.py で並べ替えて均している。
     const counts = new Map<string, number>(MARKS.map((m) => [m, 0]));
     EL3_PROBLEMS.forEach((p) => {
-      p.subQuestions.forEach((sq: any) => {
+      p.subQuestions.forEach((sq) => {
         counts.set(sq.correctAnswer, (counts.get(sq.correctAnswer) || 0) + 1);
       });
     });
@@ -135,16 +136,16 @@ describe('F1 第3問：PDF の15セット（90問）が入っている', () => {
 describe('F2 第3問の音声：A / B を別の声で読み上げる', () => {
   it('全問の音源が turns（A / B の発話列）を持っている', () => {
     EL3_PROBLEMS.forEach((p) => {
-      p.audioTracks.forEach((t: any) => {
+      p.audioTracks.forEach((t) => {
         expect(Array.isArray(t.turns)).toBe(true);
         // 対話なので最低2発話。実データは5〜7発話。
         expect(t.turns.length).toBeGreaterThanOrEqual(2);
-        t.turns.forEach((turn: any) => {
+        t.turns.forEach((turn) => {
           expect(['A', 'B']).toContain(turn.who);
           expect(turn.text.trim().length).toBeGreaterThan(0);
         });
         // A と B の両方が登場している（片方だけならモノローグになってしまう）
-        const whos = new Set(t.turns.map((turn: any) => turn.who));
+        const whos = new Set(t.turns.map((turn) => turn.who));
         expect(whos.has('A')).toBe(true);
         expect(whos.has('B')).toBe(true);
       });
@@ -153,8 +154,8 @@ describe('F2 第3問の音声：A / B を別の声で読み上げる', () => {
 
   it('script は turns と同じ内容を「A: …」形式で持つ（MP3 が無いときの保険）', () => {
     EL3_PROBLEMS.forEach((p) => {
-      p.audioTracks.forEach((t: any) => {
-        const rebuilt = t.turns.map((x: any) => `${x.who}: ${x.text}`).join('\n');
+      p.audioTracks.forEach((t) => {
+        const rebuilt = t.turns.map((x) => `${x.who}: ${x.text}`).join('\n');
         expect(t.script).toBe(rebuilt);
       });
     });
@@ -195,9 +196,10 @@ describe('F3 単元選択：横スクロールではなく一覧で並べる', (
     //   「単元ボタンを縦に置いたら選びづらいから横に並べて横スクロールに」
     //   （feat(navigation): make mobile chapter tabs horizontally scrollable）で
     //   スマホは横スクロール・PC（sm以上）は grid 一覧、が現行仕様になった。
-    const m = CHAPTER.match(/aria-label="章を選択"\s*\n\s*className="([^"]+)"/u);
+    // className は文字列リテラルでもテンプレートリテラル（{`...`}）でもよい
+    const m = CHAPTER.match(/aria-label="章を選択"\s*\n\s*className=(?:"([^"]+)"|\{`([^`]+)`\})/u);
     expect(m).toBeTruthy();
-    const cls = m![1];
+    const cls = m![1] ?? m![2];
     // スマホ：横スクロール（スナップ付き）
     expect(cls).toContain('overflow-x-auto');
     expect(cls).toContain('snap-x');

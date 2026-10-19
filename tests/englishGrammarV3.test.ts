@@ -82,7 +82,7 @@ describe('英文法 改訂版（第1〜20章）', () => {
     expect(chapters).toHaveLength(20);
     let subs = 0;
     for (const c of chapters) {
-      for (const p of c.practiceProblems as any[]) {
+      for (const p of c.practiceProblems) {
         expect(p.stepwise).toBe(true);
         expect(p.audioTracks).toBeUndefined();
         expect(p.subQuestions.length).toBeLessThanOrEqual(5);

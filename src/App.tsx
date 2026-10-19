@@ -4,9 +4,11 @@
  */
 
 import { AdBannerSlot } from './ads/AdBannerSlot';
+import { PdfViewerHost } from './components/PdfViewer';
+import { usePdfOpen } from './hooks/usePdfOpen';
 import React, { useState, useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { setReviewFocus } from './utils/reviewFocus';
+import { setReviewFocus, type ReviewTargetItem } from './utils/reviewFocus';
 import { BottomNavigation } from './components/ui/BottomNavigation';
 import { ListeningHome as Home } from './components/ListeningHome';
 import { ListeningSubjectSelection } from './components/ListeningSubjectSelection';
@@ -65,127 +67,27 @@ const ChapterSelection = React.lazy(() =>
 const QuizScreens = React.lazy(() =>
   import('./components/QuizScreens').then((m) => ({ default: m.QuizScreens })),
 );
-/*
- * ★まとめプリント画面だけは「開いたときに読む」（遅延読み込み）★
- *
- * ■ なぜこの画面から始めたか（実測にもとづく）
- *
- * この画面が使う data/learningContent は、まとめプリントの HTML 文字列で
- * 実測 710,921 バイト / 16 ファイル。しかも
- * ★LearningViewer 以外の誰も読んでいない完全に独立した塊★ である。
- * つまり切り離しても他の画面に影響が出ない。
- *
- * ■ 「チャンクを分けるだけ」では 1 バイトも減らないことを実験で確認済み
- *
- * 先に vite.config.ts の manualChunks で learningContent を
- * 別チャンク（data-learning）に分ける実験をした。結果:
- *
- *   data 3,041.75 → 2,367.58 kB、data-learning 674.06 kB（循環 0 で成功）
- *   しかし起動時に必ず落ちる JS は 5,253,265 → 5,253,186 B（−79 B のみ）
- *   遅延で落ちる JS は 0 B のまま
- *
- * ここが静的 import のままだと、チャンクを分けても両方ダウンロードされる。
- * ★分割は削減ではない。静的 import を切ることが先。★
- * この実験は取り消し、こちらの順序に変えた。
- *
- * ■ 表示は変えていない
- *
- * 元のコードは
- *     {appState === 'learning' && <LearningViewer … />}
- * で、画面が「学習」に切り替わった瞬間に描画される形だった。
- * lazy にしても JSX の書き方・渡す props・表示内容は同じ。
- * 違いは「その JS を読み終わるまでのわずかな間」だけで、
- * その間は下の Suspense fallback（何も描かない）になる。
- *
- * fallback をあえて空にしているのは、
- * ローディング表示という★新しい UI を足さない★ため。
- * 読み込み中に一瞬何かが出て消えるほうが、表示の変化としては大きい。
- */
-const LearningViewer = React.lazy(() =>
-  import('./components/LearningViewer').then((m) => ({ default: m.LearningViewer })),
-);
 import { Leaderboard } from './components/Leaderboard';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import { Intro } from './components/Intro';
-import { LogicalTree } from './components/LogicalTree';
 import { NoteDetail } from './components/NoteDetail';
 import { StudyHub, type StudyHubView } from './components/StudyHub';
 import { ScreenLoading, ScreenUnavailable } from './components/ScreenStatus';
 import { studyEntry, isLearningScreen } from './utils/studyNavigation';
-import { activeStudySeconds, addStudySeconds } from './utils/studyTime';
-import { setFormatMathContext } from './utils/textFormatter';
-import { resolveReviewTarget } from './utils/reviewTarget';
+import { DEFAULT_SUBJECT, SUBJECT_IDS } from './data/subjects';
+import { useStudyTimeTracker } from './hooks/useStudyTimeTracker';
+import { resolveReviewTarget, type ReviewRequest } from './utils/reviewTarget';
+import type { ChapterRunState } from './utils/quizRunState';
+import type { StudyNote } from './types/studyNote';
 import { Onboarding } from './components/Onboarding';
-import { MockExam } from './components/MockExam';
-import { getSubjectLabel, isSubjectId, type SubjectId } from './components/SubjectSelection';
+import { getSubjectLabel, isSubjectId, type SubjectId } from './data/subjectLabels';
 /*
  * 本体に教科データを持たない教科（高校入試 理科など）の登録簿。
  * ★何も import しない葉ファイルなので、ここから読んでも問題データは付いてこない★
  * （tests/subjectLabels.test.ts が「葉であること」を機械で見張っている）
  */
 import { isExternalSubject } from './data/externalSubjects';
-/*
- * ★分野選択画面（化学・発展）も「開いたときに読む」（遅延読み込み）★
- *
- * ■ 見落としていた4本目の線（新しく足した検査が見つけた）
- *
- * 上の3本を切ったあと、起動時の重さを見張る検査
- * （tests/screenDataWeight.test.ts）を「教科データの玄関に
- * 到達していないこと」に書き換えたところ、こう落ちた:
- *
- *   ★起動時に src/data/chemistryAdvancedData.ts へ静的に到達している★
- *
- * 原因はこの画面である。分野を3つ並べるだけの軽い画面なのに
- *     import { ADVANCED_FIELDS, getAdvancedFieldStats } from '../data/chemistryAdvancedData'
- * と書かれていて、見出しの下に出す「章○／単元○／大問○」を数えるために
- * ★化学（発展）の問題データ本体（実測 90,658 B のチャンク）★を
- * 起動時に持ってきていた。
- *
- * ■ ここで大事なこと
- *
- * 自分では「3本で全部」と思っていたが、実際には4本目があった。
- * ★思い込みではなく検査が見つけた。★
- * だから検査を「上限を少し下げる」形ではなく
- * 「玄関に届いていないこと」という★構造の条件★に書き換えたのが正しかった。
- * 教科を増やしても条件が古くならない。
- *
- * ■ 数え上げを消していない（表示は変えない）
- *
- * 「章○／単元○／大問○」の表示はそのまま残している。
- * 画面ごと遅延にしただけなので、出る数字も文言も同じ。
- * fallback は null＝何も描かない。
- * この画面へは「学習を始める → 化学 → モード選択」と進んだ先で入るので、
- * モード選択にいる間に先読みしている（下の「先読み」の useEffect を参照）。
- */
-const AdvancedFieldSelection = React.lazy(() =>
-  import('./components/AdvancedFieldSelection').then((m) => ({
-    default: m.AdvancedFieldSelection,
-  })),
-);
-/**
- * 高校入試 理科の入口（演習・まとめ・出題傾向）。
- *
- * ★必ず遅延読み込みにする★
- * 理科のデータは合計で約900KB あり、本体の教科データとは別物。
- * 静かに静的 import すると、理科を使わない生徒の起動時にも
- * この900KBが読み込まれることになる。
- * RikaHome の中で3画面をさらに分けているので、
- * 実際に読まれるのは「開いたタブの分だけ」になる。
- */
-const RikaHome = React.lazy(() => import('./features/rika/RikaHome'));
-/*
- * 理科の入口で「最初に開くタブ」を指定するための型だけを読む。
- * ★import type なので、この行では実際のコードは1バイトも読み込まれない★
- * （型は組み立てのときに消える。遅延読み込みの効き目は保たれる）
- */
-import type { RikaTab } from './features/rika/RikaHome';
-// 分野（理論／無機／有機）の表示情報だけを持つ葉ファイルから読む。
-// ここで使うのは「保存値が正しい分野IDかの確認」と「見出しに出す分野名」だけで、
-// 化学（発展）の問題データは1問も要らない。
-// （以前は ./data/chemistryAdvancedData から読んでいたため、
-//   この2つを使うだけで問題データ本体まで読み込み対象になっていた）
-import { ADVANCED_FIELDS, type AdvancedFieldId } from './data/advancedFields';
 import { readJsonArray } from './utils/safeLocalStorage';
 import { safeSetItem } from './utils/storageGuard';
 /*
@@ -208,9 +110,6 @@ import { isSubjectEnabled, fallbackSubjectId, FEATURES } from './config/features
   「経過ミリ秒 → 音量」の対応だけを別ファイルの純粋関数に置いてある
   （ブラウザを開かずに機械検査できるようにするため）。
 */
-import { appBgmVolume, isBgmFadeComplete } from './utils/bgmFade';
-import { writeAudioPreferences, readAudioPreferences } from './battle/audio/audioPreferences';
-import { setTitleBgmVolume, unlockTitleBgm } from './battle/audio/titleMediaAudio';
 /*
  * ★chemistryData（1,253,813 B）の静的 import はここから外した★
  *
@@ -230,7 +129,6 @@ import { useGlobalClickSound } from './hooks/useGlobalClickSound';
 import { useIdleReset } from './hooks/useIdleReset';
 import { useIsMobile } from './hooks/useMediaQuery';
 import { countIncomingFriendRequests } from './utils/friends';
-import { applyOverviewViewport } from './utils/viewportControl';
 /*
  * ErrorBoundary の import もここから外した。
  * 演習画面・結果画面を包んでいたのが唯一の用途で、
@@ -254,46 +152,46 @@ import {
   quizStepKey,
 } from './utils/quizStorageKeys';
 import { pullStudyData, installStudySyncFlush, resetStudySyncState } from './utils/studySync';
+import { startUserDataSync, stopUserDataSync, installUserDataSyncFlush, USER_DATA_SYNCED_EVENT } from './utils/userDataSync';
+import { installUsageFlush, trackScreen } from './utils/analytics';
+import { rescheduleReminders } from './utils/studyRemindersRuntime';
 import { TeacherDashboard } from './components/TeacherDashboard';
+import { useTitleBgmController } from './hooks/useTitleBgmController';
 import { FeedbackAdminPanel } from './components/FeedbackAdminPanel';
 import { battleAudio } from './battle/audio/battleAudio';
 import { installFriendPresence } from './utils/friendPresence';
 import { BattleMode } from './battle/ui/BattleMode';
 import type { GrowthPage } from './components/GrowthHub';
 import './styles/world.css';
+import { usePreventZoom, NATIVE_CONTROLS_SELECTOR } from './hooks/usePreventZoom';
+import { useAutomationHooks } from './hooks/useAutomationHooks';
+import { logRejection } from './utils/reportError';
+import { notify, confirmAction } from './utils/dialog';
 const GrowthHub = React.lazy(() => import('./components/GrowthHub').then(m => ({ default: m.GrowthHub })));
 const MissionToast = React.lazy(() => import('./components/MissionToast').then(m => ({ default: m.MissionToast })));
 
-export type AppState = 'home' | 'mode_selection' | 'chapters' | 'quiz' | 'explanation' | 'learning' | 'intro' | 'study_hub' | 'note_detail' | 'onboarding' | 'logical_tree' | 'settings' | 'leaderboard' | 'mock_exam' | 'subject_selection' | 'advanced_fields' | 'teacher_dashboard' | 'feedback_admin' | 'battle' | 'rika' | 'growth' | 'foundation' | 'study';
+export type AppState = 'home' | 'mode_selection' | 'chapters' | 'quiz' | 'explanation' | 'intro' | 'study_hub' | 'note_detail' | 'onboarding' | 'settings' | 'leaderboard' | 'subject_selection' | 'teacher_dashboard' | 'feedback_admin' | 'battle' | 'growth' | 'foundation' | 'study';
 export type AppMode = 'mini_test' | 'practice' | 'learning';
 
+/*
+ * 復元してよい画面の一覧。
+ * 統合版にあった 'learning'（まとめプリント）・'advanced_fields'（化学の分野選択）・'rika'（高校入試 理科）・
+ * 'logical_tree'・'mock_exam' はリスニング版に画面が無いので含めない。古い保存値は isAppState が false を返し、
+ * オンボーディング（またはホーム）へ倒れる（'flowchart' と同じ扱い）。
+ */
 const APP_STATES = new Set<AppState>([
-  'home', 'mode_selection', 'chapters', 'quiz', 'explanation', 'learning', 'intro',
-  /*
-   * 'flowchart' は以前ここにあったが、描画する画面が無く
-   * 保存値から復元されると下部ナビしか出ない空白画面になっていた。
-   * isAppState が false を返すので、古い保存値はオンボーディングへ倒れる。
-   */
-  'study_hub', 'note_detail', 'onboarding', 'logical_tree', 'settings',
-  'leaderboard', 'mock_exam', 'subject_selection', 'advanced_fields', 'teacher_dashboard',
+  'home', 'mode_selection', 'chapters', 'quiz', 'explanation', 'intro',
+  'study_hub', 'note_detail', 'onboarding', 'settings',
+  'leaderboard', 'subject_selection', 'teacher_dashboard',
   'feedback_admin', 'battle', 'growth',
   /** 英文法・英単語を固める（単語・熟語／聞き取りの文法／その他）。下のナビを残す1画面のページ。 */
   'foundation',
   'study',
-  /**
-   * 高校入試 理科の入口（演習・まとめ・出題傾向の3画面）。
-   *
-   * ★本体の教科の流れ（教科→学び方→単元→解く）に乗せていない★
-   * 理科は本体の「章・大問・小問」の形を持たず、単元の絞り込みも
-   * 問題の出し方も理科側の画面が自分で持っているため、
-   * 独立した1画面として置いている（詳しくは RikaHome.tsx）。
-   */
-  'rika',
 ]);
 const APP_MODES = new Set<AppMode>(['mini_test', 'practice', 'learning']);
 
 export function isAppState(value: unknown): value is AppState {
-  return typeof value === 'string' && !['logical_tree', 'mock_exam', 'learning', 'advanced_fields', 'rika'].includes(value) && APP_STATES.has(value as AppState);
+  return typeof value === 'string' && APP_STATES.has(value as AppState);
 }
 
 export function isAppMode(value: unknown): value is AppMode {
@@ -311,7 +209,6 @@ const SELECTED_SUBJECT_KEY = 'savedSelectedSubject';
  *   0/1 や true/false を初期値として書き込んでしまうと、
  *   あとで既定値を変えても既存ユーザーに届かなくなる。
  */
-const BGM_ENABLED_KEY = 'bgm_enabled';
 
 /**
  * 通常 BGM を止める画面。
@@ -321,9 +218,7 @@ const BGM_ENABLED_KEY = 'bgm_enabled';
  *     通常 BGM と重なると濁る。対戦モードの間だけ通常 BGM を止め、
  *     戻ってきたら従来どおり再開する（フェードの計測も止まる）。
  */
-const BGM_SILENT_STATES: readonly string[] = ['quiz', 'explanation', 'battle', 'study_hub', 'note_list', 'note_detail'];
 /** 化学（発展）で最後に選んだ分野の保存キー */
-const SELECTED_FIELD_KEY = 'savedSelectedAdvancedField';
 
 /**
  * 無操作でホーム画面に戻るまでの時間（30分）。
@@ -331,6 +226,13 @@ const SELECTED_FIELD_KEY = 'savedSelectedAdvancedField';
  * かつ放置された端末が学習画面のまま残らない長さにしている。
  */
 const IDLE_RESET_MS = 30 * 60 * 1000;
+/** ログインできずに「この端末だけで続ける」を選んだ印（ゲスト入口の廃止後の逃げ道） */
+const LOGIN_FALLBACK_KEY = 'login_fallback_local_v1';
+function isScreenshotMode(): boolean {
+  try {
+    return new URLSearchParams(window.location.search).get('screenshot') === '1' || localStorage.getItem('screenshot_mode') === 'true';
+  } catch { return false; }
+}
 
 export default function App() {
   const [hasEntered, setHasEntered] = useState(() => {
@@ -340,7 +242,9 @@ export default function App() {
         if (p.get('screenshot') === '1' || localStorage.getItem('screenshot_mode') === 'true') {
           return true;
         }
-      } catch {}
+      } catch {
+        // localStorage が使えない環境（プライベートモード等）は通常の起動に倒す
+      }
     }
     return false;
   });
@@ -362,7 +266,9 @@ export default function App() {
         if (p.get('screenshot') === '1' || localStorage.getItem('screenshot_mode') === 'true' || localStorage.getItem('hasCompletedOnboarding') === 'true') {
           return 'home';
         }
-      } catch {}
+      } catch {
+        // localStorage が使えない環境（プライベートモード等）は通常の起動に倒す
+      }
     }
     return 'onboarding';
   });
@@ -380,7 +286,6 @@ export default function App() {
    *   なぜか演習が開いている」という、押した覚えのない状態が残る。
    *   ここは毎回まっさらな 'practice' から始める。
    */
-  const [rikaTab, setRikaTab] = useState<RikaTab>('practice');
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(() => localStorage.getItem('savedSelectedChapterId'));
   /**
    * 「今回はこの範囲だけを解く」ときの範囲（両端を含む・章内の通し番号）。
@@ -414,13 +319,12 @@ export default function App() {
       return null;
     }
   });
-  const [selectedNote, setSelectedNote] = useState<any>(null);
+  const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
   const [studyHubView, setStudyHubView] = useState<StudyHubView>({ tab: 'today', subjectTab: 'all' });
   const [chapterGroups, setChapterGroups] = useState<Record<string, string>>({});
   const [battleReturnActive, setBattleReturnActive] = useState(false);
   const [battleActive, setBattleActive] = useState(false);
   const [growthPage, setGrowthPage] = useState<GrowthPage>('overview');
-  const [rikaBattleTarget, setRikaBattleTarget] = useState<{ chapterId: string; questionId?: string } | null>(null);
   const battleScrollRef = useRef<HTMLDivElement | null>(null);
   const savedBattleScroll = useRef(0);
   const restoreBattleScroll = useRef(false);
@@ -433,16 +337,16 @@ export default function App() {
     return () => cancelAnimationFrame(frame);
   }, [appState]);
   useEffect(() => {
-    if (!['battle', 'quiz', 'explanation', 'rika'].includes(appState)) setBattleReturnActive(false);
+    if (!['battle', 'quiz', 'explanation'].includes(appState)) setBattleReturnActive(false);
   }, [appState]);
   useEffect(() => {
     let owner = auth.currentUser?.uid || 'guest';
     return onAuthStateChanged(auth, user => {
       const next = user?.uid || 'guest';
-      if (next !== owner) { setBattleReturnActive(false); setRikaBattleTarget(null); }
+      if (next !== owner) setBattleReturnActive(false);
       owner = next;
       // 積み上げ（満点・レベル）を端末共通に（ほかの端末で解いたぶんも「満点 n/3」に反映）
-      if (user && !user.isAnonymous) void import('./utils/achievementsSync').then(m => m.scheduleAchievementsSync(1500)).catch(() => {});
+      if (user && !user.isAnonymous) void import('./utils/achievementsSync').then(m => m.scheduleAchievementsSync(1500)).catch(logRejection('achievements.scheduleSync'));
     });
   }, []);
   const returnToBattle = () => {
@@ -452,53 +356,19 @@ export default function App() {
   };
   const navigateMain = (next: AppState) => {
     if (appState === 'battle' && next !== 'battle' && battleActive &&
-      !window.confirm('進行中の対戦・待機を終了して移動しますか？オンライン対戦では途中退出扱いになります。')) return;
+      !confirmAction('進行中の対戦・待機を終了して移動しますか？オンライン対戦では途中退出扱いになります。')) return;
     if (next === 'settings') setPrevAppState(appState === 'battle' && battleActive ? 'home' : appState);
     setBattleReturnActive(false);
-    setRikaBattleTarget(null);
     setAppState(next);
   };
-  /**
-   * ★学習時間（設定のプロフィールカード）★ utils/studyTime.ts
-   * 演習・解説の画面を開いていて、タブが前面にある間だけ15秒ごとに足す。
-   * ★1分間なにも操作がなければ数えない（2026-10-11）★ 音声が鳴っている間（リスニング）は操作ありとみなす。
-   */
-  useEffect(() => {
-    if (appState !== 'quiz' && appState !== 'explanation') return;
-    let last = Date.now();
-    let lastActive = last;
-    const mark = () => { lastActive = Date.now(); };
-    const events: (keyof WindowEventMap)[] = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
-    events.forEach(ev => window.addEventListener(ev, mark, { passive: true, capture: true }));
-    // BGM（loop のついた <audio>）は数えない。リスニングの音声・読み上げだけ
-    const mediaPlaying = () => [...document.querySelectorAll<HTMLMediaElement>('audio, video')].some(m => !m.loop && !m.paused && !m.ended)
-      || (typeof speechSynthesis !== 'undefined' && speechSynthesis.speaking);
-    const tick = () => {
-      const now = Date.now();
-      if (mediaPlaying()) lastActive = now;
-      if (document.visibilityState === 'visible') {
-        const d = new Date(now);
-        const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        addStudySeconds(auth.currentUser?.uid || 'guest', activeStudySeconds(last, now, lastActive), day);
-      }
-      last = now;
-    };
-    const id = window.setInterval(tick, 15000);
-    return () => {
-      window.clearInterval(id);
-      events.forEach(ev => window.removeEventListener(ev, mark, { capture: true }));
-      tick();
-    };
-  }, [appState]);
+  // 学習時間の計測（演習・解説の画面にいる間だけ）。中身は hooks/useStudyTimeTracker.ts
+  useStudyTimeTracker(appState === 'quiz' || appState === 'explanation', appState);
   const reviewRequest = useRef(0);
   const reviewBusy = useRef(false);
   useEffect(() => { reviewRequest.current += 1; reviewBusy.current = false; }, [appState]);
   const [quizAnswers, setQuizAnswers] = useState<Record<string, string>>(() =>
     parseStoredStringRecord(localStorage.getItem('savedQuizAnswers')),
   );
-  // スマホ端末では常にスマホ向けレイアウトで表示するため、PC/スマホ切り替えは廃止。
-  // 既存の判定ロジック（shouldForceDesktopUI / isMobileExplanation）との互換のため定数 false を保持する。
-  const forceDesktop = false;
   // ユーザーエージェントによるモバイル端末判定（初回のみ・不変）。
   // 画面幅の判定は共有フック useIsMobile に一元化する（C2）。
   const isMobileUserAgent = useRef(
@@ -507,7 +377,16 @@ export default function App() {
   const isNarrowViewport = useIsMobile();
   // 「モバイル端末」= UA がモバイル or 画面幅が md 未満。
   const isMobileDevice = isMobileUserAgent || isNarrowViewport;
-  const [isGuest, setIsGuest] = useState(() => localStorage.getItem('savedIsGuest') === 'true');
+  /*
+   * isGuest ＝「ログインせずに、この端末だけで使っている」状態。
+   * 2026-10-19 ゲストで始める入口は廃止した（ログイン必須）。
+   * ただし「ログインがどうしても通らない／オンライン機能が設定前」のときに
+   * アプリへ入れなくなるのが一番まずいので、ログイン画面で失敗したときだけ
+   * 「この端末だけで続ける」を出す（Onboarding の onOffline）。その印が LOGIN_FALLBACK_KEY。
+   * 以前のゲスト（savedIsGuest）は引き継がない＝次の起動でログイン画面が出る。
+   * ログインすると、この端末の記録は userDataSync.migrateGuestData でアカウントへ移る。
+   */
+  const [isGuest, setIsGuest] = useState(() => localStorage.getItem(LOGIN_FALLBACK_KEY) === 'true');
   // 選択中の科目。ログイン直後の科目選択画面（＝タイトル画面）で決まる。
   // 保存値が今の科目一覧に無い（＝古い/壊れた値）場合は化学基礎に戻す。
   const [selectedSubject, setSelectedSubject] = useState<SubjectId>(() => {
@@ -526,21 +405,13 @@ export default function App() {
       戻す先は fallbackSubjectId が公開中のものから選ぶ。
       「必ず化学基礎」と書かないのは、将来化学基礎を非公開にした日に
       非公開の科目へ倒す処理になってしまうからである。
-      公開中の科目が1つも無い場合だけ 'chemistry_basic' を使う
+      公開中の科目が1つも無い場合だけ登録簿の先頭（DEFAULT_SUBJECT）を使う
       （その状態はアプリとして成立していないので、
         画面が真っ白になるのを避けるための最後の受け皿）。
     */
     if (isSubjectId(saved) && isSubjectEnabled(saved)) return saved;
-    const fallback = fallbackSubjectId(
-      ['chemistry_basic', 'chemistry', 'english_listening', 'english_grammar', 'biology_basic', 'geography'],
-    );
-    return (fallback as SubjectId) ?? 'english_listening';
-  });
-  // 化学（発展）で選択中の分野（理論／無機／有機）。
-  // 保存値が壊れていても安全に理論化学へ倒す。
-  const [selectedField, setSelectedField] = useState<AdvancedFieldId>(() => {
-    const saved = localStorage.getItem(SELECTED_FIELD_KEY);
-    return ADVANCED_FIELDS.some(f => f.id === saved) ? (saved as AdvancedFieldId) : 'theoretical';
+    const fallback = fallbackSubjectId(SUBJECT_IDS);
+    return (fallback as SubjectId) ?? DEFAULT_SUBJECT;
   });
   const [isExplanationView, setIsExplanationView] = useState(false);
   const [prevAppState, setPrevAppState] = useState<AppState>('home');
@@ -549,11 +420,13 @@ export default function App() {
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
   /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
   const [foundationTab, setFoundationTab] = useState<'words' | 'quiz' | 'grammar' | 'more'>('words');
+  /** アプリ内の PDF ビューが開いているか（開いている間は広告を出さない） */
+  const pdfOpen = usePdfOpen();
   const [foundationBackTo, setFoundationBackTo] = useState<'home' | 'study'>('home');
   // 演習する（科目→コンテンツ）。選んだ科目・前回のコンテンツは端末に覚えておく
   const [studyCatalogSubject, setStudyCatalogSubject] = useState<string | null>(() => localStorage.getItem('study_catalog_subject_v1'));
   const [studyLastContent, setStudyLastContent] = useState<string | null>(() => localStorage.getItem('study_catalog_last_v1'));
-  const [lastQuizResult, setLastQuizResult] = useState<any>(null);
+  const [lastQuizResult, setLastQuizResult] = useState<ChapterRunState | null>(null);
   // 届いているフレンド申請件数（設定ボタンのバッジ表示用）
   const [pendingFriendRequests, setPendingFriendRequests] = useState(0);
 
@@ -579,7 +452,7 @@ export default function App() {
   // 送信に失敗して端末に溜まっているフィードバックを、起動時とオンライン復帰時に自動再送する。
   // （電波の悪い教室や機内モードで書いた意見を取りこぼさないための保険）
   useEffect(() => {
-    const flush = () => { void flushFeedbackQueue().catch(() => {}); };
+    const flush = () => { void flushFeedbackQueue().catch(logRejection('feedback.flushQueue')); };
     const timer = window.setTimeout(flush, 2500);
     window.addEventListener('online', flush);
     return () => { window.clearTimeout(timer); window.removeEventListener('online', flush); };
@@ -592,7 +465,7 @@ export default function App() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, () => {
       window.setTimeout(() => {
-        void recordUserPresence(getFeedbackWebhookUrl()).catch(() => {});
+        void recordUserPresence(getFeedbackWebhookUrl()).catch(logRejection('presence.record'));
       }, 4000);
     });
     return unsub;
@@ -609,7 +482,7 @@ export default function App() {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (!user) return; // ゲストは掲載対象外
       window.setTimeout(() => {
-        void ensureRankingEntry().catch(() => {});
+        void ensureRankingEntry().catch(logRejection('ranking.ensureEntry'));
       }, 3000);
     });
     return unsub;
@@ -630,8 +503,12 @@ export default function App() {
       if (!user) {
         // ログアウトしたら同期状態を捨てる（別アカウントと混ざらないように）
         resetStudySyncState();
+        stopUserDataSync();
         return;
       }
+      // レベル・コイン・ガチャ・単語の✓・学習時間・メモなど、端末だけにあった記録も
+      // アカウントへ保存する（ゲストで使っていた分はここでアカウントへ移る）
+      startUserDataSync(user.uid);
       // ログイン直後は他の初期化処理と競合しやすいので少し待つ
       window.setTimeout(() => {
         void pullStudyData().then((result) => {
@@ -650,45 +527,28 @@ export default function App() {
   // 未送信の学習データを送る。iOS Safari は beforeunload が
   // 発火しないことがあるため pagehide / visibilitychange を使う。
   useEffect(() => installStudySyncFlush(), []);
-
-  // Prevent iOS pinch zoom and double tap zoom, EXCEPT on the answers/explanations pages
+  useEffect(() => installUserDataSyncFlush(), []);
+  useEffect(() => installUsageFlush(), []);
+  // 学習のお知らせ（通知）：開いたとき・裏から戻ったときに予約し直す（復習日・連続日数が変わるため）
   useEffect(() => {
-    const handleTouchMove = (e: TouchEvent) => {
-      if (appState === 'explanation' || isExplanationView || (e.target instanceof Element && e.target.closest('input, select, button, a'))) {
-        return; // Native controls must retain their touch behavior.
-      }
-      if (e.touches.length > 1) {
-        e.preventDefault();
-      }
-    };
-    
-    let lastTouchEnd = 0;
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (appState === 'explanation' || isExplanationView || (e.target instanceof Element && e.target.closest('input, select, button, a'))) {
-        return; // Native controls must retain their touch behavior.
-      }
-      const now = (new Date()).getTime();
-      if (now - lastTouchEnd <= 300) {
-        e.preventDefault();
-      }
-      lastTouchEnd = now;
-    };
+    const again = () => { if (document.visibilityState !== 'hidden') void rescheduleReminders(); };
+    const t = window.setTimeout(again, 3000);
+    document.addEventListener('visibilitychange', again);
+    window.addEventListener(USER_DATA_SYNCED_EVENT, again);
+    return () => { window.clearTimeout(t); document.removeEventListener('visibilitychange', again); window.removeEventListener(USER_DATA_SYNCED_EVENT, again); };
+  }, []);
 
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { passive: false });
-
-    return () => {
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [appState, isExplanationView]);
-
-  const [lastLearnState, setLastLearnState] = useState<AppState>(() => {
-    const saved = localStorage.getItem('savedLastLearnState');
-    return isAppState(saved) && isLearningScreen(saved) ? saved : 'study';
+  // iOS のピンチ・ダブルタップズームを抑止する（解答・解説画面と入力欄・ボタン・リンクは除く）
+  usePreventZoom({
+    enabled: !(appState === 'explanation' || isExplanationView),
+    blockPinchTouch: true,
+    ignoreSelector: NATIVE_CONTROLS_SELECTOR,
   });
 
+
   useEffect(() => { safeSetItem('savedAppState', appState); }, [appState]);
+  // 使われ方の記録：どの画面を開いたか（設定でオフにできる。utils/analytics.ts）
+  useEffect(() => { trackScreen(hasEntered ? appState : 'launch'); }, [appState, hasEntered]);
   useEffect(() => { safeSetItem('savedAppMode', appMode); }, [appMode]);
   useEffect(() => {
     if (selectedChapterId) {
@@ -705,13 +565,14 @@ export default function App() {
     }
   }, [quizRange]);
   useEffect(() => { safeSetItem('savedQuizAnswers', JSON.stringify(quizAnswers)); }, [quizAnswers]);
-  useEffect(() => { safeSetItem('savedIsGuest', isGuest.toString()); }, [isGuest]);
+  useEffect(() => {
+    safeSetItem(LOGIN_FALLBACK_KEY, isGuest.toString());
+    try { localStorage.removeItem('savedIsGuest'); } catch { /* 古い印の掃除。消せなくても読まないので害はない */ }
+  }, [isGuest]);
   useEffect(() => { safeSetItem(SELECTED_SUBJECT_KEY, selectedSubject); }, [selectedSubject]);
-  useEffect(() => { safeSetItem(SELECTED_FIELD_KEY, selectedField); }, [selectedField]);
   
   useEffect(() => {
     if (isLearningScreen(appState)) {
-      setLastLearnState(appState);
       safeSetItem('savedLastLearnState', appState);
     }
   }, [appState]);
@@ -754,17 +615,13 @@ export default function App() {
    * 見せることになってしまうため。
    */
   useEffect(() => {
-    // モード選択・分野選択にいる ＝ 次は単元選択の可能性が高い
-    if (appState === 'mode_selection' || appState === 'advanced_fields') {
-      import('./components/ChapterSelection').catch(() => {});
-    }
-    // モード選択にいる ＝ 化学（発展）なら次は分野選択
+    // モード選択にいる ＝ 次は単元選択の可能性が高い
     if (appState === 'mode_selection') {
-      import('./components/AdvancedFieldSelection').catch(() => {});
+      import('./components/ChapterSelection').catch(logRejection('chunk.prefetch.ChapterSelection'));
     }
     // 単元選択にいる ＝ 次は演習画面の可能性が高い
     if (appState === 'chapters') {
-      import('./components/QuizScreens').catch(() => {});
+      import('./components/QuizScreens').catch(logRejection('chunk.prefetch.QuizScreens'));
     }
   }, [appState]);
 
@@ -796,13 +653,11 @@ export default function App() {
   // そこで俯瞰UIをやめ、スマホでは解答解説もスマホ専用レイアウト
   // （正誤一覧 → タップでその問の解説を開く。Explanation.tsx 側で実装）で表示する。
   // PC のレイアウトは一切変えない。
-  const shouldForceDesktopUI = forceDesktop;
-  const isMobileView = isMobileDevice && !shouldForceDesktopUI;
+  const isMobileView = isMobileDevice;
 
   // PC版では「学習モードを選択」(mode_selection) 以外の全画面で外側余白をなくし、
   // ノート風背景を全幅に広げる。mode_selection だけは従来通り中央寄せ＋余白を維持。
   // 数学の演習・解説・まとめを開いている間だけ、数式を数学の規則で組む（書体の混在を防ぐ）。
-  setFormatMathContext(selectedSubject === 'math' && ['quiz', 'explanation', 'learning', 'mock_exam'].includes(appState));
   const isFullBleed = appState !== 'mode_selection';
 
   /**
@@ -823,7 +678,6 @@ export default function App() {
       setSelectedChapterId(null);
       setQuizRange(null);
       setLastQuizResult(null);
-      setLastLearnState('chapters');
       safeSetItem('savedLastLearnState', 'chapters');
     }
     setSelectedSubject(subject);
@@ -872,7 +726,6 @@ export default function App() {
       setSelectedChapterId(null);
       setQuizRange(null);
       setLastQuizResult(null);
-      setLastLearnState(entry);
       safeSetItem('savedLastLearnState', entry);
     }
     setSelectedSubject(subject);
@@ -886,7 +739,9 @@ export default function App() {
       isFirstLoad.current = false;
 
       if (!user) {
-        if (!isGuest && !wasFirstLoad) {
+        // ログイン必須（2026-10-19）。起動時に未ログインならログイン画面へ。
+        // 例外：ログインできずに「この端末だけで続ける」を選んだ人・スクリーンショット撮影
+        if (!isGuest && !(wasFirstLoad && isScreenshotMode())) {
           setAppState('onboarding');
         }
       } else {
@@ -908,409 +763,11 @@ export default function App() {
     return unsubscribe;
   }, [isGuest]);
   
-  // BGM state
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const titlePauseTimer = useRef<number | null>(null);
-  /*
-    ===== BGM の初期状態について =====
-    ★以前は常に ON（useState(true)）だった。これを OFF 既定に変える。★
-
-    ■ なぜ OFF にするのか
-      学習アプリで音が勝手に鳴り始めるのは、
-        ・図書館・電車・自習室では実害になる
-        ・イヤホンを繋いだ瞬間に大音量で鳴ることがある
-        ・「まず音を止める」から始まる体験になる
-      という問題がある。音楽を聴きながらやりたい人は
-      自分の好きな曲を別に流しているので、
-      ★アプリ側が鳴らす理由は元々弱い。★
-      機能自体は消さず、設定画面のトグルからONにできる。
-
-      既定値は src/config/features.ts の FEATURES.bgm で持つ。
-      「どの機能を出すか」の判断を1か所に集めておくため
-      （このファイルに true/false を直接書かない）。
-
-    ■ 選択を覚える
-      毎回OFFに戻ると、ONにしたい人には毎回操作が必要になる。
-      localStorage に覚えるので、ONにした人は次回もON。
-      ★保存値が無い人（＝新規・これまでのユーザー全員）は
-        フラグの既定値に従うので、OFF から始まる。★
-
-    ■ 保存値の読み方
-      'on' / 'off' という文字で保存する（true/false の文字列より
-      あとから3値目を足しやすく、読んで意味が分かる）。
-      壊れた値・読めない場合は既定値に倒す。
-      localStorage が使えない環境（プライベートモード等）で
-      例外が飛んでも起動を止めないよう try で囲む。
-  */
-  const [isBgmEnabled, setIsBgmEnabled] = useState(() => {
-    try {
-      const saved = localStorage.getItem(BGM_ENABLED_KEY);
-      if (saved === 'on') return true;
-      if (saved === 'off') return false;
-    } catch {
-      /* 読めない環境では既定値に従う */
-    }
-    // まだ選んでいない人は、対戦BGMの設定（既定ON）に合わせる＝BGMのスイッチは1つ（2026-10-01）
-    try { return readAudioPreferences().bgm; } catch { return FEATURES.bgm; }
-  });
-  const [bgmVolume, setBgmVolume] = useState(() => readAudioPreferences().volume);
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const [isAudioValid, setIsAudioValid] = useState(true);
-  /*
-    フェードが終わって音が消えた状態。
-    ★これを画面に出さないと「ONなのに鳴っていない」＝故障に見える。★
-    ヘッダーのボタンのラベルを「もう一度鳴らす」に変えるために使う。
-  */
-  const [isBgmFadedOut, setIsBgmFadedOut] = useState(false);
-  const hasLoggedAudioError = useRef(false);
-
-  /**
-   * ★設定のスライダーの値を、再生開始・フェードの計算にも使う（A13）★
-   * 以前はここが 0.1 固定で、500ms ごとのフェード計算が audio.volume を 0.1 に戻していたため、
-   * スライダーを動かしても音量が変わらなかった。タイマーの中から最新の値を読むので ref で持つ。
-   */
-  const bgmVolumeRef = useRef(bgmVolume);
-  bgmVolumeRef.current = bgmVolume;
-  useEffect(() => {
-    if (readAudioPreferences().volume !== bgmVolume) writeAudioPreferences({ volume: bgmVolume });
-    battleAudio().setSettings({ ...readAudioPreferences(), volume: bgmVolume });
-    if (audioRef.current) {
-      setTitleBgmVolume(audioRef.current, appBgmVolume(bgmVolume, bgmElapsedMs()));
-    }
-  }, [bgmVolume]);
-
-  // ON/OFF の選択を覚える（次回もその状態で始まる）。
-  // localStorage が使えない環境でも起動を止めない。
-  useEffect(() => {
-    try {
-      safeSetItem(BGM_ENABLED_KEY, isBgmEnabled ? 'on' : 'off');
-    } catch {
-      /* 保存できなくても今回のセッションでは効いているので続行する */
-    }
-    /*
-      ★BGMのON/OFFは1つのボタンで全部（2026-10-01）★
-      以前は対戦BGMが別スイッチ（battle_audio_settings.bgm・既定ON）で、
-      ホームのBGMボタンを切っても対戦BGM（待ち時間・試合中）は鳴り続けていた。
-      アプリBGMのON/OFFを対戦側の設定へそのまま写し、どの画面のボタンでも両方が切り替わるようにする。
-    */
-    if (readAudioPreferences().bgm !== isBgmEnabled) writeAudioPreferences({ bgm: isBgmEnabled });
-  }, [isBgmEnabled]);
-  // 逆向き：対戦ロビーのBGMボタン（対戦側の設定）で切り替えたら、アプリBGMも同じにする
-  useEffect(() => {
-    const sync = () => {
-      const settings = readAudioPreferences();
-      setIsBgmEnabled(prev => prev === settings.bgm ? prev : settings.bgm);
-      setBgmVolume(prev => prev === settings.volume ? prev : settings.volume);
-    };
-    const onStorage = (event: StorageEvent) => { if (event.key === 'battle_audio_settings' || event.key === null) sync(); };
-    window.addEventListener('storage', onStorage);
-    window.addEventListener('battle-audio-settings', sync);
-    return () => { window.removeEventListener('battle-audio-settings', sync); window.removeEventListener('storage', onStorage); };
-  }, []);
-
-  useEffect(() => {
-    // BattleMode remains mounted while hidden to preserve matches. Its owners must
-    // not leak music into home (double BGM) or listening practice (answer interference).
-    if (appState === 'battle') return;
-    const reviewing = ['study_hub', 'note_list', 'note_detail'].includes(appState);
-    const token = Symbol('app-audio-policy');
-    const engine = battleAudio();
-    engine.setSettings({ ...readAudioPreferences(), bgm: isBgmEnabled });
-    engine.setBgmOwner(token, reviewing ? 'matching' : null, 100);
-    const resume = () => { if (reviewing && document.visibilityState !== 'hidden') engine.unlock(); };
-    resume();
-    window.addEventListener('pointerdown', resume);
-    document.addEventListener('visibilitychange', resume);
-    return () => { engine.releaseBgmOwner(token); window.removeEventListener('pointerdown', resume); document.removeEventListener('visibilitychange', resume); };
-  }, [appState, isBgmEnabled]);
-
-  const bgmStateRef = useRef({ isBgmEnabled, isAudioValid, appState });
-  useEffect(() => {
-    bgmStateRef.current = { isBgmEnabled, isAudioValid, appState };
-  }, [isBgmEnabled, isAudioValid, appState]);
-
-  /*
-    ===== ONのままでも90秒で自然に消える（フェードアウト） =====
-
-    ■ 何のためか
-      ONにした人でも「鳴り続けてほしい」わけではない。
-      始めた直後は気分が乗るが、問題文を読み始めると音は邪魔になる。
-      止めたくなったときに設定画面まで戻るのは手間なので、
-      ★放っておいても消える★ようにする。
-
-    ■ 「鳴っていた時間」だけを数える
-      単に「ONにした時刻から90秒」で数えると、
-      演習中（quiz / explanation）は止まっているのに時間だけ進み、
-      演習から戻ってきた瞬間にはもう消えている、という
-      「一度も聞けていないのに終わっている」状態が起きる。
-      そこで ★実際に鳴っていた時間を足し込む★ 方式にする。
-        bgmPlayedMsRef  … これまで鳴っていた合計（一時停止中も保持）
-        bgmPlaySinceRef … いま鳴り始めた時刻（止まっているときは null）
-
-    ■ 音量の計算はこのファイルに書かない
-      「経過ミリ秒 → 音量」の対応は utils/bgmFade.ts の純粋関数に置く。
-      ここに書くと目視でしか確認できないが、
-      切り出せばブラウザを開かずに機械検査できる。
-
-    ■ 消えたあとは pause する
-      音量0のまま再生を続けると、電池を削り、
-      端末の「再生中の音楽」を占有し続けてしまう（他アプリの音楽が戻らない）。
-  */
-  const bgmPlayedMsRef = useRef(0);
-  const bgmPlaySinceRef = useRef<number | null>(null);
-
-  /** 現在までに「実際に鳴っていた」合計ミリ秒。 */
-  const bgmElapsedMs = () => {
-    const since = bgmPlaySinceRef.current;
-    return bgmPlayedMsRef.current + (since === null ? 0 : Date.now() - since);
-  };
-
-  /** 再生時間の計測をやり直す（ONに入れ直したとき＝もう一度聞きたいとき）。 */
-  const resetBgmFade = () => {
-    bgmPlayedMsRef.current = 0;
-    bgmPlaySinceRef.current = null;
-  };
-
-  /** 鳴り始めた／止まった、を計測に反映する。 */
-  const markBgmPlaying = (playing: boolean) => {
-    if (playing) {
-      if (bgmPlaySinceRef.current === null) bgmPlaySinceRef.current = Date.now();
-      return;
-    }
-    const since = bgmPlaySinceRef.current;
-    if (since !== null) {
-      bgmPlayedMsRef.current += Date.now() - since;
-      bgmPlaySinceRef.current = null;
-    }
-  };
-
-  useEffect(() => {
-    const handleInteraction = () => {
-      setHasInteracted(true);
-      
-      // Attempt to play immediately on interaction to satisfy strict browser policies
-      const audio = audioRef.current;
-      const { isBgmEnabled, isAudioValid, appState } = bgmStateRef.current;
-      
-      if (audio && isAudioValid && isBgmEnabled && !BGM_SILENT_STATES.includes(appState)) {
-        unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current));
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(e => {
-            if (e.name === 'NotSupportedError' || e.message?.includes('no supported sources')) {
-              if (!hasLoggedAudioError.current) {
-                hasLoggedAudioError.current = true;
-                console.error('[BGM Error] Decode failed on interaction. Switching to silent mode.', e);
-                console.warn('音源ファイルが読み込めないか、サポートされていない形式です。無音でアプリを続行します。');
-              }
-              setIsAudioValid(false);
-            } else if (e.name === 'NotAllowedError') {
-              console.warn('[BGM Info] Autoplay blocked by browser. Waiting for user interaction.', e);
-            } else {
-              console.error('[BGM Error] Unexpected playback error on interaction:', e);
-            }
-          });
-        }
-      }
-
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('touchstart', handleInteraction);
-      document.removeEventListener('keydown', handleInteraction);
-    };
-
-    document.addEventListener('click', handleInteraction);
-    document.addEventListener('touchstart', handleInteraction);
-    document.addEventListener('keydown', handleInteraction);
-
-    return () => {
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('touchstart', handleInteraction);
-      document.removeEventListener('keydown', handleInteraction);
-    };
-  }, []);
-
-  useEffect(() => {
-    const viewport = document.querySelector('meta[name="viewport"]');
-    if (viewport) {
-      if (shouldForceDesktopUI) {
-        // 解答解説画面：俯瞰UI。常に PC 版レイアウト（width=1024）で描画し、
-        // 初期表示は全体が画面内に収まる縮小倍率（fit scale）にする。
-        // 実装は viewportControl.applyOverviewViewport に一元化。
-        // （ページ遷移毎のズームリセットは Explanation 側でも同関数を呼ぶ）
-        applyOverviewViewport();
-      } else {
-        // モバイルへ戻る/遷移する際に、以前の desktop スケールが残って
-        // 「異常にズームされた状態」で切り替わるのを防ぐため、一度スケールを
-        // 明示的に 1.0 に固定してから通常のビューポートへ戻す（D対策）。
-        // user-scalable は既定（許可）のままにしてアクセシビリティを確保する（C3）。
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0');
-        // 次フレームで拡大許可を戻し、ユーザーによるピンチズームを再度可能にする。
-        requestAnimationFrame(() => {
-          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
-        });
-      }
-    }
-  }, [shouldForceDesktopUI, appState]);
-
-  const handleAudioError = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
-    const target = e.target as HTMLAudioElement;
-    const error = target.error;
-    
-    if (!hasLoggedAudioError.current) {
-      hasLoggedAudioError.current = true;
-      console.error('[BGM Error] Failed to load or decode. Details:', {
-        code: error?.code,
-        message: error?.message,
-        networkState: target.networkState,
-        readyState: target.readyState,
-        src: target.src
-      });
-      console.warn('音源ファイルが読み込めないか、ブラウザでサポートされていない形式です。無音でアプリを続行します。');
-    }
-    setIsAudioValid(false);
-  };
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !isAudioValid || hasLoggedAudioError.current) return;
-    
-    // Starting from the title mounts <audio>; a prior title tap may already have
-    // set hasInteracted, so hasEntered must also trigger this effect.
-    const shouldPlay = hasEntered && isBgmEnabled && hasInteracted && !BGM_SILENT_STATES.includes(appState);
-
-    if (shouldPlay) {
-      /*
-        ★音量は設定のスライダーの値（bgmVolumeRef）にフェードの倍率をかけたもの★
-        以前は 0.1 固定で、スライダーを動かしても再生開始やフェードの計算が
-        0.1 に戻してしまい「音量が変わらない」状態だった（2026-09-30 修正）。
-      */
-      unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current, bgmElapsedMs()));
-      // すでにフェードが終わっている（＝90秒＋5秒鳴り終えた）なら鳴らさない。
-      // 画面を移動しただけで音が復活しては「消えた」ことにならない。
-      if (isBgmFadeComplete(bgmElapsedMs())) {
-        markBgmPlaying(false);
-        audio.pause();
-        return;
-      }
-      markBgmPlaying(true);
-      // 鳴っている最中に play() を重ねて呼ばない（画面遷移のたびに呼ぶとバッファが詰まり「ガガッ」と鳴る）
-      if (titlePauseTimer.current) { window.clearTimeout(titlePauseTimer.current); titlePauseTimer.current = null; }
-      if (!audio.paused) return;
-      // Play might fail if user hasn't interacted with the document yet or if source is invalid
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(e => {
-          if (e.name === 'NotSupportedError' || e.message?.includes('no supported sources')) {
-            if (!hasLoggedAudioError.current) {
-              hasLoggedAudioError.current = true;
-              console.error('[BGM Error] Decode failed (NotSupportedError). Switching to silent mode.', e);
-              console.warn('音源ファイルが読み込めないか、サポートされていない形式です。無音でアプリを続行します。');
-            }
-            setIsAudioValid(false);
-          } else if (e.name === 'NotAllowedError') {
-            console.warn('[BGM Info] Autoplay blocked by browser. Waiting for user interaction.', e);
-          } else {
-            console.error('[BGM Error] Unexpected playback error:', e);
-          }
-        });
-      }
-    } else {
-      // 止まる側でも計測を止める。演習中に進んだ時間を数えてしまうと
-      // 「演習から戻ったらもう消えていた」状態になる。
-      markBgmPlaying(false);
-      // いきなり pause せず、音量を絞ってから止める（ブツッ・ガガッを防ぐ）。
-      // 短い時間で戻ってきたら（演習→解説などの行き来）止めずに続ける。
-      if (!audio.paused && !titlePauseTimer.current) {
-        setTitleBgmVolume(audio, 0);
-        titlePauseTimer.current = window.setTimeout(() => { titlePauseTimer.current = null; audio.pause(); }, 250);
-      }
-    }
-  }, [appState, isBgmEnabled, hasInteracted, isAudioValid, hasEntered]);
-
-  /*
-    ===== フェードを実際に進める時計 =====
-    音量の計算式（utils/bgmFade.ts）は「経過時間を渡せば音量が出る」形なので、
-    誰かが定期的に呼んでやる必要がある。鳴っている間だけ 500ms ごとに呼ぶ。
-
-    ★鳴っていないときは時計を作らない★（依存配列に isBgmEnabled 等を入れ、
-    OFF・演習中・音源不正のときは setInterval を張らない）。
-    常時タイマーを回すと、音を切っている人の電池まで削ることになる。
-  */
-  useEffect(() => {
-    if (!isBgmEnabled || !isAudioValid || hasInteracted === false) return;
-    if (BGM_SILENT_STATES.includes(appState)) return;
-
-    const id = window.setInterval(() => {
-      const audio = audioRef.current;
-      if (!audio) return;
-      const elapsed = bgmElapsedMs();
-      setTitleBgmVolume(audio, appBgmVolume(bgmVolumeRef.current, elapsed));
-      if (isBgmFadeComplete(elapsed)) {
-        markBgmPlaying(false);
-        audio.pause();
-        // 「もう鳴らない」ことを画面にも伝える（ヘッダーのボタンの見た目が変わる）。
-        setIsBgmFadedOut(true);
-      }
-    }, 500);
-
-    return () => window.clearInterval(id);
-  }, [isBgmEnabled, isAudioValid, hasInteracted, appState]);
-
-  // iOS/Safari では audio.play() をユーザー操作（クリック/タップ）と同一の
-  // コールスタック内で呼ばないと再生がブロックされる。
-  // 設定画面のトグルでは React state 更新 → useEffect 再生では間に合わないため、
-  // 操作ハンドラ内で直接 play/pause を実行する。
-  const handleToggleBgm = (enabled: boolean) => {
-    setIsBgmEnabled(enabled);
-    setHasInteracted(true);
-    /*
-      ★ONに入れ直したら再生時間の計測をやり直す★
-      「もう一度鳴らしたい」という操作なので、
-      前回の90秒を引き継いだままだと押しても鳴らない
-      （＝ボタンが壊れているように見える）。
-      OFFにしたときも0に戻す。次にONにしたときが「始まり」だから。
-    */
-    resetBgmFade();
-    setIsBgmFadedOut(false);
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (enabled) {
-      if (!isAudioValid || hasLoggedAudioError.current) return;
-      if (BGM_SILENT_STATES.includes(appState)) return;
-      unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current));
-      markBgmPlaying(true);
-      // iOS Safari 対策:
-      // 音源がまだデコードされていない場合、ユーザー操作と同一スタックで
-      // load() → play() を呼ぶことで再生ブロック/デコード失敗を回避しやすくなる。
-      try {
-        if (audio.readyState < 2) {
-          audio.load();
-        }
-      } catch {
-        /* load 失敗は play 側の catch で処理 */
-      }
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(e => {
-          if (e.name === 'NotSupportedError' || e.message?.includes('no supported sources')) {
-            if (!hasLoggedAudioError.current) {
-              hasLoggedAudioError.current = true;
-              console.error('[BGM Error] Decode failed on toggle. Switching to silent mode.', e);
-            }
-            setIsAudioValid(false);
-          } else if (e.name === 'NotAllowedError') {
-            console.warn('[BGM Info] Playback blocked by browser on toggle.', e);
-          } else {
-            console.error('[BGM Error] Unexpected playback error on toggle:', e);
-          }
-        });
-      }
-    } else {
-      markBgmPlaying(false);
-      audio.pause();
-    }
-  };
+  // BGM（タイトル曲）の制御は hooks/useTitleBgmController.tsx にまとめた
+  const {
+    audioRef, isBgmEnabled, setIsBgmEnabled, bgmVolume, setBgmVolume,
+    setHasInteracted, isBgmFadedOut, handleAudioError, handleToggleBgm,
+  } = useTitleBgmController({ appState, hasEntered });
 
   /**
    * -----------------------------------------------------------------
@@ -1350,21 +807,10 @@ export default function App() {
   const handleIntro = () => setAppState('intro');
   
   const handleSelectMode = (mode: AppMode) => {
-    setAppMode(mode);
-    if (mode === 'learning' && selectedSubject === 'english_listening') {
-      setAppMode('practice'); setAppState('chapters'); return;
-    }
-    if (mode === 'learning') {
-      setAppState('learning');
-    } else if (selectedSubject === 'english_listening') {
-      // 英語リスニングは分野選択を持たず、そのまま大問（単元）選択へ進む。
-      setAppState('chapters');
-    } else if (selectedSubject === 'chemistry') {
-      // 分野は単元一覧内の切替で選ぶ。
-      setAppState('chapters');
-    } else {
-      setAppState('chapters');
-    }
+    // 公開中の科目（リスニング・英文法）は学び方を選ばず、単元選択へ進む。
+    // 「学習(インプット)」（まとめプリント）はリスニング版に無いので、演習として単元選択へ進める。
+    setAppMode(mode === 'learning' ? 'practice' : mode);
+    setAppState('chapters');
   };
 
   const handleSelectChapter = (
@@ -1432,50 +878,39 @@ export default function App() {
         // 英単語・英熟語は対戦専用（本体に演習画面が無い）。
         // リザルトは onPractice を渡されても vocab では出さない（BattleResult 側で判定）が、
         // 履歴など別経路から来たときのためにここでも止める。
-        if (subject !== 'rika') throw new Error('この科目は対戦専用です。答えはリザルトの解答欄で確認できます。');
-        if (!FEATURES.rika) throw new Error('この科目の演習は現在公開されていません。');
-        const { RIKA_ITEMS } = await import('./features/rika/rikaData');
-        const found = RIKA_ITEMS.find(q => q.chapterId === chapterId && (!subQuestionId || q.id === subQuestionId));
-        if (!found) throw new Error('対応する演習問題が見つかりません。');
-        if (request !== reviewRequest.current) return;
-        savedBattleScroll.current = battleScrollRef.current?.scrollTop || 0;
-        setBattleReturnActive(true);
-        setRikaBattleTarget({ chapterId, questionId: subQuestionId });
-        setRikaTab('practice'); setAppState('rika');
-        return;
+        throw new Error('この科目は対戦専用です。答えはリザルトの解答欄で確認できます。');
       }
-      const { getPartsOfSubject } = await import('./data/allChapters');
+      const { getPartsOfSubject, miniTestProblemsOf } = await import('./data/allChapters');
       if (request !== reviewRequest.current) return;
       if (!isSubjectId(subject)) throw new Error('対応する科目が見つかりません。');
       const parts = getPartsOfSubject(subject);
-      const part = parts.find((p: any) => p.chapters.some((c: any) => c.id === chapterId));
-      const chapter = part?.chapters.find((c: any) => c.id === chapterId);
+      const part = parts.find((p) => p.chapters.some((c) => c.id === chapterId));
+      const chapter = part?.chapters.find((c) => c.id === chapterId);
       if (!chapter) throw new Error('対応する単元が見つかりません。');
       let mode: 'practice' | 'mini_test' = 'practice';
       let problems = chapter.practiceProblems || [];
-      let index = problemId ? problems.findIndex((p: any) => p.id === problemId) : 0;
+      let index = problemId ? problems.findIndex((p) => p.id === problemId) : 0;
       if (problemId && index < 0) {
         mode = 'mini_test';
-        problems = Array.isArray(chapter.miniTest) ? chapter.miniTest : chapter.miniTest?.problems || [];
-        index = problems.findIndex((p: any) => p.id === problemId);
+        problems = miniTestProblemsOf(chapter);
+        index = problems.findIndex((p) => p.id === problemId);
       }
-      if (!problems[index] || (subQuestionId && !problems[index].subQuestions?.some((q: any) => q.id === subQuestionId))) {
+      if (!problems[index] || (subQuestionId && !problems[index].subQuestions?.some((q) => q.id === subQuestionId))) {
         throw new Error('対応する問題が見つかりません。教材が更新された可能性があります。');
       }
       savedBattleScroll.current = battleScrollRef.current?.scrollTop || 0;
       setBattleReturnActive(true);
       setSelectedSubject(subject as SubjectId);
-      if (part?.field) setSelectedField(part.field);
       setAppMode(mode);
       handleSelectChapter(chapterId, index, false, problemId ? { startIndex: index, endIndex: index } : null, mode);
     } catch (error) {
-      if (request === reviewRequest.current) alert(error instanceof Error ? error.message : '演習を読み込めませんでした。もう一度お試しください。');
+      if (request === reviewRequest.current) notify(error instanceof Error ? error.message : '演習を読み込めませんでした。もう一度お試しください。');
     } finally {
       if (request === reviewRequest.current) reviewBusy.current = false;
     }
   };
 
-  const handleFinishQuiz = (answers: Record<string, string>, result?: any) => {
+  const handleFinishQuiz = (answers: Record<string, string>, result?: ChapterRunState) => {
     setQuizAnswers(answers);
     setLastQuizResult(result || null);
     setAppState('explanation');
@@ -1502,11 +937,22 @@ export default function App() {
   };
 
   /**
+   * 「間違えた問題だけ解き直す」を始める。
+   * 演習画面には、間違いを含む大問（それぞれ間違えた小問だけ）の並びが渡るので、
+   * 位置は先頭・範囲指定なしで開始する（範囲は絞り込み前の通し番号なので使えない）。
+   */
+  const startFocusedRetry = (chapterId: string, targets: ReviewTargetItem[], targetMode: AppMode) => {
+    if (targets.length === 0) return;
+    handleSelectChapter(chapterId, 0, false, null, targetMode);
+    setReviewFocus({ chapterId, targets });
+  };
+
+  /**
    * 学習ノートの問題項目から、対応する演習問題へ遷移する（要件5）。
    * ノートに保存された chapterId / questionId を優先して問題位置を特定し、
    * 見つからなければ questionIndex（1始まり表示番号）でフォールバックする。
    */
-  const handleReviewNote = async (note: any) => {
+  const handleReviewNote = async (note: ReviewRequest | null | undefined) => {
     if (!note || reviewBusy.current) return;
     reviewBusy.current = true;
     const request = ++reviewRequest.current;
@@ -1518,13 +964,12 @@ export default function App() {
         .filter(entry => isSubjectEnabled(entry.id))
         .map(entry => ({ id: entry.id, parts: getPartsOfSubject(entry.id) })));
       if (!target) {
-        alert(note.subQuestionId && !note.chapterId && !note.questionId
+        notify(note.subQuestionId && !note.chapterId && !note.questionId
           ? 'この確認問題は現在の教材に見つかりませんでした。問題が差し替えられた可能性があります。'
           : '対応する問題を見つけられませんでした。教材が更新された可能性があります。ノートはそのまま残しています。');
         return;
       }
       setSelectedSubject(target.subject);
-      if (target.field) setSelectedField(target.field);
       setAppMode('practice');
       // ★間違えた小問だけを解き直す（2026-10-04 ご要望）★ その大問1つだけを範囲にして、小問も間違えた分に絞る
       const subIds: string[] = Array.isArray(note.subQuestionIds) ? note.subQuestionIds.map(String)
@@ -1534,14 +979,14 @@ export default function App() {
         setReviewFocus(null);
         handleSelectChapter(target.chapterId, target.questionIndex, false, { startIndex: target.questionIndex, endIndex: target.questionIndex }, 'practice');
       } else if (subIds.length > 0 && note.questionId) {
-        handleSelectChapter(target.chapterId, target.questionIndex, false, { startIndex: target.questionIndex, endIndex: target.questionIndex }, 'practice');
-        setReviewFocus({ chapterId: target.chapterId, questionId: String(note.questionId), subQuestionIds: subIds });
+        // 絞り込み後の並びはその大問だけになるので、先頭から・範囲なしで始める
+        startFocusedRetry(target.chapterId, [{ questionId: String(note.questionId), subQuestionIds: subIds }], 'practice');
       } else {
         handleSelectChapter(target.chapterId, target.questionIndex, false, null, 'practice');
       }
     } catch {
       if (request === reviewRequest.current) {
-        alert('問題データの読み込みに失敗しました。通信状況を確認して、もう一度お試しください。');
+        notify('問題データの読み込みに失敗しました。通信状況を確認して、もう一度お試しください。');
       }
     } finally {
       if (request === reviewRequest.current) reviewBusy.current = false;
@@ -1576,52 +1021,36 @@ export default function App() {
    *   同じ引数で同期に呼んでいる）。見つからないときに何も描かないのも同じ。
    */
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      (window as any).__ENTER_APP__ = () => {
-        setHasInteracted(true);
-        setHasEntered(true);
-      };
-      (window as any).__SET_APP_STATE__ = (s: AppState) => {
-        setHasInteracted(true);
-        setHasEntered(true);
-        setAppState(s);
-      };
-      (window as any).__SET_GROWTH_PAGE__ = (g: GrowthPage) => {
-        setHasInteracted(true);
-        setHasEntered(true);
-        setGrowthPage(g);
-      };
-      (window as any).__SELECT_CHAPTER__ = (c: any, idx = 0) => {
-        setHasInteracted(true);
-        setHasEntered(true);
-        handleSelectChapter(c, idx, false, { startIndex: idx, endIndex: idx }, 'practice');
-      };
-      (window as any).__NAVIGATE_QUIZ__ = (chapterId = 'el1_A') => {
-        setHasInteracted(true);
-        setHasEntered(true);
-        setSelectedChapterId(chapterId);
-        setAppMode('practice');
-        setQuizRange({ startIndex: 0, endIndex: 0 });
-        setAppState('quiz');
-      };
-      (window as any).__NAVIGATE_EXPLANATION__ = (chapterId = 'el1_A') => {
-        setHasInteracted(true);
-        setHasEntered(true);
-        setSelectedChapterId(chapterId);
-        setAppMode('practice');
-        setQuizAnswers({ el1_A_q1: '1' });
-        setAppState('explanation');
-      };
-    }
-  }, []);
+  // 画面検証（スクリーンショット・E2E）用の操作を window に公開する（最新の操作を ref 経由で呼ぶ）
+  const enterForAutomation = () => { setHasInteracted(true); setHasEntered(true); };
+  useAutomationHooks({
+    enterApp: enterForAutomation,
+    setAppState: (s: AppState) => { enterForAutomation(); setAppState(s); },
+    setGrowthPage: (g: GrowthPage) => { enterForAutomation(); setGrowthPage(g); },
+    selectChapter: (c: string, idx = 0) => {
+      enterForAutomation();
+      handleSelectChapter(c, idx, false, { startIndex: idx, endIndex: idx }, 'practice');
+    },
+    navigateQuiz: (chapterId = 'el1_A') => {
+      enterForAutomation();
+      setSelectedChapterId(chapterId);
+      setAppMode('practice');
+      setQuizRange({ startIndex: 0, endIndex: 0 });
+      setAppState('quiz');
+    },
+    navigateExplanation: (chapterId = 'el1_A') => {
+      enterForAutomation();
+      setSelectedChapterId(chapterId);
+      setAppMode('practice');
+      setQuizAnswers({ el1_A_q1: '1' });
+      setAppState('explanation');
+    },
+  });
 
   if (!hasEntered) {
     const enter = () => { battleAudio().unlock(); setHasInteracted(true); setHasEntered(true); };
-    // 副CTA「ゲストで試す」は、まだゲストでもログイン済みでもない人（＝次にログイン画面が出る人）にだけ出す
-    const firstVisit = !isGuest && !auth.currentUser;
-    return <LaunchScreen soundEnabled={isBgmEnabled} onToggleSound={() => handleToggleBgm(!isBgmEnabled)} onStart={enter}
-      onGuest={firstVisit ? () => { setIsGuest(true); setAppState('home'); enter(); } : undefined} />;
+    // 2026-10-19 タイトルの「ゲストで試す」は廃止（ログイン必須）。未ログインならこの次にログイン画面が出る
+    return <LaunchScreen soundEnabled={isBgmEnabled} onToggleSound={() => handleToggleBgm(!isBgmEnabled)} onStart={enter} />;
   }
 
   return (
@@ -1698,13 +1127,10 @@ export default function App() {
             src="/tanjou.mp3" 
             loop 
             preload="auto" 
-            // @ts-ignore - playsInline は audio でも iOS 挙動安定のため付与
             playsInline
             onError={handleAudioError}
           />
           
-          {/* スマホ版の「パソコン版・スマホ版の切り替えボタン」は削除。
-              （スマホ端末では常にスマホ向けレイアウトで表示する。forceDesktop は false 固定） */}
 
           {/*
             外枠でせっかく高さを確定させても、この中間ラッパーが高さを
@@ -1731,12 +1157,12 @@ export default function App() {
             {appState === 'feedback_admin' && <FeedbackAdminPanel onBack={() => setAppState('settings')} />}
 
             {/* ログイン／ゲスト開始の直後は、必ず科目選択（＝タイトル）画面を経由する */}
-            {/* ログイン／ゲスト開始の直後は、そのままホームへ入る。
+            {/* ログイン（またはログインできないときの「この端末だけで続ける」）の直後は、そのままホームへ入る。
                 以前はここで科目選択を挟んでいたため、
                 «ログイン → 科目選択 → ホーム → 学習を始める → 科目選択»
                 と科目選択が2回出てしまっていた。
                 科目はホームの「学習を始める」で選ぶ（初期値は化学基礎）。 */}
-            {appState === 'onboarding' && <Onboarding onComplete={() => setAppState('home')} onGuest={() => { setIsGuest(true); setAppState('home'); }} />}
+            {appState === 'onboarding' && <Onboarding onComplete={() => { setIsGuest(false); setAppState('home'); }} onOffline={() => { setIsGuest(true); setAppState('home'); }} />}
             {appState === 'subject_selection' && (
               <ListeningSubjectSelection
                 onSelectSubject={handleSelectSubject}
@@ -1745,12 +1171,10 @@ export default function App() {
                 // 科目選択は必ずホームから開くので、常に「ホームに戻る」を出せる
                 onBack={() => setAppState(subjectPickerReturnTo)}
                 backLabel={subjectPickerReturnTo === 'home' ? 'ホームに戻る' : '学習に戻る'}
-                /* 高校入試 理科（スマホでは科目選択に並べる。ホームの onRika と同じ条件・同じ行き先） */
-                onRika={FEATURES.rika ? () => { setRikaTab('practice'); setAppState('rika'); } : undefined}
                 onBattle={FEATURES.battle ? () => setAppState('battle') : undefined}
               />
             )}
-            {appState === 'home' && <Home onPractice={() => { setFoundationBackTo('home'); setAppState('study'); }} onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLogicalTree={() => setAppState('logical_tree')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onRika={FEATURES.rika ? () => { setRikaTab('practice'); setAppState('rika'); } : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => { setFoundationBackTo('home'); setAppState('foundation'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
+            {appState === 'home' && <Home onPractice={() => { setFoundationBackTo('home'); setAppState('study'); }} onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => { setFoundationBackTo('home'); setAppState('foundation'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
             {/* ★ルーティング側の門（4箇所のうちの3番目）★
                 ナビのボタンを隠すだけでは、Home の「ランキングを見る」など
                 別の導線からこの状態になれてしまう。
@@ -1790,62 +1214,8 @@ export default function App() {
               />
               </div>
             )}
-            {appState === 'rika' && FEATURES.rika && (
-              /*
-                高校入試 理科の入口（演習・まとめ・出題傾向）。
-                遅延読み込み（上の React.lazy を参照）。fallback は null＝何も描かない。
-                本体の他の遅延画面と同じ扱いにそろえてある。
-
-                ★描画の受け口でも FEATURES.rika を見る★
-                ホームのカードを消すだけでは塞げない。
-                このアプリは画面状態を localStorage に保存しているので、
-                理科を開いた状態で非公開に切り替えると
-                ★次の起動で保存値 'rika' が復元されて中に入ってしまう★。
-                （既存のランキングと同じ塞ぎ方。詳しくは src/config/features.ts）
-              */
-              <React.Suspense fallback={<ScreenLoading />}>
-                <RikaHome onBack={battleReturnActive ? returnToBattle : () => setAppState('home')} initialTab={rikaTab}
-                  battleTarget={rikaBattleTarget || undefined} onReturnToBattle={battleReturnActive ? returnToBattle : undefined} />
-              </React.Suspense>
-            )}
             {appState === 'intro' && <Intro onBack={() => setAppState('home')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
-            {appState === 'logical_tree' && (
-              <LogicalTree
-                onBack={() => setAppState('home')}
-                /* ツリーの「確認問題」は小問IDを持つ。学習ノートと同じ解決处理で演習へ移る。 */
-                onOpenQuestion={(subQuestionId) => handleReviewNote({ subQuestionId })}
-              />
-            )}
-            {appState === 'mode_selection' && <ModeSelection onSelectMode={handleSelectMode} onBack={() => setAppState('home')} onChangeSubject={handleChangeStudySubject} onMockExam={() => setAppState('mock_exam')} subject={selectedSubject} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
-            {appState === 'mock_exam' && <MockExam onBack={() => setAppState('mode_selection')} />}
-            {appState === 'learning' && (
-              /*
-                まとめプリントは遅延読み込み（上の React.lazy を参照）。
-                fallback は null＝何も描かない。
-                ローディング表示を足すと「元には無かった表示」が増えてしまうため。
-              */
-              <React.Suspense fallback={<ScreenLoading />}>
-                <LearningViewer
-                  onBack={() => setAppState('mode_selection')}
-                  subject={
-                    selectedSubject === 'chemistry' ? 'chemistry'
-                    : selectedSubject === 'math' ? 'math'
-                    : selectedSubject === 'biology_basic' ? 'biology_basic'
-                    : 'chemistry_basic'
-                  }
-                />
-              </React.Suspense>
-            )}
-            {/* 化学（発展）：理論化学・無機化学・有機化学の分野選択 */}
-            {appState === 'advanced_fields' && (
-              /* 分野選択画面は遅延読み込み（上の React.lazy を参照）。fallback は null＝何も描かない。 */
-              <React.Suspense fallback={<ScreenLoading />}>
-                <AdvancedFieldSelection
-                  onSelectField={(field) => { setSelectedField(field); setAppState('chapters'); }}
-                  onBack={() => setAppState('mode_selection')}
-                />
-              </React.Suspense>
-            )}
+            {appState === 'mode_selection' && <ModeSelection onSelectMode={handleSelectMode} onBack={() => setAppState('home')} onChangeSubject={handleChangeStudySubject} subject={selectedSubject} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} />}
             {appState === 'chapters' && (
               /*
                 単元選択画面は遅延読み込み（上の React.lazy を参照）。
@@ -1862,12 +1232,9 @@ export default function App() {
                   onSelectChapter={handleSelectChapter}
                   onBack={() => setAppState(chaptersBackTo === 'study' ? 'study' : chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? 'foundation' : studyEntry(selectedSubject) === 'chapters' ? 'home' : 'mode_selection')}
                   backLabel={chaptersBackTo === 'study' ? '演習' : chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? '固める' : studyEntry(selectedSubject) === 'chapters' ? 'ホーム' : '学習モード'}
-                  onChangeField={setSelectedField}
-                  rememberedGroup={chapterGroups[`${selectedSubject}:${selectedField}`]}
-                  onGroupChange={(group) => setChapterGroups(prev => ({ ...prev, [`${selectedSubject}:${selectedField}`]: group }))}
+                  rememberedGroup={chapterGroups[selectedSubject]}
+                  onGroupChange={(group) => setChapterGroups(prev => ({ ...prev, [selectedSubject]: group }))}
                   subject={selectedSubject}
-                  field={selectedField}
-                  fieldTitle={ADVANCED_FIELDS.find(f => f.id === selectedField)?.title}
                 />
               </React.Suspense>
             )}
@@ -1907,7 +1274,7 @@ export default function App() {
                   questionRange={quizRange}
                   subject={selectedSubject}
                   /* 結果画面の「次にすること」。どちらも通常の演習開始と同じ経路を通す。 */
-                  onRetryWrong={(chapterId, firstWrongIndex) => handleSelectChapter(chapterId, firstWrongIndex, false, quizRange, appMode)}
+                  onRetryWrong={(chapterId, targets) => startFocusedRetry(chapterId, targets, appMode)}
                   onNextChapter={(chapterId) => handleSelectChapter(chapterId, 0, false, null, appMode)}
                   onNextRound={(chapterId, index) => handleSelectChapter(chapterId, index, false, { startIndex: index, endIndex: index }, appMode)}
                   onHome={() => navigateMain('home')}
@@ -1992,7 +1359,10 @@ export default function App() {
       </>
 
       {/* バナー広告の場所（今は OFF なので何も描かない。src/ads/adConfig.ts で有効にする） */}
-      <AdBannerSlot screen={appState === 'battle' && battleActive ? 'battle_live' : appState} />
+      {/* PDF を開いている間は 'pdf'（広告を出さない画面）として扱う */}
+      <AdBannerSlot screen={pdfOpen ? 'pdf' : appState === 'battle' && battleActive ? 'battle_live' : appState} />
+      {/* アプリ内の PDF ビュー（どの画面からでも openPdf() で開く。戻るボタン・Esc で閉じる） */}
+      <PdfViewerHost />
 
       {/* ミッション達成のお知らせ（どの画面でも上に出る。「報酬を受け取る」はその場で受け取る・2026-10-11） */}
       <React.Suspense fallback={null}>

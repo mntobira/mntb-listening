@@ -16,6 +16,7 @@ import { SOCIAL_FEATURES } from '../config/features';
 import { clanCall } from '../utils/manaClan';
 import { fetchStudyTimeRanking, refreshPublicStudyTime, watchPublicStudyProfiles, type PublicStudyProfile, type StudyTimeRow } from '../utils/publicStudyProfile';
 import { formatStudyTime, readStudyTime } from '../utils/studyTime';
+import { logRejection } from '../utils/reportError';
 interface LeaderboardProps { onBack: () => void; initialTab?: 'national' | 'friend' | 'clan'; onRequireLogin?: () => void; isGuest?: boolean; initialChapterId?: string | null; initialSubject?: string; onBattle?: () => void; onGacha?: () => void; }
 export function Leaderboard({ onBack, onBattle, onGacha, initialTab = 'national', onRequireLogin }: LeaderboardProps) {
   const [uid, setUid] = useState(auth.currentUser?.uid ?? '');
@@ -49,7 +50,7 @@ export function Leaderboard({ onBack, onBattle, onGacha, initialTab = 'national'
   useEffect(() => {
     setProfiles({viewer:uid,data:{}});
     if (!uid || tab === 'clan' || !profileIds) return;
-    void refreshPublicStudyTime().catch(()=>{});
+    void refreshPublicStudyTime().catch(logRejection('leaderboard.refreshStudyTime'));
     return watchPublicStudyProfiles(profileIds.split(','), data=>setProfiles({viewer:uid,data}));
   }, [uid, tab, profileIds, retry]);
   // 学習時間ランキング：公開した人だけ。名前は対戦ランキングの表（公開読み取り）から引く
@@ -59,7 +60,7 @@ export function Leaderboard({ onBack, onBattle, onGacha, initialTab = 'national'
     if (!uid) { setTimeRows([]); setLoading(false); setError(''); return; }
     let alive = true; setLoading(true); setError(''); setTimeRows([]);
     (async () => {
-      await refreshPublicStudyTime().catch(() => {});
+      await refreshPublicStudyTime().catch(logRejection('leaderboard.refreshStudyTime'));
       const list = tab === 'friend' ? await fetchStudyTimeRanking(100, await fetchFriendUids(true)) : await fetchStudyTimeRanking(100);
       const names = list.length ? await fetchFriendBattleRanking(list.map(r => r.uid)).catch(() => [] as BattleRankingRow[]) : [];
       const nameOf = new Map(names.map(n => [n.uid, n.nickname]));

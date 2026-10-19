@@ -1,3 +1,5 @@
+import { fixture } from './helpers/fixture';
+import type { SubQuestion } from '../src/types/curriculum';
 import { describe, expect, it } from 'vitest';
 import { BADGES, emptyProgress, lifetimeTotals, nearestBadgeGoal } from '../src/battle/core/growth';
 import { LOGIN_MILESTONES, tobiraMood } from '../src/data/tobiraMood';
@@ -48,7 +50,7 @@ import { parsePublicStudyProfile } from '../src/utils/publicStudyProfile';
 describe('ステージ：満点3回で達成', () => {
   it('満点だけ数え、3回で達成・履歴は新しい順', () => {
     const mem = new Map<string, string>();
-    (globalThis as any).localStorage = { getItem: (k: string) => mem.get(k) ?? null, setItem: (k: string, v: string) => void mem.set(k, v), removeItem: (k: string) => void mem.delete(k), clear: () => mem.clear(), key: () => null, length: 0 };
+    (globalThis as { localStorage?: unknown }).localStorage = { getItem: (k: string) => mem.get(k) ?? null, setItem: (k: string, v: string) => void mem.set(k, v), removeItem: (k: string) => void mem.delete(k), clear: () => mem.clear(), key: () => null, length: 0 };
     recordStagePlay('u', 'ch1', '第1章', 9, 10, 1);
     for (let i = 0; i < STAGE_CLEAR_PERFECTS - 1; i++) recordStagePlay('u', 'ch1', '第1章', 10, 10, 2 + i);
     expect(isStageCleared(readStageRecords('u').ch1)).toBe(false);
@@ -82,7 +84,7 @@ describe('対戦結果（2026-10-04）', () => {
   });
   it('詳しい解説はその1問だけ（大問の問1〜問5一覧を混ぜない）', async () => {
     const { subQuestionExplanation } = await import('../src/battle/ui/BattleReviewDetails');
-    const text = subQuestionExplanation({ detailedExplanation: { theme: 'put off＝延期する', steps: ['① A', '② B'] } });
+    const text = subQuestionExplanation(fixture<SubQuestion>({ detailedExplanation: { theme: 'put off＝延期する', steps: ['① A', '② B'] } }));
     expect(text).toContain('put off'); expect(text).not.toContain('問2');
   });
 });

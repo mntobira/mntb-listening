@@ -22,11 +22,14 @@ import { getAllListeningChapters } from '../src/data/englishListeningData';
 const ROOT = path.resolve(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(ROOT, p), 'utf-8');
 
-const PLAYER = read('src/components/ListeningAudioPlayer.tsx');
+// 復習用のスクリプト表示（ListeningEvidenceScript）は ListeningEvidenceScript.tsx へ分離したため合わせて読む
+const PLAYER = read('src/components/ListeningAudioPlayer.tsx') + '\n' + read('src/components/ListeningEvidenceScript.tsx');
 const QUIZ = read('src/components/Quiz.tsx');
 // 問題文ペイン（左58%／スマホ上）の JSX は components/ProblemPane.tsx へ切り出した。
 const PROBLEM = read('src/components/ProblemPane.tsx');
-const EXPLANATION = read('src/components/Explanation.tsx');
+// 解答・解説の JSX は 2026-10-14 のリファクタリングで一部を components/explanation/ へ切り出した。
+// 左カラムの問題文ブロック（復習用の音源を含む）は explanation/ProblemStatement.tsx にある。
+const EXPLANATION = read('src/components/Explanation.tsx') + read('src/components/explanation/ProblemStatement.tsx');
 // 設問から作る「表示用の派生値」（useMemo 17個）は
 // hooks/useQuestionDerived.ts へ切り出した。
 const DERIVED = read('src/hooks/useQuestionDerived.ts');
@@ -56,7 +59,7 @@ describe('第1問A に「第1回」が差し込まれている', () => {
   it('4問（第1問Aのマーク数）ぶんの小問がある', () => {
     const set1 = EL1_A_PROBLEMS[0];
     expect(set1.subQuestions.length).toBe(4);
-    expect(set1.subQuestions.map((sq: any) => sq.label.slice(0, 2))).toEqual([
+    expect(set1.subQuestions.map((sq) => sq.label.slice(0, 2))).toEqual([
       '問1',
       '問2',
       '問3',
@@ -70,7 +73,7 @@ describe('第1問A に「第1回」が差し込まれている', () => {
       expect(sq.type).toBe('multiple_choice');
       expect(sq.options).toEqual(['①', '②', '③', '④']);
     }
-    expect(set1.subQuestions.map((sq: any) => sq.correctAnswer)).toEqual([
+    expect(set1.subQuestions.map((sq) => sq.correctAnswer)).toEqual([
       '②',
       '②',
       '③',
@@ -158,7 +161,7 @@ describe('音源（スクリプトから生成した音声）', () => {
   });
 
   it('音源トラックの subId は小問の id と一致している', () => {
-    const subIds = set1.subQuestions.map((sq: any) => sq.id);
+    const subIds = set1.subQuestions.map((sq) => sq.id);
     expect(set1.audioTracks.map((t) => t.subId)).toEqual(subIds);
   });
 
@@ -247,8 +250,10 @@ describe('ListeningAudioPlayer（音源を聞く場所）', () => {
   });
 
   it('他の音声（BGM・他プレーヤー）を止めて二重再生を防ぐ', () => {
-    expect(PLAYER).toContain('pauseOtherAudio');
-    expect(PLAYER).toMatch(/document\.querySelectorAll\('audio'\)/);
+    // 停止処理は utils/audioElements.ts の pauseAllAudio に一元化（挙動は tests/audioElements.test.ts）
+    expect(PLAYER).toContain("import { pauseAllAudio } from '../utils/audioElements'");
+    expect(PLAYER).toMatch(/pauseAllAudio\(el\)/);
+    expect(PLAYER).not.toMatch(/document\.querySelectorAll\('audio'\)/);
   });
 
   it('画面から離れたら音を止める（後追い再生の防止）', () => {
@@ -291,7 +296,7 @@ describe('音源ボタンが「わかりやすい場所」に置かれている'
     expect(DERIVED).toMatch(
       /const listeningTracks[\s\S]{0,200}?Array\.isArray\(t\) \? t : \[\]/,
     );
-    expect(DERIVED).toMatch(/\(currentQuestion as any\)\?\.audioTracks/);
+    expect(DERIVED).toMatch(/currentQuestion\?\.audioTracks/);
     expect(QUIZ).toContain('listeningTracks.length > 0');
     // 小問ごとの再生ボタンも「その小問の音源があるときだけ」出す
     expect(QUIZ).toContain('hasTrackFor');
@@ -313,9 +318,11 @@ describe('音源ボタンが「わかりやすい場所」に置かれている'
      */
     expect(EXPLANATION).toMatch(/mode=\{reorderMobile \? 'practice' : 'review'\}/);
     expect(EXPLANATION).toMatch(/mode=\{reorderMobile \? 'review' : 'practice'\}/);
-    expect(EXPLANATION).toMatch(/Array\.isArray\(\(question as any\)\.audioTracks\)/);
-    // 解説ペインの配色に合わせて tone を切り替える
-    expect(EXPLANATION).toMatch(/tone=\{mode === 'mini_test' \? 'light' : 'dark'\}/);
+    expect(EXPLANATION).toMatch(/Array\.isArray\(question\.audioTracks\)/);
+    // 解説ペインは常にライト配色（暗色テーマの分岐は 2026-10-14 に撤去済み）。
+    // 暗色の tone を渡す経路が残っていないことを確かめる。
+    expect(EXPLANATION).toMatch(/tone=\{?'light'\}?/);
+    expect(EXPLANATION).not.toMatch(/tone=\{?'dark'\}?/);
   });
 
   it('Explanation：問題文より前（採点直後に目に入る位置）に置く', () => {
@@ -327,7 +334,8 @@ describe('音源ボタンが「わかりやすい場所」に置かれている'
      * 実際に learningPrint.test.ts でこの事故が起きた
      * （詳細は tests/helpers/sourceScan.ts の冒頭）。
      */
-    const code = readCode('src/components/Explanation.tsx');
+    // 問題文ブロックは explanation/ProblemStatement.tsx へ移した（音源→問題文の順は同じファイル内で確かめる）
+    const code = readCode('src/components/explanation/ProblemStatement.tsx');
     const playerAt = code.indexOf('<ListeningAudioPlayer');
     const bodyAt = code.indexOf('text={cleanQuestionText(question.text)}');
     expect(playerAt).toBeGreaterThan(-1);

@@ -1,0 +1,12 @@
+endanger. <break time="1.2s" />
+tempt. <break time="1.2s" />
+deprive. <break time="1.2s" />
+proverb. <break time="1.2s" />
+frighten. <break time="1.2s" />
+irritate. <break time="1.2s" />
+yawn. <break time="1.2s" />
+frustrate. <break time="1.2s" />
+confine. <break time="1.2s" />
+arouse. <break time="1.2s" />
+precede. <break time="1.2s" />
+enclose.

@@ -3,13 +3,26 @@ import { Volume2 } from 'lucide-react';
 import { parseSupportProgress, supportStorageKey, type SupportProgress } from '../data/listeningSupport';
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { speak, stopSpeech, isSpeechSupported } from '../utils/listeningSpeech';
+import { pauseAllAudio } from '../utils/audioElements';
+import { playVocabAudio, stopVocabAudio } from '../utils/vocabAudio';
 
 /** 「英文法・英単語を固める」ページ（FoundationPage）の共通部品。 */
 
 /** 端末の音声で読む（他の音源は止める）。 */
 export function say(text: string, onEnd?: () => void): boolean {
-  document.querySelectorAll('audio').forEach(a => a.pause());
+  pauseAllAudio();
+  stopVocabAudio();
   return speak('listening-support', text, 1, { rate: .85, onEnd });
+}
+
+/**
+ * 英単語を読む。録音（ElevenLabs）があればそれを、無ければ端末の音声で読む。
+ * 録音の有無は public/audio/vocab/index.json で決まる（utils/vocabAudio.ts）。
+ */
+export function sayWord(wordId: string, text: string): void {
+  pauseAllAudio();
+  stopSpeech();
+  void playVocabAudio(wordId).then(ok => { if (!ok) say(text); });
 }
 
 export function ReadAloud({ text, label = '読み上げ' }: { text: string; label?: string } & React.Attributes) {

@@ -17,9 +17,8 @@
 
 import {
   fingerprintProblem,
-  detectStale,
-  type CurrentProblemState,
-} from './problemVersion';
+  } from './problemVersion';
+import { logRejection } from './reportError';
 
 const STORAGE_PREFIX = 'review_list_';
 
@@ -249,7 +248,7 @@ export function markReviewedCorrect(uid: string | null | undefined, key: string)
   saveReviewList(uid, next);
   // Optional personal reward; never block review scheduling or add growth code to initial study load.
   if (uid && items.some(it => it.key === key)) {
-    void import('../battle/data/growthStore').then(({ recordReviewGrowth }) => recordReviewGrowth(uid, key)).catch(() => {});
+    void import('../battle/data/growthStore').then(({ recordReviewGrowth }) => recordReviewGrowth(uid, key)).catch(logRejection('growth.recordReview'));
   }
   return next;
 }
@@ -283,17 +282,6 @@ export function removeReviewItem(uid: string | null | undefined, key: string): R
   return items;
 }
 
-/**
- * ユーザーが手動で1問を復習に追加する（採点フロー外からの導線）。
- */
-export function addReviewItemManually(
-  uid: string | null | undefined,
-  input: WrongAnswerInput
-): ReviewItem[] {
-  const items = upsertWrongAnswer(loadReviewList(uid), input);
-  saveReviewList(uid, items);
-  return items;
-}
 
 // ============================================================
 // 参照系（表示・スケジュール判定）
@@ -319,54 +307,6 @@ export function getDueCount(uid: string | null | undefined, now: number = Date.n
   return loadReviewList(uid).reduce((n, it) => (it.dueAt <= now ? n + 1 : n), 0);
 }
 
-/**
- * ===================================================================
- * 差し替えられた問題を復習リストから外す
- * ===================================================================
- *
- * ■ いつ呼ぶか
- *   問題データを読み込んでいる画面（復習リスト・学習ノート）で、
- *   一覧を出す直前に1回だけ呼ぶ。
- *
- * ■ ★「調べていないものは触らない」を徹底する★
- *   getCurrent が 'unknown' を返した件は、食い違っているかどうか
- *   判断できないので★何もしない★。
- *   判断できないものを消すのは、ユーザーのデータを理由なく壊す行為。
- *   （判定そのものは utils/problemVersion.ts の detectStale が持つ。
- *     ここはストレージ側の受け口だけを担当する。）
- *
- * ■ 返り値
- *   { items, removed } — removed は外した件数。
- *   0 件なら保存もしない（書き込みを増やさない）。
- *
- * ■ なぜ「非表示」ではなく「削除」なのか
- *   残したまま隠すと、件数バッジと一覧の数が食い違う。
- *   「3件あるはずなのに開くと0件」は原因が分からない不具合の典型。
- *   古い問題は解いても意味がないので、外すのが正しい。
- */
-export function purgeStaleReviewItems(
-  uid: string | null | undefined,
-  getCurrent: (item: ReviewItem) => CurrentProblemState,
-): { items: ReviewItem[]; removed: number } {
-  const items = loadReviewList(uid);
-  if (items.length === 0) return { items, removed: 0 };
-
-  const kept = items.filter((it) => {
-    let current: CurrentProblemState;
-    try {
-      current = getCurrent(it);
-    } catch {
-      // 問い合わせ側が転んだ場合は「調べられなかった」扱いにして残す。
-      // ここで消すと、一時的な不具合でユーザーのデータが失われる。
-      return true;
-    }
-    return detectStale(it.fingerprint, current) === null;
-  });
-
-  const removed = items.length - kept.length;
-  if (removed > 0) saveReviewList(uid, kept);
-  return { items: kept, removed };
-}
 
 /** アイテムが「習得済み」とみなせるか（最終ボックス到達） */
 export function isMastered(item: ReviewItem): boolean {

@@ -38,6 +38,7 @@ import {
   INK,
   LINE,
 } from './BattleParts';
+import { logRejection } from '../../utils/reportError';
 
 /** 結果画面に切り替わるまでの間（最後の1問の正解を見る時間） */
 const REVEAL_HOLD_MS = 3500;
@@ -97,7 +98,6 @@ export function BattleRoomScreen({
     questions,
     current,
     remainMs,
-    limitSec,
     answered,
     opponentAnswered,
     myChoice,
@@ -186,7 +186,7 @@ export function BattleRoomScreen({
     try {
       const mode = friendModeById(next.mode);
       const { roomId: created } = await createFriendRoom(next.subject, { questionCount: next.questionCount }, undefined, roomId, mode.rules);
-      if (room.status === 'waiting') void abortRoom(roomId).catch(() => {});
+      if (room.status === 'waiting') void abortRoom(roomId).catch(logRejection('battle.room.abortWaiting'));
       onSwitchRoom(created);
     } catch (e) {
       setMoveError(e instanceof Error ? e.message : '次の部屋を作れませんでした。');

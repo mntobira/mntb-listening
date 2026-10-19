@@ -13,4 +13,7 @@ ext {
     androidxJunitVersion = '1.3.0'
     androidxEspressoCoreVersion = '3.7.0'
     cordovaAndroidVersion = '14.0.1'
+    // @capacitor-firebase/authentication: Google ログイン用 SDK（play-services-auth / Credential Manager）を含める。
+    // false（既定）のままだと Android の Google ログインは「SDK が含まれていない」で失敗する。
+    rgcfaIncludeGoogle = true
 }

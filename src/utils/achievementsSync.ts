@@ -9,6 +9,7 @@ import { auth, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase';
 import { safeLocalStorage } from './safeLocalStorage';
 import { readLocalStageRecords, writeOtherDeviceStages } from './stageRecords';
 import { cachedGrowth } from '../battle/data/growthStore';
+import { logRejection } from './reportError';
 
 const DEVICE_KEY = 'achievements_device_v1';
 type Result = { stages: Record<string, { p: number; n: number }>; stagesCleared: number; level: number; xp: number };
@@ -50,5 +51,5 @@ let timer: ReturnType<typeof setTimeout> | null = null;
 /** 連続で解いたときに何度も送らないよう、まとめて送る */
 export function scheduleAchievementsSync(delayMs = 4000): void {
   if (timer) clearTimeout(timer);
-  timer = setTimeout(() => { timer = null; void syncAchievements().catch(() => {}); }, delayMs);
+  timer = setTimeout(() => { timer = null; void syncAchievements().catch(logRejection('achievements.sync')); }, delayMs);
 }

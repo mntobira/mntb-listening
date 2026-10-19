@@ -46,6 +46,7 @@ import {
 } from './firestoreMetered';
 import { auth, db } from '../firebase';
 import { resolveNickname } from './leaderboard';
+import { isPermissionDenied, toFriendlyFirestoreError, type FirestoreErrorMessages } from './firestoreErrors';
 
 export interface FriendProfile {
   uid: string;
@@ -75,41 +76,26 @@ function requestId(fromUid: string, toUid: string) {
   return `${toUid}_${fromUid}`;
 }
 
+/** friends.ts 用の Firestore エラー文言（コード → 表示文）。 */
+const FRIEND_ERROR_MESSAGES: FirestoreErrorMessages = {
+  'permission-denied':
+    'この操作は許可されていません。本番の Firestore セキュリティルールが古いままです。管理者は Firebase Console（console.firebase.google.com → Firestore → ルール）でリポジトリの firestore.rules を貼り付けて「公開」するか、firebase deploy --only firestore:rules を実行してください。詳細は docs/DEPLOY_FIRESTORE_RULES.md を参照。',
+  unauthenticated: 'ログインの有効期限が切れています。もう一度Googleログインしてください。',
+  unavailable: 'Firestore に接続できません。通信状態を確認してもう一度お試しください。',
+  'failed-precondition': 'オフラインのため実行できません。オンラインに戻ってからお試しください。',
+  'not-found': '対象のデータが見つかりませんでした。画面を更新してお試しください。',
+  'already-exists': 'すでに登録済みです。画面を更新してご確認ください。',
+  aborted: '同時に別の操作が行われました。もう一度お試しください。',
+  'deadline-exceeded': '処理がタイムアウトしました。もう一度お試しください。',
+  'resource-exhausted': 'アクセスが集中しています。しばらく待ってからお試しください。',
+};
+
 /**
  * Firestore の権限エラーを、ユーザーに意味が伝わる日本語へ変換する。
- * 「Missing or insufficient permissions.」をそのまま出さないための共通処理。
+ * 「Missing or insufficient permissions.」をそのまま出さないための共通処理（実体は firestoreErrors.ts）。
  */
-function toFriendlyError(error: any, fallback: string): Error {
-  const code = error?.code as string | undefined;
-  switch (code) {
-    case 'permission-denied':
-      return new Error(
-        'この操作は許可されていません。本番の Firestore セキュリティルールが古いままです。管理者は Firebase Console（console.firebase.google.com → Firestore → ルール）でリポジトリの firestore.rules を貼り付けて「公開」するか、firebase deploy --only firestore:rules を実行してください。詳細は docs/DEPLOY_FIRESTORE_RULES.md を参照。'
-      );
-    case 'unauthenticated':
-      return new Error('ログインの有効期限が切れています。もう一度Googleログインしてください。');
-    case 'unavailable':
-      return new Error('Firestore に接続できません。通信状態を確認してもう一度お試しください。');
-    case 'failed-precondition':
-      return new Error('オフラインのため実行できません。オンラインに戻ってからお試しください。');
-    case 'not-found':
-      return new Error('対象のデータが見つかりませんでした。画面を更新してお試しください。');
-    case 'already-exists':
-      return new Error('すでに登録済みです。画面を更新してご確認ください。');
-    case 'aborted':
-      return new Error('同時に別の操作が行われました。もう一度お試しください。');
-    case 'deadline-exceeded':
-      return new Error('処理がタイムアウトしました。もう一度お試しください。');
-    case 'resource-exhausted':
-      return new Error('アクセスが集中しています。しばらく待ってからお試しください。');
-    default:
-      return new Error(error?.message ? `${fallback}（${error.message}）` : fallback);
-  }
-}
-
-/** Firestore の permission-denied かどうか（フォールバック判定用）。 */
-function isPermissionDenied(error: any): boolean {
-  return error?.code === 'permission-denied';
+function toFriendlyError(rawError: unknown, fallback: string): Error {
+  return toFriendlyFirestoreError(rawError, fallback, FRIEND_ERROR_MESSAGES);
 }
 
 function makeFriendCode(uid: string, salt = 0) {
@@ -288,7 +274,7 @@ export async function sendFriendRequest(friendCode: string): Promise<string> {
   try {
     const friendship = await getDoc(doc(db, 'friends', me.uid, 'items', target.uid));
     if (friendship.exists()) throw new Error(`${target.nickname} さんとはすでにフレンドです。`);
-  } catch (e: any) {
+  } catch (e) {
     if (e instanceof Error && e.message.includes('すでにフレンド')) throw e;
     throw toFriendlyError(e, 'フレンド状態の確認に失敗しました。');
   }
@@ -315,7 +301,7 @@ export async function sendFriendRequest(friendCode: string): Promise<string> {
     ));
     const pendingOutgoing = outgoing.docs.find((d) => (d.data().status ?? 'pending') === 'pending');
     if (pendingOutgoing) return `${target.nickname} さんへ申請済みです。`;
-  } catch (e: any) {
+  } catch (e) {
     if (e instanceof Error && e.message.includes('申請が届いています')) throw e;
     throw toFriendlyError(e, '申請状況の確認に失敗しました。');
   }
@@ -462,7 +448,7 @@ export async function acceptFriendRequest(req: FriendRequest) {
         addedAt: serverTimestamp(),
       });
     });
-  } catch (e: any) {
+  } catch (e) {
     // 業務ロジック由来のメッセージはそのまま見せる
     if (e instanceof Error && !('code' in e)) throw e;
     if (isPermissionDenied(e)) {
@@ -566,55 +552,4 @@ export interface FriendCompetitionEntry {
   sub: string;
 }
 
-/** フレンド全員（自分を含む）の合計・章別・期間別スコアを漏れなく集計する。 */
-export async function fetchFriendCompetition(
-  mode: 'total' | 'chapter' | 'period',
-  options: { chapterId?: string; since?: Date | null } = {}
-): Promise<FriendCompetitionEntry[]> {
-  const uids = await fetchFriendUids(true);
-  if (uids.length === 0) return [];
 
-  if (mode === 'total' || mode === 'chapter') {
-    const entries = await Promise.all(uids.map(async (uid) => {
-      const ref = mode === 'total'
-        ? doc(db, 'leaderboard_total', uid)
-        : doc(db, 'leaderboard_chapter', `${options.chapterId}_${uid}`);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) return null;
-      const data = snap.data() as any;
-      return {
-        uid,
-        nickname: data.nickname || '名無しの化学者',
-        photoURL: data.photoURL || '',
-        score: mode === 'total' ? (data.totalScore || 0) : (data.bestScore || 0),
-        sub: mode === 'total'
-          ? `${Object.keys(data.chapterScores || {}).length} 章クリア`
-          : `正答率 ${Math.round((data.correctRate || 0) * 100)}% / ${data.timeUsedSec || 0}秒`,
-      } satisfies FriendCompetitionEntry;
-    }));
-    return entries.filter((entry): entry is FriendCompetitionEntry => entry !== null).sort((a, b) => b.score - a.score);
-  }
-
-  // ★1人あたり読む件数に上限をかける★
-  //   プレイ履歴（leaderboard_events）は遊ぶたびに増えるので、上限が無いと
-  //   「フレンド20人 × 1人数千件」を開くたびに読むことになる。
-  //   期間別ランキングは直近の記録で十分なので、1人 200 件までにする。
-  const entries = await Promise.all(uids.map(async (uid) => {
-    const snaps = await getDocs(query(collection(db, 'leaderboard_events'), where('uid', '==', uid), limit(200)));
-    const events = snaps.docs.map((item) => item.data() as any).filter((event) => {
-      if (!options.since) return true;
-      const playedAt = event.playedAt?.toDate?.();
-      return playedAt instanceof Date && playedAt >= options.since;
-    });
-    if (events.length === 0) return null;
-    const best = events.reduce((current, event) => (event.score || 0) > (current.score || 0) ? event : current, events[0]);
-    return {
-      uid,
-      nickname: best.nickname || '名無しの化学者',
-      photoURL: best.photoURL || '',
-      score: best.score || 0,
-      sub: `${events.length} 回プレイ`,
-    } satisfies FriendCompetitionEntry;
-  }));
-  return entries.filter((entry): entry is FriendCompetitionEntry => entry !== null).sort((a, b) => b.score - a.score);
-}

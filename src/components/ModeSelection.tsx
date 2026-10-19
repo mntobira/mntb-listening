@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { BookOpen, ArrowLeft, FileText, TrendingUp, FlaskConical, Swords, ArrowRight } from 'lucide-react';
-import { TrendModal } from './TrendModal';
-import { chemistryBasicTrendDataset } from '../data/trendData';
-import { chemistryAdvancedTrendDataset } from '../data/chemistryAdvancedTrendData';
+import React, { useEffect } from 'react';
+import { BookOpen, ArrowLeft, FileText, Swords, ArrowRight } from 'lucide-react';
 import { labelOfSubject } from '../data/subjectLabels';
+import { DEFAULT_SUBJECT, subjectDefinitionOf } from '../data/subjects';
 import { DoorMascot } from './DoorMascot';
 import { subjectTheme } from '../data/subjectTheme';
 // 教科IDの型は data/allChapters.ts の SubjectKey が唯一の定義
 import type { SubjectKey } from '../data/allChapters';
+import { KineticText } from '../motion';
 
 interface ModeSelectionProps {
   onSelectMode: (mode: 'mini_test' | 'practice' | 'learning') => void;
   onBack: () => void;
   onChangeSubject?: () => void;
-  onMockExam?: () => void;
-  /** 選択中の科目。省略時は従来どおり化学基礎として振る舞う。 */
+  /** 選択中の科目。省略時は登録簿の先頭の科目。 */
   subject?: SubjectKey;
   /**
    * オンライン対戦を開く。
@@ -36,50 +34,18 @@ interface ModeSelectionProps {
   onBattle?: () => void;
 }
 
-export function ModeSelection({ onSelectMode, onBack, onMockExam, subject = 'chemistry_basic', onBattle, onChangeSubject }: ModeSelectionProps) {
+export function ModeSelection({ onSelectMode, onBack, subject = DEFAULT_SUBJECT, onBattle, onChangeSubject }: ModeSelectionProps) {
   /**
-   * 化学（発展）では、化学基礎専用の 2027年度予想問題はまだ用意していないので隠す。
-   * 化学基礎側の表示は一切変えない。
-   *
-   * 「学習(インプット)」と「出題傾向」は例外で、化学でも
-   * まとめプリントと過去15年（本試＋追試）の分析を公開済みなので両方の科目で表示する。
+   * この画面は、登録簿で entry: 'mode_selection' にした科目（演習の前に「まとめプリント」などを
+   * 選ばせたい科目）のための入口。いまの英語2科目は単元一覧へ直行するので通らない。
+   * 文言は登録簿（data/subjects.ts）から引くので、科目を足しても画面を書き換えなくてよい。
    */
-  const isAdvanced = subject === 'chemistry';
-  /**
-   * 英語リスニングはまず大問（単元）だけを公開した段階なので、
-   * まとめプリント（学習インプット）・出題傾向・予想問題はまだ無い。
-   * 空の画面へ連れていかないよう、「演習問題」だけを出す（カードの見た目は他科目と同じ）。
-   */
-  const isListening = subject === 'english_listening';
-  /**
-   * 数学は「学習(インプット)＝まとめプリント」と「演習問題」の2つを公開する。
-   * 出題傾向・予想問題は化学基礎・化学専用なので出さない。
-   */
-  const isMath = subject === 'math';
-  const isBiology = subject === 'biology_basic';
-  /**
-   * 英文法は「単元別の4択演習」として公開している。
-   * まとめプリント（学習インプット）・出題傾向・予想問題は未収録なので、
-   * リスニングと同じように「演習問題」だけを出す（空の画面へ連れていかない）。
-   */
-  const isGrammar = subject === 'english_grammar';
-  /**
-   * 地理総合・地理探究は第1問〜第3問の演習（単元演習5回＋模試7回ぶん）を
-   * 公開した段階。
-   * まとめプリント（学習インプット）・出題傾向・予想問題は未収録なので、
-   * リスニング・英文法と同じく「演習問題」だけを出す（空の画面へ連れていかない）。
-   */
-  const isGeography = subject === 'geography';
-  /** まとめプリントを持たない科目（学習カードを隠す） */
-  const hideLearning = isListening || isGrammar || isGeography;
-  /**
-   * 科目ごとの配色。
-   * この画面はどの科目でも同じダスティローズで描かれていたため、
-   * 「今どの科目のモードを選んでいるのか」が見た目から分からなかった。
-   * 演習問題カードのアクセントを科目色にして区別できるようにする。
-   */
+  const definition = subjectDefinitionOf(subject);
+  /** まとめプリントを持たない科目（学習カードを隠す）。登録簿で learningDescription を書いた科目だけ出す */
+  const learningDescription = definition?.learningDescription;
+  const hideLearning = !learningDescription;
+  /** 科目ごとの配色。演習問題カードのアクセントを科目色にして、いまの科目を見分けられるようにする */
   const theme = subjectTheme(subject);
-  const [showOverallTrend, setShowOverallTrend] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -95,7 +61,7 @@ export function ModeSelection({ onSelectMode, onBack, onMockExam, subject = 'che
         </header>
         <div className="mode-heading">
           <p className="mtb-kicker">今日の学びを、明日の自信に。</p>
-          <h1>{labelOfSubject(subject)}</h1>
+          <h1><KineticText text={labelOfSubject(subject)} /></h1>
           <p>学習モードを選択</p>
         </div>
         {onChangeSubject && <div className="mb-3 flex justify-end"><button type="button" onClick={onChangeSubject} className="min-h-[44px] rounded-full border border-gray-200 bg-white px-4 text-sm font-bold text-[#2C3E50]">科目を変更</button></div>}
@@ -110,15 +76,7 @@ export function ModeSelection({ onSelectMode, onBack, onMockExam, subject = 'che
             <div className="mode-practice-copy">
               <span className="mtb-kicker">知識を、使える力に</span>
               <h2 id="mode-practice-title">演習問題</h2>
-              <p>{isListening
-                ? '第1問A・第1問B …のように大問別（A／Bも別）に選び、回ごとに取り組みます。'
-                : isGrammar
-                ? '文型・時制・準動詞…の単元別に4択を解きます。全問に完成文の音源と誤答肢の理由がつきます。'
-                : isGeography
-                ? '会話文と資料（気候グラフ・統計表・地形図）を行き来して考える、共通テスト型の大問を回ごとに解きます。'
-                : isMath
-                  ? '数学Ⅰ・A・Ⅱ・B・Ⅲ・Cから単元を選んで練習。解説と数式入力パレットで、一問ずつ理解を深めます。'
-                  : 'より実践的な問題に取り組みます。応用力を身につけたい場合におすすめです。'}</p>
+              <p>{definition?.practiceDescription ?? 'より実践的な問題に取り組みます。応用力を身につけたい場合におすすめです。'}</p>
             </div>
             <button type="button" onClick={() => onSelectMode('practice')} className="mode-primary" aria-label="演習問題の単元を選ぶ"><span>演習問題をはじめる</span><ArrowRight size={21} aria-hidden="true" /></button>
           </section>
@@ -126,37 +84,13 @@ export function ModeSelection({ onSelectMode, onBack, onMockExam, subject = 'che
             <button type="button" onClick={() => onSelectMode('learning')} className="mode-input-paper" aria-label="学習(インプット)を開く">
               <span className="mode-page-tab">READ</span><FileText size={34} aria-hidden="true" />
               <h2>まとめプリント</h2><span className="mode-input-subtitle">読む・理解する</span>
-              <p>{isAdvanced
-                ? '熱化学・電池と電気分解の要点を、テーマごとに読む。例題の解説も確認できます。'
-                : isMath
-                  ? '数学Ⅰ・A・Ⅱ・B・Ⅲ・Cの要点と例題を、テーマごとに。積分・確率・整数・ベクトルの詳しい教材もあります。'
-                  : isBiology
-                    ? '細胞・遺伝子・体内環境・生態系の要点を読む。必要なテーマから復習できます。'
-                    : '基礎知識をしっかりと身につけます。'}</p>
+              <p>{learningDescription}</p>
               <span className="mode-input-open">ノートをひらく <ArrowRight size={18} aria-hidden="true" /></span>
             </button>
           )}
         </div>
-        {(subject === 'chemistry_basic' || isAdvanced) && (
-          <section className="mode-tools" aria-label="試験対策のツール">
-            <p className="mtb-section-label">試験前の、もうひと準備</p>
-            <div>
-              <button type="button" onClick={() => setShowOverallTrend(true)} className="mtb-round-link">
-                <span><TrendingUp size={24} aria-hidden="true" /></span><strong>共通テスト出題傾向</strong>
-                <small>{isAdvanced ? '過去15年・本試＋追試' : '過去11年の全体分析'}<br />2027年の出題を予想</small>
-              </button>
-              {onMockExam && !isAdvanced && (
-                <button type="button" onClick={onMockExam} className="mtb-round-link">
-                  <span><FlaskConical size={24} aria-hidden="true" /></span><strong>2027年度 予想問題</strong>
-                  <small>共通テスト化学基礎<br />オリジナル問題・解説付き</small>
-                </button>
-              )}
-            </div>
-          </section>
-        )}
         <p className="mode-footnote">{hideLearning ? 'この科目は演習問題を公開中です。学習(インプット)は順次追加予定です。' : '読む → 解く → 振り返る。自分に合った入口から始めましょう。'}</p>
       </div>
-      {showOverallTrend && <TrendModal onClose={() => setShowOverallTrend(false)} dataset={isAdvanced ? chemistryAdvancedTrendDataset : chemistryBasicTrendDataset} />}
     </>
   );
 }

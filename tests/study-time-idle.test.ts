@@ -24,3 +24,16 @@ describe('本番までの日数', () => {
     expect(daysUntil(new Date(2026, 0, 1), from)).toBe(0);
   });
 });
+
+describe('学習時間の計測フック（App.tsx から hooks/useStudyTimeTracker.ts へ移した）', () => {
+  it('日付キーは utils/studySummary の toDateKey と同じ YYYY-MM-DD（従来の手書きの書式と一致）', async () => {
+    const { toDateKey } = await import('../src/utils/studySummary');
+    const d = new Date(2026, 0, 5, 23, 59);
+    const legacy = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    expect(toDateKey(d.getTime())).toBe(legacy);
+  });
+  it('15秒ごとに足す（間隔は定数で1か所）', async () => {
+    const { STUDY_TICK_MS } = await import('../src/hooks/useStudyTimeTracker');
+    expect(STUDY_TICK_MS).toBe(15_000);
+  });
+});

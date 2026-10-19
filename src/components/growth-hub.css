@@ -1,3 +1,5 @@
+/* ミッションの短い説明は PC だけ（スマホは従来の詳しい説明を出す） */
+.missions-note-short { display: none; }
 /*
  * ガチャ・マイページの共通部分（2026-10-01 C16）。ガチャと行き来しても違和感がないよう、
  * 同じ地・同じ見出し・同じカード・同じタブ（共通UI）にそろえる。機能・並びは変えない。
@@ -188,4 +190,56 @@
   :root[data-ad-banner=true] .mypage-parts button { min-height: 44px; padding: 4px 8px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; }
   :root[data-ad-banner=true] .mypage-parts button > svg { display: none; }
   :root[data-ad-banner=true] .mypage-part-cur { text-align: left; width: 100%; }
+}
+
+/* ===== 2026-10-16 PC：マイページの一覧をスクロールさせない（入るぶんだけ並べてページでめくる）===== */
+@media (min-width: 1024px) {
+  .mypage-body > .mypage-extra-scroll:has(> .profile-standalone[data-profile-standalone=badges]) { overflow: hidden; display: flex; flex-direction: column; }
+  .profile-standalone[data-profile-standalone=badges] { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .profile-standalone[data-profile-standalone=badges] .badges-tab { flex: 1; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
+  .badges-locked { min-height: 0; display: flex; flex-direction: column; }
+  .badge-locked-frame { flex: 1; min-height: 0; overflow: hidden; }
+  .badge-locked-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); list-style: none; margin: 0; padding: 0; }
+}
+
+/* ミッション（PC）：縦1列で 1410px はみ出していたので、横3列に並べて1画面に収める（並び順＝DOM はスマホと同じ）
+   左＝今日の状態・宝箱・説明／中＝対戦ミッション・レベルで手に入るもの／右＝ボーナスミッション。ボタンは下に横並び。
+   各列は上から詰めて積む。どの行から何行ぶん使うかは useMasonrySpans が実際の高さから決める。 */
+@media (min-width: 1024px) {
+  .mypage-body > .mypage-extra-scroll:has(> .missions-shell) { overflow: hidden; display: flex; }
+  .missions-shell { min-height: 0 !important; flex: 1; background: transparent !important; }
+  .missions-shell > main { max-width: none !important; padding: 0 !important; min-height: 0; }
+  .missions-shell > main > .notebook-paper {
+    display: grid !important; column-gap: 16px; row-gap: 0; padding: 10px 16px !important; min-height: 0; overflow: hidden; position: relative;
+    grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 4px; align-content: start;
+  }
+  /* 高さは中身ぶん（行に引き伸ばさない）にしてから測る */
+  .missions-shell > main > .notebook-paper > * { margin: 0 0 10px !important; align-self: start; }
+  .missions-shell h1 { grid-column: 1 / -1; font-size: 22px !important; }
+  .missions-shell .missions-lead { display: none; }
+  .missions-shell #battle-missions-summary { grid-column: 1; padding: 12px !important; }
+  .missions-shell #battle-missions-chest { grid-column: 1; padding: 12px !important; }
+  .missions-shell .missions-note { display: none; grid-column: 3; font-size: 12px !important; padding: 10px 12px; border-radius: 16px; background: #fffaf0; border: 1px solid #ead9b5; }
+  .missions-shell .missions-col-battle { grid-column: 2; }
+  .missions-shell .missions-extra { grid-column: 2; }
+  .missions-shell .missions-col-bonus { grid-column: 3; }
+  .missions-shell .missions-note-short { display: flex; grid-column: 3; align-items: flex-start; gap: 6px; font-size: 12px; font-weight: 700; line-height: 1.5; padding: 8px 10px; border-radius: 14px; background: #fffaf0; border: 1px solid #ead9b5; }
+  .missions-shell .missions-col > h2 { margin: 0 0 6px !important; font-size: 13px !important; }
+  .missions-shell .missions-col > .grid { gap: 6px !important; }
+  .missions-shell .missions-col > .grid > div { flex-wrap: nowrap; padding: 6px 10px !important; }
+  .missions-shell .missions-col > .grid > div > span:first-child { display: none; }
+  .missions-shell .missions-extra .level-road { margin: 0; padding: 10px 12px; }
+  .missions-shell .missions-extra .level-road-note { display: none; }
+  /* レベルで手に入るもの：2列で並べる */
+  .missions-shell .missions-extra .level-road ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .missions-shell .missions-extra .level-road li { min-height: 44px; font-size: 12px; gap: 4px; padding: 4px 6px; }
+  .missions-shell .missions-extra .level-road .lr-lv { width: auto; }
+  .missions-shell .missions-extra .level-road .lr-icon { display: none; }
+  .missions-shell .missions-extra .level-road .lr-label { line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .missions-shell > footer { max-width: none !important; padding: 0 16px 4px !important; }
+  .missions-shell .missions-actions { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
+  .missions-shell .missions-actions button { min-height: 48px; }
+}
+@media (min-width: 1024px) {
+  .missions-shell .missions-toast { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 5; margin: 0 !important; min-width: 360px; }
 }

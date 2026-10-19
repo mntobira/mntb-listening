@@ -38,6 +38,7 @@ import {
   LINE,
   PlayerBadge,
 } from './BattleParts';
+import { logRejection } from '../../utils/reportError';
 
 /** 結果画面に切り替わるまでの間（最後の1問の正解を見る時間） */
 const REVEAL_HOLD_MS = 3500;
@@ -126,7 +127,7 @@ export function BattleAiRoomScreen({
   const [myRating, setMyRating] = useState(1500);
   useEffect(() => {
     let alive = true;
-    void fetchMyRankingRow().then((r) => { if (alive && r && Number.isFinite(r.rating)) setMyRating(r.rating); }).catch(() => {});
+    void fetchMyRankingRow().then((r) => { if (alive && r && Number.isFinite(r.rating)) setMyRating(r.rating); }).catch(logRejection('battle.aiRoom.fetchRanking'));
     return () => { alive = false; };
   }, []);
   const growthMatchId = useMemo(() => `ai:${crypto.randomUUID()}`, [matchNo, subject, level, chapterId]);

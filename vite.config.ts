@@ -121,6 +121,8 @@ export default defineConfig(({mode}) => {
             if (id.includes('/firebase/') || id.includes('/@firebase/') || id.includes('/@capacitor-firebase/')) return 'vendor-firebase';
             if (id.includes('/@capacitor/') || id.includes('/@capacitor-community/')) return 'vendor-firebase';
             if (id.includes('/katex/')) return 'vendor-katex';
+            // pdf.js は PDF を開いた時だけ読む（起動時の vendor に混ぜると、全員の最初の読み込みが重くなる）
+            if (id.includes('/pdfjs-dist/')) return 'vendor-pdf';
             if (id.includes('/motion') || id.includes('/framer-motion')) return 'vendor-motion';
             if (id.includes('/lucide-react/')) return 'vendor-icons';
             if (id.includes('/react-dom/') || id.includes('/react/') || id.includes('/scheduler/'))
@@ -130,6 +132,7 @@ export default defineConfig(({mode}) => {
 
           /*
            * ★教科データは1つのチャンクにまとめる（分割してはいけない）★
+           *   ※以下は統合版（化学・数学などを含んでいた頃）の記録。教科ごとの分割は下で別の方法で解いている。
            *
            * ■ 最初は教科ごとに分けたが、それは動かなかった
            *   data-chemistry / data-english-listening / data-biology … と
@@ -289,48 +292,16 @@ export default defineConfig(({mode}) => {
            *       → data チャンクへ向かう辺も1本も無い
            *   どちら向きにも辺が無いので、チャンク間の循環に加われない。
            *
-           * ■ ★なぜ advancedFields.ts には同じ例外を付けないのか★
-           *   同じく軽い葉（実コード 600 バイト）だが、こちらは
-           *   chemistryAdvancedData.ts（＝data チャンク側）から
-           *   再公開のために import されている。
-           *   例外にすると「data チャンク → index チャンク」の辺ができ、
-           *   index → data の辺と合わせて循環になる恐れがある。
-           *   （前に per-subject 分割で出した
-           *     Cannot access 'D' before initialization がこれ。）
-           *   実際に例外を追加して測ったが、ビルド結果のハッシュは
-           *   1バイトも変わらず効果が無かったので、その設定は取り消した。
-           *   軽い葉なら何でも例外にしていい、という話ではない。
+           * ■ 軽い葉なら何でも例外にしていい、という話ではない
+           *   data チャンク側から import される葉を例外にすると「data → index」の辺ができ、
+           *   index → data の辺と合わせて循環になる恐れがある
+           *   （Cannot access 'D' before initialization の原因）。
            *   ★入ってくる辺・出ていく辺の両方を数えて判断すること。★
            */
           if (id.includes('/src/data/subjectLabels')) return undefined;
           // 理念の文章は宣伝用ページ（/message）からも読むので、1MB の data チャンクに入れない（2026-10-05）
           if (id.includes('/src/data/philosophy')) return undefined;
 
-          /*
-           * ★まとめプリントのデータは data チャンクから切り離す★
-           *
-           * ■ この行は「LearningViewer を遅延読み込みにした後」で初めて効く
-           *
-           * 先に分割だけを試したときは効果がなかった（実測）:
-           *   data 3,041.75 → 2,367.58 kB / data-learning 674.06 kB（循環 0）
-           *   でも起動時に必ず落ちる JS は 5,253,265 → 5,253,186 B（−79 B だけ）
-           *   遅延で落ちる JS は 0 B のまま
-           * 理由は LearningViewer が静的 import されていたから。
-           * チャンクを分けても、静的に繋がっていれば両方ダウンロードされる。
-           * ★分割は削減ではない。静的 import を切るのが先。★
-           * この実験はいったん取り消し、順序を入れ替えてやり直した。
-           *
-           * いま App.tsx 側で LearningViewer を React.lazy にしたので、
-           * この 710,921 バイト / 16 ファイルの塊は
-           * 「まとめプリントを開いたときに初めて読む」ものになる。
-           *
-           * ■ 安全性（両方向の辺を数えて確認した）
-           *   - learningContent/* を読むのは LearningViewer だけ（他に 0 件・実測）
-           *   - learningContent/* から src/data の他のファイルへの辺は無い
-           *   → data チャンクとの間に循環はできない
-           * 循環が出ていないことはビルドの Circular 警告 0 で確認する。
-           */
-          if (id.includes('/src/data/learningContent/')) return 'data-learning';
 
           /*
            * ============================================================
@@ -461,54 +432,13 @@ export default defineConfig(({mode}) => {
            */
           if (
             id.includes('/src/data/problemCount') ||
-            id.includes('/src/data/explanationPostProcess') ||
             id.includes('/src/data/listeningPostProcess') ||
-            id.includes('/src/data/unitTeaching') ||
             id.includes('/src/data/teachingTypes') ||
             id.includes('/src/utils/explanationFormat') ||
             id.includes('/src/utils/listeningExplanation') ||
             id.includes('/src/utils/sanitizeHtml')
           ) {
             return 'data-core';
-          }
-
-          /* 分野の見出しだけの軽い葉（App.tsx が起動時に使う） */
-          if (id.includes('/src/data/advancedFields')) return 'data-leaf';
-
-          /* 図（ロジックツリー・フローチャート）のデータ */
-          if (
-            id.includes('/src/data/chemistryTreeData') ||
-            id.includes('/src/data/chapterTreeMap')
-          ) {
-            return 'data-tree';
-          }
-
-          /* 出題傾向のグラフ（モード選択画面で開く） */
-          if (
-            id.includes('/src/data/chemistryAdvancedTrendData') ||
-            id.includes('/src/data/trendData')
-          ) {
-            return 'data-trend';
-          }
-
-          /* 化学基礎の問題データ */
-          if (
-            id.includes('/src/data/chemistryData') ||
-            id.includes('/src/data/chemProblemsC') ||
-            id.includes('/src/data/acidBaseProblems') ||
-            id.includes('/src/data/crystalProblems') ||
-            id.includes('/src/data/molUnitConversions') ||
-            id.includes('/src/data/redoxProblems')
-          ) {
-            return 'data-chem-basic';
-          }
-
-          /* 化学（発展）の問題データ */
-          if (
-            id.includes('/src/data/chemistryAdvancedData') ||
-            id.includes('/src/data/advancedThermoProblems')
-          ) {
-            return 'data-chem-adv';
           }
 
           /* 英語リスニングの問題データ */
@@ -523,25 +453,12 @@ export default defineConfig(({mode}) => {
             return 'data-english-g';
           }
 
-          /* 数学の問題データ */
-          if (
-            id.includes('/src/data/mathData') ||
-            // mathData reads these constants during module initialization. Keeping
-            // curriculum in the catch-all data chunk creates data-math -> data -> data-math.
-            id.includes('/src/data/mathCurriculum') ||
-            id.includes('/src/data/mathProblemKit') ||
-            id.includes('/src/data/mathIntegerProblems') ||
-            id.includes('/src/data/mathIntegralProblems') ||
-            id.includes('/src/data/mathProbabilityProblems') ||
-            id.includes('/src/data/mathVectorProblems') ||
-            id.includes('/src/data/mathPlusProblems') ||
-            id.includes('/src/data/mathIAProblems')
-          ) {
-            return 'data-math';
-          }
-
-          /* 生物基礎の問題データ */
-          if (id.includes('/src/data/biologyBasic')) return 'data-biology';
+          /*
+           * ★教科を足したとき★
+           *   新しい教科の問題データ（例: src/data/mathData.ts と mathXxxProblems.ts）は
+           *   ここに1つ if を足して専用チャンクに分ける（data/subjects.ts と docs/ADDING_SUBJECT.md 参照）。
+           *   足さなくても動く（下の 'data' にまとまる）が、起動時に読む量が増える。
+           */
 
           if (id.includes('/src/data/')) return 'data';
 

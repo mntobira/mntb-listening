@@ -17,7 +17,7 @@ import { englishListeningData } from '../src/data/englishListeningData';
 
 function chapterById(id: string) {
   return englishListeningData.parts
-    .flatMap((p) => p.chapters as any[])
+    .flatMap((p) => p.chapters)
     .find((c) => c.id === id);
 }
 
@@ -77,7 +77,7 @@ describe('buildListeningRounds（回のボタン一覧を作る）', () => {
   });
 
   it('questionId は問題データの id と一致する（進捗の「済」判定に使う）', () => {
-    const problems = chapterById('el1_A')?.practiceProblems as any[];
+    const problems = chapterById('el1_A')?.practiceProblems;
     const rounds = buildListeningRounds(problems);
     expect(rounds.map((r) => r.questionId)).toEqual(problems.map((p) => p.id));
   });
@@ -95,7 +95,7 @@ describe('buildListeningRounds（回のボタン一覧を作る）', () => {
     //   テストを書き換えるのは本質的でないので、
     //   「その時点で practiceProblems が空の大問」を実データから探す形にする。
     const empty = englishListeningData.parts
-      .flatMap((p) => p.chapters as any[])
+      .flatMap((p) => p.chapters)
       .filter((c) => (c.practiceProblems?.length ?? 0) === 0);
     // 全大問が埋まったらこのケースは検証不要（空配列の入力だけ確認する）
     for (const c of empty) {

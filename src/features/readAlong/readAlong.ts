@@ -55,6 +55,7 @@ export function loadReadAlong(audioUrl: string | undefined | null): Promise<Read
   if (!url || typeof fetch !== 'function') return Promise.resolve(null);
   let p = cache.get(url);
   if (!p) {
+    // 読み方データが無い・壊れている音源は null（従来のスクリプト表示に戻す）。失敗はキャッシュから外して次回再試行
     p = fetch(url).then(r => (r.ok ? r.json() : null)).then(j => (j && j.v === 1 ? buildReadAlong(j as ReadAlongFile) : null)).catch(() => null);
     p.then(v => { if (!v) cache.delete(url); });
     cache.set(url, p);

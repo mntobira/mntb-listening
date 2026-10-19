@@ -4,6 +4,8 @@ import { Users, Shield, Plus, LogIn, Copy, Swords, RefreshCw } from 'lucide-reac
 import { auth } from '../firebase';
 import { clanCall, type Clan, type ClanState } from '../utils/manaClan';
 import { displaySafeNickname } from '../features/safety/nicknameFilter';
+import { logRejection } from '../utils/reportError';
+import { confirmAction } from '../utils/dialog';
 
 /**
  * マナクラン（2026-10-03 導線を整理）
@@ -62,7 +64,7 @@ export function ManaClan({ onRequireLogin }: { onRequireLogin?: () => void; key?
     try {
       const room = await createFriendRoom('english_grammar');
       try { await clanCall('challenge', { inviteCode: duelCode, roomId: room.roomId }); }
-      catch (e) { await abortRoom(room.roomId).catch(() => {}); throw e; }
+      catch (e) { await abortRoom(room.roomId).catch(logRejection('clan.abortRoom')); throw e; }
       setDuelJoinCode(room.joinCode);
     } catch (e) { fail(e); } finally { setBusy(false); }
   };
@@ -113,7 +115,7 @@ export function ManaClan({ onRequireLogin }: { onRequireLogin?: () => void; key?
         </details>
         <details><summary>脱退</summary>
           <p>脱退すると24時間は再参加できません。最後のメンバーが抜けるとクランは解散します。</p>
-          <button type="button" disabled={busy} onClick={() => { if (window.confirm('クランを脱退しますか？再参加には24時間待つ必要があります。最後のメンバーならクランは解散します。')) void run('leave', {}, 'クランを脱退しました。'); }}>脱退する</button>
+          <button type="button" disabled={busy} onClick={() => { if (confirmAction('クランを脱退しますか？再参加には24時間待つ必要があります。最後のメンバーならクランは解散します。')) void run('leave', {}, 'クランを脱退しました。'); }}>脱退する</button>
         </details>
       </> : <>
         <p>まだクランに入っていません。1人が所属できるクランは1つです。初心者も歓迎。</p>

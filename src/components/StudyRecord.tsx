@@ -3,6 +3,8 @@ import { CheckCircle2, ChevronDown, PenLine, Play, RotateCcw, Swords, XCircle } 
 import { auth } from '../firebase';
 import { STUDY_LOG_DAYS, groupStudyLogByDay, loadStudyLog, type StudyLogEntry } from '../utils/studyLog';
 import './study-record.css';
+import { KineticText, ScoreRing } from '../motion';
+import { CountUp } from './ui/CountUp';
 
 /**
  * 学習記録（2026-10-04 ご要望）
@@ -23,13 +25,13 @@ export function StudyRecord({ onReview, onRetry, embedded = false }: { onReview?
     <section className={`study-record ${embedded ? 'is-embedded' : ''}`} aria-labelledby="study-record-title" data-study-record>
       <header className="sr-head">
         <div>
-          <h1 id="study-record-title">学習記録</h1>
+          <h1 id="study-record-title"><KineticText text="学習記録" /></h1>
           <p>直近{STUDY_LOG_DAYS}日に解いた問題と、まちがえた所</p>
         </div>
       </header>
       <div className="sr-summary" role="group" aria-label={`直近${STUDY_LOG_DAYS}日のまとめ`}>
-        <span><b>{total}</b>問 解いた</span>
-        <span className="is-wrong"><b>{wrong}</b>問 まちがえた</span>
+        <span><b><CountUp value={total} fromZero duration={900} delay={250} /></b>問 解いた</span>
+        <span className="is-wrong"><b><CountUp value={wrong} fromZero duration={900} delay={400} /></b>問 まちがえた</span>
         {onReview && wrong > 0 && <button type="button" onClick={onReview}><RotateCcw size={16} aria-hidden="true" />復習ノートで直す</button>}
       </div>
       <div className="mt-segment sr-filter" role="tablist" aria-label="表示">
@@ -64,7 +66,7 @@ function EntryCard({ entry, onlyWrong, onRetry }: { entry: StudyLogEntry; onlyWr
             {entry.items.map(i => <i key={i.id} data-ok={i.correct || undefined} title={i.label}>{i.correct ? '○' : '×'}</i>)}
           </span>
         </span>
-        <span className="sr-entry-score">{entry.items.length - wrongItems.length}<small>/{entry.items.length}</small></span>
+        <span className="sr-entry-score mo-rate"><ScoreRing rate={entry.items.length ? (entry.items.length - wrongItems.length) / entry.items.length : 0} size={20} stroke={4} tone={wrongItems.length === 0 ? 'done' : 'brand'} /><span>{entry.items.length - wrongItems.length}<small>/{entry.items.length}</small></span></span>
         <ChevronDown size={18} aria-hidden="true" className={open ? 'rotate-180' : ''} />
       </button>
       {/* ★解きなおしの2択（2026-10-11）★ 一人で学んだ大問だけ（対戦の問題は復習ノートから） */}

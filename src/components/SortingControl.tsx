@@ -19,10 +19,11 @@
  */
 import React from 'react';
 import { ChevronLeft, ChevronRight, GripVertical } from 'lucide-react';
+import type { SubQuestion } from '../types/curriculum';
 import { formatText } from '../utils/textFormatter';
 
 export interface SortingControlProps {
-  sq: any;
+  sq: SubQuestion;
   /** 設問ID → 解答文字列。並べ替えは ' > ' 区切りで1本の文字列に入る。 */
   answers: Record<string, string>;
   /** 解答を更新する（Quiz 側の handleOptionSelect をそのまま渡す） */
@@ -79,7 +80,7 @@ export function SortingControl({
    *   代わりに「タップで選択→別要素タップで入れ替え」＋各要素の ◀▶ 移動ボタンで
    *   確実に並べ替えできるタッチ対応UIを提供する（要件：スマホでドラッグが使えない不具合）。
    */
-  function renderSortingControl(sq: any) {
+  function renderSortingControl(sq: SubQuestion) {
     const activeOrder = answers[sq.id] ? answers[sq.id].split(' > ') : [...(sq.items || [])];
 
     // ── スマホ（タッチ）: タップ入れ替え ＋ ◀▶ 移動ボタン ──

@@ -690,6 +690,63 @@ service cloud.firestore {
     }
 
     // ============================================================
+    // 使われ方の記録（usage_sessions）2026-10-19  src/utils/analytics.ts
+    //   1回の利用につき1件。uid・名前・メールは入れない（install はランダムな端末ID）。
+    //   書けるのは誰でも（ログイン前の画面の使われ方も知りたい）。読めるのは運営だけ。
+    //   書き換え・削除はできない。大きさは決まった形・件数の上限で抑える。
+    // ============================================================
+    match /usage_sessions/{id} {
+      function smallMap(m) { return m is map && m.size() <= 60; }
+      allow create: if request.resource.data.keys().hasOnly([
+            'day', 'platform', 'appVersion', 'install', 'signedIn', 'durationSec',
+            'screens', 'screenSec', 'events', 'errors', 'createdAt'])
+        && request.resource.data.day is string && request.resource.data.day.size() == 10
+        && request.resource.data.platform in ['web', 'ios', 'android']
+        && request.resource.data.appVersion is string && request.resource.data.appVersion.size() <= 40
+        && request.resource.data.install is string && request.resource.data.install.size() == 16
+        && request.resource.data.signedIn is bool
+        && request.resource.data.durationSec is int && request.resource.data.durationSec >= 0 && request.resource.data.durationSec <= 86400
+        && smallMap(request.resource.data.screens) && smallMap(request.resource.data.screenSec)
+        && smallMap(request.resource.data.events) && smallMap(request.resource.data.errors)
+        && request.resource.data.createdAt == request.time;
+      allow read: if isFeedbackAdmin();
+      allow update, delete: if false;
+    }
+
+    // ============================================================
+    // 端末だけにあった記録のバックアップ（user_data）2026-10-19
+    //   user_data/{uid} = { uid, s_growth, s_vocabQuiz, ..., updatedAt }
+    //   各 s_* は JSON 文字列（src/utils/userDataSyncCore.ts の SYNC_SECTIONS）。
+    //   レベル・コイン・ガチャ・持ちもの・ミッション・単語の✓・学習時間・メモなど。
+    // ■ 読めるのも書けるのも本人だけ（先生・フレンドからも見えない）
+    // ■ 決まったフィールドだけ・1つ 200,000 文字まで（ドキュメント 1MiB の手前で止める）
+    // ■ コインなどは端末で計算した値。ランキング・レートには使わない（改ざんの得が無い）
+    // ============================================================
+    match /user_data/{userId} {
+      function sec(data, k) {
+        return !(k in data) || (data[k] is string && data[k].size() <= 200000);
+      }
+      function isValidUserData(data) {
+        return data.keys().hasOnly([
+                 'uid', 'updatedAt',
+                 's_growth', 's_vocabQuiz', 's_vocabPrefs', 's_support', 's_studyTime', 's_studyLog',
+                 's_unitStats', 's_stageHistory', 's_battleLog', 's_profile', 's_completed', 's_notes', 's_streak'
+               ])
+          && data.uid == userId
+          && data.uid == request.auth.uid
+          && sec(data, 's_growth') && sec(data, 's_vocabQuiz') && sec(data, 's_vocabPrefs')
+          && sec(data, 's_support') && sec(data, 's_studyTime') && sec(data, 's_studyLog')
+          && sec(data, 's_unitStats') && sec(data, 's_stageHistory') && sec(data, 's_battleLog')
+          && sec(data, 's_profile') && sec(data, 's_completed') && sec(data, 's_notes') && sec(data, 's_streak')
+          && (!('updatedAt' in data) || data.updatedAt == request.time);
+      }
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create, update: if isOwner(userId) && isValidUserData(request.resource.data);
+      allow delete: if isOwner(userId);
+    }
+
+    // ============================================================
     // 学習データの閲覧許可（study_access）
     //   study_access/{生徒uid}_{先生uid} =
     //     { studentUid, teacherUid, classId, grantedAt }

@@ -1,3 +1,4 @@
+import { useLatest } from '../hooks/useLatest';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -35,15 +36,16 @@ export function QuizTimerBar({ timeLimit, running, onTick, resetKey }: QuizTimer
   const startedAtRef = useRef<number | null>(null);
   const accumulatedRef = useRef(0);
   const intervalRef = useRef<number | null>(null);
+  // 親の onTick は描画ごとに作り直されるので最新のものを ref で読む（作り直しではタイマーを張り直さない）
+  const onTickRef = useLatest(onTick);
 
   // resetKey 変化時は完全リセット
   useEffect(() => {
     accumulatedRef.current = 0;
     startedAtRef.current = null;
     setElapsed(0);
-    if (onTick) onTick(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetKey]);
+    if (onTickRef.current) onTickRef.current(0);
+  }, [resetKey, onTickRef]);
 
   useEffect(() => {
     // running が true なら開始 / false なら停止
@@ -55,7 +57,7 @@ export function QuizTimerBar({ timeLimit, running, onTick, resetKey }: QuizTimer
         const now = Date.now();
         const e = accumulatedRef.current + (now - startedAtRef.current) / 1000;
         setElapsed(e);
-        if (onTick) onTick(e);
+        if (onTickRef.current) onTickRef.current(e);
       }, 250) as unknown as number;
     } else {
       // 停止：経過分を accumulated に積む
@@ -63,7 +65,7 @@ export function QuizTimerBar({ timeLimit, running, onTick, resetKey }: QuizTimer
         accumulatedRef.current += (Date.now() - startedAtRef.current) / 1000;
         startedAtRef.current = null;
         setElapsed(accumulatedRef.current);
-        if (onTick) onTick(accumulatedRef.current);
+        if (onTickRef.current) onTickRef.current(accumulatedRef.current);
       }
       if (intervalRef.current != null) {
         window.clearInterval(intervalRef.current);
@@ -77,8 +79,7 @@ export function QuizTimerBar({ timeLimit, running, onTick, resetKey }: QuizTimer
         intervalRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running, resetKey]);
+  }, [running, resetKey, onTickRef]);
 
   const remaining = timeLimit - elapsed;
   const isOver = remaining < 0;

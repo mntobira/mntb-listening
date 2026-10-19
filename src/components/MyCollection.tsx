@@ -6,6 +6,10 @@ import { buyItem, equip, unequip, importLeagueReward, leagueRewardClaimed } from
 import { GrowthAvatar } from '../battle/ui/GrowthParts';
 import { clanCall, type LeagueReward } from '../utils/manaClan';
 import { auth } from '../firebase';
+import { confirmAction } from '../utils/dialog';
+import { useFitPager } from '../hooks/useFitPager';
+import { FitPagerBar } from './ui/FitPagerBar';
+import { openPdf } from '../utils/pdfViewer';
 /** プレゼント（隔週リーグ報酬）でしか手に入らないアイテム */
 const LEAGUE_GIFT_ITEM = 'frame_league_aurora';
 const LEAGUE_LABEL: Record<string, string> = { bronze: 'ブロンズ', silver: 'シルバー', gold: 'ゴールド', platinum: 'プラチナ', manatobi: 'マナトビ' };
@@ -22,14 +26,17 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all' }: {
     setBusy(true); clanCall<{ rewards: LeagueReward[] }>('rewards').then(r => { if (alive) setRewards(r.rewards); }).catch(e => { if (alive) setMessage(e.message); }).finally(() => { if (alive) setBusy(false); });
     return () => { alive = false; };
   }, [view, uid]);
+  // PC では、枠に入るぶんだけ並べてページでめくる（スクロールさせない）。絞り込みを変えたら1ページ目へ
+  const owned = progress?.owned ?? [];
+  const base = ITEMS.filter(i => view === 'prints' ? i.kind === 'print' && owned.includes(i.id) : view === 'shop' ? 'coins' in i.unlock : i.kind !== 'print');
+  const list = base.filter(i => (kind === 'all' || i.kind === kind) && (!search || i.label.includes(search)) && (view === 'prints' || state === 'all' || (state === 'owned') === owned.includes(i.id)));
+  const pager = useFitPager(list.length, `${view}:${kind}:${search}:${state}`);
   if (!progress) return <p role="alert">所有記録を読み込めません。ブラウザの保存設定を確認してください。</p>;
   const titles = { owned: 'もっているもの', prints: 'マイPDF', shop: 'ショップ（選んで交換）' };
-  const base = ITEMS.filter(i => view === 'prints' ? i.kind === 'print' && progress.owned.includes(i.id) : view === 'shop' ? 'coins' in i.unlock : i.kind !== 'print');
-  const list = base.filter(i => (kind === 'all' || i.kind === kind) && (!search || i.label.includes(search)) && (view === 'prints' || state === 'all' || (state === 'owned') === progress.owned.includes(i.id)));
   const perform = async (item: ItemDef) => {
     if (busy) return;
     const owned = progress.owned.includes(item.id);
-    if (!owned && 'coins' in item.unlock && !window.confirm(`${item.label}を${item.unlock.coins}マナコインで購入しますか？`)) return;
+    if (!owned && 'coins' in item.unlock && !confirmAction(`${item.label}を${item.unlock.coins}マナコインで購入しますか？`)) return;
     setBusy(true); setMessage('');
     try {
       if (owned) { const r = await equip(item.id); setMessage(r ? '装備しました。ホームと対戦に反映されます。' : '装備を保存できませんでした。'); }
@@ -49,7 +56,7 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all' }: {
     <header><h2>{view === 'prints' ? <FileText size={22}/> : <Shirt size={22}/>} {titles[view]}</h2><b><Coins size={18}/>{progress.coins.toLocaleString()}</b></header>
     {message && <p role="status" className="collection-message">{message}</p>}
     {<><div className="collection-controls"><label className="sr-only" htmlFor="collection-search">アイテム名で探す</label><input id="collection-search" placeholder="名前で探す" value={search} onChange={e => setSearch(e.target.value)}/>{view !== 'prints' && <select aria-label="所有状況" value={state} onChange={e => setState(e.target.value as typeof state)}><option value="owned">所持済み</option><option value="available">未所持</option><option value="all">すべて</option></select>}</div>{view !== 'prints' && <label className="collection-kind">種類<select value={kind} onChange={e => setKind(e.target.value)}>{[['all','すべて'],['pose','ポーズ'],['frame','フレーム'],['hat','帽子'],['glasses','メガネ'],['cheek','ほっぺ'],['aura','オーラ'],['wallpaper','壁紙']].map(([id,label]) => <option key={id} value={id}>{label}</option>)}</select></label>}</>}
-    <div className="collection-scroll" tabIndex={0} aria-label="所有アイテム一覧">
+    <div className="collection-scroll" tabIndex={0} aria-label="所有アイテム一覧" ref={pager.frameRef} data-fit-paged={pager.enabled || undefined}>
       {view === 'shop' && <section className="store-guide" aria-label="ショップとガチャの違い" data-store-guide>
         <div><b>ショップ</b><span>欲しい物を<strong>選んで</strong>コイン交換</span></div>
         <div><b>ガチャ</b><span>何が出るか<strong>ランダム</strong>（UR・SRはガチャ限定）</span></div>
@@ -59,14 +66,15 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all' }: {
       {/* 届いたプレゼント（未受け取りだけ）。受け取ると下の一覧に「プレゼントで獲得」と出る */}
       {view === 'owned' && rewards.some(r => !progress.owned.includes(r.itemId)) && <section className="store-guide is-gift" aria-label="届いたプレゼント" data-gift-guide>
         <p><strong>プレゼントが届いています</strong>（隔週リーグの上位報酬）。受け取ると持ちものに入り、装備できます。</p>
-        {rewards.filter(r => !leagueRewardClaimed(r.id) && !(r.itemId && progress.owned.includes(r.itemId) && !r.coins)).map(r => <article key={r.id} className="collection-reward"><strong><Gift size={16} aria-hidden/> {r.kind === 'join' ? `シーズン参加賞（${LEAGUE_LABEL[r.label] ?? r.label}）` : 'UR · リーグ・オーロラフレーム'}{r.coins ? ` ＋${r.coins}マナコイン` : ''}</strong><p>{r.season.replace(/^s/, 'シーズン')} · {r.kind === 'join' ? '全国対戦3試合以上' : r.kind === 'clan' ? `マナクラン ${r.rank}位` : `${LEAGUE_LABEL[r.label] ?? r.label} ${r.rank}位`}</p><button type="button" disabled={busy} onClick={async () => { setBusy(true); try { const validated = await clanCall<LeagueReward>('claimReward', { rewardId: r.id }); const result = await importLeagueReward(validated.id, validated.itemId, uid, validated.coins ?? 0); setMessage(result ? (validated.itemId ? 'プレゼントを受け取りました。持ちものから装備できます。' : `${validated.coins ?? 0}マナコインを受け取りました。`) : '端末保存に失敗しました。再度受け取れます。'); } catch (e: any) { setMessage(e.message); } finally { setBusy(false); } }}>受け取る</button></article>)}
+        {rewards.filter(r => !leagueRewardClaimed(r.id) && !(r.itemId && progress.owned.includes(r.itemId) && !r.coins)).map(r => <article key={r.id} className="collection-reward"><strong><Gift size={16} aria-hidden/> {r.kind === 'join' ? `シーズン参加賞（${LEAGUE_LABEL[r.label] ?? r.label}）` : 'UR · リーグ・オーロラフレーム'}{r.coins ? ` ＋${r.coins}マナコイン` : ''}</strong><p>{r.season.replace(/^s/, 'シーズン')} · {r.kind === 'join' ? '全国対戦3試合以上' : r.kind === 'clan' ? `マナクラン ${r.rank}位` : `${LEAGUE_LABEL[r.label] ?? r.label} ${r.rank}位`}</p><button type="button" disabled={busy} onClick={async () => { setBusy(true); try { const validated = await clanCall<LeagueReward>('claimReward', { rewardId: r.id }); const result = await importLeagueReward(validated.id, validated.itemId, uid, validated.coins ?? 0); setMessage(result ? (validated.itemId ? 'プレゼントを受け取りました。持ちものから装備できます。' : `${validated.coins ?? 0}マナコインを受け取りました。`) : '端末保存に失敗しました。再度受け取れます。'); } catch (e) { setMessage((e as Error).message); } finally { setBusy(false); } }}>受け取る</button></article>)}
       </section>}
-      <ul className="collection-grid">{list.map(item => { const owned = progress.owned.includes(item.id); const print = printOf(item.id); const equipped = progress.equipped[item.kind] === item.id; return <li key={item.id} data-owned={owned}>
+      <ul className="collection-grid" ref={pager.gridRef}>{list.slice(pager.start, pager.end).map(item => { const owned = progress.owned.includes(item.id); const print = printOf(item.id); const equipped = progress.equipped[item.kind] === item.id; return <li key={item.id} data-owned={owned}>
         <div className="collection-art">{print ? <img src={print.thumb} alt="PDFの表紙" loading="lazy"/> : <GrowthAvatar progress={{...progress,equipped:{...progress.equipped,[item.kind]:item.id}}} size={68} showLevel={false}/>}</div>
         <span className="collection-tag">{gachaRarityOf(item)} · {equipped ? '装備中' : owned ? '所持済み' : '未所持'}</span>{owned && item.id === LEAGUE_GIFT_ITEM && <span className="collection-gift-tag" data-gift-item><Gift size={12} aria-hidden/>プレゼントで獲得</span>}<h3>{item.label}</h3>
-        {print && owned ? <><p>{print.category} · {print.pages}ページ</p><a href={print.file} target="_blank" rel="noopener"><FileText size={16}/>PDFを開く</a><a href={print.file} download><Download size={16}/>保存する</a></> : owned ? (equipped ? (canUnequip(progress, item) ? <button type="button" className="collection-unequip" data-unequip={item.id} disabled={busy} onClick={() => void takeOff(item)}>外す</button> : <button type="button" disabled>装備中</button>) : <button type="button" disabled={busy} onClick={() => void perform(item)}>装備する</button>) : 'coins' in item.unlock ? <><p>{item.unlock.coins} マナコイン</p><button type="button" disabled={busy || progress.coins < item.unlock.coins} onClick={() => void perform(item)}>{progress.coins < item.unlock.coins ? `あと${item.unlock.coins-progress.coins}枚` : '購入する'}</button></> : <p>{item.id === 'frame_league_aurora' ? '隔週リーグ限定UR' : 'level' in item.unlock ? `Lv.${item.unlock.level}で解放` : 'badge' in item.unlock ? '称号で解放' : 'ガチャで獲得'}</p>}
+        {print && owned ? <><p>{print.category} · {print.pages}ページ</p><a href={print.file} onClick={e => { e.preventDefault(); openPdf(print.file, print.label); }}><FileText size={16}/>PDFを開く</a><a href={print.file} download><Download size={16}/>保存する</a></> : owned ? (equipped ? (canUnequip(progress, item) ? <button type="button" className="collection-unequip" data-unequip={item.id} disabled={busy} onClick={() => void takeOff(item)}>外す</button> : <button type="button" disabled>装備中</button>) : <button type="button" disabled={busy} onClick={() => void perform(item)}>装備する</button>) : 'coins' in item.unlock ? <><p>{item.unlock.coins} マナコイン</p><button type="button" disabled={busy || progress.coins < item.unlock.coins} onClick={() => void perform(item)}>{progress.coins < item.unlock.coins ? `あと${item.unlock.coins-progress.coins}枚` : '購入する'}</button></> : <p>{item.id === 'frame_league_aurora' ? '隔週リーグ限定UR' : 'level' in item.unlock ? `Lv.${item.unlock.level}で解放` : 'badge' in item.unlock ? '称号で解放' : 'ガチャで獲得'}</p>}
       </li>; })}</ul>{!list.length && <p className="collection-empty">{view === 'prints' ? '獲得したPDFはここに並びます。ガチャのURで学習プリントを手に入れよう。' : 'この条件のアイテムはありません。絞り込みを変えてみてください。'}</p>}
     </div>
+    <FitPagerBar pager={pager} label="一覧" />
     <p className="collection-storage">所有アイテム・コインはこの端末のアカウント別に保存。リーグの配布記録はサーバーに保存され、受け取り直せます。</p>
   </section>;
 }

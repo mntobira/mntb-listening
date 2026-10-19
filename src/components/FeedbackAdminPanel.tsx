@@ -46,6 +46,7 @@ import {
   type FeedbackStatus,
 } from '../utils/feedbackReply';
 import { FEEDBACK_CATEGORY_LABELS, FEEDBACK_SCREEN_LABELS } from '../utils/feedback';
+import { asErrorLike } from '../utils/errorLike';
 
 interface FeedbackAdminPanelProps {
   onBack: () => void;
@@ -83,12 +84,13 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
     try {
       const list = await fetchFeedbackList();
       setItems(list);
-    } catch (e: any) {
+    } catch (rawError) {
+      const e = asErrorLike(rawError);
       const code = String(e?.code || '');
       setError(
         code.includes('permission-denied')
           ? 'フィードバックの閲覧権限がありません。運営アカウントでログインしているか、Firestore ルールが最新かを確認してください。'
-          : String(e?.message || e || '読み込みに失敗しました'),
+          : String(e?.message || rawError || '読み込みに失敗しました'),
       );
     } finally {
       setLoading(false);
@@ -114,8 +116,8 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
     try {
       await updateFeedbackStatus(item.docId, status);
       setItems((prev) => prev.map((p) => (p.docId === item.docId ? { ...p, status } : p)));
-    } catch (e: any) {
-      setError(String(e?.message || e || '対応状況の更新に失敗しました'));
+    } catch (e) {
+      setError(String(asErrorLike(e)?.message || e || '対応状況の更新に失敗しました'));
     }
   };
 
@@ -129,8 +131,8 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
       setReplyText('');
       setReplyingId(null);
       window.setTimeout(() => setSentId(null), 4000);
-    } catch (e: any) {
-      setError(String(e?.message || e || '返信の送信に失敗しました'));
+    } catch (e) {
+      setError(String(asErrorLike(e)?.message || e || '返信の送信に失敗しました'));
     } finally {
       setSending(false);
     }
@@ -224,10 +226,10 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
                       {FEEDBACK_STATUS_LABELS[item.status]}
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-bold">
-                      {labelOf(FEEDBACK_SCREEN_LABELS as any, item.screen)}
+                      {labelOf(FEEDBACK_SCREEN_LABELS as Record<string, string>, item.screen)}
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-[#FBE0E9] text-[#D9466E] font-bold">
-                      {labelOf(FEEDBACK_CATEGORY_LABELS as any, item.category)}
+                      {labelOf(FEEDBACK_CATEGORY_LABELS as Record<string, string>, item.category)}
                     </span>
                     {item.rating > 0 && (
                       <span className="inline-flex items-center gap-0.5 text-amber-500 font-bold">

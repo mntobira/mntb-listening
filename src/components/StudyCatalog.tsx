@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, ChevronLeft, FlaskConical, Globe2, Headphones, Pe
 import { STUDY_CATALOG, findStudySubject, type StudyContent, type StudyIcon, type StudySubject } from '../data/studyCatalog';
 import './study-catalog.css';
 import { TobiraBuddy } from './TobiraBuddy';
+import { KineticText } from '../motion';
 
 /**
  * 演習する（B2〜B6）2026-10-01
@@ -80,7 +81,7 @@ export function StudyCatalog({ subjectId, onSubject, onContent, onBack, progress
         <button type="button" className="sc-back" onClick={back} aria-label={`${backLabel}に戻る`}><ChevronLeft size={18} aria-hidden="true" /><span>{backLabel}</span></button>
         <div className="sc-head-title">
           <p className="sc-crumb" aria-label="現在地">{single ? <>演習する › <b>{single.label}</b></> : <>演習する{!showSubjects && <> › <b>{subject.label}</b></>}</>}</p>
-          <h1>{title}</h1>
+          <h1><KineticText text={title} /></h1>
           <p>{sub}</p>
         </div>
       </header>

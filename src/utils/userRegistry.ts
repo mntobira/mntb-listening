@@ -95,7 +95,7 @@ export interface UserRecordPayload {
 
 function readEnv(key: string): string {
   try {
-    const env = (import.meta as any)?.env;
+    const env = (import.meta as unknown as { env?: Record<string, unknown> } | undefined)?.env;
     const value = env?.[key];
     return typeof value === 'string' ? value.trim() : '';
   } catch {
@@ -228,8 +228,8 @@ async function sendToWebhook(payload: UserRecordPayload, url: string): Promise<v
   try {
     const response = await fetchWithTimeout(url, init, WEBHOOK_TIMEOUT_MS);
     if (!response.ok) throw new Error(`status ${response.status}`);
-  } catch (error: any) {
-    if (error?.name === 'AbortError') throw error;
+  } catch (error) {
+    if ((error as { name?: unknown } | null)?.name === 'AbortError') throw error;
     // CORS / ネットワーク由来 → no-cors で撃ち直す（到達すれば記録はされる）
     await fetchWithTimeout(url, { ...init, mode: 'no-cors' }, WEBHOOK_TIMEOUT_MS);
   }

@@ -5,8 +5,10 @@ import { Dialog } from './ui';
 import { VOCAB_LEVELS, type ListeningWord, type VocabularyData } from '../data/listeningSupport';
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { stopSpeech, isSpeechSupported } from '../utils/listeningSpeech';
-import { say } from './foundationShared';
+import { sayWord } from './foundationShared';
 import { VOCAB_PREF_KEY } from '../utils/vocabGoal';
+import { wordNumbers } from '../data/vocabQuiz';
+import { pauseAllAudio } from '../utils/audioElements';
 
 /**
  * 単語・熟語タブ（A4・A19）。
@@ -58,7 +60,7 @@ function WordDetail({ word, onPractice }: { word: ListeningWord; onPractice: (ch
         <p lang="en">{ex.script.length > 220 ? ex.script.slice(0, 220) + '…' : ex.script}</p>
         <div className="fd-example-actions">
           <audio controls preload="none" src={ex.audioUrl} aria-label={`${ex.chapterTitle} 第${ex.problemIndex + 1}回の音源`}
-            onPlay={e => { stopSpeech(); document.querySelectorAll('audio').forEach(a => { if (a !== e.currentTarget) a.pause(); }); }} />
+            onPlay={e => { stopSpeech(); pauseAllAudio(e.currentTarget); }} />
           <button type="button" onClick={() => onPractice(ex.chapterId, ex.problemIndex)}><Headphones size={15} aria-hidden="true" />この回を解く</button>
         </div>
       </section>)}
@@ -123,6 +125,8 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
       && (!chapter || w.chapterIds.includes(chapter))
       && (!needle || (w.word + ' ' + w.fullMeaning).normalize('NFKC').toLowerCase().includes(needle))), [data, levels, listenOnly, chapter, needle]);
   const wordById = useMemo(() => new Map((data?.words ?? []).map(w => [w.id, w])), [data]);
+  /** 語の番号（レベルごとに 1 から）。4択のステージ（No.1〜10 …）と同じ番号 */
+  const numbers = useMemo(() => wordNumbers(data?.words ?? []), [data]);
   /** ★分け方★ レベル → 100語のまとまり → 20語の章。章番号はレベルごとに1から */
   const levelList = useMemo(() => Object.keys(VOCAB_LEVELS).filter(l => levels.has(l)).map(id => {
     const ids = base.filter(w => w.level === id).map(w => w.id);
@@ -140,7 +144,6 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
   const pageWords = searching ? base.slice(safePage * PAGE, safePage * PAGE + PAGE) : (curChapter?.ids ?? []).map(id => wordById.get(id)!).filter(Boolean);
   const slice = unlearned ? pageWords.filter(w => !known.has(w.id)) : pageWords;
   const filtered = base;
-  const learned = useMemo(() => filtered.reduce((n, w) => n + (known.has(w.id) ? 1 : 0), 0), [filtered, known]);
   const goPage = (n: number) => {
     stopSpeech(); setOpenWord(null); setPeek(new Set()); setSlide(n > safePage ? 'next' : n < safePage ? 'prev' : ''); listRef.current?.scrollTo({ top: 0 });
     if (searching || !curLevel) setPage(n); else setPos(v => ({ ...v, [curLevel.id]: Math.max(0, Math.min(n, chapters.length - 1)) }));
@@ -239,11 +242,12 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
                 if (hide !== 'none' && !peek.has(w.id) && !open) { setPeek(v => new Set(v).add(w.id)); return; }
                 setOpenWord(open ? null : w.id);
               }}>
+                <span className="fd-word-no" aria-label={`No.${numbers.get(w.id)}`}>{numbers.get(w.id)}</span>
                 <span className="fd-word-en" lang="en" data-hidden={(hide === 'en' && !open && !peek.has(w.id)) || undefined}>{w.word}</span>
                 <span className="fd-word-ja" data-hidden={(hide === 'ja' && !open && !peek.has(w.id)) || undefined}>{w.meaning}</span>
                 {(searching || w.examples.length > 0) && <span className="fd-word-tags">{searching && <i>{VOCAB_LEVELS[w.level]}</i>}{w.examples.length > 0 && <i className="fd-tag-listen">リスニング</i>}</span>}
               </button>
-              <button type="button" className="fd-icon" aria-label={`${w.word} を読み上げる`} disabled={!isSpeechSupported()} onClick={() => say(w.word)}><Volume2 size={18} aria-hidden="true" /></button>
+              <button type="button" className="fd-icon" aria-label={`${w.word} を読み上げる`} disabled={!isSpeechSupported()} onClick={() => sayWord(w.id, w.word)}><Volume2 size={18} aria-hidden="true" /></button>
               <button type="button" className="fd-icon fd-mark" aria-pressed={isKnown} aria-label={isKnown ? `${w.word} の覚えた印を外す` : `${w.word} を覚えた語にする`} onClick={() => onMark(w.id, !isKnown)}><Check size={18} aria-hidden="true" /></button>
             </div>
             {open && <WordDetail word={w} onPractice={onPractice} />}

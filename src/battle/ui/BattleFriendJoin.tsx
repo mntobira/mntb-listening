@@ -3,9 +3,11 @@ import { ArrowLeft, LogIn, UserPlus } from 'lucide-react';
 import { abortRoom, joinRoomByCode } from '../data/battle';
 import { AMBER, BattleButton, BattleNotice, BattleShell, BattleTitle, INK, INK_SUB, LINE } from './BattleParts';
 import { ConnectionCheckPanel } from './ConnectionCheckPanel';
+import { logRejection } from '../../utils/reportError';
 
-/** Normalize only for validation/submission, never rewrite an active IME buffer. */
-export function normalizeJoinCode(raw: string): string {
+/** フレンド部屋コード（4桁英数）用。クラス参加コード用の classroomCore.normalizeJoinCode とは別物。
+ *  Normalize only for validation/submission, never rewrite an active IME buffer. */
+export function normalizeFriendRoomCode(raw: string): string {
   return raw.normalize('NFKC').replace(/\s/g, '').toUpperCase();
 }
 
@@ -23,7 +25,7 @@ export function BattleFriendJoin({ onJoined, onBack, onOpenFriends }: {
   const composingRef = useRef(false);
   const sendingRef = useRef(false);
   const mountedRef = useRef(true);
-  const code = normalizeJoinCode(raw);
+  const code = normalizeFriendRoomCode(raw);
   const valid = /^[A-Z0-9]{4}$/.test(code);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export function BattleFriendJoin({ onJoined, onBack, onOpenFriends }: {
     // Read the current DOM value: Enter and the final input event can arrive
     // together on mobile. A synchronous lock prevents duplicate join requests.
     if (sendingRef.current || composingRef.current) return;
-    const value = normalizeJoinCode(inputRef.current?.value ?? raw);
+    const value = normalizeFriendRoomCode(inputRef.current?.value ?? raw);
     if (!/^[A-Z0-9]{4}$/.test(value)) {
       setError('合言葉を英数字4文字で入力してください。');
       return;
@@ -47,7 +49,7 @@ export function BattleFriendJoin({ onJoined, onBack, onOpenFriends }: {
     try {
       const roomId = await joinRoomByCode(value);
       if (mountedRef.current) onJoined(roomId);
-      else void abortRoom(roomId).catch(() => {});
+      else void abortRoom(roomId).catch(logRejection('battle.friendJoin.abortRoom'));
     } catch (e) {
       if (mountedRef.current) {
         setError(e instanceof Error ? e.message : '部屋に入れませんでした。');

@@ -2,7 +2,7 @@ import { beforeAll,beforeEach,afterAll,it,expect,vi } from 'vitest';
 import { initializeTestEnvironment,type RulesTestEnvironment,assertFails } from '@firebase/rules-unit-testing';
 import { doc,getDoc,updateDoc,setDoc,deleteDoc,serverTimestamp } from 'firebase/firestore';
 import { readFileSync } from 'node:fs';
-const state=vi.hoisted(()=>({db:null as any,auth:{currentUser:null as any}}));
+const state=vi.hoisted(()=>({db:null as unknown as ReturnType<ReturnType<RulesTestEnvironment['authenticatedContext']>['firestore']>,auth:{currentUser:null as { uid: string; photoURL: string } | null}}));
 vi.mock('../src/firebase',()=>({get db(){return state.db;},auth:state.auth}));
 vi.mock('../src/utils/leaderboard',()=>({resolveNickname:()=>state.auth.currentUser?.uid || 'test'}));
 import { createFriendRoom,joinRoomByCode,findOrEnqueue,startBattle,submitAnswer,advanceQuestion,watchMatched } from '../src/battle/data/battle';

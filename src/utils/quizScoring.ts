@@ -32,27 +32,29 @@ import {
 } from './scoring';
 import { captureWrongAnswers, applyReviewRetry, type WrongAnswerInput } from './reviewList';
 import { recordStudyLog } from './studyLog';
-import { readReviewFocus } from './reviewFocus';
+import { focusedSubIds, readReviewFocus } from './reviewFocus';
 import { markProblemSolved } from './progress';
 import { recordUnitResult } from './unitStats';
 import { schedulePush } from './studySync';
 import { isAnswerCorrect, isDescriptive } from './answerJudge';
 import { stepScoreKey } from './listeningSteps';
 import { saveRun, type ChapterRunState } from './quizRunState';
+import { logRejection } from './reportError';
+import type { Chapter, Problem, SubQuestion } from '../types/curriculum';
 
 export interface QuizScoringDeps {
   /** いま表示している大問 */
-  currentQuestion: any;
+  currentQuestion: Problem | undefined;
   /** リスニングの「1画面＝1問」モードか */
   perStep: boolean;
   /** 1問ずつモードで、いま表示している小問（先頭） */
-  activeStepSub: any;
+  activeStepSub: SubQuestion | null | undefined;
   /**
    * 1問ずつモードで、いま表示しているステップの小問全部。
    * 第4問以降は「音声1本に複数の解答欄」なのでこちらを採点する。
    * 省略時は activeStepSub 1つとみなす（第1〜3問は从来と同じ）。
    */
-  activeStepSubs?: any[];
+  activeStepSubs?: SubQuestion[];
   /** 章の途中経過（点数・コンボ・所要時間） */
   run: ChapterRunState;
   setRun: (next: ChapterRunState) => void;
@@ -62,7 +64,7 @@ export interface QuizScoringDeps {
   timeUsedRef: { current: number };
   answers: Record<string, string>;
   questionTimeLimit: number;
-  chapter: { id: string; title: string; [k: string]: any };
+  chapter: Chapter;
   mode: string;
   isGuest?: boolean;
   currentQuestionIndex: number;
@@ -196,10 +198,10 @@ export function createScoreCurrentQuestion({
       // とびら君の成長（XP・マナコイン・ミッション）。同じ大問は1日1回。学習の保存とは独立で、失敗しても学習を止めない。
       if (uid && Number.isFinite(boostedScore) && boostedScore >= 1) {
         const key = `${chapter.id}::${currentQuestion.id}`;
-        void import('../battle/data/growthStore').then(({ recordStudyGrowth }) => recordStudyGrowth(uid, key)).catch(() => {});
+        void import('../battle/data/growthStore').then(({ recordStudyGrowth }) => recordStudyGrowth(uid, key)).catch(logRejection('growth.recordStudy'));
       } else if (uid) {
         // 0点だった → 演習の「れんぞく正解」ミッションの連続を切る
-        void import('../battle/data/growthStore').then(({ breakStudyStreak }) => breakStudyStreak()).catch(() => {});
+        void import('../battle/data/growthStore').then(({ breakStudyStreak }) => breakStudyStreak()).catch(logRejection('growth.breakStreak'));
       }
 
       // localStorage への記録が済んだので、クラウドへの送信を予約する。
@@ -219,9 +221,9 @@ export function createScoreCurrentQuestion({
       if (uid) {
         const questionIndex = currentQuestionIndex + 1;
         const wrongInputs: WrongAnswerInput[] = subQuestions
-          .filter((sq: any) => !isDescriptive(sq))
-          .filter((sq: any) => !isAnswerCorrect(sq, answers[sq.id]))
-          .map((sq: any) => ({
+          .filter((sq) => !isDescriptive(sq))
+          .filter((sq) => !isAnswerCorrect(sq, answers[sq.id]))
+          .map((sq) => ({
             chapterId: chapter.id,
             chapterTitle: chapter.title,
             questionIndex,
@@ -241,7 +243,7 @@ export function createScoreCurrentQuestion({
     // ★学習記録（直近3日）★ どの問題を解いて、どの小問を間違えたか
     try {
       const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
-      const judged = subQuestions.filter((sq: any) => !isDescriptive(sq));
+      const judged = subQuestions.filter((sq) => !isDescriptive(sq));
       if (judged.length > 0) {
         const unit = String(chapter.abstractTitle || chapter.realTitle || chapter.title || chapter.id);
         const round = String(currentQuestion.title || '').trim() || `第${currentQuestionIndex + 1}問`;
@@ -249,18 +251,18 @@ export function createScoreCurrentQuestion({
           key: `study:${chapter.id}:${currentQuestion.id}:${new Date().toDateString()}`,
           kind: 'study', at: Date.now(), chapterId: chapter.id, questionId: currentQuestion.id,
           title: unit, sub: round,
-          items: judged.map((sq: any, i: number) => {
+          items: judged.map((sq, i: number) => {
             const ok = isAnswerCorrect(sq, answers[sq.id]);
             const m = String(sq.label || '').match(/問\s*\d+/u);
             return { id: String(sq.id), label: m ? m[0].replace(/\s+/g, '') : (sq.label ? String(sq.label).slice(0, 12) : `(${i + 1})`), correct: ok, answer: ok ? undefined : String(sq.correctAnswer ?? '') };
           }),
         });
         // 復習ノートから「間違えた問題だけ」を解き直しているとき：正解した小問はノートで1段階進める
-        const focus = readReviewFocus();
-        if (focus && focus.chapterId === chapter.id && focus.questionId === currentQuestion.id) {
+        const focusIds = focusedSubIds(readReviewFocus(), chapter.id, currentQuestion.id);
+        if (focusIds) {
           applyReviewRetry(uid, chapter.id, currentQuestion.id,
-            judged.filter((sq: any) => focus.subQuestionIds.includes(String(sq.id)))
-              .map((sq: any) => ({ subQuestionId: String(sq.id), correct: isAnswerCorrect(sq, answers[sq.id]) })));
+            judged.filter((sq) => focusIds.includes(String(sq.id)))
+              .map((sq) => ({ subQuestionId: String(sq.id), correct: isAnswerCorrect(sq, answers[sq.id]) })));
         }
       }
     } catch { /* 記録できなくても学習は止めない */ }

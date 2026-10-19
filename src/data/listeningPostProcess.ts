@@ -42,10 +42,11 @@
  */
 import { enhanceExplanation, isStructuredExplanation } from '../utils/explanationFormat';
 import { buildListeningExplanation } from '../utils/listeningExplanation';
+import type { Chapter } from '../types/curriculum';
 
 /** 教科データの、このファイルが必要とする最小限の形 */
 interface SubjectDataLike {
-  parts: any[];
+  parts: Array<{ chapters?: Array<Partial<Pick<Chapter, 'practiceProblems' | 'miniTest'>>> }>;
 }
 
 /**
@@ -53,7 +54,7 @@ interface SubjectDataLike {
  * データ自身を書き換える（もとのループと同じ振る舞い）。
  */
 export function applyListeningPostProcess(data: SubjectDataLike): void {
-  const chapters = (data.parts as any[]).flatMap((part: any) => part.chapters || []);
+  const chapters = data.parts.flatMap((part) => part.chapters || []);
   for (const chapter of chapters) {
     const problems = [
       ...(chapter.practiceProblems || []),

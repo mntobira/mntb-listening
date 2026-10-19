@@ -24,6 +24,7 @@
  */
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { ExplanationBody } from './ExplanationBody';
+import type { Problem } from '../types/curriculum';
 import {
   buildListeningLeadText,
   extractListeningDifficulty,
@@ -31,7 +32,7 @@ import {
 } from '../utils/listeningOptions';
 
 export interface ListeningBriefingProps {
-  currentQuestion: any;
+  currentQuestion: Problem;
   /** 章（単元）の表示名。Quiz.tsx では chapter.abstractTitle を渡している。
    *  （chapter.title ではないので注意。取り違えると見出しが変わる） */
   chapterAbstractTitle: string;

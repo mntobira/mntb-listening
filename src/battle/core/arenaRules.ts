@@ -15,7 +15,7 @@ export function speedCurve(remainingRatio: number) {
   const r = Math.min(1, Math.max(0, remainingRatio));
   return 0.7 * r * r + 0.3 * r * r * r;
 }
-export function nationalRoomMatches(room: { mode?: unknown; subject?: unknown; joinCode?: unknown; status?: unknown; players?: unknown; profiles?: any }, uid: string, subject: string, session: string) {
+export function nationalRoomMatches(room: { mode?: unknown; subject?: unknown; joinCode?: unknown; status?: unknown; players?: unknown; profiles?: Record<string, { matchSessionId?: unknown } | undefined> }, uid: string, subject: string, session: string) {
   return !!session && room.mode === 'random' && room.subject === subject && room.joinCode === ''
     && (room.status === 'waiting' || room.status === 'playing') && Array.isArray(room.players)
     && room.players.length === 2 && new Set(room.players).size === 2 && room.players.includes(uid)

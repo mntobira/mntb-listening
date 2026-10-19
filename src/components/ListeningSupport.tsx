@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Check, Headphones, Search, Volume2, X 
 import { LISTENING_GRAMMAR, VOCAB_LEVELS, filterVocabulary, parseSupportProgress, supportStorageKey, type ListeningWord, type VocabularyData, type SupportProgress } from '../data/listeningSupport';
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { speak, stopSpeech, isSpeechSupported } from '../utils/listeningSpeech';
+import { pauseAllAudio } from '../utils/audioElements';
 
 // key を渡せるよう React.Attributes を足す（@types/react が無い環境でも tsc が通るように。2026-09-29）
 function ReadAloud({text}:{text:string}&React.Attributes) {
@@ -11,7 +12,7 @@ function ReadAloud({text}:{text:string}&React.Attributes) {
   useEffect(()=>{active.current=true;return()=>{active.current=false;stopSpeech();};},[text]);
   const play=()=>{
     if(playing){stopSpeech();setPlaying(false);return;}
-    document.querySelectorAll('audio').forEach(a=>a.pause());
+    pauseAllAudio();
     const ok=speak('listening-support',text,1,{rate:.85,onEnd:()=>{if(active.current)setPlaying(false);}});
     setPlaying(ok);
   };
@@ -31,7 +32,7 @@ function WordCard({word,known,onMark,onPractice}:{word:ListeningWord;known:boole
       <p>教材スクリプトに同じ表記がある回です。語形変化・言い換えは自動では結び付けていません。</p>
       {word.examples.length===0?<p>現在の教材に同じ表記の例はありません。語彙を広げる学習として使えます。</p>:word.examples.map(example=><section key={example.chapterId}>
         <h4>{example.chapterTitle}・第{example.problemIndex+1}回</h4><p lang="en">{example.script}</p><p>{example.translation}</p>
-        <label>収録音源（全体）<audio controls preload="none" src={example.audioUrl} onPlay={e=>{stopSpeech();document.querySelectorAll('audio').forEach(a=>{if(a!==e.currentTarget)a.pause();});}}/></label>
+        <label>収録音源（全体）<audio controls preload="none" src={example.audioUrl} onPlay={e=>{stopSpeech();pauseAllAudio(e.currentTarget);}}/></label>
         <button onClick={()=>onPractice(example.chapterId,example.problemIndex)}><Headphones size={16}/>この回を演習する</button>
       </section>)}
     </details>
@@ -47,14 +48,14 @@ export function ListeningSupport({initialTab,uid,onClose,onPractice}:{initialTab
     catch(e){return {progress:{version:1,words:[],grammar:[]},error:e instanceof Error?e.message:'保存記録を読み込めません。'};}
   });
   const [saveError,setSaveError]=useState('');
-  useEffect(()=>{const node=dialog.current;node?.showModal();return()=>{node?.querySelectorAll('audio').forEach(a=>a.pause());stopSpeech();node?.close();};},[]);
+  useEffect(()=>{const node=dialog.current;node?.showModal();return()=>{pauseAllAudio(null,node);stopSpeech();node?.close();};},[]);
   useEffect(()=>{
     if(tab!=='words'||data)return;let alive=true;setLoadError('');
     const controller=new AbortController();
     fetch('/data/listeningVocabulary.json',{signal:controller.signal}).then(r=>{if(!r.ok)throw new Error('Vocabulary unavailable');return r.json();}).then(value=>{if(!Array.isArray(value.words)||!Array.isArray(value.chapters)||typeof value.wordCount!=='number')throw new Error('Invalid vocabulary data');if(alive)setData(value as VocabularyData);}).catch(()=>{if(alive)setLoadError('単語を読み込めませんでした。接続を確認して再読み込みしてください。');});
     return()=>{alive=false;controller.abort();};
   },[tab,data,retry]);
-  const stop=()=>{dialog.current?.querySelectorAll('audio').forEach(a=>a.pause());stopSpeech();};
+  const stop=()=>{pauseAllAudio(null,dialog.current);stopSpeech();};
   const close=()=>{stop();dialog.current?.close();onClose();};
   const practice=(id:string,index:number)=>{close();onPractice(id,index);};
   const mark=(kind:'words'|'grammar',id:string,done:boolean)=>{

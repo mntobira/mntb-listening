@@ -1,0 +1,24 @@
+in vain. <break time="1.2s" />
+owing to. <break time="1.2s" />
+accuse A of B. <break time="1.2s" />
+at intervals. <break time="1.2s" />
+be apt to do. <break time="1.2s" />
+be peculiar to. <break time="1.2s" />
+on the verge of. <break time="1.2s" />
+needless to say. <break time="1.2s" />
+be accustomed to. <break time="1.2s" />
+refrain from. <break time="1.2s" />
+abide by. <break time="1.2s" />
+adhere to. <break time="1.2s" />
+indulge in. <break time="1.2s" />
+dispose of. <break time="1.2s" />
+be acquainted with. <break time="1.2s" />
+correspond with. <break time="1.2s" />
+cling to. <break time="1.2s" />
+coincide with. <break time="1.2s" />
+be preferable to. <break time="1.2s" />
+deprive A of B. <break time="1.2s" />
+dispense with. <break time="1.2s" />
+sympathize with. <break time="1.2s" />
+yearn for. <break time="1.2s" />
+confine A to B.

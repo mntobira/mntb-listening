@@ -36,6 +36,21 @@ import { safeLocalStorage } from './safeLocalStorage';
 // （userRegistry.ts）と同じ GAS へ同じ作法で送るため共通のものを使う
 // （以前はこの2ファイルに同じ実装と同じ値が別々に書かれていた）。
 import { fetchWithTimeout, WEBHOOK_TIMEOUT_MS } from './httpTimeout';
+import { asErrorLike } from './errorLike';
+
+/**
+ * テスト（Node）でも落ちないよう、ブラウザの機能は globalThis から「あるかもしれない」として読む。
+ * 実行時は `globalThis` そのもの（型を付けるだけ）。
+ */
+type MaybeBrowserGlobals = {
+  process?: { env?: Record<string, string | undefined> };
+  localStorage?: Storage;
+  crypto?: { randomUUID?: () => string };
+  window?: { innerWidth?: number; innerHeight?: number };
+  navigator?: { userAgent?: unknown };
+  document?: Document;
+} & Record<string, unknown>;
+const browserGlobals = (): MaybeBrowserGlobals | undefined => globalThis as unknown as MaybeBrowserGlobals | undefined;
 
 /** フィードバックの送付先メールアドレス（mailto フォールバック／GAS 通知先の既定値） */
 export const FEEDBACK_EMAIL = 'mntobira@gmail.com';
@@ -149,14 +164,14 @@ export interface FeedbackValidation {
 
 function readEnv(key: string): string {
   try {
-    const env = (import.meta as any)?.env;
+    const env = (import.meta as unknown as { env?: Record<string, unknown> } | undefined)?.env;
     const value = env ? env[key] : undefined;
     if (typeof value === 'string') return value.trim();
   } catch {
     // import.meta が使えない環境（Node の CJS 実行など）は無視する
   }
   try {
-    const value = (globalThis as any)?.process?.env?.[key];
+    const value = browserGlobals()?.process?.env?.[key];
     if (typeof value === 'string') return value.trim();
   } catch {
     // process が無い環境も無視
@@ -234,7 +249,7 @@ export function isAllowedFeedbackWebhookUrl(url: string): boolean {
  */
 export function getFeedbackWebhookUrl(): string {
   try {
-    const override = (globalThis as any)?.localStorage?.getItem(FEEDBACK_WEBHOOK_OVERRIDE_KEY);
+    const override = browserGlobals()?.localStorage?.getItem(FEEDBACK_WEBHOOK_OVERRIDE_KEY);
     if (typeof override === 'string') {
       const trimmed = override.trim();
       // 意図的に空文字を保存した場合は「既定URLも使わない」という指示として扱う
@@ -257,7 +272,7 @@ export function getFeedbackWebhookUrl(): string {
 export function setFeedbackWebhookUrl(url: string): boolean {
   const trimmed = (url || '').trim();
   try {
-    const ls = (globalThis as any)?.localStorage;
+    const ls = browserGlobals()?.localStorage;
     if (!ls) return false;
     if (trimmed === '') {
       ls.removeItem(FEEDBACK_WEBHOOK_OVERRIDE_KEY);
@@ -326,7 +341,7 @@ export function validateFeedback(input: Partial<FeedbackInput>): FeedbackValidat
 
 function createId(): string {
   try {
-    const uuid = (globalThis as any)?.crypto?.randomUUID?.();
+    const uuid = browserGlobals()?.crypto?.randomUUID?.();
     if (uuid) return `fb_${uuid}`;
   } catch {
     // randomUUID が無い環境はフォールバックへ
@@ -336,7 +351,7 @@ function createId(): string {
 
 function safeViewport(): string {
   try {
-    const w = (globalThis as any)?.window;
+    const w = browserGlobals()?.window;
     if (w?.innerWidth) return `${w.innerWidth}x${w.innerHeight}`;
   } catch {
     // SSR / テスト環境
@@ -346,7 +361,7 @@ function safeViewport(): string {
 
 function safeUserAgent(): string {
   try {
-    const ua = (globalThis as any)?.navigator?.userAgent;
+    const ua = browserGlobals()?.navigator?.userAgent;
     if (typeof ua === 'string') return ua.slice(0, 300);
   } catch {
     // SSR / テスト環境
@@ -443,7 +458,8 @@ export function buildFeedbackMailto(payload: FeedbackPayload, to: string = getFe
  *   利用者に「あなたの入力が悪い」と誤解させないよう、運営側の設定問題である
  *   ことが伝わる文言にする。
  */
-function describeFirestoreError(error: any): string {
+function describeFirestoreError(rawError: unknown): string {
+  const error = asErrorLike(rawError);
   const code = String(error?.code || '');
   if (code.includes('permission-denied')) {
     return '保存先データベースが受け付けを拒否しました（サーバー側の権限設定が未反映です）';
@@ -523,7 +539,8 @@ async function sendToWebhook(payload: FeedbackPayload, url: string): Promise<voi
       throw new Error(`スプレッドシート側が ${response.status} を返しました（GASの「アクセスできるユーザー」を「全員」にしてください）`);
     }
     return;
-  } catch (error: any) {
+  } catch (rawError) {
+    const error = asErrorLike(rawError);
     // タイムアウト（中断）は再試行しても無駄なので、そのまま失敗にする
     if (error?.name === 'AbortError') {
       throw new Error('スプレッドシートへの送信がタイムアウトしました');
@@ -538,9 +555,9 @@ async function sendToWebhook(payload: FeedbackPayload, url: string): Promise<voi
       await fetchWithTimeout(url, { ...init, mode: 'no-cors' }, WEBHOOK_TIMEOUT_MS);
       // opaque レスポンス。到達したとみなす（best effort）
       return;
-    } catch (retryError: any) {
+    } catch (retryError) {
       throw new Error(
-        retryError?.name === 'AbortError'
+        asErrorLike(retryError)?.name === 'AbortError'
           ? 'スプレッドシートへの送信がタイムアウトしました'
           : 'スプレッドシートに接続できませんでした（URLまたは公開設定をご確認ください）',
       );
@@ -572,6 +589,14 @@ export interface QueuedFeedback {
 }
 
 /** 再送キューを読み出す（旧フォーマットも読めるようにする） */
+/** 端末に保存されていたキューの1件（新旧どちらの形式かは読んでみるまで分からない） */
+type QueuedFeedbackRaw = null | undefined | {
+  payload?: unknown;
+  pending?: unknown;
+  id?: unknown;
+  message?: unknown;
+};
+
 export function readFeedbackQueue(): QueuedFeedback[] {
   const ls = readStorage();
   if (!ls) return [];
@@ -581,7 +606,7 @@ export function readFeedbackQueue(): QueuedFeedback[] {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     return parsed
-      .map((item: any): QueuedFeedback | null => {
+      .map((item: QueuedFeedbackRaw): QueuedFeedback | null => {
         if (!item || typeof item !== 'object') return null;
         // 新フォーマット { payload, pending }
         if (item.payload && Array.isArray(item.pending)) {
@@ -658,11 +683,11 @@ async function deliver(payload: FeedbackPayload, sinks: FeedbackSink[]): Promise
   const webhookUrl = getFeedbackWebhookUrl();
   const tasks: Array<Promise<void>> = [];
 
-  const run = (sink: FeedbackSink, task: Promise<void>, describe?: (error: any) => string) => {
+  const run = (sink: FeedbackSink, task: Promise<void>, describe?: (error: unknown) => string) => {
     tasks.push(task.then(
       () => { delivered.push(sink); },
       (error) => {
-        failed.push({ sink, reason: describe ? describe(error) : String(error?.message || error) });
+        failed.push({ sink, reason: describe ? describe(error) : String(asErrorLike(error)?.message || error) });
       },
     ));
   };
@@ -708,7 +733,7 @@ const FEEDBACK_PER_DAY = 20;
  */
 export function takeFeedbackSlot(now: number = Date.now()): boolean {
   try {
-    const ls = (globalThis as any)?.localStorage;
+    const ls = browserGlobals()?.localStorage;
     if (!ls) return true;
     const raw = JSON.parse(ls.getItem(FEEDBACK_RATE_KEY) || '[]');
     const recent = (Array.isArray(raw) ? raw : []).filter((t: unknown) => typeof t === 'number' && now - t < 86400000 && t <= now);
@@ -826,12 +851,12 @@ export async function diagnoseFeedbackRoutes(): Promise<SinkDiagnosis[]> {
             : 'テスト送信を実行しました。ブラウザの制約で結果を読み取れないため、'
               + 'シートに [診断] の行が増えているかを必ず確認してください。',
       });
-    } catch (error: any) {
+    } catch (error) {
       results.push({
         sink: 'webhook',
         label: 'Google スプレッドシート',
         status: 'ng',
-        detail: String(error?.message || error),
+        detail: String(asErrorLike(error)?.message || error),
       });
     }
   }
@@ -850,7 +875,7 @@ export async function diagnoseFeedbackRoutes(): Promise<SinkDiagnosis[]> {
  *          null  … 判定できなかった（DOMなし等。従来どおり best effort で送る）
  */
 async function pingWebhook(url: string): Promise<boolean | null> {
-  const doc = (globalThis as any)?.document;
+  const doc = browserGlobals()?.document;
   if (!doc?.createElement || !doc?.head) return null;
 
   return new Promise<boolean | null>((resolve) => {
@@ -861,13 +886,13 @@ async function pingWebhook(url: string): Promise<boolean | null> {
     const cleanup = (result: boolean | null) => {
       if (settled) return;
       settled = true;
-      try { delete (globalThis as any)[callbackName]; } catch { /* noop */ }
+      try { delete (globalThis as unknown as MaybeBrowserGlobals)[callbackName]; } catch { /* noop */ }
       try { script.remove(); } catch { /* noop */ }
       clearTimeout(timer);
       resolve(result);
     };
 
-    (globalThis as any)[callbackName] = () => cleanup(true);
+    (globalThis as unknown as MaybeBrowserGlobals)[callbackName] = () => cleanup(true);
 
     const timer = setTimeout(() => cleanup(null), WEBHOOK_TIMEOUT_MS);
 

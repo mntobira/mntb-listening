@@ -1,0 +1,1 @@
+package com.getcapacitor; public class Bridge { public String getHost(){return "localhost";} public Ctx getContext(){return new Ctx();} public void setWebViewClient(BridgeWebViewClient c){} public static class Ctx { public android.content.res.AssetManager getAssets(){return new android.content.res.AssetManager();} } }

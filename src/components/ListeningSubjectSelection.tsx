@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { ArrowRight, BookOpen, ChevronLeft, Headphones, PenLine, Swords } from 'lucide-react';
-import type { SubjectId } from './SubjectSelection';
+import type { SubjectId } from '../data/subjectLabels';
 import { getSubjectStats } from '../data/chapterIndex.generated';
 import { VOCABULARY_COUNT } from '../data/listeningVocabularyMeta.generated';
 import { auth } from '../firebase';
 import './listening-home.css';
+import { KineticText } from '../motion';
 
 /**
  * リスニング専用版の「科目選択」画面（2026-09-29）。
@@ -45,7 +46,7 @@ export function ListeningSubjectSelection({ onSelectSubject, currentSubject, onB
 
       <section className="ls-subjects-title">
         <p className="lh-eyebrow">なにを学ぶ？</p>
-        <h1>聞く力と、その土台。</h1>
+        <h1><KineticText text="聞く力と、その土台。" step={55} variant="wave" /></h1>
         <p>リスニングを軸に、英文法と英単語をまとめて固めよう。</p>
       </section>
 

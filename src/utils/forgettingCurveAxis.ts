@@ -114,17 +114,3 @@ export function pickAxisTicks(
   return picked;
 }
 
-/**
- * 選ばれた目盛りが本当に重なっていないかを判定する（テスト・検証用）。
- * 実装とテストで同じ計算を共有し、期待値の書き間違いを防ぐ。
- */
-export function hasOverlap(ticks: AxisTick[], fontSize: number, gap = 0): boolean {
-  for (let i = 1; i < ticks.length; i += 1) {
-    const a = ticks[i - 1];
-    const b = ticks[i];
-    const aRight = a.x + estimateLabelWidth(a.label, fontSize) / 2;
-    const bLeft = b.x - estimateLabelWidth(b.label, fontSize) / 2;
-    if (bLeft < aRight + gap) return true;
-  }
-  return false;
-}

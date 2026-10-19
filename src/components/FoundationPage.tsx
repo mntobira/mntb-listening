@@ -6,6 +6,7 @@ import { useSupportProgress } from './foundationShared';
 import { FoundationWords } from './FoundationWords';
 import { VocabQuiz } from './VocabQuiz';
 import './foundation.css';
+import { pauseAllAudio } from '../utils/audioElements';
 
 /**
  * 「英文法・英単語を固める」ページ（2026-09-30・A1/A2/A17/A18）。
@@ -47,7 +48,7 @@ export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = '�
   const [infoOpen, setInfoOpen] = useState(false);
   const known = useMemo(() => new Set(progress.words), [progress.words]);
 
-  useEffect(() => () => { stopSpeech(); document.querySelectorAll<HTMLAudioElement>('.fd-page audio').forEach(a => a.pause()); }, []);
+  useEffect(() => () => { stopSpeech(); pauseAllAudio(null, document.querySelector('.fd-page')); }, []);
   useEffect(() => { stopSpeech(); setInfoOpen(false); }, [tab]);
 
 

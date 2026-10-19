@@ -3,7 +3,7 @@
  * UI は AccountSafetySection.tsx。
  *
  * ★今の firestore.rules で本人が消せるもの★
- *   study_progress / battle_queue / class_members + study_access（退出）/
+ *   study_progress / user_data / battle_queue / class_members + study_access（退出）/
  *   friends（双方向）/ friend_requests / friend_profiles / friend_codes / battle_history /
  *   public_study_profiles / クラン在籍（manaClan 関数の leave）
  * ★ルールで削除禁止のため残るもの★
@@ -15,17 +15,22 @@ import { db } from '../../firebase';
 import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from '../../utils/firestoreMetered';
 import { fetchMyMemberships, leaveClassroom } from '../../utils/classroom';
 import { STUDY_PROGRESS_COLLECTION } from '../../utils/studySync';
+import { USER_DATA_COLLECTION } from '../../utils/userDataSync';
 import { submitFeedback } from '../../utils/feedback';
 import { PUBLIC_STUDY_PROFILES } from '../../utils/publicStudyProfile';
 import { clanCall } from '../../utils/manaClan';
+import { reportError } from '../../utils/reportError';
 
+/** 1件の削除を試す。失敗しても残りの削除は続け、失敗は記録しておく（戻り値は従来どおり成否） */
 async function quiet(p: Promise<unknown>): Promise<boolean> {
-  try { await p; return true; } catch { return false; }
+  try { await p; return true; } catch (error) { reportError('account.delete.item', error); return false; }
 }
 
 /** 本人が消せるクラウド上のデータをすべて消す（1つ失敗しても残りは続ける） */
 export async function deleteMyCloudData(uid: string): Promise<void> {
   await quiet(deleteDoc(doc(db, STUDY_PROGRESS_COLLECTION, uid)));
+  // レベル・コイン・ガチャ・単語の✓・学習時間・メモなどのバックアップ（user_data）
+  await quiet(deleteDoc(doc(db, USER_DATA_COLLECTION, uid)));
   await quiet(deleteDoc(doc(db, 'battle_queue', uid)));
   // 公開プロフィール（志望校・学習時間）とクラン在籍（サーバー関数経由で抜ける）
   await quiet(deleteDoc(doc(db, PUBLIC_STUDY_PROFILES, uid)));
@@ -33,7 +38,7 @@ export async function deleteMyCloudData(uid: string): Promise<void> {
 
   try {
     for (const m of await fetchMyMemberships()) await quiet(leaveClassroom(m.classId));
-  } catch { /* noop */ }
+  } catch (error) { reportError('account.delete.classrooms', error); }
 
   try {
     const friends = await getDocs(collection(db, 'friends', uid, 'items'));
@@ -41,20 +46,20 @@ export async function deleteMyCloudData(uid: string): Promise<void> {
       await quiet(deleteDoc(f.ref));
       await quiet(deleteDoc(doc(db, 'friends', f.id, 'items', uid)));
     }
-  } catch { /* noop */ }
+  } catch (error) { reportError('account.delete.friends', error); }
 
   for (const field of ['fromUid', 'toUid'] as const) {
     try {
       const reqs = await getDocs(query(collection(db, 'friend_requests'), where(field, '==', uid)));
       for (const r of reqs.docs) await quiet(deleteDoc(r.ref));
-    } catch { /* noop */ }
+    } catch (error) { reportError('account.delete.friendRequests', error); }
   }
 
   try {
     const profile = await getDoc(doc(db, 'friend_profiles', uid));
     const code = (profile.data() as { friendCode?: string } | undefined)?.friendCode;
     if (code) await quiet(deleteDoc(doc(db, 'friend_codes', code)));
-  } catch { /* noop */ }
+  } catch (error) { reportError('account.delete.friendCode', error); }
   await quiet(deleteDoc(doc(db, 'friend_profiles', uid)));
 
   // ランキングは削除できない（ルール）ので、名前とアイコンを外して個人が分からないようにする
@@ -63,12 +68,12 @@ export async function deleteMyCloudData(uid: string): Promise<void> {
   try {
     const rows = await getDocs(query(collection(db, 'leaderboard_chapter'), where('uid', '==', uid)));
     for (const r of rows.docs) await quiet(setDoc(r.ref, { nickname: ANON, photoURL: '' }, { merge: true }));
-  } catch { /* noop */ }
+  } catch (error) { reportError('account.delete.leaderboardChapter', error); }
 
   try {
     const hist = await getDocs(collection(db, 'battle_history', uid, 'items'));
     for (const h of hist.docs) await quiet(deleteDoc(h.ref));
-  } catch { /* noop */ }
+  } catch (error) { reportError('account.delete.battleHistory', error); }
 }
 
 /** この端末に残る、この人の記録を消す（キーに uid を含むもの＋アプリ共通の mntb_*） */

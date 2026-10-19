@@ -21,8 +21,7 @@ import {
   getAllListeningChapters,
   getListeningStats,
 } from '../src/data/englishListeningData';
-import { chemistryData } from '../src/data/chemistryData';
-import { getAllAdvancedChapters } from '../src/data/chemistryAdvancedData';
+import { SUBJECT_REGISTRY, subjectOfChapterId } from '../src/data/subjects';
 
 describe('英語リスニングの単元構成', () => {
   it('ご要望どおりの並び（第1問A/B → 第2問 → 第3問 → 第4問A/B → 第5問 → 第6問A/B）', () => {
@@ -94,18 +93,14 @@ describe('他科目と同じ形（画面を流用するための約束）', () =
     }
   });
 
-  it('単元ID に重複がなく、化学基礎・化学の単元ID とも衝突しない', () => {
+  it('単元ID に重複がなく、どの単元IDも英語リスニングの形として判定される', () => {
     const ids = getAllListeningChapters().map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
-
-    const chemIds = new Set<string>([
-      ...chemistryData.parts.flatMap((p: any) => p.chapters.map((c: any) => c.id)),
-      ...getAllAdvancedChapters().map((c) => c.id),
-    ]);
     for (const id of ids) {
-      expect(chemIds.has(id)).toBe(false);
-      // 接頭辞 el… で識別できる
+      // 接頭辞 el… で識別でき、登録簿の他の教科の形には当てはまらない
       expect(id.startsWith('el')).toBe(true);
+      expect(subjectOfChapterId(id)).toBe('english_listening');
+      expect(SUBJECT_REGISTRY.filter((s) => s.chapterIdPattern.test(id)).map((s) => s.id)).toEqual(['english_listening']);
     }
   });
 
@@ -141,8 +136,8 @@ describe('集計ヘルパー', () => {
 
   it('getListeningPart は未知の区分に対して null を返す', () => {
     expect(getListeningPart('first_half')).not.toBeNull();
-    expect(getListeningPart('unknown' as any)).toBeNull();
-    expect(getListeningChapters('unknown' as any)).toEqual([]);
+    expect(getListeningPart('unknown' as unknown as Parameters<typeof getListeningPart>[0])).toBeNull();
+    expect(getListeningChapters('unknown' as unknown as Parameters<typeof getListeningChapters>[0])).toEqual([]);
   });
 });
 
@@ -152,9 +147,13 @@ describe('提供MP3全206本の対応・整合性', () => {
     const { readFileSync } = await import('node:fs');
     const { createHash } = await import('node:crypto');
     const manifest = JSON.parse(readFileSync('scripts/data/listening_premium_manifest.json', 'utf8'));
+    const ledger = new Map<string, { sha256: string }>(
+      (JSON.parse(readFileSync('listening_audio_ledger.json', 'utf8')) as { audioUrl: string; sha256: string }[])
+        .map((e) => [e.audioUrl, e]),
+    );
     const targets = getAllListeningChapters().filter(c => ['el1_A', 'el1_B', 'el3'].includes(c.id));
-    const tracks = targets.flatMap(c => c.practiceProblems.flatMap((p: any) =>
-      p.audioTracks.map((track: any) => ({ ...track, readCount: p.readCount }))));
+    const tracks = targets.flatMap(c => c.practiceProblems.flatMap((p) =>
+      p.audioTracks.map((track) => ({ ...track, readCount: p.readCount }))));
     expect(tracks).toHaveLength(206);
     expect(manifest).toHaveLength(206);
     expect(new Set(tracks.map(t => t.audioUrl)).size).toBe(206);
@@ -166,8 +165,12 @@ describe('提供MP3全206本の対応・整合性', () => {
       expect(track.script, reference.subId).toBe(reference.script);
       expect(track.readCount).toBe(reference.app_read_count);
       expect(reference.repetitions_in_file).toBe(1);
+      // チェックサムは現行の音源台帳（listening_audio_ledger.json）が正。
+      // 旧マニフェストの sha256 は商用音源へ差し替える前の値（来歴として残す）なので照合に使わない。
+      const ledgerEntry = ledger.get(track.audioUrl);
+      expect(ledgerEntry, reference.subId).toBeDefined();
       const bytes = readFileSync(`public${track.audioUrl}`);
-      expect(createHash('sha256').update(bytes).digest('hex'), reference.subId).toBe(reference.sha256);
+      expect(createHash('sha256').update(bytes).digest('hex'), reference.subId).toBe(ledgerEntry!.sha256);
     }
   });
 });

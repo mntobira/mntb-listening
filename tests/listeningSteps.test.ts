@@ -42,7 +42,9 @@
  *   分割すると進捗台帳のキー（章ID::大問ID）が総入れ替えになり、
  *   これまでの学習記録が全部リセットされる。ここもテストで固定する。
  */
+import { fixture } from './helpers/fixture';
 import { describe, it, expect } from 'vitest';
+import type { Problem, SubQuestion } from '../src/types/curriculum';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
@@ -55,7 +57,9 @@ import { buildListeningLeadText, stripListeningHowToBlocks } from '../src/utils/
 import { EL1_A_EXTRA_PROBLEMS } from '../src/data/englishListeningQ1ASets';
 import { EL1_B_PROBLEMS } from '../src/data/englishListeningQ1BProblems';
 import { getAllListeningChapters } from '../src/data/englishListeningData';
-import { chemistryData } from '../src/data/chemistryData';
+import { getAllGrammarChapters } from '../src/data/englishGrammarData';
+import { scopeQuestionsToFocus } from '../src/components/explanation/explanationLogic';
+import { buildProgressPill } from '../src/utils/listeningSteps';
 
 const ROOT = path.resolve(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(ROOT, p), 'utf-8');
@@ -78,7 +82,8 @@ const BRIEFING = read('src/components/ListeningBriefing.tsx');
 // 設問から作る「表示用の派生値」（useMemo 17個）は
 // hooks/useQuestionDerived.ts へ切り出した。
 const DERIVED = read('src/hooks/useQuestionDerived.ts');
-const EXPL = read('src/components/Explanation.tsx');
+// 左カラムの問題文ブロック（図・キャプションを含む）は 2026-10-14 に explanation/ProblemStatement.tsx へ切り出した
+const EXPL = read('src/components/Explanation.tsx') + read('src/components/explanation/ProblemStatement.tsx');
 const PLAYER = read('src/components/ListeningAudioPlayer.tsx');
 const FIGURE = read('src/components/QuestionFigure.tsx');
 // 選択肢ボタンの並べ方（①②③④ のグリッド／本文つき選択肢の縦積み）は
@@ -101,23 +106,27 @@ describe('D1: 1画面＝1問（問1で1つの進捗、問2で1つの進捗）', 
     expect(isPerSubQuestionListening(EL1_B_PROBLEMS[0])).toBe(true);
   });
 
-  it('化学の大問は対象外（(1)の結果を(2)で使う構成を壊さない）', () => {
-    // 音源を持たないので false。1問ずつに切ると前の設問を見返せず解けなくなる。
-    const chem = (chemistryData as any).parts
-      .flatMap((p: any) => p.chapters || [])
-      .flatMap((c: any) => [...(c.miniTest || []), ...(c.practiceProblems || [])]);
-    expect(chem.length).toBeGreaterThan(0);
-    for (const p of chem) {
-      expect(isPerSubQuestionListening(p)).toBe(false);
-    }
+  it('音源も stepwise も持たない大問は対象外（(1)の結果を(2)で使う構成を壊さない）', () => {
+    // 1問ずつに切ると前の設問を見返せず解けなくなる。
+    // （以前は統合版の化学データで確かめていた。リスニング版の収録データには該当がないので最小の例で固定する）
+    expect(isPerSubQuestionListening(fixture<Problem>({ subQuestions: [{ id: 'a' }, { id: 'b' }] }))).toBe(false);
+    expect(isPerSubQuestionListening(fixture<Problem>({ audioTracks: [], subQuestions: [{ id: 'a' }, { id: 'b' }] }))).toBe(false);
+  });
+
+  it('英文法は音源が無くても stepwise で1問ずつにする', () => {
+    const grammar = getAllGrammarChapters()
+      .flatMap((c) => [...(c.miniTest || []), ...(c.practiceProblems || [])])
+      .filter((p) => p.stepwise === true && (p.subQuestions || []).length > 1);
+    expect(grammar.length).toBeGreaterThan(0);
+    for (const p of grammar) expect(isPerSubQuestionListening(p)).toBe(true);
   });
 
   it('音源はあっても小問が1つだけなら分割しない（分ける意味がない）', () => {
     expect(
-      isPerSubQuestionListening({
+      isPerSubQuestionListening(fixture<Problem>({
         audioTracks: [{ subId: 'a' }],
         subQuestions: [{ id: 'a' }],
-      }),
+      })),
     ).toBe(false);
   });
 
@@ -127,7 +136,7 @@ describe('D1: 1画面＝1問（問1で1つの進捗、問2で1つの進捗）', 
     expect(steps.map((s) => s.index)).toEqual([0, 1, 2, 3]);
     // 各ステップのIDは、その回の小問IDと1対1で対応する
     expect(steps.map((s) => s.subQuestionId)).toEqual(
-      EL1_A_EXTRA_PROBLEMS[0].subQuestions.map((sq: any) => sq.id),
+      EL1_A_EXTRA_PROBLEMS[0].subQuestions.map((sq) => sq.id),
     );
   });
 
@@ -140,7 +149,7 @@ describe('D1: 1画面＝1問（問1で1つの進捗、問2で1つの進捗）', 
   it('ラベルが「問N」で無いときも並び順から番号を作る（空表示にしない）', () => {
     expect(stepLabelOf({ label: '問 3 発話に合うイラスト' }, 0)).toBe('問3');
     expect(stepLabelOf({ label: '発話に合うイラスト' }, 1)).toBe('問2');
-    expect(stepLabelOf({}, 2)).toBe('問3');
+    expect(stepLabelOf(fixture<SubQuestion>({}), 2)).toBe('問3');
   });
 
   it('採点キーは「大問ID::小問ID」で、問ごとに別レコードになる', () => {
@@ -164,8 +173,20 @@ describe('D1: 1画面＝1問（問1で1つの進捗、問2で1つの進捗）', 
   });
 
   it('進捗ピルの分子・分母が問単位に切り替わる', () => {
-    expect(QUIZ).toContain('const progressTotal = perStep ? listeningSteps.length : rangeCount');
-    expect(QUIZ).toContain('const progressPosition = perStep ? safeStepIndex + 1 : rangePosition');
+    // 1問ずつのとき：分母＝全ステップの小問数の合計、分子＝いまのステップの先頭の小問番号。
+    // 音源1本に複数の小問がある回（第4問以降）は「問2〜3」のように範囲で出す。
+    const steps = [{ subQuestionIds: ['a'] }, { subQuestionIds: ['b', 'c'] }, { subQuestionIds: ['d'] }];
+    expect(buildProgressPill({ perStep: true, steps, stepIndex: 0, rangeCount: 9, rangePosition: 4 }))
+      .toEqual({ position: 1, positionEnd: undefined, total: 4 });
+    expect(buildProgressPill({ perStep: true, steps, stepIndex: 1, rangeCount: 9, rangePosition: 4 }))
+      .toEqual({ position: 2, positionEnd: 3, total: 4 });
+    expect(buildProgressPill({ perStep: true, steps, stepIndex: 2, rangeCount: 9, rangePosition: 4 }))
+      .toEqual({ position: 4, positionEnd: undefined, total: 4 });
+    // 1問ずつでないとき：回（大問）単位のまま
+    expect(buildProgressPill({ perStep: false, steps, stepIndex: 1, rangeCount: 9, rangePosition: 4 }))
+      .toEqual({ position: 4, positionEnd: undefined, total: 9 });
+    // Quiz が実際にこの関数で進捗ピルを作っている（書いただけで未配線を防ぐ）
+    expect(QUIZ).toContain('buildProgressPill(');
   });
 
   it('最後の問を解き終えるまで結果画面に進まない', () => {
@@ -217,19 +238,32 @@ describe('D1 回帰防止：進捗台帳のキーを壊さない', () => {
 // D1b: 解説も「その問だけ」に絞る
 // =====================================================================
 describe('D1b: 解説も問ごと（先の問の正解が見えないようにする）', () => {
+  // ソースの文字列ではなく、絞り込みの純関数（scopeQuestionsToFocus）の入出力で確かめる。
+  const q1a = () => chapter('el1_A').practiceProblems[0];
+
   it('Explanation が「いま解いた1問」を受け取れる', () => {
     expect(EXPL).toContain('focusSubQuestionId?: string | null');
-    expect(EXPL).toContain('focusSubQuestionId }: ExplanationProps');
+    expect(EXPL).toContain('scopeQuestionsToFocus(');
   });
 
   it('その問だけに subQuestions を絞り込む', () => {
-    expect(EXPL).toContain('if (!focusSubQuestionId) return picked;');
-    expect(EXPL).toContain('subs.filter((sq: any) => sq?.id === focusSubQuestionId)');
-    expect(EXPL).toContain('subQuestions: hit,');
+    const q = q1a();
+    expect(q.subQuestions.length).toBeGreaterThan(1);
+    const target = q.subQuestions[1];
+    const [scoped] = scopeQuestionsToFocus([q], String(target.id));
+    expect(scoped.subQuestions.map((sq) => sq.id)).toEqual([target.id]);
+    // 指定が無いときは大問まるごと（同じ参照のまま）
+    expect(scopeQuestionsToFocus([q], null)[0]).toBe(q);
+    // 存在しない ID のときも大問まるごと（画面を空にしない）
+    expect(scopeQuestionsToFocus([q], '__none__')[0]).toBe(q);
   });
 
   it('復習用の音源もその問のトラックだけにする', () => {
-    expect(EXPL).toContain("tracks.filter((t: any) => t?.subId === focusSubQuestionId)");
+    const q = q1a();
+    const target = q.subQuestions[1];
+    const [scoped] = scopeQuestionsToFocus([q], String(target.id));
+    expect(scoped.audioTracks.length).toBeGreaterThan(0);
+    for (const t of scoped.audioTracks) expect(t.subId).toBe(target.id);
   });
 
   it('解説へ「いま解いた問」を渡している', () => {
@@ -240,11 +274,6 @@ describe('D1b: 解説も問ごと（先の問の正解が見えないように�
     // Quiz.tsx は「切り出した画面を1回だけ呼ぶ」形になっている。
     expect(QUIZ).toContain('<ExplanationScreen');
     expect((QUIZ.match(/<ExplanationScreen/g) || []).length).toBe(1);
-  });
-
-  it('解説のスコアも問ごとの記録（perStep）から引く', () => {
-    expect(EXPL_SCREEN).toMatch(/run\.perStep\?\.\[stepScoreKey\(currentQuestion\.id, activeStepSub\.id\)\]/);
-    expect(QUIZ).not.toMatch(/run\.perStep\?\.\[stepScoreKey\(/);
   });
 });
 

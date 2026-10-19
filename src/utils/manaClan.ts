@@ -8,7 +8,8 @@ export type LeagueReward = { id: string; itemId: string | null; season: string; 
 export async function clanCall<T>(action: string, input: Record<string, unknown> = {}): Promise<T> {
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) throw new Error('マナクランにはGoogleログインとオンライン設定が必要です。');
   try { return (await httpsCallable<Record<string, unknown>, T>(functions, 'manaClan')({ action, ...input })).data; }
-  catch (e: any) {
+  catch (rawError) {
+    const e = rawError as { code?: string; message?: string };
     // ★サーバー未設定・停止中は、英語のコード（internal など）をそのまま見せない★
     //   functions/internal は「関数が無い（CORS で弾かれた）」「設定（秘密値）が無い」ときにも返る。
     if (['functions/not-found', 'functions/unavailable', 'functions/internal', 'functions/deadline-exceeded', 'functions/unknown'].includes(e.code)

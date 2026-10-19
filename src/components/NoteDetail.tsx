@@ -3,12 +3,14 @@ import { ArrowLeft, Save, Trash2, Star, RotateCw, Tag, PenLine } from 'lucide-re
 import { formatText } from '../utils/textFormatter';
 import { auth } from '../firebase';
 import { readJsonArray } from '../utils/safeLocalStorage';
+import { notify, confirmAction } from '../utils/dialog';
+import type { StudyNote } from '../types/studyNote';
 
 interface NoteDetailProps {
-  note: any;
+  note: StudyNote;
   onBack: () => void;
   /** 問題項目をタップしたときに、対応する演習問題へ遷移する（要件5） */
-  onReview?: (note: any) => void;
+  onReview?: (note: StudyNote) => void;
 }
 
 export function NoteDetail({ note, onBack, onReview }: NoteDetailProps) {
@@ -33,8 +35,8 @@ export function NoteDetail({ note, onBack, onReview }: NoteDetailProps) {
   const persist = (patch: Record<string, unknown>): boolean => {
     try {
       const key = notesKey;
-      const localNotes = readJsonArray<any>(key);
-      const updatedNotes = localNotes.map((n: any) => (n.id === note.id ? { ...n, ...patch } : n));
+      const localNotes = readJsonArray<StudyNote>(key);
+      const updatedNotes = localNotes.map((n) => (n.id === note.id ? { ...n, ...patch } : n));
       localStorage.setItem(key, JSON.stringify(updatedNotes));
       // 一覧へ戻ったときに古い値が見えないよう、渡されたノート自体も更新する。
       Object.assign(note, patch);
@@ -55,25 +57,25 @@ export function NoteDetail({ note, onBack, onReview }: NoteDetailProps) {
       if (!persist({ memo, isImportant, reviewCount, tags, lastReviewedAt: new Date().toISOString() })) {
         throw new Error('persist failed');
       }
-      alert('メモを保存しました！');
+      notify('メモを保存しました！');
     } catch (error) {
       console.error('保存エラー:', error);
-      alert('保存に失敗しました。');
+      notify('保存に失敗しました。');
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm('本当に削除しますか？')) return;
+    if (!confirmAction('本当に削除しますか？')) return;
     try {
-      const localNotes = readJsonArray<any>(notesKey);
-      const updatedNotes = localNotes.filter((n: any) => n.id !== note.id);
+      const localNotes = readJsonArray<StudyNote>(notesKey);
+      const updatedNotes = localNotes.filter((n) => n.id !== note.id);
       localStorage.setItem(notesKey, JSON.stringify(updatedNotes));
       onBack();
     } catch (error) {
       console.error('削除エラー:', error);
-      alert('削除に失敗しました。');
+      notify('削除に失敗しました。');
     }
   };
 

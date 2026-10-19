@@ -13,7 +13,7 @@
  * 「負けたけれど積み上がった」を先に読ませる。
  */
 
-import { useEffect } from 'react';
+import { useMountEffect } from '../../hooks/useMountEffect';
 import type { CSSProperties } from 'react';
 import { ArrowUp, Award, Coins, Sparkles, Target, Unlock } from 'lucide-react';
 import { itemById, levelOf, missionById, type GrowthDelta, type GrowthProgress } from '../core/growth';
@@ -47,13 +47,12 @@ export function BattleGrowthCard({
 }) {
   const leveledUp = delta ? delta.levelAfter > delta.levelBefore : false;
   // 音は勝敗の音（BattleResult）の後に：レベルアップ 1.2s、新称号 1.9s（バッジが順に現れる時刻に合わせる）
-  useEffect(() => {
+  useMountEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
     if (leveledUp) timers.push(setTimeout(() => play('levelup', false), 1200));
     if (delta && delta.newBadges.length > 0) timers.push(setTimeout(() => play('badge', false), 1900));
     return () => timers.forEach(clearTimeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
   const completedMissions = delta?.missionUpdates.filter((m) => m.completed) ?? [];
   const info = levelOf(progress.xp);
 

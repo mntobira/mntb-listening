@@ -41,19 +41,27 @@ import { isShortAnswerType, extractBlankToken, blankHighlightVariants } from '..
 import { requiresMathSymbols } from '../utils/quizPaletteRules';
 import { buildListeningOptionTexts } from '../utils/listeningOptions';
 import { cleanQuestionText, isSubQuestionListRedundant, extractInlineQuestionRows } from '../utils/questionDisplay';
+import type { AudioTrack, Problem, SubQuestion } from '../types/curriculum';
+
+/** 解答欄に並べる単位（group 付きの小問は同じ見出しでまとめる） */
+export interface AnswerGroup {
+  type: 'single' | 'group';
+  groupName?: string;
+  items: SubQuestion[];
+}
 
 export interface UseQuestionDerivedArgs {
   /** 表示中の設問オブジェクト。undefined のときは各値が空を返す。 */
-  currentQuestion: any;
+  currentQuestion: Problem | null | undefined;
   /** リスニングで「小問ごとに音源が分かれている回」かどうか。 */
   perStep: boolean;
   /** 小問ごと形式のとき、いま出している小問（先頭）。 */
-  activeStepSub: any;
+  activeStepSub: SubQuestion | null | undefined;
   /**
    * いま出しているステップの小問全部（第4問以降は複数）。
    * 省略時は activeStepSub 1つだけとみなす（第1〜3問と同じ動き）。
    */
-  activeStepSubs?: any[];
+  activeStepSubs?: SubQuestion[];
   /** いまフォーカスしている小問の id（ハイライトの出し分けに使う）。 */
   focusedSubId: string | null;
   /** 本文のハイライト指定（ユーザーの選択由来）。 */
@@ -84,12 +92,12 @@ export function useQuestionDerived({
   mobileAnsIdx,
 }: UseQuestionDerivedArgs) {
   // Group subQuestions if they have a group property
-  const groupedSubQuestions = useMemo(() => {
+  const groupedSubQuestions = useMemo((): AnswerGroup[] => {
     if (!currentQuestion) return [];
-    const list: { type: 'single' | 'group'; groupName?: string; items: any[] }[] = [];
-    let lastGroup: any = null;
+    const list: AnswerGroup[] = [];
+    let lastGroup: AnswerGroup | null = null;
 
-    (currentQuestion.subQuestions || []).forEach((sq: any) => {
+    (currentQuestion.subQuestions || []).forEach((sq) => {
       if (sq.group) {
         if (lastGroup && lastGroup.groupName === sq.group) {
           lastGroup.items.push(sq);
@@ -122,11 +130,11 @@ export function useQuestionDerived({
     // 小問を全部出す。第1〜3問は从来どおり1つだけ。
     const ids = new Set(
       (activeStepSubs && activeStepSubs.length > 0 ? activeStepSubs : [activeStepSub]).map(
-        (sq: any) => sq?.id,
+        (sq) => sq?.id,
       ),
     );
-    return groupedSubQuestions.filter((g: any) =>
-      (g.items || []).some((sq: any) => ids.has(sq?.id)),
+    return groupedSubQuestions.filter((g) =>
+      (g.items || []).some((sq) => ids.has(sq?.id)),
     );
   }, [groupedSubQuestions, perStep, activeStepSub, activeStepSubs]);
 
@@ -147,9 +155,9 @@ export function useQuestionDerived({
   // グループ（(ア)(イ)…の空欄グリッド）も1空欄＝1ページに分解し、
   // 「どのページでも解答欄は常に1つ」を保証する。
   const mobileAnswerSubs = useMemo(() => {
-    const list: { sq: any; groupName?: string; gType: 'single' | 'group' }[] = [];
-    visibleGroupedSubQuestions.forEach((g: any) => {
-      (g.items || []).forEach((sq: any) => {
+    const list: { sq: SubQuestion; groupName?: string; gType: AnswerGroup['type'] }[] = [];
+    visibleGroupedSubQuestions.forEach((g) => {
+      (g.items || []).forEach((sq) => {
         list.push({ sq, groupName: g.type === 'group' ? g.groupName : undefined, gType: g.type });
       });
     });
@@ -164,11 +172,11 @@ export function useQuestionDerived({
 
   // 実際に描画するグループ一覧。PC は従来どおり全設問を縦に並べ、
   // スマホは「現在ページの1設問」だけを含む1グループに絞る。
-  const renderedAnswerGroups = useMemo(() => {
+  const renderedAnswerGroups = useMemo((): AnswerGroup[] => {
     if (isDesktop) return visibleGroupedSubQuestions;
     const cur = mobileAnswerSubs[safeMobileAnsIdx];
     if (!cur) return visibleGroupedSubQuestions;
-    return [{ type: cur.gType, groupName: cur.groupName, items: [cur.sq] }] as any[];
+    return [{ type: cur.gType, groupName: cur.groupName, items: [cur.sq] }];
   }, [isDesktop, visibleGroupedSubQuestions, mobileAnswerSubs, safeMobileAnsIdx]);
 
   // ────────────────────────────────────────────────────────────────
@@ -179,9 +187,9 @@ export function useQuestionDerived({
   // データ側の明示 opt-in（requiresMathPalette）のみで判定する。
   const questionNeedsMathPalette = useMemo(() => {
     if (!currentQuestion) return false;
-    if ((currentQuestion as any).requiresMathPalette) return true;
+    if (currentQuestion.requiresMathPalette) return true;
     const subs = currentQuestion.subQuestions || [];
-    return subs.some((sq: any) => requiresMathSymbols(sq));
+    return subs.some((sq) => requiresMathSymbols(sq));
   }, [currentQuestion]);
 
   /**
@@ -203,14 +211,14 @@ export function useQuestionDerived({
    *   問題によっておかしくなる」を避けるため）。
    */
   const isEnglishProse = useMemo(() => {
-    const tracks = (currentQuestion as any)?.audioTracks;
+    const tracks = currentQuestion?.audioTracks;
     return Array.isArray(tracks) && tracks.length > 0;
   }, [currentQuestion]);
 
   // 現在フォーカス中の穴埋め設問に対応する、問題文中のハイライト候補文字列。
   const focusHighlightVariants = useMemo(() => {
     if (!focusedSubId || !currentQuestion) return [] as string[];
-    const sub = (currentQuestion.subQuestions || []).find((sq: any) => sq.id === focusedSubId);
+    const sub = (currentQuestion.subQuestions || []).find((sq) => sq.id === focusedSubId);
     if (!sub) return [] as string[];
     const token = extractBlankToken(sub.label || '');
     if (!token) return [] as string[];
@@ -271,9 +279,9 @@ export function useQuestionDerived({
   // だけになった。キーボードを使うのはテキスト入力の設問だけなので、
   // ナビ対象もテキスト入力の設問だけにする。
   const inputNavSubs = useMemo(() => {
-    if (!currentQuestion) return [] as any[];
+    if (!currentQuestion) return [] as SubQuestion[];
     return (currentQuestion.subQuestions || []).filter(
-      (sq: any) => isShortAnswerType(sq) || sq.type === 'descriptive',
+      (sq) => isShortAnswerType(sq) || sq.type === 'descriptive',
     );
   }, [currentQuestion]);
 
@@ -284,8 +292,8 @@ export function useQuestionDerived({
   // ご要望「1問題とそれに該当する再生ボタンを横に配置して」に対応するため、
   // 「この設問(subId)に対応するトラックがあるか」を O(1) で引けるようにする。
   // 解答カード側は subId で引いて、そのカードの横に再生ボタンを描く。
-  const listeningTracks: any[] = useMemo(() => {
-    const t = (currentQuestion as any)?.audioTracks;
+  const listeningTracks: AudioTrack[] = useMemo(() => {
+    const t = currentQuestion?.audioTracks;
     return Array.isArray(t) ? t : [];
   }, [currentQuestion]);
 
@@ -323,7 +331,7 @@ export function useQuestionDerived({
    * 化学など音源が無い教科では false のままなので、従来表示に影響しない。
    */
   // 英文法（stepwise）も、音源は無いが同じ「設問＋選択肢を1枚のカード」表示にする
-  const listeningUnified = listeningTracks.length > 0 || (currentQuestion as any)?.stepwise === true;
+  const listeningUnified = listeningTracks.length > 0 || currentQuestion?.stepwise === true;
 
   /**
    * スマホのリスニングで「高さの配り方を逆にする」レイアウトを使うか。
@@ -361,7 +369,7 @@ export function useQuestionDerived({
    */
   const activeStepHasFigure =
     !!activeStepSub?.imageUrl ||
-    (Array.isArray(activeStepSubs) && activeStepSubs.some((sq: any) => sq?.imageUrl || sq?.optionImages));
+    (Array.isArray(activeStepSubs) && activeStepSubs.some((sq) => sq?.imageUrl || sq?.optionImages));
 
   /**
    * リスニング（スマホ）で「図が無い大問」のレイアウトを使うか。

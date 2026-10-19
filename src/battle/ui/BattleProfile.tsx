@@ -18,6 +18,8 @@
  * 押した瞬間にトランザクションで保存する。失敗したら画面に知らせる。
  */
 
+import { useFitPager } from '../../hooks/useFitPager';
+import { FitPagerBar } from '../../components/ui/FitPagerBar';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { ArrowLeft, Award, BarChart3, Coins, Lock, Shirt, Sparkles, Trophy, Store, Volume2, VolumeX } from 'lucide-react';
@@ -56,6 +58,7 @@ import { auth } from '../../firebase';
 import { STAGE_CLEAR_PERFECTS, readStageHistory, stageSummary } from '../../utils/stageRecords';
 import { useGrowthProgress } from '../../hooks/useGrowthProgress';
 import { BadgeChip, GrowthAvatar, LevelBar, NextGoals, StatCard, TitleChip } from './GrowthParts';
+import { logRejection } from '../../utils/reportError';
 
 export type ProfileTab = 'outfit' | 'shop' | 'badges' | 'stats' | 'gacha';
 
@@ -78,7 +81,7 @@ export function BattleProfile({ onBack, initialTab = 'outfit', standalone = fals
   useEffect(() => {
     let alive = true;
     setRating(1500);
-    void fetchMyRankingRow().then((r) => alive && r && setRating(r.rating)).catch(() => {});
+    void fetchMyRankingRow().then((r) => alive && r && setRating(r.rating)).catch(logRejection('battle.profile.fetchRanking'));
     return () => {
       alive = false;
     };
@@ -425,9 +428,10 @@ function BadgesTab({ progress, busy, run }: { progress: GrowthProgress; busy: bo
     return rb - ra || a.tier - b.tier;
   });
   const current = progress.equipped.title;
+  const pager = useFitPager(locked.length);
 
   return (
-    <div className="grid gap-4">
+    <div className="badges-tab grid gap-4">
       <section>
         <div className="mb-2 flex items-center justify-between">
           <h3 className="flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
@@ -470,15 +474,19 @@ function BadgesTab({ progress, busy, run }: { progress: GrowthProgress; busy: bo
         </p>
       </section>
 
-      <section>
+      <section className="badges-locked">
         <h3 className="mb-2 flex items-center gap-1 text-xs font-black" style={{ color: INK_SUB }}>
           <Lock size={12} /> まだの称号
         </h3>
-        <div className="grid gap-1.5">
-          {locked.map((b) => (
-            <BadgeChip key={b.id} id={b.id} earned={false} progress={progress} />
-          ))}
+        {/* PC では入るぶんだけ並べてページでめくる（スクロールさせない）。スマホは従来どおり縦に並べる */}
+        <div ref={pager.frameRef} className="badge-locked-frame">
+          <ul className="badge-locked-grid grid gap-1.5" ref={pager.gridRef}>
+            {locked.slice(pager.start, pager.end).map((b) => (
+              <li key={b.id}><BadgeChip id={b.id} earned={false} progress={progress} /></li>
+            ))}
+          </ul>
         </div>
+        <FitPagerBar pager={pager} label="まだの称号" />
       </section>
     </div>
   );

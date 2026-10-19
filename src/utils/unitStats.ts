@@ -55,17 +55,6 @@ export function recordUnitResult(uid: string | null | undefined, chapterId: stri
 export type UnitStatus = 'todo' | 'doing' | 'done';
 export const UNIT_STATUS_LABEL: Record<UnitStatus, string> = { todo: '未着手', doing: '学習中', done: '達成' };
 
-/**
- * 単元の状態を決める。
- *   未着手 … 1問も解いていない（途中保存もない）
- *   学習中 … 途中まで解いた／途中保存がある
- *   完了   … 全大問を1点以上で解いた
- */
-export function unitStatus(solved: number, total: number, hasSavedProgress = false): UnitStatus {
-  if (total > 0 && solved >= total) return 'done';
-  if (solved > 0 || hasSavedProgress) return 'doing';
-  return 'todo';
-}
 
 /** 正解率（%）。採点できた小問がなければ null（「—」と表示する） */
 export function accuracyOf(stat: UnitStat | undefined): number | null {

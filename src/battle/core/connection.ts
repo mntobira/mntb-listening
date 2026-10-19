@@ -202,10 +202,6 @@ export function smoothRtt(prev: number | null, sample: number, weight = 0.3): nu
  * ルールが「今より大きい番号」しか通さないので、撃ち直しても壊れない。
  */
 export const ADVANCE_RETRY_MS = 3_000;
-export function shouldRetryAdvance(params: { firedAt: number | null; now: number; indexChanged: boolean }): boolean {
-  if (params.indexChanged || params.firedAt == null) return false;
-  return params.now - params.firedAt >= ADVANCE_RETRY_MS;
-}
 
 /** 再接続したときに伝える文（切れていた時間が短ければ言わない） */
 export function reconnectNotice(offlineForMs: number): string | null {

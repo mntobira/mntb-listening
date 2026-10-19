@@ -51,14 +51,10 @@ import { loadPool } from '../data/battlePool';
 import { applyRatingResult } from '../data/battleRanking';
 import {
   BATTLE_REVEAL_HOLD_MS,
-  FORFEIT_STREAK,
-  hasLeft,
-  judgeBattle,
   nationalAutoStartDelayMs,
   NO_ANSWER,
   resolveTimeLimit,
   scoreBattlePlayer,
-  trailingNoAnswerCount,
 } from '../core/battleCore';
 import { normalizeRule } from '../core/battleRules';
 import { cycleKanaKey } from '../core/kanaKeyboard';
@@ -71,118 +67,30 @@ import {
   reconnectNotice,
   resumeNotice,
   retryDelayMs,
-  type ConnectionQuality,
   type ConnectionState,
 } from '../core/connection';
 import type {
   BattleAnswerSheet,
-  BattlePlayerScore,
   BattleQuestion,
-  BattleResultSummary,
   BattleRoom,
 } from '../core/types';
-import { answerIndexOf, answerKeyOf } from '../core/types';
+import { answerKeyOf } from '../core/types';
 import { COUNTDOWN_TOTAL_MS, firstDeadlineSec } from '../core/battleLive';
 import { preloadTargets, warmAssets } from '../core/preload';
+import {
+  areAttestationsAgreed,
+  computeBattleResult,
+  evaluateByForfeit,
+  extractAnsweredIndexes,
+  findFirstLeaver,
+} from './battleRoomSelectors';
+import type { BattleRoomActions, BattleRoomState } from './battleRoomTypes';
 
-/** 画面が使う対戦の状態 */
-export interface BattleRoomState {
-  loading: boolean;
-  error: string | null;
-  /** 開始の書き込み中 */
-  starting: boolean;
-  /** 出題プールを読み込めたか（false の間は開始できない） */
-  poolReady: boolean;
-  room: BattleRoom | null;
-  /** 出題（部屋の questionIds を本体に戻したもの） */
-  questions: BattleQuestion[];
-  /** いま出ている問題 */
-  current: BattleQuestion | null;
-  /** 残りミリ秒（0で締切） */
-  remainMs: number;
-  /** いまの問の制限時間（秒・resolveTimeLimit 済み）。残り時間バーの分母。 */
-  limitSec: number;
-  /** 自分がこの問題に答えたか */
-  answered: boolean;
-  /** 相手が答えたか（「相手は解答済み」の表示に使う） */
-  opponentAnswered: boolean;
-  /** 自分が選んだ選択肢（表示のため） */
-  myChoice: number;
-  /** 自分が押したパネルの順 */
-  myPanel: number[];
-  /** 結果（試合終了後のみ） */
-  result: BattleResultSummary | null;
-  myScore: BattlePlayerScore | null;
-  opponentScore: BattlePlayerScore | null;
-  /** レートの変化（反映後のみ） */
-  rating: { before: number; after: number } | null;
-  /** 相手の離脱による決着か */
-  byForfeit: boolean;
-  /** 相手の表示名・アイコン */
-  opponent: { uid: string; nickname: string; photoURL: string; rating: number } | null;
-  /** 試合が終わったか */
-  finished: boolean;
-  /**
-   * 端末の時計が大きくずれているか。
-   * ずれていても対戦は成立する（サーバ時刻に寄せて計算している）が、
-   * 端末側の設定を直してもらうために画面で伝える。
-   */
-  clockSkewed: boolean;
-  /**
-   * 通信の状態。
-   * ★圏外でも購読は続く★ので、これがないと切れたことに気付けない。
-   */
-  connection: ConnectionState;
-  /** 電波の強さ（アンテナ表示）と直近の往復時間 */
-  quality: ConnectionQuality;
-  rttMs: number | null;
-  /** 解答を送信中（届くまでの間、押した選択肢を仮に出す） */
-  sending: boolean;
-  /** 通信が戻ったときの知らせ */
-  reconnectMessage: string | null;
-  /** 圏外の知らせ（出す必要がないときは null） */
-  offlineMessage: string | null;
-  /** 画面を離れて戻ってきたときの知らせ（同） */
-  resumeMessage: string | null;
-  /** 解答を送れる状態か（選択肢を押せるかの判断に使う） */
-  submittable: boolean;
-  /**
-   * ★臨場感アップデート★ 開始カウントダウン（3・2・1・START!）の残りミリ秒。
-   * 0 なら問題が始まっている。1問目の締切を「制限時間＋カウントダウン」で
-   * 置き、締切から逆算して両端末が同じタイミングで数える（追加の書き込みなし）。
-   */
-  preStartMs: number;
-  /** 自分が答えた問題番号（平均回答時間の集計に使う。無回答を除くため） */
-  myAnsweredIndexes: number[];
-}
+export type { BattleRoomActions, BattleRoomState } from './battleRoomTypes';
 
-export interface BattleRoomActions {
-  /** 選択肢を押す（4択・2〜3択・5〜6択） */
-  choose: (index: number) => void;
-  /** パネル／五十音キーボードのキーを押す */
-  pushPanel: (index: number) => void;
-  /** 1つ戻す */
-  popPanel: () => void;
-  /**
-   * かな入力: 最後の1文字を「゛゜小」で切り替える。
-   * カ→ガ→カ のように一周して戻るので、押しすぎても詰まらない。
-   */
-  cyclePanel: () => void;
-  /**
-   * かな入力: 「けってい」で解答を送る。
-   *
-   * ★文字パネルには対応する操作が無い★
-   * 文字パネルは札が揃った瞬間に自動で送っている（1タップぶん速い）。
-   * かな入力は最後の文字に濁点を付ける余地があるので、
-   * 自動で送ると「ダイヤモント」で確定してしまう。だから明示的に送る。
-   */
-  commitKana: () => void;
-  /** 部屋主が対戦を開始する */
-  start: () => void;
-  /** 部屋を離脱する */
-  leave: () => void;
-  /** 復帰の知らせを消す */
-  dismissResumeMessage: () => void;
+/** 解答の再送を続けてよい時間（締切まで＋1.5秒、最低1.5秒） */
+function sendBudgetFor(remainMs: number): number {
+  return Math.max(1_500, remainMs + 1_500);
 }
 
 /** 締切をまたいだ判定に使う猶予（ms）。表示と受付のズレを吸収する */
@@ -219,8 +127,6 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
 
   /** 二重実行を防ぐための記録（進行・申告・レート反映） */
   const advancedRef = useRef<number>(-1);
-  /** 最後に「進める」を撃った問題番号と時刻（撃ち直しの見張り用） */
-  const advanceFiredRef = useRef<{ index: number; at: number } | null>(null);
   const revealStartedRef = useRef<{ index: number; at: number } | null>(null);
   const attestedRef = useRef(false);
   const ratedRef = useRef(false);
@@ -611,13 +517,10 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
    * 両者が退出している（ありえないが）場合は先に抜けた方を負けにする。
    */
   const leftMap = room?.left;
-  const firstLeaver = useMemo(() => {
-    const leavers = (players || []).filter((p) => hasLeft(leftMap, p));
-    if (leavers.length === 0) return '';
-    return [...leavers].sort(
-      (a, b) => (toMillis(leftMap?.[a]) ?? 0) - (toMillis(leftMap?.[b]) ?? 0),
-    )[0] as string;
-  }, [players, leftMap]);
+  const firstLeaver = useMemo(
+    () => findFirstLeaver(players, leftMap),
+    [players, leftMap],
+  );
   const explicitForfeit =
     Boolean(firstLeaver) && (status === 'playing' || status === 'finished');
 
@@ -690,46 +593,34 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
    * 相手は普通に答えている可能性がある。
    * ★自分の電波が悪いことを相手の離脱と取り違えてはいけない★。
    */
-  const byForfeit = useMemo(() => {
-    // 明示的な退出が確定していれば、抜けていない側の不戦勝
-    if (explicitForfeit) return firstLeaver !== uid;
-    if (status !== 'playing') return false;
+  const byForfeit = useMemo(
+    () =>
+      evaluateByForfeit({
+        explicitForfeit,
+        firstLeaver,
+        uid,
+        status,
+        leftMap,
+        opponentUid,
+        connection,
+        opponentSheet,
+        currentIndex,
+      }),
+    [status, leftMap, opponentUid, connection, opponentSheet, currentIndex, explicitForfeit, firstLeaver, uid],
+  );
 
-    // ① 明示的な離脱は即座に成立
-    if (hasLeft(leftMap, opponentUid)) return true;
-
-    // ★自分が圏外なら推測しない★
-    // 端末内の控えを見ているだけなので、相手の回答が届いていないだけの
-    // 可能性が高い。ここで不戦勝にすると、電波の悪い側が
-    // 「相手が逃げた」と誤解したまま試合が終わる。
-    if (connection === 'offline') return false;
-
-    // ② 無回答の連続からの推測
-    // キー名（q0, q1 …）から問題番号を取り出す。
-    // 壊れたキーは answerIndexOf が null を返すので捨てる。
-    const answeredIndexes = Object.keys(opponentSheet)
-      .map((k) => answerIndexOf(k))
-      .filter((n): n is number => n != null);
-    const trailing = trailingNoAnswerCount(answeredIndexes, currentIndex);
-    return trailing >= FORFEIT_STREAK;
-  }, [status, leftMap, opponentUid, connection, opponentSheet, currentIndex, explicitForfeit, firstLeaver, uid]);
-
-  const result = useMemo(() => {
-    if (!scores || !finished) return null;
-    // ★退出した側の負け★
-    //   点数で判定すると「負けそうになったら抜ける」が引き分け以上になりうる。
-    //   退出は得点に関係なく敗北にする（逃げ得を作らない）。
-    if (explicitForfeit) {
-      return {
-        me: scores.me,
-        opponent: scores.other,
-        outcome: firstLeaver === uid ? ('lose' as const) : ('win' as const),
-        decidedByTime: false,
-        needsSuddenDeath: false,
-      };
-    }
-    return judgeBattle(scores.me, scores.other, rules);
-  }, [scores, finished, rules, explicitForfeit, firstLeaver, uid]);
+  const result = useMemo(
+    () =>
+      computeBattleResult({
+        scores,
+        finished,
+        explicitForfeit,
+        firstLeaver,
+        uid,
+        rules,
+      }),
+    [scores, finished, rules, explicitForfeit, firstLeaver, uid],
+  );
 
   // ------------------------------------------------------------
   // 結果の申告
@@ -776,15 +667,9 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
     if (!theirs && !forfeit) return;
 
     // 申告が食い違ったら無効試合（レートを動かさない）
-    if (theirs) {
-      const agreed =
-        (mine.outcome === 'win' && theirs.outcome === 'lose') ||
-        (mine.outcome === 'lose' && theirs.outcome === 'win') ||
-        (mine.outcome === 'draw' && theirs.outcome === 'draw');
-      if (!agreed) {
-        ratedRef.current = true;
-        return;
-      }
+    if (theirs && !areAttestationsAgreed(mine, theirs)) {
+      ratedRef.current = true;
+      return;
     }
 
     ratedRef.current = true;
@@ -831,17 +716,15 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
    */
   const [pending, setPending] = useState<{ index: number; choice: number } | null>(null);
   useEffect(() => { if (pending && (answered || pending.index !== currentIndex)) setPending(null); }, [answered, currentIndex, pending]);
-  const sendBudget = () => Math.max(1_500, remainMs + 1_500);
 
   const choose = useCallback(
     (index: number) => {
       if (!roomId || !current || !submittable || pending) return;
       setPending({ index: currentIndex, choice: index });
-      void submitAnswer(roomId, currentIndex, { choice: index, panel: [] }, answered, { budgetMs: sendBudget() }).catch(
+      void submitAnswer(roomId, currentIndex, { choice: index, panel: [] }, answered, { budgetMs: sendBudgetFor(remainMs) }).catch(
         (e: Error) => { setPending(null); setError(e.message); },
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [roomId, current, submittable, answered, currentIndex, pending, remainMs],
   );
 
@@ -858,11 +741,10 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
       if (!roomId || !current || !submittable) return;
       if (order.length !== current.panelOrder.length || pending) return;
       setPending({ index: currentIndex, choice: NO_ANSWER });
-      void submitAnswer(roomId, currentIndex, { choice: NO_ANSWER, panel: order }, answered, { budgetMs: sendBudget() }).catch(
+      void submitAnswer(roomId, currentIndex, { choice: NO_ANSWER, panel: order }, answered, { budgetMs: sendBudgetFor(remainMs) }).catch(
         (e: Error) => { setPending(null); setError(e.message); },
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [roomId, current, submittable, answered, currentIndex, pending, remainMs],
   );
 
@@ -1076,9 +958,7 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
     resumeMessage,
     submittable,
     preStartMs,
-    myAnsweredIndexes: Object.keys(mySheet)
-      .map((k) => answerIndexOf(k))
-      .filter((n): n is number => n != null),
+    myAnsweredIndexes: extractAnsweredIndexes(mySheet),
     choose,
     pushPanel,
     popPanel,

@@ -58,6 +58,15 @@ import {
 // なければ表示が食い違うので、sanitizeHtml.ts の1つだけを使う
 // （以前はこのファイルにも同じ実装が書かれていた）。
 import { escapeHtml } from './sanitizeHtml';
+import type { AudioTrack, Problem, SubQuestion } from '../types/curriculum';
+
+/**
+ * 解説の組み立てが読む大問・小問の形。
+ * データ取り込みの途中（listeningPostProcess）でも呼ばれ、欠けた項目があっても
+ * 空文字・空配列で続けるよう書かれているので、全項目を任意として受ける。
+ */
+type ProblemSource = Partial<Problem> | null | undefined;
+type SubSource = Partial<SubQuestion> | null | undefined;
 
 /**
  * スクリプトを入れる枠。
@@ -178,16 +187,16 @@ export function scriptBox(script: string, translation?: string, phrases: readonl
  * 第4問以降は1本の音源に複数の小問がぶら下がる（subIds）ので、
  * subId が一致しなければ subIds の中も見る。
  */
-export function trackForSubQuestion(problem: any, sq: any): any | undefined {
+export function trackForSubQuestion(problem: ProblemSource, sq: SubSource): AudioTrack | undefined {
   const subId = String(sq?.id || '');
-  const tracks: any[] = Array.isArray(problem?.audioTracks) ? problem.audioTracks : [];
+  const tracks: AudioTrack[] = Array.isArray(problem?.audioTracks) ? problem.audioTracks : [];
   return (
     tracks.find((t) => String(t?.subId || '') === subId) ||
     tracks.find((t) => Array.isArray(t?.subIds) && t.subIds.map(String).includes(subId))
   );
 }
 
-export function pickScript(problem: any, sq: any): { script: string; translation: string } {
+export function pickScript(problem: ProblemSource, sq: SubSource): { script: string; translation: string } {
   const track = trackForSubQuestion(problem, sq);
   if (track && String(track.script || '').trim()) {
     return {
@@ -211,7 +220,7 @@ function unquote(text: string): string {
 }
 
 /** 解説本文の「問N …／スクリプト：…」から、その小問のスクリプト行を拾う */
-function scriptLineFor(problem: any, sq: any): string {
+function scriptLineFor(problem: ProblemSource, sq: SubSource): string {
   const no = questionNumberOf(sq);
   if (no === null) return '';
   const lines = String(problem?.explanation || '').split('\n');
@@ -230,13 +239,13 @@ function scriptLineFor(problem: any, sq: any): string {
 }
 
 /** 小問ラベル（'問2 話者（…）'）から設問番号を取り出す */
-function questionNumberOf(sq: any): number | null {
+function questionNumberOf(sq: SubSource): number | null {
   const m = String(sq?.label || '').match(/問\s*(\d+)/u);
   return m ? Number(m[1]) : null;
 }
 
 /** 外から設問番号を知りたいとき用の公開版（Explanation の問スコープで使う） */
-export function listeningQuestionNumberOf(sq: any): number | null {
+export function listeningQuestionNumberOf(sq: SubSource): number | null {
   return questionNumberOf(sq);
 }
 
@@ -434,7 +443,7 @@ function englishFragments(text: string): string[] {
 }
 
 /** 解説本文から、その小問に対応するブロックだけを取り出す */
-function commentaryFor(problem: any, sq: any): string {
+function commentaryFor(problem: ProblemSource, sq: SubSource): string {
   const no = questionNumberOf(sq);
   if (no === null) return '';
   const lines = String(problem?.explanation || '').split('\n');
@@ -472,8 +481,8 @@ function commentaryFor(problem: any, sq: any): string {
  *   4択問題1問を決めるのに必要な手がかりは、多くても数個である。
  */
 export function extractDecisivePhrases(
-  problem: any,
-  sq: any,
+  problem: ProblemSource,
+  sq: SubSource,
   script: string,
 ): { phrase: string; meaning: string }[] {
   const result: { phrase: string; meaning: string }[] = [];
@@ -518,11 +527,11 @@ export function extractDecisivePhrases(
   // 「can」1語の正解が消えたりするので、完成文に実在するかだけを見る。
   // 解説文の英語も拾わない（誤りの選択肢の語まで黄色くなるため）。
   if (problem?.keyPhrasesOnly === true) {
-    return ((track?.keyPhrases || []) as any[])
+    return (track?.keyPhrases || [])
       .map((kp) => ({ phrase: String(kp?.phrase || '').trim(), meaning: String(kp?.meaning || '').trim() }))
       .filter((kp) => kp.phrase && occursInScript(script, kp.phrase));
   }
-  for (const kp of (track?.keyPhrases || []) as any[]) {
+  for (const kp of track?.keyPhrases || []) {
     push(String(kp?.phrase || ''), String(kp?.meaning || ''), { allowCitationForm: true });
   }
 
@@ -692,8 +701,8 @@ function trapWords(script: string): string[] {
  *   「全小問で同一なら、それはこの問固有の話ではない」という
  *   構造だけで判定すれば、今後どんな文言に変わっても正しく効く。
  */
-export function areStepsSharedAcrossSubQuestions(problem: any): boolean {
-  const subs: any[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
+export function areStepsSharedAcrossSubQuestions(problem: ProblemSource): boolean {
+  const subs: SubQuestion[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
   const stepSets = subs.map((sq) =>
     JSON.stringify((sq?.detailedExplanation?.steps || []) as string[]),
   );
@@ -705,9 +714,9 @@ export function areStepsSharedAcrossSubQuestions(problem: any): boolean {
 }
 
 /** 全小問で共通している思考手順（無ければ空配列） */
-export function sharedSteps(problem: any): string[] {
+export function sharedSteps(problem: ProblemSource): string[] {
   if (!areStepsSharedAcrossSubQuestions(problem)) return [];
-  const subs: any[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
+  const subs: SubQuestion[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
   return (subs[0]?.detailedExplanation?.steps || []) as string[];
 }
 
@@ -749,7 +758,7 @@ function styleReasonLine(line: string): string {
   return line;
 }
 
-function reasonLines(problem: any, sq: any): string[] {
+function reasonLines(problem: ProblemSource, sq: SubSource): string[] {
   const lines = commentaryFor(problem, sq).split('\n');
   const kept: string[] = [];
   // 第4問以降：小問が自分の一言解説（explainJa）を持つならそれを先頭に置く
@@ -830,8 +839,8 @@ function decisiveBlock(phrases: { phrase: string; meaning: string }[], theme: st
  *   従来の汎用エンジンに任せる。無理に専用整形をかけて
  *   情報が欠けるほうが害が大きい。
  */
-export function buildListeningExplanation(problem: any): string {
-  const subs: any[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
+export function buildListeningExplanation(problem: ProblemSource): string {
+  const subs: SubQuestion[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
   if (subs.length === 0) return '';
 
   // スクリプトが1問でも取れなければ、この専用整形は使わない

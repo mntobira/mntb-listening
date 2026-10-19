@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useMountEffect } from '../hooks/useMountEffect';
+import { useRef, useState } from 'react';
 import { CinematicClip, CINEMATIC_CLIPS } from './CinematicClip';
 import type { GachaRarity } from '../battle/core/growth';
 import { play } from '../battle/ui/feedback';
@@ -16,7 +17,7 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
   const finished = useRef(false);
   const finish = () => { if (finished.current) return; finished.current = true; doneRef.current(); };
 
-  useEffect(() => {
+  useMountEffect(() => {
     const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     const timers: ReturnType<typeof setTimeout>[] = [];
     if (reduce) {
@@ -34,8 +35,7 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
     timers.push(setTimeout(finish, at + REVEAL_BURST_MS));
     return () => timers.forEach(clearTimeout);
     // 1回の抽選につき1度だけ流す
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const step = steps[index];
   const skip = () => { setBurst(true); play(burstSfx(rarity), false); setTimeout(finish, 180); };

@@ -33,7 +33,7 @@ export interface QuizHeaderProps {
   /** 「単元選択に戻る」を押したとき。 */
   handleExit: () => void;
   /** 章の途中経過（点数・コンボ）。 */
-  run: { score: number; combo: number; [k: string]: any };
+  run: { score: number; combo: number };
   /** いま何問目か（1 から数えた値）。 */
   progressPosition: number;
   /** 1画面に2問以上（問34・35）あるときの最後の番号。「1〜2 / 2」と出す */

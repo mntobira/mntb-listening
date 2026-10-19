@@ -104,6 +104,12 @@ function conversationScript(conv: { who: string; text: string }[]): string {
   return conv.map((c) => `${c.who}: ${c.text}`).join('\n');
 }
 
+/** 表のセル（文字か、空所番号） */
+type TableCell = string | { blank: number };
+
+/** 第5問のワークシートの1行（JSON 上は label / blank が無い行もある） */
+type WorksheetRow = { text: string; label?: string; blank?: number };
+
 /** 表（headers/rows）を Markdown テーブルにする。空所は「( 22 )」の形で出す */
 function tableMarkdown(table: { headers: string[]; rows: (string | { blank: number })[][] }): string {
   const cell = (c: string | { blank: number }) =>
@@ -218,7 +224,7 @@ function buildQ4A(set: Q4Set): ListeningProblem {
     `■ 問22〜25　${back.worksheetTitle}`,
     `状況：${back.situation}`,
     '形式：表の空欄を埋める（①〜⑥の6つから各空欄に1つ。2つは使わない）',
-    tableMarkdown(back.table as any),
+    tableMarkdown(back.table as Parameters<typeof tableMarkdown>[0]),
     backChoiceLines,
   ].join('\n');
 
@@ -250,8 +256,8 @@ function buildQ4A(set: Q4Set): ListeningProblem {
   }));
 
   const backSubs = back.blanks.map((b, i) => {
-    const row = (back.table.rows as any[]).find((r) =>
-      r.some((c: any) => typeof c === 'object' && c && c.blank === b.no),
+    const row = (back.table.rows as TableCell[][]).find((r) =>
+      r.some((c) => typeof c === 'object' && c && c.blank === b.no),
     );
     const rowHead = row ? String(row[0]) : '';
     return {
@@ -285,7 +291,7 @@ function buildQ4A(set: Q4Set): ListeningProblem {
     `第${no}回（難易度：${set.levelJa}）第4問 A の解説です。`,
     '',
     `問18　正解は ${mark(front.blanks[0].answer)}`,
-    `問18〜21 の正解：${front.blanks.map((b) => `(${b.no}) ${mark(b.answer)}`).join('　')}${front.type === 'sequence' ? `　※使わない選択肢：${mark((front as any).dummy)}` : ''}`,
+    `問18〜21 の正解：${front.blanks.map((b) => `(${b.no}) ${mark(b.answer)}`).join('　')}${front.type === 'sequence' ? `　※使わない選択肢：${mark((front as { dummy?: number }).dummy as number)}` : ''}`,
     `スクリプト：${front.script}`,
     front.explain,
     ...front.blanks.slice(1).map((b) => `\n問${b.no}　正解は ${mark(b.answer)}\n上の問18の解説を参照（4問完答で4点）。`),
@@ -441,7 +447,7 @@ function worksheetText(ws: Q5Set['worksheet']): string {
   for (const block of ws.blocks) {
     lines.push(`■ ${block.heading}`);
     for (const row of block.rows) {
-      const label = (row as any).label ? `${(row as any).label} ` : '';
+      const label = (row as WorksheetRow).label ? `${(row as WorksheetRow).label} ` : '';
       lines.push(`　・${label}${row.text}`);
     }
     lines.push('');
@@ -575,7 +581,7 @@ function buildQ5(set: Q5Set): ListeningProblem {
   const blankRow = (no2: number) => {
     for (const block of set.worksheet.blocks) {
       for (const row of block.rows) {
-        if ((row as any).blank === no2) return { heading: block.heading, row };
+        if ((row as WorksheetRow).blank === no2) return { heading: block.heading, row };
       }
     }
     return null;
@@ -583,7 +589,7 @@ function buildQ5(set: Q5Set): ListeningProblem {
 
   const q2831Subs = set.q2831.blanks.map((b, i) => {
     const found = blankRow(b.no);
-    const rowText = found ? `${(found.row as any).label ? `${(found.row as any).label} ` : ''}${found.row.text}` : '';
+    const rowText = found ? `${(found.row as WorksheetRow).label ? `${(found.row as WorksheetRow).label} ` : ''}${found.row.text}` : '';
     const pairIdx = set.q2831.pairs.findIndex((p) => p.includes(b.no));
     return {
       id: idOf(b.no),
@@ -912,7 +918,7 @@ function buildQ6B(set: Q6Set): ListeningProblem {
     `数字＝${pb.q37.basis.number}／対象＝${pb.q37.basis.target}／出来事＝${pb.q37.basis.event}`,
     ...pb.q37.graphs.map(
       (g) =>
-        `${mark(g.no)} ${g.title}（${g.measures}）：${g.no === pb.q37.answer ? '3点すべて一致' : (g as any).whyWrong || ''}`,
+        `${mark(g.no)} ${g.title}（${g.measures}）：${g.no === pb.q37.answer ? '3点すべて一致' : (g as { whyWrong?: string }).whyWrong || ''}`,
     ),
     pb.q37.explain,
   ].join('\n');

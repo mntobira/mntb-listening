@@ -130,7 +130,7 @@ describe('実データ検証：第1問A 全14セット（56問）', () => {
 
   it('選択肢本文は「設問IDごとに4件・空文字なし」', () => {
     for (const p of Q1A) {
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         const bodies = buildListeningOptionTexts(p).get(sq.id)!;
         expect(bodies.length).toBe(4);
         for (const body of bodies) expect(body.length).toBeGreaterThan(0);
@@ -159,7 +159,7 @@ describe('実データ検証：第1問A 全14セット（56問）', () => {
       }
 
       const map = buildListeningOptionTexts(p);
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         const bodies = map.get(sq.id)!;
         const picked = bodies[MARKS.indexOf(sq.correctAnswer)];
         expect(picked, `${sq.id}: 正解マークに対応する本文が無い`).toBeTruthy();
@@ -196,7 +196,7 @@ describe('実データ検証：第1問B（イラスト選択）は本文を持�
 
   it('代わりに設問ごとのイラストを持っている（判断材料が解答欄の中にある）', () => {
     for (const p of EL1_B_PROBLEMS) {
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         expect(sq.imageUrl).toMatch(/^\/listening_q1b\/.+\.jpg$/);
       }
     }
@@ -277,7 +277,7 @@ describe('問ごと表示：共通解説のスコープ（scopeListeningCommonTo
 
   it('小問ラベルから問番号を取り出せる（listeningQuestionNumberOf）', () => {
     for (const p of EL1_A_PROBLEMS) {
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         expect(listeningQuestionNumberOf(sq), `${sq.id} の問番号が取れない`).not.toBeNull();
       }
     }

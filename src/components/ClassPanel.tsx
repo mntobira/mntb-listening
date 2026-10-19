@@ -19,6 +19,7 @@ import {
 } from '../utils/classroom';
 import { normalizeJoinCode, JOIN_CODE_LENGTH } from '../utils/classroomCore';
 import { subjectTheme } from '../data/subjectTheme';
+import { confirmAction } from '../utils/dialog';
 
 /**
  * ===================================================================
@@ -107,7 +108,7 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
 
   const handleLeave = async (membership: MembershipDetail) => {
     // 退出は取り消せない操作なので必ず確認する（誤タップ防止）
-    const confirmed = window.confirm(
+    const confirmed = confirmAction(
       `「${membership.className}」から抜けます。\n先生からあなたの学習状況は見えなくなります。よろしいですか？`,
     );
     if (!confirmed) return;

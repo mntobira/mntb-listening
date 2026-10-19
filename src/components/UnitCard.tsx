@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, Headphones, GitBranch, RotateCcw, Play } from 'lucide-react';
+import { ChevronDown, Headphones, RotateCcw, Play } from 'lucide-react';
 import { UNIT_STATUS_LABEL, stripCircledNumber, type UnitStatus } from '../utils/unitStats';
 import { STAGE_CLEAR_PERFECTS } from '../utils/stageRecords';
 import './unit-card.css';
@@ -29,7 +29,6 @@ export interface UnitCardProps {
   onResume?: () => void;
   onAudio?: () => void;
   audioOpen?: boolean;
-  onExplain?: () => void;
   /** 開いたときに下に出す追加の中身（問題を選ぶ・音源プレーヤーなど） */
   children?: React.ReactNode;
   accent?: string;
@@ -39,7 +38,7 @@ export interface UnitCardProps {
   progressLabel?: string;
 }
 
-export function UnitCard({ index, title, topics, questionCount, status, accuracy, hasSavedProgress, expanded, onToggle, onStart, onResume, onAudio, audioOpen, onExplain, children, accent, perfects, progressLabel }: UnitCardProps) {
+export function UnitCard({ index, title, topics, questionCount, status, accuracy, hasSavedProgress, expanded, onToggle, onStart, onResume, onAudio, audioOpen, children, accent, perfects, progressLabel }: UnitCardProps) {
   const ready = questionCount > 0;
   const number = String(index + 1).padStart(2, '0');
   const name = stripCircledNumber(title);
@@ -67,11 +66,10 @@ export function UnitCard({ index, title, topics, questionCount, status, accuracy
         <div className="unit-card-panel" id={panelId}>
           {topics && topics.length > 0 && <ul className="unit-card-topics">{topics.map(t => <li key={t}>{t}</li>)}</ul>}
           <p className="unit-card-count">{ready ? `演習 ${questionCount} 大問` : '問題を準備中です'}</p>
-          {ready && (onAudio || onExplain || (hasSavedProgress && onResume)) && (
+          {ready && (onAudio || (hasSavedProgress && onResume)) && (
             <div className="unit-card-secondary">
               {hasSavedProgress && onResume && <button type="button" onClick={onStart}><RotateCcw size={15} aria-hidden="true" />最初から</button>}
               {onAudio && <button type="button" onClick={onAudio} aria-pressed={!!audioOpen} title="復習用の音源を聞く（問題を解かずに音声だけ再生）"><Headphones size={15} aria-hidden="true" />音源</button>}
-              {onExplain && <button type="button" onClick={onExplain}><GitBranch size={15} aria-hidden="true" />解説</button>}
             </div>
           )}
           {children}

@@ -81,7 +81,7 @@ describe('第1問A：PDF の類題集13セットが収録されている', () =>
 
   it('全設問がマーク式（①〜④）で、正解がその中にある', () => {
     for (const p of EL1_A_EXTRA_PROBLEMS) {
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         expect(sq.type).toBe('multiple_choice');
         expect(sq.options).toEqual(MARKS);
         expect(MARKS).toContain(sq.correctAnswer);
@@ -102,7 +102,7 @@ describe('第1問A：PDF の類題集13セットが収録されている', () =>
   it('各問に音源トラック（スクリプト）が対応づいている', () => {
     for (const p of EL1_A_EXTRA_PROBLEMS) {
       expect(p.audioTracks).toHaveLength(p.subQuestions.length);
-      const subIds = (p.subQuestions as any[]).map((s) => s.id);
+      const subIds = (p.subQuestions).map((s) => s.id);
       for (const track of p.audioTracks) {
         expect(subIds).toContain(track.subId);
         // スクリプトが空だと読み上げも復習もできない
@@ -132,7 +132,7 @@ describe('第1問B：イラスト選択の類題集15セットが収録されて
 
   it('各設問にイラストが割り当てられ、public に実ファイルがある', () => {
     for (const p of EL1_B_PROBLEMS) {
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         expect(typeof sq.imageUrl).toBe('string');
         // Genspark の共有URLはセッション認証つきで資産にできない。必ず public 配下。
         expect(sq.imageUrl.startsWith('/listening_q1b/')).toBe(true);
@@ -146,7 +146,7 @@ describe('第1問B：イラスト選択の類題集15セットが収録されて
 
   it('イラストは1問1枚で重複しない（画像の貼り違えを防ぐ）', () => {
     const urls = EL1_B_PROBLEMS.flatMap((p) =>
-      (p.subQuestions as any[]).map((sq) => sq.imageUrl),
+      (p.subQuestions).map((sq) => sq.imageUrl),
     );
     expect(new Set(urls).size).toBe(urls.length);
     expect(urls).toHaveLength(60);
@@ -155,7 +155,7 @@ describe('第1問B：イラスト選択の類題集15セットが収録されて
   it('画像のセット・問番号が設問IDと一致している（スクリプトと絵の対応）', () => {
     EL1_B_PROBLEMS.forEach((p, si) => {
       const setNo = si + 1;
-      (p.subQuestions as any[]).forEach((sq, qi) => {
+      (p.subQuestions).forEach((sq, qi) => {
         expect(sq.id).toBe(`q_el1_B_set${setNo}_${qi + 1}`);
         expect(sq.imageUrl).toBe(`/listening_q1b/el1B_set${setNo}_q${qi + 1}.jpg`);
       });
@@ -164,7 +164,7 @@ describe('第1問B：イラスト選択の類題集15セットが収録されて
 
   it('全設問がマーク式（①〜④）で、正解がその中にある', () => {
     for (const p of EL1_B_PROBLEMS) {
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         expect(sq.type).toBe('multiple_choice');
         expect(sq.options).toEqual(MARKS);
         expect(MARKS).toContain(sq.correctAnswer);
@@ -175,7 +175,7 @@ describe('第1問B：イラスト選択の類題集15セットが収録されて
   it('各問に音源トラック（スクリプト）が対応づいている', () => {
     for (const p of EL1_B_PROBLEMS) {
       expect(p.audioTracks).toHaveLength(p.subQuestions.length);
-      const subIds = (p.subQuestions as any[]).map((s) => s.id);
+      const subIds = (p.subQuestions).map((s) => s.id);
       for (const track of p.audioTracks) {
         expect(subIds).toContain(track.subId);
         expect(track.script.trim().length).toBeGreaterThan(5);
@@ -218,7 +218,7 @@ describe('単元への配線', () => {
 
   it('大問IDが全単元で一意（進捗の取り違えを防ぐ）', () => {
     const ids = getAllListeningChapters().flatMap((c) =>
-      (c.practiceProblems || []).map((p: any) => p.id),
+      (c.practiceProblems || []).map((p) => p.id),
     );
     expect(new Set(ids).size).toBe(ids.length);
   });
@@ -243,7 +243,7 @@ describe('解答画面：音源は左（問題文）ペインに横帯で置く'
     expect(PLAYER).toContain("const isRow = isInline && orientation === 'horizontal'");
   });
 
-  it('横帯モードではボタンが 44px 級のタップ領域を持つ（押しやすさ）', () => {
+  it('横帯モードではボタンが 44px 級のタップ領域を持つ（押しやすさ・::after の拡張込み）', () => {
     /*
      * 再生ボタン・2回ボタン・速度ボタンのいずれも高さ 44px 以上。
      *
@@ -259,12 +259,26 @@ describe('解答画面：音源は左（問題文）ペインに横帯で置く'
      *   なお isCompact（panel を畳んだ表示）の 36px ボタンは
      *   音源ボタンではないので、条件名 isRow で絞って除外する。
      */
+    /*
+     * ★見た目の高さ ≠ 押せる範囲★
+     *   ご指摘11 の1段折り返し対策で、見た目の高さは 36px（min-h-[2.25rem]）に下げた
+     *   （理由は ListeningAudioPlayer.tsx の「36px で止める理由」）。
+     *   押せる範囲は quiz-compact.css の `.lap-row button::after { inset: -4px 0 }` で
+     *   上下 4px ずつ広げてあるので、実際のタップ領域は 36 + 8 = 44px。
+     *   ここでは「見た目の高さ＋上下の拡張」が 44px 以上であることを確かめる。
+     */
+    const CSS = read('src/components/quiz-compact.css');
+    expect(PLAYER).toContain("'lap-row w-full flex-row");
+    const ext = CSS.match(/\.lap-row button::after\s*\{[^}]*inset:\s*-([0-9.]+)px\s+0/);
+    expect(ext).not.toBeNull();
+    const extendPx = parseFloat(ext![1]) * 2;
     const rowMinHeights = [...PLAYER.matchAll(/isRow\s*\n?\s*\?\s*'min-h-\[([0-9.]+)rem\]/g)].map(
       (m) => parseFloat(m[1]),
     );
     expect(rowMinHeights.length).toBeGreaterThanOrEqual(3);
     for (const rem of rowMinHeights) {
-      expect(rem * 16).toBeGreaterThanOrEqual(44);
+      expect(rem * 16).toBeGreaterThanOrEqual(36); // 見た目の下限（指の腹）
+      expect(rem * 16 + extendPx).toBeGreaterThanOrEqual(44); // 押せる範囲
     }
   });
 
@@ -311,8 +325,8 @@ describe('解答画面：音源は左（問題文）ペインに横帯で置く'
     見出し行の下に独立した段落として置かれ、1行ぶん図を押し下げていた。
   */
   it('短い設問文は「問N（全N問中N問目）」と同じ行に置く（図を上げる）', () => {
-    // 全角20文字相当までを見出し行へ寄せる。
-    expect(PROBLEM).toContain('const inlineBody = body && body.length <= 20 ? body : \'\'');
+    // 全角20文字相当（表示幅。ASCII は 0.5 文字）までを見出し行へ寄せる。
+    expect(PROBLEM).toContain('const inlineBody = body && displayWidthOf(body) <= 20 ? body : \'\'');
     expect(PROBLEM).toContain('const blockBody = inlineBody ? \'\' : body');
     // 見出し行は折り返せるようにし、問Nバッジと問数表示は縮ませない。
     expect(PROBLEM).toContain('flex items-center gap-2 flex-wrap');
@@ -374,7 +388,8 @@ describe('解答画面：消去法（選択肢を直接タップして斜線を�
     // 実際に使っているキー生成と、読み書き両方の存在で確認する。
     // 引数名はフック側では chapterId（Quiz.tsx から chapter.id を渡す）。
     expect(ELIM).toContain('quizElimKey(chapterId, mode)');
-    expect(ELIM).toContain('localStorage.setItem(quizElimKey(chapterId, mode)');
+    // 書き込みは保存失敗を記録する safeSetItem（utils/storageGuard.ts）経由
+    expect(ELIM).toContain('safeSetItem(quizElimKey(chapterId, mode)');
     expect(ELIM).toContain('localStorage.getItem(quizElimKey(chapterId, mode))');
 
     const { quizElimKey } = await import('../src/utils/quizStorageKeys');
@@ -505,7 +520,7 @@ describe('第1問B：セット7〜15 の選択肢はシャッフルされてい�
 
   it('各セットの正解に ①②③④ がちょうど1回ずつ出る', () => {
     for (const p of SHUFFLED) {
-      const answers = p.subQuestions.map((sq: any) => sq.correctAnswer);
+      const answers = p.subQuestions.map((sq) => sq.correctAnswer);
       expect([...answers].sort()).toEqual([...MARKS].sort());
     }
   });
@@ -513,7 +528,7 @@ describe('第1問B：セット7〜15 の選択肢はシャッフルされてい�
   it('「①ばかり」ではない（正解の偏りが解消されている）', () => {
     const count: Record<string, number> = { '①': 0, '②': 0, '③': 0, '④': 0 };
     for (const p of EL1_B_PROBLEMS) {
-      for (const sq of p.subQuestions as any[]) count[sq.correctAnswer] += 1;
+      for (const sq of p.subQuestions) count[sq.correctAnswer] += 1;
     }
     // 60問中どのマークも「半分以上」にはならない＝当てずっぽうが通らない
     for (const mark of MARKS) expect(count[mark]).toBeLessThan(30);
@@ -523,7 +538,7 @@ describe('第1問B：セット7〜15 の選択肢はシャッフルされてい�
 
   it('並びが単純な規則（昇順・降順・一定間隔）になっていない', () => {
     for (const p of SHUFFLED) {
-      const idx = p.subQuestions.map((sq: any) => MARKS.indexOf(sq.correctAnswer));
+      const idx = p.subQuestions.map((sq) => MARKS.indexOf(sq.correctAnswer));
       expect(idx).not.toEqual([...idx].sort((a, b) => a - b));
       expect(idx).not.toEqual([...idx].sort((a, b) => b - a));
       // 「+1 ずつずれる」ような回転パターンも避ける
@@ -549,7 +564,7 @@ describe('第1問B：セット7〜15 の選択肢はシャッフルされてい�
 
   it('解説の中の ①〜④ も入れ替え後の番号に合わせて書き換わっている', () => {
     for (const p of SHUFFLED) {
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         const no = sq.id.slice(sq.id.lastIndexOf('_') + 1);
         // 「問N　正解は ○」の行が subQuestion.correctAnswer と一致していること。
         // ここがズレると「解説を読んだら正解が違う」という最悪の不整合になる。

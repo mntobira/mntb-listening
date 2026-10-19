@@ -1,0 +1,1 @@
+package com.getcapacitor; public class BridgeWebViewClient { public BridgeWebViewClient(Bridge b){} public android.webkit.WebResourceResponse shouldInterceptRequest(android.webkit.WebView v, android.webkit.WebResourceRequest r){return null;} }

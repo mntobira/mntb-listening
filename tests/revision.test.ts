@@ -44,7 +44,7 @@ describe('battle range and league revision',()=>{
     expect(pool.some(q=>questionInScope(q,'vocab:lv1:150:101'))).toBe(false);
   });
   it('grammar answer audio is removed while explanations and listening audio remain',async()=>{
-    const qs=getAllGrammarChapters().flatMap(c=>[...c.practiceProblems,...c.miniTest]);expect(qs.length).toBeGreaterThan(0);for(const q of qs){expect((q as any).audioTracks).toBeUndefined();expect((q as any).audioUrl).toBeUndefined();}
+    const qs=getAllGrammarChapters().flatMap(c=>[...c.practiceProblems,...c.miniTest]);expect(qs.length).toBeGreaterThan(0);for(const q of qs){expect((q as { audioTracks?: unknown }).audioTracks).toBeUndefined();expect((q as { audioUrl?: unknown }).audioUrl).toBeUndefined();}
     expect((await loadPool('english_listening')).every(q=>!!q.audioUrl)).toBe(true);
   });
   it('server aggregation is never imported by the frontend and nav has an independent My Page',()=>{

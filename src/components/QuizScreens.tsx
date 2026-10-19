@@ -67,13 +67,14 @@
  * つまり「読み込み中は何も出ない」は元からの挙動と同じであり、
  * 新しい待ち時間の見え方を持ち込んでいない。
  */
-import React, { useEffect } from 'react';
-import { applyReviewFocus, readReviewFocus } from '../utils/reviewFocus';
+import React from 'react';
+import { applyReviewFocus, readReviewFocus, type ReviewTargetItem } from '../utils/reviewFocus';
 import { Quiz } from './Quiz';
 import { Explanation } from './Explanation';
 import { ErrorBoundary } from './ErrorBoundary';
 import { ScreenUnavailable } from './ScreenStatus';
 import { findChapterById, getChaptersOfSubject } from '../data/allChapters';
+import type { Chapter } from '../types/curriculum';
 import { showInterstitialAd } from '../utils/adService';
 
 /** Quiz が結果として返す採点内容（App.tsx 側の onFinish にそのまま渡す） */
@@ -100,11 +101,11 @@ interface QuizScreensProps {
   /**
    * 結果画面の「次にすること」用。
    *   subject … 「次の単元」を同じ科目の中から探すために使う
-   *   onRetryWrong … 間違えた最初の問題から同じ単元を解き直す
+   *   onRetryWrong … 間違えた小問だけを解き直す（大問ごとに間違えた小問の id を渡す）
    *   onNextChapter … 次の単元（章ID）を新しく始める
    */
   subject?: string;
-  onRetryWrong?: (chapterId: string, firstWrongIndex: number) => void;
+  onRetryWrong?: (chapterId: string, targets: ReviewTargetItem[]) => void;
   onNextChapter?: (chapterId: string) => void;
   /** 1回だけ解いたとき、同じ単元の次の回を始める（英文法・リスニング） */
   onNextRound?: (chapterId: string, index: number) => void;
@@ -112,16 +113,18 @@ interface QuizScreensProps {
   onHome?: () => void;
 }
 
-const focusCache = new WeakMap<object, { sig: string; value: any }>();
+const focusCache = new WeakMap<object, { sig: string; value: Chapter }>();
 /** 同じ章・同じ対象なら同じ写しを返す（毎回新しいオブジェクトにすると演習画面の状態が作り直される） */
-function focusedChapter(chapter: any, mode: string): any {
-  if (!chapter || mode === 'mini_test') return chapter;
+function focusedChapter(chapter: Chapter | undefined, mode: string): Chapter | undefined {
+  if (!chapter) return chapter;
   const focus = readReviewFocus();
   if (!focus || focus.chapterId !== chapter.id) return chapter;
-  const sig = JSON.stringify(focus);
+  const sig = `${mode}:${JSON.stringify(focus)}`;
   const hit = focusCache.get(chapter);
   if (hit && hit.sig === sig) return hit.value;
-  const value = { ...chapter, practiceProblems: applyReviewFocus(chapter.practiceProblems || [], chapter.id, focus) };
+  // 演習でもミニテストでも、いま解く側の並びだけを絞る
+  const pool = mode === 'mini_test' ? 'miniTest' : 'practiceProblems';
+  const value = { ...chapter, [pool]: applyReviewFocus(chapter[pool] || [], chapter.id, focus) };
   focusCache.set(chapter, { sig, value });
   return value;
 }
@@ -175,10 +178,10 @@ export function QuizScreens({
   const nextChapter = (() => {
     if (screen !== 'explanation' || questionRange || !subject) return null;
     const list = getChaptersOfSubject(subject);
-    const at = list.findIndex((c: any) => c.id === chapter.id);
+    const at = list.findIndex((c: Chapter) => c.id === chapter.id);
     if (at < 0) return null;
     const pool = mode === 'mini_test' ? 'miniTest' : 'practiceProblems';
-    return list.slice(at + 1).find((c: any) => (c[pool] || []).length > 0) || null;
+    return list.slice(at + 1).find((c: Chapter) => (c[pool] || []).length > 0) || null;
   })();
 
   // 1回だけ解いた → 同じ単元の次の回（無ければ単元一覧へ戻る）
@@ -207,6 +210,7 @@ export function QuizScreens({
   }
 
   // 結果・解説画面からの画面遷移（区切り）時に頻度制限付きインタースティシャル広告を試行
+  // 広告の失敗（在庫なし・頻度制限・Web）で画面遷移を止めない
   const triggerAdAndAction = (action?: () => void) => {
     showInterstitialAd().catch(() => {});
     action?.();
@@ -234,7 +238,7 @@ export function QuizScreens({
         // 1回分（例：第3回演習）だけを解いたときは、その回だけを振り返る。
         // 解いていない回まで答え合わせに並ぶと、どこまでやったか分からなくなる。
         questionRange={questionRange}
-        onRetryWrong={onRetryWrong ? (index) => { triggerAdAndAction(); onRetryWrong(chapter.id, index); } : undefined}
+        onRetryWrong={onRetryWrong ? (targets) => { triggerAdAndAction(); onRetryWrong(chapter.id, targets); } : undefined}
         onNextChapter={nextRoundIndex >= 0 && onNextRound ? () => { triggerAdAndAction(); onNextRound(chapter.id, nextRoundIndex); }
           : nextChapter && onNextChapter ? () => { triggerAdAndAction(); onNextChapter(nextChapter.id); } : undefined}
         onHome={onHome ? () => triggerAdAndAction(onHome) : undefined}

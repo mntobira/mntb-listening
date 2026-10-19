@@ -38,13 +38,14 @@ export function AdBannerSlot({ screen }: { screen: string }) {
       const extraMargin = isAndroid ? 4 : 0;
       const margin = (navPureHeight >= 40 && navPureHeight <= 140 ? navPureHeight : 72) + extraMargin;
 
+      // 広告SDKの失敗（未設定・在庫なし・Web）では枠だけ残して学習を続ける
       showNativeBottomBanner(margin).catch(() => {});
     } else {
       root.setProperty('--ad-bottom-h', '0px');
       root.setProperty('--ad-gap', '0px');
       document.documentElement.setAttribute('data-ad-banner', 'false');
       window.dispatchEvent(new Event('resize'));
-      hideNativeBottomBanner().catch(() => {});
+      hideNativeBottomBanner().catch(() => {}); // 消せなくても枠の高さは 0 に戻してある
     }
 
     if (top) {
@@ -59,7 +60,7 @@ export function AdBannerSlot({ screen }: { screen: string }) {
       root.setProperty('--ad-gap', '0px');
       document.documentElement.setAttribute('data-ad-banner', 'false');
       window.dispatchEvent(new Event('resize'));
-      hideNativeBottomBanner().catch(() => {});
+      hideNativeBottomBanner().catch(() => {}); // 消せなくても枠の高さは 0 に戻してある
     };
   }, [show, top, bottom, height]);
 

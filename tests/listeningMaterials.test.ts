@@ -71,7 +71,8 @@ describe('later listening printed materials', () => {
   });
 
   it('opts in only when the active audio step has printed materials', () => {
-    function Probe({ problem, desktop = false, expanded = false }: any) {
+    type ProbeProps = { problem: (typeof EL5_PROBLEMS)[number]; desktop?: boolean; expanded?: boolean };
+    function Probe({ problem, desktop = false, expanded = false }: ProbeProps) {
       const result = useQuestionDerived({ currentQuestion: problem, perStep: true,
         activeStepSub: problem.subQuestions[0], activeStepSubs: problem.subQuestions,
         focusedSubId: null, highlights: [], isDesktop: desktop, isProblemExpanded: expanded,
@@ -79,7 +80,7 @@ describe('later listening printed materials', () => {
       return React.createElement('span', null, String(result.listeningMaterialsMobile));
     }
     const problem = EL5_PROBLEMS[0];
-    const render = (props: any) => renderToStaticMarkup(React.createElement(Probe, props));
+    const render = (props: ProbeProps) => renderToStaticMarkup(React.createElement(Probe, props));
     expect(render({ problem })).toContain('true');
     expect(render({ problem, desktop: true })).toContain('false');
     expect(render({ problem, expanded: true })).toContain('false');

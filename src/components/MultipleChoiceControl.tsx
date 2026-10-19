@@ -16,12 +16,13 @@
  */
 import React from 'react';
 import { HelpCircle } from 'lucide-react';
+import type { SubQuestion } from '../types/curriculum';
 import { formatText } from '../utils/textFormatter';
 import { optionCircledMark } from '../utils/questionDisplay';
 import './quiz-compact.css';
 
 export interface MultipleChoiceControlProps {
-  sq: any;
+  sq: SubQuestion;
   answers: Record<string, string>;
   onSelect: (sqId: string, option: string) => void;
   /** その設問で消去（斜線）中の選択肢一覧。sq.id をキーに持つ。 */
@@ -85,7 +86,7 @@ export function MultipleChoiceControl({
   // Quiz.tsx にあったときの呼び名をそのまま残す（下の JSX を書き換えないため）
   const handleOptionSelect = onSelect;
 
-  function renderMultipleChoiceControl(sq: any) {
+  function renderMultipleChoiceControl(sq: SubQuestion) {
     const isLongOptionList = sq.options.some((opt: string) => opt.length > 5);
     // 複数選択かどうかの判定：
     //   correctAnswer を区切り文字で分割した「すべてのトークン」が選択肢に存在する場合のみ複数選択とみなす。

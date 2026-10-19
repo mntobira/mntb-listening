@@ -268,6 +268,7 @@ export function BattleMatching({
       //   成立している場合、待機票は相手が既に消している。
       if (!doneRef.current) void leaveQueue(searchId);
     };
+    // 検索は教科・やり直し回数・オンライン状態が変わったときだけ張り直す（コールバックの作り直しでは張り直さない）
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subject, searchNo, online]);
 
@@ -292,6 +293,7 @@ export function BattleMatching({
       playSfx('matched');
       flashTimerRef.current = window.setTimeout(() => onGhostMatch({ profile: ghostProfileFor(rating, seed), reason }), 700);
     });
+    // 相手が見つからない理由が出たときに1回だけゴースト対戦へ切り替える（二重送信は ghostSentRef で防ぐ）
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reason]);
 

@@ -13,8 +13,13 @@
  *   なるのを防ぐため、この画面では
  *     ① 連携で何が得られるかを先に具体的に見せる
  *     ② Google 連携ボタンを主ボタン（大・カラー）にする
- *     ③ ゲストは「あとで連携できる」ことを添えた副action に落とす
+ *     ③ ゲストで始める入口は置かない（2026-10-19 ご指示でゲスト廃止・ログイン必須）
  *   の3点を徹底する。
+ *
+ * ■ ログインできないときの逃げ道（アプリに入れなくなるのが最悪なので必ず残す）
+ *   ログインに失敗したとき、またはオンライン機能が設定前のときだけ
+ *   「ログインせずに、この端末だけで続ける」を出す（onOffline）。
+ *   その間の記録は端末に残り、あとでログインすればアカウントへ移る（utils/userDataSync）。
  *
  * ■ popup が塞がれた環境への対応
  *   utils/googleAuth.ts が popup → redirect の切り替えを吸収する。
@@ -26,18 +31,26 @@ import { motion } from 'motion/react';
 import { Loader2, AlertTriangle, Check, ArrowRight } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase';
 import { signInWithGoogle, consumeGoogleRedirectResult, GOOGLE_LINK_BENEFITS, isInAppBrowser } from '../utils/googleAuth';
+import { syncUserData } from '../utils/userDataSync';
 import { syncRankingNickname } from '../utils/leaderboard';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey } from '../utils/userStorageKeys';
 import { GoogleMark } from './GoogleLinkBanner';
 import { AppleSignInButton } from '../features/auth/AppleSignInButton';
+import { logRejection } from '../utils/reportError';
+import { asErrorLike } from '../utils/errorLike';
+import type { User } from 'firebase/auth';
 
 interface OnboardingProps {
   onComplete: () => void;
-  onGuest: () => void;
+  /** ログインできないときだけ使う「この端末だけで続ける」 */
+  onOffline: () => void;
 }
 
-export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
+/** 新しい端末では、プロフィールがクラウドから届くのを少しだけ待つ（入力し直しを防ぐ） */
+const PROFILE_WAIT_MS = 4000;
+
+export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
   const [step, setStep] = useState<'login' | 'profile'>('login');
   const [name, setName] = useState('');
   const [grade, setGrade] = useState('');
@@ -45,7 +58,9 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
   const [loading, setLoading] = useState(false);
   const [signing, setSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [guestConfirm, setGuestConfirm] = useState(false);
+  /** ログインに一度でも失敗したか（失敗したときだけ逃げ道を出す） */
+  const [loginFailed, setLoginFailed] = useState(false);
+  const onlineReady = FIREBASE_CONFIGURED || USE_EMULATORS;
 
   const inAppBrowser = isInAppBrowser();
 
@@ -53,14 +68,21 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
   useEffect(() => {
     let cancelled = false;
     consumeGoogleRedirectResult().then((user) => {
-      if (!cancelled && user) checkProfile(user);
+      if (!cancelled && user) void checkProfile(user);
     });
     return () => { cancelled = true; };
   }, []);
 
-  const checkProfile = (user: any) => {
+  const checkProfile = async (user: Pick<User, 'uid' | 'displayName'>) => {
     try {
-      const localProfile = localStorage.getItem(profileKey(user.uid));
+      let localProfile = localStorage.getItem(profileKey(user.uid));
+      if (!localProfile) {
+        // 機種変更・別の端末：アカウントに保存したプロフィールを先に取り込む
+        setSigning(true);
+        await Promise.race([syncUserData('onboarding'), new Promise((r) => setTimeout(r, PROFILE_WAIT_MS))]);
+        setSigning(false);
+        localProfile = localStorage.getItem(profileKey(user.uid));
+      }
       if (localProfile) {
         onComplete();
       } else {
@@ -81,10 +103,12 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
     if (outcome.redirecting) return; // ページ遷移するのでそのまま待つ
     setSigning(false);
     if (outcome.ok && outcome.user) {
-      checkProfile(outcome.user);
+      void checkProfile(outcome.user);
       return;
     }
     setError(outcome.message || 'ログインに失敗しました。');
+    // キャンセルは失敗に数えない（逃げ道は、本当に通らなかったときだけ）
+    if (!/キャンセル/.test(outcome.message || '')) setLoginFailed(true);
   };
 
   const handleSaveProfile = async () => {
@@ -98,10 +122,10 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
         iconUrl: auth.currentUser.photoURL || '',
       }));
       // 初回に決めた名前もランキング側へ即反映（失敗しても進行は止めない）
-      void syncRankingNickname().catch(() => {});
+      void syncRankingNickname().catch(logRejection('ranking.syncNickname'));
       onComplete();
-    } catch (saveError: any) {
-      setError('プロフィールの保存に失敗しました。' + String(saveError?.message || ''));
+    } catch (saveError) {
+      setError('プロフィールの保存に失敗しました。' + String(asErrorLike(saveError)?.message || ''));
     } finally {
       setLoading(false);
     }
@@ -135,7 +159,7 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
       >
         {step === 'login' ? (
           <>
-            <h2 className="text-center text-2xl font-bold text-[#1B2631] sm:text-[28px]">ようこそ！</h2>{!FIREBASE_CONFIGURED && !USE_EMULATORS && <p role="status">設定前のプレビューです。ゲストで演習・AI対戦を試せます。オンライン対戦には専用Firebaseの設定が必要です。</p>}
+            <h2 className="text-center text-2xl font-bold text-[#1B2631] sm:text-[28px]">ようこそ！</h2>{!onlineReady && <p role="status" className="mt-2 text-center text-[12px] font-modern text-[#7E5109]">設定前のプレビューです。ログインとオンライン対戦には専用Firebaseの設定が必要です。</p>}
             {/* ★説明文を書き換えた理由★
                 以前は「学習記録を守るため、連携をおすすめしています」だけで、
                 ★アプリの主機能である対戦に一言も触れていなかった★。
@@ -157,7 +181,7 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
             {/* 連携で得られること（抽象論にせず具体的に示す） */}
             <ul className="mt-4 space-y-1.5 rounded-2xl border border-[#F4A9C4]/45 bg-[#FFF7FA] px-4 py-3">
               {GOOGLE_LINK_BENEFITS.map((benefit) => (
-                <li key={benefit} className="flex items-start gap-2 text-[11.5px] font-modern leading-snug text-[#5D6D7E]">
+                <li key={benefit} className="flex items-start gap-2 text-[12px] font-modern leading-snug text-[#5D6D7E]">
                   <Check size={14} className="mt-[1px] shrink-0 text-[#E8688E]" aria-hidden="true" />
                   <span>{benefit}</span>
                 </li>
@@ -168,7 +192,7 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
             {inAppBrowser && (
               <div className="mt-4 flex items-start gap-2 rounded-2xl border border-[#FF9F43]/60 bg-[#FFF4E5] px-3.5 py-3">
                 <AlertTriangle size={16} className="mt-0.5 shrink-0 text-[#E67E22]" aria-hidden="true" />
-                <p className="text-[11px] font-modern leading-relaxed text-[#7E5109]">
+                <p className="text-[12px] font-modern leading-relaxed text-[#7E5109]">
                   LINE や Instagram などの<b>アプリ内ブラウザ</b>では Google ログインが利用できません。
                   右上のメニューから「ブラウザで開く」を選び、Safari や Chrome で開き直してください。
                 </p>
@@ -188,64 +212,45 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
             <AppleSignInButton
               className="mt-2.5 !rounded-2xl !min-h-[50px] !text-[14px]"
               label="Appleで続ける"
-              onResult={(o) => { if (o.ok && o.user) checkProfile(o.user); else setError(o.message || 'ログインに失敗しました。'); }}
+              onResult={(o) => {
+                if (o.ok && o.user) { void checkProfile(o.user); return; }
+                setError(o.message || 'ログインに失敗しました。');
+                if (!/キャンセル/.test(o.message || '')) setLoginFailed(true);
+              }}
             />
-            <p className="mt-2 text-center text-[10.5px] font-modern leading-snug text-[#8895A0]">
+            <p className="mt-2 text-center text-[12px] font-modern leading-snug text-[#8895A0]">
               メールアドレスとお名前のみを利用します。パスワードは受け取りません。
             </p>
 
             {error && (
               <div className="mt-4 flex items-start gap-2 rounded-2xl border border-[#E74C3C]/40 bg-[#FDEDEC] px-3.5 py-3" role="alert">
                 <AlertTriangle size={15} className="mt-0.5 shrink-0 text-[#C0392B]" aria-hidden="true" />
-                <p className="text-[11px] font-modern leading-relaxed text-[#C0392B]">{error}</p>
+                <p className="text-[12px] font-modern leading-relaxed text-[#C0392B]">{error}</p>
               </div>
             )}
 
-            {/* ===== 副action：ゲスト利用（不利益を隠さず1度だけ確認する） ===== */}
-            <div className="mt-5 border-t border-dashed border-[#E4E8EC] pt-4">
-              {!guestConfirm ? (
+            {/* ===== ログインできないときだけの逃げ道（ゲスト入口の代わり） =====
+                ふだんは出さない。ログインに失敗した／オンライン機能が設定前のときだけ出す。
+                ここで入った人の記録は端末に残り、あとでログインするとアカウントへ移る。 */}
+            {(loginFailed || !onlineReady) && (
+              <div className="mt-5 rounded-2xl border border-[#E4E8EC] bg-[#F7F9FA] px-3.5 py-3">
+                <p className="text-[12px] font-modern leading-relaxed text-[#5D6D7E]">
+                  ログインできないときは、<b className="text-[#1B2631]">この端末だけ</b>で学習を続けられます。
+                  オンライン対戦・ランキング・フレンドは使えません。あとでログインすると、この端末の記録はアカウントへ移ります。
+                </p>
                 <button
-                  onClick={() => setGuestConfirm(true)}
-                  className="w-full rounded-xl py-2 text-[11.5px] font-bold text-[#8895A0] underline decoration-dotted underline-offset-4 transition-colors hover:text-[#5D6D7E]"
+                  onClick={onOffline}
+                  className="mt-2.5 flex min-h-[44px] w-full items-center justify-center gap-1 rounded-xl border border-[#E4E8EC] bg-white text-[13px] font-bold text-[#5D6D7E] transition-colors hover:bg-[#F2F4F5]"
                 >
-                  連携せずにゲストとして試す
+                  ログインせずに、この端末だけで続ける<ArrowRight size={14} aria-hidden="true" />
                 </button>
-              ) : (
-                <div className="rounded-2xl border border-[#E4E8EC] bg-[#F7F9FA] px-3.5 py-3">
-                  {/* ★「対戦は使えない」を先頭に出した理由★
-                      以前は「ランキングやフレンドは使えません」だけで、
-                      対戦が使えないことを書いていなかった。
-                      ゲストで始めた人はホームの一番上に対戦のボタンを
-                      見つけて押し、そこで初めて弾かれることになる。
-                      ★押す前に分かるようにするのが正しい★ */}
-                  <p className="text-[11px] font-modern leading-relaxed text-[#5D6D7E]">
-                    ゲスト利用では<b className="text-[#1B2631]">オンライン対戦・ランキング・フレンドが使えません</b>。
-                    学習記録も<b className="text-[#1B2631]">この端末の中だけ</b>に保存され、ブラウザのデータを消すと消えます。
-                    <br />
-                    <span className="text-[#8895A0]">※ 学習（問題を解く・解説を読む）はゲストのままでも全部できます。あとから設定画面でいつでも連携でき、記録はそのまま引き継がれます。</span>
-                  </p>
-                  <div className="mt-2.5 grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => setGuestConfirm(false)}
-                      className="rounded-xl border border-[#F4A9C4]/60 bg-white py-2 text-[11.5px] font-bold text-[#D9466E] transition-colors hover:bg-[#FFF3F7]"
-                    >
-                      連携に戻る
-                    </button>
-                    <button
-                      onClick={onGuest}
-                      className="flex items-center justify-center gap-1 rounded-xl border border-[#E4E8EC] bg-white py-2 text-[11.5px] font-bold text-[#8895A0] transition-colors hover:bg-[#F2F4F5]"
-                    >
-                      ゲストで始める<ArrowRight size={13} aria-hidden="true" />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </>
         ) : (
           <>
             <h2 className="text-center text-2xl font-bold text-[#1B2631] sm:text-[26px]">プロフィール設定</h2>
-            <p className="mt-2 text-center text-[11.5px] font-modern leading-relaxed text-[#5D6D7E]">
+            <p className="mt-2 text-center text-[12px] font-modern leading-relaxed text-[#5D6D7E]">
               連携が完了しました。表示名と学年を設定して始めましょう。
             </p>
 
@@ -278,7 +283,7 @@ export function Onboarding({ onComplete, onGuest }: OnboardingProps) {
             {error && (
               <div className="mt-4 flex items-start gap-2 rounded-2xl border border-[#E74C3C]/40 bg-[#FDEDEC] px-3.5 py-3" role="alert">
                 <AlertTriangle size={15} className="mt-0.5 shrink-0 text-[#C0392B]" aria-hidden="true" />
-                <p className="text-[11px] font-modern leading-relaxed text-[#C0392B]">{error}</p>
+                <p className="text-[12px] font-modern leading-relaxed text-[#C0392B]">{error}</p>
               </div>
             )}
 

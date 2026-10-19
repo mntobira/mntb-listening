@@ -74,6 +74,7 @@ import { egV3Chapters, egV3ChapterId } from './egV3Problems';
 // 解説の後処理は listeningPostProcess.ts に1つだけ置いている
 // （リスニングとまったく同じループだったため共通化した）。
 import { applyListeningPostProcess } from './listeningPostProcess';
+import type { Problem } from '../types/curriculum';
 
 /**
  * 1つの単元。ListeningChapter / BiologyChapter と同形。
@@ -94,8 +95,8 @@ export interface GrammarChapter {
   questionGroup: string;
   /** 扱う内容 */
   topics: string[];
-  practiceProblems: any[];
-  miniTest: any[];
+  practiceProblems: Problem[];
+  miniTest: Problem[];
 }
 
 export interface GrammarPart {
@@ -223,14 +224,15 @@ const EG_PROBLEMS: Record<string, GrammarProblem[]> = {
   for (const c of englishGrammarData.parts.flatMap(p => p.chapters)) {
     for (const problem of [...c.practiceProblems, ...c.miniTest]) {
       // 音は出さない（答えが聞こえるため）。完成文・和訳・語句は解説の1画面表示用に文字だけ残す
-      if (Array.isArray((problem as any).audioTracks)) (problem as any).explanationTracks = (problem as any).audioTracks;
-      delete (problem as any).audioTracks;
-      delete (problem as any).audioUrl;
+      if (Array.isArray(problem.audioTracks)) problem.explanationTracks = problem.audioTracks;
+      delete problem.audioTracks;
+      // audioUrl は Problem の型には無い（古いデータの名残り）が、念のため消す処理は残す
+      delete (problem as Problem & { audioUrl?: unknown }).audioUrl;
       // 音源は外しても、進め方は以前どおり「問1→解説→問2→解説…」の1問ずつ
-      (problem as any).stepwise = true;
+      problem.stepwise = true;
       // 音が無いので、リスニング用の見出しを文法向けの言葉に置き換える
-      if (typeof (problem as any).explanation === 'string') {
-        (problem as any).explanation = (problem as any).explanation
+      if (typeof problem.explanation === 'string') {
+        problem.explanation = problem.explanation
           .replace(/SCRIPT ／ 実際に流れた英文/g, 'ANSWER ／ 完成した英文')
           .replace(/聞き取りの決め手/g, '解くカギ')
           .replace(/スクリプト内の黄色いマーカー/g, '英文の黄色いマーカー')
@@ -260,7 +262,7 @@ export function getGrammarStats() {
     (sum, c) =>
       sum +
       [...(c.practiceProblems || []), ...(c.miniTest || [])].reduce(
-        (n, p: any) => n + (Array.isArray(p?.subQuestions) ? p.subQuestions.length : 0),
+        (n, p: Problem) => n + (Array.isArray(p?.subQuestions) ? p.subQuestions.length : 0),
         0,
       ),
     0,

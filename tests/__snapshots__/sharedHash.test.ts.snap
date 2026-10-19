@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`共通ハッシュ（FNV-1a 32bit） > 日付ごとのミッションの組（共通化前に記録した値）が変わらない 1`] = `
+{
+  "2026-01-01": "m_holes1,m_perfect,m_listen2",
+  "2026-10-17": "m_holes5,m_speedy3,m_listen2",
+  "2027-04-01": "m_holes3,m_streak5,m_play3",
+}
+`;

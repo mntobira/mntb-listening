@@ -1,9 +1,11 @@
-/** Device-local, account-scoped personal progression. No Firestore writes or public profiles.
+/** Device-local, account-scoped personal progression. This module never writes Firestore itself;
+ * utils/userDataSync.ts backs the envelope up to user_data/{uid} (owner-only) and merges it across devices.
  * Progress and reward receipts share one atomic localStorage write. Web Locks serialize tabs.
  * This is deliberately not an anti-cheat boundary: local cosmetics never affect online ratings.
  */
 import { auth } from '../../firebase';
 import { safeLocalStorage } from '../../utils/safeLocalStorage';
+import { USER_DATA_SYNCED_EVENT } from '../../utils/userDataSyncEvent';
 import { applyHolesFilled, applyLoginWithBonus, applyMatchToProgress, applyRushResult, applyStudySolved,
   bumpDailyMission, claimMission, emptyProgress, newlyCompletedMissions, equipItem, equipTitle, localDateKey, normalizeProgress, openCompleteChest,
   purchaseItem, RUSH_COIN_PLAYS_PER_DAY, unequipKind, type EquipKind, type GrowthProgress, type ItemDef, type MatchSummaryForGrowth,
@@ -56,6 +58,14 @@ export function subscribeGrowth(fn: (p: GrowthProgress) => void): () => void {
   listeners.add(scoped);
   globalThis.addEventListener?.('storage', changed);
   return () => { listeners.delete(scoped); globalThis.removeEventListener?.('storage', changed); };
+}
+/** アカウント同期（utils/userDataSync）が成長記録を書き換えたら、表示中の画面へ知らせる */
+if (typeof window !== 'undefined') {
+  window.addEventListener(USER_DATA_SYNCED_EVENT, (event) => {
+    const changed = (event as CustomEvent<{ changed?: string[] }>).detail?.changed;
+    if (!changed?.includes('growth')) return;
+    try { publish(read(scope()).progress); } catch { /* 壊れていたら表示はそのまま */ }
+  });
 }
 export function cachedGrowth(): GrowthProgress | null {
   try { return read(scope()).progress; } catch { return null; }

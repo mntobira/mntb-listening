@@ -1,5 +1,7 @@
 This is the listening derivative. Read README.md and DERIVATIVE_HANDOFF.md. Preserve dedicated Firebase settings and listening-first UI. Every PR must explicitly state listening delivery decision, reason, affected files, and actual handoff status. Do not claim delivery to another room without evidence.
 
+**Before reading code, open `docs/code_guide/codemap.md`** (one line per file: path, role, lines, how many files import it). Use it to pick the 2–5 files you need, then open only those. Take paths from this text file, not from the map images (`docs/code_guide/maps/*.png`): in a measured test an image-reading AI turned 2.3% of file names into names that do not exist (`docs/code_guide/research.md` 7.4). The map summarises roles; always confirm details in the source file. After refactoring, run `bash docs/code_guide/tools/update.sh` to refresh it.
+
 ## UI principles (decided with the user, 2026-09-30) — follow these whenever you design or change a screen
 1. **One screen, no scrolling.** A learner should finish the task on a screen without scrolling as far as possible (home, review note, question, explanation, battle). Put details behind "tap to expand" (accordion / details / modal) instead of stacking them vertically.
 2. **No duplicates.** Do not show the same control twice on one screen (e.g. a second play button under the main player, a repeated title, the same explanation twice).

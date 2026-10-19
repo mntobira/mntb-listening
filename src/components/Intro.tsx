@@ -3,6 +3,7 @@ import { BookOpen, ChevronDown, ChevronLeft, Coins, Headphones, Heart, Music, Pe
 import { TobiraBuddy } from './TobiraBuddy';
 import { BGM_FILES, BGM_LOGIC_VERSION } from '../battle/audio/bgmFiles';
 import './intro.css';
+import { KineticText } from '../motion';
 
 /**
  * 使い方（2026-10-01 D 作り直し）
@@ -31,7 +32,7 @@ export function Intro({ onBack, onBattle }: { onBack: () => void; onBattle?: () 
   return <main className="intro-page pb-app-nav" data-intro>
     <header className="intro-head">
       <button type="button" className="intro-back" onClick={onBack} aria-label="ホームに戻る"><ChevronLeft size={18} aria-hidden="true" /><span>ホーム</span></button>
-      <h1>使い方</h1>
+      <h1><KineticText text="使い方" /></h1>
     </header>
 
     <section className="intro-hero" aria-label="マナトビとは">

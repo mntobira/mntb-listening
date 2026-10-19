@@ -15,7 +15,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 const ROOT = path.resolve(__dirname, '..');
-type Row = { audioUrl: string; status: string; sha256: string; masterFiles?: string[]; legacyCopy?: string; legacyDiscardedAt?: string; provider: string; license: string };
+type Row = { audioUrl: string; status: string; durationSec?: number; sha256: string; masterFiles?: string[]; legacyCopy?: string; legacyDiscardedAt?: string; provider: string; license: string };
 const ledger: Row[] = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/listening_audio_ledger.json'), 'utf8'));
 const sha = (f: string) => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
 const replaced = ledger.filter(r => r.status === 'replaced');
@@ -98,8 +98,8 @@ describe('全音源が商用の新音源（2026-09-29 完了）', () => {
 describe('対戦のリスニング締切と音源の長さ', () => {
   it('対戦に出るリスニング音源は、締切（55秒）までに聞き終えて答える時間（10秒以上）が残る', async () => {
     const { arenaRule } = await import('../src/battle/core/arenaRules');
-    const rule = arenaRule({ subject: 'english_listening' } as any);
-    const limit = Number((rule as any).timeLimitOverride);
+    const rule = arenaRule({ subject: 'english_listening' } as Parameters<typeof arenaRule>[0]);
+    const limit = Number(rule.timeLimitOverride);
     expect(limit).toBeLessThan(60); // AGENTS.md：締切は60秒未満
     const pool = fs.readFileSync(path.join(ROOT, 'src/battle/data/pool.english_listening.generated.ts'), 'utf8');
     const chapters = new Set([...pool.matchAll(/\["q:(el\w+):/g)].map(m => m[1]));
@@ -107,7 +107,7 @@ describe('対戦のリスニング締切と音源の長さ', () => {
     const replacedInPool = replaced.filter(r => [...chapters].some(c => prefix[c]?.test(r.audioUrl)));
     expect(replacedInPool.length).toBeGreaterThan(0);
     for (const r of replacedInPool) {
-      const sec = (r as any).durationSec as number;
+      const sec = r.durationSec as number;
       expect(sec, `${r.audioUrl} が長すぎて対戦で答える時間が残らない（${sec}秒）`).toBeLessThanOrEqual(limit - 10);
     }
   });

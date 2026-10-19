@@ -20,7 +20,7 @@ import type React from 'react';
 // visualViewport API が使える場合は、キーボードで狭まった実際の可視領域を基準に
 // 入力欄がキーボードの上に来るよう調整する（block:'center' だとキーボード裏に隠れることがある）。
 export const scrollInputIntoView = (target: HTMLElement) => {
-  const vv = (window as any).visualViewport as VisualViewport | undefined;
+  const vv = window.visualViewport as VisualViewport | null | undefined;
   if (vv) {
     const rect = target.getBoundingClientRect();
     // 可視領域の下端（キーボード上端に相当）
@@ -60,7 +60,7 @@ export const handleInputFocusScroll = (e: React.FocusEvent<HTMLInputElement | HT
   // キーボードの表示アニメーション完了を待ってからスクロールする。
   setTimeout(() => scrollInputIntoView(target), 300);
   // visualViewport のリサイズ（キーボード出現）を捉えて再調整（iOS で確実にするため）。
-  const vv = (window as any).visualViewport as VisualViewport | undefined;
+  const vv = window.visualViewport as VisualViewport | null | undefined;
   if (vv) {
     const onResize = () => {
       scrollInputIntoView(target);

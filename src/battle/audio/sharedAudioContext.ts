@@ -10,6 +10,8 @@
  *   ため、画面遷移（片方が止まり片方が鳴る）の瞬間に音が崩れていた。
  *   1つにすれば、出力の組み直しも片側だけの停止も起きない。
  */
+import { isAndroidAudio } from './audioPlatform';
+
 let shared: AudioContext | null = null;
 
 export function sharedAudioContext(): AudioContext | null {
@@ -17,7 +19,13 @@ export function sharedAudioContext(): AudioContext | null {
   try {
     const AC = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AC) return null;
-    shared = new AC();
+    // Android は出力バッファを大きく取る（小さいとアンダーランで音割れする。audioPlatform.ts）
+    if (isAndroidAudio()) {
+      try { shared = new AC({ latencyHint: 'playback' }); }
+      catch { shared = new AC(); } // 古い WebView はオプションを受け付けない
+    } else {
+      shared = new AC();
+    }
     installResumeGuards();
     return shared;
   } catch {
@@ -39,6 +47,7 @@ export function resumeSharedAudio(): void {
   if (!ctx) return;
   const state = ctx.state as AudioContextState | 'interrupted';
   if (state === 'running' || state === 'closed') return;
+  // ユーザー操作の前はブラウザが resume を拒む。次の操作で再び resume するので捨ててよい
   void ctx.resume().catch(() => {});
 }
 

@@ -104,20 +104,20 @@
  * の2通りで本文に戻す。★どちらでも戻せない設問は出題しない。★
  */
 
-import { buildSingleBlankDisplay, singleQuestionLabel, stripExerciseHeading, hasUnresolvedBlank, type PromptSub } from '../src/battle/core/questionPrompt';
+import { buildSingleBlankDisplay, singleQuestionLabel, stripExerciseHeading, hasUnresolvedBlank, type PromptSub } from '../src/battle/authoring/questionPrompt';
 import { writeFileSync, readFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { SUBJECTS, getChaptersOfSubject } from '../src/data/allChapters';
-import { battleTimeLimitOf } from '../src/battle/core/battleTiming';
+import { battleTimeLimitOf } from '../src/battle/authoring/battleTiming';
 import { normalizeAnswer } from '../src/utils/answerJudge';
 /**
  * ★手書き問題（authored）の型は画面・検証器と共有する★
  * ここで独自に型を書くと、検証器が通した JSON を生成器が別の形だと思って
  * 静かに落とす、という一番気づきにくい壊れ方をする。必ず同じファイルを見る。
  */
-import type { AuthoredFile, AuthoredQuestion } from '../src/battle/core/authoredTypes';
+import type { AuthoredFile, AuthoredQuestion } from '../src/battle/authoring/authoredTypes';
 /**
  * ★手書き問題の変換の判断は共有モジュールに置く★
  * ここに書くとテストから呼べないため（このファイルは import すると main() が走る）。
@@ -125,7 +125,7 @@ import type { AuthoredFile, AuthoredQuestion } from '../src/battle/core/authored
 import {
   convertAuthoredQuestion,
   authoredRejectMessage,
-} from '../src/battle/core/authoredConvert';
+} from '../src/battle/authoring/authoredConvert';
 /**
  * ★五十音キーボードの番号表は画面と共有する★
  * ここで独自に文字表を持つと、生成した番号と画面の文字がズレて
@@ -193,7 +193,7 @@ const EXTERNAL_DIR = resolve(HERE, '../src/battle/data/external');
  * 読み終わる前に締切が来てしまう。1人用の見積りは問題文の長さ・選択肢の数を
  * 見ているので、比率で縮めれば「長い問題は長め」という関係が保たれる。
  */
-// 下限・上限・比率は src/battle/core/battleTiming.ts に固定（1人用の調整で対戦が変わらないように）
+// 下限・上限・比率は src/battle/authoring/battleTiming.ts に固定（1人用の調整で対戦が変わらないように）
 
 /**
  * ★合成形式（word / panel）を作るか★
@@ -1240,7 +1240,7 @@ function loadAuthored(): AuthoredRow[] {
 /**
  * 手書き1問を、対戦プールの1問に変換する。
  *
- * ★判断そのものは src/battle/core/authoredConvert.ts にある★
+ * ★判断そのものは src/battle/authoring/authoredConvert.ts にある★
  * ここに書くとテストから呼べない（このスクリプトは import した瞬間に
  * main() が走って全教科データを読み、生成ファイルを書き換えてしまう）。
  * 過去の事故（USE_SYNTHESIZED_FORMATS）は「生成器の中だけにあって

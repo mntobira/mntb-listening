@@ -23,25 +23,25 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Edit3 } from 'lucide-react';
+import type { AnswerGroup } from '../hooks/useQuestionDerived';
+import type { Problem, SubQuestion } from '../types/curriculum';
 import { formatText } from '../utils/textFormatter';
 import { answerCardMarker } from '../utils/questionDisplay';
-import { ChemistryPalette, MathPalette } from './SymbolPalette';
-import { requiresChemicalSymbols, requiresMathSymbols } from '../utils/quizPaletteRules';
 import { handleInputFocusScroll } from '../utils/quizInputScroll';
 
 export interface AnswerPaneProps {
   /** いま表示している大問。 */
-  currentQuestion: any;
+  currentQuestion: Problem;
   /** 画面幅が PC 相当かどうか（true なら右ペイン、false ならスマホの下ペイン）。 */
   isDesktop: boolean;
   /** 解答（設問ID → 文字列 or 文字列配列）。 */
-  answers: Record<string, any>;
+  answers: Record<string, string | string[]>;
   /** 入力欄の値が変わったときに呼ぶ。 */
   handleTextChange: (sqId: string, value: string) => void;
   /** 入力欄の ref を設問ごとに配る関数。 */
-  getInputRef: (sqId: string) => any;
+  getInputRef: (sqId: string) => (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
   /** 入力欄の ref をまとめて持つ箱（フォーカス移動に使う）。 */
-  inputRefs: React.MutableRefObject<Record<string, any>>;
+  inputRefs: React.MutableRefObject<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>;
   /** リスニングで「音源がある」状態か。 */
   listeningUnified: boolean;
   /** リスニングのスマホ2分割表示か。 */
@@ -53,23 +53,21 @@ export interface AnswerPaneProps {
   focusedSubId: string | null;
   setFocusedSubId: (v: string | null) => void;
   /** スマホでページャー表示する設問の並び。 */
-  mobileAnswerSubs: any[];
+  mobileAnswerSubs: Array<{ sq: SubQuestion; groupName?: string }>;
   /** ページャーのいまの位置（範囲外にならないよう丸めた値）。 */
   safeMobileAnsIdx: number;
   /** ページャーを1つ進める／戻す。 */
   goMobileAns: (delta: number) => void;
   /** スマホのカードでキー操作したときの扱い。 */
-  handleMobileCardKeyDown: (sq: any) => (e: React.KeyboardEvent) => void;
+  handleMobileCardKeyDown: (sq: SubQuestion) => (e: React.KeyboardEvent) => void;
   /** その設問が「入力の並びの最後」かどうか（Enter を done にするため）。 */
-  isLastNavSub: (sq: any) => boolean;
+  isLastNavSub: (sq: SubQuestion) => boolean;
   /** PC で設問をグループ分けして並べた結果。 */
-  renderedAnswerGroups: any;
+  renderedAnswerGroups: AnswerGroup[];
   /** 選択式の解答UI（実体は MultipleChoiceControl.tsx）。 */
-  renderMultipleChoiceControl: (sq: any) => React.ReactNode;
-  /** スマホの数学で、入力の設問を 4択にしたもの（作れなければ null → 入力のまま） */
-  mobileChoiceSub?: (sq: any) => any | null;
+  renderMultipleChoiceControl: (sq: SubQuestion) => React.ReactNode;
   /** 並べ替えの解答UI（実体は SortingControl.tsx）。 */
-  renderSortingControl: (sq: any) => React.ReactNode;
+  renderSortingControl: (sq: SubQuestion) => React.ReactNode;
   /** この大問が数式パレットを要るかどうか。 */
   questionNeedsMathPalette: boolean;
   /** 問題文を全画面表示している最中か。 */
@@ -100,7 +98,6 @@ export function AnswerPane({
   isLastNavSub,
   renderedAnswerGroups,
   renderMultipleChoiceControl,
-  mobileChoiceSub,
   renderSortingControl,
   questionNeedsMathPalette,
   isProblemExpanded,
@@ -264,7 +261,7 @@ export function AnswerPane({
             <span className="flex min-w-0 items-baseline gap-1.5 text-xs font-bold text-gray-600">
               {(() => {
                 const cur = mobileAnswerSubs[safeMobileAnsIdx]?.sq;
-                const idx = cur ? ((currentQuestion?.subQuestions || []) as any[]).indexOf(cur) : -1;
+                const idx = cur ? (currentQuestion?.subQuestions || []).indexOf(cur) : -1;
                 const marker = cur ? answerCardMarker(cur, idx < 0 ? safeMobileAnsIdx : idx, currentQuestion) : '';
                 return (
                   <>
@@ -304,7 +301,7 @@ export function AnswerPane({
             </button>
           )}
           <div className={isDesktop ? 'contents' : 'flex-1 min-w-0 space-y-4'}>
-        {renderedAnswerGroups.map((g: any, gIdx: number) => {
+        {renderedAnswerGroups.map((g: AnswerGroup, gIdx: number) => {
           if (g.type === 'group') {
             return (
               <div key={`group-${gIdx}`} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 hover:border-[#A9CCE3]/50 transition-all duration-250 flex flex-col gap-4">
@@ -321,7 +318,7 @@ export function AnswerPane({
                   sm 以上は従来どおり列数を増やし、PC の見た目は変えない。
                 */}
                 <div className="grid grid-cols-2 sm:grid-cols-5 md:grid-cols-6 gap-2.5 sm:gap-3 w-full">
-                  {g.items.map((sq: any) => {
+                  {g.items.map((sq: SubQuestion) => {
                     const isFocusedBlank = focusedSubId === sq.id;
                     return (
                     <div
@@ -386,7 +383,7 @@ export function AnswerPane({
           const isFocusedCard = !isDesktop && focusedSubId === sq.id;
           // 表示ルール3：右側の解答欄カードには設問文自体は含めず、
           // 設問マーカー（(ア)/(1)/問2 など）のみを表示する。
-          const sqAllIndex = ((currentQuestion?.subQuestions || []) as any[]).indexOf(sq);
+          const sqAllIndex = (currentQuestion?.subQuestions || []).indexOf(sq);
           // (1) の中が ①② に分かれている設問では "(1)①" のように枝番まで出す。
           // そうしないと解答欄に "(1)" が並び、今どれを入力中か分からなくなる。
           const sqMarker = answerCardMarker(sq, sqAllIndex < 0 ? gIdx : sqAllIndex, currentQuestion);
@@ -490,12 +487,7 @@ export function AnswerPane({
                   </span>
                 )}
 
-                {!isDesktop && sq.type === 'short_answer' && mobileChoiceSub?.(sq) ? (
-                  // ★スマホの数学は4択★（選んだ文字列をそのまま答えとして採点する。PC は入力のまま）
-                  <div className="w-full" data-math-mobile-choice>
-                    {renderMultipleChoiceControl(mobileChoiceSub(sq))}
-                  </div>
-                ) : sq.type === 'multiple_choice' ? (
+                {sq.type === 'multiple_choice' ? (
                   // ★全教科・全端末で選択肢をカード内に直接表示する。
                   //   以前のスマホは「カード＝表示専用チップ → タップで下部
                   //   固定パネルにもう1つ選択UIが出る」2段構えで、同じ設問の
@@ -525,22 +517,6 @@ export function AnswerPane({
                             className="w-full pl-9 pr-4 py-2 md:py-2.5 text-[16px] md:text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern resize-none bg-gray-50 focus:bg-white leading-relaxed"
                           />
                         </div>
-                        {/* 化学記号パレット（反応式・化学式の記述が必要な問題のみ表示） */}
-                        {requiresChemicalSymbols(sq) && (
-                          <ChemistryPalette
-                            value={answers[sq.id] || ''}
-                            onChange={(next) => handleTextChange(sq.id, next)}
-                            inputRef={getInputRef(sq.id)}
-                          />
-                        )}
-                        {/* 数学記号パレット（数III積分など requiresMathPalette の問題のみ） */}
-                        {requiresMathSymbols(sq) && (
-                          <MathPalette
-                            value={answers[sq.id] || ''}
-                            onChange={(next) => handleTextChange(sq.id, next)}
-                            inputRef={getInputRef(sq.id)}
-                          />
-                        )}
                       </>
                     ) : (
                       // スマホ：この欄に直接入力する（ご指摘：「タップしたらなんで
@@ -562,22 +538,6 @@ export function AnswerPane({
                             className="w-full pl-9 pr-4 py-3 text-[16px] rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern resize-none bg-gray-50 focus:bg-white leading-relaxed"
                           />
                         </div>
-                        {/* 化学・数学記号パレット：フォーカス中の設問にだけ出す
-                            （常時表示だとカードが縦に伸びて他の設問が埋もれる）。 */}
-                        {focusedSubId === sq.id && requiresChemicalSymbols(sq) && (
-                          <ChemistryPalette
-                            value={answers[sq.id] || ''}
-                            onChange={(next) => handleTextChange(sq.id, next)}
-                            inputRef={getInputRef(sq.id)}
-                          />
-                        )}
-                        {focusedSubId === sq.id && requiresMathSymbols(sq) && (
-                          <MathPalette
-                            value={answers[sq.id] || ''}
-                            onChange={(next) => handleTextChange(sq.id, next)}
-                            inputRef={getInputRef(sq.id)}
-                          />
-                        )}
                       </>
                     )}
                   </div>
@@ -597,22 +557,6 @@ export function AnswerPane({
                             className="w-full pl-9 pr-4 py-2.5 md:py-2.5 text-[16px] md:text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern bg-gray-50 focus:bg-white shadow-sm leading-relaxed"
                           />
                         </div>
-                        {/* 化学記号パレット（必要な問題のみ表示・カーソル位置に挿入） */}
-                        {requiresChemicalSymbols(sq) && (
-                          <ChemistryPalette
-                            value={answers[sq.id] || ''}
-                            onChange={(next) => handleTextChange(sq.id, next)}
-                            inputRef={getInputRef(sq.id)}
-                          />
-                        )}
-                        {/* 数学記号パレット（requiresMathPalette の問題のみ・カーソル位置に挿入） */}
-                        {requiresMathSymbols(sq) && (
-                          <MathPalette
-                            value={answers[sq.id] || ''}
-                            onChange={(next) => handleTextChange(sq.id, next)}
-                            inputRef={getInputRef(sq.id)}
-                          />
-                        )}
                       </>
                     ) : (
                       // スマホ：この欄に直接入力する（重複解答欄の解消）。
@@ -633,21 +577,6 @@ export function AnswerPane({
                             className="w-full pl-9 pr-4 py-3 min-h-[3.25rem] text-[16px] rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern bg-gray-50 focus:bg-white shadow-sm leading-relaxed"
                           />
                         </div>
-                        {/* 記号パレットはフォーカス中の設問にだけ出す。 */}
-                        {focusedSubId === sq.id && requiresChemicalSymbols(sq) && (
-                          <ChemistryPalette
-                            value={answers[sq.id] || ''}
-                            onChange={(next) => handleTextChange(sq.id, next)}
-                            inputRef={getInputRef(sq.id)}
-                          />
-                        )}
-                        {focusedSubId === sq.id && requiresMathSymbols(sq) && (
-                          <MathPalette
-                            value={answers[sq.id] || ''}
-                            onChange={(next) => handleTextChange(sq.id, next)}
-                            inputRef={getInputRef(sq.id)}
-                          />
-                        )}
                       </>
                     )}
                   </div>

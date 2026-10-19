@@ -48,6 +48,8 @@
  *     必ず public 配下の静的ファイルとして持つ）
  */
 
+import type { SubQuestion } from '../types/curriculum';
+
 /** Printed materials only: never include scripts, answers or explanation fields. */
 export interface ListeningMaterial {
   title: string;
@@ -116,7 +118,7 @@ export type ListeningProblem = {
   id: string;
   category: string;
   text: string;
-  subQuestions: any[];
+  subQuestions: SubQuestion[];
   explanation: string;
   surroundingKnowledge: string[];
   deepDiveTopics: string[];

@@ -1,6 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { BannerAdOptions, BannerAdPosition, BannerAdSize } from '@capacitor-community/admob';
-import { AD_TOGGLES, ADMOB_IDS, getEffectiveBannerId, getEffectiveRewardedId } from '../utils/adConfig';
+import { AD_TOGGLES, getEffectiveBannerId, getEffectiveRewardedId } from '../utils/adConfig';
 
 const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env ?? {};
 const on = (v: string | undefined, defaultVal: boolean) => (v != null ? v === '1' || v === 'true' : defaultVal);
@@ -17,13 +16,19 @@ export const AD_CONFIG = {
     dailyLimit: 5,
   },
   banner: {
-    /** true にすると画面の上／下にバナーの場所を空け、ネイティブバナーを表示（初回は OFF） */
-    enabled: on(env.VITE_ADS_BANNER, Capacitor.isNativePlatform() && AD_TOGGLES.enableBottomBanner),
+    /**
+     * true にすると画面の上／下にバナーの場所を空ける。
+     * ★2026-10-14：Web 版でもアプリ版と同じ場所を空ける（画面の見え方・余白をそろえる）★
+     *   実際の広告（AdMob）を出すのはアプリ版だけ（showNativeBottomBanner が Web では何もしない）。
+     *   Web で枠を消したいときは ?no_ads=1 か VITE_ADS_BANNER=0。
+     */
+    enabled: on(env.VITE_ADS_BANNER, AD_TOGGLES.enableBottomBanner),
     position: ((env.VITE_ADS_BANNER_POSITION as BannerPosition) || 'bottom') as BannerPosition,
     unitId: getEffectiveBannerId(isIos ? 'ios' : 'android'),
     height: 50,
     /** バナーを出さない画面（問題を解いている最中・対戦中・解説など）。学習の邪魔をしない */
-    hiddenOn: ['quiz', 'explanation', 'battle_live', 'onboarding', 'launch'] as string[],
+    // 'pdf' … アプリ内の PDF ビューを開いている間（PDF の上に広告を重ねない・2026-10-17）
+    hiddenOn: ['quiz', 'explanation', 'battle_live', 'onboarding', 'launch', 'pdf'] as string[],
   },
 } as const;
 

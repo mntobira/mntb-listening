@@ -85,13 +85,9 @@ import { SUBJECTS, getChaptersOfSubject } from '../src/data/allChapters';
  *   さらに tests/chapterIndex.test.ts が、実行時にも本物の関数と
  *   1フィールドずつ突き合わせるので、再生成を忘れれば必ずテストが落ちる。
  */
-import { getAllAdvancedChapters } from '../src/data/chemistryAdvancedData';
 import { getListeningStats } from '../src/data/englishListeningData';
-import { getMathStats } from '../src/data/mathData';
-import { getBiologyStats } from '../src/data/biologyBasicData';
 import { getGrammarStats } from '../src/data/englishGrammarData';
-import { getGeographyStats } from '../src/data/geographyData';
-import { countProblemsInChapters } from '../src/data/problemCount';
+import type { SubjectKey } from '../src/data/subjects';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../src/data/chapterIndex.generated.ts');
@@ -153,31 +149,16 @@ interface SubjectStats {
 }
 
 /**
- * 科目選択画面が使う数字を、本物の集計関数から取ってくる。
+ * 科目カードなどに出す「収録ボリューム」の数字を、本物の集計関数から取ってくる。
  *
- * 化学基礎・化学（発展）は専用の stats 関数が無いので、
- * SubjectSelection.tsx が書いていた式をそのまま再現している
- * （章を並べて countProblemsInChapters で数える）。
- * この一致もテストで検査する。
+ * ★教科を足したら、ここに1行足す★（Record<SubjectKey, …> なので忘れると型エラーになる）。
+ * 専用の集計関数が無い教科は、data/problemCount.ts の countProblemsInChapters で
+ * { chapters: 章の数, questions: 大問の数 } を作ればよい。
  */
-function buildSubjectStats(): Record<string, SubjectStats> {
-  const basicChapters = getChaptersOfSubject('chemistry_basic');
-  const advancedChapters = getAllAdvancedChapters();
-
+function buildSubjectStats(): Record<SubjectKey, SubjectStats> {
   return {
-    chemistry_basic: {
-      chapters: basicChapters.length,
-      questions: countProblemsInChapters(basicChapters as any),
-    },
-    chemistry: {
-      chapters: advancedChapters.length,
-      questions: countProblemsInChapters(advancedChapters as any),
-    },
     english_listening: getListeningStats(),
-    math: getMathStats(),
-    biology_basic: getBiologyStats(),
     english_grammar: getGrammarStats(),
-    geography: getGeographyStats(),
   };
 }
 

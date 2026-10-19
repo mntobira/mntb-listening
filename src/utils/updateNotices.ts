@@ -151,7 +151,7 @@ function readRemoteCache(): UpdateNotice[] {
   try {
     const raw = safeStorage()?.getItem(REMOTE_CACHE_KEY);
     const list = raw ? JSON.parse(raw) : [];
-    return Array.isArray(list) ? list.map((n: any) => parseRemoteNotice(String(n?.id ?? ''), n)).filter((n): n is UpdateNotice => !!n) : [];
+    return Array.isArray(list) ? list.map((n: { id?: unknown } | null | undefined) => parseRemoteNotice(String(n?.id ?? ''), n)).filter((n): n is UpdateNotice => !!n) : [];
   } catch { return []; }
 }
 let remoteCache: UpdateNotice[] = readRemoteCache();

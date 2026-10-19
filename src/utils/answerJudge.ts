@@ -223,31 +223,3 @@ export interface JudgeResult {
   totalCount: number;
 }
 
-/**
- * 設問群をまとめて採点する。
- * Quiz / Explanation / 復習リストはこの関数の結果を使うことで、
- * 表示とスコアの判定基準を完全に一致させられる。
- */
-export function judgeSubQuestions(
-  subQuestions: JudgeableSubQuestion[],
-  answers: Record<string, string>
-): JudgeResult {
-  const correctById: Record<string, boolean> = {};
-  let correctCount = 0;
-  let judgeableCount = 0;
-
-  for (const sq of subQuestions || []) {
-    if (!isJudgeable(sq)) continue;
-    judgeableCount += 1;
-    const ok = isAnswerCorrect(sq, answers[sq.id]);
-    correctById[sq.id] = ok;
-    if (ok) correctCount += 1;
-  }
-
-  return {
-    correctById,
-    correctCount,
-    judgeableCount,
-    totalCount: (subQuestions || []).length,
-  };
-}

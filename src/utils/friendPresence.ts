@@ -1,6 +1,7 @@
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, serverTimestamp, updateDoc } from './firestoreMetered';
 import { auth, db } from '../firebase';
+import { logRejection } from './reportError';
 
 /**
  * Visible-tab heartbeat; stale sessions expire after 90 seconds. No public user listing.
@@ -25,7 +26,7 @@ export function installFriendPresence() {
     const now = Date.now();
     if (uid === lastUid && now - lastAt < MIN_GAP_MS) return;
     lastAt = now; lastUid = uid;
-    void updateDoc(doc(db,'friend_profiles',uid),{presenceActive:true,presenceAt:serverTimestamp()}).catch(()=>{});
+    void updateDoc(doc(db,'friend_profiles',uid),{presenceActive:true,presenceAt:serverTimestamp()}).catch(logRejection('friends.presence'));
   };
   const off=onAuthStateChanged(auth,()=>{pulse();});
   const timer=setInterval(()=>{if(document.visibilityState==='visible')pulse();},PULSE_MS);

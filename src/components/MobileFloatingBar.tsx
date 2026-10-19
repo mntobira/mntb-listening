@@ -23,13 +23,14 @@
  */
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import type { Problem, SubQuestion } from '../types/curriculum';
 import { formatText } from '../utils/textFormatter';
 import { answerCardMarker } from '../utils/questionDisplay';
 import { isShortAnswerType } from '../utils/quizBlanks';
 
 export interface MobileFloatingBarProps {
   /** いま表示している大問。 */
-  currentQuestion: any;
+  currentQuestion: Problem;
   /** 画面幅が PC 相当か（true ならこのバーは出さない）。 */
   isDesktop: boolean;
   /** 問題文を全画面表示している最中か（true なら1本目は出さない）。 */
@@ -39,18 +40,18 @@ export interface MobileFloatingBarProps {
   /** キーボードに隠れないよう持ち上げる高さ（px）。 */
   keyboardOffset: number;
   /** いま入力している設問。null なら1本目のナビが出る。 */
-  focusedSub: any;
+  focusedSub: SubQuestion | null | undefined;
   /** その設問ID。 */
   focusedSubId: string | null;
   setFocusedSubId: (v: string | null) => void;
   /** 入力欄を行き来する並び。 */
-  inputNavSubs: any[];
+  inputNavSubs: SubQuestion[];
   /** その並びの中のいまの位置。 */
   focusedIndex: number;
   /** 入力欄のフォーカスを前後に動かす。 */
   moveFocus: (delta: number) => void;
   /** 入力欄の ref をまとめて持つ箱。 */
-  inputRefs: React.MutableRefObject<Record<string, any>>;
+  inputRefs: React.MutableRefObject<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>;
   /** この大問が数式パレットを要るか。 */
   questionNeedsMathPalette: boolean;
   /** 「前へ」が押せるか。 */

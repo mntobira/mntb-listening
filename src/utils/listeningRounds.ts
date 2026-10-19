@@ -31,6 +31,7 @@
  *   保存や順位付けのキーは章ID（chapter.id）のままなので、
  *   これまでの学習記録・ランキングが1件も消えない。
  */
+import type { ProblemLike } from '../types/curriculum';
 
 /** 1回分の演習を表す */
 export interface ListeningRound {
@@ -79,7 +80,7 @@ export function parseRoundLabel(
  * 回番号で並べ替えると、番号が付いていないデータが混ざったときに
  * 順番が突然入れ替わって混乱するため。
  */
-export function buildListeningRounds(questions: any[] | undefined | null): ListeningRound[] {
+export function buildListeningRounds(questions: ProblemLike[] | undefined | null): ListeningRound[] {
   if (!Array.isArray(questions)) return [];
   return questions.map((question, index) => {
     const { roundNumber, detail } = parseRoundLabel(question?.category, index);

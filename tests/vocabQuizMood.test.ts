@@ -37,7 +37,7 @@ describe('英単語の4択', () => {
   });
   it('0点でも次の一手を言う', () => {
     expect(quizComment(0)).toMatch(/単語帳/);
-    expect(quizComment(10)).toMatch(/次の100語/);
+    expect(quizComment(10)).toMatch(/続き/);
   });
 });
 

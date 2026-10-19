@@ -27,7 +27,7 @@ describe('BGMの音量と1つのスイッチ（2026-10-01）', () => {
     expect(BGM_MEASURED_LUFS).toEqual({ title: -13.4, waiting: -20.3, battle: -19.7, battle2: -20.3 });
   });
   it('アプリBGMのON/OFFが対戦BGMにも写る（逆向きも）', () => {
-    const app = readFileSync('src/App.tsx', 'utf8');
+    const app = readFileSync('src/App.tsx', 'utf8') + readFileSync('src/hooks/useTitleBgmController.tsx', 'utf8'); // タイトルBGMの制御はフックへ移した
     expect(app).toMatch(/writeAudioPreferences\(\{ bgm: isBgmEnabled \}\)/);
     expect(app).toMatch(/addEventListener\('battle-audio-settings', sync\)/);
     expect(app).not.toMatch(/audio\.volume = bgmVolume;/);
@@ -40,7 +40,7 @@ describe('BGMの音量と1つのスイッチ（2026-10-01）', () => {
     expect(readFileSync('src/battle/ui/BattleResult.tsx', 'utf8')).toContain("useBattleAudio('matching')");
   });
   it('非表示の対戦画面はホーム・演習へBGMを持ち込まない', () => {
-    const app = readFileSync('src/App.tsx', 'utf8');
+    const app = readFileSync('src/App.tsx', 'utf8') + readFileSync('src/hooks/useTitleBgmController.tsx', 'utf8'); // タイトルBGMの制御はフックへ移した
     expect(app).toContain("if (appState === 'battle') return;");
     expect(app).toContain("engine.setBgmOwner(token, reviewing ? 'matching' : null, 100)");
   });
@@ -79,7 +79,7 @@ describe('canonical audio preference and mobile-safe title gain', () => {
     writeAudioPreferences({volume:0.23,bgm:false}); expect(readAudioPreferences().volume).toBe(0.23);
   });
   it('changes native gain even when the platform ignores media volume; creates one route', () => {
-    const nodes:any[]=[]; let contexts=0; let sources=0; let resumes=0;
+    const nodes:Array<{ gain?: { value: number } }>=[]; let contexts=0; let sources=0; let resumes=0;
     class Context {
       state='suspended'; destination={};
       constructor(){contexts++;}

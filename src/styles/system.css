@@ -133,3 +133,13 @@
    手書き体は消さず、ロジックツリー・解説の図など学習内容の中（--font-handwriting を直接使う所）にだけ残す。 */
 .mtb-kicker { font: var(--mt-text-kicker) !important; letter-spacing: var(--mt-kicker-spacing) !important; color: var(--mt-ink-muted) !important; }
 .mtb-page-header h1, .mtb-page-header h2 { font: var(--mt-text-xl) !important; color: var(--mt-ink-warm) !important; }
+
+/* ===== 一覧のページ送り（PC：スクロールせずに1画面で見せる・2026-10-16）=====
+   useFitPager + FitPagerBar。スマホでは描かれない（従来どおりスクロール）。 */
+.fit-pager { flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 6px 0 2px; }
+.fit-pager > button { display: grid; place-items: center; width: 44px; height: 44px; border: 1.5px solid var(--mt-line, #d6cbbb); border-radius: 999px; background: var(--mt-bg-card, #fffdf8); color: var(--mt-ink, #2c3e50); cursor: pointer; }
+.fit-pager > button:hover:not(:disabled) { border-color: #c9a85a; background: #fff6dc; }
+.fit-pager > button:disabled { opacity: .35; cursor: default; }
+.fit-pager > span { min-width: 64px; text-align: center; font: 700 14px/1 var(--mt-font-body, inherit); color: var(--mt-ink-2, #4a5563); font-variant-numeric: tabular-nums; }
+.fit-pager > span b { font-size: 18px; color: var(--mt-ink, #2c3e50); }
+.collection-scroll[data-fit-paged] { overflow: hidden; }

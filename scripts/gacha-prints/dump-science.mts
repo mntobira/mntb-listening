@@ -2,6 +2,10 @@
  * 理科・化学（無機）・数学の UR 学習プリント用に、アプリの手書きデータを JSON に書き出す。
  *   npx tsx scripts/gacha-prints/dump-science.mts  →  .tmpwork/science-raw.json
  * 文章はアプリのデータのまま（ここでは並べ替え・作文はしない）。
+ *
+ * ★2026-10-16 注意★ 理科・化学・数学の教科データはこのアプリから外した（英語専用にしたため）。
+ * ガチャの景品（public/prints の PDF と src/data/gachaPrints.generated.ts）はそのまま残している。
+ * プリントを作り直すときは、元のリポジトリから下の import 先のデータを一時的に戻してから実行する。
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
 import * as inorg from '../../src/data/inorganicProblems';

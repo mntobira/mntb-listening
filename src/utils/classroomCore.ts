@@ -45,6 +45,7 @@
 
 // 教科IDの型は data/allChapters.ts の SubjectKey が唯一の定義。
 // import type なのでコンパイル時に消え、実行時の依存は増えない。
+import { isSubjectKey } from '../data/subjects';
 import type { SubjectKey } from '../data/allChapters';
 
 /**
@@ -205,19 +206,7 @@ export function validateClassroomInput(input: ClassroomInput): ValidationResult 
   if (className.length > CLASS_NAME_MAX) {
     return { ok: false, message: `クラス名は${CLASS_NAME_MAX}文字以内で入力してください。` };
   }
-  if (
-    ![
-      'chemistry_basic',
-      'chemistry',
-      'english_listening',
-      'english_grammar',
-      'math',
-      'biology_basic',
-      'geography',
-    ].includes(
-      input.subject,
-    )
-  ) {
+  if (!isSubjectKey(input.subject)) {
     return { ok: false, message: '対象科目を選んでください。' };
   }
   return { ok: true, message: '' };
@@ -389,14 +378,3 @@ export function parseSchoolBrand(raw: string | null | undefined): SchoolBrand | 
   }
 }
 
-/**
- * 画面に出す組織名を決める。
- *
- * 学校名が設定されていればそれを主役にし、無ければ既定名に戻す。
- * 「〇〇高校 × マナトビ」のような併記にしないのは、
- * 学校に配るときに「うちの教材」として見えるほうが導入されやすいため。
- */
-export function resolveBrandLabel(brand: SchoolBrand | null, fallback = 'マナトビ'): string {
-  const name = brand?.schoolName?.trim();
-  return name ? name : fallback;
-}

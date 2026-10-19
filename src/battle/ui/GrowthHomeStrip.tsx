@@ -5,6 +5,7 @@ import { GrowthAvatar, LevelBar } from './GrowthParts';
 import { LoginBonusSheet } from './GrowthFx';
 import { useGrowthProgress } from '../../hooks/useGrowthProgress';
 import { Coins, Gift, Shirt, Award, Target, Store, ChevronRight, Flame } from 'lucide-react';
+import { CountUp } from '../../components/ui/CountUp';
 
 /** Compact, optional entry: never place an automatic reward overlay in front of matchmaking. */
 export function GrowthHomeStrip({ onProfile, onMissions, onShop, onBadges, onWallet, onGacha, expanded = false, homeLayout = false }: { onProfile: () => void; onMissions: () => void; onShop?: () => void; onBadges?: () => void; onWallet?: () => void; onGacha?: () => void; expanded?: boolean; homeLayout?: boolean }) {
@@ -33,7 +34,7 @@ export function GrowthHomeStrip({ onProfile, onMissions, onShop, onBadges, onWal
   const claimable = allMissionsForDate(today).filter(m => canClaimMission(progress, m.id, today)).length;
   if (homeLayout) return <section className="mana-dashboard game-home-hud" aria-label="マナコインととびら君の成長" data-mana-dashboard>
     <div className="game-hud-top">
-      <button type="button" className="game-hud-wallet" onClick={onWallet || onShop || onProfile} aria-label="マナコインの使い道を開く" data-mana-coins><Coins /><span><i className="game-hud-label">マナコイン</i><strong>{progress.coins.toLocaleString('ja-JP')}<small>枚</small></strong></span><ChevronRight size={14} /></button>
+      <button type="button" className="game-hud-wallet" onClick={onWallet || onShop || onProfile} aria-label="マナコインの使い道を開く" data-mana-coins><Coins /><span><i className="game-hud-label">マナコイン</i><strong><CountUp value={progress.coins} fromZero duration={1000} delay={300} /><small>枚</small></strong></span><ChevronRight size={14} /></button>
       <button type="button" className="game-hud-bonus" aria-label={received ? '今日のボーナス受取済み' : 'デイリーボーナスを受け取る'} disabled={busy || received} onClick={() => void claim()}><Gift /><span><i className="game-hud-label">{received ? '受取済み' : '今日のボーナス'}</i><strong>{received ? 'また明日' : `+${nextBonus?.coins ?? 0}枚`}</strong></span></button>
     </div>
     <div className="game-hud-xp"><LevelBar xp={progress.xp} compact /></div>

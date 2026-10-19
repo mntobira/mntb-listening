@@ -49,12 +49,16 @@ import {
 } from '../src/utils/explanationFormat';
 import { buildListeningExplanation } from '../src/utils/listeningExplanation';
 import { applyListeningPostProcess } from '../src/data/listeningPostProcess';
+import type { Problem } from '../src/types/curriculum';
+
+/** テスト用データの形（実物の教科データの一部。問題はテストに要る項目だけを持つ） */
+type FixtureData = { parts: Array<{ id?: string; chapters: Array<{ id?: string; practiceProblems: Problem[]; miniTest?: Problem[] }> }> };
 
 // ---------------------------------------------------------------------------
 // 変更前の書き方の複製（リスニング側）
 // ---------------------------------------------------------------------------
-const legacyListening = (data: any) => {
-  for (const chapter of data.parts.flatMap((p: any) => p.chapters)) {
+const legacyListening = (data: FixtureData) => {
+  for (const chapter of data.parts.flatMap((p) => p.chapters)) {
     const problems = [...(chapter.practiceProblems || []), ...(chapter.miniTest || [])];
     for (const problem of problems) {
       if (!problem) continue;
@@ -70,8 +74,8 @@ const legacyListening = (data: any) => {
 // 変更前の書き方の複製（英文法側）
 //   コメントは違うが処理は上とまったく同じだった、という事実をそのまま残す
 // ---------------------------------------------------------------------------
-const legacyGrammar = (data: any) => {
-  for (const chapter of data.parts.flatMap((p: any) => p.chapters)) {
+const legacyGrammar = (data: FixtureData) => {
+  for (const chapter of data.parts.flatMap((p) => p.chapters)) {
     const problems = [...(chapter.practiceProblems || []), ...(chapter.miniTest || [])];
     for (const problem of problems) {
       if (!problem) continue;
@@ -91,7 +95,8 @@ const TREE_JSON = JSON.stringify({
   phase1: { steps: [{ label: 'Step 1', body: '聞き取る' }] },
 });
 
-const makeData = () => ({
+/** 項目を省いた教材データ（テストに要る項目だけ）。読む側の型は FixtureData に合わせる */
+const makeData = (): FixtureData => ({
   parts: [
     {
       id: 'first_half',
@@ -168,15 +173,15 @@ const makeData = () => ({
       ],
     },
   ],
-});
+}) as unknown as FixtureData;
 
 /** 後処理の結果を比較しやすい形に落とす */
-const snapshot = (data: any) =>
+const snapshot = (data: FixtureData) =>
   data.parts
-    .flatMap((p: any) => p.chapters)
-    .flatMap((c: any) => [...(c.practiceProblems || []), ...(c.miniTest || [])])
+    .flatMap((p) => p.chapters)
+    .flatMap((c) => [...(c.practiceProblems || []), ...(c.miniTest || [])])
     .filter(Boolean)
-    .map((q: any) => `${q.id}\n---explanation---\n${q.explanation}\n`)
+    .map((q) => `${q.id}\n---explanation---\n${q.explanation}\n`)
     .join('\n========\n');
 
 describe('英語2教科の解説の後処理の共通化', () => {
@@ -216,20 +221,20 @@ describe('英語2教科の解説の後処理の共通化', () => {
   it('構造化解説（フローチャートJSON）は書き換えない', () => {
     const data = makeData();
     applyListeningPostProcess(data);
-    const q = data.parts[0].chapters[0].practiceProblems[1] as any;
+    const q = data.parts[0].chapters[0].practiceProblems[1];
     expect(q.explanation).toBe(TREE_JSON);
   });
 
   it('構造化解説には explanationSupplement を付けない（化学とはここが違う）', () => {
     const data = makeData();
     applyListeningPostProcess(data);
-    const q = data.parts[0].chapters[0].practiceProblems[1] as any;
+    const q = data.parts[0].chapters[0].practiceProblems[1];
     expect(q.explanationSupplement).toBeUndefined();
   });
 
   it('音声つきの問題は、リスニング専用の組み立てが使われる', () => {
     const data = makeData();
-    const q = data.parts[0].chapters[0].practiceProblems[0] as any;
+    const q = data.parts[0].chapters[0].practiceProblems[0];
     const expected = buildListeningExplanation({ ...q });
     // 前提としてリスニング専用の組み立てが成立するデータであること
     expect(expected).toBeTruthy();
@@ -239,8 +244,8 @@ describe('英語2教科の解説の後処理の共通化', () => {
 
   it('音声なしの問題は、汎用エンジンの整形結果になる', () => {
     const data = makeData();
-    const raw = data.parts[0].chapters[0].practiceProblems[2] as any;
-    const expected = buildListeningExplanation({ ...raw }) || enhanceExplanation({ ...raw } as any);
+    const raw = data.parts[0].chapters[0].practiceProblems[2];
+    const expected = buildListeningExplanation({ ...raw }) || enhanceExplanation({ ...raw });
     applyListeningPostProcess(data);
     expect(raw.explanation).toBe(expected);
   });
@@ -262,7 +267,7 @@ describe('英語2教科の解説の後処理の共通化', () => {
   it('miniTest を持たない単元でも落ちない', () => {
     const data = makeData();
     expect(() => applyListeningPostProcess(data)).not.toThrow();
-    const q = data.parts[0].chapters[1].practiceProblems[0] as any;
+    const q = data.parts[0].chapters[1].practiceProblems[0];
     expect(String(q.explanation).length).toBeGreaterThan(0);
   });
 
@@ -272,7 +277,7 @@ describe('英語2教科の解説の後処理の共通化', () => {
   });
 
   it('parts が空でも落ちない', () => {
-    expect(() => applyListeningPostProcess({ parts: [] } as any)).not.toThrow();
+    expect(() => applyListeningPostProcess({ parts: [] })).not.toThrow();
   });
 
   /**
@@ -309,9 +314,9 @@ describe('英語2教科の解説の後処理の共通化', () => {
   it('音声を持たない問題については、2回実行しても結果が変わらない（汎用エンジンは冪等）', () => {
     const data = makeData();
     applyListeningPostProcess(data);
-    const first = (data.parts[0].chapters[0].practiceProblems[2] as any).explanation;
+    const first = data.parts[0].chapters[0].practiceProblems[2].explanation;
     applyListeningPostProcess(data);
-    const second = (data.parts[0].chapters[0].practiceProblems[2] as any).explanation;
+    const second = data.parts[0].chapters[0].practiceProblems[2].explanation;
     expect(second).toBe(first);
   });
 

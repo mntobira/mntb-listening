@@ -8,7 +8,7 @@ vi.mock('../src/battle/audio/sfxSamples', () => ({ preloadSamples: vi.fn(), play
 const contexts: MockContext[] = [];
 class MockContext {
   state = 'running'; currentTime = 0; destination = {};
-  sources: any[] = [];
+  sources: Array<{ loop: boolean; loopStart: number; loopEnd: number; buffer: unknown; connect: unknown; start: unknown; stop: unknown }> = [];
   resume = vi.fn(async () => { this.state = 'running'; });
   decodeAudioData = vi.fn(async () => ({ duration: 90 }));
   constructor() { contexts.push(this); }
@@ -55,8 +55,8 @@ describe('screen-owned battle BGM lifecycle', () => {
     expect(contexts[0].sources[0]).toMatchObject({ loop: true, loopStart: 7, loopEnd: 67.5 });
   });
   it('does not discard slow decoding when battle phases change', async () => {
-    const pending: Array<(buffer: any) => void> = [];
-    const resolve = (b: any) => pending.splice(0).forEach((r) => r(b));
+    const pending: Array<(buffer) => void> = [];
+    const resolve = (b) => pending.splice(0).forEach((r) => r(b));
     const e = new BattleAudioEngine(), owner = Symbol();
     e.unlock(); contexts[0].decodeAudioData.mockImplementation(() => new Promise(r => { pending.push(r); }));
     await flush(); e.setBgmOwner(owner, 'normal'); e.setBgmOwner(owner, 'closing'); e.setBgmOwner(owner, 'final');
@@ -64,8 +64,8 @@ describe('screen-owned battle BGM lifecycle', () => {
     expect(contexts[0].sources).toHaveLength(1); expect(contexts[0].sources[0].start).toHaveBeenCalledOnce();
   });
   it('ignores stale decode after leaving the battle', async () => {
-    const pending: Array<(buffer: any) => void> = [];
-    const resolve = (b: any) => pending.splice(0).forEach((r) => r(b));
+    const pending: Array<(buffer) => void> = [];
+    const resolve = (b) => pending.splice(0).forEach((r) => r(b));
     const e = new BattleAudioEngine(), owner = Symbol();
     e.unlock(); contexts[0].decodeAudioData.mockImplementation(() => new Promise(r => { pending.push(r); }));
     await flush(); e.setBgmOwner(owner, 'normal'); e.releaseBgmOwner(owner); await flush();
@@ -97,7 +97,7 @@ describe('screen-owned battle BGM lifecycle', () => {
     expect(contexts).toHaveLength(2); expect(contexts[1].sources).toHaveLength(1);
   });
   it('picks one of the two battle songs per match and keeps it through closing/final', async () => {
-    const urls = () => (fetch as any).mock.calls.map((c: any[]) => c[0]);
+    const urls = () => vi.mocked(fetch).mock.calls.map((c) => c[0]);
     const e = new BattleAudioEngine(), owner = Symbol();
     e.random = () => 0.7;
     e.setBgmOwner(owner, 'matching'); await flush();

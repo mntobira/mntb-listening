@@ -5,6 +5,7 @@ import { AnnotLegend, AnnotToggles, AnnotatedScript, useAnnotOpts } from './Anno
 import { DictationTip, ReadAlongStudio } from './ReadAlongStudio';
 import { locateListeningEvidence } from '../../utils/listeningExplanation';
 import './read-along.css';
+import { pauseAllAudio } from '../../utils/audioElements';
 
 /**
  * 解答・解説のスクリプトを「読み方つき」で出す（2026-10-08）
@@ -114,9 +115,10 @@ export function ScriptReading({ track, fallback, after, compact = false }: { tra
       audio.current = a;
     }
     const a = audio.current;
-    document.querySelectorAll('audio').forEach(el => { if (!el.paused) el.pause(); });
+    pauseAllAudio();
     a.currentTime = Math.max(0, (w.start - 60) / 1000);
     stopAt.current = w.end + 120;
+    // 自動再生の制限で拒まれたら、利用者が再生ボタンを押せばよい
     void a.play().catch(() => undefined);
   };
   useEffect(() => () => { audio.current?.pause(); }, []);

@@ -28,7 +28,7 @@ Flutter 自体が悪いわけではありません。**Web 版が完成してい
 
 | ファイル | 内容 |
 |---|---|
-| `capacitor.config.ts` | アプリID `jp.manatobi.listening`、アプリ名「まなとび」、表示するのは `dist/`（Web 版のビルド） |
+| `capacitor.config.ts` | アプリID `com.manatobi.listening`、アプリ名「まなとび」、表示するのは `dist/`（Web 版のビルド） |
 | `ios/` `android/` | Xcode / Android Studio のプロジェクト（`npx cap add` で作成済み・`dist` 同期済み） |
 | `src/native/platform.ts` | 「アプリの中か」を判定（Web では常に false） |
 | `src/native/nativeAuth.ts` | **アプリ版のログイン**。Google はアプリ内の画面でのログインを禁止しているため、端末のログイン画面で認証してから Web 版と同じ Firebase にログインする（uid は Web と同じ） |
@@ -93,12 +93,18 @@ Flutter 自体が悪いわけではありません。**Web 版が完成してい
 ### 手順
 1. このフォルダで `npm install`
 2. `.env` を作る（Web 版と同じ `VITE_FIREBASE_*`。`.env.example` 参照）
-3. **Firebase コンソールで iOS アプリを追加**（バンドルID `jp.manatobi.listening`）
+3. **Firebase コンソールで iOS アプリを追加**（バンドルID `com.manatobi.listening`）
    - `GoogleService-Info.plist` を `ios/App/App/` に置き、Xcode で App フォルダにドラッグして追加
-   - `ios/App/App/Info.plist` の `com.googleusercontent.apps.REPLACE_WITH_REVERSED_CLIENT_ID` を、plist の `REVERSED_CLIENT_ID` の値に置き換える
-4. **Firebase コンソールで Android アプリを追加**（パッケージ名 `jp.manatobi.listening`）
-   - `google-services.json` を `android/app/` に置く
-   - SHA-1（デバッグ用・Play のアプリ署名鍵の両方）を Firebase に登録
+   - `ios/App/App/Info.plist` の URL スキーム（`com.googleusercontent.apps.…`）が、plist の `REVERSED_CLIENT_ID` と同じか確かめる
+4. **Firebase コンソールで Android アプリを追加**（パッケージ名 `com.manatobi.listening`。`jp.` ではない）
+   - `google-services.json` を `android/app/` に置く（SHA を登録したあとで**ダウンロードし直したもの**）
+   - SHA-1 と SHA-256 を**3種類とも**登録する（どれか1つでも欠けると、その配り方のアプリだけ Google ログインが失敗する）
+     | 種類 | どこで見るか | 使われる場面 |
+     |---|---|---|
+     | デバッグ鍵 | `cd android && ./gradlew signingReport` の `debug` | Android Studio から実機に入れたとき |
+     | アップロード鍵 | 同じく `release`（または `keytool -list -v -keystore <upload.jks>`） | 自分で署名した APK |
+     | **Play のアプリ署名鍵** | Play Console → アプリの完全性 → アプリの署名 | **Play ストア・内部テストから入れたとき（ここが漏れやすい）** |
+   - 失敗したときの画面の `[NA-SHA1]` は「SHA が未登録」、`[NA-PROVIDER]` `[NA-SDK]` は「アプリ側の設定」、`[NA-CONFIG]` は「json / plist が無い」（`src/native/nativeAuthError.ts`）
 5. Firebase の Authentication で Google と Apple を有効にする（Web 版で済んでいれば不要）
 6. Apple でサインイン：Xcode の Signing & Capabilities で「Sign in with Apple」を追加
 7. `npm run app:ios` → Xcode が開く → 実機を選んで ▶（Android は `npm run app:android`）

@@ -47,6 +47,7 @@ import { BattleRanking } from './BattleRanking';
 import { BattleRoomScreen } from './BattleRoomScreen';
 import { BattleSubjectSelect } from './BattleSubjectSelect';
 import type { QuestionCountChoice } from './BattleSubjectSelect';
+import { logRejection } from '../../utils/reportError';
 
 /**
  * 対戦モードの中の画面。
@@ -238,7 +239,7 @@ export function BattleMode({
         count ? { questionCount: count } : undefined,
         unit,
       );
-      if (!mountedRef.current) { void abortRoom(created).catch(() => {}); return; }
+      if (!mountedRef.current) { void abortRoom(created).catch(logRejection('battle.mode.abortRoom')); return; }
       setRoomId(created);
       setScreen('room');
     } catch (e) {

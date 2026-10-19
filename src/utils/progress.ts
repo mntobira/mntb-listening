@@ -56,6 +56,7 @@ import { safeLocalStorage } from './safeLocalStorage';
 import { completedKey } from './userStorageKeys';
 // 章 × モードごとの旧キー名も utils/quizStorageKeys.ts が唯一の定義
 import { quizAnswersKey, quizRunKey } from './quizStorageKeys';
+import type { ProblemLike } from '../types/curriculum';
 
 export const SOLVED_KEY_PREFIX = 'solved_problems_v1_';
 
@@ -192,19 +193,7 @@ export function markProblemSolved(
   return true;
 }
 
-/** その大問を既に解いているか */
-export function isProblemSolved(
-  uid: string | null | undefined,
-  chapterId: string,
-  questionId: string,
-): boolean {
-  return Boolean(readSolvedMap(uid)[problemKey(chapterId, questionId)]);
-}
 
-/** 解いた大問の総数 */
-export function countSolvedProblems(uid: string | null | undefined): number {
-  return Object.keys(readSolvedMap(uid)).length;
-}
 
 /**
  * 指定した章の集合に限って、解いた大問数を数える。
@@ -228,19 +217,6 @@ export function countSolvedProblemsIn(
   return count;
 }
 
-/**
- * 章ごとに解いた大問数を数える。
- * 章の進捗表示や「次の章」の判定に使える。
- */
-export function countSolvedByChapter(uid: string | null | undefined): Record<string, number> {
-  const result: Record<string, number> = {};
-  Object.keys(readSolvedMap(uid)).forEach((key) => {
-    const chapterId = key.split('::')[0];
-    if (!chapterId) return;
-    result[chapterId] = (result[chapterId] || 0) + 1;
-  });
-  return result;
-}
 
 /**
  * -------------------------------------------------------------------
@@ -315,7 +291,7 @@ export function isLegacyProgressBackfilled(uid: string | null | undefined): bool
  */
 export function backfillLegacyProgress(
   uid: string | null | undefined,
-  chapters: Array<{ id: string; miniTest?: any[]; practiceProblems?: any[] }>,
+  chapters: Array<{ id: string; miniTest?: ProblemLike[]; practiceProblems?: ProblemLike[] }>,
 ): number {
   const ls = storage();
   if (!ls) return 0;
@@ -355,9 +331,9 @@ export function backfillLegacyProgress(
 
     // 小問ID → その小問が属する大問ID
     const subToProblem = new Map<string, string>();
-    problems.forEach((q: any) => {
-      (q?.subQuestions || []).forEach((sq: any) => {
-        if (sq?.id) subToProblem.set(String(sq.id), String(q.id));
+    problems.forEach((q) => {
+      (q?.subQuestions || []).forEach((sq) => {
+        if (sq?.id) subToProblem.set(String(sq.id), String(q?.id));
       });
     });
 
@@ -399,7 +375,7 @@ export function backfillLegacyProgress(
     // ③ 章を修了していれば、その章の大問はすべて解いたものとして扱う
     //    （run も answers も消えているため、他に復元手段がない）
     if (completedChapters.includes(chapter.id)) {
-      problems.forEach((q: any) => {
+      problems.forEach((q) => {
         if (q?.id) add(chapter.id, String(q.id));
       });
     }

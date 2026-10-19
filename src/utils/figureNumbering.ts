@@ -12,7 +12,6 @@
 interface QuestionLike {
   id?: string;
   imageUrl?: string;
-  [key: string]: any;
 }
 
 /**

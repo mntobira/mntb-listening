@@ -1,0 +1,185 @@
+/*
+ * マナトビ モーション層（2026-10-16）
+ *   キネティック・タイポグラフィ／UI・UX アニメーション／インフォグラフィック アニメーション
+ *
+ * 決まり
+ *   1. 完成状態は素の CSS。動きは `prefers-reduced-motion: no-preference` の中だけに書く
+ *      → 動きを減らす設定・印刷では、今までと同じ画面がそのまま出る
+ *   2. 動きは opacity と translate / scale / rotate / filter だけ（transform は各画面の :active の沈みに空けておく）
+ *      → 既存の「押すと沈む」や配置（translate:-50% など）と打ち消し合わない
+ *   3. 入場は1回だけ（animation-fill-mode: backwards＝終わったら各画面の元の指定に戻る。:active の沈み・ホバーを邪魔しない）。くり返す動きは「注意を引く1点」だけ
+ *   4. 1画面に収める決まり（CLAUDE.md）を崩さない：大きさ・余白・行の高さは変えない
+ *   5. 色は tokens.css の変数だけを使う（ホームの色合いを変えない）
+ */
+
+/* ---------- 共通の動きの性格 ---------- */
+:root {
+  --mo-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --mo-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --mo-fast: .28s;
+  --mo-mid: .55s;
+  --mo-slow: .9s;
+}
+
+/* ---------- キネティック・タイポ（KineticText）：完成状態 ---------- */
+.kt { display: inline; }
+.kt-chars { display: inline; }
+.kt-ch { display: inline-block; white-space: pre; }
+.kt-ch::before { content: attr(data-ch); }
+
+/* ---------- カウントアップ：幅を最終値で確保し、数えている間に周りを揺らさない ---------- */
+.mt-countup { display: inline-grid; font-variant-numeric: tabular-nums; }
+.mt-countup::before { content: attr(data-final); grid-area: 1 / 1; visibility: hidden; }
+.mt-countup > span { grid-area: 1 / 1; text-align: right; }
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ======================================================================
+   * 1. キネティック・タイポグラフィ
+   * ==================================================================== */
+  .kt-ch { animation: kt-rise var(--mo-slow) var(--mo-ease-out) backwards; animation-delay: calc(var(--kt-delay, 0ms) + var(--i) * var(--kt-step, 38ms)); }
+  .kt[data-kt=pop] .kt-ch { animation-name: kt-pop; animation-duration: .6s; animation-timing-function: var(--mo-spring); }
+  .kt[data-kt=wave] .kt-ch { animation-name: kt-rise, kt-wave; animation-duration: var(--mo-slow), .9s;
+    animation-delay: calc(var(--kt-delay, 0ms) + var(--i) * var(--kt-step, 38ms)), calc(var(--kt-delay, 0ms) + 700ms + var(--i) * 45ms); animation-timing-function: var(--mo-ease-out), ease-in-out; }
+  .kt-whole { display: inline-block; animation: kt-rise var(--mo-slow) var(--mo-ease-out) backwards; animation-delay: var(--kt-delay, 0ms); }
+  @keyframes kt-rise { from { opacity: 0; translate: 0 .55em; rotate: 8deg; filter: blur(5px); } to { opacity: 1; translate: 0 0; rotate: 0deg; filter: blur(0); } }
+  @keyframes kt-pop { 0% { opacity: 0; scale: .2; translate: 0 .3em; } 100% { opacity: 1; scale: 1; translate: 0 0; } }
+  @keyframes kt-wave { 0%, 100% { translate: 0 0; } 40% { translate: 0 -.18em; } }
+
+  /* 数え終わりに小さく弾む */
+  .mt-countup[data-done] > span { display: inline-block; animation: mo-bump .45s var(--mo-spring); }
+  @keyframes mo-bump { 0% { scale: 1; } 40% { scale: 1.18; } 100% { scale: 1; } }
+
+  /* ======================================================================
+   * 2. UI/UX：画面の入場
+   *    各画面は appState が変わるたびに作り直される（App.tsx の .app-screen-stack の子）ので、付けるだけで毎回再生される。
+   *    ★ここは opacity だけ★ translate / scale / filter を付けると、動いている間だけ
+   *    画面の中の position:fixed（結果画面の下のバーなど）が画面ではなくこの箱に付いてしまう。
+   * ==================================================================== */
+  .app-screen-stack > :not(audio) { animation: mo-fade .45s ease-out backwards; }
+
+  /* 一覧の札が順に並ぶ（stagger）。--mo-i は CSS の :nth-child で与える */
+  :is(.sc-list > *, .rn-list > li, .sr-day > ol > li, .unit-card, .mypage-tabs > button, .game-home-utility > button, .game-stage-shortcuts > button, .intro-page section) {
+    animation: mo-card-in .6s var(--mo-ease-out) backwards; animation-delay: calc(120ms + var(--mo-i, 0) * 55ms);
+  }
+  @keyframes mo-card-in { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
+  :is(.sc-list, .rn-list, .sr-day > ol, .mypage-tabs, .game-home-utility, .game-stage-shortcuts) > :nth-child(1) { --mo-i: 0; }
+  :is(.sc-list, .rn-list, .sr-day > ol, .mypage-tabs, .game-home-utility, .game-stage-shortcuts) > :nth-child(2) { --mo-i: 1; }
+  :is(.sc-list, .rn-list, .sr-day > ol, .mypage-tabs, .game-home-utility, .game-stage-shortcuts) > :nth-child(3) { --mo-i: 2; }
+  :is(.sc-list, .rn-list, .sr-day > ol, .mypage-tabs, .game-home-utility, .game-stage-shortcuts) > :nth-child(4) { --mo-i: 3; }
+  :is(.sc-list, .rn-list, .sr-day > ol, .mypage-tabs, .game-home-utility, .game-stage-shortcuts) > :nth-child(5) { --mo-i: 4; }
+  :is(.sc-list, .rn-list, .sr-day > ol, .mypage-tabs, .game-home-utility, .game-stage-shortcuts) > :nth-child(6) { --mo-i: 5; }
+  :is(.sc-list, .rn-list, .sr-day > ol, .mypage-tabs, .game-home-utility, .game-stage-shortcuts) > :nth-child(n+7) { --mo-i: 6; }
+  .unit-card { --mo-i: 0; }
+
+  /* 開閉（アコーディオン）の中身は上から降りてくる */
+  :is(.rn-item-detail, .sr-items, .unit-card-panel, .rn-group-detail) { animation: mo-drop .38s var(--mo-ease-out) backwards; transform-origin: 50% 0; }
+  @keyframes mo-drop { from { opacity: 0; translate: 0 -6px; scale: 1 .96; } to { opacity: 1; translate: 0 0; scale: 1 1; } }
+
+  /* ダイアログ：奥から手前へ。背景はふわっと暗く */
+  :is(.mt-dialog, .game-details-dialog)[open] { animation: mo-dialog-in .42s var(--mo-spring) backwards; }
+  :is(.mt-dialog, .game-details-dialog)[open]::backdrop { animation: mo-fade .3s ease-out backwards; }
+  @keyframes mo-dialog-in { from { opacity: 0; scale: .92; translate: 0 18px; } to { opacity: 1; scale: 1; translate: 0 0; } }
+  @keyframes mo-fade { from { opacity: 0; } to { opacity: 1; } }
+  .mt-toast { animation: mo-toast-in .45s var(--mo-spring) backwards; }
+  @keyframes mo-toast-in { from { opacity: 0; translate: 0 16px; scale: .95; } to { opacity: 1; translate: 0 0; scale: 1; } }
+
+  /* 下ナビ：現在地のアイコンが跳ね、上の線が伸びる */
+  .app-bottom-nav > button[aria-current=page] .app-nav-icon { animation: mo-nav-hop .55s var(--mo-spring); }
+  .app-bottom-nav > button[aria-current=page]::before { animation: mo-line-grow .45s var(--mo-ease-out) backwards; }
+  @keyframes mo-nav-hop { 0% { translate: 0 0; } 35% { translate: 0 -6px; scale: 1.12; } 100% { translate: 0 0; scale: 1; } }
+  @keyframes mo-line-grow { from { scale: 0 1; } to { scale: 1 1; } }
+  .app-nav-badge { animation: mo-pop-in .5s var(--mo-spring) backwards; }
+
+  /* タブ：選ばれた札がふわっと浮く */
+  :is(.mt-tabs, .mt-segment) > :is([aria-current=page], [aria-selected=true], [aria-pressed=true]) { animation: mo-tab .4s var(--mo-spring); }
+  @keyframes mo-tab { from { scale: .94; } to { scale: 1; } }
+
+  /* ホバー（マウスのある端末だけ）：札が少し持ち上がる */
+  @media (hover: hover) {
+    :is(.sc-card, .unit-card, .rn-item, .sr-entry, .mt-card, .home-rush-card) { transition: translate .25s var(--mo-ease-out), box-shadow .25s var(--mo-ease-out); }
+    :is(.sc-card, .rn-item, .sr-entry, .home-rush-card):hover { translate: 0 -2px; }
+    .sc-card:hover .sc-arrow { animation: mo-nudge .6s var(--mo-ease-out); }
+  }
+  @keyframes mo-nudge { 0%, 100% { translate: 0 0; } 45% { translate: 5px 0; } }
+
+  /* 押した瞬間の波紋（MoRipple が .mo-ripple を差し込む） */
+  .mo-ripple { position: absolute; z-index: 0; border-radius: 50%; pointer-events: none; background: currentColor; opacity: .16;
+    width: var(--mo-r); height: var(--mo-r); left: var(--mo-x); top: var(--mo-y); translate: -50% -50%; animation: mo-ripple .6s var(--mo-ease-out) forwards; }
+  @keyframes mo-ripple { from { scale: 0; opacity: .22; } to { scale: 1; opacity: 0; } }
+
+  /* ======================================================================
+   * 3. インフォグラフィック：数・量・割合を形で見せる
+   * ==================================================================== */
+  /* 進捗バー・メーターは 0 から伸びる */
+  :is(.mt-progress, .mt-meter, .sc-track, .game-study-progress > div) > i { animation: mo-bar-grow 1.1s var(--mo-ease-out) backwards; animation-delay: .35s; transform-origin: 0 50%; }
+  @keyframes mo-bar-grow { from { scale: 0 1; } to { scale: 1 1; } }
+  /* バーの上を光が1回だけ走る */
+  .mt-progress > i { position: relative; overflow: hidden; }
+  .mt-progress > i::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 20%, #ffffffb3 50%, transparent 80%); translate: -100% 0; animation: mo-shine 1.4s ease-out 1.3s 1 backwards; }
+  @keyframes mo-shine { to { translate: 100% 0; } }
+
+  /* 連続学習の扉：1枚ずつ開く（開いている扉は回転して開き、光る） */
+  .study-doors i { animation: mo-pop-in .45s var(--mo-spring) backwards; }
+  .study-doors i[data-open] { animation: mo-door-open .7s var(--mo-spring) backwards; transform-origin: 0 50%; }
+  .study-doors i:nth-child(1) { animation-delay: .45s; } .study-doors i:nth-child(2) { animation-delay: .55s; }
+  .study-doors i:nth-child(3) { animation-delay: .65s; } .study-doors i:nth-child(4) { animation-delay: .75s; }
+  .study-doors i:nth-child(5) { animation-delay: .85s; } .study-doors i:nth-child(6) { animation-delay: .95s; }
+  .study-doors i:nth-child(7) { animation-delay: 1.05s; } .study-doors b { animation: mo-pop-in .5s var(--mo-spring) 1.2s backwards; }
+  @keyframes mo-door-open { 0% { opacity: 0; scale: .3; rotate: -20deg; } 60% { opacity: 1; scale: 1.15; rotate: 4deg; } 100% { opacity: 1; scale: 1; rotate: 0deg; } }
+  @keyframes mo-pop-in { from { opacity: 0; scale: .3; } to { opacity: 1; scale: 1; } }
+
+  /* ○×のマーク：1問ずつ判定が押される */
+  .sr-marks i { animation: mo-stamp .4s var(--mo-spring) backwards; }
+  .sr-marks i:nth-child(1) { animation-delay: .35s; } .sr-marks i:nth-child(2) { animation-delay: .42s; } .sr-marks i:nth-child(3) { animation-delay: .49s; }
+  .sr-marks i:nth-child(4) { animation-delay: .56s; } .sr-marks i:nth-child(5) { animation-delay: .63s; } .sr-marks i:nth-child(6) { animation-delay: .7s; }
+  .sr-marks i:nth-child(n+7) { animation-delay: .77s; }
+  @keyframes mo-stamp { 0% { opacity: 0; scale: 1.8; rotate: -12deg; } 100% { opacity: 1; scale: 1; rotate: 0deg; } }
+
+  /* 本番までの日数：数字の札が落ちてくる（カレンダーをめくる） */
+  .game-home-countdown > div { animation: mo-flip .7s var(--mo-spring) backwards; transform-origin: 50% 0; }
+  .game-home-countdown > div:nth-child(2) { animation-delay: .12s; }
+  @keyframes mo-flip { from { opacity: 0; rotate: x -80deg; } to { opacity: 1; rotate: x 0deg; } }
+
+  /* 正答率の輪（ScoreRing）：線が描かれる */
+  .mo-ring-fg { transition: none; animation: mo-ring-draw 1.3s var(--mo-ease-out) .3s backwards; }
+  @keyframes mo-ring-draw { from { stroke-dashoffset: 1; } }
+  .mo-ring-label { animation: mo-pop-in .5s var(--mo-spring) .9s backwards; }
+
+  /* 演習の結果：大きな数字が弾んで出る */
+  .practice-result-badge { animation: mo-pop-in .5s var(--mo-spring) .1s backwards; }
+  .practice-result-main p { animation: mo-card-in .6s var(--mo-ease-out) .2s backwards; }
+  .practice-result-stats > div { animation: mo-card-in .6s var(--mo-ease-out) backwards; }
+  .practice-result-stats > div:nth-child(1) { animation-delay: .35s; } .practice-result-stats > div:nth-child(2) { animation-delay: .5s; }
+  .practice-stage-reward { animation: mo-pop-in .6s var(--mo-spring) .7s backwards; }
+  .practice-stage-reward b { display: inline-block; animation: mo-coin 1s var(--mo-spring) 1.1s backwards; }
+  @keyframes mo-coin { 0% { scale: .4; rotate: y 0deg; } 60% { scale: 1.2; rotate: y 360deg; } 100% { scale: 1; rotate: y 360deg; } }
+
+  /* 学習記録のまとめ：数字が弾む */
+  .sr-summary > span { animation: mo-card-in .55s var(--mo-ease-out) backwards; }
+  .sr-summary > span:nth-child(2) { animation-delay: .1s; }
+  .sr-summary > button { animation: mo-pop-in .5s var(--mo-spring) .35s backwards; }
+
+  /* ホーム：3本柱が下から順に、主役の吹き出し・ステージの床の輪が広がる */
+  .game-home .home-pillars > * { animation: mo-pillar .7s var(--mo-spring) backwards; }
+  .game-home .home-pillars > :nth-child(1) { animation-delay: .25s; } .game-home .home-pillars > :nth-child(2) { animation-delay: .35s; }
+  .game-home .home-review-rush > * { animation: mo-card-in .6s var(--mo-ease-out) backwards; animation-delay: .45s; }
+  .game-home .home-review-rush > :nth-child(2) { animation-delay: .52s; }
+  @keyframes mo-pillar { from { opacity: 0; translate: 0 28px; scale: .92; } to { opacity: 1; translate: 0 0; scale: 1; } }
+  .game-home .game-home-logo { animation: mo-logo .9s var(--mo-ease-out) backwards; }
+  @keyframes mo-logo { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0 0 0 0); } }
+  .game-home .game-home-hud, .game-home .mana-dashboard { animation: mo-card-in .55s var(--mo-ease-out) .1s backwards; }
+  /* 復習待ちのバッジ：注意を引く1点だけ、ゆっくり脈打つ */
+  .game-home .home-review-wide > b { animation: mo-pop-in .5s var(--mo-spring) .8s backwards, mo-pulse 2.4s ease-in-out 1.6s infinite; }
+  @keyframes mo-pulse { 0%, 100% { box-shadow: 0 0 0 0 #c8879166; } 50% { box-shadow: 0 0 0 7px #c8879100; } }
+}
+
+/* 波紋の入れ物：押したボタンの真上に同じ形で重ねる（MoRipple.ts）。中身が消えると入れ物も消える */
+.mo-ripple-clip { position: fixed; z-index: 2147483000; overflow: hidden; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .mo-ripple-clip { display: none; } }
+@media print { .mo-ripple-clip { display: none; } }
+
+/* カウントアップは置いた場所の文字の形をそのまま受け継ぐ（各画面の `.xxx span { font-size }` に負けない） */
+.mt-countup, .mt-countup > span { font: inherit !important; color: inherit !important; letter-spacing: inherit !important; font-variant-numeric: tabular-nums !important; }
+/* 正答率の輪＋数字 */
+.mo-rate { display: inline-flex; align-items: center; gap: 4px; }

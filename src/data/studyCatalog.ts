@@ -96,7 +96,3 @@ export function findStudySubject(id: string | null | undefined): StudySubject | 
   return STUDY_CATALOG.find(s => s.id === id);
 }
 
-/** 単元一覧の科目ID（english_listening など）から、カタログ上の科目を引く */
-export function studySubjectOfUnits(unitSubject: string): StudySubject | undefined {
-  return STUDY_CATALOG.find(s => s.contents.some(c => c.action.kind === 'units' && c.action.subject === unitSubject));
-}

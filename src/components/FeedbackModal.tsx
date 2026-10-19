@@ -14,6 +14,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { asErrorLike } from '../utils/errorLike';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Send, Star, CheckCircle2, AlertTriangle, Mail, MessageSquareHeart, Loader2 } from 'lucide-react';
 import {
@@ -107,8 +108,8 @@ export function FeedbackModal({
     try {
       const submitted = await submitFeedback({ screen, category, rating, message, contactEmail, context });
       setResult(submitted);
-    } catch (error: any) {
-      setErrors([String(error?.message || '送信に失敗しました。時間をおいてお試しください。')]);
+    } catch (error) {
+      setErrors([String(asErrorLike(error)?.message || '送信に失敗しました。時間をおいてお試しください。')]);
     } finally {
       setSending(false);
     }

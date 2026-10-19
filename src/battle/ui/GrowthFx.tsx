@@ -2,7 +2,7 @@
  * GrowthFx — 成長システムの「祝い」と「手触り」の部品
  *
  *   Confetti        … 紙吹雪（勝ち・レベルアップ・段位アップで 1 回だけ）
- *   CountUp         … 数字が前の値から今の値へ刻んで進む（レート）
+ *   BattleCountUp   … 数字が前の値から今の値へ刻んで進む（レート。共通UIの components/ui/CountUp とは別物）
  *   RatingTierBar   … 段位（入門→初級→…→達人）の中での位置と、つぎの段位まで
  *   LoginBonusSheet … ログインボーナスの受け取りシート
  *   ShareButton     … 結果を共有（Web Share API → 無ければクリップボード）
@@ -12,6 +12,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { CSSProperties } from 'react';
 import { Check, Coins, Flame, Gift, Share2, Sparkles } from 'lucide-react';
 import { levelOf, loginBonusFor, ratingTierOf, type GrowthProgress, type LoginBonus } from '../core/growth';
@@ -73,7 +74,7 @@ export function Confetti({ count = 18, hues = [45, 38, 205, 150] }: { count?: nu
  * from → to へ 0.9 秒で刻む。刻みごとに小さな音（tick）を最大 8 回。
  * 差が 0 ならそのまま出す。reduced-motion なら即 to。
  */
-export function CountUp({
+export function BattleCountUp({
   from,
   to,
   duration = 900,
@@ -210,9 +211,17 @@ export function LoginBonusSheet({
   }, [bonus.milestone]);
   const dayInCycle = ((bonus.streak - 1) % 7) + 1;
   const level = levelOf(progress.xp).level;
-  return (
+  /*
+   * ★2026-10-14 ログインボーナスが画面から切れる不具合★
+   *   このシートはホーム（.game-home-viewport：position:relative＋z-index:1）の中で描かれていたため、
+   *   z-50 を付けてもその中に閉じ込められ、下ナビ（z-60）と広告の場所（50px）の「下」に潜っていた。
+   *   スマホでは下寄せ（items-end）なので「受け取りました・閉じる」がナビと広告の裏に隠れていた。
+   *   → document.body 直下に描き（createPortal）、ナビより上に置く。
+   *     さらに下の余白に「ナビ＋広告の場所＋セーフエリア」を足し、シートの最大の高さもその分だけ縮める。
+   */
+  return createPortal(
     <div
-      className="growth-sheet-backdrop fixed inset-0 z-50 flex items-end justify-center bg-black/35 p-3 sm:items-center"
+      className="growth-sheet-backdrop login-bonus-backdrop fixed inset-0 z-[90] flex items-end justify-center bg-black/35 p-3 sm:items-center"
       ref={dialogRef}
       role="dialog"
       onKeyDown={(event) => {
@@ -228,7 +237,7 @@ export function LoginBonusSheet({
     >
       {bonus.milestone && <Confetti />}
       <div
-        className="growth-sheet max-h-[90dvh] overflow-y-auto w-full max-w-sm rounded-3xl border-2 p-5"
+        className="growth-sheet login-bonus-sheet overflow-y-auto overscroll-contain w-full max-w-sm rounded-3xl border-2 p-5"
         style={{ background: '#FFFDF7', borderColor: `${GOLD}AA`, boxShadow: '0 12px 40px -12px rgba(0,0,0,0.35)' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -306,7 +315,8 @@ export function LoginBonusSheet({
           受け取りました・閉じる
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

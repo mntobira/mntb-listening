@@ -41,18 +41,13 @@ import { auth, provider, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase'
 import { profileKey } from './userStorageKeys';
 import { isNativeApp } from '../native/platform';
 import { nativeSignIn, nativeSignOut } from '../native/nativeAuth';
+import type { GoogleSignInOutcome, SignInMethod } from './authTypes';
+import { logRejection } from './reportError';
+import { asErrorLike } from './errorLike';
+import { trackError, trackEvent } from './analytics';
+// 既存の呼び出し側（import { SignInMethod } from './googleAuth'）のため再公開する
+export type { GoogleSignInOutcome, SignInMethod } from './authTypes';
 
-/** サインイン結果 */
-export interface GoogleSignInOutcome {
-  /** 連携できたか */
-  ok: boolean;
-  /** 連携できたユーザー（redirect に切り替えた場合は undefined のままページが遷移する） */
-  user?: User;
-  /** ページ遷移（リダイレクト）を開始したので、この後の処理は不要 */
-  redirecting?: boolean;
-  /** 失敗理由（利用者向けの日本語） */
-  message?: string;
-}
 
 /**
  * LINE / Instagram などのアプリ内ブラウザ（WebView）かどうか。
@@ -80,7 +75,8 @@ function isPopupUnavailable(code: string): boolean {
 }
 
 /** Firebase のエラーを、原因と次の行動が分かる日本語にする */
-export function describeAuthError(error: any): string {
+export function describeAuthError(rawError: unknown): string {
+  const error = asErrorLike(rawError);
   const code = String(error?.code || '');
   if (code.includes('network-request-failed')) {
     return 'ネットワークに接続できませんでした。通信状況をご確認ください。';
@@ -97,8 +93,6 @@ export function describeAuthError(error: any): string {
   return String(error?.message || 'ログインに失敗しました。時間をおいてお試しください。');
 }
 
-/** ログイン方法（2026-10-02：App Store 申請に向けて Apple を戻した） */
-export type SignInMethod = 'google' | 'apple';
 
 /**
  * Apple でサインイン（App Store Review Guideline 4.8）。
@@ -123,12 +117,20 @@ function providerFor(method: SignInMethod): AuthProvider {
  * popup が使えない環境では自動で redirect に切り替える。
  */
 export async function signInWith(method: SignInMethod): Promise<GoogleSignInOutcome> {
+  const outcome = await signInWithInner(method);
+  // 使われ方の記録：ログインの成否と失敗の種類（キャンセルは数えない）
+  if (outcome.ok) trackEvent(`login_ok_${method}`);
+  else if (!outcome.redirecting && !/キャンセル/.test(outcome.message || '')) trackError(outcome.errorCode || `login_${method}_failed`);
+  return outcome;
+}
+
+async function signInWithInner(method: SignInMethod): Promise<GoogleSignInOutcome> {
   // アプリ（Capacitor ネイティブ環境）のときは端末のログイン画面を使用する
   if (isNativeApp()) {
     return nativeSignIn(method);
   }
 
-  if (!FIREBASE_CONFIGURED && !USE_EMULATORS) return { ok: false, message: 'オンライン機能は初期設定が必要です。運営者はREADMEに従って専用Firebaseを設定してください。ゲストで演習・AI対戦を試せます。' };
+  if (!FIREBASE_CONFIGURED && !USE_EMULATORS) return { ok: false, message: 'オンライン機能は初期設定が必要です。運営者はREADMEに従って専用Firebaseを設定してください。' };
   const label = method === 'apple' ? 'Apple' : 'Google';
   if (isInAppBrowser()) {
     return {
@@ -141,15 +143,15 @@ export async function signInWith(method: SignInMethod): Promise<GoogleSignInOutc
   try {
     const credential: UserCredential = await signInWithPopup(auth, p);
     return { ok: true, user: credential.user };
-  } catch (error: any) {
-    const code = String(error?.code || '');
+  } catch (error) {
+    const code = String(asErrorLike(error)?.code || '');
     if (isPopupUnavailable(code)) {
       // 同じタブでログイン画面へ遷移する。戻ってきたときは
       // consumeGoogleRedirectResult() が結果を受け取る。
       try {
         await signInWithRedirect(auth, p);
         return { ok: false, redirecting: true };
-      } catch (redirectError: any) {
+      } catch (redirectError) {
         return { ok: false, message: describeAuthError(redirectError) };
       }
     }
@@ -188,7 +190,7 @@ export async function consumeGoogleRedirectResult(): Promise<User | null> {
 /** ログアウト（プロフィールのローカルキャッシュも掃除する） */
 export async function signOutGoogle(): Promise<void> {
   if (isNativeApp()) {
-    nativeSignOut().catch(() => {});
+    nativeSignOut().catch(logRejection('auth.nativeSignOut'));
   }
   const uid = auth.currentUser?.uid;
   await signOut(auth);

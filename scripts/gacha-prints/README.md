@@ -10,7 +10,7 @@ cp scripts/gacha-prints/dump-grammar.mts .tmpwork/eg/dump.mts && npx tsx .tmpwor
 # 2) PDF を作る（reportlab・pdftoppm・Pillow・IPAゴシックが必要）
 python3 scripts/gacha-prints/build-grammar-ur.py
 python3 scripts/gacha-prints/build-vocab-ur.py
-# 理科3冊・化学 無機・数学 総まとめ（アプリのデータを書き出してから作る）
+# 理科3冊・化学 無機・数学 総まとめ（★教科データはアプリから外したので、元のリポジトリから src/data と src/features/rika を一時的に戻してから実行★）
 npx tsx scripts/gacha-prints/dump-science.mts
 python3 scripts/gacha-prints/build-science-ur.py            # 一部だけなら: ... inorganic math rika1 rika2 rika3
 # 3) src/data/gachaPrints.generated.ts の pages / kb を実物に合わせる（tests/gachaPrintsQuality.test.ts が検査）

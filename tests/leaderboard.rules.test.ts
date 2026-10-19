@@ -104,7 +104,7 @@ function eventPayload(uid: string, over: Record<string, unknown> = {}) {
   };
 }
 
-const chapterRef = (db: any, uid: string, chapterId = CHAPTER) =>
+const chapterRef = (db: ReturnType<typeof ctxFor>, uid: string, chapterId = CHAPTER) =>
   doc(db, 'leaderboard_chapter', `${chapterId}_${uid}`);
 
 // ==================================================================
@@ -166,7 +166,7 @@ describe('leaderboard_chapter', () => {
 
   it('nickname が欠けていたら弾く', async () => {
     const db = ctxFor(ALICE);
-    const { nickname, ...rest } = chapterPayload(ALICE) as any;
+    const { nickname, ...rest } = chapterPayload(ALICE) as Record<string, unknown>;
     await assertFails(setDoc(chapterRef(db, ALICE), rest));
   });
 

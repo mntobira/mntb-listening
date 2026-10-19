@@ -39,12 +39,25 @@ import {
   limit,
   where,
   Timestamp,
+  type QueryConstraint,
 } from './firestoreMetered';
 import { db, auth } from '../firebase';
 import { LEADERBOARD_PAGE_SIZE } from './scoring';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey } from './userStorageKeys';
 import { sanitizeNickname } from '../features/safety/nicknameFilter';
+
+/**
+ * leaderboard_events の1件（Firestore から読んだままの形）。
+ * 古い記録には欠けている項目があるため、すべて「無くてもよい」にしている。
+ */
+export interface LeaderboardEventDoc {
+  uid: string;
+  nickname?: string;
+  photoURL?: string;
+  score?: number;
+  playedAt?: { toDate?: () => Date };
+}
 
 export interface ChapterScoreEntry {
   uid: string;
@@ -266,7 +279,7 @@ export async function fetchPeriodRanking(
       since.setMonth(since.getMonth() - 1);
     }
 
-    const constraints: any[] = [orderBy('playedAt', 'desc'), limit(500)];
+    const constraints: QueryConstraint[] = [orderBy('playedAt', 'desc'), limit(500)];
     if (since) {
       constraints.unshift(where('playedAt', '>=', Timestamp.fromDate(since)));
     }
@@ -280,7 +293,7 @@ export async function fetchPeriodRanking(
     //   入っていない。ベストスコア時点の古い名前で上書きしない。）
     const bucket = new Map<string, { uid: string; nickname: string; photoURL?: string; bestScore: number; playCount: number }>();
     snaps.forEach((s) => {
-      const d = s.data() as any;
+      const d = s.data() as LeaderboardEventDoc;
       const cur = bucket.get(d.uid);
       if (!cur) {
         bucket.set(d.uid, {

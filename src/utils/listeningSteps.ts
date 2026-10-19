@@ -38,6 +38,14 @@
  */
 
 /** 1問ぶんの表示単位 */
+import type { Problem, SubQuestion } from '../types/curriculum';
+
+/**
+ * ステップ分けで読む大問の形。
+ * 呼び出し元には空の値や組み立て途中の大問が来ることもあるので、全項目を任意にしている。
+ */
+type StepSource = Pick<Partial<Problem>, 'subQuestions' | 'audioTracks' | 'stepwise'> | null | undefined;
+
 export interface ListeningStep {
   /** 大問（回）の中での位置（0始まり） */
   index: number;
@@ -66,7 +74,7 @@ export interface ListeningStep {
  * 判定は音源トラックの有無で行う。リスニング以外（化学など）は
  * audioTracks を持たないので、これまでどおり大問まるごと1画面のまま。
  */
-export function isPerSubQuestionListening(problem: any): boolean {
+export function isPerSubQuestionListening(problem: StepSource): boolean {
   // 英文法：答えを読み上げる音源は外したが「問1→解説→問2…」の1問ずつ進行は残す（2026-10-02）。
   //   音源の有無と進め方を切り離すため、明示フラグ stepwise でも1問ずつにする。
   if (problem?.stepwise === true && Array.isArray(problem?.subQuestions) && problem.subQuestions.length > 1) return true;
@@ -78,20 +86,20 @@ export function isPerSubQuestionListening(problem: any): boolean {
   // 小問が1つでも「音源1本に複数の解答欄」型（subIds を持つ）は
   // 1問ずつモードの描画（設問文・音源・図を左に置く）を使う。
   if (subs.length > 1) return true;
-  return tracks.some((t: any) => Array.isArray(t?.subIds));
+  return tracks.some((t) => Array.isArray(t?.subIds));
 }
 
 /**
  * 音源トラックが「複数の小問をまとめる」形（第4問以降）か。
  * subIds を持つトラックが1つでもあれば、その大問は音源単位でステップを切る。
  */
-function hasGroupedTracks(problem: any): boolean {
-  const tracks: any[] = Array.isArray(problem?.audioTracks) ? problem.audioTracks : [];
+function hasGroupedTracks(problem: StepSource): boolean {
+  const tracks = Array.isArray(problem?.audioTracks) ? problem.audioTracks : [];
   return tracks.some((t) => Array.isArray(t?.subIds) && t.subIds.length > 0);
 }
 
 /** 小問ラベル（'問2 話者（…）の発話に…'）から「問2」だけを取り出す。 */
-export function stepLabelOf(sq: any, index: number): string {
+export function stepLabelOf(sq: Pick<SubQuestion, 'label'> | null | undefined, index: number): string {
   const matched = String(sq?.label || '').match(/^\s*(問\s*\d+)/u);
   if (matched) return matched[1].replace(/\s+/gu, '');
   return `問${index + 1}`;
@@ -104,13 +112,13 @@ export function stepLabelOf(sq: any, index: number): string {
  * こうすると呼び出し側は「ステップ配列を順に見せる」だけで両方に対応でき、
  * リスニング用と従来用で描画コードを二重に持たなくて済む。
  */
-export function buildListeningSteps(problem: any): ListeningStep[] {
-  const subs: any[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
+export function buildListeningSteps(problem: StepSource): ListeningStep[] {
+  const subs: SubQuestion[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
   if (subs.length === 0) return [];
 
   // ---- 第4問以降：音源1本＝1ステップ（複数の解答欄） ----
   if (hasGroupedTracks(problem)) {
-    const tracks: any[] = problem.audioTracks;
+    const tracks = problem?.audioTracks ?? [];
     const steps: ListeningStep[] = [];
     const used = new Set<string>();
     tracks.forEach((t) => {
@@ -157,9 +165,9 @@ export function buildListeningSteps(problem: any): ListeningStep[] {
 /**
  * ステップに含まれる小問オブジェクトを取り出す（subQuestions の並び順のまま）。
  */
-export function stepSubQuestions(problem: any, step: ListeningStep | null | undefined): any[] {
+export function stepSubQuestions(problem: StepSource, step: ListeningStep | null | undefined): SubQuestion[] {
   if (!step) return [];
-  const subs: any[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
+  const subs: SubQuestion[] = Array.isArray(problem?.subQuestions) ? problem.subQuestions : [];
   const wanted = new Set(step.subQuestionIds);
   return subs.filter((sq) => wanted.has(String(sq?.id)));
 }
@@ -176,4 +184,42 @@ export function stepSubQuestions(problem: any, step: ListeningStep | null | unde
  */
 export function stepScoreKey(questionId: string, subQuestionId: string): string {
   return `${questionId}::${subQuestionId}`;
+}
+
+/** 進捗ピル（例「2〜3 / 8」）に出す値 */
+export interface ProgressPill {
+  /** いま解いている位置（1始まり） */
+  position: number;
+  /** 1画面に複数の解答欄があるときの末尾（例「2〜3」の 3）。1つだけなら undefined */
+  positionEnd: number | undefined;
+  total: number;
+}
+
+/**
+ * 進捗ピルの分子・分母を決める。
+ *
+ * ・1問ずつモード（リスニング）… その回の中の「答えの数」を数える（例 2/4）
+ * ・従来モード               … 範囲内の「大問」を数える（例 3/14）
+ *
+ * 第4問〜第6問は「音声1本に問34・35の2つの解答欄」なので、画面は1枚でも答えは2問。
+ * 結果画面と数え方を揃えるため、どちらも「答えの数」で数える（2026-10-05 ご指摘「1問なのに2問と出る」）。
+ */
+export function buildProgressPill(input: {
+  perStep: boolean;
+  steps: readonly Pick<ListeningStep, 'subQuestionIds'>[];
+  stepIndex: number;
+  rangeCount: number;
+  rangePosition: number;
+}): ProgressPill {
+  const { perStep, steps, stepIndex, rangeCount, rangePosition } = input;
+  if (!perStep) return { position: rangePosition, positionEnd: undefined, total: rangeCount };
+  const answersPerStep = steps.map((step) => Math.max(1, step.subQuestionIds.length));
+  const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
+  const position = sum(answersPerStep.slice(0, stepIndex)) + 1;
+  const current = answersPerStep[stepIndex] ?? 1;
+  return {
+    position,
+    positionEnd: current > 1 ? position + current - 1 : undefined,
+    total: sum(answersPerStep),
+  };
 }

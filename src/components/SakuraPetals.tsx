@@ -41,10 +41,10 @@ export function SakuraPetals({ count = 18, className = '' }: SakuraPetalsProps) 
             opacity: p.opacity,
             background: p.color,
             // CSS変数でアニメーションパラメータを渡す
-            ['--fall-duration' as any]: `${p.duration}s`,
-            ['--fall-delay' as any]: `${p.delay}s`,
-            ['--sway' as any]: `${p.sway}px`,
-          }}
+            '--fall-duration': `${p.duration}s`,
+            '--fall-delay': `${p.delay}s`,
+            '--sway': `${p.sway}px`,
+          } as React.CSSProperties}
         />
       ))}
     </div>

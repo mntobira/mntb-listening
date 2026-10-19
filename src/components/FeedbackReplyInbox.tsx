@@ -24,6 +24,7 @@ import {
   markReplyRead,
   type MyFeedbackReply,
 } from '../utils/feedbackReply';
+import { logRejection } from '../utils/reportError';
 
 export function FeedbackReplyInbox() {
   const [replies, setReplies] = useState<MyFeedbackReply[]>([]);
@@ -59,7 +60,7 @@ export function FeedbackReplyInbox() {
     setExpandedId(next);
     if (next && !reply.read) {
       // 開いた時点で既読化（失敗しても次回また試みるだけなので握りつぶす）
-      markReplyRead(reply.docId).catch(() => {});
+      markReplyRead(reply.docId).catch(logRejection('feedback.markReplyRead'));
       setReplies((prev) => prev.map((p) => (p.docId === reply.docId ? { ...p, read: true } : p)));
     }
   };

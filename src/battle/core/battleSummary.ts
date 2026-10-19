@@ -21,7 +21,7 @@
  *   （「負けたら何も残らない」だと復習に向かう気持ちが折れる）。
  */
 
-import type { BattleQuestion, BattleResultSummary, BattlePlayerScore, BattleOutcome } from './types';
+import type { BattleQuestion, BattleResultSummary, BattlePlayerScore } from './types';
 
 // ============================================================
 // 統計
@@ -53,48 +53,7 @@ export function statsOf(score: BattlePlayerScore, answeredIndexes: ReadonlySet<n
   };
 }
 
-// ============================================================
-// XP
-// ============================================================
-
-/** 正解1問あたり */
-export const XP_PER_CORRECT = 10;
-/** 試合を完走した */
-export const XP_FINISH = 20;
-/** 勝利 */
-export const XP_WIN = 50;
-/** 引き分け */
-export const XP_DRAW = 25;
-/** 最大コンボが3以上のとき、コンボ数×この値 */
-export const XP_PER_STREAK = 5;
-
-export interface XpBreakdown {
-  finish: number;
-  correct: number;
-  outcome: number;
-  streak: number;
-  total: number;
-}
-
-export function xpOf(outcome: BattleOutcome, correctCount: number, maxStreak: number): XpBreakdown {
-  const finish = XP_FINISH;
-  const correct = Math.max(0, correctCount) * XP_PER_CORRECT;
-  const outcomeXp = outcome === 'win' ? XP_WIN : outcome === 'draw' ? XP_DRAW : 0;
-  const streak = maxStreak >= 3 ? maxStreak * XP_PER_STREAK : 0;
-  return { finish, correct, outcome: outcomeXp, streak, total: finish + correct + outcomeXp + streak };
-}
-
-/** 累計XPの保存キー（端末内。uid ごと） */
-export function xpStorageKey(uid: string): string {
-  return `battle_xp_${uid || 'guest'}`;
-}
-
-/** 保存文字列 → 数値（壊れていたら 0） */
-export function parseXpTotal(raw: string | null | undefined): number {
-  if (!raw) return 0;
-  const n = Number(raw);
-  return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
-}
+// 経験値（XP）の定数・計算は growth.ts に一本化した（ここにあった旧 xpOf 等は未使用だったため削除）。
 
 // ============================================================
 // 復習の抽出

@@ -45,3 +45,10 @@ ios/App/App/GoogleService-Info.plist
 android/app/google-services.json
 .DS_Store
 zz_uicheck/
+
+# クラッシュダンプ（ルート直下のみ。src/battle/core/ を巻き込まない）
+/core
+/core.[0-9]*
+
+# Instagram 動画の中間ファイル
+store-assets/instagram/_work/

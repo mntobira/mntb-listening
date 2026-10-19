@@ -38,6 +38,14 @@ import 'katex/dist/contrib/mhchem.mjs';
 // （以前はこのファイルにも同じ実装が書かれていた）。
 // sanitizeHtml.ts は何も import しない末端モジュールなので循環にならない。
 import { escapeHtml } from './sanitizeHtml';
+import {
+  SUBSCRIPT_CHARS,
+  SUPERSCRIPT_CHARS,
+  scanChemRegions,
+  toChemLatex,
+  type MathRegion,
+} from './mathChemTypeset';
+export { scanChemRegions, toChemLatex, type MathRegion };
 
 /** KaTeX 出力を包む目印クラス（CSS で本文となじませるために使う）。 */
 export const KATEX_WRAPPER_CLASS = 'mtb-math';
@@ -133,15 +141,6 @@ const SYMBOL_REPLACEMENTS: Array<[RegExp, string]> = [
   [/φ/g, '\\varphi '],
   [/Ω/g, '\\Omega '],
 ];
-
-const SUPERSCRIPT_CHARS: Record<string, string> = {
-  '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5',
-  '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁺': '+', '⁻': '-', 'ⁿ': 'n',
-};
-const SUBSCRIPT_CHARS: Record<string, string> = {
-  '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4',
-  '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9',
-};
 
 /** `(` `{` に対応する閉じ括弧を前方に探す。見つからなければ -1。 */
 function matchForward(s: string, openIndex: number): number {
@@ -469,234 +468,6 @@ export function toLatex(src: string): string {
 //     (3) 反応式は「矢印を含み、両辺が化学式だけ」のときのみ式全体を組む
 //   の3段構えにしている。
 
-/** 実在する元素記号（周期表 1〜118）。これ以外の綴りは化学式と認めない。 */
-const ELEMENTS = new Set([
-  'H','He','Li','Be','B','C','N','O','F','Ne',
-  'Na','Mg','Al','Si','P','S','Cl','Ar',
-  'K','Ca','Sc','Ti','V','Cr','Mn','Fe','Co','Ni','Cu','Zn','Ga','Ge','As','Se','Br','Kr',
-  'Rb','Sr','Y','Zr','Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I','Xe',
-  'Cs','Ba','La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu',
-  'Hf','Ta','W','Re','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Po','At','Rn',
-  'Fr','Ra','Ac','Th','Pa','U','Np','Pu','Am','Cm','Bk','Cf','Es','Fm','Md','No','Lr',
-  'Rf','Db','Sg','Bh','Hs','Mt','Ds','Rg','Cn','Nh','Fl','Mc','Lv','Ts','Og',
-]);
-
-/**
- * 化学式と紛れやすいので化学式にしない語。
- *
- * 元素記号の並びとしては解釈できてしまうが、実際には単位や英単語のもの。
- *   No  … 「いいえ」（ノーベリウム）
- *   In  … 前置詞（インジウム）
- *   As  … 接続詞（ヒ素）
- *   At  … 前置詞（アスタチン）
- *   Be / Sc / Y / I / K / N / C …  一文字や英単語との衝突
- */
-const NOT_CHEMICAL = new Set([
-  'No','In','As','At','Be','He','If','It','Is','On','Of','So','To','Or','An','Am','We','Us',
-  'Sc','Cs','Ba','Nb','Pa','Os','Pm','Pr','Np','Bk','Cf','Es','Fm','Md','Lr','Ho','Er',
-  'CD','ID','OK','TV','PC','AI','US','UK',
-  // 単位・記号
-  'mol','L','g','kg','mL','cm','mm','km','Pa','hPa','kPa','MPa','J','kJ','K','V','A','W','C',
-  'N','S','B','F','P','H','O','U','Y','I',
-]);
-
-/** 化学反応式で使う矢印。mhchem の記法へ写す。 */
-const CHEM_ARROWS: [RegExp, string][] = [
-  [/⇄|⇌|⟷|⇔/g, ' <=> '],
-  [/⟶|→|->/g, ' -> '],
-  [/←/g, ' <- '],
-];
-
-/**
- * 語が「元素記号の並び＋数字＋電荷」として完全に説明できるか。
- *
- * 例）H2O → H,O で説明できる（○）
- *     Cabbage → Ca,B,B,... と読めるが 'bage' が残る（×）
- */
-function isChemicalFormula(word: string): boolean {
-  if (!word || NOT_CHEMICAL.has(word)) return false;
-  // 先頭は必ず大文字か数字（係数）
-  if (!/^[0-9]*[A-Z(]/.test(word)) return false;
-  // 使える文字だけで構成されているか（元素・数字・括弧・電荷）
-  if (!/^[0-9A-Za-z()·・^+-]+$/.test(word)) return false;
-
-  let i = 0;
-  let elementCount = 0;
-  // 先頭の係数（2H2O の 2）
-  while (i < word.length && /[0-9]/.test(word[i])) i++;
-
-  while (i < word.length) {
-    const ch = word[i];
-    if (ch === '(' || ch === ')' || ch === '·' || ch === '・') { i++; continue; }
-    if (/[0-9]/.test(ch)) { i++; continue; }
-    if (ch === '^') {
-      // 電荷（SO4^2- / Cu^2+ / Na^+）。^ 以降は数字と符号だけで、末尾は符号。
-      if (!/^\^[0-9]*[+-]$/.test(word.slice(i))) return false;
-      i = word.length;
-      continue;
-    }
-    if (ch === '+' || ch === '-') {
-      // 電荷は末尾だけに許す（Cu2+ / SO4 2-）
-      if (i !== word.length - 1) return false;
-      i++;
-      continue;
-    }
-    // 2文字の元素記号を優先して読む（Na を N+a と読まないため）
-    const two = word.slice(i, i + 2);
-    if (two.length === 2 && /^[A-Z][a-z]$/.test(two) && ELEMENTS.has(two)) {
-      elementCount++; i += 2; continue;
-    }
-    if (/^[A-Z]$/.test(ch) && ELEMENTS.has(ch)) {
-      elementCount++; i += 1; continue;
-    }
-    return false;
-  }
-  // 元素を1つも含まない（＝ただの数字や括弧）は化学式ではない
-  return elementCount > 0;
-}
-
-/**
- * Unicode の添字・上付き（H₂O, SO₄²⁻）を mhchem が読める表記に戻す。
- *
- * ★上付き（電荷）は必ず `^` を付けること★
- *   SO₄²⁻ をそのまま平文化すると "SO42-" になり、
- *   mhchem は「酸素が42個」と解釈してしまう（意味が変わる重大な誤り）。
- *   正しくは "SO4^2-" で、4 は原子数・2- は電荷。
- */
-function unscript(text: string): string {
-  return text
-    .replace(/[₀₁₂₃₄₅₆₇₈₉]/g, (c) => SUBSCRIPT_CHARS[c] ?? c)
-    // 上付きの連続（²⁻ や ³⁺）を 1 つの電荷として ^{…} 相当に写す
-    .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+/g, (run) =>
-      `^${[...run].map((c) => SUPERSCRIPT_CHARS[c] ?? '').join('')}`,
-    );
-}
-
-/**
- * 化学反応式の候補を mhchem の \ce{…} に変換する。
- * 化学式として解釈できなければ null（＝従来の描画に任せる）。
- */
-export function toChemLatex(src: string): string | null {
-  // ★HTML 由来の添字・上付きの記法をならす★
-  //   まとめプリントは <sub>2</sub> / <sup>2-</sup> で書かれており、
-  //   typesetHtmlMath はそれを論理テキスト `_{2}` / `^{2-}` に写す。
-  //   mhchem は `ZnCl2` `SO4^2-` の形（波かっこ無し）で読むので、
-  //   ここで
-  //     _{2}   → 2    （原子の数。添字の 2 は数のまま並べる）
-  //     ^{2-}  → ^2-  （電荷。^ は必ず残す＝原子数と区別する）
-  //   に直す。^ を落とすと SO4^2- が SO42- になり
-  //   「酸素が42個」という別の意味になってしまう。
-  let t = String(src ?? '')
-    .replace(/_\{([0-9]+)\}/g, '$1')
-    .replace(/\^\{([0-9]*[+-])\}/g, '^$1');
-
-  // 全角のプラス・矢印を ASCII に寄せ、Unicode 添字を平文に戻す
-  t = unscript(t).replace(/＋/g, ' + ').replace(/[（]/g, '(').replace(/[）]/g, ')');
-  for (const [re, rep] of CHEM_ARROWS) t = t.replace(re, rep);
-
-  // 空白なしで書かれた「＋」を項の区切りとして分ける（H⁺+OH⁻→H₂O）。
-  //   ★電荷の + と区別すること★
-  //   直前が `^`（＝ H^+ の電荷）なら区切りではない。
-  //   直後が元素記号・係数・開き括弧のときだけ区切りと見なす。
-  t = t.replace(/(?<!\^)\+(?=[A-Z(0-9])/g, ' + ');
-
-  // 係数と化学式の間に空白は入れない（mhchem が 2H2O をそのまま解釈する）
-  const tokens = t.split(/\s+/).filter(Boolean).map((token) => {
-    // Compact charges in the verified chemistry sources must be explicit for
-    // mhchem: Fe2+ otherwise means two Fe atoms with a single positive charge.
-    // Only known ions are disambiguated; NH4+, O2+ and explicit scripts retain
-    // their atom counts. Leading reaction coefficients are kept unchanged.
-    const match = token.match(/^(\d*)(.*)$/)!;
-    const compact: Record<string, string> = {
-      'Fe2+': 'Fe^2+', 'Fe3+': 'Fe^3+', 'Cu2+': 'Cu^2+',
-      // Include charges used in distractors / hypothetical-element questions.
-      'Na2+': 'Na^2+', 'Y2+': 'Y^2+',
-      'Ca2+': 'Ca^2+', 'Mg2+': 'Mg^2+', 'Ba2+': 'Ba^2+',
-      'Sr2+': 'Sr^2+', 'Be2+': 'Be^2+', 'Zn2+': 'Zn^2+',
-      'Al3+': 'Al^3+', 'Mn2+': 'Mn^2+', 'Cr3+': 'Cr^3+',
-      'Pb2+': 'Pb^2+', 'Sn2+': 'Sn^2+', 'Sn4+': 'Sn^4+',
-      'Ni2+': 'Ni^2+', 'Co2+': 'Co^2+', 'Cd2+': 'Cd^2+',
-      'Hg2+': 'Hg^2+', 'O2-': 'O^2-', 'S2-': 'S^2-',
-      'SO42-': 'SO4^2-', 'SO32-': 'SO3^2-', 'CO32-': 'CO3^2-',
-      'PO43-': 'PO4^3-', 'CrO42-': 'CrO4^2-', 'Cr2O72-': 'Cr2O7^2-',
-      'C2O42-': 'C2O4^2-',
-    };
-    return compact[match[2]] ? match[1] + compact[match[2]] : token;
-  });
-  if (tokens.length === 0) return null;
-
-  let sawFormula = false;
-  for (const token of tokens) {
-    // 演算子・矢印はそのまま通す
-    if (/^(\+|->|<-|<=>|=)$/.test(token)) continue;
-    if (!isChemicalFormula(token)) return null;
-    sawFormula = true;
-  }
-  if (!sawFormula) return null;
-
-  return `\\ce{${tokens.join(' ')}}`;
-}
-
-/**
- * 化学式・反応式として組める領域を探す。
- *
- * 解説文（日本語）の中に混ざった化学式も対象にするため、
- * 「化学式に使える文字が続く範囲」を切り出して 1 つずつ検証する。
- * 検証に落ちた範囲は触らない（＝従来の描画に任せる）。
- */
-// ★`_` `{` `}` を含めている理由★
-//   まとめプリント（HTML）の <sub>2</sub> は typesetHtmlMath が
-//   論理テキスト `_{2}` に写してから領域判定に回す。
-//   これを CHEM_CHAR に入れておかないと ZnCl_{2} が
-//   「ZnCl」と「2」に切れてしまい、反応式として組めない。
-//   ここで拾い過ぎても toChemLatex が元素記号の並びとして
-//   検証するので誤変換にはならない。
-const CHEM_CHAR = /[0-9A-Za-z()·・^_{}+\-＋→⟶⇄⇌⟷⇔←=₀₁₂₃₄₅₆₇₈₉⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻ \t]/;
-
-/**
- * ローマ数字だけの領域（酸化数の (II) / (III) など）。
- *
- * ★化学式にしてはいけない★
- *   I と V と X は元素記号（ヨウ素・バナジウム・キセノン）なので
- *   isChemicalFormula は「(II)」を通してしまうが、
- *   実際の意味は「銅(II)イオン」の酸化数であって化学式ではない。
- */
-const ROMAN_ONLY = /^\(?[IVXLCDM]{1,5}\)?$/;
-
-export function scanChemRegions(text: string): MathRegion[] {
-  const regions: MathRegion[] = [];
-  let i = 0;
-
-  while (i < text.length) {
-    if (!CHEM_CHAR.test(text[i])) { i++; continue; }
-
-    let j = i;
-    while (j < text.length && CHEM_CHAR.test(text[j])) j++;
-
-    // 前後の空白・句読点を落として candidate を作る
-    const raw = text.slice(i, j);
-    const lead = raw.length - raw.replace(/^[\s=]+/, '').length;
-    const candidate = raw.replace(/^[\s=]+/, '').replace(/[\s]+$/, '');
-
-    if (candidate) {
-      const latex = toChemLatex(candidate);
-      // 単独の元素記号 1 個（「O」「H」など）だけの領域は組み替えない。
-      // 文章中の記号としてそのまま読めるし、囲みが増えると逆に読みにくい。
-      const trivial = /^[0-9]*[A-Z][a-z]?$/.test(candidate);
-      if (latex && !trivial && !ROMAN_ONLY.test(candidate)) {
-        regions.push({
-          start: i + lead,
-          end: i + lead + candidate.length,
-          text: candidate,
-        });
-      }
-    }
-    i = j;
-  }
-
-  return regions;
-}
-
 // ===================================================================
 // 2. 混在テキストから「数式領域」を切り出す
 // ===================================================================
@@ -798,12 +569,6 @@ function looksLikeMath(text: string, mathContext = false): boolean {
   }
 
   return true;
-}
-
-export interface MathRegion {
-  start: number;
-  end: number;
-  text: string;
 }
 
 /**

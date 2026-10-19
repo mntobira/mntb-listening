@@ -26,6 +26,7 @@
  *   判断材料はイラスト（subQuestion.imageUrl）なので選択肢本文は無い。
  *   その場合は空の Map が返り、呼び出し側はマークのみのボタンを描く。
  */
+import type { ProblemLike, SubQuestion, SubQuestionLike } from '../types/curriculum';
 
 /** 選択肢マーク（第1問A/B はすべて ①〜④ の4択） */
 const MARKS = ['①', '②', '③', '④'];
@@ -90,7 +91,7 @@ export function parseListeningOptionBlocks(text: string): Map<number, string[]> 
  * subQuestion のラベル（"問2 話者（…）の発話に最も近い英文"）から設問番号を推定する。
  * 取れない場合は並び順（index+1）を使う。
  */
-export function subQuestionNumber(sq: any, index: number): number {
+export function subQuestionNumber(sq: SubQuestionLike, index: number): number {
   const m = String(sq?.label || '').match(/問\s*(\d+)/u);
   return m ? Number(m[1]) : index + 1;
 }
@@ -99,9 +100,10 @@ export function subQuestionNumber(sq: any, index: number): number {
  * 「subQuestion.id → 選択肢本文の配列（options と同じ並び）」を作る。
  * 選択肢本文が取れない設問（第1問B など）はキーを持たない。
  */
-export function buildListeningOptionTexts(problem: any): Map<string, string[]> {
+export function buildListeningOptionTexts(problem: ProblemLike): Map<string, string[]> {
   const map = new Map<string, string[]>();
-  const subs: any[] = problem?.subQuestions || [];
+  // ここで読む小問は id を持つ前提（データの小問は必ず id を持つ）
+  const subs = (problem?.subQuestions || []) as Array<Partial<SubQuestion> & { id: string }>;
 
   // ★第4問以降：小問が選択肢本文（optionTexts）を直接持っている★
   //   6択共有・図が選択肢・日本語の選択肢など形が多く、problem.text から

@@ -16,11 +16,13 @@ function isAdDisabled(): boolean {
   try {
     const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env ?? {};
     if (env.VITE_DISABLE_ADS === 'true' || env.VITE_DISABLE_ADS === '1') return true;
-    if ((window as any).__SCREENSHOT_MODE__) return true;
+    if ((window as Window & { __SCREENSHOT_MODE__?: unknown }).__SCREENSHOT_MODE__) return true;
     const params = new URLSearchParams(window.location.search);
     if (params.get('no_ads') === '1' || params.get('screenshot') === '1') return true;
     if (localStorage.getItem('no_ads') === '1' || localStorage.getItem('screenshot_mode') === 'true') return true;
-  } catch {}
+  } catch {
+    // URL・localStorage を読めない環境では広告の無効化指定なしとして扱う
+  }
   return false;
 }
 

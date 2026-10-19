@@ -657,14 +657,6 @@ export function nextRating(
   return Math.max(RATING_FLOOR, Math.round(raw));
 }
 
-/**
- * レート差から「勝てそうか」の目安を返す（0〜100の百分率）。
- * マッチング画面で相手の強さを伝えるために使う。
- */
-export function winProbabilityPercent(myRating: number, opponentRating: number): number {
-  const e = 1 / (1 + Math.pow(10, (opponentRating - myRating) / 400));
-  return Math.round(e * 100);
-}
 
 // ============================================================
 // 決定論的な乱数（出題の抽選に使う）

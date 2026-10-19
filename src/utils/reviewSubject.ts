@@ -20,33 +20,21 @@
  *   マージ処理（studySyncCore）にも影響しない。
  *
  * ■ 判定の根拠（chapterId の命名規則）
- *   実データの章IDは科目ごとに接頭辞が分かれている。
- *     化学基礎 … 'c1_1' 〜 'c6_7'      （src/data/chemistryData.ts）
- *     化学     … 'a1_1' 〜 'a14_5'     （src/data/chemistryAdvancedData.ts）
- *     リスニング … 'el1_A', 'el2', 'el3' 〜 'el6_B'（src/data/englishListeningData.ts）
- *
- *   単なる先頭1文字の判定にすると 'el…' が 'e' で化学基礎に化けるなど
- *   将来の追加で壊れやすいので、
- *     1) まず実データから作った章IDの集合に問い合わせ（最も確実）
- *     2) 見つからなければ命名規則の正規表現で判定（新章の追加に追従）
- *   の2段構えにしている。どちらでも決まらなければ null を返し、
- *   呼び出し側で「その他」として扱う（データを捨てない）。
+ *   実データの章IDは科目ごとに接頭辞が分かれている（リスニング el… / 英文法 eg…）。
+ *   形は教科の登録簿（data/subjects.ts の chapterIdPattern）が持つ。
+ *   どれにも合わなければ「その他」として扱う（旧版の化学などのデータも捨てない）。
  */
 
 import { REVIEW_INTERVALS_DAYS, type ReviewItem } from './reviewList';
 import { stripHtmlToText } from './sanitizeHtml';
 
-/** ダッシュボードが扱う科目ID。SubjectSelection の SubjectId と同じ値を使う。 */
-export type ReviewSubjectId =
-  | 'chemistry_basic'
-  | 'chemistry'
-  | 'english_listening'
-  | 'math'
-  | 'biology_basic'
-  | 'english_grammar'
-  | 'geography';
+import { SUBJECT_REGISTRY, subjectOfChapterId as registrySubjectOf, type SubjectKey } from '../data/subjects';
+import type { ReviewSubjectStyle } from '../data/subjects';
+export type { ReviewSubjectStyle } from '../data/subjects';
 
-/** 科目が判定できなかったアイテムをまとめる擬似ID */
+/** 復習アイテムが属しうる科目（教科の登録簿の教科） */
+export type ReviewSubjectId = SubjectKey;
+
 export const UNKNOWN_SUBJECT = 'other' as const;
 
 export type ReviewSubjectKey = ReviewSubjectId | typeof UNKNOWN_SUBJECT;
@@ -56,108 +44,30 @@ export const ALL_SUBJECTS = 'all' as const;
 
 export type SubjectTabId = typeof ALL_SUBJECTS | ReviewSubjectKey;
 
-export const REVIEW_SUBJECT_LABELS: Record<ReviewSubjectKey, string> = {
-  chemistry_basic: '化学基礎',
-  chemistry: '化学',
-  english_listening: '英語リスニング',
-  math: '数学',
-  biology_basic: '生物基礎',
-  english_grammar: '英文法',
-  geography: '地理総合・地理探究',
+const OTHER_STYLE: ReviewSubjectStyle = {
+  textClass: 'text-slate-600',
+  bgClass: 'bg-slate-100',
+  borderClass: 'border-slate-200',
+  activeClass: 'bg-slate-600 text-white border-slate-600',
+  stripeClass: 'bg-slate-400',
+};
+
+/** 科目の表示名（登録簿から作る。判定できないものは「その他」） */
+export const REVIEW_SUBJECT_LABELS = {
+  ...Object.fromEntries(SUBJECT_REGISTRY.map((s) => [s.id, s.label])),
   other: 'その他',
-};
+} as Record<ReviewSubjectKey, string>;
 
-/** タブに出す短縮名（スマホ幅でも横スクロールで並べられる長さにする） */
-export const REVIEW_SUBJECT_SHORT_LABELS: Record<ReviewSubjectKey, string> = {
-  chemistry_basic: '化学基礎',
-  chemistry: '化学',
-  english_listening: 'リスニング',
-  math: '数学',
-  biology_basic: '生物基礎',
-  english_grammar: '英文法',
-  geography: '地理',
+/** タブに出す短い表示名 */
+export const REVIEW_SUBJECT_SHORT_LABELS = {
+  ...Object.fromEntries(SUBJECT_REGISTRY.map((s) => [s.id, s.shortLabel])),
   other: 'その他',
-};
+} as Record<ReviewSubjectKey, string>;
 
-/**
- * 科目ごとの識別色。
- * src/data/subjectTheme.ts のアクセント色と同じ値を使い、
- * アプリ内で「化学基礎＝ローズ／化学＝ブルー／リスニング＝ミント」の
- * 対応が画面をまたいでも崩れないようにしている。
- * Tailwind は動的なクラス名を拾えないので、完成形の文字列で持つ。
- */
-export interface ReviewSubjectStyle {
-  /** 文字色（濃いめ） */
-  textClass: string;
-  /** 背景（淡い面） */
-  bgClass: string;
-  /** 枠線 */
-  borderClass: string;
-  /** 選択中タブの塗り */
-  activeClass: string;
-  /** 左端の色帯（カードの科目識別） */
-  stripeClass: string;
-}
-
-const SUBJECT_STYLES: Record<ReviewSubjectKey, ReviewSubjectStyle> = {
-  chemistry_basic: {
-    textClass: 'text-[#A8635D]',
-    bgClass: 'bg-[#F0C7D2]/25',
-    borderClass: 'border-[#F0C7D2]',
-    activeClass: 'bg-[#C0847E] text-white border-[#C0847E]',
-    stripeClass: 'bg-[#C0847E]',
-  },
-  chemistry: {
-    textClass: 'text-[#3C6B8A]',
-    bgClass: 'bg-[#A9CCE3]/25',
-    borderClass: 'border-[#A9CCE3]',
-    activeClass: 'bg-[#4A7FA0] text-white border-[#4A7FA0]',
-    stripeClass: 'bg-[#4A7FA0]',
-  },
-  english_listening: {
-    textClass: 'text-[#2F7C74]',
-    bgClass: 'bg-[#A9E0D8]/25',
-    borderClass: 'border-[#A9E0D8]',
-    activeClass: 'bg-[#3E9C93] text-white border-[#3E9C93]',
-    stripeClass: 'bg-[#3E9C93]',
-  },
-  // 以下は src/data/subjectTheme.ts の accent / accentSoft と同じ値。
-  math: {
-    textClass: 'text-[#4A4D8F]',
-    bgClass: 'bg-[#C7C9E8]/25',
-    borderClass: 'border-[#C7C9E8]',
-    activeClass: 'bg-[#5B5EA6] text-white border-[#5B5EA6]',
-    stripeClass: 'bg-[#5B5EA6]',
-  },
-  biology_basic: {
-    textClass: 'text-[#5F7B39]',
-    bgClass: 'bg-[#D5E3B8]/25',
-    borderClass: 'border-[#D5E3B8]',
-    activeClass: 'bg-[#7A9A4B] text-white border-[#7A9A4B]',
-    stripeClass: 'bg-[#7A9A4B]',
-  },
-  english_grammar: {
-    textClass: 'text-[#9F6230]',
-    bgClass: 'bg-[#EFD3B4]/25',
-    borderClass: 'border-[#EFD3B4]',
-    activeClass: 'bg-[#C77B3C] text-white border-[#C77B3C]',
-    stripeClass: 'bg-[#C77B3C]',
-  },
-  geography: {
-    textClass: 'text-[#864A74]',
-    bgClass: 'bg-[#E7C4DB]/25',
-    borderClass: 'border-[#E7C4DB]',
-    activeClass: 'bg-[#A45C8E] text-white border-[#A45C8E]',
-    stripeClass: 'bg-[#A45C8E]',
-  },
-  other: {
-    textClass: 'text-slate-600',
-    bgClass: 'bg-slate-100',
-    borderClass: 'border-slate-200',
-    activeClass: 'bg-slate-600 text-white border-slate-600',
-    stripeClass: 'bg-slate-400',
-  },
-};
+const SUBJECT_STYLES = {
+  ...Object.fromEntries(SUBJECT_REGISTRY.map((s) => [s.id, s.reviewStyle])),
+  other: OTHER_STYLE,
+} as Record<ReviewSubjectKey, ReviewSubjectStyle>;
 
 export function reviewSubjectStyle(subject: ReviewSubjectKey): ReviewSubjectStyle {
   return SUBJECT_STYLES[subject] || SUBJECT_STYLES.other;
@@ -167,54 +77,12 @@ export function reviewSubjectStyle(subject: ReviewSubjectKey): ReviewSubjectStyl
 // chapterId → 科目
 // ============================================================
 
-/**
- * 実データから章IDの集合を作る。
- * データ本体（chemistryData など）を import すると
- * ダッシュボードを開くだけで巨大なJSONを読み込むことになるため、
- * ここでは import せず「命名規則」だけで判定する方針を採った。
- *
- * 代わりに、呼び出し側（テスト含む）が実データの章IDを渡して
- * 規則の妥当性を検証できるようにしている。
- */
-// 実データには枝番付きの章IDもある（化学基礎の 'c1_2_A' / 'c1_2_B' など）。
-// 末尾の枝番を任意で許す形にしておく。
-// 「実データの全章IDがどれかの科目に必ず分類される」ことは
-// tests/reviewDashboard.test.ts が全件走査して保証しているので、
-// 章が追加されて規則から外れた場合はテストが落ちて気づける。
-const CHEMISTRY_BASIC_RE = /^c\d+_\d+(_[A-Z])?$/;
-const CHEMISTRY_ADVANCED_RE = /^a\d+_\d+(_[A-Z])?$/;
-const LISTENING_RE = /^el\d+(_[A-Z])?$/;
-// 数学 'm1_1' / 'mi_1'（積分）/ 'mv_1'（ベクトル）/ 'mp_1'（確率）/ 'mc1_…'（カリキュラム）/ 'ia1_1'（数I・A）、生物基礎 'bio1_1'〜、
-// 英文法 'eg1_1'〜、地理 'geo_q1_r1' / 'geo_exam_r1' など。
-// 実データの全章IDがこの規則で分類されることは tests/reviewDashboard.test.ts が
-// 章インデックス（全科目）を全件走査して検査する。
-const MATH_RE = /^(?:m[a-z]?\d*_\d+|mc[123abc]_[a-z0-9_]+|ia\d*_\d+)$/;
-const BIOLOGY_RE = /^bio\d+_\d+$/;
-const GRAMMAR_RE = /^eg\d+_\d+$/;
-const GEOGRAPHY_RE = /^geo_[a-z0-9_]+$/;
-
-/**
- * 章IDから科目を判定する。判定できなければ null。
- *
- * 判定順に意味がある: 'el…' を先に見ることで、
- * 将来 'e' で始まる別の規則が増えても誤判定しにくくする。
- */
-export function subjectOfChapterId(chapterId: string | null | undefined): ReviewSubjectId | null {
-  const id = (chapterId || '').trim();
-  if (!id) return null;
-  if (LISTENING_RE.test(id)) return 'english_listening';
-  if (GRAMMAR_RE.test(id)) return 'english_grammar';
-  if (GEOGRAPHY_RE.test(id)) return 'geography';
-  if (BIOLOGY_RE.test(id)) return 'biology_basic';
-  if (MATH_RE.test(id)) return 'math';
-  if (CHEMISTRY_ADVANCED_RE.test(id)) return 'chemistry';
-  if (CHEMISTRY_BASIC_RE.test(id)) return 'chemistry_basic';
-  return null;
-}
+/** 章IDから科目を判定する。判定できなければ null（形は登録簿の chapterIdPattern）。実体は data/subjects.ts。 */
+export { subjectOfChapterId } from '../data/subjects';
 
 /** 復習アイテムの科目キー（判定できないものは 'other'） */
 export function subjectOfReviewItem(item: ReviewItem): ReviewSubjectKey {
-  return subjectOfChapterId(item.chapterId) ?? UNKNOWN_SUBJECT;
+  return registrySubjectOf(item.chapterId) ?? UNKNOWN_SUBJECT;
 }
 
 // ============================================================
@@ -252,17 +120,8 @@ export interface SubjectSummary {
   avgRetention: number;
 }
 
-/** 表示順（科目選択画面と同じ並び → その他）を固定する */
-const SUBJECT_ORDER: ReviewSubjectKey[] = [
-  'chemistry_basic',
-  'chemistry',
-  'english_listening',
-  'math',
-  'biology_basic',
-  'english_grammar',
-  'geography',
-  UNKNOWN_SUBJECT,
-];
+/** 表示順（登録簿の並び → その他）を固定する */
+const SUBJECT_ORDER: ReviewSubjectKey[] = [...SUBJECT_REGISTRY.map((s) => s.id), UNKNOWN_SUBJECT];
 
 /**
  * 復習アイテムを科目ごとにまとめ、件数と平均定着度を集計する。
@@ -416,18 +275,3 @@ export interface ReviewBadge {
   label: string;
 }
 
-export function badgesForItem(item: ReviewItem): ReviewBadge[] {
-  const badges: ReviewBadge[] = [];
-  const retention = Math.round(retentionOf(item) * 100);
-
-  if (item.box >= REVIEW_INTERVALS_DAYS.length - 1) {
-    badges.push({ kind: 'mastered', label: '習得済み' });
-  } else if (item.wrongCount >= 2) {
-    badges.push({ kind: 'weak', label: `苦手 ${item.wrongCount}回` });
-  }
-
-  badges.push({ kind: 'retention', label: `定着 ${retention}%` });
-
-  // 最大2つ（要件: バッジ2つまで）
-  return badges.slice(0, 2);
-}

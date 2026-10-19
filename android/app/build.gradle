@@ -16,7 +16,10 @@ android {
         versionCode 12
         versionName "1.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // 音源・動画は APK 内で無圧縮にする（RangeAwareWebViewClient が openFd で長さを取り、途中から読めるように）
+        // ※ mp3/mp4 は既定でも無圧縮だが、念のため明示する
         aaptOptions {
+             noCompress 'mp3', 'm4a', 'mp4', 'webm', 'ogg', 'wav'
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'

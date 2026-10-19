@@ -23,16 +23,16 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { formatText } from '../utils/textFormatter';
 import { buildSubQuestionList, cleanQuestionText, findSubQuestionSentence, splitQuestionLabel, type InlineQuestionRows } from '../utils/questionDisplay';
 import { getFigureNumber } from '../utils/figureNumbering';
-import { stepLabelOf } from '../utils/listeningSteps';
+import { stepLabelOf, type ListeningStep } from '../utils/listeningSteps';
+import type { AudioTrack, Problem, SubQuestion } from '../types/curriculum';
 import { QuestionFigure } from './QuestionFigure';
-import { IonizationEnergyChart } from './IonizationEnergyChart';
 import { ListeningAudioPlayer } from './ListeningAudioPlayer';
 import { ExplanationBody } from './ExplanationBody';
 import { ListeningMaterials } from './ListeningMaterials';
 
 export interface ProblemPaneProps {
   /** いま表示している大問。 */
-  currentQuestion: any;
+  currentQuestion: Problem;
   currentQuestionIndex: number;
   /** PC 表示か（true なら高さの分岐が変わる）。 */
   isDesktop: boolean;
@@ -51,18 +51,18 @@ export interface ProblemPaneProps {
   /** リスニングのスマホ表示で図が無い場合のレイアウト分岐。 */
   listeningMobileNoFigure: boolean;
   listeningMaterialsMobile?: boolean;
-  selectedAnswerSub?: any;
-  listeningSteps: any[];
+  selectedAnswerSub?: SubQuestion | null;
+  listeningSteps: ListeningStep[];
   safeStepIndex: number;
-  activeStepSub: any;
-  listeningTracks: any[];
-  hasTrackFor: (sq: any) => boolean;
+  activeStepSub: SubQuestion | null | undefined;
+  listeningTracks: AudioTrack[];
+  hasTrackFor: (subId: string) => boolean;
   /** 英文（散文）として折り返すか。 */
   isEnglishProse: boolean;
   /** 数式フォントを当てるか。 */
   questionNeedsMathPalette: boolean;
   /** 図番号 → 表示番号 の対応表。 */
-  figureNumberMap: Map<string, number> | any;
+  figureNumberMap: Record<string, number>;
   /** 設問文に出す強調語（ユーザー選択＋自動抽出）。 */
   combinedHighlights: string[];
   highlights: string[];
@@ -424,7 +424,7 @@ export function ProblemPane({
             */
             const currentStep = listeningSteps[safeStepIndex];
             const grouped = !!currentStep && currentStep.subQuestionIds.length > 1;
-            const stepTrack = listeningTracks.find((t: any) => t?.subId === activeStepSub.id);
+            const stepTrack = listeningTracks.find((t: AudioTrack) => t?.subId === activeStepSub.id);
             const stepMarker = grouped && currentStep
               ? currentStep.label
               : stepLabelOf(activeStepSub, safeStepIndex);
@@ -572,9 +572,9 @@ export function ProblemPane({
                     orientation="horizontal"
                     mode="practice"
                     tone="light"
-                    readCount={(currentQuestion as any).readCount || 2}
+                    readCount={currentQuestion.readCount || 2}
                     /* 第4問以降：本番どおり1回だけ再生（データ側の playOnce） */
-                    playOnce={!!(currentQuestion as any).playOnce}
+                    playOnce={!!currentQuestion.playOnce}
                   />
                 )}
 
@@ -715,11 +715,6 @@ export function ProblemPane({
                 boxedSections
               />
             )
-          )}
-          {currentQuestion.text.includes('図6') && (
-            <div className="mt-4">
-              <IonizationEnergyChart showDetails={false} />
-            </div>
           )}
           {/* 問題に付随する図・イラスト（PDF由来の図版など） */}
           {currentQuestion.imageUrl && (

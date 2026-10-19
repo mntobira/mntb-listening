@@ -4,7 +4,7 @@ import { groupReviewItems, captureWrongAnswers, loadReviewList, applyReviewRetry
 const store: Record<string, string> = {};
 beforeEach(() => {
   for (const k of Object.keys(store)) delete store[k];
-  (globalThis as any).localStorage = { getItem: (k: string) => store[k] ?? null, setItem: (k: string, v: string) => { store[k] = v; }, removeItem: (k: string) => { delete store[k]; } };
+  (globalThis as { localStorage?: unknown }).localStorage = { getItem: (k: string) => store[k] ?? null, setItem: (k: string, v: string) => { store[k] = v; }, removeItem: (k: string) => { delete store[k]; } };
 });
 
 describe('review note groups wrong sub-questions per problem (2026-10-04)', () => {
@@ -29,9 +29,39 @@ import { applyReviewFocus } from '../src/utils/reviewFocus';
 describe('review focus narrows the problem to the wrong sub-questions only', () => {
   it('keeps only 問4 of 問1〜5', () => {
     const problems = [{ id: 'q1', subQuestions: [1, 2, 3, 4, 5].map(n => ({ id: `q1_${n}` })) }, { id: 'q2', subQuestions: [{ id: 'q2_1' }] }];
-    const out = applyReviewFocus(problems, 'c', { chapterId: 'c', questionId: 'q1', subQuestionIds: ['q1_4'] });
+    const out = applyReviewFocus(problems, 'c', { chapterId: 'c', targets: [{ questionId: 'q1', subQuestionIds: ['q1_4'] }] });
     expect(out[0].subQuestions!.map(s => s.id)).toEqual(['q1_4']);
-    expect(out[1]).toBe(problems[1]);
+    expect(out).toHaveLength(1);
     expect(problems[0].subQuestions).toHaveLength(5);
+  });
+});
+
+import { focusedSubIds, normalizeReviewFocus } from '../src/utils/reviewFocus';
+describe('「間違えた問題だけ解き直す」は間違えた大問・小問だけを出す（2026-10-16 不具合修正）', () => {
+  const problems = [
+    { id: 'q1', subQuestions: [{ id: 'q1_1' }, { id: 'q1_2' }] },
+    { id: 'q2', subQuestions: [{ id: 'q2_1' }] },
+    { id: 'q3', subQuestions: [{ id: 'q3_1' }, { id: 'q3_2' }, { id: 'q3_3' }] },
+  ];
+  const focus = { chapterId: 'c', targets: [
+    { questionId: 'q1', subQuestionIds: ['q1_2'] },
+    { questionId: 'q3', subQuestionIds: ['q3_1', 'q3_3'] },
+  ] };
+  it('全部正解の大問は出さず、間違えた小問だけに絞る', () => {
+    const out = applyReviewFocus(problems, 'c', focus);
+    expect(out.map(p => p.id)).toEqual(['q1', 'q3']);
+    expect(out[0].subQuestions!.map(s => s.id)).toEqual(['q1_2']);
+    expect(out[1].subQuestions!.map(s => s.id)).toEqual(['q3_1', 'q3_3']);
+  });
+  it('別の単元には効かない／対象が見つからなければ元の並び', () => {
+    expect(applyReviewFocus(problems, 'other', focus)).toBe(problems);
+    expect(applyReviewFocus(problems, 'c', { chapterId: 'c', targets: [{ questionId: 'gone', subQuestionIds: ['x'] }] })).toBe(problems);
+  });
+  it('旧形式の保存値も読める・空の対象は捨てる', () => {
+    expect(normalizeReviewFocus({ chapterId: 'c', questionId: 'q1', subQuestionIds: ['q1_1'] }))
+      .toEqual({ chapterId: 'c', targets: [{ questionId: 'q1', subQuestionIds: ['q1_1'] }] });
+    expect(normalizeReviewFocus({ chapterId: 'c', targets: [{ questionId: 'q1', subQuestionIds: [] }] })).toBeNull();
+    expect(focusedSubIds(focus, 'c', 'q3')).toEqual(['q3_1', 'q3_3']);
+    expect(focusedSubIds(focus, 'c', 'q2')).toBeNull();
   });
 });

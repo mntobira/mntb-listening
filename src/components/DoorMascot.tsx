@@ -1,3 +1,4 @@
+import { DEFAULT_SUBJECT } from '../data/subjects';
 import React, { useState } from 'react';
 import { auth } from '../firebase';
 import { TIP_CATEGORIES, tipsForSubject, type MascotTip, type TipSubject } from '../data/mascotTips';
@@ -72,7 +73,7 @@ export function DoorMascot({
   className = '',
   showSpeech = true,
   size = 'normal',
-  subject = 'chemistry_basic',
+  subject = DEFAULT_SUBJECT,
   showCategory = false,
 }: DoorMascotProps) {
   // マスコットの絵柄は表示ごとにランダム（従来どおり）

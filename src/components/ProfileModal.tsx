@@ -27,7 +27,10 @@ import { fetchMyRankingRow } from '../battle/data/battleRanking';
 import { readStudyTime, formatStudyTime } from '../utils/studyTime';
 import { GOAL_OPTIONS, TARGET_SCHOOL_MAX, normalizeTargetSchool, readGoal, writeGoal, type GoalId } from '../utils/vocabGoal';
 import './profile-settings.css';
+import { ReminderSettings, AnalyticsSetting } from './ReminderSettings';
 import { readJsonArray } from '../utils/safeLocalStorage';
+import { logRejection } from '../utils/reportError';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 interface ProfileModalProps {
   onClose: () => void;
@@ -62,10 +65,12 @@ type SettingsTab = 'general' | 'friends' | 'class';
 export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenTeacherDashboard, onOpenFeedbackAdmin, onOpenOutfit }: ProfileModalProps) {
   const { progress: growth } = useGrowthProgress();
   const [rating, setRating] = useState(1500);
-  useEffect(() => { let alive = true; if (auth.currentUser) void fetchMyRankingRow().then(r => { if (alive && r) setRating(r.rating); }).catch(() => {}); return () => { alive = false; }; }, []);
+  useEffect(() => { let alive = true; if (auth.currentUser) void fetchMyRankingRow().then(r => { if (alive && r) setRating(r.rating); }).catch(logRejection('profile.fetchRanking')); return () => { alive = false; }; }, []);
   const [studySeconds] = useState(() => readStudyTime(auth.currentUser?.uid || 'guest').total);
   const earnedBadges = BADGES.filter(b => b.id in growth.badges);
   const [tab, setTab] = useState<SettingsTab>(() => (initialTab && initialTab !== 'general' && auth.currentUser ? initialTab : 'general'));
+  /** PC の3列レイアウト（profile-settings.css の 1100px と揃える） */
+  const wideLayout = useMediaQuery('(min-width: 1100px)');
   const [battleAudioSettings, updateBattleAudio] = useBattleAudioSettings();
   const [name, setName] = useState('');
   const [grade, setGrade] = useState('');
@@ -151,8 +156,8 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
       // 「プロフィールを変えたのにランキングが変わらない」と混乱させていた。
       // 通信失敗しても保存自体は成功として扱う（次回ログイン時に再同期される）。
       if (auth.currentUser) {
-        void syncRankingNickname().catch(() => {});
-        void ensureFriendProfile().catch(() => {});
+        void syncRankingNickname().catch(logRejection('ranking.syncNickname'));
+        void ensureFriendProfile().catch(logRejection('friends.ensureProfile'));
       }
       if (publishFailed) { setPublicationError(publishFailed); setProfilePublic(wasPublic); return; }
       onClose();
@@ -194,9 +199,22 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
     if (!outcome.ok) setAuthError(outcome.message || 'ログインに失敗しました。');
   };
 
+  /* ★対戦で相手に見えるカードのプレビュー（A16）★ 名前・称号を変えるとその場で反映される。
+     PC の3列（1100px〜）ではプロフィール列が縦に長くなるので、余白のあるサウンド列に置く。 */
+  const preview = (
+    <section className="ps-preview mt-card" aria-label="対戦で相手に見えるカード">
+      <p>対戦で相手に見えるカード</p>
+      <div className="ps-mini" aria-hidden="true">
+        <span className="ps-mini-avatar"><GrowthAvatar progress={growth} size={44} showLevel={false} /></span>
+        <div><strong>{name.trim() || 'ニックネーム'}</strong><span><TitleChip progress={growth} rating={rating} /> Lv.{levelOf(growth.xp).level}</span></div>
+        <b>VS</b>
+      </div>
+    </section>
+  );
+
   return (
     <div className="mtb-page mt-screen profile-journal w-full h-full overflow-hidden pb-[calc(var(--app-nav-h,120px)+8px)] sm:pb-24" data-settings>
-      <div className="max-w-4xl h-full mx-auto px-3 sm:px-5 py-3 sm:py-5 flex flex-col relative">
+      <div className="profile-frame max-w-4xl h-full mx-auto px-3 sm:px-5 py-3 sm:py-5 flex flex-col relative">
         <div className="absolute top-4 right-8 w-40 h-40 bg-[#A9CCE3]/15 rounded-full blur-3xl pointer-events-none" />
 
         <header className="mt-app-header mb-2 sm:mb-3 relative z-10 shrink-0">
@@ -240,7 +258,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
           ) : (
             <div className="h-full flex flex-col gap-2">
             <div className="profile-workspace flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 overflow-y-auto md:overflow-hidden no-scrollbar">
-              <div className="space-y-2 sm:space-y-3">
+              <div className="ps-col-profile space-y-2 sm:space-y-3">
                 {/* ★プロフィールカード（A14）★ アバター・レベル/称号・連続日数・学習時間・バッジを1枚に。
                     「学習状況」と「プロフィール」の2枚に分かれていたものをまとめ、縦を詰める。 */}
                 <h3 className="ps-group-title">アカウント・プロフィール</h3>
@@ -304,18 +322,10 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
                   <p id="target-goal-help" className="sr-only">目標レベルを変えると、単語帳の出題範囲も変わります。志望校と学習時間は「プロフィールを公開」を保存した場合だけランキングに表示されます。</p>
                 </section>
 
-                {/* ★対戦で相手に見えるカードのプレビュー（A16）★ 名前・称号を変えるとその場で反映される */}
-                <section className="ps-preview mt-card" aria-label="対戦で相手に見えるカード">
-                  <p>対戦で相手に見えるカード</p>
-                  <div className="ps-mini" aria-hidden="true">
-                    <span className="ps-mini-avatar"><GrowthAvatar progress={growth} size={44} showLevel={false} /></span>
-                    <div><strong>{name.trim() || 'ニックネーム'}</strong><span><TitleChip progress={growth} rating={rating} /> Lv.{levelOf(growth.xp).level}</span></div>
-                    <b>VS</b>
-                  </div>
-                </section>
+                {!wideLayout && preview}
               </div>
 
-              <div className="space-y-2 sm:space-y-3 flex flex-col">
+              <div className="ps-col-app space-y-2 sm:space-y-3 flex flex-col">
                 <h3 className="ps-group-title">アプリ（サウンド）</h3>
                 <section className="ps-sound mt-card" aria-label="サウンド">
                   <Toggle label="BGM" sub="学習中・待ち時間・対戦の音楽（ひとつでON/OFF）" checked={isBgmEnabled} onChange={toggleBgm} icon={isBgmEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />} />
@@ -324,7 +334,14 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
                   <p className="ps-sub"><Swords size={14} aria-hidden="true" />対戦モードの音</p>
                   <Toggle label="対戦効果音" sub="正解・逆転など" checked={battleAudioSettings.sfx} onChange={() => { updateBattleAudio({ sfx: !battleAudioSettings.sfx }); if (!battleAudioSettings.sfx) window.setTimeout(() => battleAudio().play('correct'), 50); }} tone="gold" />
                 </section>
+                <h3 className="ps-group-title">通知</h3>
+                <section className="ps-sound mt-card" aria-label="通知">
+                  <ReminderSettings />
+                </section>
+                {wideLayout && preview}
+              </div>
 
+              <div className="ps-col-account space-y-2 sm:space-y-3 flex flex-col">
                 <h3 className="ps-group-title">アカウント連携</h3>
                 <section className="ps-account mt-card space-y-2" aria-label="アカウント連携">
                   {!auth.currentUser ? (
@@ -383,6 +400,9 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
                 </section>
 
                 <h3 className="ps-group-title">その他・データ</h3>
+                <section className="ps-sound mt-card" aria-label="使われ方の記録">
+                  <AnalyticsSetting />
+                </section>
                 <AccountSafetySection onDeleted={onClose} />
 
                 {/* ※「お問い合わせの送信状態」の欄は廃止した。

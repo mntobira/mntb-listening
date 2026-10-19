@@ -91,6 +91,9 @@ import {
 } from './BattleParts';
 import { fetchMyRankingRow, ratingProgress, ratingTitle } from '../data/battleRanking';
 import type { BattleRankingRow } from '../data/battleRanking';
+import { logRejection } from '../../utils/reportError';
+import { KineticText } from '../../motion';
+import { trackEvent } from '../../utils/analytics';
 
 export type BattleHomeChoice =
   | 'friend-create'
@@ -132,9 +135,9 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
 }) {
  const user=auth.currentUser;const {progress}=useGrowthProgress();
  const [row,setRow]=useState<BattleRankingRow|null>(null);
- useEffect(()=>{let active=true;if(user)void fetchMyRankingRow().then(r=>{if(active)setRow(r);}).catch(()=>{});return()=>{active=false;};},[user]);
+ useEffect(()=>{let active=true;if(user)void fetchMyRankingRow().then(r=>{if(active)setRow(r);}).catch(logRejection('battle.home.fetchRanking'));return()=>{active=false;};},[user]);
  return <BattleShell className="arena-menu">
-   <header className="arena-menu-header"><button type="button" onClick={onExit}>ホームへ</button><h1><Swords size={21}/>とびらバトル</h1><BgmButton /></header>
+   <header className="arena-menu-header"><button type="button" onClick={onExit}>ホームへ</button><h1><Swords size={21}/><KineticText text="とびらバトル" step={45} variant="pop" /></h1><BgmButton /></header>
    {/* ★E（2026-10-01）対戦前の舞台★ 夜のアリーナに「あなた VS ？？？」。とびら君がひとこと（少し挑発）。
        機能は同じ。下の3択・その他・ルールの中身も同じ */}
    <section className={`arena-vs${row ? ' has-rank' : ''}`} aria-label="あなたの情報" data-arena-vs>
@@ -161,7 +164,7 @@ export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
    {/* 3つのモードは同じ高さ・同じ幅。主役は「AIと対戦」（ゲストでも遊べる）を色とサイズで最強調 */}
    <p className="arena-lobby-label" aria-hidden="true">今すぐ対戦</p>
    <section className="arena-lobby-deck arena-lobby-grid" aria-label="今すぐ対戦：AI・フレンド・全国">
-    <button type="button" className="arena-lobby-card arena-lobby-main" data-battle-mode="ai" data-tone="ai" onClick={()=>onChoose('ai')} aria-label="AIと対戦する">
+    <button type="button" className="arena-lobby-card arena-lobby-main" data-battle-mode="ai" data-tone="ai" onClick={()=>{ trackEvent('battle_ai'); onChoose('ai'); }} aria-label="AIと対戦する">
      <span className="arena-lobby-icon"><Bot aria-hidden="true"/></span><strong>AIと対戦</strong><small>すぐ始まる・ゲストOK</small>
      <span className="arena-lobby-cta">はじめる<Swords size={16} aria-hidden="true"/></span>
     </button>

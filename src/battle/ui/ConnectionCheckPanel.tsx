@@ -1,3 +1,4 @@
+import { useLatest } from '../../hooks/useLatest';
 /**
  * 通信チェック（対戦メニュー・マッチング失敗時）。
  * 押したときだけ読み取りを最大4回して、どこで止まっているかを上から順に出す。
@@ -20,8 +21,8 @@ export function ConnectionCheckPanel({ autoRun = false, compact = false }: { aut
     setRunning(true); setCopied(false);
     try { setResults((await probeConnection()).results); } finally { setRunning(false); }
   };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (autoRun && !started.current) { started.current = true; void run(); } }, [autoRun]);
+  const runRef = useLatest(run);
+  useEffect(() => { if (autoRun && !started.current) { started.current = true; void runRef.current(); } }, [autoRun, runRef]);
   const summary = results ? summarizeConnection(results) : null;
   const copy = async () => {
     if (!results) return;

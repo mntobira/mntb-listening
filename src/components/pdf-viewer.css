@@ -1,0 +1,19 @@
+/* アプリ内の PDF ビュー（PdfViewer.tsx）。下のナビ・広告より上に全画面で重ねる */
+.pdfv { position: fixed; inset: 0; z-index: 9000; display: flex; flex-direction: column; background: #3a3f47; color: #fff; }
+.pdfv-bar { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: calc(env(safe-area-inset-top, 0px) + 6px) 10px 6px; background: #1c2a39; box-shadow: 0 2px 8px rgba(0, 0, 0, .25); }
+.pdfv-back { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 14px 0 10px; border-radius: 999px; border: 0; background: #fff; color: #1c2a39; font: 800 14px/1 var(--mt-font-display, sans-serif); }
+.pdfv-back:focus-visible, .pdfv-tools > *:focus-visible { outline: 3px solid #f2b84b; outline-offset: 2px; }
+.pdfv-title { flex: 1; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.pdfv-title strong { font-size: 14px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pdfv-title small { font-size: 12px; color: #c9d4e6; }
+.pdfv-tools { flex-shrink: 0; display: flex; gap: 4px; }
+.pdfv-tools > button, .pdfv-tools > a { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 44px; min-height: 44px; padding: 0 8px; border-radius: 12px; border: 1px solid #ffffff33; background: transparent; color: #fff; font: 700 13px/1 var(--mt-font-body, sans-serif); text-decoration: none; }
+.pdfv-tools > button:disabled { opacity: .4; }
+.pdfv-scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 12px 8px calc(env(safe-area-inset-bottom, 0px) + 16px); }
+.pdfv-pages { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.pdfv-scroll[data-zoom] .pdfv-pages { align-items: flex-start; width: max-content; min-width: 100%; }
+.pdfv-pages canvas { display: block; max-width: none; height: auto; background: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, .35); }
+.pdfv-scroll:not([data-zoom]) .pdfv-pages canvas { max-width: 100%; }
+.pdfv-status { margin: 24px auto; max-width: 420px; text-align: center; font-size: 14px; color: #e6ecf5; }
+.pdfv-status button { margin-top: 12px; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 0; background: #fff; color: #1c2a39; font-weight: 800; }
+@media (max-width: 360px) { .pdfv-tools > a span { display: none; } }

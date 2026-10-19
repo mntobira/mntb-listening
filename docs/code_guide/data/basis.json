@@ -1,0 +1,2438 @@
+{
+".env.example": {
+"h": "3eb416223e9e",
+"lines": 12
+},
+".firebaserc": {
+"h": "3eb416223e9e",
+"lines": 4
+},
+".gitignore": {
+"h": "3eb416223e9e",
+"lines": 54
+},
+"APP_CAPACITOR_README.md": {
+"h": "3eb416223e9e",
+"lines": 132
+},
+"CLAUDE.md": {
+"h": "3eb416223e9e",
+"lines": 8
+},
+"COMMERCIAL_AUDIO_MIGRATION.md": {
+"h": "3eb416223e9e",
+"lines": 123
+},
+"COMMERCIAL_AUDIO_STATUS.json": {
+"h": "3eb416223e9e",
+"lines": 22
+},
+"DERIVATIVE_HANDOFF.md": {
+"h": "3eb416223e9e",
+"lines": 106
+},
+"EXPORT_MANIFEST.json": {
+"h": "3eb416223e9e",
+"lines": 1217
+},
+"README.md": {
+"h": "3eb416223e9e",
+"lines": 156
+},
+"android/app/src/main/java/com/manatobi/listening/MainActivity.java": {
+"h": "3eb416223e9e",
+"lines": 16
+},
+"android/app/src/main/java/com/manatobi/listening/RangeAwareWebViewClient.java": {
+"h": "3eb416223e9e",
+"lines": 214
+},
+"capacitor.config.ts": {
+"h": "ec67f7b6761b",
+"lines": 17
+},
+"docs/ADDING_SUBJECT.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/APP_STORE.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/APP_SYNC.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/BATTLE.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/BATTLE_BGM.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/BATTLE_RELEASE_STEPS.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/BUILD.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/CINEMATICS.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/CINEMATICS_PROMPTS.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/DEPLOY_FIRESTORE_RULES.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/FEEDBACK_SETUP.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/FIRESTORE_RULES_DEPLOY.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/FRIEND_SYSTEM.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/LISTENING_AS_PRODUCT.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/LISTENING_AUDIO_REPLACE.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/LISTENING_AUDIO_VS_SPEECH.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/LISTENING_DERIVATIVE.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/RELEASE_STEPS_2026-10-05.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/UI_REVAMP_2026-09-30.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/UI参考_画面と導線.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/app_review/BLOCK_FEATURE_FOR_APPLE.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/business_overview/index.html": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/deploy-firestore-rules.workflow.yml": {
+"h": "a085fd3e9552",
+"lines": 49
+},
+"docs/feedback-gas.js": {
+"h": "45fa21104f14",
+"lines": 489
+},
+"docs/listening_q4-6/q4/README.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q4/データの決まり.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q4/問題の作り方.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q4/既存ファイルの変更点.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q5/README.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q5/データの決まり.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q5/問題の作り方.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q5/既存ファイルの変更点.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q6/README.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q6/データの決まり.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q6/問題の作り方.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"docs/listening_q4-6/q6/既存ファイルの変更点.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"firebase.json": {
+"h": "3eb416223e9e",
+"lines": 125
+},
+"firestore.indexes.json": {
+"h": "3eb416223e9e",
+"lines": 99
+},
+"firestore.rules": {
+"h": "3eb416223e9e",
+"lines": 2126
+},
+"functions/core.mjs": {
+"h": "442d9cfa2e3d",
+"lines": 109
+},
+"functions/core.test.mjs": {
+"h": "3026fd20dcbd",
+"lines": 57
+},
+"functions/index.mjs": {
+"h": "87cbf1e2657a",
+"lines": 241
+},
+"functions/integration.test.mjs": {
+"h": "3eb416223e9e",
+"lines": 146
+},
+"functions/package.json": {
+"h": "3eb416223e9e",
+"lines": 10
+},
+"index.html": {
+"h": "3eb416223e9e",
+"lines": 36
+},
+"ios/App/App/AppDelegate.swift": {
+"h": "3eb416223e9e",
+"lines": 44
+},
+"ios/App/App/SceneDelegate.swift": {
+"h": "3eb416223e9e",
+"lines": 24
+},
+"license_evidence/README.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"listening_audio_ledger.json": {
+"h": "3eb416223e9e",
+"lines": 5612
+},
+"message/index.html": {
+"h": "3eb416223e9e",
+"lines": 35
+},
+"metadata.json": {
+"h": "3eb416223e9e",
+"lines": 3
+},
+"package.json": {
+"h": "3eb416223e9e",
+"lines": 71
+},
+"public/.keep": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"public/_headers": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"public/data/listeningVocabulary.json": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"public/flowcharts/chem-basic-acid-redox-flowchart.html": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"public/manifest.json": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"public/sfx/battle/LICENSE_SFX.md": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"public/sw.js": {
+"h": "be4e3cd4002c",
+"lines": 125
+},
+"public/化学基礎_フローチャート集.html": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"public/化学基礎_フローチャート集_v2.html": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"scripts/android-range-check/Check.java": {
+"h": "3eb416223e9e",
+"lines": 16
+},
+"scripts/android-range-check/Javac.java": {
+"h": "3eb416223e9e",
+"lines": 1
+},
+"scripts/android-range-check/run.sh": {
+"h": "f9a57f977143",
+"lines": 11
+},
+"scripts/apply-android-assets.py": {
+"h": "3eb416223e9e",
+"lines": 79
+},
+"scripts/apply-new-icon.py": {
+"h": "3eb416223e9e",
+"lines": 100
+},
+"scripts/build-listening-prompts-pdf.py": {
+"h": "3eb416223e9e",
+"lines": 143
+},
+"scripts/build-q2-rerecord-pdf.py": {
+"h": "3eb416223e9e",
+"lines": 186
+},
+"scripts/build.sh": {
+"h": "fca2556319b4",
+"lines": 49
+},
+"scripts/check-firebase-setup.mjs": {
+"h": "fccd4c81623e",
+"lines": 37
+},
+"scripts/check-release.mjs": {
+"h": "3eb416223e9e",
+"lines": 17
+},
+"scripts/concat_listening_audio.sh": {
+"h": "e82482f2236c",
+"lines": 57
+},
+"scripts/data/grammar_v3/build_ts.py": {
+"h": "3eb416223e9e",
+"lines": 81
+},
+"scripts/data/grammar_v3/exam_tips.py": {
+"h": "3eb416223e9e",
+"lines": 176
+},
+"scripts/data/grammar_v3/ja_gloss.py": {
+"h": "3eb416223e9e",
+"lines": 101
+},
+"scripts/data/grammar_v3/normalize.py": {
+"h": "3eb416223e9e",
+"lines": 108
+},
+"scripts/export-listening-audio-prompts.mts": {
+"h": "be92e20b8e4d",
+"lines": 97
+},
+"scripts/extract_q2_illustrations.py": {
+"h": "3eb416223e9e",
+"lines": 225
+},
+"scripts/fix-vocab-meanings.py": {
+"h": "3eb416223e9e",
+"lines": 69
+},
+"scripts/fix_q2_text_to_figures.py": {
+"h": "3eb416223e9e",
+"lines": 159
+},
+"scripts/gacha-prints/README.md": {
+"h": "3eb416223e9e",
+"lines": 21
+},
+"scripts/gacha-prints/build-grammar-ur.py": {
+"h": "3eb416223e9e",
+"lines": 305
+},
+"scripts/gacha-prints/build-level-ur.py": {
+"h": "3eb416223e9e",
+"lines": 70
+},
+"scripts/gacha-prints/build-science-ur.py": {
+"h": "3eb416223e9e",
+"lines": 315
+},
+"scripts/gacha-prints/build-vocab-ur.py": {
+"h": "3eb416223e9e",
+"lines": 225
+},
+"scripts/gacha-prints/dump-grammar.mts": {
+"h": "3eb416223e9e",
+"lines": 8
+},
+"scripts/gacha-prints/dump-science.mts": {
+"h": "17ec7e193b0b",
+"lines": 35
+},
+"scripts/gacha-prints/fonts.py": {
+"h": "3eb416223e9e",
+"lines": 43
+},
+"scripts/gacha-prints/ur_common.py": {
+"h": "3eb416223e9e",
+"lines": 282
+},
+"scripts/gen-battle-pool.mts": {
+"h": "ca978e1eaabe",
+"lines": 2434
+},
+"scripts/gen-chapter-index.mts": {
+"h": "043677308644",
+"lines": 368
+},
+"scripts/gen-listening-vocabulary.mts": {
+"h": "895d4224059f",
+"lines": 27
+},
+"scripts/gen_listening_data.py": {
+"h": "3eb416223e9e",
+"lines": 430
+},
+"scripts/gen_listening_q2_data.py": {
+"h": "3eb416223e9e",
+"lines": 564
+},
+"scripts/gen_listening_q3_data.py": {
+"h": "3eb416223e9e",
+"lines": 344
+},
+"scripts/kasa-diff.sh": {
+"h": "12388e48f874",
+"lines": 20
+},
+"scripts/listening-audio.mts": {
+"h": "235273f84064",
+"lines": 675
+},
+"scripts/listening-split.py": {
+"h": "3eb416223e9e",
+"lines": 190
+},
+"scripts/make-icons.py": {
+"h": "3eb416223e9e",
+"lines": 72
+},
+"scripts/parse_listening_pdf.py": {
+"h": "3eb416223e9e",
+"lines": 199
+},
+"scripts/parse_listening_q2_pdf.py": {
+"h": "3eb416223e9e",
+"lines": 484
+},
+"scripts/parse_listening_q3_pdf.py": {
+"h": "3eb416223e9e",
+"lines": 318
+},
+"scripts/purge-legacy-listening-audio.mjs": {
+"h": "70d240556249",
+"lines": 87
+},
+"scripts/q2_figure_fixes.py": {
+"h": "3eb416223e9e",
+"lines": 273
+},
+"scripts/q2_img_to_public.py": {
+"h": "3eb416223e9e",
+"lines": 57
+},
+"scripts/readalong/add_prosody.py": {
+"h": "3eb416223e9e",
+"lines": 133
+},
+"scripts/readalong/align_readalong.py": {
+"h": "3eb416223e9e",
+"lines": 175
+},
+"scripts/readalong/dump_tracks.ts": {
+"h": "3eb416223e9e",
+"lines": 7
+},
+"scripts/shuffle_listening_q2_options.py": {
+"h": "3eb416223e9e",
+"lines": 570
+},
+"scripts/shuffle_listening_q3_options.py": {
+"h": "3eb416223e9e",
+"lines": 197
+},
+"scripts/shuffle_q1b_options.py": {
+"h": "3eb416223e9e",
+"lines": 373
+},
+"scripts/strip_genspark_logo.py": {
+"h": "3eb416223e9e",
+"lines": 113
+},
+"scripts/verify_q2_single_gender.py": {
+"h": "3eb416223e9e",
+"lines": 189
+},
+"scripts/verify_q2_tts_speakers.py": {
+"h": "3eb416223e9e",
+"lines": 149
+},
+"src/App.tsx": {
+"h": "d13b6f276e7b",
+"lines": 1329
+},
+"src/ads/AdBannerSlot.tsx": {
+"h": "39119fa21400",
+"lines": 75
+},
+"src/ads/adConfig.ts": {
+"h": "c5e61338b7b3",
+"lines": 34
+},
+"src/ads/ads.css": {
+"h": "98395259ab1b",
+"lines": 56
+},
+"src/ads/rewardedAd.ts": {
+"h": "8514a12ddc6c",
+"lines": 73
+},
+"src/assets/.keep": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"src/battle/audio/audioPlatform.ts": {
+"h": "db914096236d",
+"lines": 31
+},
+"src/battle/audio/audioPreferences.ts": {
+"h": "129596c32c4e",
+"lines": 31
+},
+"src/battle/audio/battleAudio.ts": {
+"h": "ab4880d88d2e",
+"lines": 378
+},
+"src/battle/audio/bgmFiles.ts": {
+"h": "7d0c599ac69c",
+"lines": 120
+},
+"src/battle/audio/bgmLoudness.ts": {
+"h": "de35d90a84f0",
+"lines": 34
+},
+"src/battle/audio/sfxSamples.ts": {
+"h": "6bdd055e14c9",
+"lines": 139
+},
+"src/battle/audio/sharedAudioContext.ts": {
+"h": "f209c6ea6e23",
+"lines": 84
+},
+"src/battle/audio/titleMediaAudio.ts": {
+"h": "e5d5c8a593dd",
+"lines": 50
+},
+"src/battle/authoring/README.md": {
+"h": "3eb416223e9e",
+"lines": 14
+},
+"src/battle/authoring/authoredConvert.ts": {
+"h": "05c0b6ed0e0a",
+"lines": 375
+},
+"src/battle/authoring/authoredTypes.ts": {
+"h": "88b2b10c05b6",
+"lines": 171
+},
+"src/battle/authoring/battleTiming.ts": {
+"h": "33a6a3c839a1",
+"lines": 67
+},
+"src/battle/authoring/questionPrompt.ts": {
+"h": "6054caefc0d9",
+"lines": 123
+},
+"src/battle/core/aiOpponent.ts": {
+"h": "323c1b524ce3",
+"lines": 329
+},
+"src/battle/core/arenaEconomy.ts": {
+"h": "6b880a5371a6",
+"lines": 79
+},
+"src/battle/core/arenaRules.ts": {
+"h": "77b1a580abc1",
+"lines": 30
+},
+"src/battle/core/audioSettings.ts": {
+"h": "0db5a7de86c0",
+"lines": 84
+},
+"src/battle/core/battleCore.ts": {
+"h": "0e2622482a13",
+"lines": 848
+},
+"src/battle/core/battleLive.ts": {
+"h": "7a100c3bd399",
+"lines": 400
+},
+"src/battle/core/battleRules.ts": {
+"h": "cfdab723e446",
+"lines": 287
+},
+"src/battle/core/battleSummary.ts": {
+"h": "5ec330ad7d8b",
+"lines": 116
+},
+"src/battle/core/connection.ts": {
+"h": "c0612c790eaa",
+"lines": 210
+},
+"src/battle/core/connectionCheck.ts": {
+"h": "311218b9491e",
+"lines": 151
+},
+"src/battle/core/friendModes.ts": {
+"h": "a8824f9bbfdf",
+"lines": 39
+},
+"src/battle/core/gachaFeatured.ts": {
+"h": "065605bb98b3",
+"lines": 68
+},
+"src/battle/core/growth.ts": {
+"h": "91718cba6237",
+"lines": 766
+},
+"src/battle/core/growthBadges.ts": {
+"h": "2479ffc5d3ed",
+"lines": 66
+},
+"src/battle/core/growthItems.ts": {
+"h": "4ac8cfe27a7a",
+"lines": 316
+},
+"src/battle/core/growthLevel.ts": {
+"h": "73496435c80d",
+"lines": 107
+},
+"src/battle/core/growthMissions.ts": {
+"h": "8c393d4af3d8",
+"lines": 273
+},
+"src/battle/core/growthTypes.ts": {
+"h": "49266f0007af",
+"lines": 103
+},
+"src/battle/core/kanaKeyboard.ts": {
+"h": "81dc43fde2b2",
+"lines": 219
+},
+"src/battle/core/leagues.ts": {
+"h": "bb3206121262",
+"lines": 43
+},
+"src/battle/core/matchFallback.ts": {
+"h": "196f743e5eb2",
+"lines": 67
+},
+"src/battle/core/preload.ts": {
+"h": "5bd61cf0fea1",
+"lines": 44
+},
+"src/battle/core/serverClock.ts": {
+"h": "44a888ececdd",
+"lines": 247
+},
+"src/battle/core/tobiraParts.ts": {
+"h": "9901fbd8c437",
+"lines": 76
+},
+"src/battle/core/types.ts": {
+"h": "1c2410467be0",
+"lines": 503
+},
+"src/battle/core/vocabRanges.ts": {
+"h": "ed0ef69fa890",
+"lines": 21
+},
+"src/battle/data/battle.ts": {
+"h": "66cc498e85aa",
+"lines": 88
+},
+"src/battle/data/battleFriendRoom.ts": {
+"h": "a2631cbcc184",
+"lines": 285
+},
+"src/battle/data/battleHistory.ts": {
+"h": "9e3e0fcde535",
+"lines": 61
+},
+"src/battle/data/battleMatchmaking.ts": {
+"h": "005f806ea29f",
+"lines": 381
+},
+"src/battle/data/battlePool.ts": {
+"h": "b72ec972b990",
+"lines": 262
+},
+"src/battle/data/battleRanking.ts": {
+"h": "686523787bfc",
+"lines": 299
+},
+"src/battle/data/battleRoomActions.ts": {
+"h": "3efb315eaf61",
+"lines": 298
+},
+"src/battle/data/battleRuleOverrides.ts": {
+"h": "1c45af43f7ed",
+"lines": 58
+},
+"src/battle/data/battleShared.ts": {
+"h": "ebf8d7d3052f",
+"lines": 169
+},
+"src/battle/data/battleTransport.ts": {
+"h": "5b8d18407a4d",
+"lines": 147
+},
+"src/battle/data/connectionProbe.ts": {
+"h": "9f255974b7ad",
+"lines": 74
+},
+"src/battle/data/growthStore.ts": {
+"h": "e3dbe0a8550a",
+"lines": 309
+},
+"src/battle/data/localBattleLog.ts": {
+"h": "d661ea722111",
+"lines": 65
+},
+"src/battle/data/serverHealth.ts": {
+"h": "6641a53ee7c0",
+"lines": 39
+},
+"src/battle/hooks/battleRoomSelectors.ts": {
+"h": "c7f07eb0e2de",
+"lines": 129
+},
+"src/battle/hooks/battleRoomTypes.ts": {
+"h": "adfb809f830f",
+"lines": 116
+},
+"src/battle/hooks/useAiBattle.ts": {
+"h": "e8d50dde82a1",
+"lines": 466
+},
+"src/battle/hooks/useBattleAudio.ts": {
+"h": "bc44b8cd9d6e",
+"lines": 96
+},
+"src/battle/hooks/useBattleLive.ts": {
+"h": "996a4d126326",
+"lines": 217
+},
+"src/battle/hooks/useBattleRoom.ts": {
+"h": "b214c90120f0",
+"lines": 969
+},
+"src/battle/ui/ArenaFighters.tsx": {
+"h": "642ff4f04992",
+"lines": 23
+},
+"src/battle/ui/BattleAiRoomScreen.tsx": {
+"h": "d73b2f6fdaf1",
+"lines": 368
+},
+"src/battle/ui/BattleAiSelect.tsx": {
+"h": "27c7785fcc0e",
+"lines": 122
+},
+"src/battle/ui/BattleFriendJoin.tsx": {
+"h": "649315e4ab9e",
+"lines": 103
+},
+"src/battle/ui/BattleGrowthCard.tsx": {
+"h": "1b38a9953a40",
+"lines": 189
+},
+"src/battle/ui/BattleGrowthReward.tsx": {
+"h": "46346e374b11",
+"lines": 71
+},
+"src/battle/ui/BattleHistory.tsx": {
+"h": "a6cd4175bf0d",
+"lines": 216
+},
+"src/battle/ui/BattleHome.tsx": {
+"h": "92075abbe06d",
+"lines": 202
+},
+"src/battle/ui/BattleLiveParts.tsx": {
+"h": "2f6a3ad3cefe",
+"lines": 408
+},
+"src/battle/ui/BattleLiveStage.tsx": {
+"h": "3207757074e3",
+"lines": 281
+},
+"src/battle/ui/BattleLobby.tsx": {
+"h": "424acc578088",
+"lines": 370
+},
+"src/battle/ui/BattleMatching.tsx": {
+"h": "f5e6822d010b",
+"lines": 480
+},
+"src/battle/ui/BattleMissions.tsx": {
+"h": "2b47e9c3ac6e",
+"lines": 321
+},
+"src/battle/ui/BattleMode.tsx": {
+"h": "e6ac49252e45",
+"lines": 492
+},
+"src/battle/ui/BattleParts.tsx": {
+"h": "4469bb4fd6c4",
+"lines": 422
+},
+"src/battle/ui/BattleProfile.tsx": {
+"h": "6a3adb97fb4b",
+"lines": 604
+},
+"src/battle/ui/BattleQuestionView.tsx": {
+"h": "6f4985423bc2",
+"lines": 883
+},
+"src/battle/ui/BattleRanking.tsx": {
+"h": "ce0a2ec7875d",
+"lines": 5
+},
+"src/battle/ui/BattleResult.tsx": {
+"h": "56b39f7ff3e8",
+"lines": 752
+},
+"src/battle/ui/BattleResultLive.tsx": {
+"h": "5fa3864201cf",
+"lines": 361
+},
+"src/battle/ui/BattleReviewDetails.tsx": {
+"h": "e84b8e632c8c",
+"lines": 59
+},
+"src/battle/ui/BattleRoomScreen.tsx": {
+"h": "37e8c50b1b47",
+"lines": 465
+},
+"src/battle/ui/BattleSubjectSelect.tsx": {
+"h": "bda3f2e4bc86",
+"lines": 412
+},
+"src/battle/ui/BattleText.tsx": {
+"h": "7aa3ff91eeca",
+"lines": 81
+},
+"src/battle/ui/ConnectionCheckPanel.tsx": {
+"h": "9b83451f2f7b",
+"lines": 42
+},
+"src/battle/ui/ConnectionMeter.tsx": {
+"h": "890a6fbb58bd",
+"lines": 32
+},
+"src/battle/ui/GrowthFx.tsx": {
+"h": "7eab5d70fe56",
+"lines": 367
+},
+"src/battle/ui/GrowthHomeStrip.tsx": {
+"h": "a300b79f9a3c",
+"lines": 92
+},
+"src/battle/ui/GrowthParts.tsx": {
+"h": "f7e6fb9e6070",
+"lines": 531
+},
+"src/battle/ui/OpponentCard.tsx": {
+"h": "c50bef7fa84a",
+"lines": 55
+},
+"src/battle/ui/ReviewPictureGrid.tsx": {
+"h": "20ef0ae507a1",
+"lines": 39
+},
+"src/battle/ui/TobiraAccessories.tsx": {
+"h": "1daa583d776e",
+"lines": 134
+},
+"src/battle/ui/battle-lobby.css": {
+"h": "e0ae4cab2c71",
+"lines": 161
+},
+"src/battle/ui/battle-question.css": {
+"h": "638f335b6f44",
+"lines": 214
+},
+"src/battle/ui/battle-result-review.css": {
+"h": "e62cb3db56c9",
+"lines": 145
+},
+"src/battle/ui/feedback.ts": {
+"h": "b0bacdf338bb",
+"lines": 99
+},
+"src/battle/ui/opponent-card.css": {
+"h": "3eb416223e9e",
+"lines": 16
+},
+"src/battle/ui/review-picture-grid.css": {
+"h": "f941edc3194e",
+"lines": 9
+},
+"src/components/AnswerPane.tsx": {
+"h": "4a3df44f2d28",
+"lines": 635
+},
+"src/components/AppWallpaper.tsx": {
+"h": "d234d8c6d6bb",
+"lines": 27
+},
+"src/components/ChapterSelection.tsx": {
+"h": "04a868e87e98",
+"lines": 697
+},
+"src/components/CinematicClip.tsx": {
+"h": "5dd0aa5cb643",
+"lines": 60
+},
+"src/components/ClassPanel.tsx": {
+"h": "828004065837",
+"lines": 302
+},
+"src/components/ComingSoon.tsx": {
+"h": "db0f0dd5d693",
+"lines": 15
+},
+"src/components/DoorMascot.tsx": {
+"h": "0a94887acf84",
+"lines": 126
+},
+"src/components/ErrorBoundary.tsx": {
+"h": "d51381574f8e",
+"lines": 94
+},
+"src/components/Explanation.tsx": {
+"h": "db16222bb3e5",
+"lines": 1011
+},
+"src/components/ExplanationBody.tsx": {
+"h": "b0ea1c72461d",
+"lines": 513
+},
+"src/components/ExplanationScreen.tsx": {
+"h": "4664473278a6",
+"lines": 97
+},
+"src/components/FeedbackAdminPanel.tsx": {
+"h": "1ad82753c8cd",
+"lines": 333
+},
+"src/components/FeedbackButton.tsx": {
+"h": "4bf4aa3763e2",
+"lines": 106
+},
+"src/components/FeedbackModal.tsx": {
+"h": "ecf7b494953d",
+"lines": 381
+},
+"src/components/FeedbackReplyInbox.tsx": {
+"h": "cfa6f818b2e3",
+"lines": 156
+},
+"src/components/FloatingScoreAnimation.tsx": {
+"h": "1c9e2274aa2e",
+"lines": 118
+},
+"src/components/ForgettingCurveChart.tsx": {
+"h": "728f6657ab95",
+"lines": 272
+},
+"src/components/FoundationPage.tsx": {
+"h": "1363f4c00476",
+"lines": 81
+},
+"src/components/FoundationWords.tsx": {
+"h": "a85a5bf3e5d6",
+"lines": 275
+},
+"src/components/FriendCodeInput.tsx": {
+"h": "69dbbc3473b0",
+"lines": 49
+},
+"src/components/FriendPanel.tsx": {
+"h": "f5b57eb60002",
+"lines": 241
+},
+"src/components/GachaParts.tsx": {
+"h": "baf3a94b1a3b",
+"lines": 125
+},
+"src/components/GachaReveal.tsx": {
+"h": "5ad32802c8e8",
+"lines": 57
+},
+"src/components/GachaRoom.tsx": {
+"h": "f54c34adbc48",
+"lines": 657
+},
+"src/components/GoogleLinkBanner.tsx": {
+"h": "f687c9d6449c",
+"lines": 209
+},
+"src/components/GrowthHub.tsx": {
+"h": "060c839d9527",
+"lines": 68
+},
+"src/components/Home.tsx": {
+"h": "132dc5879b07",
+"lines": 451
+},
+"src/components/InlineAdSlot.tsx": {
+"h": "9853c11c93ce",
+"lines": 38
+},
+"src/components/Intro.tsx": {
+"h": "2302f8d51984",
+"lines": 111
+},
+"src/components/LaunchScreen.tsx": {
+"h": "d4169ecfbdbb",
+"lines": 147
+},
+"src/components/Leaderboard.tsx": {
+"h": "d5972e75eee4",
+"lines": 119
+},
+"src/components/LevelRewards.tsx": {
+"h": "1e4b9e8f53ce",
+"lines": 35
+},
+"src/components/ListeningAudioPlayer.tsx": {
+"h": "d0ccbe379765",
+"lines": 806
+},
+"src/components/ListeningBriefing.tsx": {
+"h": "92ca2e6d2d30",
+"lines": 121
+},
+"src/components/ListeningEvidenceScript.tsx": {
+"h": "44e28f543df3",
+"lines": 124
+},
+"src/components/ListeningHome.tsx": {
+"h": "7fa188f747e4",
+"lines": 21
+},
+"src/components/ListeningMaterials.tsx": {
+"h": "a56d385c5163",
+"lines": 55
+},
+"src/components/ListeningSubjectSelection.tsx": {
+"h": "6c4186d44388",
+"lines": 86
+},
+"src/components/ListeningSupport.tsx": {
+"h": "63aea544106b",
+"lines": 94
+},
+"src/components/ManaClan.tsx": {
+"h": "5d98a61e4a00",
+"lines": 143
+},
+"src/components/ManaRush.tsx": {
+"h": "4cd4c0e8e75f",
+"lines": 326
+},
+"src/components/MissionToast.tsx": {
+"h": "8e8f02d273d1",
+"lines": 103
+},
+"src/components/MobileFloatingBar.tsx": {
+"h": "a241116f40e7",
+"lines": 210
+},
+"src/components/ModeSelection.tsx": {
+"h": "4b93aa0fde30",
+"lines": 96
+},
+"src/components/MultipleChoiceControl.tsx": {
+"h": "6afc44e26513",
+"lines": 525
+},
+"src/components/MyCollection.tsx": {
+"h": "6c526b330cdb",
+"lines": 79
+},
+"src/components/NoteDetail.tsx": {
+"h": "8e9097bf64c8",
+"lines": 266
+},
+"src/components/Onboarding.tsx": {
+"h": "6fb7e8700ca0",
+"lines": 311
+},
+"src/components/PhilosophyPage.tsx": {
+"h": "52a23dc45891",
+"lines": 118
+},
+"src/components/ProblemPane.tsx": {
+"h": "09d028c1bd82",
+"lines": 777
+},
+"src/components/ProfileModal.tsx": {
+"h": "cf034963a99d",
+"lines": 444
+},
+"src/components/QuestionFigure.tsx": {
+"h": "c4c2bc5d4fbc",
+"lines": 374
+},
+"src/components/Quiz.tsx": {
+"h": "8c58c84b0b57",
+"lines": 1306
+},
+"src/components/QuizHeader.tsx": {
+"h": "816d46a8bb0e",
+"lines": 183
+},
+"src/components/QuizScreens.tsx": {
+"h": "d563f1f844e5",
+"lines": 249
+},
+"src/components/QuizTimerBar.tsx": {
+"h": "04757a967b2c",
+"lines": 133
+},
+"src/components/RewardVideo.tsx": {
+"h": "2f3adbe87276",
+"lines": 33
+},
+"src/components/SakuraPetals.tsx": {
+"h": "7eefb665a0f4",
+"lines": 52
+},
+"src/components/ScreenStatus.tsx": {
+"h": "6db58ba06cae",
+"lines": 16
+},
+"src/components/SortingControl.tsx": {
+"h": "8f9ddb7acce5",
+"lines": 249
+},
+"src/components/SpinMascot.tsx": {
+"h": "23bf357fa465",
+"lines": 82
+},
+"src/components/StudyCatalog.tsx": {
+"h": "89b11c0df6a6",
+"lines": 119
+},
+"src/components/StudyHub.tsx": {
+"h": "eca2873f9183",
+"lines": 471
+},
+"src/components/StudyRecord.tsx": {
+"h": "0c3f8564e729",
+"lines": 96
+},
+"src/components/TeacherDashboard.tsx": {
+"h": "fbb1359d8f64",
+"lines": 472
+},
+"src/components/TobiraBuddy.tsx": {
+"h": "3a0a8f9dc4fe",
+"lines": 49
+},
+"src/components/UnitCard.tsx": {
+"h": "2df0e4c35349",
+"lines": 80
+},
+"src/components/UpdateNoticeModal.tsx": {
+"h": "142be8c6d6d5",
+"lines": 183
+},
+"src/components/UsageMeterPanel.tsx": {
+"h": "c618de4cccaa",
+"lines": 157
+},
+"src/components/VocabQuiz.tsx": {
+"h": "2c534795d92b",
+"lines": 162
+},
+"src/components/explanation/BottomBars.tsx": {
+"h": "cc08de7be738",
+"lines": 60
+},
+"src/components/explanation/ExplanationHeader.tsx": {
+"h": "8503ac20d27f",
+"lines": 205
+},
+"src/components/explanation/ExtrasSection.tsx": {
+"h": "c294faacda09",
+"lines": 138
+},
+"src/components/explanation/ListeningCompactAnswers.tsx": {
+"h": "90fa3b9352ec",
+"lines": 140
+},
+"src/components/explanation/MobileResultChips.tsx": {
+"h": "0c0e4fb59225",
+"lines": 73
+},
+"src/components/explanation/ProblemStatement.tsx": {
+"h": "1b1187eda3aa",
+"lines": 306
+},
+"src/components/explanation/ResultSummary.tsx": {
+"h": "97844b81b293",
+"lines": 261
+},
+"src/components/explanation/ReviewTopNav.tsx": {
+"h": "bc56b5dcbb43",
+"lines": 31
+},
+"src/components/explanation/ScoreHead.tsx": {
+"h": "5b72d9cb3fcf",
+"lines": 41
+},
+"src/components/explanation/SharedExplanation.tsx": {
+"h": "f53b171776a1",
+"lines": 49
+},
+"src/components/explanation/SubQuestionCard.tsx": {
+"h": "e35bb1012a0f",
+"lines": 219
+},
+"src/components/explanation/explanationLogic.ts": {
+"h": "9d7b231b109b",
+"lines": 117
+},
+"src/components/explanation/explanationSlices.ts": {
+"h": "d0bf4689a1ed",
+"lines": 75
+},
+"src/components/explanation/helpers.ts": {
+"h": "6c1b06bfdd51",
+"lines": 48
+},
+"src/components/explanation/types.ts": {
+"h": "bb98579e41c4",
+"lines": 18
+},
+"src/components/foundation.css": {
+"h": "c0d565d1ae23",
+"lines": 411
+},
+"src/components/foundationShared.tsx": {
+"h": "7e2283d6f1c7",
+"lines": 54
+},
+"src/components/fx/CorrectBurst.tsx": {
+"h": "9a94fcfdf059",
+"lines": 65
+},
+"src/components/fx/correct-burst.css": {
+"h": "97d95facd4d3",
+"lines": 62
+},
+"src/components/gacha.css": {
+"h": "0c3b152cadec",
+"lines": 278
+},
+"src/components/gachaRevealSteps.ts": {
+"h": "447b5976815e",
+"lines": 45
+},
+"src/components/growth-hub.css": {
+"h": "38d67d7040b8",
+"lines": 245
+},
+"src/components/home-legibility.css": {
+"h": "8edc3138246e",
+"lines": 119
+},
+"src/components/home-pillars.css": {
+"h": "ff7a584f0732",
+"lines": 59
+},
+"src/components/intro.css": {
+"h": "1b4962d5990f",
+"lines": 62
+},
+"src/components/launch-screen.css": {
+"h": "c45ffe26e4ef",
+"lines": 185
+},
+"src/components/listening-explanation.css": {
+"h": "4d3e735fa69a",
+"lines": 150
+},
+"src/components/listening-home.css": {
+"h": "3eb416223e9e",
+"lines": 18
+},
+"src/components/mission-clear.css": {
+"h": "89929dcf661e",
+"lines": 39
+},
+"src/components/philosophy-page.css": {
+"h": "fff93029e30e",
+"lines": 130
+},
+"src/components/profile-settings.css": {
+"h": "d34f1d614c81",
+"lines": 157
+},
+"src/components/quiz-compact.css": {
+"h": "2805ee86d02a",
+"lines": 18
+},
+"src/components/ranking.css": {
+"h": "54a57d2b0092",
+"lines": 170
+},
+"src/components/review-note.css": {
+"h": "ba9d7391fbef",
+"lines": 153
+},
+"src/components/step-explanation.css": {
+"h": "12da362ae8f1",
+"lines": 136
+},
+"src/components/study-catalog.css": {
+"h": "3d0ae8adb9d3",
+"lines": 89
+},
+"src/components/study-record.css": {
+"h": "28e96d93771f",
+"lines": 44
+},
+"src/components/teacher/ClassesTab.tsx": {
+"h": "6cd22fdfc9a3",
+"lines": 92
+},
+"src/components/teacher/CreateClassModal.tsx": {
+"h": "f82466206baa",
+"lines": 108
+},
+"src/components/teacher/EmptyState.tsx": {
+"h": "ee20bd716e17",
+"lines": 35
+},
+"src/components/teacher/KantenTab.tsx": {
+"h": "9d82ca23f6cb",
+"lines": 205
+},
+"src/components/teacher/StudentsTab.tsx": {
+"h": "f23117de0d58",
+"lines": 384
+},
+"src/components/teacher/teacherSubjects.ts": {
+"h": "a47e2bf423c8",
+"lines": 10
+},
+"src/components/teacher/teacherTheme.ts": {
+"h": "5e06a0f236c8",
+"lines": 4
+},
+"src/components/tobira-buddy.css": {
+"h": "2916d1c6c8f0",
+"lines": 34
+},
+"src/components/ui/BottomNavigation.tsx": {
+"h": "3989ad35865a",
+"lines": 44
+},
+"src/components/ui/CountUp.tsx": {
+"h": "b411e37470fb",
+"lines": 35
+},
+"src/components/ui/FitPagerBar.tsx": {
+"h": "95e325a11b67",
+"lines": 22
+},
+"src/components/ui/index.tsx": {
+"h": "10f31e0fb5b1",
+"lines": 130
+},
+"src/components/unit-card.css": {
+"h": "eda5e3f0b42c",
+"lines": 33
+},
+"src/components/unit-select.css": {
+"h": "e3e3856cd462",
+"lines": 86
+},
+"src/config/features.ts": {
+"h": "b71692dd5b03",
+"lines": 137
+},
+"src/contexts/ThemeContext.tsx": {
+"h": "ce62f87ad98d",
+"lines": 79
+},
+"src/data/allChapters.ts": {
+"h": "a63757ab8c10",
+"lines": 182
+},
+"src/data/chapterCatalog.ts": {
+"h": "8c16c441294d",
+"lines": 158
+},
+"src/data/egProblemsExpr1.ts": {
+"h": "467bbfe0e8cc",
+"lines": 212
+},
+"src/data/egProblemsExpr2.ts": {
+"h": "654c3399f5d9",
+"lines": 210
+},
+"src/data/egProblemsUsage1.ts": {
+"h": "2078a539b2b7",
+"lines": 204
+},
+"src/data/egProblemsUsage2.ts": {
+"h": "e80f8dcd2de4",
+"lines": 204
+},
+"src/data/egProblemsUsage3.ts": {
+"h": "7e1477551b4a",
+"lines": 204
+},
+"src/data/egProblemsUsage4.ts": {
+"h": "0aa0fe9b5cda",
+"lines": 204
+},
+"src/data/egV3Problems.ts": {
+"h": "07b582050c30",
+"lines": 109
+},
+"src/data/englishGrammarData.ts": {
+"h": "5394b0b53e4e",
+"lines": 272
+},
+"src/data/englishGrammarKit.ts": {
+"h": "7f415c43ce6b",
+"lines": 228
+},
+"src/data/englishGrammarProblems.ts": {
+"h": "4a6d3d5433c1",
+"lines": 59
+},
+"src/data/englishListeningData.ts": {
+"h": "6db1deb7a033",
+"lines": 364
+},
+"src/data/englishListeningQ1AProblems.ts": {
+"h": "fc544e30e310",
+"lines": 377
+},
+"src/data/englishListeningQ1ASets.ts": {
+"h": "6a7fea280fb8",
+"lines": 2532
+},
+"src/data/englishListeningQ1BProblems.ts": {
+"h": "4cfa54a850ba",
+"lines": 2961
+},
+"src/data/englishListeningQ2Problems.ts": {
+"h": "bddf4617a089",
+"lines": 3409
+},
+"src/data/englishListeningQ3Problems.ts": {
+"h": "05ad526d1217",
+"lines": 5694
+},
+"src/data/englishListeningQ4to6Problems.ts": {
+"h": "5ad9d1b81e3e",
+"lines": 1029
+},
+"src/data/externalSubjects.ts": {
+"h": "c7989b510647",
+"lines": 142
+},
+"src/data/listeningPictureAspect.ts": {
+"h": "26f98e125fd9",
+"lines": 19
+},
+"src/data/listeningPostProcess.ts": {
+"h": "1e619d6f258f",
+"lines": 74
+},
+"src/data/listeningSupport.ts": {
+"h": "7aff11724dbd",
+"lines": 28
+},
+"src/data/mascotTips.ts": {
+"h": "5c59cc844674",
+"lines": 180
+},
+"src/data/philosophy.ts": {
+"h": "62cbd7f99f1e",
+"lines": 68
+},
+"src/data/problemCount.ts": {
+"h": "3b831dbae3ee",
+"lines": 66
+},
+"src/data/studyCatalog.ts": {
+"h": "c3d1888a2687",
+"lines": 98
+},
+"src/data/subjectLabels.ts": {
+"h": "916a03d161fb",
+"lines": 27
+},
+"src/data/subjectTheme.ts": {
+"h": "105310827ef0",
+"lines": 58
+},
+"src/data/subjects.ts": {
+"h": "0e7dbdc4ba66",
+"lines": 157
+},
+"src/data/teachingTypes.ts": {
+"h": "4c2e7b180509",
+"lines": 110
+},
+"src/data/tobiraMood.ts": {
+"h": "2e5d90078290",
+"lines": 125
+},
+"src/data/unitSections.ts": {
+"h": "14f43e79bea0",
+"lines": 74
+},
+"src/data/updateNotices.ts": {
+"h": "244f7ee9a9b7",
+"lines": 333
+},
+"src/data/vocabChapters.ts": {
+"h": "92985acf83cd",
+"lines": 68
+},
+"src/data/vocabQuiz.ts": {
+"h": "8a000d41ce47",
+"lines": 94
+},
+"src/features/account/AccountSafetySection.tsx": {
+"h": "47b69a4aa6b6",
+"lines": 99
+},
+"src/features/account/accountDeletion.ts": {
+"h": "5dc129ccce09",
+"lines": 111
+},
+"src/features/auth/AppleSignInButton.tsx": {
+"h": "612b573cba02",
+"lines": 41
+},
+"src/features/legal/LegalDialog.tsx": {
+"h": "4aeabf51bcdf",
+"lines": 36
+},
+"src/features/legal/legalText.ts": {
+"h": "89d0d7fcfa46",
+"lines": 61
+},
+"src/features/readAlong/AnnotatedScript.tsx": {
+"h": "542ffc83ada6",
+"lines": 112
+},
+"src/features/readAlong/ReadAlongStudio.tsx": {
+"h": "0f0683ec5e65",
+"lines": 238
+},
+"src/features/readAlong/ScriptReading.tsx": {
+"h": "0af611b25246",
+"lines": 151
+},
+"src/features/readAlong/read-along.css": {
+"h": "34f7b2d04e3e",
+"lines": 203
+},
+"src/features/readAlong/readAlong.ts": {
+"h": "ca099809740b",
+"lines": 239
+},
+"src/features/safety/UserSafetyMenu.tsx": {
+"h": "a42c3d223c46",
+"lines": 122
+},
+"src/features/safety/avatarUrl.ts": {
+"h": "3bf879a1951f",
+"lines": 28
+},
+"src/features/safety/nicknameFilter.ts": {
+"h": "08cdc45a5360",
+"lines": 172
+},
+"src/features/safety/useBlockedFilter.ts": {
+"h": "441d8daacca0",
+"lines": 17
+},
+"src/features/safety/userSafety.ts": {
+"h": "564bcc7c477a",
+"lines": 146
+},
+"src/firebase.ts": {
+"h": "c22d504da8b0",
+"lines": 29
+},
+"src/hooks/titleBgmConstants.ts": {
+"h": "1a75ac784c8e",
+"lines": 4
+},
+"src/hooks/useAutomationHooks.ts": {
+"h": "fba1b818827e",
+"lines": 46
+},
+"src/hooks/useElimination.ts": {
+"h": "b7fd753246c8",
+"lines": 185
+},
+"src/hooks/useFitPager.ts": {
+"h": "0f5761e23b0c",
+"lines": 87
+},
+"src/hooks/useGlobalClickSound.ts": {
+"h": "b3c782b665d6",
+"lines": 56
+},
+"src/hooks/useGrowthProgress.ts": {
+"h": "c69c2a75c92a",
+"lines": 25
+},
+"src/hooks/useIdleReset.ts": {
+"h": "909dc57eb44e",
+"lines": 103
+},
+"src/hooks/useLatest.ts": {
+"h": "03ca984ae3ac",
+"lines": 19
+},
+"src/hooks/useMasonrySpans.ts": {
+"h": "59ad337d11a7",
+"lines": 50
+},
+"src/hooks/useMediaQuery.ts": {
+"h": "7d3675e33930",
+"lines": 87
+},
+"src/hooks/useMountEffect.ts": {
+"h": "1e1e07f400f7",
+"lines": 15
+},
+"src/hooks/usePreventZoom.ts": {
+"h": "1d9fd88ca26f",
+"lines": 69
+},
+"src/hooks/useQuestionDerived.ts": {
+"h": "4fb6b6cd36f9",
+"lines": 411
+},
+"src/hooks/useStudyTimeTracker.ts": {
+"h": "8bf0dde3e77e",
+"lines": 53
+},
+"src/hooks/useTitleBgmController.tsx": {
+"h": "4f44e2212f27",
+"lines": 433
+},
+"src/index.css": {
+"h": "3eb416223e9e",
+"lines": 3238
+},
+"src/main.tsx": {
+"h": "7d10d59c6d85",
+"lines": 62
+},
+"src/message.tsx": {
+"h": "33192d93d61b",
+"lines": 13
+},
+"src/motion/KineticText.tsx": {
+"h": "bcdfd773c60c",
+"lines": 65
+},
+"src/motion/MoRipple.ts": {
+"h": "e014f824a5cc",
+"lines": 37
+},
+"src/motion/ScoreRing.tsx": {
+"h": "95a5d5650800",
+"lines": 17
+},
+"src/motion/index.ts": {
+"h": "35d0b08f705b",
+"lines": 11
+},
+"src/motion/motion.css": {
+"h": "45dd22d5d446",
+"lines": 185
+},
+"src/native/nativeAuth.ts": {
+"h": "4a3c41bfa892",
+"lines": 75
+},
+"src/native/platform.ts": {
+"h": "9efcf1336e36",
+"lines": 19
+},
+"src/styles/nav.css": {
+"h": "242a999202b8",
+"lines": 40
+},
+"src/styles/system.css": {
+"h": "ef7d5e0317b6",
+"lines": 145
+},
+"src/styles/tokens.css": {
+"h": "02e15c29458b",
+"lines": 184
+},
+"src/styles/world.css": {
+"h": "70cf094782ce",
+"lines": 275
+},
+"src/types.d.ts": {
+"h": "3eb416223e9e",
+"lines": 9
+},
+"src/types/curriculum.ts": {
+"h": "8f4116e462d1",
+"lines": 189
+},
+"src/types/studyNote.ts": {
+"h": "c5df2537cb24",
+"lines": 29
+},
+"src/utils/achievementsSync.ts": {
+"h": "cde45955a239",
+"lines": 55
+},
+"src/utils/adConfig.ts": {
+"h": "6e7a4faf8b95",
+"lines": 142
+},
+"src/utils/adService.ts": {
+"h": "73948feb49de",
+"lines": 230
+},
+"src/utils/answerEquivalence.ts": {
+"h": "f14d62ec1c6f",
+"lines": 653
+},
+"src/utils/answerJudge.ts": {
+"h": "676eef5cb9c1",
+"lines": 225
+},
+"src/utils/audioElements.ts": {
+"h": "90a66b971654",
+"lines": 24
+},
+"src/utils/authTypes.ts": {
+"h": "742b5748038b",
+"lines": 21
+},
+"src/utils/bgmFade.ts": {
+"h": "0b0159708c7e",
+"lines": 113
+},
+"src/utils/chunkRecovery.ts": {
+"h": "bad057bb3342",
+"lines": 58
+},
+"src/utils/classroom.ts": {
+"h": "46ce32f29ae5",
+"lines": 597
+},
+"src/utils/classroomCore.ts": {
+"h": "7d98c8028264",
+"lines": 380
+},
+"src/utils/dialog.ts": {
+"h": "189eb8344762",
+"lines": 38
+},
+"src/utils/errorLike.ts": {
+"h": "4c384966428f",
+"lines": 24
+},
+"src/utils/examCountdown.ts": {
+"h": "6b00a3241eeb",
+"lines": 28
+},
+"src/utils/explanationFormat.ts": {
+"h": "9aee23ae3920",
+"lines": 1469
+},
+"src/utils/explanationSupplement.ts": {
+"h": "1f18cd9b5446",
+"lines": 79
+},
+"src/utils/feedback.ts": {
+"h": "20d68823e970",
+"lines": 946
+},
+"src/utils/feedbackReply.ts": {
+"h": "043b82f7df4d",
+"lines": 231
+},
+"src/utils/figureNumbering.ts": {
+"h": "860229dd6829",
+"lines": 43
+},
+"src/utils/firestoreErrors.ts": {
+"h": "aea80da95df1",
+"lines": 31
+},
+"src/utils/firestoreMetered.ts": {
+"h": "93257bc9b236",
+"lines": 176
+},
+"src/utils/forgettingCurveAxis.ts": {
+"h": "c0254b48fe5c",
+"lines": 116
+},
+"src/utils/friendPresence.ts": {
+"h": "f9d69646b65b",
+"lines": 35
+},
+"src/utils/friends.ts": {
+"h": "c0b53cb761ba",
+"lines": 555
+},
+"src/utils/googleAuth.ts": {
+"h": "7bc4e049b10e",
+"lines": 228
+},
+"src/utils/httpTimeout.ts": {
+"h": "b5493f387312",
+"lines": 63
+},
+"src/utils/kantenReport.ts": {
+"h": "538f700d5113",
+"lines": 333
+},
+"src/utils/leaderboard.ts": {
+"h": "26965dfdc0a5",
+"lines": 359
+},
+"src/utils/listeningExplanation.ts": {
+"h": "683dd3dc0a4d",
+"lines": 927
+},
+"src/utils/listeningOptions.ts": {
+"h": "13a04b013168",
+"lines": 307
+},
+"src/utils/listeningRounds.ts": {
+"h": "6efb284b0f51",
+"lines": 95
+},
+"src/utils/listeningSpeech.ts": {
+"h": "ce3082ff4a52",
+"lines": 259
+},
+"src/utils/listeningSteps.ts": {
+"h": "24c1e488686e",
+"lines": 225
+},
+"src/utils/manaClan.ts": {
+"h": "e31783a29d58",
+"lines": 23
+},
+"src/utils/mathChemTypeset.ts": {
+"h": "f9ca2bb0baa7",
+"lines": 178
+},
+"src/utils/mathExpression.ts": {
+"h": "b36be0989d48",
+"lines": 566
+},
+"src/utils/mathTypeset.ts": {
+"h": "32f990569a81",
+"lines": 957
+},
+"src/utils/nicknamePrivacy.ts": {
+"h": "1724d59be5de",
+"lines": 49
+},
+"src/utils/polyfills.ts": {
+"h": "694b28cfbf93",
+"lines": 65
+},
+"src/utils/problemVersion.ts": {
+"h": "3acd0d452443",
+"lines": 199
+},
+"src/utils/progress.ts": {
+"h": "07ca3d218b66",
+"lines": 391
+},
+"src/utils/publicStudyProfile.ts": {
+"h": "a00198cd8c04",
+"lines": 122
+},
+"src/utils/questionDisplay.ts": {
+"h": "d2b449009eac",
+"lines": 670
+},
+"src/utils/quizBlanks.ts": {
+"h": "dffdc7843dad",
+"lines": 51
+},
+"src/utils/quizInputScroll.ts": {
+"h": "ba835a4acdc4",
+"lines": 73
+},
+"src/utils/quizPaletteRules.ts": {
+"h": "ffd374c6111c",
+"lines": 72
+},
+"src/utils/quizRunState.ts": {
+"h": "b7520884103b",
+"lines": 116
+},
+"src/utils/quizScoring.ts": {
+"h": "6d2453a0a544",
+"lines": 281
+},
+"src/utils/quizStorageKeys.ts": {
+"h": "7082a071440c",
+"lines": 97
+},
+"src/utils/reportError.ts": {
+"h": "3feb588023dd",
+"lines": 82
+},
+"src/utils/reviewFocus.ts": {
+"h": "63f84b70a6dd",
+"lines": 57
+},
+"src/utils/reviewList.ts": {
+"h": "c54772cd6a3b",
+"lines": 427
+},
+"src/utils/reviewSubject.ts": {
+"h": "e68f64454950",
+"lines": 277
+},
+"src/utils/reviewTarget.ts": {
+"h": "0690b8380dae",
+"lines": 52
+},
+"src/utils/safeLocalStorage.ts": {
+"h": "00f7a831bd85",
+"lines": 88
+},
+"src/utils/sanitizeHtml.ts": {
+"h": "b5bca30d463a",
+"lines": 355
+},
+"src/utils/scoring.ts": {
+"h": "f9fb53e63e67",
+"lines": 271
+},
+"src/utils/stagePlay.ts": {
+"h": "9d19efe94940",
+"lines": 25
+},
+"src/utils/stageRecords.ts": {
+"h": "ee8eba5ad614",
+"lines": 124
+},
+"src/utils/storageGuard.ts": {
+"h": "957dcdc67341",
+"lines": 78
+},
+"src/utils/studyLog.ts": {
+"h": "db23fb56cdca",
+"lines": 93
+},
+"src/utils/studyNavigation.ts": {
+"h": "ebd3e52651e4",
+"lines": 13
+},
+"src/utils/studySummary.ts": {
+"h": "b64af3a9a8af",
+"lines": 513
+},
+"src/utils/studySync.ts": {
+"h": "032234106841",
+"lines": 285
+},
+"src/utils/studySyncCore.ts": {
+"h": "2bdfed65bdc5",
+"lines": 285
+},
+"src/utils/studyTime.ts": {
+"h": "c2a188b331ea",
+"lines": 63
+},
+"src/utils/textFormatter.tsx": {
+"h": "e230f17df845",
+"lines": 749
+},
+"src/utils/tipRotation.ts": {
+"h": "02b4410988e1",
+"lines": 126
+},
+"src/utils/unitStats.ts": {
+"h": "51012c4a6039",
+"lines": 68
+},
+"src/utils/updateNotices.ts": {
+"h": "2b80af767902",
+"lines": 179
+},
+"src/utils/userRegistry.ts": {
+"h": "1922c96c11ac",
+"lines": 340
+},
+"src/utils/userStorageKeys.ts": {
+"h": "78e753f2facc",
+"lines": 71
+},
+"src/utils/viewportControl.ts": {
+"h": "333b438f5d71",
+"lines": 59
+},
+"src/utils/vocabGoal.ts": {
+"h": "85e85203012a",
+"lines": 41
+},
+"store-assets/_tools/edit_instagram.py": {
+"h": "5171395db557",
+"lines": 231
+},
+"store-assets/_tools/grammar_answers.json": {
+"h": "3eb416223e9e",
+"lines": 0
+},
+"store-assets/_tools/peek.py": {
+"h": "f4e1d87816f1",
+"lines": 27
+},
+"store-assets/_tools/promo_cut.py": {
+"h": "3f05878eb82e",
+"lines": 495
+},
+"store-assets/_tools/promo_engine.py": {
+"h": "c872a35116f9",
+"lines": 443
+},
+"store-assets/_tools/promo_sfx.py": {
+"h": "9d01662086e3",
+"lines": 81
+},
+"store-assets/_tools/record_duo.py": {
+"h": "924c8a44fb8c",
+"lines": 227
+},
+"store-assets/_tools/record_scenes.py": {
+"h": "581e0957d4df",
+"lines": 340
+},
+"store-assets/instagram/CAPTIONS.md": {
+"h": "3eb416223e9e",
+"lines": 104
+},
+"store-assets/instagram/ELEVENLABS_PROMPTS.md": {
+"h": "3eb416223e9e",
+"lines": 55
+},
+"store-assets/instagram/README.md": {
+"h": "3eb416223e9e",
+"lines": 70
+},
+"store-assets/youtube/CHAPTERS.txt": {
+"h": "3eb416223e9e",
+"lines": 7
+},
+"store-assets/youtube/youtube_16x9.mp4": {
+"h": "3eb416223e9e",
+"lines": 236072
+},
+"tests/__snapshots__/sharedHash.test.ts.snap": {
+"h": "3eb416223e9e",
+"lines": 9
+},
+"tests/ai-no-rating.test.ts": {
+"h": "ae4b000918bc",
+"lines": 19
+},
+"tests/androidBgmCrackle.test.ts": {
+"h": "7a06cb4d97d0",
+"lines": 85
+},
+"tests/androidRangeServer.test.ts": {
+"h": "93428b5f6727",
+"lines": 23
+},
+"tests/audioElements.test.ts": {
+"h": "1235a1f59e70",
+"lines": 36
+},
+"tests/battle.rules.test.ts": {
+"h": "5e8df47b6e0d",
+"lines": 1371
+},
+"tests/battleAudioLifecycle.test.ts": {
+"h": "3eb416223e9e",
+"lines": 118
+},
+"tests/battleBgmFiles.test.ts": {
+"h": "3eb416223e9e",
+"lines": 83
+},
+"tests/battleNoNav.test.ts": {
+"h": "3eb416223e9e",
+"lines": 18
+},
+"tests/battlePictureListening.test.ts": {
+"h": "d0ae9fdac086",
+"lines": 31
+},
+"tests/bgmPlayError.test.ts": {
+"h": "b478410a1d2e",
+"lines": 70
+},
+"tests/bgmUnify.test.ts": {
+"h": "3eb416223e9e",
+"lines": 98
+},
+"tests/chunkRecovery.test.ts": {
+"h": "3eb416223e9e",
+"lines": 19
+},
+"tests/cinematicClips.test.ts": {
+"h": "3eb416223e9e",
+"lines": 40
+},
+"tests/cinematics.browser.mjs": {
+"h": "6ece21a0b525",
+"lines": 108
+},
+"tests/connectionCheck.test.ts": {
+"h": "3eb416223e9e",
+"lines": 54
+},
+"tests/dialog.test.ts": {
+"h": "3eb416223e9e",
+"lines": 44
+},
+"tests/englishGrammarV3.test.ts": {
+"h": "0a49c76ff1a5",
+"lines": 112
+},
+"tests/englishListeningData.test.ts": {
+"h": "d00901f9810b",
+"lines": 176
+},
+"tests/englishListeningQ1A.test.ts": {
+"h": "207c715892df",
+"lines": 387
+},
+"tests/englishListeningQ1Sets.test.ts": {
+"h": "d0de05653a67",
+"lines": 577
+},
+"tests/englishListeningQ2Sets.test.ts": {
+"h": "338d12ad5d4c",
+"lines": 280
+},
+"tests/englishListeningQ3.test.ts": {
+"h": "d16c465a4192",
+"lines": 232
+},
+"tests/firestoreErrors.test.ts": {
+"h": "d9d1ef12db67",
+"lines": 33
+},
+"tests/friend-code-input.test.ts": {
+"h": "50382e005810",
+"lines": 10
+},
+"tests/friends.rules.test.ts": {
+"h": "7cd3ea70b9ca",
+"lines": 492
+},
+"tests/gachaFeatured.test.ts": {
+"h": "3eb416223e9e",
+"lines": 36
+},
+"tests/gachaPrintsQuality.test.ts": {
+"h": "0b6bca7b7ccf",
+"lines": 65
+},
+"tests/gachaReveal.test.ts": {
+"h": "3eb416223e9e",
+"lines": 27
+},
+"tests/helpers/battleRules.ts": {
+"h": "c5968e1cbfa1",
+"lines": 66
+},
+"tests/helpers/fixture.ts": {
+"h": "0f7f168bd4f9",
+"lines": 11
+},
+"tests/helpers/sourceScan.ts": {
+"h": "a45843dd30a6",
+"lines": 92
+},
+"tests/hookDepsReasons.test.ts": {
+"h": "bd73372f99a5",
+"lines": 34
+},
+"tests/leaderboard.rules.test.ts": {
+"h": "250435bac0dd",
+"lines": 330
+},
+"tests/listeningAudioLedger.test.ts": {
+"h": "a460f83c3d01",
+"lines": 114
+},
+"tests/listeningExplanation.test.ts": {
+"h": "a58fe19b50d6",
+"lines": 366
+},
+"tests/listeningMaterials.browser.mjs": {
+"h": "d6c5e7dbc6ed",
+"lines": 121
+},
+"tests/listeningMaterials.test.ts": {
+"h": "3eb416223e9e",
+"lines": 88
+},
+"tests/listeningOptions.test.ts": {
+"h": "1916dcb45bca",
+"lines": 328
+},
+"tests/listeningPostProcess.test.ts": {
+"h": "9fa59ed3f596",
+"lines": 349
+},
+"tests/listeningRounds.test.ts": {
+"h": "cc373cb2fb08",
+"lines": 108
+},
+"tests/listeningSteps.test.ts": {
+"h": "d185a59acfa4",
+"lines": 885
+},
+"tests/matchFallback.test.ts": {
+"h": "3eb416223e9e",
+"lines": 89
+},
+"tests/mission-claim.test.ts": {
+"h": "7872733ca701",
+"lines": 16
+},
+"tests/moduleGraph.test.ts": {
+"h": "5a9558637638",
+"lines": 85
+},
+"tests/motion.test.ts": {
+"h": "d3b6d5b2358a",
+"lines": 45
+},
+"tests/noExplicitAny.test.ts": {
+"h": "4f9df513d730",
+"lines": 48
+},
+"tests/noSilentCatch.test.ts": {
+"h": "8a73b80cba00",
+"lines": 48
+},
+"tests/polyfills.test.ts": {
+"h": "3eb416223e9e",
+"lines": 39
+},
+"tests/publicTextFilter.test.ts": {
+"h": "3eb416223e9e",
+"lines": 17
+},
+"tests/quizHookOrder.test.ts": {
+"h": "bcd276ba70ba",
+"lines": 32
+},
+"tests/quotaGhost.test.ts": {
+"h": "542594317da1",
+"lines": 46
+},
+"tests/readAlong.test.ts": {
+"h": "3eb416223e9e",
+"lines": 102
+},
+"tests/reportError.test.ts": {
+"h": "3eb416223e9e",
+"lines": 53
+},
+"tests/retention.test.ts": {
+"h": "3eb416223e9e",
+"lines": 88
+},
+"tests/review-group.test.ts": {
+"h": "3eb416223e9e",
+"lines": 67
+},
+"tests/revision.browser.mjs": {
+"h": "3eb416223e9e",
+"lines": 94
+},
+"tests/revision.test.ts": {
+"h": "3eb416223e9e",
+"lines": 69
+},
+"tests/revisionD.browser.mjs": {
+"h": "3eb416223e9e",
+"lines": 116
+},
+"tests/rewarded-ad.test.ts": {
+"h": "3eb416223e9e",
+"lines": 23
+},
+"tests/security.test.ts": {
+"h": "3eb416223e9e",
+"lines": 63
+},
+"tests/sharedHash.test.ts": {
+"h": "fd0a4a08dd55",
+"lines": 44
+},
+"tests/stagePlay.test.ts": {
+"h": "3eb416223e9e",
+"lines": 23
+},
+"tests/standalone-online.rules.test.ts": {
+"h": "3eb416223e9e",
+"lines": 114
+},
+"tests/standalone.browser.mjs": {
+"h": "3eb416223e9e",
+"lines": 74
+},
+"tests/standalone.test.ts": {
+"h": "3eb416223e9e",
+"lines": 113
+},
+"tests/storageGuard.test.ts": {
+"h": "3eb416223e9e",
+"lines": 38
+},
+"tests/strip-script-box.test.ts": {
+"h": "a6e9fb9a427b",
+"lines": 16
+},
+"tests/study-log.test.ts": {
+"h": "3eb416223e9e",
+"lines": 22
+},
+"tests/study-time-idle.test.ts": {
+"h": "3eb416223e9e",
+"lines": 39
+},
+"tests/subjectRegistry.test.ts": {
+"h": "b2179b66b875",
+"lines": 78
+},
+"tests/unequip.test.ts": {
+"h": "5ef97a3629f4",
+"lines": 23
+},
+"tests/updateNotices.test.ts": {
+"h": "3eb416223e9e",
+"lines": 21
+},
+"tests/usePreventZoom.test.ts": {
+"h": "3eb416223e9e",
+"lines": 24
+},
+"tests/vocab-meanings.test.ts": {
+"h": "762ce64dd7a5",
+"lines": 13
+},
+"tests/vocabChapters.test.ts": {
+"h": "3eb416223e9e",
+"lines": 37
+},
+"tests/vocabQuizMood.test.ts": {
+"h": "3eb416223e9e",
+"lines": 109
+},
+"tests/wallpaperCoverage.test.ts": {
+"h": "3eb416223e9e",
+"lines": 19
+},
+"tsconfig.json": {
+"h": "3eb416223e9e",
+"lines": 36
+},
+"tsconfig.scripts.json": {
+"h": "3eb416223e9e",
+"lines": 22
+},
+"tsconfig.tests.json": {
+"h": "3eb416223e9e",
+"lines": 9
+},
+"vercel.json": {
+"h": "3eb416223e9e",
+"lines": 85
+},
+"vite.config.ts": {
+"h": "581b2628618d",
+"lines": 476
+},
+"vitest.config.ts": {
+"h": "ec67f7b6761b",
+"lines": 2
+},
+"リスニングの部屋へ_これ1つで全部.md": {
+"h": "3eb416223e9e",
+"lines": 59
+}
+}

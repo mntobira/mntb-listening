@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>マナトビ 事業概要（コンテスト審査用）</title>
+<meta name="viewport" content="width=1280">
+<meta name="description" content="マナトビ（共通テスト英語リスニング）の事業概要。紹介動画の実際の画面とともに、1問の流れ・対戦をつくった理由・続けるしかけ・到達点をまとめています。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&family=Inter:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script>/* JS が動くときだけアニメ前の状態を使う（JS なし・印刷は完成状態のまま） */document.documentElement.classList.add('anim')</script>
+<style>
+/*
+ * 書体と色の決まり（宛先＝コンテスト審査員に合わせて落ち着かせる）
+ *   文字サイズは 3 段だけ：見出し 32px／本文 18px／補足 16px（16px 未満は使わない）
+ *   例外：表紙の見出し（丸ゴ太字・表紙だけ）と、スライド6の数字
+ *   色：アプリの tokens.css から。地は紙色、文字は墨、ブランドの青。オレンジは一語ハイライト（全体で2回）だけ
+ */
+:root{
+  --brand:#2458a6; --brand-soft:#e7eef8;
+  --accent-ink:#8a4b00; --accent-soft:#fdf0db;
+  --paper:#fcf5e9; --white:#fff;
+  --ink:#1c2a39; --ink-2:#3e4c5b; --ink-3:#5a6573;
+  --line:#e3d9c8; --line-strong:#cbbda6;
+  --h:32px; --b:18px; --s:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#efe8da}
+body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;font-feature-settings:"palt" 1}
+.slide{width:1280px;height:720px;margin:24px auto;position:relative;overflow:hidden;background:var(--paper);
+  padding:60px 80px 64px;display:flex;flex-direction:column}
+@media print{html{background:none}.slide{margin:0;break-after:page}@page{size:1280px 720px;margin:0}}
+h2{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:var(--h);line-height:1.45;color:var(--ink);letter-spacing:.01em}
+p,li,dd,td{font-size:var(--b);line-height:1.75;color:var(--ink-2)}
+.s{font-size:var(--s);line-height:1.65;color:var(--ink-3)}
+.body{flex:1;display:flex;align-items:center;min-height:0}
+.mark{background:linear-gradient(transparent 62%,var(--accent-soft) 62%);color:var(--accent-ink)}
+.folio{position:absolute;right:80px;bottom:26px;font-size:var(--s);color:var(--ink-3)}
+.phone{border-radius:28px;border:7px solid #1c2a39;overflow:hidden;background:#fff;flex:none;
+  box-shadow:0 3px 0 #cbbda6,0 16px 30px rgba(40,30,15,.14)}
+.phone img{display:block;width:100%;height:auto}
+b,strong{color:var(--ink);font-weight:700}
+/* 動画の枠：紹介動画（実際のアプリ画面の録画）から切り出した短いループ。印刷・PDF・動きを減らす設定では静止画 */
+.vid{position:relative;border-radius:14px;overflow:hidden;background:#1d3d73;aspect-ratio:16/9;flex:none;
+  box-shadow:0 3px 0 #cbbda6,0 16px 30px rgba(40,30,15,.14)}
+.vid img,.vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.vid .tag{position:absolute;left:10px;bottom:10px;font-size:var(--s);line-height:1;font-weight:700;color:#fff;background:rgba(20,32,52,.78);
+  border-radius:8px;padding:6px 10px}
+@media print{.vid video{display:none}}
+</style>
+<style id="motion">
+/*
+ * モーション層（キネティック・タイポグラフィ／UIアニメ／インフォグラフィック）
+ *   決まり：
+ *   - 「完成状態」は素の CSS。アニメ前の状態は screen かつ動きを減らす設定でないときだけ定義する
+ *     → 印刷・PDF・prefers-reduced-motion・JS なしでは、元のスライドと同じ完成状態で静止する
+ *   - 文言と数字は変えない（カウントアップも最後は元の表記にもどる）
+ *   - 出現は transform ではなく translate / scale / rotate を使う（transform はホバーの傾きに空けておく）
+ */
+:root{--ease-out:cubic-bezier(.16,1,.3,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+.k-tok{display:inline-block;white-space:nowrap}
+.cnt{font-variant-numeric:tabular-nums}
+.mark{background-repeat:no-repeat;background-size:100% 100%}
+
+/* インフォグラフィック（スライド6）：数字の上に、その数を形で見せる */
+#s6 .viz{height:58px;margin-bottom:14px;display:flex;align-items:flex-end}
+#s6 .dots{display:grid;gap:3px;align-content:end}
+#s6 .dots i{display:block;border-radius:50%;background:var(--brand)}
+#s6 .dots.big i{width:6px;height:6px}
+#s6 .dots.small{gap:2px}
+#s6 .dots.small i{width:4px;height:4px;background:var(--accent-ink)}
+#s6 .ring{width:58px;height:58px;transform:rotate(-90deg)}
+#s6 .ring circle{fill:none;stroke-width:8}
+#s6 .ring .bg{stroke:var(--line)}
+#s6 .ring .fg{stroke:var(--brand);stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:.02}
+#s6 .ring-wrap{display:flex;align-items:center;gap:12px}
+#s6 .ring-wrap b{font-family:'Inter',sans-serif;font-size:var(--s);color:var(--brand)}
+
+/* ホバーの手ざわり（:where で詳細度を0にし、出現アニメの transition を上書きしない） */
+:where(.phone,#s3 .c,#s4 .ann li,#s5 tr,#s7 .qr>div){transition:transform .4s var(--ease-out),box-shadow .4s var(--ease-out),background-color .3s}
+.phone[data-tilt]{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}
+#s3 .c:hover,#s3 .c.hl{transform:translateY(-3px);box-shadow:0 10px 24px rgba(36,88,166,.14)}
+#s4 .ann li{border-radius:10px}
+#s4 .ann li.hl{background-color:var(--brand-soft);box-shadow:0 0 0 10px var(--brand-soft)}
+#s4 .pin.hl{transform:scale(1.35)}
+#s5 tr:hover{background-color:var(--brand-soft)}
+#s7 .qr>div:hover{transform:translateY(-4px)}
+
+/* 画面の操作部品（印刷には出さない） */
+.ui{font-family:'Inter','Noto Sans JP',sans-serif}
+.progress{position:fixed;left:0;top:0;right:0;height:4px;background:rgba(36,88,166,.12);z-index:50}
+.progress i{display:block;height:100%;width:100%;background:var(--brand);transform-origin:0 50%;transform:scaleX(var(--p,0));transition:transform .5s var(--ease-out)}
+.pager{position:fixed;right:18px;top:50%;translate:0 -50%;list-style:none;display:flex;flex-direction:column;gap:6px;z-index:50}
+.pager button{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;gap:10px;height:28px}
+.pager button span{font-size:13px;color:var(--ink-2);background:#fff;border:1px solid var(--line);border-radius:8px;padding:3px 10px;white-space:nowrap;
+  opacity:0;translate:8px 0;transition:opacity .25s,translate .25s;pointer-events:none;max-width:420px;overflow:hidden;text-overflow:ellipsis}
+.pager button:hover span,.pager button:focus-visible span{opacity:1;translate:0 0}
+.pager button i{display:block;width:10px;height:10px;border-radius:50%;border:2px solid var(--brand);transition:all .35s var(--spring)}
+.pager button[aria-current="true"] i{background:var(--brand);height:24px;border-radius:6px}
+.dock{position:fixed;right:18px;bottom:18px;display:flex;gap:8px;z-index:50}
+.dock button{all:unset;cursor:pointer;min-width:44px;height:44px;padding:0 14px;border-radius:22px;background:var(--ink);color:#fff;font-size:14px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 18px rgba(28,42,57,.22);transition:translate .2s,background .2s}
+.dock button:hover{translate:0 -2px;background:var(--brand)}
+.dock{opacity:.6;transition:opacity .25s}
+.dock:hover,.dock:focus-within{opacity:1}
+html.present .dock{top:14px;bottom:auto}
+.dock button:focus-visible,.pager button:focus-visible{outline:3px solid #f2b84b;outline-offset:2px}
+.dock kbd{font:inherit;font-size:12px;opacity:.7;border:1px solid rgba(255,255,255,.4);border-radius:4px;padding:0 5px}
+
+/* プレゼンモード：1枚ずつ画面いっぱいに */
+html.present{background:#141c26;overflow:hidden}
+html.present .slide{position:fixed;left:50%;top:50%;margin:0;translate:-50% -50%;scale:var(--k,1);opacity:0;visibility:hidden;
+  transition:opacity .5s var(--ease-out),visibility 0s .5s;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+html.present .slide.cur{opacity:1;visibility:visible;transition:opacity .5s var(--ease-out),visibility 0s}
+html.present .pager span{display:none}
+html.present .progress{background:rgba(255,255,255,.12)}
+@media print{.ui{display:none!important}}
+
+@media screen and (prefers-reduced-motion:no-preference){
+  html.anim .slide.noanim *,html.anim .slide.noanim *::before,html.anim .slide.noanim *::after{transition:none!important}
+
+  /* キネティック・タイポ：1語ずつ、ぼかしから立ち上がる */
+  html.anim .k-tok{transition:opacity .55s var(--ease-out),translate .8s var(--ease-out),rotate .8s var(--ease-out),filter .6s var(--ease-out);
+    transition-delay:calc(var(--kd,0ms) + var(--i) * var(--ks,24ms))}
+  html.anim .slide:not(.in) .k-tok{opacity:0;translate:0 .6em;rotate:6deg;filter:blur(6px)}
+  html.anim .mark{transition:background-size .9s var(--ease-out) var(--md,1200ms)}
+  html.anim .slide:not(.in) .mark{background-size:0 100%}
+  html.anim .verb{background:linear-gradient(var(--brand),var(--brand)) no-repeat 0 94%/100% 4px;padding-bottom:2px;
+    transition:background-size .6s var(--ease-out);transition-delay:var(--vd)}
+  html.anim .slide:not(.in) .verb{background-size:0 4px}
+
+  /* 汎用の出現 */
+  html.anim [data-rv]{transition-property:opacity,translate,scale,rotate,clip-path,transform,box-shadow,background-color;
+    transition-duration:.7s,.9s,.9s,.9s,1.1s,.4s,.4s,.3s;transition-timing-function:var(--ease-out);
+    transition-delay:var(--d,0ms),var(--d,0ms),var(--d,0ms),var(--d,0ms),var(--d,0ms),0s,0s,0s}
+  html.anim .slide:not(.in) [data-rv="up"]{opacity:0;translate:0 28px}
+  html.anim .slide:not(.in) [data-rv="left"]{opacity:0;translate:-48px 0}
+  html.anim .slide:not(.in) [data-rv="right"]{opacity:0;translate:48px 0}
+  html.anim .slide:not(.in) [data-rv="pop"]{opacity:0;scale:.4}
+  html.anim [data-rv="pop"]{transition-timing-function:var(--ease-out),var(--ease-out),var(--spring),var(--ease-out)}
+  html.anim .slide:not(.in) [data-rv="phone"]{opacity:0;translate:0 90px;rotate:-6deg;scale:.94}
+  html.anim .slide:not(.in) [data-rv="wipe"]{clip-path:inset(0 0 0 100%)}
+  html.anim .slide:not(.in) [data-rv="wipe-l"]{clip-path:inset(0 100% 0 0)}
+  html.anim [data-rv="wipe"],html.anim [data-rv="wipe-l"]{clip-path:inset(0 0 0 0)}
+
+  /* 1 表紙：スマホがふわりと浮く */
+  @keyframes float{0%,100%{translate:0 0}50%{translate:0 -10px}}
+  html.anim #s1.in .phone{animation:float 5s ease-in-out 2.2s infinite}
+
+  /* 2 年表：線が上から引かれ、点が順に灯る */
+  html.anim #s2 ol:before{transform-origin:50% 0;transition:scale 1.4s var(--ease-out) .5s}
+  html.anim #s2:not(.in) ol:before{scale:1 0}
+  html.anim #s2 li:before{transition:scale .5s var(--spring),background .4s;transition-delay:var(--d)}
+  html.anim #s2:not(.in) li:before{scale:0}
+  html.anim #s2.in li:before{background:var(--brand-soft)}
+
+  /* 3 課題→機能：線が左から右へ描かれる */
+  html.anim #links line{stroke-dasharray:1;transition:stroke-dashoffset .9s var(--ease-out);transition-delay:var(--d)}
+  html.anim #s3:not(.in) #links line{stroke-dashoffset:1}
+  html.anim #links circle{transform-box:fill-box;transform-origin:center;transition:scale .45s var(--spring);transition-delay:var(--d)}
+  html.anim #s3:not(.in) #links circle{scale:0}
+
+  /* 4 核心：ピンが弾んで出て、波紋で呼びかける */
+  html.anim #s4 .pin{transition:opacity .4s,scale .6s var(--spring),transform .35s var(--spring);transition-delay:var(--d),var(--d),0s}
+  html.anim #s4:not(.in) .pin{opacity:0;scale:0}
+  @keyframes ripple{0%{box-shadow:0 0 0 3px #fff,0 0 0 3px rgba(36,88,166,.55)}100%{box-shadow:0 0 0 3px #fff,0 0 0 18px rgba(36,88,166,0)}}
+  html.anim #s4.in .pin{animation:ripple 2.2s var(--ease-out) calc(var(--d) + .6s) infinite}
+  html.anim #s4 .ann li:before{transition:scale .5s var(--spring);transition-delay:var(--d)}
+  html.anim #s4:not(.in) .ann li:before{scale:0}
+
+  /* 6 インフォグラフィック：点が満ち、輪が満ちる */
+  html.anim #s6 .dots i{transition:scale .4s var(--spring),opacity .3s;transition-delay:calc(var(--d0) + var(--i) * var(--ds))}
+  html.anim #s6:not(.in) .dots i{scale:0;opacity:0}
+  html.anim #s6 .ring .fg{transition:stroke-dashoffset 1.6s var(--ease-out) 1.1s}
+  html.anim #s6:not(.in) .ring .fg{stroke-dashoffset:1}
+
+  /* 7 お願い：手順の番号が順に灯り、QRに走査線が走る */
+  html.anim #s7 ol li:before{transition:scale .5s var(--spring),background .4s,color .4s;transition-delay:var(--d)}
+  html.anim #s7:not(.in) ol li:before{scale:0}
+  html.anim #s7.in ol li:before{background:var(--brand);color:#fff}
+  #s7 .qr>div{position:relative}
+  @keyframes scan{0%{top:6%;opacity:0}12%{opacity:1}88%{opacity:1}100%{top:calc(100% - 46px);opacity:0}}
+  html.anim #s7.in .qr>div:before{content:"";position:absolute;left:8%;right:8%;height:3px;border-radius:2px;background:var(--brand);
+    box-shadow:0 0 14px 3px rgba(36,88,166,.45);opacity:0;animation:scan 2.4s ease-in-out var(--sd) 2}
+}
+</style>
+</head>
+<body>
+
+<!-- 1. 表紙 ------------------------------------------------------------ -->
+<section class="slide" id="s1" style="padding:0">
+  <style>
+    #s1{display:grid;grid-template-columns:1fr 540px;align-items:center}
+    #s1 .l{padding:0 0 0 80px}
+    #s1 .logo{width:230px;display:block;margin-bottom:40px}
+    #s1 h1{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:36px;line-height:1.5;color:var(--ink)}
+    #s1 .sub{margin-top:28px}
+    #s1 .meta{margin-top:44px;padding-top:20px;border-top:1px solid var(--line)}
+    #s1 .r{height:100%;background:var(--brand-soft);display:flex;align-items:center;justify-content:center}
+    #s1 .r{flex-direction:column;gap:14px;padding:0 36px}
+    #s1 .l{padding-right:40px}
+    #s1 .vid{width:468px}
+    #s1 .r .s{color:var(--ink-2)}
+    #s1 .tagline{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:var(--b);color:var(--brand);margin-top:22px}
+  </style>
+  <div class="l">
+    <img class="logo" src="img/logo.webp" alt="マナトビ" data-rv="wipe-l">
+    <h1 data-kinetic style="--kd:250ms;--ks:30ms">共通テスト英語リスニングの演習は、<br><span class="verb" style="--vd:1.9s">聞く</span>・<span class="verb" style="--vd:2.05s">解く</span>・<span class="verb" style="--vd:2.2s">確かめる</span>・<span class="verb" style="--vd:2.35s">競う</span>まで、<br>このアプリ1本で完結します。</h1>
+    <p class="sub" data-rv="up" style="--d:1.7s">作ったのは、受験を終えた大学生2人です。</p>
+    <p class="tagline" data-rv="up" style="--d:1.85s">「聞き取れた！」を、毎日ひとつずつ。</p>
+    <p class="s meta" data-rv="up" style="--d:1.95s">マナトビ　事業概要｜App Store・Google Play で公開中</p>
+  </div>
+  <div class="r" data-rv="wipe" style="--d:0ms">
+    <div class="vid" data-rv="up" style="--d:600ms"><img src="clips/hero.jpg" alt="マナトビのタイトル画面"><video data-src="clips/hero.mp4" poster="clips/hero.jpg" muted loop playsinline preload="none" aria-label="紹介動画のダイジェスト：問題を聞く、採点、英文が光る解説、対戦、勝利"></video></div>
+    <p class="s" data-rv="up" style="--d:900ms">紹介動画（実際の画面の録画）より　聞く → 採点 → 解説 → 対戦</p>
+  </div>
+</section>
+
+<!-- 2. なぜ作ったか ---------------------------------------------------- -->
+<section class="slide" id="s2">
+  <style>
+    #s2 .body{display:grid;grid-template-columns:1fr 330px;gap:64px;align-items:center}
+    #s2 ol{list-style:none;position:relative}
+    #s2 ol:before{content:"";position:absolute;left:9px;top:12px;bottom:12px;width:2px;background:var(--line-strong)}
+    #s2 li{position:relative;padding-left:44px}
+    #s2 li+li{margin-top:30px}
+    #s2 li:before{content:"";position:absolute;left:0;top:7px;width:20px;height:20px;border-radius:50%;background:var(--paper);border:3px solid var(--brand)}
+    #s2 .when{font-size:var(--s);color:var(--brand);font-weight:700}
+    #s2 blockquote{font-family:'Noto Sans JP',sans-serif;font-weight:500;font-size:24px;line-height:1.6;color:var(--ink);margin-top:4px}
+    #s2 .team{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:26px 28px}
+    #s2 .team dt{font-size:var(--b);font-weight:700;color:var(--ink);margin-top:16px}
+    #s2 .team dt:first-of-type{margin-top:10px}
+    #s2 .team dd{font-size:var(--s);color:var(--ink-3)}
+  </style>
+  <h2>受験でインプットに逃げて伸び悩んだ経験から、<br>大学生2人がアウトプットの場として作りました。</h2>
+  <div class="body">
+    <ol>
+      <li style="--d:700ms"><div class="when" data-rv="left" style="--d:750ms">受験生のころ</div><blockquote data-kinetic style="--kd:850ms;--ks:28ms">「私はインプットに逃げたためになかなか成績が伸びずに上手くいきませんでした。」</blockquote></li>
+      <li style="--d:1.7s"><div class="when" data-rv="left" style="--d:1.75s">そこから得た答え</div><blockquote data-kinetic style="--kd:1.85s;--ks:40ms">「ひたすらに実践すること。それだけです。」</blockquote></li>
+      <li style="--d:2.5s"><div class="when" data-rv="left" style="--d:2.55s">大学生になって</div><p data-rv="up" style="--d:2.65s">演習と解答解説を全大問にそろえたリスニングアプリを作り、公開しました。</p></li>
+    </ol>
+    <div class="team" data-rv="right" style="--d:1s">
+      <p class="s">つくった人</p>
+      <dl>
+        <dt>庄司 悠人</dt><dd>関西学院大学 工学部 2年</dd>
+        <dt>磯和 宏樹</dt><dd>三重大学 教育学部 2年</dd>
+      </dl>
+    </div>
+  </div>
+  <p class="s" data-rv="up" style="--d:3s">引用はアプリ内の開発者の手紙「学びの扉 ～私達に出来ることを～」から</p>
+  <div class="folio">2 / 10</div>
+</section>
+
+<!-- 3. 課題→解決 ------------------------------------------------------ -->
+<section class="slide" id="s3">
+  <style>
+    #s3 .body{position:relative}
+    #s3 .grid{display:grid;grid-template-columns:440px 1fr;column-gap:120px;row-gap:26px;width:100%}
+    #s3 .head{font-size:var(--s);font-weight:700;color:var(--ink-3)}
+    #s3 .c{border-radius:14px;padding:18px 22px;min-height:112px;display:flex;flex-direction:column;justify-content:center}
+    #s3 .p{background:var(--white);border:1px solid var(--line)}
+    #s3 .f{background:var(--brand-soft);border:1px solid #c9d7ee}
+    #s3 .c strong{font-size:var(--b);line-height:1.5}
+    #s3 .c span{font-size:var(--s);line-height:1.6;color:var(--ink-3);margin-top:4px}
+    #s3 svg{position:absolute;left:440px;top:0;width:120px;height:100%;overflow:visible}
+  </style>
+  <h2>受験生がつまずく3つの場面に、機能を1つずつ対応させています。</h2>
+  <div class="body">
+    <div class="grid">
+      <div class="head" data-rv="up" style="--d:500ms">つまずく場面（開発者の受験経験から立てた仮説）</div><div class="head" data-rv="up" style="--d:600ms">マナトビの機能</div>
+      <div class="c p" data-rv="left" style="--d:800ms"><strong>答え合わせをしても、どの一語を聞き落としたかが分からない</strong></div>
+      <div class="c f" data-rv="right" style="--d:1.5s"><strong>聞き取りの決め手つきスクリプト</strong><span>正解の根拠になった英文に番号と色が付きます</span></div>
+      <div class="c p" data-rv="left" style="--d:1.1s"><strong>本番と同じ1回読みで練習する機会が少ない</strong></div>
+      <div class="c f" data-rv="right" style="--d:1.8s"><strong>本番と同じ形式の演習を、第1問Aから第6問Bまで</strong><span>第4問から第6問は、本番どおり音声が1回しか流れません</span></div>
+      <div class="c p" data-rv="left" style="--d:1.4s"><strong>一人の演習は続きにくい</strong></div>
+      <div class="c f" data-rv="right" style="--d:2.1s"><strong>同じ問題で競う対戦</strong><span>AI・フレンド・全国の3種類</span></div>
+    </div>
+    <svg id="links" aria-hidden="true"></svg>
+  </div>
+  <div class="folio">3 / 10</div>
+</section>
+
+
+<!-- 4. 1問の流れ（紹介動画の STEP 1〜3） --------------------------------- -->
+<section class="slide" id="sFlow">
+  <style>
+    #sFlow .body{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;align-content:center;align-items:start;padding-top:24px}
+    #sFlow .st{font-family:'Inter',sans-serif;font-size:var(--s);font-weight:700;color:var(--brand);margin-top:18px;letter-spacing:.04em}
+    #sFlow .st+p{margin-top:2px}
+    #sFlow p strong{display:block;font-size:var(--b);line-height:1.5}
+  </style>
+  <h2>1問ごとに、聞く・採点・根拠の確認までが<br>その場で終わります。</h2>
+  <div class="body">
+    <div data-rv="up" style="--d:500ms">
+      <div class="vid"><img src="clips/listen.jpg" alt="第2問。英語を聞いて合うイラストを選ぶ画面（パソコンとスマホ）"><video data-src="clips/listen.mp4" poster="clips/listen.jpg" muted loop playsinline preload="none"></video><span class="tag">第2問</span></div>
+      <p class="st">STEP 1</p>
+      <p><strong>英語を聞いて、合うイラストを選ぶ</strong><span class="s">本番と同じ形式。スマホでもパソコンでも同じ問題を解けます。</span></p>
+    </div>
+    <div data-rv="up" style="--d:800ms">
+      <div class="vid"><img src="clips/answer.jpg" alt="答えると、その場で採点と解説が出る画面"><video data-src="clips/answer.mp4" poster="clips/answer.jpg" muted loop playsinline preload="none"></video></div>
+      <p class="st">STEP 2</p>
+      <p><strong>答えたら、すぐ採点と解説</strong><span class="s">正解・不正解と、選択肢ごとの解説がすぐ出ます。</span></p>
+    </div>
+    <div data-rv="up" style="--d:1.1s">
+      <div class="vid"><img src="clips/readalong.jpg" alt="スクリプトの英文が音声に合わせて光る画面"><video data-src="clips/readalong.mp4" poster="clips/readalong.jpg" muted loop playsinline preload="none"></video></div>
+      <p class="st">STEP 3</p>
+      <p><strong>音声に合わせて、英文が光る</strong><span class="s">今読まれている単語と、強く読む所・つながる所が見えます。</span></p>
+    </div>
+  </div>
+  <p class="s" data-rv="up" style="--d:1.6s">動画はすべて紹介動画（実際のアプリ画面の録画）から切り出したものです。</p>
+  <div class="folio">4 / 10</div>
+</section>
+
+<!-- 5. 核心の1枚 ------------------------------------------------------- -->
+<section class="slide" id="s4">
+  <style>
+    #s4{padding-top:40px;padding-bottom:30px}
+    #s4 h2{font-size:30px}
+    #s4 .body{display:grid;grid-template-columns:270px 1fr;gap:80px;align-items:center;margin-top:16px}
+    #s4 .phone{width:270px}
+    #s4 .wrap{position:relative}
+    #s4 .ann{list-style:none;counter-reset:a}
+    #s4 .ann li{counter-increment:a;position:relative;padding-left:46px}
+    #s4 .ann li+li{margin-top:24px}
+    #s4 .ann li:before{content:counter(a);position:absolute;left:0;top:2px;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;
+      font-weight:700;font-size:var(--s);display:flex;align-items:center;justify-content:center}
+    #s4 .pin{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700;font-size:var(--s);
+      display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #fff}
+    #s4 .claim{margin-top:34px;padding-top:24px;border-top:1px solid var(--line);font-size:var(--b);color:var(--ink)}
+  </style>
+  <h2>解き終えた直後に、正解の根拠になった英文をスクリプトの中で確かめられます。</h2>
+  <div class="body">
+    <div class="wrap" data-rv="phone" style="--d:300ms">
+      <div class="phone" data-tilt><img src="img/f_evidence.jpg" alt="第4問Bの解説画面。スクリプトの根拠部分に番号つきの色が付いている"></div>
+      <span class="pin" data-pin="1" style="left:-16px;top:250px;--d:1.1s">1</span>
+      <span class="pin" data-pin="2" style="right:-16px;top:18px;--d:1.6s">2</span>
+      <span class="pin" data-pin="3" style="right:-16px;top:82px;--d:2.1s">3</span>
+    </div>
+    <div>
+      <ol class="ann">
+        <li data-pin="1" data-rv="right" style="--d:1s"><p><strong>番号つきの黄色の部分が「<span class="mark" style="--md:1.6s">聞き取りの決め手</span>」です。</strong>正解を選ぶ根拠になった英文を示します。</p></li>
+        <li data-pin="2" data-rv="right" style="--d:1.5s"><p><strong>設問の番号を押すと、その設問の解説に移ります。</strong></p></li>
+        <li data-pin="3" data-rv="right" style="--d:2s"><p><strong>スクリプトを見ながら、音声をもう一度聞けます。</strong>0.75倍のゆっくり再生もできます。</p></li>
+      </ol>
+      <p class="claim" data-rv="up" style="--d:2.6s">解いた直後に根拠の英文まで戻れるので、1回のアウトプットごとに「どこを聞き落としたか」まで分かります。</p>
+      <p class="s" style="margin-top:14px;--d:2.9s" data-rv="up">画面は第4問Bの解説。決め手は第4問A〜第6問Bの全大問（120音源）に付いています。</p>
+    </div>
+  </div>
+  <div class="folio">5 / 10</div>
+</section>
+
+
+<!-- 6. 対戦をつくった理由（紹介動画の理念の画面） ------------------------- -->
+<section class="slide" id="sPhilo" style="padding:0">
+  <style>
+    #sPhilo{background:#16294a;justify-content:center;align-items:center}
+    #sPhilo .bg{position:absolute;inset:-30px;background:url(clips/philo_bg.jpg) center/cover;filter:blur(14px);opacity:.35}
+    #sPhilo .pair{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:40px;width:1120px}
+    #sPhilo .q{background:rgba(14,26,48,.82);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:40px 40px 36px}
+    #sPhilo .kick{display:inline-block;font-size:var(--s);font-weight:700;color:#1c2a39;background:#f2b84b;border-radius:999px;padding:4px 14px;margin-bottom:18px}
+    #sPhilo h2,#sPhilo .q p.big{font-size:var(--h);line-height:1.6;color:#fff}
+    #sPhilo .q p.big{font-family:'Noto Sans JP',sans-serif;font-weight:700}
+    #sPhilo .hl{color:#f6c25a}
+    #sPhilo .q .s{color:#c9d4e6;margin-top:16px}
+    #sPhilo .folio{color:#c9d4e6}
+  </style>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="pair">
+    <div class="q" data-rv="left" style="--d:300ms">
+      <span class="kick">対戦をつくった理由</span>
+      <h2 style="--kd:500ms">一人で落ち着いて解く力と、<br>相手がいる中で聞き取る力は、<br><span class="hl">別の力。</span></h2>
+    </div>
+    <div class="q" data-rv="right" style="--d:1.6s">
+      <span class="kick">だから</span>
+      <p class="big" data-kinetic style="--kd:1.8s">紙の問題集では作れない<br>「<span class="hl">本番の緊張感</span>」を、<br>スマホの中に。</p>
+      <p class="s" data-rv="up" style="--d:2.6s">AI・友だち・全国と、リスニング・英文法・英単語で対戦できます。</p>
+    </div>
+  </div>
+  <div class="folio">6 / 10</div>
+</section>
+
+<!-- 7. 対戦 --------------------------------------------- -->
+<section class="slide" id="s5">
+  <style>
+    #s5{padding-top:44px;padding-bottom:30px}
+    #s5 .body{display:grid;grid-template-columns:1fr 540px;gap:56px;align-items:center;margin-top:12px}
+    #s5 .vid{width:540px}
+    #s5 .cap{margin-top:12px}
+    #s5 .folio{right:auto;left:80px}
+    #s5 table{width:100%;border-collapse:collapse}
+    #s5 th,#s5 td{text-align:left;padding:14px 0;border-bottom:1px solid var(--line);vertical-align:top}
+    #s5 th{width:150px;font-size:var(--b);font-weight:700;color:var(--ink)}
+    #s5 .after{display:flex;gap:20px;align-items:center;margin-top:30px}
+    #s5 .after img{width:84px;flex:none}
+  </style>
+  <h2>同じ問題で相手と競えるので、<br>一人では続きにくい演習にも続ける理由が生まれます。</h2>
+  <div class="body">
+    <div>
+      <table>
+        <tr data-rv="left" style="--d:900ms"><th>AIと対戦</th><td>ログインせずに、すぐ始められます。</td></tr>
+        <tr data-rv="left" style="--d:1.15s"><th>フレンド</th><td>4文字の合言葉で友だちを呼び、1対1で戦います。</td></tr>
+        <tr data-rv="left" style="--d:1.4s"><th>全国対戦</th><td>ログインした受験生どうしで戦い、勝敗でランクが動きます。</td></tr>
+      </table>
+      <p style="margin-top:24px;--d:1.8s" data-rv="up">正解で<span class="cnt" data-to="60" data-delay="1800">60</span>点、速く答えるほどボーナスが付きます。</p>
+      <div class="after">
+        <img src="img/good.webp" alt="" data-rv="pop" style="--d:2.2s">
+        <p data-rv="up" style="--d:2.35s">対戦で間違えた問題は復習ノートに入り、あとで解説と一緒に聞き直せます。</p>
+      </div>
+    </div>
+    <div data-rv="right" style="--d:400ms">
+      <div class="vid"><img src="clips/battle.jpg" alt="パソコンとスマホで同じ問題を早押しで対戦している画面"><video data-src="clips/battle.mp4" poster="clips/battle.jpg" muted loop playsinline preload="none"></video><span class="tag">早押し4択・全10問</span></div>
+      <p class="s cap">スマホとパソコンの2台で、実際に全国対戦した録画です。</p>
+    </div>
+  </div>
+  <div class="folio">7 / 10</div>
+</section>
+
+
+<!-- 8. 続けるしかけ ------------------------------------------------------ -->
+<section class="slide" id="sKeep">
+  <style>
+    #sKeep .body{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;align-content:center;align-items:start;padding-top:24px}
+    #sKeep p strong{display:block;font-size:var(--b);line-height:1.5;margin-top:18px}
+    #sKeep .end{display:flex;align-items:center;gap:18px;margin-top:6px}
+    #sKeep .end img{width:72px;flex:none}
+    #sKeep .end p{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:var(--b);color:var(--brand)}
+  </style>
+  <h2>勝っても負けても、ガチャ・復習ノート・毎日のミッションで<br>次の1問につながります。</h2>
+  <div class="body">
+    <div data-rv="up" style="--d:500ms">
+      <div class="vid"><img src="clips/gacha.jpg" alt="ごほうびガチャの演出"><video data-src="clips/gacha.mp4" poster="clips/gacha.jpg" muted loop playsinline preload="none"></video></div>
+      <p><strong>ごほうびガチャ</strong><span class="s">対戦やミッションで集めたコインで引けます。とびら君の着がえや壁紙が出ます。</span></p>
+    </div>
+    <div data-rv="up" style="--d:800ms">
+      <div class="vid"><img src="clips/review.jpg" alt="復習ノートの画面"><video data-src="clips/review.mp4" poster="clips/review.jpg" muted loop playsinline preload="none"></video></div>
+      <p><strong>間違えた問題は、復習ノートに</strong><span class="s">あとで解説と一緒に聞き直せます。</span></p>
+    </div>
+    <div data-rv="up" style="--d:1.1s">
+      <div class="vid"><img src="clips/missions.jpg" alt="毎日のミッションの画面"><video data-src="clips/missions.mp4" poster="clips/missions.jpg" muted loop playsinline preload="none"></video></div>
+      <p><strong>毎日のミッション</strong><span class="s">毎日0時に入れかわり、全員おなじ内容です。演習・英単語・対戦で進みます。</span></p>
+    </div>
+  </div>
+  <div class="end" data-rv="up" style="--d:1.6s"><img src="img/happy.webp" alt=""><p>「聞き取れた！」を、毎日ひとつずつ。</p></div>
+  <div class="folio">8 / 10</div>
+</section>
+
+<!-- 9. いまの到達点 ---------------------------------------------------- -->
+<section class="slide" id="s6">
+  <style>
+    #s6 .body{display:grid;grid-template-columns:repeat(3,1fr);gap:0;align-items:center}
+    #s6 .k{padding:8px 40px;border-left:1px solid var(--line);display:flex;flex-direction:column}
+    #s6 .k:first-child{border-left:0;padding-left:0}
+    #s6 .k:last-child{padding-right:0}
+    #s6 .n{font-family:'Inter',sans-serif;font-weight:700;font-size:60px;line-height:1.1;color:var(--ink);letter-spacing:-.02em}
+    #s6 .n small{font-family:'Noto Sans JP',sans-serif;font-size:var(--b);font-weight:700;margin-left:6px;letter-spacing:0}
+    #s6 .what{font-size:var(--b);color:var(--ink-2);margin-top:6px}
+    #s6 .so{margin-top:36px;padding-top:22px;border-top:2px solid var(--brand);font-size:var(--b);line-height:1.7;color:var(--ink)}
+    #s6 .so:before{content:"だから";display:block;font-size:var(--s);font-weight:700;color:var(--brand);margin-bottom:4px}
+  </style>
+  <h2>教材は全大問がそろっていて、<br>問題を増やす費用も小さいことが分かっています。</h2>
+  <div class="body">
+    <div class="k" data-rv="up" style="--d:500ms">
+      <div class="viz" aria-hidden="true"><div class="dots big" data-n="135" data-cols="27" style="--d0:700ms;--ds:7ms"></div></div>
+      <div class="n"><span class="cnt" data-to="135" data-delay="700">135</span><small>大問</small></div>
+      <p class="what">第1問Aから第6問Bまで、9単元・554小問。すべてに解答解説があります。</p>
+      <p class="so" data-rv="up" style="--d:2.2s">共通テスト英語リスニングの出題形式は、すべてこのアプリだけで練習できます。</p>
+    </div>
+    <div class="k" data-rv="up" style="--d:750ms">
+      <div class="viz" aria-hidden="true"><div class="dots small" data-n="374" data-cols="44" style="--d0:950ms;--ds:3ms"></div></div>
+      <div class="n">US$<span class="cnt" data-to="30" data-delay="950">30</span><small>.20</small></div>
+      <p class="what">音源374本の制作費の合計です（音声生成サービスの領収書3件）。</p>
+      <p class="so" data-rv="up" style="--d:2.45s">1本あたり<span class="mark" style="--md:3.1s">約8セント</span>なので、問題を増やす費用はほとんどかかりません。</p>
+    </div>
+    <div class="k" data-rv="up" style="--d:1s">
+      <div class="viz ring-wrap" aria-hidden="true"><svg class="ring" viewBox="0 0 58 58"><circle class="bg" cx="29" cy="29" r="24" pathLength="1"/><circle class="fg" cx="29" cy="29" r="24" pathLength="1"/></svg><b>約98%</b></div>
+      <div class="n"><span class="cnt" data-to="453425" data-fmt="comma" data-delay="1100">453,425</span><small>人</small></div>
+      <p class="what">2026年1月の共通テストで、英語リスニングを受けた人数です。</p>
+      <p class="so" data-rv="up" style="--d:2.7s">本試験の受験者の約98%にあたり、受験生のほぼ全員が対象になります。</p>
+    </div>
+  </div>
+  <p class="s" data-rv="up" style="--d:3s">出典：大学入試センター「令和8年度大学入学共通テスト 実施結果の概要」（2026年2月5日）。大問数と音源数はアプリの問題データと音源台帳から集計。</p>
+  <div class="folio">9 / 10</div>
+</section>
+
+<!-- 10. お願い ---------------------------------------------------------- -->
+<section class="slide" id="s7">
+  <style>
+    #s7 .body{display:grid;grid-template-columns:1fr 440px;gap:64px;align-items:center}
+    #s7 ol{list-style:none;counter-reset:st}
+    #s7 ol li{counter-increment:st;position:relative;padding:14px 0 14px 46px;border-bottom:1px solid var(--line)}
+    #s7 ol li:before{content:counter(st);position:absolute;left:0;top:16px;width:28px;height:28px;border-radius:50%;border:2px solid var(--brand);
+      color:var(--brand);font-weight:700;font-size:var(--s);display:flex;align-items:center;justify-content:center}
+    #s7 .qr{display:grid;grid-template-columns:1fr 1fr;gap:28px;text-align:center}
+    #s7 .qr img{width:100%;display:block;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+    #s7 .qr p{font-size:var(--s);margin-top:10px;color:var(--ink-2)}
+    #s7 .mail{margin-top:30px;font-size:var(--b)}
+  </style>
+  <h2>審査の前に、1大問を解いて、<br>解説の「聞き取りの決め手」まで見てください。</h2>
+  <div class="body">
+    <div>
+      <ol>
+        <li data-rv="left" style="--d:900ms"><p>右のQRコードからアプリを入れて、Google か Apple でログインして試します。</p></li>
+        <li data-rv="left" style="--d:1.3s"><p>「演習する」→「英語リスニング」→「第4問 B」と進み、1大問を解きます。</p></li>
+        <li data-rv="left" style="--d:1.7s"><p>解き終えたら「詳しい結果を確認する」を押し、スクリプトの黄色の部分を見てください。</p></li>
+      </ol>
+      <p class="mail" data-rv="up" style="--d:2.2s"><strong>連絡先</strong>　mntobira@gmail.com</p>
+    </div>
+    <div class="qr">
+      <div data-rv="pop" style="--d:1.1s;--sd:1.8s"><img src="img/qr_appstore.png" alt="App Store のQRコード"><p>App Store（iPhone）</p></div>
+      <div data-rv="pop" style="--d:1.35s;--sd:2.1s"><img src="img/qr_googleplay.png" alt="Google Play のQRコード"><p>Google Play（Android）</p></div>
+    </div>
+  </div>
+  <div class="folio">10 / 10</div>
+</section>
+
+<!-- 画面の操作部品（印刷には出ない） -->
+<div class="progress ui" aria-hidden="true"><i></i></div>
+<nav class="pager ui" aria-label="スライド一覧"></nav>
+<div class="dock ui">
+  <button type="button" id="btn-replay" aria-label="このスライドのアニメーションをもう一度">↻ <kbd>R</kbd></button>
+  <button type="button" id="btn-present" aria-pressed="false">プレゼン <kbd>P</kbd></button>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  const doc = document.documentElement;
+  const slides = [...document.querySelectorAll('.slide')];
+  const motionOK = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+
+  /* ---------- 1. キネティック・タイポ：見出しを1文字ずつ（英数字の語は1かたまり）に分ける ----------
+     ・句読点や閉じかっこは前の文字に、開きかっこは次の文字にくっつける（行頭禁則がくずれないように）
+     ・空白はそのまま残す（英語の語間で改行できるように） */
+  const CLOSE = /[、。，．・：；！？」』）】〉》ー〜…ぁぃぅぇぉっゃゅょァィゥェォッャュョ]/;
+  const OPEN  = /[「『（【〈《]/;
+  function tokenize(text){
+    const out = []; let buf = ''; let pendingOpen = '';
+    const chars = [...text];
+    for (let i = 0; i < chars.length; i++){
+      const ch = chars[i];
+      if (/\s/.test(ch)){ if (buf){ out.push(buf); buf=''; } out.push({space:ch}); continue; }
+      if (/[A-Za-z0-9$.,%]/.test(ch) && /[A-Za-z0-9$]/.test(buf.slice(-1))){ buf += ch; continue; }
+      if (CLOSE.test(ch) && (buf || out.length)){ if (buf) buf += ch; else { const last = out[out.length-1]; if (typeof last === 'string'){ out[out.length-1] = last + ch; } else buf = ch; } continue; }
+      if (buf){ out.push(buf); buf=''; }
+      if (OPEN.test(ch)){ pendingOpen += ch; continue; }
+      buf = pendingOpen + ch; pendingOpen = '';
+    }
+    if (pendingOpen) buf += pendingOpen;
+    if (buf) out.push(buf);
+    return out;
+  }
+  function splitKinetic(root){
+    let idx = 0;
+    (function walk(node){
+      [...node.childNodes].forEach(n => {
+        if (n.nodeType === 3){
+          const frag = document.createDocumentFragment();
+          tokenize(n.nodeValue).forEach(t => {
+            if (typeof t === 'object'){ frag.appendChild(document.createTextNode(t.space)); return; }
+            const s = document.createElement('span');
+            s.className = 'k-tok'; s.style.setProperty('--i', idx++); s.textContent = t;
+            frag.appendChild(s);
+          });
+          n.replaceWith(frag);
+        } else if (n.nodeType === 1 && n.tagName !== 'BR'){ walk(n); }
+      });
+    })(root);
+    root.setAttribute('aria-label', root.textContent.trim());
+  }
+  slides.forEach(s => s.querySelectorAll('h2').forEach(h => {
+    h.setAttribute('data-kinetic',''); if (!h.style.getPropertyValue('--kd')) h.style.setProperty('--kd','80ms');
+  }));
+  document.querySelectorAll('[data-kinetic]').forEach(splitKinetic);
+  /* 1文字ずつの span は読み上げでは1つの文として読ませる */
+  document.querySelectorAll('[data-kinetic] .k-tok').forEach(t => t.setAttribute('aria-hidden','true'));
+  document.querySelectorAll('[data-kinetic]').forEach(el => {
+    const sr = document.createElement('span'); sr.textContent = el.getAttribute('aria-label');
+    sr.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap';
+    el.appendChild(sr); el.removeAttribute('aria-label');
+  });
+
+  /* ---------- 2. インフォグラフィック：数を点で描く（135大問・374音源） ---------- */
+  document.querySelectorAll('#s6 .dots').forEach(box => {
+    const n = +box.dataset.n, cols = +box.dataset.cols;
+    const size = box.classList.contains('big') ? 6 : 4;
+    box.style.gridTemplateColumns = `repeat(${cols}, ${size}px)`;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < n; i++){ const d = document.createElement('i'); d.style.setProperty('--i', i); frag.appendChild(d); }
+    box.appendChild(frag);
+  });
+
+  /* ---------- 3. スライド3：課題（左）と機能（右）を線でつなぐ ----------
+     offsetTop で座標を取るので、出現アニメの移動やプレゼン時の拡大の影響を受けない */
+  const svg = document.getElementById('links');
+  const P = [...document.querySelectorAll('#s3 .c.p')], F = [...document.querySelectorAll('#s3 .c.f')];
+  function drawLinks(){
+    const w = svg.clientWidth || 120; let d = '';
+    P.forEach((p,i) => {
+      const y1 = p.offsetTop + p.offsetHeight/2, y2 = F[i].offsetTop + F[i].offsetHeight/2;
+      const delay = `style="--d:${1700 + i*300}ms"`;
+      d += `<line data-i="${i}" ${delay} pathLength="1" x1="0" y1="${y1}" x2="${w}" y2="${y2}" stroke="#2458a6" stroke-width="2"/>`+
+           `<circle ${delay} cx="0" cy="${y1}" r="5" fill="#2458a6"/><circle style="--d:${2300 + i*300}ms" cx="${w}" cy="${y2}" r="5" fill="#2458a6"/>`;
+    });
+    svg.innerHTML = d;
+  }
+  drawLinks();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawLinks);
+  P.forEach((p,i) => [p, F[i]].forEach(el => {
+    el.addEventListener('mouseenter', () => { P[i].classList.add('hl'); F[i].classList.add('hl'); const l = svg.querySelector(`line[data-i="${i}"]`); if (l) l.setAttribute('stroke-width','4'); });
+    el.addEventListener('mouseleave', () => { P[i].classList.remove('hl'); F[i].classList.remove('hl'); const l = svg.querySelector(`line[data-i="${i}"]`); if (l) l.setAttribute('stroke-width','2'); });
+  }));
+
+  /* ---------- 4. スライド4：ピンと説明文を相互にハイライト ---------- */
+  document.querySelectorAll('#s4 [data-pin]').forEach(el => {
+    const k = el.dataset.pin, pair = document.querySelectorAll(`#s4 [data-pin="${k}"]`);
+    el.addEventListener('mouseenter', () => pair.forEach(x => x.classList.add('hl')));
+    el.addEventListener('mouseleave', () => pair.forEach(x => x.classList.remove('hl')));
+  });
+
+  /* ---------- 5. スマホ画面の傾き（マウスに追従） ---------- */
+  if (motionOK) document.querySelectorAll('[data-tilt]').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--ry', ((e.clientX - r.left)/r.width - .5) * 12 + 'deg');
+      el.style.setProperty('--rx', -((e.clientY - r.top)/r.height - .5) * 10 + 'deg');
+    });
+    el.addEventListener('mouseleave', () => { el.style.setProperty('--rx','0deg'); el.style.setProperty('--ry','0deg'); });
+  });
+
+  /* ---------- 6. 数字のカウントアップ（最後は必ず元の表記にもどす） ---------- */
+  const counters = [...document.querySelectorAll('.cnt')];
+  counters.forEach(c => {
+    c.dataset.final = c.textContent;
+    c.style.display = 'inline-block'; c.style.textAlign = 'right';
+    c.style.minWidth = c.getBoundingClientRect().width + 'px';
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => counters.forEach(c => {
+    const t = c.textContent; c.textContent = c.dataset.final; c.style.minWidth = '0px';
+    c.style.minWidth = c.getBoundingClientRect().width + 'px'; c.textContent = t;
+  }));
+  const fmt = (v, c) => c.dataset.fmt === 'comma' ? v.toLocaleString('en-US') : String(v);
+  function runCounters(slide){
+    if (!motionOK) return;
+    slide.querySelectorAll('.cnt').forEach(c => {
+      const to = +c.dataset.to, delay = +(c.dataset.delay || 0), dur = 1500;
+      cancelAnimationFrame(c._raf); clearTimeout(c._t);
+      c.textContent = fmt(0, c);
+      c._t = setTimeout(() => {
+        const t0 = performance.now();
+        const step = now => {
+          const p = Math.min(1, (now - t0)/dur), e = 1 - Math.pow(2, -10*p);
+          c.textContent = p < 1 ? fmt(Math.round(to*e), c) : c.dataset.final;
+          if (p < 1) c._raf = requestAnimationFrame(step);
+        };
+        c._raf = requestAnimationFrame(step);
+      }, delay);
+    });
+  }
+  function finishCounters(slide){
+    slide.querySelectorAll('.cnt').forEach(c => { cancelAnimationFrame(c._raf); clearTimeout(c._t); c.textContent = c.dataset.final; });
+  }
+
+  /* ---------- 7. スライドの入場・退場 ---------- */
+  function playVideos(slide, on){
+    slide.querySelectorAll('video[data-src]').forEach(v => {
+      if (!on){ v.pause(); return; }
+      if (!motionOK) return;
+      if (!v.src){ v.src = v.dataset.src; v.preload = 'auto'; }
+      v.currentTime = 0; const pr = v.play(); if (pr) pr.catch(() => { /* 自動再生できない環境では静止画のまま */ });
+    });
+  }
+  function enter(slide){
+    if (slide.classList.contains('in')) return;
+    slide.classList.add('in'); runCounters(slide); playVideos(slide, true);
+  }
+  function reset(slide){
+    /* 見えなくなったら一瞬で初期状態にもどす（逆再生させない）→ 次に入ったときもう一度再生 */
+    slide.classList.add('noanim'); slide.classList.remove('in'); finishCounters(slide); playVideos(slide, false);
+    void slide.offsetWidth; slide.classList.remove('noanim');
+  }
+  function replay(slide){ reset(slide); requestAnimationFrame(() => requestAnimationFrame(() => enter(slide))); }
+
+  let current = 0, presenting = false;
+  const io = new IntersectionObserver(entries => {
+    if (presenting) return;
+    entries.forEach(e => {
+      if (e.intersectionRatio >= 0.35) enter(e.target);
+      else if (!e.isIntersecting) reset(e.target);
+      if (e.intersectionRatio >= 0.55) setCurrent(slides.indexOf(e.target));
+    });
+  }, {threshold:[0, 0.35, 0.55]});
+  slides.forEach(s => io.observe(s));
+
+  /* ---------- 8. ページ送りUI：進捗バー・目次ドット・プレゼンモード ---------- */
+  const bar = document.querySelector('.progress i'), pager = document.querySelector('.pager');
+  slides.forEach((s,i) => {
+    const h = s.querySelector('h1,h2'); const label = `${i+1}. ` + (h ? h.textContent.replace(/\s+/g,'') : '');
+    const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', label);
+    b.innerHTML = `<span></span><i></i>`; b.firstChild.textContent = label;
+    b.addEventListener('click', () => go(i));
+    pager.appendChild(b);
+  });
+  const dots = [...pager.querySelectorAll('button')];
+  function setCurrent(i){
+    current = i;
+    dots.forEach((d,k) => d.setAttribute('aria-current', k === i ? 'true' : 'false'));
+    bar.style.setProperty('--p', (i+1)/slides.length);
+  }
+  function fit(){ doc.style.setProperty('--k', Math.min(innerWidth/1280, innerHeight/720) * .96); }
+  function go(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    if (presenting){
+      slides[current].classList.remove('cur'); reset(slides[current]);
+      setCurrent(i); slides[i].classList.add('cur');
+      requestAnimationFrame(() => requestAnimationFrame(() => enter(slides[i])));
+    } else {
+      slides[i].scrollIntoView({behavior: motionOK ? 'smooth' : 'auto', block:'center'});
+    }
+  }
+  const btn = document.getElementById('btn-present');
+  function setPresent(on){
+    presenting = on; doc.classList.toggle('present', on); btn.setAttribute('aria-pressed', String(on));
+    btn.firstChild.textContent = on ? '一覧へ ' : 'プレゼン ';
+    if (on){
+      fit(); slides.forEach(s => { s.classList.remove('cur'); reset(s); });
+      slides[current].classList.add('cur'); requestAnimationFrame(() => requestAnimationFrame(() => enter(slides[current])));
+      if (doc.requestFullscreen && !document.fullscreenElement) doc.requestFullscreen().catch(() => { /* 全画面が許可されなくてもプレゼンは続ける */ });
+    } else {
+      slides.forEach(s => { s.classList.remove('cur'); io.unobserve(s); io.observe(s); });
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      slides[current].scrollIntoView({block:'center'});
+    }
+  }
+  btn.addEventListener('click', () => setPresent(!presenting));
+  document.getElementById('btn-replay').addEventListener('click', () => replay(slides[current]));
+  addEventListener('resize', fit);
+  document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && presenting) setPresent(false); });
+  addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key;
+    if (k === 'p' || k === 'P'){ setPresent(!presenting); }
+    else if (k === 'r' || k === 'R'){ replay(slides[current]); }
+    else if (k === 'Escape' && presenting){ setPresent(false); }
+    else if (['ArrowRight','ArrowDown','PageDown',' '].includes(k)){ go(current+1); }
+    else if (['ArrowLeft','ArrowUp','PageUp'].includes(k)){ go(current-1); }
+    else if (k === 'Home'){ go(0); } else if (k === 'End'){ go(slides.length-1); }
+    else return;
+    e.preventDefault();
+  });
+  if (presenting === false) setCurrent(0);
+
+  /* 印刷・PDF化：プレゼンを抜け、数字を確定させる（見た目は CSS で完成状態になる） */
+  addEventListener('beforeprint', () => { if (presenting) setPresent(false); slides.forEach(s => { s.classList.add('in'); finishCounters(s); }); });
+})();
+</script>
+</body>
+</html>

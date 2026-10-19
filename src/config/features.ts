@@ -42,13 +42,13 @@
  * 機械的に検査する（人の記憶に頼らない）。
  *
  * -------------------------------------------------------------------
- * ■ このファイルは何も import しない（葉モジュール）
+ * ■ import してよいのは教科の登録簿（data/subjects.ts、これも葉）だけ
  * -------------------------------------------------------------------
  * ここから教科データや画面を import すると、
  * 「フラグを1つ見たいだけ」の場所が重いデータを引き込んでしまう。
- * ★何も import しないことが仕様である。★
- * （tests/featureFlags.test.ts がこれも検査する）
+ * 教科の公開/非公開は登録簿の enabled が唯一の出どころ。
  */
+import { SUBJECT_REGISTRY } from '../data/subjects';
 
 /**
  * 公開/非公開の一覧。
@@ -60,15 +60,6 @@
  * 理由が書かれていないフラグは、後で誰も戻せなくなる。
  */
 export const FEATURES = {
-  "chemistry_basic": false,
-  "chemistry": false,
-  "listening": true,
-  "english_grammar": true,
-  "biology_basic": false,
-  "geography": false,
-  "math": false,
-  "physics": false,
-  "rika": false,
   "my_words": false,
   "bgm": false,
   "ranking": true,
@@ -90,29 +81,10 @@ export function isFeatureEnabled(key: string | null | undefined): boolean {
   return (FEATURES as Record<string, boolean>)[key] === true;
 }
 
-/**
- * 科目IDのフラグ名。
- *
- * ■ なぜ対応表が必要か
- *   科目IDと、先方の助言にあったフラグ名が完全一致していない。
- *     科目ID `english_listening`  ↔  フラグ名 `listening`
- *   IDを変えると保存済みの進捗・復習リストのキーが全部変わって
- *   ユーザーのデータが消えるので、★IDは変えずに対応表で吸収する。★
- *
- *   フラグ名を持たない科目IDが来た場合は「フラグ名なし」を返し、
- *   下の isSubjectEnabled が false（隠す）と判断する。
- *   ここでも安全側は「隠す」。
- */
-const SUBJECT_FEATURE_KEY: Record<string, FeatureKey> = {
-  chemistry_basic: 'chemistry_basic',
-  chemistry: 'chemistry',
-  english_listening: 'listening',
-  english_grammar: 'english_grammar',
-  biology_basic: 'biology_basic',
-  geography: 'geography',
-  math: 'math',
-  physics: 'physics',
-};
+/** 教科ID → 公開中か（data/subjects.ts の enabled から作る） */
+const SUBJECT_ENABLED: Readonly<Record<string, boolean>> = Object.fromEntries(
+  SUBJECT_REGISTRY.map((s) => [s.id, s.enabled]),
+);
 
 /**
  * その科目をユーザーに見せる／入れてよいか。
@@ -121,10 +93,8 @@ const SUBJECT_FEATURE_KEY: Record<string, FeatureKey> = {
  * 判断が1か所しかないので、片方だけ直して片方を忘れることが起きない。
  */
 export function isSubjectEnabled(subjectId: string | null | undefined): boolean {
-  if (!subjectId) return false;
-  const key = SUBJECT_FEATURE_KEY[subjectId];
-  if (!key) return false;
-  return FEATURES[key] === true;
+  // 登録簿に無い教科ID（旧版の化学・数学など）は false＝隠す。安全側は「隠す」。
+  return !!subjectId && SUBJECT_ENABLED[subjectId] === true;
 }
 
 /**

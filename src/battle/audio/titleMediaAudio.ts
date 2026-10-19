@@ -2,7 +2,10 @@
  * Web Audio like battle music, without changing the licensed source file.
  * Retain one media source per element (also across StrictMode effects).
  */
+// AudioContext.resume() はユーザー操作の前にブラウザが拒むのが通常。次の操作・再生で再び resume するので、
+// このファイルの `.resume().catch(() => {})` は意図して捨てている。
 import { sharedAudioContext } from './sharedAudioContext';
+import { isAndroidAudio } from './audioPlatform';
 
 type Route = { context: AudioContext; gain: GainNode; source: MediaElementAudioSourceNode };
 const routes = new WeakMap<HTMLMediaElement, Route>();
@@ -10,6 +13,8 @@ const routes = new WeakMap<HTMLMediaElement, Route>();
 export function setTitleBgmVolume(audio: HTMLMediaElement, volume: number): void {
   const value = Number.isFinite(volume) ? Math.max(0, Math.min(1, volume)) : 0;
   let route = routes.get(audio);
+  // Android は volume が効くので Web Audio に通さない（通すと音割れしやすい。audioPlatform.ts）
+  if (!route && isAndroidAudio()) { audio.volume = value; return; }
   if (!route) {
     const context = sharedAudioContext();
     if (context) {

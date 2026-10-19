@@ -1,0 +1,1 @@
+package android.webkit; public class WebResourceResponse { public int code; public java.util.Map<String,String> h; public java.io.InputStream data; public WebResourceResponse(String m,String e,int c,String r,java.util.Map<String,String> h,java.io.InputStream d){code=c;this.h=h;data=d;} }

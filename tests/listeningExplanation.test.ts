@@ -20,6 +20,8 @@
  * 「壊れたら気づける」形でテストに固定しておく。
  */
 import { describe, it, expect } from 'vitest';
+import { fixture } from './helpers/fixture';
+import type { Problem, SubQuestion } from '../src/types/curriculum';
 import fs from 'node:fs';
 import path from 'node:path';
 import { EL1_A_PROBLEMS } from '../src/data/englishListeningQ1AProblems';
@@ -46,15 +48,15 @@ const ROOT = path.resolve(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(ROOT, p), 'utf-8');
 
 /** 収録済みのリスニング問題すべて（第1問A 14回 ＋ 第1問B 15回） */
-const ALL_PROBLEMS: any[] = [
-  ...(EL1_A_PROBLEMS as any[]),
-  ...(EL1_A_EXTRA_PROBLEMS as any[]),
-  ...(EL1_B_PROBLEMS as any[]),
+const ALL_PROBLEMS: Problem[] = [
+  ...(EL1_A_PROBLEMS),
+  ...(EL1_A_EXTRA_PROBLEMS),
+  ...(EL1_B_PROBLEMS),
 ];
 
 /** すべての小問を (problem, subQuestion) の組で列挙する */
-const ALL_SUBS: { problem: any; sq: any }[] = ALL_PROBLEMS.flatMap((problem) =>
-  (problem.subQuestions as any[]).map((sq) => ({ problem, sq })),
+const ALL_SUBS: { problem: Problem; sq: SubQuestion }[] = ALL_PROBLEMS.flatMap((problem) =>
+  (problem.subQuestions).map((sq) => ({ problem, sq })),
 );
 
 /** HTML タグを外して素のテキストにする（並び順の検査に使う） */
@@ -114,7 +116,8 @@ describe('リスニングの解説：スクリプトを最初に出す（C3）',
 
   it('画面側は「スクリプト先出し」のときだけ道すじの重複表示を止めている', () => {
     // ここが外れると、全問共通の一般論がスクリプトより前に4問ぶん並んでしまう。
-    const source = read('src/components/Explanation.tsx');
+    // 小問カードは 2026-10-14 のリファクタリングで explanation/SubQuestionCard.tsx へ移した（中身は同じ）
+    const source = read('src/components/Explanation.tsx') + read('src/components/explanation/SubQuestionCard.tsx');
     expect(source).toContain('isScriptFirstExplanation');
     expect(source).toContain('const isScriptFirst = isScriptFirstExplanation(sqSliceRaw)');
     expect(source).toContain('{!isScriptFirst && isPracticeMode && sq.detailedExplanation?.steps?.length > 0');
@@ -179,7 +182,7 @@ describe('リスニングの解説：どの語を聞き取れればよかった�
   it('手書きの keyPhrases（意味つき）は捨てられず、先頭に出る', () => {
     // 意味の説明が付いたデータは人が書いたいちばん価値の高い情報なので、
     // 機械的に拾った語より先に見せる。
-    const p: any = EL1_A_PROBLEMS[0];
+    const p: Problem = EL1_A_PROBLEMS[0];
     const sq = p.subQuestions[0];
     const { script } = pickScript(p, sq);
     const phrases = extractDecisivePhrases(p, sq, script);
@@ -263,36 +266,36 @@ describe('リスニングの解説：枠と分量（C5）', () => {
     // 「全小問で同一なら、その問固有の話ではない」という構造だけで判定する。
     // こうしておけば、データの文言が変わっても正しく効き続ける。
     const steps = ['① 通して聞く', '② but を探す', '③ 半分に切る', '④ 確定する'];
-    const allSame = {
+    const allSame = fixture<Problem>({
       subQuestions: [
         { id: 'a', detailedExplanation: { steps: [...steps] } },
         { id: 'b', detailedExplanation: { steps: [...steps] } },
       ],
-    };
+    });
     expect(areStepsSharedAcrossSubQuestions(allSame)).toBe(true);
     expect(sharedSteps(allSame)).toEqual(steps);
 
-    const different = {
+    const different = fixture<Problem>({
       subQuestions: [
         { id: 'a', detailedExplanation: { steps: ['① 固有の話'] } },
         { id: 'b', detailedExplanation: { steps: ['① べつの固有の話'] } },
       ],
-    };
+    });
     expect(areStepsSharedAcrossSubQuestions(different)).toBe(false);
     expect(sharedSteps(different)).toEqual([]);
 
     // 小問が1つだけのときは「共通」と判断しない（比べる相手がいない）
     expect(
-      areStepsSharedAcrossSubQuestions({
+      areStepsSharedAcrossSubQuestions(fixture<Problem>({
         subQuestions: [{ id: 'a', detailedExplanation: { steps } }],
-      }),
+      })),
     ).toBe(false);
   });
 
   it('小問1つぶんの本文が長くなりすぎない（読み切れる分量）', () => {
     // 「長すぎて、どこが大事か分からない」への歯止め。
     // 手書きの第1回だけは元から詳しいので、機械生成の28回ぶんを見る。
-    const generated = [...(EL1_A_EXTRA_PROBLEMS as any[]), ...(EL1_B_PROBLEMS as any[])];
+    const generated = [...(EL1_A_EXTRA_PROBLEMS), ...(EL1_B_PROBLEMS)];
     for (const p of generated) {
       const slices = sliceEnhancedBySubQuestion(p.explanation)!;
       for (const sub of slices.subs) {
@@ -308,11 +311,11 @@ describe('リスニングの解説：安全側の作り', () => {
     // 無理に専用整形をかけて情報が欠けるほうが害が大きい。
     expect(buildListeningExplanation({ subQuestions: [] })).toBe('');
     expect(
-      buildListeningExplanation({
+      buildListeningExplanation(fixture<Problem>({
         explanation: '解説',
         subQuestions: [{ id: 'x', label: '問1', correctAnswer: '②' }],
         audioTracks: [],
-      }),
+      })),
     ).toBe('');
     expect(buildListeningExplanation(null)).toBe('');
     expect(buildListeningExplanation(undefined)).toBe('');
@@ -321,7 +324,7 @@ describe('リスニングの解説：安全側の作り', () => {
   it('解説の「問N　正解は ○」が解答データと一致している', () => {
     // 解説を読んだら正解が違う、という最悪の不整合を防ぐ命綱。
     for (const p of ALL_PROBLEMS) {
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         const no = String(sq.label || '').match(/問\s*(\d+)/u)?.[1];
         expect(no, `${sq.id} のラベルに問番号が無い`).toBeTruthy();
         const m = p.explanation.match(new RegExp(`問${no}\\s*正解は\\s*([①②③④])`));
@@ -333,7 +336,7 @@ describe('リスニングの解説：安全側の作り', () => {
 
   it('小問の見出しは行頭の「問N」から始まる（アコーディオン整形の条件）', () => {
     for (const p of ALL_PROBLEMS) {
-      for (let n = 1; n <= (p.subQuestions as any[]).length; n += 1) {
+      for (let n = 1; n <= (p.subQuestions).length; n += 1) {
         expect(p.explanation, `${p.id} に問${n}の見出しが無い`).toMatch(
           new RegExp(`^問${n}`, 'm'),
         );

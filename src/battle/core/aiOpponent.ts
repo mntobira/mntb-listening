@@ -136,9 +136,6 @@ export const AI_UID_PREFIX = 'ai:';
 export function aiUidOf(level: AiLevel): string {
   return `${AI_UID_PREFIX}${level}`;
 }
-export function isAiUid(uid: string): boolean {
-  return uid.startsWith(AI_UID_PREFIX);
-}
 
 /**
  * 問題文の長さから「読むのにかかる時間」の下限（秒）を見積もる。

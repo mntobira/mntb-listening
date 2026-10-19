@@ -13,6 +13,7 @@ import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { BattleMissions } from '../battle/ui/BattleMissions';
 import { BattleProfile } from '../battle/ui/BattleProfile';
 import './growth-hub.css';
+import { KineticText } from '../motion';
 const PARTS = [['pose','ポーズ'],['frame','フレーム'],['hat','帽子'],['glasses','メガネ'],['cheek','ほっぺ'],['aura','オーラ'],['wallpaper','壁紙']] as const;
 export type GrowthPage = 'overview' | 'gacha' | 'shop' | 'outfit' | 'prints' | 'rewards' | 'badges' | 'stats' | 'missions' | 'rush';
 export function GrowthHub({ page, onPage, onBack, onBattle, onReview, onRanking, defaultSubject, onStudy, onFoundation, onRetry }: {
@@ -43,7 +44,7 @@ export function GrowthHub({ page, onPage, onBack, onBattle, onReview, onRanking,
   // ★ガチャ・マイページは下のナビから入るので「← ホーム」は置かない（2026-10-05）★
   if (page === 'gacha') return <section className="mana-hub mana-hub-gacha compact-gacha"><GachaRoom embedded onBack={onBack} onMissions={()=>onPage('missions')}/></section>;
   return <section className="mana-hub mypage-hub" data-mypage>
-    <header className="mana-hub-header"><h1>マイページ</h1></header>
+    <header className="mana-hub-header"><h1><KineticText text="マイページ" /></h1></header>
     {/* ショップはホームのボタンから入れるので、ここは学習記録（2026-10-05）。ミッション・学習記録の下ボタンは廃止 */}
     <nav className="mypage-tabs" aria-label="マイページメニュー">{([['overview','マイページ'],['outfit','持ちもの'],['badges','称号'],['prints','マイPDF'],['stats','学習記録']] as const).map(([id,label]) => <button type="button" key={id} aria-current={page === id ? 'page' : undefined} onClick={()=>openTab(id)}>{label}</button>)}</nav>
     <div className="mypage-body">

@@ -281,6 +281,23 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 }
 .growth-sheet { animation: growthSheetIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) 1 both; }
 .growth-sheet-backdrop { animation: growthReveal 0.25s ease-out 1 both; }
+/* ログインボーナス（2026-10-14）：下ナビ・広告の場所・セーフエリアの分だけ上に置き、はみ出したら中だけスクロール */
+.login-bonus-backdrop {
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(12px + 72px + var(--ad-bottom-h, 0px) + var(--ad-gap, 0px) + env(safe-area-inset-bottom, 0px));
+}
+.login-bonus-sheet { max-height: calc(100dvh - 24px - 72px - var(--ad-bottom-h, 0px) - var(--ad-gap, 0px) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); }
+@media (min-width: 640px) {
+  /* 中央寄せの画面（タブレット・PC）は上下を均等に空ける */
+  .login-bonus-backdrop { padding-bottom: calc(12px + var(--ad-bottom-h, 0px) + var(--ad-gap, 0px) + env(safe-area-inset-bottom, 0px)); }
+  .login-bonus-sheet { max-height: calc(100dvh - 24px - var(--ad-bottom-h, 0px) - var(--ad-gap, 0px) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-height: 640px) {
+  /* 背の低い画面：余白と7日の並びを詰めて、閉じるボタンまで1画面に入れる */
+  .login-bonus-sheet { padding: 14px !important; }
+  .login-bonus-sheet ol { margin-top: 10px !important; }
+  .login-bonus-sheet > div + div, .login-bonus-sheet button { margin-top: 10px !important; }
+}
 
 /* ボタンを押した手応え（:active でわずかに沈む） */
 .growth-press:active { transform: translateY(1px) scale(0.99); }
@@ -2903,7 +2920,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 /* ---- 通報・ブロック（App Store 1.2） ---- */
 .user-safety-trigger { display:inline-flex; align-items:center; justify-content:center; min-width:32px; min-height:32px; border-radius:9999px; color:#8895A0; flex-shrink:0; }
 .user-safety-trigger:hover, .user-safety-trigger:focus-visible { background:#F1EDE4; color:#1B2631; }
-.user-safety-dialog, .legal-dialog { border:0; border-radius:18px; padding:0; width:min(92vw,360px); box-shadow:0 20px 50px rgba(0,0,0,.25); }
+.user-safety-dialog, .legal-dialog { border:0; border-radius:18px; padding:0; width:min(92vw,360px); box-shadow:0 20px 50px rgba(0,0,0,.25); margin:auto; max-height:calc(100dvh - 24px); overflow-y:auto; } /* 2026-10-14 Tailwind の初期化で margin:0 になり、iPad で左上に張り付いていた */
 .user-safety-dialog::backdrop, .legal-dialog::backdrop { background:rgba(20,28,36,.45); }
 .user-safety-body { padding:16px; display:grid; gap:10px; font-size:13px; color:#1B2631; }
 .user-safety-body h2 { font-size:15px; font-weight:800; }

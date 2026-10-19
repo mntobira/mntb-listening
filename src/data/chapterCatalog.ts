@@ -148,7 +148,7 @@ export function getChapterCatalog(subject: CatalogSubject): ChapterDefinition[] 
   const hit = cache.get(subject);
   if (hit) return hit;
 
-  // 未知のIDのときに化学基礎（＝先頭の教科）へ落ちる挙動は、
+  // 未知のIDのときに先頭の教科（英語リスニング）へ落ちる挙動は、
   // 元の getPartsOfSubject / 元の switch の default 節と同じ。
   const entry = SUBJECT_INDEX.find((s) => s.id === subject) ?? SUBJECT_INDEX[0];
   const rows = toDefinitions(entry ? entry.chapters : []);
@@ -156,7 +156,3 @@ export function getChapterCatalog(subject: CatalogSubject): ChapterDefinition[] 
   return rows;
 }
 
-/** カタログ全体の大問総数（到達率の分母） */
-export function countCatalogProblems(subject: CatalogSubject): number {
-  return getChapterCatalog(subject).reduce((sum, row) => sum + row.totalProblems, 0);
-}

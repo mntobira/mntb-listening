@@ -34,7 +34,7 @@ const ROOT = path.resolve(__dirname, '..');
 const IMG_DIR = path.join(ROOT, 'public/listening_q2');
 const MARKS = ['①', '②', '③', '④'];
 
-const allSub = EL2_PROBLEMS.flatMap((p) => p.subQuestions as any[]);
+const allSub = EL2_PROBLEMS.flatMap((p) => p.subQuestions);
 
 /** imageUrl（/listening_q2/el2_set9_q2.jpg）から実ファイルのパスを作る。 */
 const fileOf = (imageUrl: string) =>
@@ -73,8 +73,8 @@ describe('第2問：収録データの整合', () => {
   it('各問に音源トラック（対話スクリプト）が対応づいている', () => {
     for (const p of EL2_PROBLEMS) {
       expect(p.audioTracks).toHaveLength(p.subQuestions.length);
-      const subIds = (p.subQuestions as any[]).map((s) => s.id);
-      for (const track of p.audioTracks as any[]) {
+      const subIds = (p.subQuestions).map((s) => s.id);
+      for (const track of p.audioTracks) {
         expect(subIds).toContain(track.subId);
         expect(track.script.trim().length).toBeGreaterThan(5);
         // 2人の対話なので発話は必ず2つ以上。1つだと話者交替が耳で分からない。
@@ -98,7 +98,7 @@ describe('第2問：収録データの整合', () => {
       const setNo = Number(m![1]);
 
       let prev = 0;
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         const { set, q } = idParts(sq.id);
         expect(set).toBe(setNo);
         expect(q).toBeGreaterThan(prev);
@@ -131,7 +131,7 @@ describe('第2問：正解位置（耳を使わずに解けないようにする
   it('解説に選択肢のイラスト説明と、収録した問の見出しが入っている', () => {
     for (const p of EL2_PROBLEMS) {
       expect(p.explanation).toContain('選択肢のイラスト：');
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         const { q } = idParts(sq.id);
         expect(p.explanation).toMatch(new RegExp(`^問${q}`, 'm'));
       }
@@ -147,7 +147,7 @@ describe('第2問：正解位置（耳を使わずに解けないようにする
 
   it('問を飛ばしたセットには、その旨が問題文に書かれている', () => {
     for (const p of EL2_PROBLEMS) {
-      const qs = (p.subQuestions as any[]).map((sq) => idParts(sq.id).q);
+      const qs = (p.subQuestions).map((sq) => idParts(sq.id).q);
       const skipped = [1, 2, 3].filter((n) => !qs.includes(n));
       if (skipped.length === 0) continue;
       // 「問3が無いのはなぜか」が学習者に分かるようにしておく。
@@ -162,7 +162,7 @@ describe('第2問：正解位置（耳を使わずに解けないようにする
 describe('第2問：イラストの割り当て', () => {
   it('imageUrl が設問IDと1対1で対応している', () => {
     for (const p of EL2_PROBLEMS) {
-      for (const sq of p.subQuestions as any[]) {
+      for (const sq of p.subQuestions) {
         const { set, q } = idParts(sq.id);
         expect(sq.imageUrl).toBe(`/listening_q2/el2_set${set}_q${q}.jpg`);
         expect(typeof sq.imageCaption).toBe('string');
@@ -227,8 +227,8 @@ describe('第2問：イラストの割り当て', () => {
 });
 
 describe('第2問：単元への配線', () => {
-  function el2Chapter(): any {
-    for (const part of (englishListeningData as any).parts ?? []) {
+  function el2Chapter(): (typeof englishListeningData.parts)[number]['chapters'][number] | null {
+    for (const part of englishListeningData.parts ?? []) {
       for (const ch of part.chapters ?? []) {
         if (ch.id === 'el2') return ch;
       }
@@ -243,7 +243,7 @@ describe('第2問：単元への配線', () => {
   it('収録した全セットがそのまま演習問題として登録されている', () => {
     const problems = el2Chapter().practiceProblems ?? [];
     expect(problems).toHaveLength(EL2_PROBLEMS.length);
-    expect(problems.map((p: any) => p.id)).toEqual(EL2_PROBLEMS.map((p) => p.id));
+    expect(problems.map((p) => p.id)).toEqual(EL2_PROBLEMS.map((p) => p.id));
   });
 
   it('画像ディレクトリが用意されている', () => {
