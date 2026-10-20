@@ -28,6 +28,7 @@ import {
   type ReviewItem,
 } from '../utils/reviewList';
 import { ForgettingCurveChart } from './ForgettingCurveChart';
+import { StudyRecord, type StudyRetry } from './StudyRecord';
 import './review-note.css';
 import { stripHtmlToText } from '../utils/sanitizeHtml';
 import { KineticText } from '../motion';
@@ -44,6 +45,7 @@ import {
   REVIEW_SUBJECT_LABELS,
   type SubjectTabId,
 } from '../utils/reviewSubject';
+import { safeLocalStorage } from '../utils/safeLocalStorage';
 
 /**
  * StudyHub — 「ノート」と「復習リスト」を1画面に統合した学習ハブ。
@@ -73,9 +75,11 @@ interface StudyHubProps {
   onReview?: (target: ReviewRequest) => void;
   /** 復習が空のときの「演習する」 */
   onPractice?: () => void;
+  /** 学習記録から、その大問を解きなおす（2026-10-19 復習と学習記録を1つに） */
+  onRetry?: (t: StudyRetry) => void;
 }
 
-type Tab = 'today' | 'notes' | 'important' | 'all';
+type Tab = 'today' | 'notes' | 'important' | 'all' | 'record';
 
 // ============================================================
 // 表示用の小道具
@@ -300,7 +304,7 @@ const NoteCard: React.FC<{ note: StudyNote; onSelect: (note: StudyNote) => void 
 // メイン
 // ============================================================
 
-export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, view, onViewChange }: StudyHubProps) {
+export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, onRetry, view, onViewChange }: StudyHubProps) {
   const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
 
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(() => getAllReviewItems(uid));
@@ -310,7 +314,7 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, 
 
   const loadNotes = () => {
     try {
-      const raw = localStorage.getItem(`notes_${uid || 'guest'}`);
+      const raw = safeLocalStorage()?.getItem(`notes_${uid || 'guest'}`);
       const list = raw ? JSON.parse(raw) : [];
       if (!Array.isArray(list)) return [];
       // 重要 → 新しい順
@@ -380,12 +384,12 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, 
         {/* ヘッダー：1行。説明文は置かない（画面を見れば分かる） */}
         <header className="rn-header">
           <button type="button" onClick={onBack} aria-label="ホームに戻る" className="rn-back"><ArrowLeft size={20} aria-hidden="true" /></button>
-          <h1><KineticText text="復習ノート" /></h1>
+          <h1><KineticText text={tab === 'record' ? '学習記録' : '復習ノート'} /></h1>
           <span className="rn-header-stat" aria-label={`習得済み ${masteredCount}問`}><CheckCircle2 size={16} aria-hidden="true" />習得 {masteredCount}</span>
         </header>
 
-        {/* 今日の復習：数字1つ＋主ボタン1つ */}
-        <section className="rn-hero" aria-labelledby="rn-hero-title" data-empty={dueItems.length === 0 || undefined}>
+        {/* 今日の復習：数字1つ＋主ボタン1つ（記録タブでは隠して一覧を広く） */}
+        {tab !== 'record' && <section className="rn-hero" aria-labelledby="rn-hero-title" data-empty={dueItems.length === 0 || undefined}>
           <div className="rn-hero-count">
             <p id="rn-hero-title">今日の復習</p>
             <strong>{dueItems.length}<small>問</small></strong>
@@ -411,7 +415,7 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, 
               <PenLine size={18} aria-hidden="true" /><span><strong>演習で新しく解く</strong></span>
             </button>
           ) : null}
-        </section>
+        </section>}
 
         {/* 表示切替：1本のセグメント（横スクロールしない） */}
         <div className="mt-segment rn-tabs" role="tablist" aria-label="復習ノートの表示切替">
@@ -420,6 +424,8 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, 
               {t.label}<span className="rn-tab-count">{t.count}</span>
             </button>
           ))}
+          {/* ★学習記録（直近3日）もここに（2026-10-19）★ ホームの「復習・記録」1つから両方を見る */}
+          <button type="button" role="tab" aria-selected={tab === 'record'} onClick={() => setTab('record')} data-rn-record>記録</button>
         </div>
 
         {showSubjectFilter && (
@@ -446,6 +452,8 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, 
           {tab === 'important' && (importantNotes.length === 0
             ? <EmptyState icon={<Star size={28} aria-hidden="true" />} title="重要マークのノートはありません" desc="ノート詳細で「重要」をつけると、ここに集まります。" />
             : <ul className="rn-list">{importantNotes.map(n => <NoteCard key={n.id} note={n} onSelect={onSelectNote} />)}</ul>)}
+
+          {tab === 'record' && <StudyRecord embedded onRetry={onRetry} />}
         </div>
 
         {(tab === 'today' || tab === 'all') && scopedItems.length > 0 && (

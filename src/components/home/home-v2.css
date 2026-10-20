@@ -1,0 +1,303 @@
+/*
+ * ホーム v2（2026-10-19 ご要望「入口が多すぎる・質感の混在・低コントラスト」）
+ * ---------------------------------------------------------------------------
+ *  ・ボタンはホーム本来の「真下の影で浮いた札」に統一する（斜めにずらした黒い影・太い黒縁は使わない）。
+ *    影と縁はそれぞれのボタン色を濃くした色。押すと影が縮んで沈み、離すと弾む。
+ *  ・とびら君は柔らかい 3D のまま、ステッカーの「台紙」の上に置く（質感の差を台紙が受け止める）。
+ *  ・色の役割は固定：演習＝黄、対戦＝青、復習＝ピンク、ミッション＝ミント、ラッシュ＝ラベンダー。
+ *  ・空は時間帯で変わる（朝・昼・夕・夜）。共通テストまでの日数で熱量（色）が上がる。
+ *  ・動きは transform と opacity だけ。動きを減らす設定では全部止める。
+ *  ・文字は 12px 以上、AA 以上のコントラスト、押せる所は 44px 以上。
+ * 古いホームの CSS（index.css / world.css / home-pillars.css / home-legibility.css）の上に重ねる。
+ * そのため .home-v2 を必ず付けて詳細度を上げている。
+ */
+.home-v2 {
+  --hv-ink: #1f3354;          /* ブランドの濃いネイビー（縁取り・影・文字） */
+  --hv-ink-2: #3c4f6b;
+  --hv-paper: #fffaf0;
+  --hv-yellow: #ffd257;
+  --hv-blue: #3f78d8;
+  --hv-pink: #ffc6da;
+  --hv-mint: #bfeedd;
+  --hv-lav: #dcd2ff;
+  --hv-line: #e2d3b6;        /* 紙の縁（白い札・パネル） */
+  --hv-lift: #d9c8a3;        /* 紙の札の影 */
+  --hv-radius: 18px;
+  color: var(--hv-ink);
+}
+
+/* ---------- 押せるボタンの共通形（真下の影で浮かせる。縁と影はボタン色の濃い色） ---------- */
+.home-v2 :is(.home-pillar, .home-review-wide, .home-mini-card, .game-hud-top button, .game-home-tools button, .home-side-card > button) {
+  --edge: var(--hv-line); --lift: var(--hv-lift);
+  border: 1.5px solid var(--edge) !important;
+  box-shadow: 0 4px 0 var(--lift) !important;
+  transition: transform .14s cubic-bezier(.3, 1.6, .5, 1), box-shadow .14s cubic-bezier(.3, 1.6, .5, 1) !important;
+}
+.home-v2 :is(.home-pillar, .home-review-wide, .home-mini-card, .game-hud-top button, .game-home-tools button, .home-side-card > button):active:not(:disabled) {
+  transform: translateY(4px) !important;
+  box-shadow: 0 0 0 var(--lift) !important;
+  transition-duration: .05s !important;
+}
+@media (hover: hover) {
+  .home-v2 :is(.home-pillar, .home-review-wide, .home-mini-card, .home-side-card > button):hover:not(:active) { filter: brightness(1.04); }
+}
+
+/* ---------- ヘッダー ---------- */
+.home-v2 .game-home-header { display: flex; align-items: center; gap: 8px; min-height: 48px; }
+.home-v2 .game-home-brand { flex: 1; min-width: 0; display: flex; align-items: center; }
+.home-v2 .game-home-greeting { display: none; } /* 「○○さんのホーム」は出さない（読みにくい・情報が無い） */
+.home-v2 .game-home-logo { width: 104px; height: 34px; }
+.home-v2 .game-home-tools { gap: 8px; }
+.home-v2 .game-home-tools button { width: 44px; height: 44px; border-radius: 14px; background: #fff; color: var(--hv-ink); }
+.home-v2 .game-home-tools i { background: #e2475f; }
+/* スマホのカウントダウン札 */
+.exam-chip { display: inline-flex; align-items: baseline; gap: 3px; margin: 0; padding: 6px 12px; min-height: 40px; border-radius: 999px; background: #fff; color: var(--hv-ink, #1f3354); font: 800 13px/1 var(--mt-font-body); white-space: nowrap; border: 1.5px solid #e2d3b6; box-shadow: 0 3px 0 #d9c8a3; }
+.exam-chip b { font: 900 22px/1 var(--mt-font-display); letter-spacing: -.02em; color: #c0392b; font-variant-numeric: tabular-nums; }
+.exam-chip[data-heat=d30] { background: #fff1d6; }
+.exam-chip[data-heat=d7], .exam-chip[data-heat=today] { background: #ffe0e0; animation: hv-heartbeat 1.6s ease-in-out infinite; }
+
+/* ---------- HUD（コイン・ボーナス・レベル） ---------- */
+.home-v2 .game-home-hud { padding: 8px 10px 8px !important; border: 1.5px solid var(--hv-line) !important; border-radius: var(--hv-radius) !important; background: var(--hv-paper) !important; box-shadow: 0 3px 0 #e6d7b8 !important; }
+.home-v2 .game-hud-top { grid-template-columns: 1.15fr 1fr; gap: 10px; }
+.home-v2 .game-hud-top button { min-height: 48px; border-radius: 13px; padding: 4px 10px; }
+.home-v2 .game-hud-wallet { --edge: #e8b93a; --lift: #d49a17; background: var(--hv-yellow) !important; color: var(--hv-ink) !important; }
+.home-v2 .game-hud-wallet > span { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; min-width: 0; }
+/* ★コインの数字が主役。ラベルは小さく1行（「マナコイ/ン」「枚」が折り返さない）★ */
+.home-v2 .game-hud-wallet strong { font: 900 clamp(20px, 5.4vw, 26px)/1 var(--mt-font-display) !important; color: var(--hv-ink) !important; white-space: nowrap; overflow-wrap: normal !important; font-variant-numeric: tabular-nums; }
+.home-v2 .game-hud-wallet .game-hud-label { display: block !important; font: 800 12px/1.1 var(--mt-font-body) !important; color: var(--hv-ink-2); white-space: nowrap; letter-spacing: 0; }
+.home-v2 .game-hud-wallet > svg { color: var(--hv-ink); }
+.home-v2 .game-hud-bonus { background: #fff !important; color: var(--hv-ink) !important; }
+.home-v2 .game-hud-bonus span { font-size: 12px !important; color: var(--hv-ink-2); white-space: nowrap; }
+.home-v2 .game-hud-bonus strong { font-size: 15px !important; color: var(--hv-ink); white-space: nowrap; }
+.home-v2 .game-hud-bonus:disabled { background: #f1ede4 !important; box-shadow: 0 2px 0 var(--hv-lift) !important; }
+.home-v2 .game-hud-xp { margin: 7px 2px 0; }
+.home-v2 .game-hud-xp div { color: var(--hv-ink) !important; }
+/* XP バー：加算時にオーバーシュートして戻る */
+.home-v2 .game-hud-xp [role=progressbar] { height: 10px !important; border: 1.5px solid #e3d3b0; background: #fff !important; box-shadow: none !important; }
+.home-v2 .game-hud-xp [role=progressbar] > div { transition: width .9s cubic-bezier(.34, 1.56, .64, 1) !important; background: linear-gradient(90deg, #ffb703, #ffd257) !important; }
+/* XPバーの先端に火花（伸び終わったあと1回だけ）。transform/opacity のみ */
+.home-v2 .game-hud-xp [role=progressbar] > div { position: relative; overflow: visible !important; }
+.home-v2 .game-hud-xp [role=progressbar] > div::after { content: ''; position: absolute; right: -5px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: radial-gradient(circle, #fff 0 25%, #ffd257 40%, transparent 70%); box-shadow: -7px -6px 0 -3px #ffcf4a, 6px -7px 0 -3px #ffe28a, 7px 6px 0 -3px #ffcf4a, -6px 7px 0 -3px #ffe28a; opacity: 0; transform: scale(.3); animation: hv-spark .7s ease-out 1.15s both; pointer-events: none; }
+@keyframes hv-spark { 0% { opacity: 0; transform: scale(.3); } 35% { opacity: 1; transform: scale(1.25); } 100% { opacity: 0; transform: scale(1.8); } }
+
+/* ---------- ステージ（時間帯の空） ---------- */
+.home-v2 .game-mascot-stage { border-radius: 24px !important; box-shadow: inset 0 0 0 2px #ffffff40, 0 5px 0 #0f1e3a26 !important; }
+.home-v2[data-sky=morning] .game-mascot-stage { background: radial-gradient(ellipse 70% 40% at 50% 100%, #fff3c4, transparent 70%), linear-gradient(180deg, #9fd8ff 0%, #c9ecff 55%, #ffe9c7 100%) !important; }
+.home-v2[data-sky=day] .game-mascot-stage { background: radial-gradient(circle at 82% 16%, #fff6c9 0 26px, #fff6c955 27px 46px, transparent 47px), linear-gradient(180deg, #6ec3ff 0%, #a8dcff 60%, #e6f6ff 100%) !important; }
+.home-v2[data-sky=evening] .game-mascot-stage { background: radial-gradient(ellipse 70% 45% at 50% 100%, #ffd27a, transparent 70%), linear-gradient(180deg, #6f7fd6 0%, #f19bb0 55%, #ffc27a 100%) !important; }
+.home-v2[data-sky=night] .game-mascot-stage { background: radial-gradient(ellipse 70% 40% at 50% 100%, #ffd89a 0%, #f3a55a55 45%, transparent 70%), linear-gradient(180deg, #23396a 0%, #3b5ea8 55%, #8a7fc0 82%, #f0b07c 100%) !important; }
+.home-v2:not([data-sky=night]) .game-stage-backdrop i { opacity: .25 !important; }
+/* 雲（朝・昼・夕） */
+.home-v2:not([data-sky=night]) .game-stage-backdrop::after { content: ''; position: absolute; left: 6%; top: 16%; width: 64px; height: 22px; border-radius: 22px; background: #fff; opacity: .9; box-shadow: 190px 18px 0 -4px #fff, 238px 6px 0 2px #ffffffcc; animation: hv-cloud 26s linear infinite alternate; }
+/* ステッカー（傾いた硬い縁取りのチップ。扉・鍵・ヘッドホン・音符・鉛筆） */
+.home-stickers { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.home-stickers span { position: absolute; width: 30px; height: 30px; border-radius: 50%; background: #ffffffd9 center / 18px 18px no-repeat; box-shadow: 0 2px 6px #0f1e3a1f; opacity: .9; }
+.home-stickers [data-s=door] { left: 5%; top: 24%; background-color: #ffd257; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f3354' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M4 21h16'/%3E%3Ccircle cx='14.5' cy='12' r='1' fill='%231f3354'/%3E%3C/svg%3E"); }
+.home-stickers [data-s=key] { right: 6%; top: 20%; background-color: #bfeedd; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f3354' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='12' r='4'/%3E%3Cpath d='M12 12h9M18 12v3M21 12v2'/%3E%3C/svg%3E"); }
+.home-stickers [data-s=phones] { left: 8%; bottom: 30%; background-color: #dcd2ff; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f3354' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M4 15v-3a8 8 0 0 1 16 0v3'/%3E%3Crect x='3' y='14' width='4' height='6' rx='1.5'/%3E%3Crect x='17' y='14' width='4' height='6' rx='1.5'/%3E%3C/svg%3E"); }
+.home-stickers [data-s=note] { right: 9%; bottom: 34%; background-color: #ffc6da; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f3354' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M9 18V5l11-2v13'/%3E%3Ccircle cx='6.5' cy='18' r='2.5'/%3E%3Ccircle cx='17.5' cy='16' r='2.5'/%3E%3C/svg%3E"); }
+.home-stickers [data-s=pencil] { left: 22%; top: 9%; width: 28px; height: 28px; background-size: 18px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f3354' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M4 20l4-1 11-11-3-3L5 16z'/%3E%3C/svg%3E"); }
+.home-stickers [data-s=pencil], .home-stickers [data-s=phones] { display: none; }
+@media (min-width: 1100px) { .home-stickers [data-s=phones] { display: block; } }
+/* 吹き出し：白地＋ネイビーの縁取り。文字は1文字ずつ弾んで出る（TobiraBuddy の key で毎回再生） */
+.home-v2 .game-stage-say .tb-bubble { color: var(--hv-ink) !important; font-weight: 800 !important; font-feature-settings: 'palt'; }
+.home-v2 .game-stage-say .tb-bubble > span { display: inline-block; animation: hv-pop-in .5s cubic-bezier(.3, 1.6, .5, 1) both; }
+/* とびら君の台紙（ステッカーの土台）：3D のとびら君をそのまま置き、縁取りの世界と馴染ませる */
+.home-v2 .game-stage-floor { filter: none !important; }
+/* 「マイとびら Lv.N」の札（英字の MY TOBIRA は読みにくいので日本語に。2026-10-19） */
+.home-v2 .home-level-tag { position: absolute; left: 50%; bottom: -22px; transform: translateX(-50%); z-index: 3; padding: 3px 12px; border: 1.5px solid #e3c77f; border-radius: 999px; background: #fffaf0; color: var(--hv-ink); font: 800 12px/1.3 var(--mt-font-body); letter-spacing: .04em; white-space: nowrap; box-shadow: 0 2px 0 #d9c8a3; text-shadow: none; }
+.home-v2.game-home .game-mascot-button > span.home-level-tag { color: var(--hv-ink) !important; text-shadow: none !important; }
+.home-v2.game-home .game-mascot-button > span.home-level-tag b { color: #b8641a !important; font-size: 14px !important; }
+.home-v2 .home-level-tag b { font: 900 14px/1 var(--mt-font-display); margin-left: 4px; color: var(--hv-ink) !important; }
+
+/* ---------- 主役ボタン（演習＝黄・対戦＝青） ---------- */
+.home-v2 .home-pillars { gap: 12px; }
+.home-v2 .home-pillars > .home-pillar { min-height: 96px; border-radius: 22px !important; flex-direction: row; gap: 10px; }
+.home-v2 .home-pillar strong { font: 900 clamp(22px, 6.2vw, 28px)/1.1 var(--mt-font-display) !important; letter-spacing: .02em; font-feature-settings: 'palt'; text-shadow: none !important; }
+.home-v2 .home-pillar small { display: none; }
+.home-v2 .home-pillar-solo { --edge: #f0c24a; --lift: #c98512; background: linear-gradient(180deg, #ffdb73, var(--hv-yellow)) !important; color: var(--hv-ink) !important; }
+.home-v2 .home-pillar-solo strong { color: var(--hv-ink) !important; }
+.home-v2 .home-pillar-battle { --edge: #5b8fe3; --lift: #1c4687; background: linear-gradient(180deg, #4d86e3, var(--hv-blue)) !important; color: #fff !important; }
+.home-v2 .home-pillar-battle strong { color: #fff !important; }
+.home-v2 .home-pillar-icon { width: 44px !important; height: 44px !important; background: #ffffffe6 !important; color: var(--hv-ink) !important; box-shadow: none !important; }
+.home-v2 .home-pillar-battle .home-pillar-icon { background: #ffffff2e !important; color: #fff !important; box-shadow: inset 0 0 0 1.5px #ffffff66 !important; }
+
+/* ---------- 2段目（復習・記録／ミッション／ラッシュ） ---------- */
+.home-v2.game-home .home-second-row { display: grid !important; grid-template-columns: 1.6fr 1fr 1fr !important; gap: 10px; flex-shrink: 0; }
+.home-v2 .home-review-wide { --edge: #ecb7cb; --lift: #c98aa6; min-height: 56px !important; padding: 6px 10px !important; gap: 8px !important; border-radius: 16px !important; background: var(--hv-pink) !important; color: var(--hv-ink) !important; }
+.home-v2 .home-review-wide .home-pillar-icon { width: 36px !important; height: 36px !important; }
+.home-v2 .home-review-wide .home-pillar-icon svg { width: 20px; height: 20px; }
+.home-v2 .home-review-text strong { font: 900 17px/1.15 var(--mt-font-display) !important; color: var(--hv-ink) !important; white-space: nowrap; }
+.home-v2 .home-review-wide > b { padding: 3px 9px !important; border: 2px solid #fff !important; background: #e2475f !important; color: #fff !important; font-size: 14px !important; }
+.home-v2 .home-review-wide > svg:last-child { color: var(--hv-ink) !important; }
+.home-v2 .home-second-row > .home-mini-card { height: auto !important; max-height: none !important; }
+.home-v2 .home-second-row > .home-review-wide { height: auto !important; max-height: none !important; }
+.home-v2.game-home .home-second-row > .home-review-wide { grid-column: 1 !important; grid-row: 1 !important; }
+.home-v2.game-home .home-second-row > .home-mission-card { grid-column: 2 !important; grid-row: 1 !important; }
+.home-v2.game-home .home-second-row > .home-rush-card { grid-column: 3 !important; grid-row: 1 !important; }
+.home-v2 .home-mini-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; padding: 4px 2px; border-radius: 16px; color: var(--hv-ink); }
+.home-v2 .home-mini-card strong { font: 900 14px/1.15 var(--mt-font-display); white-space: nowrap; }
+.home-v2 .home-mission-card { --edge: #9ad9c1; --lift: #5fae8f; background: var(--hv-mint); }
+.home-v2 .home-rush-card { --edge: #c3b5f3; --lift: #9a88d6; background: var(--hv-lav) !important; flex-direction: column !important; }
+.home-v2 .home-rush-card > span, .home-v2 .home-rush-card small { display: none; }
+
+/* ---------- 入場アニメ（ずれて入る・全体で1秒以内） ---------- */
+.home-v2 .game-home-viewport > * { animation: hv-enter .42s cubic-bezier(.2, .9, .3, 1.2) both; }
+.home-v2 .game-home-viewport > :nth-child(2) { animation-delay: .06s; }
+.home-v2 .game-home-viewport > :nth-child(3) { animation-delay: .12s; }
+.home-v2 .game-home-viewport > :nth-child(4) { animation-delay: .2s; }
+.home-v2 .game-home-viewport > :nth-child(5) { animation-delay: .26s; }
+.home-v2 .game-home-viewport > :nth-child(n+6) { animation-delay: .32s; }
+
+/* ---------- 連続学習の7つの扉（1日ずつ開く） ---------- */
+.home-v2 .study-doors i { width: 18px; height: 24px; border: 1.5px solid #cdbf9f; border-radius: 8px 8px 2px 2px; background: #fff; box-shadow: none; perspective: 60px; }
+.home-v2 .study-doors i[data-open] { background: linear-gradient(90deg, #ffe08a 0 52%, var(--hv-blue) 52%); animation: hv-door-open .5s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(.5s + var(--door-i, 0) * .12s); transform-origin: right center; }
+
+/* ---------- PC 専用（スマホでは隠す） ---------- */
+.home-v2 .home-side { display: none; }
+
+/* ---------- スマホ：ファーストビューは キャラ＋吹き出し＋主ボタン＋小さなステータス ---------- */
+@media (max-width: 1099px) {
+  .home-v2 .game-home-viewport { gap: 10px; padding: 6px 14px 10px; }
+  .home-v2 .game-mascot-stage { min-height: 150px; }
+  .home-v2 .game-mascot-button { bottom: 46px; height: calc(100% - 108px); }
+  .home-v2 .game-stage-floor { bottom: 18px; height: 64px; }
+  /* 広告・下のタブとの間を空ける（誤タップ防止） */
+  .home-v2.game-home { height: calc(100% - var(--app-nav-h) - 8px); }
+}
+@media (max-width: 1099px) and (max-height: 720px) {
+  .home-v2 .game-home-viewport { gap: 7px; }
+  .home-v2 .home-pillars > .home-pillar { min-height: 76px; }
+  .home-v2 .home-pillar-icon { width: 36px !important; height: 36px !important; }
+  .home-v2 .home-review-wide, .home-v2 .home-mini-card { min-height: 48px !important; }
+  .home-v2 .game-hud-top button { min-height: 44px; }
+}
+@media (max-width: 1099px) and (max-height: 620px) {
+  .home-v2 .home-pillar-icon { display: none !important; }
+  .home-v2 .home-review-wide .home-pillar-icon { display: none !important; }
+  .home-v2 .home-stickers { display: none; }
+  .home-v2 .game-hud-xp { display: none; }
+}
+@media (max-width: 360px) {
+  .home-v2 .home-second-row { grid-template-columns: 1.4fr 1fr 1fr; gap: 7px; }
+  .home-v2 .home-review-text strong { font-size: 15px !important; }
+  .home-v2 .home-mini-card strong { font-size: 13px; }
+  .home-v2 .game-home-logo { width: 84px; }
+  .home-v2 .exam-chip { padding-inline: 9px; }
+}
+
+/* ---------- PC：3列（左＝ステータス／中＝ステージと主ボタン／右＝カウントダウン・ミッション・ランク） ---------- */
+@media (min-width: 1100px) {
+  .home-v2 .game-home-viewport { max-width: 1440px; padding: 18px 28px 20px; grid-template-columns: minmax(250px, .8fr) minmax(420px, 1.5fr) minmax(250px, .85fr) !important; grid-template-rows: auto auto minmax(0, 1fr) auto auto !important; gap: 14px 22px !important; }
+  /* ロゴはサイドバーの1つだけ。ヘッダーは道具だけ右上に */
+  .home-v2 .game-home-header { grid-column: 1 / -1 !important; grid-row: 1 !important; border-bottom: 0 !important; padding-bottom: 0 !important; min-height: 44px; }
+  .home-v2 .game-home-brand h1, .home-v2 .exam-chip { display: none; }
+  .home-v2 .game-home-greeting { display: block; font: 900 22px/1.2 var(--mt-font-display) !important; color: var(--hv-ink) !important; max-width: none !important; }
+  .home-v2 .game-home-hud { grid-column: 1 !important; grid-row: 2 !important; align-self: start; }
+  .home-v2.game-home .desktop-study-summary { grid-column: 1 !important; grid-row: 3 / 6 !important; align-self: stretch !important; margin: 0 !important; display: flex !important; justify-content: flex-start !important; gap: 12px !important; height: auto !important; overflow: hidden !important; border: 1.5px solid var(--hv-line) !important; border-radius: var(--hv-radius) !important; background: var(--hv-paper) !important; box-shadow: 0 3px 0 #e6d7b8 !important; }
+  .home-v2 .desktop-study-summary h2 { display: block !important; font: 900 20px/1.2 var(--mt-font-display) !important; color: var(--hv-ink) !important; }
+  .home-v2 .desktop-study-summary strong { color: var(--hv-ink) !important; }
+  .home-v2 .desktop-study-summary label, .home-v2 .desktop-study-summary > div > span { color: var(--hv-ink-2) !important; }
+  .home-v2 .desktop-study-summary > button { margin-top: auto !important; justify-content: space-between; padding: 0 12px; border: 1.5px solid var(--hv-line); border-radius: 12px; background: #fff; color: var(--hv-ink) !important; box-shadow: 0 3px 0 var(--hv-lift); }
+  .home-v2.game-home .desktop-study-summary { justify-content: flex-start !important; gap: 18px !important; padding: 20px !important; }
+  .home-v2.game-home .desktop-study-summary > label { margin-top: 4px; }
+  .home-v2.game-home .desktop-study-summary .mt-progress { margin-top: -10px; }
+  .home-v2.game-home .desktop-study-summary .study-next { display: block !important; }
+  .home-v2.game-home .desktop-study-summary > div strong { font-size: 40px !important; }
+  .home-v2.game-home .desktop-study-summary .study-doors { gap: 6px; }
+  .home-v2.game-home .desktop-study-summary .study-doors i { flex: 1 1 0; height: 54px !important; width: auto !important; }
+  .home-v2.game-home .desktop-study-summary .study-next { margin: 0; padding: 10px 12px; border-radius: 12px; background: #fff4d6; color: var(--hv-ink) !important; font-size: 13px; font-weight: 700; }
+  .home-v2 .game-mascot-stage { grid-column: 2 !important; grid-row: 2 / 4 !important; min-height: 280px !important; }
+  .home-v2.game-home .home-pillars { grid-column: 2 !important; grid-row: 4 !important; }
+  .home-v2.game-home .home-second-row { grid-column: 2 !important; grid-row: 5 !important; }
+  .home-v2 .home-side { grid-column: 3; grid-row: 2 / 6; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+  .home-v2 .home-side > .home-side-rank { margin-top: auto; }
+  .home-v2 .game-mascot-button { bottom: 54px; height: calc(100% - 116px); }
+}
+@media (min-width: 1100px) and (max-height: 820px) {
+  .home-v2 .game-home-viewport { gap: 12px 20px !important; padding-block: 12px 14px; }
+  .home-v2 .home-pillars > .home-pillar { min-height: 80px; }
+  .home-v2 .exam-hero-dots { display: none !important; }
+}
+
+/* ---------- PC 右列 ---------- */
+.home-side-card { padding: 12px 14px; border: 1.5px solid #e2d3b6; border-radius: 18px; background: #fffaf0; box-shadow: 0 4px 0 #e2d3b6; color: #1f3354; display: flex; flex-direction: column; gap: 8px; }
+.home-side-card h2 { display: flex; align-items: center; gap: 6px; margin: 0; font: 900 16px/1.2 var(--mt-font-display); }
+.home-side-card > button { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; border-radius: 12px; background: #fff; color: #1f3354; font: 800 13px/1 var(--mt-font-body); }
+.home-side-missions { background: #ecfaf4; }
+.home-side-missions ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.home-side-missions li { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; gap: 3px 8px; font-size: 13px; font-weight: 700; }
+.home-side-mission-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-side-missions li > b { grid-row: 1 / 3; grid-column: 2; align-self: center; font: 900 14px/1 var(--mt-font-display); font-variant-numeric: tabular-nums; }
+.home-side-mission-bar { height: 8px; border: 1.5px solid #e2d3b6; border-radius: 999px; background: #fff; overflow: hidden; }
+.home-side-mission-bar i { display: block; height: 100%; background: #2fb37f; transition: width .8s cubic-bezier(.34, 1.56, .64, 1); }
+.home-side-missions li[data-ready] .home-side-mission-label::after { content: ' 受け取れる'; color: #c0392b; font-weight: 900; }
+.home-side-missions li[data-done] { opacity: .7; }
+.home-side-rank { background: #eef3ff; }
+.home-side-rank-now { display: flex; align-items: center; gap: 8px; margin: 0; font: 900 18px/1 var(--mt-font-display); }
+.home-side-rank-now b { padding: 4px 10px; border: 1.5px solid #e2d3b6; border-radius: 999px; color: #fff; font-size: 13px; }
+.home-side-rank-bar { height: 10px; border: 1.5px solid #e2d3b6; border-radius: 999px; background: #fff; overflow: hidden; }
+.home-side-rank-bar i { display: block; height: 100%; }
+.home-side-rank small, .home-side-rank-empty { margin: 0; font-size: 12px; font-weight: 700; color: #3c4f6b; }
+
+/* 共通テストのカウントダウン（PC の主役） */
+.exam-hero { position: relative; padding: 14px 16px 12px; border: 1.5px solid #e2d3b6; border-radius: 20px; background: #fff; box-shadow: 0 4px 0 #e2d3b6; color: #1f3354; overflow: hidden; }
+.exam-hero::before { content: ''; position: absolute; right: -18px; top: -18px; width: 90px; height: 90px; border-radius: 50%; background: #ffd257; opacity: .55; }
+.exam-hero-kicker { position: relative; margin: 0; font: 900 14px/1.2 var(--mt-font-display); }
+.exam-hero-days { position: relative; display: flex; align-items: baseline; gap: 4px; margin: 2px 0 0; }
+.exam-hero-num { font: 900 64px/1 var(--mt-font-display); letter-spacing: -.03em; color: #c0392b; font-variant-numeric: tabular-nums; }
+.exam-hero-days > span:last-child { font: 900 22px/1 var(--mt-font-display); }
+.exam-hero-date { position: relative; margin: 2px 0 8px; font-size: 12px; font-weight: 700; color: #3c4f6b; }
+.exam-hero-dots { display: grid; grid-template-columns: repeat(15, 1fr); gap: 4px; margin-bottom: 8px; }
+.exam-hero-dots i { aspect-ratio: 1; border-radius: 50%; background: #dfe7f5; }
+.exam-hero-dots i[data-today] { background: #c0392b; animation: hv-blink 1.4s ease-in-out infinite; }
+.exam-hero-second { margin: 0; font-size: 13px; font-weight: 700; color: #3c4f6b; }
+.exam-hero-second b { font: 900 18px/1 var(--mt-font-display); color: #1f3354; }
+.exam-hero[data-heat=d30] { background: #fff6e5; }
+.exam-hero[data-heat=d7], .exam-hero[data-heat=today] { background: #ffecec; }
+.exam-hero[data-heat=d7] .exam-hero-num, .exam-hero[data-heat=today] .exam-hero-num { animation: hv-heartbeat 1.6s ease-in-out infinite; display: inline-block; }
+
+/* オドメーター（数字が縦に回る） */
+.odo { display: inline-flex; overflow: hidden; height: 1em; line-height: 1; }
+.odo-digit { display: inline-block; height: 1em; overflow: hidden; }
+.odo-digit[data-blank] { width: 0; }
+.odo-strip { display: flex; flex-direction: column; transition: transform .9s cubic-bezier(.2, 1.3, .4, 1); }
+.odo-strip > span { height: 1em; display: block; text-align: center; }
+
+/* ---------- キーフレーム ---------- */
+@keyframes hv-enter { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes hv-pop-in { 0% { opacity: 0; transform: scale(.6) translateY(6px); } 70% { opacity: 1; transform: scale(1.06); } 100% { transform: none; } }
+@keyframes hv-door-open { 0% { transform: rotateY(0); } 60% { transform: rotateY(-55deg); } 100% { transform: rotateY(-25deg); } }
+@keyframes hv-blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+@keyframes hv-heartbeat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.08); } 24% { transform: scale(1); } 36% { transform: scale(1.05); } }
+@keyframes hv-cloud { from { transform: translateX(0); } to { transform: translateX(30px); } }
+
+/* ---------- 動きを減らす ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .home-v2 .game-hud-xp [role=progressbar] > div::after { animation: none; display: none; }
+  .home-v2 *, .exam-chip, .exam-hero * { animation: none !important; transition: none !important; }
+  .home-v2 :is(.home-pillar, .home-review-wide, .home-mini-card):active { transform: none !important; }
+}
+
+/* PC：HUD の「今日のボーナス」が切れないように、左列が狭いときはラベルを短い札に */
+@media (min-width: 1100px) {
+  .home-v2 .game-hud-top { grid-template-columns: 1fr 1fr; }
+  .home-v2 .game-hud-bonus span { overflow: hidden; text-overflow: ellipsis; }
+}
+/* 古い「低い画面ではヘッダーの p を隠す」規則にカウントダウン札が巻き込まれないように */
+.home-v2 .game-home-header > .exam-chip { display: inline-flex !important; flex-shrink: 0; }
+@media (min-width: 1100px) { .home-v2 .game-home-header > .exam-chip { display: none !important; } }
+
+/* ---------- 復習カードの吸い込み（2026-10-19） ---------- */
+.home-v2 .home-review-wide { overflow: visible; }
+.home-v2 .home-review-suck { position: absolute; inset: 0; pointer-events: none; }
+.home-v2 .home-review-suck i { position: absolute; left: 50%; top: 50%; width: 22px; height: 16px; margin: -8px 0 0 -11px; border: 1.5px solid #e7a1b4; border-radius: 4px; background: #fff; box-shadow: 0 2px 0 #f0c3cf; opacity: 0; animation: hv-suck .75s cubic-bezier(.55, 0, .7, .4) both; animation-delay: calc(1s + var(--k) * .14s); }
+.home-v2 .home-review-suck i:nth-child(1) { --sx: -70px; --sy: -54px; --r: -18deg; }
+.home-v2 .home-review-suck i:nth-child(2) { --sx: 10px; --sy: -70px; --r: 12deg; }
+.home-v2 .home-review-suck i:nth-child(3) { --sx: 80px; --sy: -48px; --r: 24deg; }
+@keyframes hv-suck {
+  0% { opacity: 0; transform: translate(var(--sx), var(--sy)) rotate(var(--r)) scale(1); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(0, 0) rotate(0) scale(.2); }
+}
+@media (prefers-reduced-motion: reduce) { .home-v2 .home-review-suck { display: none; } }
