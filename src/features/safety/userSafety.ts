@@ -20,6 +20,7 @@
  *   生まれる。見えなくする処理は表示側で完結するので、端末保存で十分。
  */
 import { submitFeedback } from '../../utils/feedback';
+import { safeLocalStorage } from '../../utils/safeLocalStorage';
 
 const BLOCK_KEY = 'mntb_blocked_users_v1';
 const BLOCK_MAX = 500;
@@ -34,14 +35,8 @@ export interface BlockedUser {
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
-function storage(): Storage | null {
-  try {
-    const s = (globalThis as { localStorage?: Storage }).localStorage;
-    return s && typeof s.getItem === 'function' ? s : null;
-  } catch {
-    return null;
-  }
-}
+// 中身が文字どおり同じだった取り出し口を safeLocalStorage に集約した（C-17）。呼び名は従来どおり storage()
+const storage = safeLocalStorage;
 
 export function listBlockedUsers(): BlockedUser[] {
   try {

@@ -47,7 +47,7 @@ export function CreateClassModal(props: CreateClassModalProps) {
             placeholder="例）〇〇県立〇〇高等学校"
             className="w-full px-3 py-2 rounded-xl border border-[#C9D2DA] text-sm text-[#1B2631] focus:outline-none focus:border-[#6FA8C5]"
           />
-          <span className="block text-[11px] text-[#9BA3AE] mt-1">
+          <span className="block text-xs text-[#9BA3AE] mt-1">
             生徒のアプリ画面にも表示されます。
           </span>
         </label>

@@ -15,6 +15,7 @@ import {
 } from '../utils/friends';
 import { auth } from '../firebase';
 import { DoorMascot } from './DoorMascot';
+import { ListSkeleton } from './ui';
 import { FriendCodeInput, friendCodeFromRaw } from './FriendCodeInput';
 import { UserSafetyMenu } from '../features/safety/UserSafetyMenu';
 import { isBlocked } from '../features/safety/userSafety';
@@ -44,6 +45,8 @@ export function FriendPanel() {
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const [loading, setLoading] = useState(false);
+  /** 一覧を一度でも読み終えたか（初回だけスケルトンを出す。更新ボタンのときは今の一覧を残す） */
+  const [loaded, setLoaded] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const load = async () => {
@@ -52,8 +55,8 @@ export function FriendPanel() {
     // 取得系（fetchFriendRequests / fetchFriends）は内部でエラーを握りつぶし
     // 空配列を返すため、ここで権限エラーのメッセージが常時表示されることはない。
     try {
-      const p = await ensureFriendProfile();
-      setProfile(p);
+      // 自分のコードの用意と、一覧の読み込みは並べて走らせる（片方が遅くても、もう片方は先に出す）
+      void ensureFriendProfile().then(setProfile).catch((e) => console.error('フレンドコードの用意に失敗しました:', e));
       const [reqs, sent, list] = await Promise.all([
         fetchFriendRequests(),
         fetchSentFriendRequests(),
@@ -66,6 +69,7 @@ export function FriendPanel() {
       // ここに到達するのは想定外の例外のみ。
       console.error('フレンド情報の取得に失敗しました:', e);
     } finally {
+      setLoaded(true); // 失敗しても骨組みを出し続けない（空の案内に切り替える）
       setLoading(false);
     }
   };
@@ -103,49 +107,45 @@ export function FriendPanel() {
   };
 
   return (
-    <div className="bg-white border border-gray-150 p-3 sm:p-4 rounded-2xl shadow-sm space-y-3 h-full overflow-y-auto overscroll-contain flex flex-col friend-panel">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-          <UserPlus size={15} />
-          <span>フレンド</span>
-        </h3>
+    /*
+      ★フレンド一覧に高さを回す（ご指摘「フレンドスクロールが小さすぎる」）★
+      390x844 の実機録画では、上の
+        見出し（フレンド＋更新）36px／自分のコードのカード 3段 110px／
+        入力欄 52px／全幅の「申請」48px／注意書き 20px
+      で約300px を使い、一覧は約150px（1.5人ぶん）しか残っていなかった。
+      さらに外枠と一覧の両方がスクロールする二重スクロールで、指が外枠を掴むと
+      一覧ではなく画面全体が動いていた。
+        ・自分のコードは1行（ラベル＋コード＋コピー）。説明文はラベルの title に寄せる
+        ・入力欄・貼り付け・申請を1行に並べる
+        ・見出しは「フレンド一覧（N人）」と更新ボタンの1行だけ（タブ名と重複していた「フレンド」見出しは外す）
+        ・外枠はスクロールさせず、一覧だけを flex-1 でスクロールさせる
+      これで上の部品は約130px になり、残り（約400px＝6人ぶん）を一覧が使う。
+    */
+    <div className="bg-white border border-gray-150 p-3 sm:p-4 rounded-2xl shadow-sm gap-2.5 h-full min-h-0 overflow-hidden flex flex-col friend-panel">
+      <div className="flex shrink-0 items-center gap-2 rounded-xl border border-[#F0C7D2]/70 bg-[#FDFBF7] px-2.5 py-1.5"
+        title="このコードを友だちに伝えると、相手があなたを追加できます。">
+        <span className="friend-own-label shrink-0 text-xs font-bold leading-tight text-gray-600">あなたの<br />コード</span>
+        <code aria-label="あなたのフレンドコード" className="friend-own-code min-w-0 flex-1 truncate rounded-lg border border-gray-150 bg-white px-2.5 py-2 text-sm font-black tracking-wider text-[#1B2631]">
+          {profile ? profile.friendCode : (loading ? '発行中…' : '—')}
+        </code>
         <button
-          onClick={load}
-          disabled={loading}
-          className="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-500 border border-gray-150 transition-colors"
-          aria-label="フレンド情報を更新"
+          onClick={() => {
+            if (!profile?.friendCode) return;
+            navigator.clipboard?.writeText(profile.friendCode);
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 1500);
+          }}
+          disabled={!profile?.friendCode}
+          className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl border border-[#A9CCE3]/40 bg-[#A9CCE3]/20 px-2 text-xs font-bold text-[#2C3E50] hover:bg-[#A9CCE3]/35 disabled:opacity-40"
+          aria-label="フレンドコードをコピー"
         >
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          {copied ? <Check size={15} /> : <Copy size={15} />}<span className="friend-own-copy-text">{copied ? '済' : 'コピー'}</span>
         </button>
       </div>
 
-      <div className="bg-[#FDFBF7] border border-[#F0C7D2]/70 rounded-xl p-3">
-        <p className="text-[11px] text-gray-500 font-bold mb-2">あなたのフレンドコード</p>
-        <div className="flex items-center gap-2">
-          <code className="flex-1 bg-white border border-gray-150 rounded-xl px-3 py-2 text-sm font-black tracking-wider text-[#1B2631]">
-            {profile ? profile.friendCode : (loading ? '発行中…' : '—')}
-          </code>
-          <button
-            onClick={() => {
-              if (!profile?.friendCode) return;
-              navigator.clipboard?.writeText(profile.friendCode);
-              setCopied(true);
-              window.setTimeout(() => setCopied(false), 1500);
-            }}
-            disabled={!profile?.friendCode}
-            className="p-2.5 rounded-xl bg-[#A9CCE3]/20 text-[#2C3E50] hover:bg-[#A9CCE3]/35 border border-[#A9CCE3]/40 disabled:opacity-40"
-            aria-label="フレンドコードをコピー"
-          >
-            {copied ? <Check size={15} /> : <Copy size={15} />}
-          </button>
-        </div>
-        <p className="text-[10px] text-gray-400 mt-2 leading-snug">
-          このコードを友だちに伝えると、相手があなたを追加できます。
-        </p>
-      </div>
-
-      {/* ★フレンドコード入力（2026-10-05 再修正）★ 普通の入力欄＋貼り付けボタン。整形は送信時だけ */}
-      <div className="friend-code-row">
+      {/* ★フレンドコード入力（2026-10-05 再修正）★ 普通の入力欄＋貼り付けボタン。整形は送信時だけ。
+          2026-10-18：申請ボタンも同じ行に並べる（一覧の高さを確保するため） */}
+      <div className="friend-code-row friend-code-row-inline shrink-0" title="長押しペースト・「貼り付け」OK。小文字や「MNTB-」なしでも送れます。">
         <FriendCodeInput value={code} onChange={setCode} disabled={loading} onSubmit={() => void submitCode()} />
         <button
           type="button"
@@ -157,10 +157,9 @@ export function FriendPanel() {
           申請
         </button>
       </div>
-      <p className="friend-code-hint">長押しペースト・「貼り付け」OK。小文字や「MNTB-」なしでも送れます。</p>
 
       {message && (
-        <p
+        <p data-friend-message
           role={isError ? 'alert' : 'status'}
           className={`text-xs font-bold rounded-xl p-3 border ${
             isError
@@ -173,8 +172,8 @@ export function FriendPanel() {
       )}
 
       {requests.length > 0 && (
-        <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
-          <p className="text-[11px] text-gray-400 font-bold sticky top-0 bg-white">届いている申請</p>
+        <div className="shrink-0 space-y-2 max-h-32 overflow-y-auto pr-1">
+          <p className="text-xs text-gray-400 font-bold sticky top-0 bg-white">届いている申請</p>
           {visibleRequests.map((req) => (
             <div key={req.id} className="flex items-center gap-3 bg-[#F9E79F]/15 border border-[#F9E79F]/50 rounded-2xl p-3">
               <Avatar name={req.fromNickname} url={req.fromPhotoURL} />
@@ -188,8 +187,8 @@ export function FriendPanel() {
       )}
 
       {sentRequests.length > 0 && (
-        <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
-          <p className="text-[11px] text-gray-400 font-bold sticky top-0 bg-white">送信済みの申請（承認待ち）</p>
+        <div className="shrink-0 space-y-2 max-h-24 overflow-y-auto pr-1">
+          <p className="text-xs text-gray-400 font-bold sticky top-0 bg-white">送信済みの申請（承認待ち）</p>
           {sentRequests.map((req) => (
             <div key={req.id} className="flex items-center gap-3 bg-gray-50 border border-gray-150 rounded-2xl p-3">
               <span className="flex-1 text-xs font-bold text-gray-500 truncate">相手の承認を待っています</span>
@@ -205,13 +204,25 @@ export function FriendPanel() {
         </div>
       )}
 
-      <div className="space-y-2 min-h-[96px] flex-1 overflow-y-auto pr-1">
-        <p className="text-[11px] text-gray-400 font-bold sticky top-0 bg-white z-10">フレンド一覧（{friends.length}人）</p>
-        {friends.length === 0 ? (
-          <div className="text-xs text-gray-400 bg-gray-50 rounded-2xl p-3 flex items-center gap-2"><DoorMascot showSpeech={false} size="mini" className="w-auto" /><span>まだフレンドはいません。コードで追加してみましょう。</span></div>
+      <div data-friend-list className="min-h-[160px] flex-1 space-y-1.5 overflow-y-auto overscroll-contain pr-1" tabIndex={0} aria-label="フレンド一覧">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-white pb-0.5">
+          <p className="flex items-center gap-1.5 text-xs font-bold text-gray-600"><UserPlus size={14} aria-hidden="true" />フレンド一覧（{loaded ? `${friends.length}人` : '…'}）</p>
+          <button
+            onClick={load}
+            disabled={loading}
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-gray-150 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100"
+            aria-label="フレンド情報を更新"
+          >
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          </button>
+        </div>
+        {!loaded ? (
+          <ListSkeleton rows={4} rowHeight={52} label="フレンド一覧を読み込み中…" />
+        ) : friends.length === 0 ? (
+          <div className="text-xs text-gray-600 bg-gray-50 rounded-2xl p-3 flex items-center gap-2"><DoorMascot showSpeech={false} size="mini" className="w-auto" /><span>まだフレンドはいません。上の「あなたのコード」を友だちに伝えるか、友だちのコードを入れて「申請」しましょう（小文字や「MNTB-」なしでも送れます）。</span></div>
         ) : (
           friends.map((f) => (
-            <div key={f.uid} className="flex items-center gap-3 bg-gray-50 border border-gray-150 rounded-2xl p-3">
+            <div key={f.uid} className="flex items-center gap-2.5 bg-gray-50 border border-gray-150 rounded-2xl px-2.5 py-1.5">
               <Avatar name={f.nickname} url={f.photoURL} />
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-bold text-[#1B2631] truncate">{displaySafeNickname(f.nickname)}</span>
@@ -223,7 +234,7 @@ export function FriendPanel() {
                 </>; })()}
               </span>
               <UserSafetyMenu target={{ uid: f.uid, nickname: f.nickname, where: 'friend' }} />
-              <button disabled={loading} onClick={() => { if (confirmAction(`${f.nickname} さんとのフレンド関係を解除しますか？`)) runAction(() => removeFriend(f.uid), 'フレンドを解除しました。'); }} className="text-xs font-bold text-red-500 hover:underline disabled:opacity-40">解除</button>
+              <button disabled={loading} onClick={() => { if (confirmAction(`${f.nickname} さんとのフレンド関係を解除しますか？`)) runAction(() => removeFriend(f.uid), 'フレンドを解除しました。'); }} className="min-h-11 shrink-0 px-1.5 text-xs font-bold text-red-600 hover:underline disabled:opacity-40">解除</button>
             </div>
           ))
         )}

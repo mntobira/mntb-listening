@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Check, Trophy, X } from 'lucide-react';
 import { claimMissionReward, subscribeMissionComplete, type MissionAnnouncement } from '../battle/data/growthStore';
 import { play } from '../battle/ui/feedback';
+import { flyCoins } from '../battle/ui/GrowthParts';
 import { TobiraBuddy } from './TobiraBuddy';
 import './mission-clear.css';
 
@@ -48,6 +49,7 @@ export function MissionToast() {
   }, [current, burst, claiming]);
 
   /** 出ているミッションをまとめて、その場で受け取る */
+  const claimBtn = useRef<HTMLButtonElement>(null);
   const claimAll = async () => {
     if (claiming) return;
     setClaiming(true);
@@ -62,6 +64,7 @@ export function MissionToast() {
     setQueue([]);
     setClaiming(false);
     setClaimed({ xp, coins, n });
+    if (n > 0 && claimBtn.current) flyCoins(claimBtn.current, coins);
     try { if (n > 0) play('coin', true); } catch { /* 音なしでも可 */ }
   };
 
@@ -95,7 +98,7 @@ export function MissionToast() {
         <span>{current.label}</span>
         <small>+{current.rewardXp} XP ・ +{current.rewardCoins} マナコイン{queue.length > 1 ? `（ほか${queue.length - 1}件）` : ''}</small>
       </div>
-      <button type="button" className="mission-toast-claim" onClick={() => { void claimAll(); }} disabled={claiming}>{claiming ? '受け取り中…' : queue.length > 1 ? 'まとめて受け取る' : '報酬を受け取る'}</button>
+      <button type="button" ref={claimBtn} className="mission-toast-claim" onClick={() => { void claimAll(); }} disabled={claiming}>{claiming ? '受け取り中…' : queue.length > 1 ? 'まとめて受け取る' : '報酬を受け取る'}</button>
       <button type="button" className="mission-toast-close" aria-label="閉じる" onClick={() => setQueue((q) => q.slice(1))}><X size={16} /></button>
       {!claiming && <span className="mission-toast-timer" style={{ animationDuration: `${SHOW_MS}ms` }} aria-hidden="true" />}
     </div>

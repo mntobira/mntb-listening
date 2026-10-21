@@ -155,7 +155,7 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
               <MessageSquareHeart className="text-[#E8688E]" size={20} />
               フィードバック管理
             </h1>
-            <p className="text-[11px] text-gray-400">届いたご意見への返信・対応状況の管理（運営専用）</p>
+            <p className="text-xs text-gray-400">届いたご意見への返信・対応状況の管理（運営専用）</p>
           </div>
           <button
             onClick={load}
@@ -221,7 +221,7 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
               return (
                 <div key={item.docId} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 space-y-3">
                   {/* メタ情報 */}
-                  <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
                     <span className={`px-2 py-0.5 rounded-full border font-bold ${STATUS_BADGE[item.status]}`}>
                       {FEEDBACK_STATUS_LABELS[item.status]}
                     </span>
@@ -245,7 +245,7 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{item.message}</p>
 
                   {/* 送信者情報 */}
-                  <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                     <User size={13} />
                     <span>{item.displayName || (item.uid ? 'ログインユーザー' : 'ゲスト')}</span>
                     {item.contactEmail && <span className="text-gray-400">連絡先: {item.contactEmail}</span>}
@@ -310,7 +310,7 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
                         className="w-full rounded-lg border border-[#F4A9C4]/50 bg-white p-2.5 text-sm leading-relaxed focus:outline-none focus:border-[#E8688E]"
                       />
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-gray-400">{replyText.length}/{FEEDBACK_REPLY_MAX}</span>
+                        <span className="text-xs text-gray-400">{replyText.length}/{FEEDBACK_REPLY_MAX}</span>
                         <button
                           onClick={() => handleSendReply(item)}
                           disabled={sending || !replyText.trim()}

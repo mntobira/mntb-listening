@@ -25,6 +25,7 @@
  * localStorage が使えない環境（プライベートモード等）でも
  * 例外で画面が落ちないよう、読み書きは必ず try/catch で包む。
  */
+import { requireLocalStorage, safeParseJson, setItemOrThrow } from './safeLocalStorage';
 
 export const SEEN_TIPS_KEY_PREFIX = 'seen_tips_v1_';
 /** 直前に出したものを覚えて、2回連続で同じものが出ないようにする */
@@ -35,7 +36,7 @@ const storageKey = (prefix: string, uid: string | null | undefined): string =>
 
 function safeRead(key: string): string | null {
   try {
-    return localStorage.getItem(key);
+    return requireLocalStorage().getItem(key);
   } catch {
     return null;
   }
@@ -43,7 +44,7 @@ function safeRead(key: string): string | null {
 
 function safeWrite(key: string, value: string): void {
   try {
-    localStorage.setItem(key, value);
+    setItemOrThrow(key, value);
   } catch {
     /* 保存できなくても表示は続ける（機能を止めない） */
   }
@@ -51,15 +52,8 @@ function safeWrite(key: string, value: string): void {
 
 /** 既読の ID 一覧を読む。壊れたデータが入っていても空配列として扱う。 */
 export function readSeenTipIds(uid: string | null | undefined): string[] {
-  const raw = safeRead(storageKey(SEEN_TIPS_KEY_PREFIX, uid));
-  if (!raw) return [];
-  try {
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((id): id is string => typeof id === 'string');
-  } catch {
-    return [];
-  }
+  const parsed = safeParseJson<unknown[]>(safeRead(storageKey(SEEN_TIPS_KEY_PREFIX, uid)), [], Array.isArray);
+  return parsed.filter((id): id is string => typeof id === 'string');
 }
 
 /** 既読として記録する（重複は持たない） */

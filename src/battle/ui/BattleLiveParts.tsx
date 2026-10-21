@@ -359,6 +359,8 @@ export function CountdownOverlay({ label }: { label: string | null }) {
     <div className="battle-ready-tools" aria-hidden="true"><FileText /><Pencil /></div>
     <h2>紙と筆記用具を<br />用意してください</h2>
     <p>計算やメモの準備をして、スタートを待とう。</p>
+    {/* 点数とごほうび（2026-10-20：対戦画面のタグから、ここへ移した） */}
+    <ul className="battle-ready-rules" aria-label="点数とごほうび"><li>正解で60点</li><li>速いほどボーナス</li><li>勝てば+10枚</li></ul>
     <div key={label} className={`battle-live-count battle-ready-count ${isStart ? 'is-start' : ''}`} role="timer" aria-live="polite" aria-atomic="true" aria-label={isStart ? '対戦開始' : `開始まで${label}秒`}><span>{label}</span></div>
     <div className="battle-ready-dots" aria-hidden="true">{Array.from({length:7},(_,i)=><i key={i} className={isStart || i >= Number(label) ? 'elapsed' : ''}/>)}</div>
     <small>問題はカウントダウンが終わってから表示されます。</small>

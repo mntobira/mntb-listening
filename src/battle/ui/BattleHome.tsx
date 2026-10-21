@@ -64,8 +64,6 @@ import { useEffect, useState } from 'react';
 import {
   Activity,
   BookOpen,
-  Coins,
-  Target,
   Bot,
   History,
   LogIn,
@@ -81,6 +79,7 @@ import {
 } from 'lucide-react';
 import { useBattleAudioSettings } from '../hooks/useBattleAudio';
 import { auth } from '../../firebase';
+import { resolveNickname } from '../../utils/leaderboard';
 import { ConnectionCheckPanel } from './ConnectionCheckPanel';
 import { TobiraBuddy } from '../../components/TobiraBuddy';
 import { useGrowthProgress } from '../../hooks/useGrowthProgress';
@@ -130,37 +129,32 @@ function RankStrip({ rating }: { rating: number }) {
   );
 }
 
-export function BattleHome({onChoose,onExit,onRequireLogin,notice}: {
- onChoose:(choice:BattleHomeChoice)=>void;onExit:()=>void;onRequireLogin?:()=>void;notice?:string|null;
+export function BattleHome({onChoose,onExit,onRanking,onRequireLogin,notice}: {
+ onChoose:(choice:BattleHomeChoice)=>void;onExit:()=>void;onRanking?:()=>void;onRequireLogin?:()=>void;notice?:string|null;
 }) {
  const user=auth.currentUser;const {progress}=useGrowthProgress();
  const [row,setRow]=useState<BattleRankingRow|null>(null);
  useEffect(()=>{let active=true;if(user)void fetchMyRankingRow().then(r=>{if(active)setRow(r);}).catch(logRejection('battle.home.fetchRanking'));return()=>{active=false;};},[user]);
  return <BattleShell className="arena-menu">
-   <header className="arena-menu-header"><button type="button" onClick={onExit}>ホームへ</button><h1><Swords size={21}/><KineticText text="とびらバトル" step={45} variant="pop" /></h1><BgmButton /></header>
+   <header className="arena-menu-header"><div className="arena-top-switch" role="tablist" aria-label="ランキングと対戦の切替"><button type="button" role="tab" aria-selected={true}><Swords size={18}/><KineticText text="とびらバトル" step={45} variant="pop" /></button>{onRanking && <button type="button" role="tab" aria-selected={false} onClick={onRanking}><Trophy size={18}/>ランキング</button>}</div><BgmButton /></header>
    {/* ★E（2026-10-01）対戦前の舞台★ 夜のアリーナに「あなた VS ？？？」。とびら君がひとこと（少し挑発）。
        機能は同じ。下の3択・その他・ルールの中身も同じ */}
    <section className={`arena-vs${row ? ' has-rank' : ''}`} aria-label="あなたの情報" data-arena-vs>
     <div className="arena-vs-me">
      <span className="arena-vs-avatar">{progress ? <GrowthAvatar progress={progress} size={56}/> : <UserRound aria-hidden="true"/>}</span>
-     <strong>{user ? (user.displayName || 'あなた') : 'ゲスト'}</strong>
+     {/* 2026-10-20：アカウント名（本名のことがある）ではなく、設定のニックネームを出す */}
+     <strong>{user ? resolveNickname() : 'ゲスト'}</strong>
      <small>{row ? <><b className="arena-rank-chip" style={{background:ratingTitle(row.rating).color}}>{ratingTitle(row.rating).label}</b>{row.rating} RP</> : user ? 'ランク確認中' : 'まずはAIで腕だめし'}</small>
     </div>
     <span className="arena-vs-mark" aria-hidden="true">VS</span>
     <div className="arena-vs-foe" aria-hidden="true">
      <span className="arena-vs-avatar arena-vs-unknown">?</span>
      <strong>対戦相手</strong>
-     <small>だれが来る？</small>
     </div>
     {row ? <RankStrip rating={row.rating}/> : <TobiraBuddy className="arena-vs-buddy" size="sm" input={{ screen: 'battle', isGuest: !user, seed: new Date().getDate() }} />}
    </section>
    {notice && <BattleNotice message={notice} tone="info"/>}
-   {/* ルールは仕様書の文ではなく、アイコン＋ひとことに（詳しい式は下の「配点と対戦ルール」） */}
-   <ul className="arena-rule-chips" aria-label="点数とごほうび">
-    <li><Target aria-hidden="true"/>正解で60点</li>
-    <li><Zap aria-hidden="true"/>速いほどボーナス</li>
-    <li><Coins aria-hidden="true"/>勝てば+10枚</li>
-   </ul>
+   {/* 「正解で60点・速いほどボーナス・勝てば+10枚」は、試合前のカウントダウン画面に移した（2026-10-20） */}
    {/* 3つのモードは同じ高さ・同じ幅。主役は「AIと対戦」（ゲストでも遊べる）を色とサイズで最強調 */}
    <p className="arena-lobby-label" aria-hidden="true">今すぐ対戦</p>
    <section className="arena-lobby-deck arena-lobby-grid" aria-label="今すぐ対戦：AI・フレンド・全国">

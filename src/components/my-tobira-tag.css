@@ -1,0 +1,33 @@
+/* ホーム：とびら君の足元の「マイとびら Lv.N」の札（2026-10-20）
+   以前は名前とレベルが同じ色で背景にも溶けて読めなかった。
+   名前＝白地に紺の文字、レベル＝金のメダル（紺の文字）にして色を分け、小さな星の飾りを付ける。
+   古い指定（world.css の白文字・game-dashboard.css の9px など）に負けないよう、詳しめのセレクタ＋!important。 */
+.game-home .game-mascot-button > span.my-tobira-tag {
+  display: inline-flex !important; align-items: center; gap: 6px;
+  bottom: -26px; padding: 3px 4px 3px 12px !important;
+  border: 1.5px solid #d9c18a; border-radius: 999px;
+  background: linear-gradient(180deg, #fffdf6, #fbefd2) !important;
+  box-shadow: 0 2px 0 #d8bf86, 0 4px 10px rgba(31, 51, 84, .14) !important;
+  color: #1f3354 !important; text-shadow: none !important;
+  font-size: 12px !important; font-weight: 800; letter-spacing: .06em; line-height: 1.2;
+}
+/* 左右の小さな星（飾り） */
+.game-home .game-mascot-button > span.my-tobira-tag::before,
+.game-home .game-mascot-button > span.my-tobira-tag::after {
+  content: ''; position: absolute; top: 50%; width: 9px; height: 9px; margin-top: -4.5px;
+  background: #f2b53a;
+  clip-path: polygon(50% 0, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0 50%, 39% 38%);
+}
+.game-home .game-mascot-button > span.my-tobira-tag::before { left: -13px; }
+.game-home .game-mascot-button > span.my-tobira-tag::after { right: -13px; }
+.game-home .game-mascot-button > span.my-tobira-tag .my-tobira-name { font-style: normal; color: #1f3354 !important; }
+.game-home .game-mascot-button > span.my-tobira-tag .my-tobira-lv {
+  margin: 0 !important; padding: 2px 9px; border-radius: 999px;
+  background: linear-gradient(180deg, #ffe08a, #f2b53a) !important;
+  box-shadow: inset 0 -1.5px 0 #c98b1a, inset 0 1px 0 #fff6d0;
+  color: #3a2600 !important; text-shadow: none !important;
+  font-size: 13px !important; font-weight: 900; letter-spacing: .02em;
+}
+@media (max-height: 700px) {
+  .game-home .game-mascot-button > span.my-tobira-tag { bottom: -20px; }
+}

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { type RaWord, type ReadAlong, LINK_LABEL, toIpa } from './readAlong';
+import { requireLocalStorage } from '../../utils/safeLocalStorage';
+import { safeSetItem } from '../../utils/storageGuard';
 
 /**
  * 強弱・アクセント・発音が「見ただけで分かる」スクリプト（2026-10-08）
@@ -22,14 +24,14 @@ export const DEFAULT_OPTS: AnnotateOpts = { stress: true, accent: true, ipa: fal
 const OPTS_KEY = 'mtb_readalong_opts';
 export function useAnnotOpts(): [AnnotateOpts, (o: AnnotateOpts) => void] {
   const [opts, set] = useState<AnnotateOpts>(() => {
-    try { return { ...DEFAULT_OPTS, ...JSON.parse(localStorage.getItem(OPTS_KEY) || '{}') }; } catch { return DEFAULT_OPTS; }
+    try { return { ...DEFAULT_OPTS, ...JSON.parse(requireLocalStorage().getItem(OPTS_KEY) || '{}') }; } catch { return DEFAULT_OPTS; }
   });
   useEffect(() => {
     const on = (e: Event) => set((e as CustomEvent<AnnotateOpts>).detail);
     window.addEventListener('mtb-readalong-opts', on);
     return () => window.removeEventListener('mtb-readalong-opts', on);
   }, []);
-  return [opts, (o) => { set(o); try { localStorage.setItem(OPTS_KEY, JSON.stringify(o)); } catch { /* noop */ } window.dispatchEvent(new CustomEvent('mtb-readalong-opts', { detail: o })); }];
+  return [opts, (o) => { set(o); safeSetItem(OPTS_KEY, JSON.stringify(o)); window.dispatchEvent(new CustomEvent('mtb-readalong-opts', { detail: o })); }];
 }
 
 /** 表示語 → 前の記号・音節・後ろの記号 */

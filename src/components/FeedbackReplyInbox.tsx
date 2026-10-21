@@ -76,14 +76,14 @@ export function FeedbackReplyInbox() {
         <div className="relative w-11 h-11 lg:w-10 lg:h-10 rounded-2xl bg-[#EAF3F9] flex items-center justify-center shrink-0">
           <MailOpen className="w-5 h-5 text-[#4A7FA0]" aria-hidden="true" />
           {unread > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#D9466E] text-white text-[10px] font-bold flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#D9466E] text-white text-xs font-bold flex items-center justify-center">
               {unread}
             </span>
           )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="font-handwriting font-bold text-[#1B2631] text-base md:text-lg">運営からの返信</div>
-          <div className="text-[11px] md:text-xs text-[#8895A0] font-modern mt-0.5">
+          <div className="text-xs md:text-xs text-[#8895A0] font-modern mt-0.5">
             {unread > 0 ? `未読が${unread}件あります` : 'いただいたご意見へのお返事'}
           </div>
         </div>
@@ -120,12 +120,12 @@ export function FeedbackReplyInbox() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               {!reply.read && <span className="w-2 h-2 rounded-full bg-[#D9466E] shrink-0" />}
-                              <span className="text-[10px] text-gray-400">
+                              <span className="text-xs text-gray-400">
                                 {reply.createdAtIso ? reply.createdAtIso.slice(0, 10) : ''} ・ {reply.adminName}
                               </span>
                             </div>
                             {reply.feedbackSummary && (
-                              <p className="text-[11px] text-gray-400 mt-1 truncate">
+                              <p className="text-xs text-gray-400 mt-1 truncate">
                                 ご意見「{reply.feedbackSummary}」への返信
                               </p>
                             )}

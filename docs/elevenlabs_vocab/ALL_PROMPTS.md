@@ -1,10 +1,10 @@
-# ElevenLabs 読み上げ原稿（英単語帳 全5713語・119バッチ・合計 約184,468文字）
+# ElevenLabs 読み上げ原稿（英単語帳 全5713語・194バッチ・合計 約182,738文字）
 
 使い方は README.md。上から順に1バッチずつ貼って生成し、見出しのファイル名で保存してください。
 
-## lv1_0001-0050（単語 Lv1 No.1〜50・50語・1425文字）
+## lv1_0001-0030（単語 Lv1 No.1〜30・30語・840文字）
 
-保存するファイル名：`lv1_0001-0050.mp3`
+保存するファイル名：`lv1_0001-0030.mp3`
 
 ```
 will. <break time="1.2s" />
@@ -36,7 +36,14 @@ until. <break time="1.2s" />
 company. <break time="1.2s" />
 real. <break time="1.2s" />
 thought. <break time="1.2s" />
-government. <break time="1.2s" />
+government.
+```
+
+## lv1_0031-0060（単語 Lv1 No.31〜60・30語・857文字）
+
+保存するファイル名：`lv1_0031-0060.mp3`
+
+```
 public. <break time="1.2s" />
 care. <break time="1.2s" />
 system. <break time="1.2s" />
@@ -56,14 +63,7 @@ general. <break time="1.2s" />
 area. <break time="1.2s" />
 law. <break time="1.2s" />
 whole. <break time="1.2s" />
-face.
-```
-
-## lv1_0051-0100（単語 Lv1 No.51〜100・50語・1433文字）
-
-保存するファイル名：`lv1_0051-0100.mp3`
-
-```
+face. <break time="1.2s" />
 per. <break time="1.2s" />
 story. <break time="1.2s" />
 means. <break time="1.2s" />
@@ -73,7 +73,14 @@ information. <break time="1.2s" />
 local. <break time="1.2s" />
 post. <break time="1.2s" />
 social. <break time="1.2s" />
-court. <break time="1.2s" />
+court.
+```
+
+## lv1_0061-0090（単語 Lv1 No.61〜90・30語・855文字）
+
+保存するファイル名：`lv1_0061-0090.mp3`
+
+```
 given. <break time="1.2s" />
 mind. <break time="1.2s" />
 control. <break time="1.2s" />
@@ -103,7 +110,14 @@ low. <break time="1.2s" />
 age. <break time="1.2s" />
 deal. <break time="1.2s" />
 rather. <break time="1.2s" />
-reason. <break time="1.2s" />
+reason.
+```
+
+## lv1_0091-0120（単語 Lv1 No.91〜120・30語・866文字）
+
+保存するファイル名：`lv1_0091-0120.mp3`
+
+```
 turn. <break time="1.2s" />
 whether. <break time="1.2s" />
 check. <break time="1.2s" />
@@ -113,14 +127,7 @@ fire. <break time="1.2s" />
 fun. <break time="1.2s" />
 major. <break time="1.2s" />
 media. <break time="1.2s" />
-art.
-```
-
-## lv1_0101-0150（単語 Lv1 No.101〜150・50語・1486文字）
-
-保存するファイル名：`lv1_0101-0150.mp3`
-
-```
+art. <break time="1.2s" />
 political. <break time="1.2s" />
 available. <break time="1.2s" />
 education. <break time="1.2s" />
@@ -140,7 +147,14 @@ main. <break time="1.2s" />
 moment. <break time="1.2s" />
 department. <break time="1.2s" />
 fine. <break time="1.2s" />
-force. <break time="1.2s" />
+force.
+```
+
+## lv1_0121-0150（単語 Lv1 No.121〜150・30語・880文字）
+
+保存するファイル名：`lv1_0121-0150.mp3`
+
+```
 issue. <break time="1.2s" />
 long-term. <break time="1.2s" />
 price. <break time="1.2s" />
@@ -173,9 +187,9 @@ test. <break time="1.2s" />
 view.
 ```
 
-## lv1_0151-0200（単語 Lv1 No.151〜200・50語・1478文字）
+## lv1_0151-0180（単語 Lv1 No.151〜180・30語・884文字）
 
-保存するファイル名：`lv1_0151-0200.mp3`
+保存するファイル名：`lv1_0151-0180.mp3`
 
 ```
 event. <break time="1.2s" />
@@ -207,7 +221,14 @@ evidence. <break time="1.2s" />
 follow. <break time="1.2s" />
 official. <break time="1.2s" />
 rate. <break time="1.2s" />
-save. <break time="1.2s" />
+save.
+```
+
+## lv1_0181-0210（単語 Lv1 No.181〜210・30語・877文字）
+
+保存するファイル名：`lv1_0181-0210.mp3`
+
+```
 stand. <break time="1.2s" />
 stuff. <break time="1.2s" />
 tax. <break time="1.2s" />
@@ -227,14 +248,7 @@ trade. <break time="1.2s" />
 various. <break time="1.2s" />
 character. <break time="1.2s" />
 chief. <break time="1.2s" />
-hate.
-```
-
-## lv1_0201-0250（単語 Lv1 No.201〜250・50語・1474文字）
-
-保存するファイル名：`lv1_0201-0250.mp3`
-
-```
+hate. <break time="1.2s" />
 lower. <break time="1.2s" />
 natural. <break time="1.2s" />
 property. <break time="1.2s" />
@@ -244,7 +258,14 @@ amazing. <break time="1.2s" />
 complete. <break time="1.2s" />
 involved. <break time="1.2s" />
 language. <break time="1.2s" />
-lord. <break time="1.2s" />
+lord.
+```
+
+## lv1_0211-0240（単語 Lv1 No.211〜240・30語・874文字）
+
+保存するファイル名：`lv1_0211-0240.mp3`
+
+```
 related. <break time="1.2s" />
 serious. <break time="1.2s" />
 stage. <break time="1.2s" />
@@ -274,7 +295,14 @@ career. <break time="1.2s" />
 figure. <break time="1.2s" />
 loss. <break time="1.2s" />
 modern. <break time="1.2s" />
-safe. <break time="1.2s" />
+safe.
+```
+
+## lv1_0241-0270（単語 Lv1 No.241〜270・30語・876文字）
+
+保存するファイル名：`lv1_0241-0270.mp3`
+
+```
 version. <break time="1.2s" />
 Internet. <break time="1.2s" />
 army. <break time="1.2s" />
@@ -284,14 +312,7 @@ access. <break time="1.2s" />
 base. <break time="1.2s" />
 mark. <break time="1.2s" />
 offer. <break time="1.2s" />
-pass.
-```
-
-## lv1_0251-0300（単語 Lv1 No.251〜300・50語・1501文字）
-
-保存するファイル名：`lv1_0251-0300.mp3`
-
-```
+pass. <break time="1.2s" />
 risk. <break time="1.2s" />
 district. <break time="1.2s" />
 mine. <break time="1.2s" />
@@ -311,7 +332,14 @@ except. <break time="1.2s" />
 limited. <break time="1.2s" />
 recently. <break time="1.2s" />
 store. <break time="1.2s" />
-track. <break time="1.2s" />
+track.
+```
+
+## lv1_0271-0300（単語 Lv1 No.271〜300・30語・896文字）
+
+保存するファイル名：`lv1_0271-0300.mp3`
+
+```
 via. <break time="1.2s" />
 weight. <break time="1.2s" />
 allow. <break time="1.2s" />
@@ -344,9 +372,9 @@ travel. <break time="1.2s" />
 consider.
 ```
 
-## lv1_0301-0350（単語 Lv1 No.301〜350・50語・1527文字）
+## lv1_0301-0330（単語 Lv1 No.301〜330・30語・913文字）
 
-保存するファイル名：`lv1_0301-0350.mp3`
+保存するファイル名：`lv1_0301-0330.mp3`
 
 ```
 positive. <break time="1.2s" />
@@ -378,7 +406,14 @@ wonder. <break time="1.2s" />
 effort. <break time="1.2s" />
 imagine. <break time="1.2s" />
 impact. <break time="1.2s" />
-lack. <break time="1.2s" />
+lack.
+```
+
+## lv1_0331-0360（単語 Lv1 No.331〜360・30語・898文字）
+
+保存するファイル名：`lv1_0331-0360.mp3`
+
+```
 address. <break time="1.2s" />
 analysis. <break time="1.2s" />
 thus. <break time="1.2s" />
@@ -398,14 +433,7 @@ cell. <break time="1.2s" />
 economy. <break time="1.2s" />
 environment. <break time="1.2s" />
 mass. <break time="1.2s" />
-mission.
-```
-
-## lv1_0351-0400（単語 Lv1 No.351〜400・50語・1490文字）
-
-保存するファイル名：`lv1_0351-0400.mp3`
-
-```
+mission. <break time="1.2s" />
 status. <break time="1.2s" />
 trial. <break time="1.2s" />
 complex. <break time="1.2s" />
@@ -415,7 +443,14 @@ exchange. <break time="1.2s" />
 mobile. <break time="1.2s" />
 species. <break time="1.2s" />
 demand. <break time="1.2s" />
-structure. <break time="1.2s" />
+structure.
+```
+
+## lv1_0361-0390（単語 Lv1 No.361〜390・30語・867文字）
+
+保存するファイル名：`lv1_0361-0390.mp3`
+
+```
 wind. <break time="1.2s" />
 mental. <break time="1.2s" />
 realize. <break time="1.2s" />
@@ -445,7 +480,14 @@ correct. <break time="1.2s" />
 firm. <break time="1.2s" />
 handle. <break time="1.2s" />
 improve. <break time="1.2s" />
-negative. <break time="1.2s" />
+negative.
+```
+
+## lv1_0391-0420（単語 Lv1 No.391〜420・30語・891文字）
+
+保存するファイル名：`lv1_0391-0420.mp3`
+
+```
 prevent. <break time="1.2s" />
 advantage. <break time="1.2s" />
 aware. <break time="1.2s" />
@@ -455,14 +497,7 @@ influence. <break time="1.2s" />
 produce. <break time="1.2s" />
 progress. <break time="1.2s" />
 require. <break time="1.2s" />
-background.
-```
-
-## lv1_0401-0450（単語 Lv1 No.401〜450・50語・1483文字）
-
-保存するファイル名：`lv1_0401-0450.mp3`
-
-```
+background. <break time="1.2s" />
 concept. <break time="1.2s" />
 labor. <break time="1.2s" />
 patient. <break time="1.2s" />
@@ -482,7 +517,14 @@ evil. <break time="1.2s" />
 religion. <break time="1.2s" />
 strategy. <break time="1.2s" />
 web. <break time="1.2s" />
-audience. <break time="1.2s" />
+audience.
+```
+
+## lv1_0421-0450（単語 Lv1 No.421〜450・30語・885文字）
+
+保存するファイル名：`lv1_0421-0450.mp3`
+
+```
 core. <break time="1.2s" />
 exist. <break time="1.2s" />
 medicine. <break time="1.2s" />
@@ -515,9 +557,9 @@ profit. <break time="1.2s" />
 suit.
 ```
 
-## lv1_0451-0500（単語 Lv1 No.451〜500・50語・1499文字）
+## lv1_0451-0480（単語 Lv1 No.451〜480・30語・886文字）
 
-保存するファイル名：`lv1_0451-0500.mp3`
+保存するファイル名：`lv1_0451-0480.mp3`
 
 ```
 debt. <break time="1.2s" />
@@ -549,7 +591,14 @@ confidence. <break time="1.2s" />
 equal. <break time="1.2s" />
 fake. <break time="1.2s" />
 maintain. <break time="1.2s" />
-measure. <break time="1.2s" />
+measure.
+```
+
+## lv1_0481-0510（単語 Lv1 No.481〜510・30語・895文字）
+
+保存するファイル名：`lv1_0481-0510.mp3`
+
+```
 numerous. <break time="1.2s" />
 split. <break time="1.2s" />
 task. <break time="1.2s" />
@@ -569,14 +618,7 @@ blame. <break time="1.2s" />
 context. <break time="1.2s" />
 determine. <break time="1.2s" />
 display. <break time="1.2s" />
-false.
-```
-
-## lv1_0501-0550（単語 Lv1 No.501〜550・50語・1508文字）
-
-保存するファイル名：`lv1_0501-0550.mp3`
-
-```
+false. <break time="1.2s" />
 incredible. <break time="1.2s" />
 novel. <break time="1.2s" />
 obvious. <break time="1.2s" />
@@ -586,7 +628,14 @@ editor. <break time="1.2s" />
 minor. <break time="1.2s" />
 struggle. <break time="1.2s" />
 tiny. <break time="1.2s" />
-capable. <break time="1.2s" />
+capable.
+```
+
+## lv1_0511-0540（単語 Lv1 No.511〜540・30語・898文字）
+
+保存するファイル名：`lv1_0511-0540.mp3`
+
+```
 desire. <break time="1.2s" />
 draft. <break time="1.2s" />
 essential. <break time="1.2s" />
@@ -616,7 +665,14 @@ typical. <break time="1.2s" />
 admit. <break time="1.2s" />
 attitude. <break time="1.2s" />
 favor. <break time="1.2s" />
-load. <break time="1.2s" />
+load.
+```
+
+## lv1_0541-0570（単語 Lv1 No.541〜570・30語・892文字）
+
+保存するファイル名：`lv1_0541-0570.mp3`
+
+```
 plot. <break time="1.2s" />
 random. <break time="1.2s" />
 rent. <break time="1.2s" />
@@ -626,14 +682,7 @@ accurate. <break time="1.2s" />
 achieve. <break time="1.2s" />
 afford. <break time="1.2s" />
 assume. <break time="1.2s" />
-category.
-```
-
-## lv1_0551-0600（単語 Lv1 No.551〜600・50語・1502文字）
-
-保存するファイル名：`lv1_0551-0600.mp3`
-
-```
+category. <break time="1.2s" />
 chemical. <break time="1.2s" />
 detail. <break time="1.2s" />
 diet. <break time="1.2s" />
@@ -653,7 +702,14 @@ object. <break time="1.2s" />
 personnel. <break time="1.2s" />
 perspective. <break time="1.2s" />
 pregnant. <break time="1.2s" />
-promote. <break time="1.2s" />
+promote.
+```
+
+## lv1_0571-0600（単語 Lv1 No.571〜600・30語・892文字）
+
+保存するファイル名：`lv1_0571-0600.mp3`
+
+```
 revolution. <break time="1.2s" />
 severe. <break time="1.2s" />
 suppose. <break time="1.2s" />
@@ -686,9 +742,9 @@ portion. <break time="1.2s" />
 protein.
 ```
 
-## lv1_0601-0650（単語 Lv1 No.601〜650・50語・1514文字）
+## lv1_0601-0630（単語 Lv1 No.601〜630・30語・894文字）
 
-保存するファイル名：`lv1_0601-0650.mp3`
+保存するファイル名：`lv1_0601-0630.mp3`
 
 ```
 raw. <break time="1.2s" />
@@ -720,7 +776,14 @@ wealth. <break time="1.2s" />
 contain. <break time="1.2s" />
 document. <break time="1.2s" />
 equivalent. <break time="1.2s" />
-operate. <break time="1.2s" />
+operate.
+```
+
+## lv1_0631-0660（単語 Lv1 No.631〜660・30語・911文字）
+
+保存するファイル名：`lv1_0631-0660.mp3`
+
+```
 outstanding. <break time="1.2s" />
 rid. <break time="1.2s" />
 tradition. <break time="1.2s" />
@@ -740,14 +803,7 @@ stable. <break time="1.2s" />
 temporary. <break time="1.2s" />
 defend. <break time="1.2s" />
 harm. <break time="1.2s" />
-occur.
-```
-
-## lv1_0651-0700（単語 Lv1 No.651〜700・50語・1528文字）
-
-保存するファイル名：`lv1_0651-0700.mp3`
-
-```
+occur. <break time="1.2s" />
 province. <break time="1.2s" />
 reputation. <break time="1.2s" />
 argue. <break time="1.2s" />
@@ -757,7 +813,14 @@ contrast. <break time="1.2s" />
 element. <break time="1.2s" />
 establish. <break time="1.2s" />
 moral. <break time="1.2s" />
-poverty. <break time="1.2s" />
+poverty.
+```
+
+## lv1_0661-0690（単語 Lv1 No.661〜690・30語・905文字）
+
+保存するファイル名：`lv1_0661-0690.mp3`
+
+```
 ridiculous. <break time="1.2s" />
 sensitive. <break time="1.2s" />
 superior. <break time="1.2s" />
@@ -787,7 +850,14 @@ participate. <break time="1.2s" />
 skill. <break time="1.2s" />
 soil. <break time="1.2s" />
 solve. <break time="1.2s" />
-virus. <break time="1.2s" />
+virus.
+```
+
+## lv1_0691-0720（単語 Lv1 No.691〜720・30語・914文字）
+
+保存するファイル名：`lv1_0691-0720.mp3`
+
+```
 aspect. <break time="1.2s" />
 boost. <break time="1.2s" />
 institution. <break time="1.2s" />
@@ -797,14 +867,7 @@ whereas. <break time="1.2s" />
 confirm. <break time="1.2s" />
 decent. <break time="1.2s" />
 decline. <break time="1.2s" />
-obtain.
-```
-
-## lv1_0701-0750（単語 Lv1 No.701〜750・50語・1509文字）
-
-保存するファイル名：`lv1_0701-0750.mp3`
-
-```
+obtain. <break time="1.2s" />
 pray. <break time="1.2s" />
 recall. <break time="1.2s" />
 associate. <break time="1.2s" />
@@ -824,7 +887,14 @@ resident. <break time="1.2s" />
 valid. <break time="1.2s" />
 vital. <break time="1.2s" />
 agriculture. <break time="1.2s" />
-funeral. <break time="1.2s" />
+funeral.
+```
+
+## lv1_0721-0750（単語 Lv1 No.721〜750・30語・884文字）
+
+保存するファイル名：`lv1_0721-0750.mp3`
+
+```
 genuine. <break time="1.2s" />
 legacy. <break time="1.2s" />
 regret. <break time="1.2s" />
@@ -848,7 +918,7 @@ luxury. <break time="1.2s" />
 outcome. <break time="1.2s" />
 poll. <break time="1.2s" />
 rob. <break time="1.2s" />
-strh. <break time="1.2s" />
+stretch. <break time="1.2s" />
 tear. <break time="1.2s" />
 contribute. <break time="1.2s" />
 extend. <break time="1.2s" />
@@ -857,9 +927,9 @@ sum. <break time="1.2s" />
 alert.
 ```
 
-## lv1_0751-0800（単語 Lv1 No.751〜800・50語・1535文字）
+## lv1_0751-0779（単語 Lv1 No.751〜779・29語・899文字）
 
-保存するファイル名：`lv1_0751-0800.mp3`
+保存するファイル名：`lv1_0751-0779.mp3`
 
 ```
 brave. <break time="1.2s" />
@@ -890,7 +960,14 @@ investigate. <break time="1.2s" />
 laboratory. <break time="1.2s" />
 praise. <break time="1.2s" />
 psychology. <break time="1.2s" />
-ruin. <break time="1.2s" />
+ruin.
+```
+
+## lv1_0780-0808（単語 Lv1 No.780〜808・29語・865文字）
+
+保存するファイル名：`lv1_0780-0808.mp3`
+
+```
 steady. <break time="1.2s" />
 treaty. <break time="1.2s" />
 bow. <break time="1.2s" />
@@ -911,14 +988,7 @@ crucial. <break time="1.2s" />
 galaxy. <break time="1.2s" />
 mature. <break time="1.2s" />
 submit. <break time="1.2s" />
-dispute.
-```
-
-## lv1_0801-0850（単語 Lv1 No.801〜850・50語・1522文字）
-
-保存するファイル名：`lv1_0801-0850.mp3`
-
-```
+dispute. <break time="1.2s" />
 moderate. <break time="1.2s" />
 overcome. <break time="1.2s" />
 radiation. <break time="1.2s" />
@@ -926,7 +996,14 @@ stroke. <break time="1.2s" />
 announce. <break time="1.2s" />
 bold. <break time="1.2s" />
 convince. <break time="1.2s" />
-encounter. <break time="1.2s" />
+encounter.
+```
+
+## lv1_0809-0837（単語 Lv1 No.809〜837・29語・868文字）
+
+保存するファイル名：`lv1_0809-0837.mp3`
+
+```
 instrument. <break time="1.2s" />
 mutual. <break time="1.2s" />
 pursue. <break time="1.2s" />
@@ -955,7 +1032,14 @@ substance. <break time="1.2s" />
 usage. <break time="1.2s" />
 fluid. <break time="1.2s" />
 folk. <break time="1.2s" />
-generate. <break time="1.2s" />
+generate.
+```
+
+## lv1_0838-0866（単語 Lv1 No.838〜866・29語・877文字）
+
+保存するファイル名：`lv1_0838-0866.mp3`
+
+```
 legitimate. <break time="1.2s" />
 permit. <break time="1.2s" />
 slight. <break time="1.2s" />
@@ -968,14 +1052,7 @@ attract. <break time="1.2s" />
 demonstrate. <break time="1.2s" />
 depend. <break time="1.2s" />
 dose. <break time="1.2s" />
-generous.
-```
-
-## lv1_0851-0900（単語 Lv1 No.851〜900・50語・1517文字）
-
-保存するファイル名：`lv1_0851-0900.mp3`
-
-```
+generous. <break time="1.2s" />
 implement. <break time="1.2s" />
 loyal. <break time="1.2s" />
 privilege. <break time="1.2s" />
@@ -991,7 +1068,14 @@ collapse. <break time="1.2s" />
 conscious. <break time="1.2s" />
 grain. <break time="1.2s" />
 physician. <break time="1.2s" />
-proceed. <break time="1.2s" />
+proceed.
+```
+
+## lv1_0867-0895（単語 Lv1 No.867〜895・29語・869文字）
+
+保存するファイル名：`lv1_0867-0895.mp3`
+
+```
 restore. <break time="1.2s" />
 contrary. <break time="1.2s" />
 diabetes. <break time="1.2s" />
@@ -1020,19 +1104,19 @@ immune. <break time="1.2s" />
 instruction. <break time="1.2s" />
 lean. <break time="1.2s" />
 organ. <break time="1.2s" />
-peer. <break time="1.2s" />
+peer.
+```
+
+## lv1_0896-0924（単語 Lv1 No.896〜924・29語・857文字）
+
+保存するファイル名：`lv1_0896-0924.mp3`
+
+```
 pile. <break time="1.2s" />
 tragedy. <break time="1.2s" />
 acquire. <break time="1.2s" />
 bend. <break time="1.2s" />
-boundary.
-```
-
-## lv1_0901-0950（単語 Lv1 No.901〜950・50語・1500文字）
-
-保存するファイル名：`lv1_0901-0950.mp3`
-
-```
+boundary. <break time="1.2s" />
 combine. <break time="1.2s" />
 courtesy. <break time="1.2s" />
 flexible. <break time="1.2s" />
@@ -1056,7 +1140,14 @@ urge. <break time="1.2s" />
 import. <break time="1.2s" />
 nutrition. <break time="1.2s" />
 pose. <break time="1.2s" />
-pour. <break time="1.2s" />
+pour.
+```
+
+## lv1_0925-0953（単語 Lv1 No.925〜953・29語・865文字）
+
+保存するファイル名：`lv1_0925-0953.mp3`
+
+```
 publish. <break time="1.2s" />
 anxious. <break time="1.2s" />
 intend. <break time="1.2s" />
@@ -1082,17 +1173,17 @@ consequence. <break time="1.2s" />
 curse. <break time="1.2s" />
 drain. <break time="1.2s" />
 hostile. <break time="1.2s" />
-outlook.
-```
-
-## lv1_0951-1000（単語 Lv1 No.951〜1000・50語・1538文字）
-
-保存するファイル名：`lv1_0951-1000.mp3`
-
-```
+outlook. <break time="1.2s" />
 quantity. <break time="1.2s" />
 scare. <break time="1.2s" />
-tremendous. <break time="1.2s" />
+tremendous.
+```
+
+## lv1_0954-0982（単語 Lv1 No.954〜982・29語・876文字）
+
+保存するファイル名：`lv1_0954-0982.mp3`
+
+```
 assure. <break time="1.2s" />
 cheat. <break time="1.2s" />
 elaborate. <break time="1.2s" />
@@ -1121,7 +1212,14 @@ eager. <break time="1.2s" />
 harvest. <break time="1.2s" />
 insist. <break time="1.2s" />
 orbit. <break time="1.2s" />
-passive. <break time="1.2s" />
+passive.
+```
+
+## lv1_0983-1011（単語 Lv1 No.983〜1011・29語・887文字）
+
+保存するファイル名：`lv1_0983-1011.mp3`
+
+```
 reject. <break time="1.2s" />
 abandon. <break time="1.2s" />
 dignity. <break time="1.2s" />
@@ -1139,14 +1237,7 @@ pause. <break time="1.2s" />
 pledge. <break time="1.2s" />
 fossil. <break time="1.2s" />
 infant. <break time="1.2s" />
-insult.
-```
-
-## lv1_1001-1050（単語 Lv1 No.1001〜1050・50語・1486文字）
-
-保存するファイル名：`lv1_1001-1050.mp3`
-
-```
+insult. <break time="1.2s" />
 negotiate. <break time="1.2s" />
 propose. <break time="1.2s" />
 steep. <break time="1.2s" />
@@ -1157,7 +1248,14 @@ expose. <break time="1.2s" />
 geography. <break time="1.2s" />
 habitat. <break time="1.2s" />
 hazard. <break time="1.2s" />
-manufacture. <break time="1.2s" />
+manufacture.
+```
+
+## lv1_1012-1040（単語 Lv1 No.1012〜1040・29語・844文字）
+
+保存するファイル名：`lv1_1012-1040.mp3`
+
+```
 prey. <break time="1.2s" />
 satisfy. <break time="1.2s" />
 admire. <break time="1.2s" />
@@ -1186,7 +1284,14 @@ leap. <break time="1.2s" />
 locate. <break time="1.2s" />
 motive. <break time="1.2s" />
 oppose. <break time="1.2s" />
-virtue. <break time="1.2s" />
+virtue.
+```
+
+## lv1_1041-1069（単語 Lv1 No.1041〜1069・29語・866文字）
+
+保存するファイル名：`lv1_1041-1069.mp3`
+
+```
 arise. <break time="1.2s" />
 bore. <break time="1.2s" />
 halt. <break time="1.2s" />
@@ -1196,14 +1301,7 @@ sustain. <break time="1.2s" />
 translate. <break time="1.2s" />
 altitude. <break time="1.2s" />
 exceed. <break time="1.2s" />
-fierce.
-```
-
-## lv1_1051-1100（単語 Lv1 No.1051〜1100・50語・1538文字）
-
-保存するファイル名：`lv1_1051-1100.mp3`
-
-```
+fierce. <break time="1.2s" />
 impose. <break time="1.2s" />
 leisure. <break time="1.2s" />
 compliment. <break time="1.2s" />
@@ -1222,7 +1320,14 @@ emerge. <break time="1.2s" />
 plague. <break time="1.2s" />
 consume. <break time="1.2s" />
 immense. <break time="1.2s" />
-interfere. <break time="1.2s" />
+interfere.
+```
+
+## lv1_1070-1098（単語 Lv1 No.1070〜1098・29語・884文字）
+
+保存するファイル名：`lv1_1070-1098.mp3`
+
+```
 appetite. <break time="1.2s" />
 calculate. <break time="1.2s" />
 consult. <break time="1.2s" />
@@ -1251,16 +1356,16 @@ monopoly. <break time="1.2s" />
 spill. <break time="1.2s" />
 tolerate. <break time="1.2s" />
 convey. <break time="1.2s" />
-decay. <break time="1.2s" />
+decay.
+```
+
+## lv1_1099-1127（単語 Lv1 No.1099〜1127・29語・885文字）
+
+保存するファイル名：`lv1_1099-1127.mp3`
+
+```
 entertain. <break time="1.2s" />
-exploit.
-```
-
-## lv1_1101-1150（単語 Lv1 No.1101〜1150・50語・1542文字）
-
-保存するファイル名：`lv1_1101-1150.mp3`
-
-```
+exploit. <break time="1.2s" />
 imply. <break time="1.2s" />
 notorious. <break time="1.2s" />
 obey. <break time="1.2s" />
@@ -1287,7 +1392,14 @@ hesitate. <break time="1.2s" />
 modify. <break time="1.2s" />
 neglect. <break time="1.2s" />
 prejudice. <break time="1.2s" />
-surround. <break time="1.2s" />
+surround.
+```
+
+## lv1_1128-1156（単語 Lv1 No.1128〜1156・29語・882文字）
+
+保存するファイル名：`lv1_1128-1156.mp3`
+
+```
 compensate. <break time="1.2s" />
 faint. <break time="1.2s" />
 abundant. <break time="1.2s" />
@@ -1310,20 +1422,20 @@ gaze. <break time="1.2s" />
 emphasize. <break time="1.2s" />
 trait. <break time="1.2s" />
 peculiar. <break time="1.2s" />
-stimulate.
-```
-
-## lv1_1151-1185（単語 Lv1 No.1151〜1185・35語・1063文字）
-
-保存するファイル名：`lv1_1151-1185.mp3`
-
-```
+stimulate. <break time="1.2s" />
 transmit. <break time="1.2s" />
 wander. <break time="1.2s" />
 forbid. <break time="1.2s" />
 remark. <break time="1.2s" />
 symptom. <break time="1.2s" />
-disgust. <break time="1.2s" />
+disgust.
+```
+
+## lv1_1157-1185（単語 Lv1 No.1157〜1185・29語・879文字）
+
+保存するファイル名：`lv1_1157-1185.mp3`
+
+```
 famine. <break time="1.2s" />
 interrupt. <break time="1.2s" />
 soak. <break time="1.2s" />
@@ -1355,9 +1467,9 @@ exaggerate. <break time="1.2s" />
 amuse.
 ```
 
-## lv2_0001-0050（単語 Lv2 No.1〜50・50語・1505文字）
+## lv2_0001-0030（単語 Lv2 No.1〜30・30語・896文字）
 
-保存するファイル名：`lv2_0001-0050.mp3`
+保存するファイル名：`lv2_0001-0030.mp3`
 
 ```
 contact. <break time="1.2s" />
@@ -1389,7 +1501,14 @@ letter. <break time="1.2s" />
 regular. <break time="1.2s" />
 unit. <break time="1.2s" />
 battle. <break time="1.2s" />
-brain. <break time="1.2s" />
+brain.
+```
+
+## lv2_0031-0060（単語 Lv2 No.31〜60・30語・896文字）
+
+保存するファイル名：`lv2_0031-0060.mp3`
+
+```
 degree. <break time="1.2s" />
 hurt. <break time="1.2s" />
 image. <break time="1.2s" />
@@ -1409,14 +1528,7 @@ protect. <break time="1.2s" />
 senior. <break time="1.2s" />
 spring. <break time="1.2s" />
 wear. <break time="1.2s" />
-choose.
-```
-
-## lv2_0051-0100（単語 Lv2 No.51〜100・50語・1509文字）
-
-保存するファイル名：`lv2_0051-0100.mp3`
-
-```
+choose. <break time="1.2s" />
 commission. <break time="1.2s" />
 direct. <break time="1.2s" />
 grand. <break time="1.2s" />
@@ -1426,7 +1538,14 @@ touch. <break time="1.2s" />
 damage. <break time="1.2s" />
 disease. <break time="1.2s" />
 grow. <break time="1.2s" />
-professor. <break time="1.2s" />
+professor.
+```
+
+## lv2_0061-0090（単語 Lv2 No.61〜90・30語・902文字）
+
+保存するファイル名：`lv2_0061-0090.mp3`
+
+```
 effective. <break time="1.2s" />
 explain. <break time="1.2s" />
 fully. <break time="1.2s" />
@@ -1456,7 +1575,14 @@ channel. <break time="1.2s" />
 distance. <break time="1.2s" />
 finding. <break time="1.2s" />
 prior. <break time="1.2s" />
-receive. <break time="1.2s" />
+receive.
+```
+
+## lv2_0091-0120（単語 Lv2 No.91〜120・30語・880文字）
+
+保存するファイル名：`lv2_0091-0120.mp3`
+
+```
 religious. <break time="1.2s" />
 royal. <break time="1.2s" />
 serve. <break time="1.2s" />
@@ -1466,14 +1592,7 @@ famous. <break time="1.2s" />
 lie. <break time="1.2s" />
 square. <break time="1.2s" />
 worry. <break time="1.2s" />
-brand.
-```
-
-## lv2_0101-0150（単語 Lv2 No.101〜150・50語・1480文字）
-
-保存するファイル名：`lv2_0101-0150.mp3`
-
-```
+brand. <break time="1.2s" />
 brand-new. <break time="1.2s" />
 count. <break time="1.2s" />
 critical. <break time="1.2s" />
@@ -1493,7 +1612,14 @@ profile. <break time="1.2s" />
 seat. <break time="1.2s" />
 target. <break time="1.2s" />
 agent. <break time="1.2s" />
-draw. <break time="1.2s" />
+draw.
+```
+
+## lv2_0121-0150（単語 Lv2 No.121〜150・30語・874文字）
+
+保存するファイル名：`lv2_0121-0150.mp3`
+
+```
 enter. <break time="1.2s" />
 foundation. <break time="1.2s" />
 memory. <break time="1.2s" />
@@ -1526,9 +1652,9 @@ ad. <break time="1.2s" />
 alive.
 ```
 
-## lv2_0151-0200（単語 Lv2 No.151〜200・50語・1512文字）
+## lv2_0151-0179（単語 Lv2 No.151〜179・29語・867文字）
 
-保存するファイル名：`lv2_0151-0200.mp3`
+保存するファイル名：`lv2_0151-0179.mp3`
 
 ```
 balance. <break time="1.2s" />
@@ -1559,7 +1685,14 @@ democratic. <break time="1.2s" />
 description. <break time="1.2s" />
 excellent. <break time="1.2s" />
 guard. <break time="1.2s" />
-port. <break time="1.2s" />
+port.
+```
+
+## lv2_0180-0208（単語 Lv2 No.180〜208・29語・870文字）
+
+保存するファイル名：`lv2_0180-0208.mp3`
+
+```
 presence. <break time="1.2s" />
 shoot. <break time="1.2s" />
 taste. <break time="1.2s" />
@@ -1580,14 +1713,7 @@ joint. <break time="1.2s" />
 mix. <break time="1.2s" />
 path. <break time="1.2s" />
 promise. <break time="1.2s" />
-terrible.
-```
-
-## lv2_0201-0250（単語 Lv2 No.201〜250・50語・1522文字）
-
-保存するファイル名：`lv2_0201-0250.mp3`
-
-```
+terrible. <break time="1.2s" />
 afraid. <break time="1.2s" />
 crowd. <break time="1.2s" />
 enemy. <break time="1.2s" />
@@ -1595,7 +1721,14 @@ intelligence. <break time="1.2s" />
 limit. <break time="1.2s" />
 proof. <break time="1.2s" />
 appearance. <break time="1.2s" />
-attorney. <break time="1.2s" />
+attorney.
+```
+
+## lv2_0209-0237（単語 Lv2 No.209〜237・29語・880文字）
+
+保存するファイル名：`lv2_0209-0237.mp3`
+
+```
 behavior. <break time="1.2s" />
 expensive. <break time="1.2s" />
 update. <break time="1.2s" />
@@ -1624,7 +1757,14 @@ aircraft. <break time="1.2s" />
 argument. <break time="1.2s" />
 distribution. <break time="1.2s" />
 escape. <break time="1.2s" />
-fill. <break time="1.2s" />
+fill.
+```
+
+## lv2_0238-0266（単語 Lv2 No.238〜266・29語・868文字）
+
+保存するファイル名：`lv2_0238-0266.mp3`
+
+```
 lay. <break time="1.2s" />
 bob. <break time="1.2s" />
 coverage. <break time="1.2s" />
@@ -1637,14 +1777,7 @@ kingdom. <break time="1.2s" />
 literature. <break time="1.2s" />
 mayor. <break time="1.2s" />
 stream. <break time="1.2s" />
-suicide.
-```
-
-## lv2_0251-0300（単語 Lv2 No.251〜300・50語・1528文字）
-
-保存するファイル名：`lv2_0251-0300.mp3`
-
-```
+suicide. <break time="1.2s" />
 theme. <break time="1.2s" />
 typically. <break time="1.2s" />
 unfortunately. <break time="1.2s" />
@@ -1660,7 +1793,14 @@ hang. <break time="1.2s" />
 maximum. <break time="1.2s" />
 reserve. <break time="1.2s" />
 empty. <break time="1.2s" />
-reasonable. <break time="1.2s" />
+reasonable.
+```
+
+## lv2_0267-0295（単語 Lv2 No.267〜295・29語・871文字）
+
+保存するファイル名：`lv2_0267-0295.mp3`
+
+```
 branch. <break time="1.2s" />
 frame. <break time="1.2s" />
 sentence. <break time="1.2s" />
@@ -1689,19 +1829,19 @@ complicated. <break time="1.2s" />
 extent. <break time="1.2s" />
 household. <break time="1.2s" />
 mount. <break time="1.2s" />
-technique. <break time="1.2s" />
+technique.
+```
+
+## lv2_0296-0324（単語 Lv2 No.296〜324・29語・851文字）
+
+保存するファイル名：`lv2_0296-0324.mp3`
+
+```
 infrastructure. <break time="1.2s" />
 loose. <break time="1.2s" />
 transition. <break time="1.2s" />
 acid. <break time="1.2s" />
-charity.
-```
-
-## lv2_0301-0350（単語 Lv2 No.301〜350・50語・1467文字）
-
-保存するファイル名：`lv2_0301-0350.mp3`
-
-```
+charity. <break time="1.2s" />
 formula. <break time="1.2s" />
 penalty. <break time="1.2s" />
 select. <break time="1.2s" />
@@ -1725,7 +1865,14 @@ evolution. <break time="1.2s" />
 lately. <break time="1.2s" />
 repair. <break time="1.2s" />
 saint. <break time="1.2s" />
-delay. <break time="1.2s" />
+delay.
+```
+
+## lv2_0325-0353（単語 Lv2 No.325〜353・29語・841文字）
+
+保存するファイル名：`lv2_0325-0353.mp3`
+
+```
 desert. <break time="1.2s" />
 elite. <break time="1.2s" />
 hire. <break time="1.2s" />
@@ -1751,17 +1898,17 @@ monitor. <break time="1.2s" />
 ratio. <break time="1.2s" />
 seed. <break time="1.2s" />
 settle. <break time="1.2s" />
-sin.
-```
-
-## lv2_0351-0400（単語 Lv2 No.351〜400・50語・1534文字）
-
-保存するファイル名：`lv2_0351-0400.mp3`
-
-```
+sin. <break time="1.2s" />
 spell. <break time="1.2s" />
 sword. <break time="1.2s" />
-tongue. <break time="1.2s" />
+tongue.
+```
+
+## lv2_0354-0382（単語 Lv2 No.354〜382・29語・888文字）
+
+保存するファイル名：`lv2_0354-0382.mp3`
+
+```
 comprehensive. <break time="1.2s" />
 extraordinary. <break time="1.2s" />
 glory. <break time="1.2s" />
@@ -1790,7 +1937,14 @@ courage. <break time="1.2s" />
 desperate. <break time="1.2s" />
 humanity. <break time="1.2s" />
 ongoing. <break time="1.2s" />
-virtual. <break time="1.2s" />
+virtual.
+```
+
+## lv2_0383-0411（単語 Lv2 No.383〜411・29語・874文字）
+
+保存するファイル名：`lv2_0383-0411.mp3`
+
+```
 biological. <break time="1.2s" />
 dare. <break time="1.2s" />
 disorder. <break time="1.2s" />
@@ -1808,14 +1962,7 @@ summit. <break time="1.2s" />
 beast. <break time="1.2s" />
 dialogue. <break time="1.2s" />
 disabled. <break time="1.2s" />
-distinct.
-```
-
-## lv2_0401-0450（単語 Lv2 No.401〜450・50語・1509文字）
-
-保存するファイル名：`lv2_0401-0450.mp3`
-
-```
+distinct. <break time="1.2s" />
 eligible. <break time="1.2s" />
 furniture. <break time="1.2s" />
 intelligent. <break time="1.2s" />
@@ -1826,7 +1973,14 @@ succeed. <break time="1.2s" />
 tale. <break time="1.2s" />
 alarm. <break time="1.2s" />
 globe. <break time="1.2s" />
-intent. <break time="1.2s" />
+intent.
+```
+
+## lv2_0412-0440（単語 Lv2 No.412〜440・29語・866文字）
+
+保存するファイル名：`lv2_0412-0440.mp3`
+
+```
 involve. <break time="1.2s" />
 spare. <break time="1.2s" />
 tap. <break time="1.2s" />
@@ -1855,7 +2009,14 @@ trigger. <break time="1.2s" />
 beneath. <break time="1.2s" />
 bullet. <break time="1.2s" />
 divine. <break time="1.2s" />
-export. <break time="1.2s" />
+export.
+```
+
+## lv2_0441-0469（単語 Lv2 No.441〜469・29語・872文字）
+
+保存するファイル名：`lv2_0441-0469.mp3`
+
+```
 habit. <break time="1.2s" />
 noble. <break time="1.2s" />
 asset. <break time="1.2s" />
@@ -1865,14 +2026,7 @@ reception. <break time="1.2s" />
 recipe. <break time="1.2s" />
 syndrome. <break time="1.2s" />
 delete. <break time="1.2s" />
-departure.
-```
-
-## lv2_0451-0500（単語 Lv2 No.451〜500・50語・1541文字）
-
-保存するファイル名：`lv2_0451-0500.mp3`
-
-```
+departure. <break time="1.2s" />
 fever. <break time="1.2s" />
 lightning. <break time="1.2s" />
 pension. <break time="1.2s" />
@@ -1891,7 +2045,14 @@ pollution. <break time="1.2s" />
 bulk. <break time="1.2s" />
 census. <break time="1.2s" />
 destiny. <break time="1.2s" />
-humor. <break time="1.2s" />
+humor.
+```
+
+## lv2_0470-0498（単語 Lv2 No.470〜498・29語・885文字）
+
+保存するファイル名：`lv2_0470-0498.mp3`
+
+```
 nerve. <break time="1.2s" />
 nightmare. <break time="1.2s" />
 qualify. <break time="1.2s" />
@@ -1920,16 +2081,16 @@ retain. <break time="1.2s" />
 shade. <break time="1.2s" />
 vocal. <break time="1.2s" />
 warrior. <break time="1.2s" />
-convenient. <break time="1.2s" />
+convenient.
+```
+
+## lv2_0499-0527（単語 Lv2 No.499〜527・29語・862文字）
+
+保存するファイル名：`lv2_0499-0527.mp3`
+
+```
 earthquake. <break time="1.2s" />
-elderly.
-```
-
-## lv2_0501-0550（単語 Lv2 No.501〜550・50語・1498文字）
-
-保存するファイル名：`lv2_0501-0550.mp3`
-
-```
+elderly. <break time="1.2s" />
 inform. <break time="1.2s" />
 stake. <break time="1.2s" />
 swift. <break time="1.2s" />
@@ -1956,7 +2117,14 @@ grip. <break time="1.2s" />
 hybrid. <break time="1.2s" />
 rage. <break time="1.2s" />
 selfish. <break time="1.2s" />
-ally. <break time="1.2s" />
+ally.
+```
+
+## lv2_0528-0556（単語 Lv2 No.528〜556・29語・865文字）
+
+保存するファイル名：`lv2_0528-0556.mp3`
+
+```
 breakdown. <break time="1.2s" />
 brutal. <break time="1.2s" />
 consensus. <break time="1.2s" />
@@ -1979,20 +2147,20 @@ merchant. <break time="1.2s" />
 pale. <break time="1.2s" />
 poison. <break time="1.2s" />
 continent. <break time="1.2s" />
-flame.
-```
-
-## lv2_0551-0600（単語 Lv2 No.551〜600・50語・1523文字）
-
-保存するファイル名：`lv2_0551-0600.mp3`
-
-```
+flame. <break time="1.2s" />
 horizon. <break time="1.2s" />
 momentum. <break time="1.2s" />
 obligation. <break time="1.2s" />
 reign. <break time="1.2s" />
 span. <break time="1.2s" />
-ambulance. <break time="1.2s" />
+ambulance.
+```
+
+## lv2_0557-0585（単語 Lv2 No.557〜585・29語・872文字）
+
+保存するファイル名：`lv2_0557-0585.mp3`
+
+```
 ashamed. <break time="1.2s" />
 cheer. <break time="1.2s" />
 deficit. <break time="1.2s" />
@@ -2021,7 +2189,14 @@ headline. <break time="1.2s" />
 kidney. <break time="1.2s" />
 modest. <break time="1.2s" />
 semester. <break time="1.2s" />
-sentiment. <break time="1.2s" />
+sentiment.
+```
+
+## lv2_0586-0614（単語 Lv2 No.586〜614・29語・868文字）
+
+保存するファイル名：`lv2_0586-0614.mp3`
+
+```
 supplement. <break time="1.2s" />
 accommodate. <break time="1.2s" />
 aesthetic. <break time="1.2s" />
@@ -2036,14 +2211,7 @@ sheer. <break time="1.2s" />
 thumb. <break time="1.2s" />
 timber. <break time="1.2s" />
 wheat. <break time="1.2s" />
-wipe.
-```
-
-## lv2_0601-0650（単語 Lv2 No.601〜650・50語・1517文字）
-
-保存するファイル名：`lv2_0601-0650.mp3`
-
-```
+wipe. <break time="1.2s" />
 acute. <break time="1.2s" />
 arrange. <break time="1.2s" />
 behave. <break time="1.2s" />
@@ -2057,7 +2225,14 @@ entrepreneur. <break time="1.2s" />
 expedition. <break time="1.2s" />
 feat. <break time="1.2s" />
 neat. <break time="1.2s" />
-outbreak. <break time="1.2s" />
+outbreak.
+```
+
+## lv2_0615-0643（単語 Lv2 No.615〜643・29語・875文字）
+
+保存するファイル名：`lv2_0615-0643.mp3`
+
+```
 probe. <break time="1.2s" />
 sore. <break time="1.2s" />
 weigh. <break time="1.2s" />
@@ -2086,21 +2261,21 @@ tumor. <break time="1.2s" />
 circulation. <break time="1.2s" />
 conscience. <break time="1.2s" />
 enforce. <break time="1.2s" />
-explicit. <break time="1.2s" />
+explicit.
+```
+
+## lv2_0644-0672（単語 Lv2 No.644〜672・29語・878文字）
+
+保存するファイル名：`lv2_0644-0672.mp3`
+
+```
 fraction. <break time="1.2s" />
 integral. <break time="1.2s" />
 scholar. <break time="1.2s" />
 wit. <break time="1.2s" />
 wreck. <break time="1.2s" />
 bargain. <break time="1.2s" />
-collision.
-```
-
-## lv2_0651-0700（単語 Lv2 No.651〜700・50語・1538文字）
-
-保存するファイル名：`lv2_0651-0700.mp3`
-
-```
+collision. <break time="1.2s" />
 compassion. <break time="1.2s" />
 cough. <break time="1.2s" />
 execute. <break time="1.2s" />
@@ -2122,7 +2297,14 @@ bloom. <break time="1.2s" />
 impress. <break time="1.2s" />
 prone. <break time="1.2s" />
 competent. <break time="1.2s" />
-debris. <break time="1.2s" />
+debris.
+```
+
+## lv2_0673-0701（単語 Lv2 No.673〜701・29語・880文字）
+
+保存するファイル名：`lv2_0673-0701.mp3`
+
+```
 sculpture. <break time="1.2s" />
 ambition. <break time="1.2s" />
 exotic. <break time="1.2s" />
@@ -2150,15 +2332,15 @@ surplus. <break time="1.2s" />
 autonomy. <break time="1.2s" />
 commodity. <break time="1.2s" />
 thrust. <break time="1.2s" />
-arbitrary.
+arbitrary. <break time="1.2s" />
+mock.
 ```
 
-## lv2_0701-0750（単語 Lv2 No.701〜750・50語・1516文字）
+## lv2_0702-0730（単語 Lv2 No.702〜730・29語・881文字）
 
-保存するファイル名：`lv2_0701-0750.mp3`
+保存するファイル名：`lv2_0702-0730.mp3`
 
 ```
-mock. <break time="1.2s" />
 sincere. <break time="1.2s" />
 breakthrough. <break time="1.2s" />
 discourse. <break time="1.2s" />
@@ -2187,7 +2369,14 @@ forge. <break time="1.2s" />
 hierarchy. <break time="1.2s" />
 render. <break time="1.2s" />
 crawl. <break time="1.2s" />
-interval. <break time="1.2s" />
+interval.
+```
+
+## lv2_0731-0759（単語 Lv2 No.731〜759・29語・862文字）
+
+保存するファイル名：`lv2_0731-0759.mp3`
+
+```
 offspring. <break time="1.2s" />
 attach. <break time="1.2s" />
 bind. <break time="1.2s" />
@@ -2207,14 +2396,7 @@ anticipate. <break time="1.2s" />
 bankrupt. <break time="1.2s" />
 excel. <break time="1.2s" />
 greet. <break time="1.2s" />
-metaphor.
-```
-
-## lv2_0751-0800（単語 Lv2 No.751〜800・50語・1526文字）
-
-保存するファイル名：`lv2_0751-0800.mp3`
-
-```
+metaphor. <break time="1.2s" />
 resemble. <break time="1.2s" />
 rumor. <break time="1.2s" />
 sorrow. <break time="1.2s" />
@@ -2223,7 +2405,14 @@ aisle. <break time="1.2s" />
 condemn. <break time="1.2s" />
 empathy. <break time="1.2s" />
 impulse. <break time="1.2s" />
-perceive. <break time="1.2s" />
+perceive.
+```
+
+## lv2_0760-0788（単語 Lv2 No.760〜788・29語・877文字）
+
+保存するファイル名：`lv2_0760-0788.mp3`
+
+```
 specimen. <break time="1.2s" />
 strive. <break time="1.2s" />
 thrill. <break time="1.2s" />
@@ -2252,7 +2441,14 @@ retrieve. <break time="1.2s" />
 troop. <break time="1.2s" />
 defect. <break time="1.2s" />
 drown. <break time="1.2s" />
-navigate. <break time="1.2s" />
+navigate.
+```
+
+## lv2_0789-0817（単語 Lv2 No.789〜817・29語・893文字）
+
+保存するファイル名：`lv2_0789-0817.mp3`
+
+```
 reinforce. <break time="1.2s" />
 revive. <break time="1.2s" />
 skeptical. <break time="1.2s" />
@@ -2264,14 +2460,7 @@ confuse. <break time="1.2s" />
 disappoint. <break time="1.2s" />
 gradual. <break time="1.2s" />
 molecule. <break time="1.2s" />
-ripe.
-```
-
-## lv2_0801-0850（単語 Lv2 No.801〜850・50語・1549文字）
-
-保存するファイル名：`lv2_0801-0850.mp3`
-
-```
+ripe. <break time="1.2s" />
 susceptible. <break time="1.2s" />
 accelerate. <break time="1.2s" />
 assign. <break time="1.2s" />
@@ -2281,14 +2470,21 @@ earnest. <break time="1.2s" />
 pronounce. <break time="1.2s" />
 suppress. <break time="1.2s" />
 trivial. <break time="1.2s" />
-fh. <break time="1.2s" />
+fetch. <break time="1.2s" />
 undermine. <break time="1.2s" />
 withstand. <break time="1.2s" />
 assemble. <break time="1.2s" />
 dread. <break time="1.2s" />
 swell. <break time="1.2s" />
 astronomy. <break time="1.2s" />
-coherent. <break time="1.2s" />
+coherent.
+```
+
+## lv2_0818-0846（単語 Lv2 No.818〜846・29語・878文字）
+
+保存するファイル名：`lv2_0818-0846.mp3`
+
+```
 criticize. <break time="1.2s" />
 drastic. <break time="1.2s" />
 edible. <break time="1.2s" />
@@ -2317,18 +2513,18 @@ tease. <break time="1.2s" />
 adolescent. <break time="1.2s" />
 dictate. <break time="1.2s" />
 glacier. <break time="1.2s" />
-rotate. <break time="1.2s" />
+rotate.
+```
+
+## lv2_0847-0875（単語 Lv2 No.847〜875・29語・881文字）
+
+保存するファイル名：`lv2_0847-0875.mp3`
+
+```
 ambiguous. <break time="1.2s" />
 discourage. <break time="1.2s" />
 latitude. <break time="1.2s" />
-offend.
-```
-
-## lv2_0851-0900（単語 Lv2 No.851〜900・50語・1521文字）
-
-保存するファイル名：`lv2_0851-0900.mp3`
-
-```
+offend. <break time="1.2s" />
 sanitation. <break time="1.2s" />
 abruptly. <break time="1.2s" />
 contend. <break time="1.2s" />
@@ -2353,7 +2549,14 @@ overlook. <break time="1.2s" />
 persist. <break time="1.2s" />
 tidy. <break time="1.2s" />
 weave. <break time="1.2s" />
-cherish. <break time="1.2s" />
+cherish.
+```
+
+## lv2_0876-0904（単語 Lv2 No.876〜904・29語・870文字）
+
+保存するファイル名：`lv2_0876-0904.mp3`
+
+```
 erect. <break time="1.2s" />
 fluent. <break time="1.2s" />
 derive. <break time="1.2s" />
@@ -2378,18 +2581,18 @@ intrinsic. <break time="1.2s" />
 compose. <break time="1.2s" />
 criterion. <break time="1.2s" />
 diminish. <break time="1.2s" />
-roam.
-```
-
-## lv2_0901-0950（単語 Lv2 No.901〜950・50語・1542文字）
-
-保存するファイル名：`lv2_0901-0950.mp3`
-
-```
+roam. <break time="1.2s" />
 vigorous. <break time="1.2s" />
 enroll. <break time="1.2s" />
 sew. <break time="1.2s" />
-subordinate. <break time="1.2s" />
+subordinate.
+```
+
+## lv2_0905-0933（単語 Lv2 No.905〜933・29語・877文字）
+
+保存するファイル名：`lv2_0905-0933.mp3`
+
+```
 uneasy. <break time="1.2s" />
 clumsy. <break time="1.2s" />
 dizzy. <break time="1.2s" />
@@ -2418,7 +2621,14 @@ affluent. <break time="1.2s" />
 designate. <break time="1.2s" />
 discard. <break time="1.2s" />
 surpass. <break time="1.2s" />
-exert. <break time="1.2s" />
+exert.
+```
+
+## lv2_0934-0962（単語 Lv2 No.934〜962・29語・889文字）
+
+保存するファイル名：`lv2_0934-0962.mp3`
+
+```
 infect. <break time="1.2s" />
 appliance. <break time="1.2s" />
 conspicuous. <break time="1.2s" />
@@ -2435,14 +2645,7 @@ injure. <break time="1.2s" />
 restrain. <break time="1.2s" />
 expel. <break time="1.2s" />
 frown. <break time="1.2s" />
-pessimistic.
-```
-
-## lv2_0951-0962（単語 Lv2 No.951〜962・12語・348文字）
-
-保存するファイル名：`lv2_0951-0962.mp3`
-
-```
+pessimistic. <break time="1.2s" />
 endanger. <break time="1.2s" />
 tempt. <break time="1.2s" />
 deprive. <break time="1.2s" />
@@ -2457,9 +2660,9 @@ precede. <break time="1.2s" />
 enclose.
 ```
 
-## lv3_0001-0050（単語 Lv3 No.1〜50・50語・1547文字）
+## lv3_0001-0030（単語 Lv3 No.1〜30・30語・923文字）
 
-保存するファイル名：`lv3_0001-0050.mp3`
+保存するファイル名：`lv3_0001-0030.mp3`
 
 ```
 aside. <break time="1.2s" />
@@ -2491,7 +2694,14 @@ expert. <break time="1.2s" />
 frequently. <break time="1.2s" />
 tool. <break time="1.2s" />
 Catholic. <break time="1.2s" />
-carbon. <break time="1.2s" />
+carbon.
+```
+
+## lv3_0031-0060（単語 Lv3 No.31〜60・30語・910文字）
+
+保存するファイル名：`lv3_0031-0060.mp3`
+
+```
 depth. <break time="1.2s" />
 electronic. <break time="1.2s" />
 existence. <break time="1.2s" />
@@ -2511,14 +2721,7 @@ hardly. <break time="1.2s" />
 motor. <break time="1.2s" />
 solar. <break time="1.2s" />
 unknown. <break time="1.2s" />
-blind.
-```
-
-## lv3_0051-0100（単語 Lv3 No.51〜100・50語・1535文字）
-
-保存するファイル名：`lv3_0051-0100.mp3`
-
-```
+blind. <break time="1.2s" />
 fantasy. <break time="1.2s" />
 license. <break time="1.2s" />
 presidential. <break time="1.2s" />
@@ -2528,7 +2731,14 @@ entitled. <break time="1.2s" />
 exact. <break time="1.2s" />
 plastic. <break time="1.2s" />
 tie. <break time="1.2s" />
-aged. <break time="1.2s" />
+aged.
+```
+
+## lv3_0061-0090（単語 Lv3 No.61〜90・30語・915文字）
+
+保存するファイル名：`lv3_0061-0090.mp3`
+
+```
 inner. <break time="1.2s" />
 lift. <break time="1.2s" />
 marked. <break time="1.2s" />
@@ -2558,7 +2768,14 @@ immigration. <break time="1.2s" />
 impressive. <break time="1.2s" />
 recognition. <break time="1.2s" />
 thin. <break time="1.2s" />
-CEO. <break time="1.2s" />
+CEO.
+```
+
+## lv3_0091-0120（単語 Lv3 No.91〜120・30語・909文字）
+
+保存するファイル名：`lv3_0091-0120.mp3`
+
+```
 bound. <break time="1.2s" />
 elsewhere. <break time="1.2s" />
 founder. <break time="1.2s" />
@@ -2568,14 +2785,7 @@ qualified. <break time="1.2s" />
 soldier. <break time="1.2s" />
 thick. <break time="1.2s" />
 violent. <break time="1.2s" />
-alongside.
-```
-
-## lv3_0101-0150（単語 Lv3 No.101〜150・50語・1536文字）
-
-保存するファイル名：`lv3_0101-0150.mp3`
-
-```
+alongside. <break time="1.2s" />
 anxiety. <break time="1.2s" />
 castle. <break time="1.2s" />
 mystery. <break time="1.2s" />
@@ -2595,7 +2805,14 @@ electricity. <break time="1.2s" />
 label. <break time="1.2s" />
 pitch. <break time="1.2s" />
 anger. <break time="1.2s" />
-behalf. <break time="1.2s" />
+behalf.
+```
+
+## lv3_0121-0150（単語 Lv3 No.121〜150・30語・915文字）
+
+保存するファイル名：`lv3_0121-0150.mp3`
+
+```
 ceremony. <break time="1.2s" />
 electrical. <break time="1.2s" />
 establishment. <break time="1.2s" />
@@ -2628,9 +2845,9 @@ mill. <break time="1.2s" />
 passenger.
 ```
 
-## lv3_0151-0200（単語 Lv3 No.151〜200・50語・1550文字）
+## lv3_0151-0180（単語 Lv3 No.151〜180・30語・926文字）
 
-保存するファイル名：`lv3_0151-0200.mp3`
+保存するファイル名：`lv3_0151-0180.mp3`
 
 ```
 possession. <break time="1.2s" />
@@ -2662,7 +2879,14 @@ ought. <break time="1.2s" />
 removal. <break time="1.2s" />
 screaming. <break time="1.2s" />
 absence. <break time="1.2s" />
-agricultural. <break time="1.2s" />
+agricultural.
+```
+
+## lv3_0181-0210（単語 Lv3 No.181〜210・30語・926文字）
+
+保存するファイル名：`lv3_0181-0210.mp3`
+
+```
 contribution. <break time="1.2s" />
 genetic. <break time="1.2s" />
 instant. <break time="1.2s" />
@@ -2682,14 +2906,7 @@ guidance. <break time="1.2s" />
 infection. <break time="1.2s" />
 intention. <break time="1.2s" />
 knee. <break time="1.2s" />
-mechanical.
-```
-
-## lv3_0201-0250（単語 Lv3 No.201〜250・50語・1545文字）
-
-保存するファイル名：`lv3_0201-0250.mp3`
-
-```
+mechanical. <break time="1.2s" />
 participation. <break time="1.2s" />
 premium. <break time="1.2s" />
 uniform. <break time="1.2s" />
@@ -2699,7 +2916,14 @@ complaint. <break time="1.2s" />
 nursing. <break time="1.2s" />
 preparation. <break time="1.2s" />
 underground. <break time="1.2s" />
-versus. <break time="1.2s" />
+versus.
+```
+
+## lv3_0211-0240（単語 Lv3 No.211〜240・30語・910文字）
+
+保存するファイル名：`lv3_0211-0240.mp3`
+
+```
 bite. <break time="1.2s" />
 chip. <break time="1.2s" />
 dynamic. <break time="1.2s" />
@@ -2729,7 +2953,14 @@ experimental. <break time="1.2s" />
 filter. <break time="1.2s" />
 odds. <break time="1.2s" />
 pin. <break time="1.2s" />
-prevention. <break time="1.2s" />
+prevention.
+```
+
+## lv3_0241-0270（単語 Lv3 No.241〜270・30語・904文字）
+
+保存するファイル名：`lv3_0241-0270.mp3`
+
+```
 pump. <break time="1.2s" />
 revenge. <break time="1.2s" />
 slip. <break time="1.2s" />
@@ -2739,14 +2970,7 @@ frequent. <break time="1.2s" />
 mechanism. <break time="1.2s" />
 tune. <break time="1.2s" />
 classical. <break time="1.2s" />
-mainstream.
-```
-
-## lv3_0251-0300（単語 Lv3 No.251〜300・50語・1523文字）
-
-保存するファイル名：`lv3_0251-0300.mp3`
-
-```
+mainstream. <break time="1.2s" />
 brick. <break time="1.2s" />
 lonely. <break time="1.2s" />
 signature. <break time="1.2s" />
@@ -2766,7 +2990,14 @@ excess. <break time="1.2s" />
 gradually. <break time="1.2s" />
 sink. <break time="1.2s" />
 skip. <break time="1.2s" />
-bug. <break time="1.2s" />
+bug.
+```
+
+## lv3_0271-0300（単語 Lv3 No.271〜300・30語・906文字）
+
+保存するファイル名：`lv3_0271-0300.mp3`
+
+```
 diagnosis. <break time="1.2s" />
 occupation. <break time="1.2s" />
 striking. <break time="1.2s" />
@@ -2799,9 +3030,9 @@ mild. <break time="1.2s" />
 neighbor.
 ```
 
-## lv3_0301-0350（単語 Lv3 No.301〜350・50語・1539文字）
+## lv3_0301-0330（単語 Lv3 No.301〜330・30語・905文字）
 
-保存するファイル名：`lv3_0301-0350.mp3`
+保存するファイル名：`lv3_0301-0330.mp3`
 
 ```
 witch. <break time="1.2s" />
@@ -2833,7 +3064,14 @@ nephew. <break time="1.2s" />
 voluntary. <break time="1.2s" />
 chin. <break time="1.2s" />
 disposal. <break time="1.2s" />
-lottery. <break time="1.2s" />
+lottery.
+```
+
+## lv3_0331-0360（単語 Lv3 No.331〜360・30語・921文字）
+
+保存するファイル名：`lv3_0331-0360.mp3`
+
+```
 publicity. <break time="1.2s" />
 evident. <break time="1.2s" />
 injection. <break time="1.2s" />
@@ -2853,14 +3091,7 @@ affection. <break time="1.2s" />
 delegation. <break time="1.2s" />
 demographic. <break time="1.2s" />
 educate. <break time="1.2s" />
-inequality.
-```
-
-## lv3_0351-0400（単語 Lv3 No.351〜400・50語・1544文字）
-
-保存するファイル名：`lv3_0351-0400.mp3`
-
-```
+inequality. <break time="1.2s" />
 lend. <break time="1.2s" />
 manuscript. <break time="1.2s" />
 outline. <break time="1.2s" />
@@ -2870,7 +3101,14 @@ glow. <break time="1.2s" />
 refuge. <break time="1.2s" />
 horizontal. <break time="1.2s" />
 hostage. <break time="1.2s" />
-literacy. <break time="1.2s" />
+literacy.
+```
+
+## lv3_0361-0390（単語 Lv3 No.361〜390・30語・919文字）
+
+保存するファイル名：`lv3_0361-0390.mp3`
+
+```
 misleading. <break time="1.2s" />
 mortality. <break time="1.2s" />
 petroleum. <break time="1.2s" />
@@ -2900,7 +3138,14 @@ autonomous. <break time="1.2s" />
 carriage. <break time="1.2s" />
 clarify. <break time="1.2s" />
 spinal. <break time="1.2s" />
-undergraduate. <break time="1.2s" />
+undergraduate.
+```
+
+## lv3_0391-0420（単語 Lv3 No.391〜420・30語・929文字）
+
+保存するファイル名：`lv3_0391-0420.mp3`
+
+```
 analyze. <break time="1.2s" />
 exile. <break time="1.2s" />
 synthesis. <break time="1.2s" />
@@ -2910,14 +3155,7 @@ livestock. <break time="1.2s" />
 naughty. <break time="1.2s" />
 reef. <break time="1.2s" />
 accidental. <break time="1.2s" />
-addicted.
-```
-
-## lv3_0401-0450（単語 Lv3 No.401〜450・50語・1552文字）
-
-保存するファイル名：`lv3_0401-0450.mp3`
-
-```
+addicted. <break time="1.2s" />
 deliberate. <break time="1.2s" />
 drift. <break time="1.2s" />
 geological. <break time="1.2s" />
@@ -2937,7 +3175,14 @@ flush. <break time="1.2s" />
 luggage. <break time="1.2s" />
 unpleasant. <break time="1.2s" />
 imaginary. <break time="1.2s" />
-patriotic. <break time="1.2s" />
+patriotic.
+```
+
+## lv3_0421-0450（単語 Lv3 No.421〜450・30語・915文字）
+
+保存するファイル名：`lv3_0421-0450.mp3`
+
+```
 probable. <break time="1.2s" />
 subjective. <break time="1.2s" />
 apparatus. <break time="1.2s" />
@@ -2970,9 +3215,9 @@ potent. <break time="1.2s" />
 rust.
 ```
 
-## lv3_0451-0500（単語 Lv3 No.451〜500・50語・1541文字）
+## lv3_0451-0479（単語 Lv3 No.451〜479・29語・889文字）
 
-保存するファイル名：`lv3_0451-0500.mp3`
+保存するファイル名：`lv3_0451-0479.mp3`
 
 ```
 stray. <break time="1.2s" />
@@ -3003,7 +3248,14 @@ lump. <break time="1.2s" />
 masculine. <break time="1.2s" />
 compulsory. <break time="1.2s" />
 emission. <break time="1.2s" />
-millennium. <break time="1.2s" />
+millennium.
+```
+
+## lv3_0480-0508（単語 Lv3 No.480〜508・29語・873文字）
+
+保存するファイル名：`lv3_0480-0508.mp3`
+
+```
 overlap. <break time="1.2s" />
 psychiatrist. <break time="1.2s" />
 stain. <break time="1.2s" />
@@ -3024,14 +3276,7 @@ govern. <break time="1.2s" />
 lag. <break time="1.2s" />
 lure. <break time="1.2s" />
 sane. <break time="1.2s" />
-verge.
-```
-
-## lv3_0501-0550（単語 Lv3 No.501〜550・50語・1546文字）
-
-保存するファイル名：`lv3_0501-0550.mp3`
-
-```
+verge. <break time="1.2s" />
 advertise. <break time="1.2s" />
 chew. <break time="1.2s" />
 congestion. <break time="1.2s" />
@@ -3039,7 +3284,14 @@ erase. <break time="1.2s" />
 extinct. <break time="1.2s" />
 knit. <break time="1.2s" />
 maternity. <break time="1.2s" />
-spur. <break time="1.2s" />
+spur.
+```
+
+## lv3_0509-0537（単語 Lv3 No.509〜537・29語・899文字）
+
+保存するファイル名：`lv3_0509-0537.mp3`
+
+```
 tangible. <break time="1.2s" />
 anthropology. <break time="1.2s" />
 intervene. <break time="1.2s" />
@@ -3068,7 +3320,14 @@ refrigerator. <break time="1.2s" />
 utmost. <break time="1.2s" />
 agony. <break time="1.2s" />
 allergy. <break time="1.2s" />
-isolate. <break time="1.2s" />
+isolate.
+```
+
+## lv3_0538-0566（単語 Lv3 No.538〜566・29語・885文字）
+
+保存するファイル名：`lv3_0538-0566.mp3`
+
+```
 meadow. <break time="1.2s" />
 restless. <break time="1.2s" />
 browse. <break time="1.2s" />
@@ -3081,14 +3340,7 @@ contagious. <break time="1.2s" />
 orphan. <break time="1.2s" />
 adhere. <break time="1.2s" />
 archaeology. <break time="1.2s" />
-dwell.
-```
-
-## lv3_0551-0600（単語 Lv3 No.551〜600・50語・1541文字）
-
-保存するファイル名：`lv3_0551-0600.mp3`
-
-```
+dwell. <break time="1.2s" />
 invent. <break time="1.2s" />
 asteroid. <break time="1.2s" />
 catastrophe. <break time="1.2s" />
@@ -3104,7 +3356,14 @@ ethic. <break time="1.2s" />
 haunt. <break time="1.2s" />
 indulge. <break time="1.2s" />
 simultaneous. <break time="1.2s" />
-encyclopedia. <break time="1.2s" />
+encyclopedia.
+```
+
+## lv3_0567-0595（単語 Lv3 No.567〜595・29語・882文字）
+
+保存するファイル名：`lv3_0567-0595.mp3`
+
+```
 tyranny. <break time="1.2s" />
 antibiotic. <break time="1.2s" />
 multiply. <break time="1.2s" />
@@ -3133,19 +3392,19 @@ ingenious. <break time="1.2s" />
 inflict. <break time="1.2s" />
 inhibit. <break time="1.2s" />
 allocate. <break time="1.2s" />
-linger. <break time="1.2s" />
+linger.
+```
+
+## lv3_0596-0624（単語 Lv3 No.596〜624・29語・881文字）
+
+保存するファイル名：`lv3_0596-0624.mp3`
+
+```
 enrich. <break time="1.2s" />
 shrug. <break time="1.2s" />
 proficient. <break time="1.2s" />
 recite. <break time="1.2s" />
-flatter.
-```
-
-## lv3_0601-0650（単語 Lv3 No.601〜650・50語・1543文字）
-
-保存するファイル名：`lv3_0601-0650.mp3`
-
-```
+flatter. <break time="1.2s" />
 proclaim. <break time="1.2s" />
 equator. <break time="1.2s" />
 emit. <break time="1.2s" />
@@ -3169,7 +3428,14 @@ embody. <break time="1.2s" />
 anthropologist. <break time="1.2s" />
 infer. <break time="1.2s" />
 neuron. <break time="1.2s" />
-chore. <break time="1.2s" />
+chore.
+```
+
+## lv3_0625-0653（単語 Lv3 No.625〜653・29語・889文字）
+
+保存するファイル名：`lv3_0625-0653.mp3`
+
+```
 deteriorate. <break time="1.2s" />
 overwhelm. <break time="1.2s" />
 cram. <break time="1.2s" />
@@ -3195,22 +3461,15 @@ nourish. <break time="1.2s" />
 oppress. <break time="1.2s" />
 contaminate. <break time="1.2s" />
 punctual. <break time="1.2s" />
-startle.
-```
-
-## lv3_0651-0653（単語 Lv3 No.651〜653・3語・73文字）
-
-保存するファイル名：`lv3_0651-0653.mp3`
-
-```
+startle. <break time="1.2s" />
 microbe. <break time="1.2s" />
 fascinate. <break time="1.2s" />
 astonish.
 ```
 
-## lv4_0001-0050（単語 Lv4 No.1〜50・50語・1575文字）
+## lv4_0001-0030（単語 Lv4 No.1〜30・30語・936文字）
 
-保存するファイル名：`lv4_0001-0050.mp3`
+保存するファイル名：`lv4_0001-0030.mp3`
 
 ```
 acceptable. <break time="1.2s" />
@@ -3242,7 +3501,14 @@ invasion. <break time="1.2s" />
 palm. <break time="1.2s" />
 rubber. <break time="1.2s" />
 serial. <break time="1.2s" />
-subsequently. <break time="1.2s" />
+subsequently.
+```
+
+## lv4_0031-0060（単語 Lv4 No.31〜60・30語・930文字）
+
+保存するファイル名：`lv4_0031-0060.mp3`
+
+```
 accidentally. <break time="1.2s" />
 affordable. <break time="1.2s" />
 amateur. <break time="1.2s" />
@@ -3262,14 +3528,7 @@ identical. <break time="1.2s" />
 legally. <break time="1.2s" />
 nonsense. <break time="1.2s" />
 slavery. <break time="1.2s" />
-developer.
-```
-
-## lv4_0051-0100（単語 Lv4 No.51〜100・50語・1565文字）
-
-保存するファイル名：`lv4_0051-0100.mp3`
-
-```
+developer. <break time="1.2s" />
 flip. <break time="1.2s" />
 precisely. <break time="1.2s" />
 prisoner. <break time="1.2s" />
@@ -3279,7 +3538,14 @@ Christianity. <break time="1.2s" />
 blade. <break time="1.2s" />
 coastal. <break time="1.2s" />
 ethics. <break time="1.2s" />
-exploration. <break time="1.2s" />
+exploration.
+```
+
+## lv4_0061-0090（単語 Lv4 No.61〜90・30語・919文字）
+
+保存するファイル名：`lv4_0061-0090.mp3`
+
+```
 overnight. <break time="1.2s" />
 respective. <break time="1.2s" />
 sustainable. <break time="1.2s" />
@@ -3309,7 +3575,14 @@ tweet. <break time="1.2s" />
 acceptance. <break time="1.2s" />
 ash. <break time="1.2s" />
 deadly. <break time="1.2s" />
-marvel. <break time="1.2s" />
+marvel.
+```
+
+## lv4_0091-0120（単語 Lv4 No.91〜120・30語・956文字）
+
+保存するファイル名：`lv4_0091-0120.mp3`
+
+```
 realistic. <break time="1.2s" />
 satisfaction. <break time="1.2s" />
 strictly. <break time="1.2s" />
@@ -3319,14 +3592,7 @@ addiction. <break time="1.2s" />
 binding. <break time="1.2s" />
 encouraging. <break time="1.2s" />
 hurry. <break time="1.2s" />
-inflation.
-```
-
-## lv4_0101-0150（単語 Lv4 No.101〜150・50語・1564文字）
-
-保存するファイル名：`lv4_0101-0150.mp3`
-
-```
+inflation. <break time="1.2s" />
 inspection. <break time="1.2s" />
 logical. <break time="1.2s" />
 meaningful. <break time="1.2s" />
@@ -3346,7 +3612,14 @@ reminder. <break time="1.2s" />
 closure. <break time="1.2s" />
 diplomatic. <break time="1.2s" />
 minimal. <break time="1.2s" />
-preference. <break time="1.2s" />
+preference.
+```
+
+## lv4_0121-0150（単語 Lv4 No.121〜150・30語・917文字）
+
+保存するファイル名：`lv4_0121-0150.mp3`
+
+```
 promising. <break time="1.2s" />
 citizenship. <break time="1.2s" />
 cliff. <break time="1.2s" />
@@ -3379,9 +3652,9 @@ testament. <break time="1.2s" />
 toe.
 ```
 
-## lv4_0151-0200（単語 Lv4 No.151〜200・50語・1551文字）
+## lv4_0151-0180（単語 Lv4 No.151〜180・30語・927文字）
 
-保存するファイル名：`lv4_0151-0200.mp3`
+保存するファイル名：`lv4_0151-0180.mp3`
 
 ```
 accommodation. <break time="1.2s" />
@@ -3413,7 +3686,14 @@ trunk. <break time="1.2s" />
 algorithm. <break time="1.2s" />
 axis. <break time="1.2s" />
 equation. <break time="1.2s" />
-fusion. <break time="1.2s" />
+fusion.
+```
+
+## lv4_0181-0210（単語 Lv4 No.181〜210・30語・922文字）
+
+保存するファイル名：`lv4_0181-0210.mp3`
+
+```
 gauge. <break time="1.2s" />
 gut. <break time="1.2s" />
 isolation. <break time="1.2s" />
@@ -3433,14 +3713,7 @@ prescription. <break time="1.2s" />
 Mediterranean. <break time="1.2s" />
 affiliate. <break time="1.2s" />
 asylum. <break time="1.2s" />
-barn.
-```
-
-## lv4_0201-0250（単語 Lv4 No.201〜250・50語・1540文字）
-
-保存するファイル名：`lv4_0201-0250.mp3`
-
-```
+barn. <break time="1.2s" />
 clause. <break time="1.2s" />
 dock. <break time="1.2s" />
 facilitate. <break time="1.2s" />
@@ -3450,7 +3723,14 @@ spark. <break time="1.2s" />
 successor. <break time="1.2s" />
 uncertain. <break time="1.2s" />
 whatsoever. <break time="1.2s" />
-irrelevant. <break time="1.2s" />
+irrelevant.
+```
+
+## lv4_0211-0240（単語 Lv4 No.211〜240・30語・914文字）
+
+保存するファイル名：`lv4_0211-0240.mp3`
+
+```
 jaw. <break time="1.2s" />
 lawn. <break time="1.2s" />
 needle. <break time="1.2s" />
@@ -3480,7 +3760,14 @@ reservation. <break time="1.2s" />
 salvation. <break time="1.2s" />
 synthetic. <break time="1.2s" />
 automobile. <break time="1.2s" />
-consequently. <break time="1.2s" />
+consequently.
+```
+
+## lv4_0241-0270（単語 Lv4 No.241〜270・30語・902文字）
+
+保存するファイル名：`lv4_0241-0270.mp3`
+
+```
 refund. <break time="1.2s" />
 robust. <break time="1.2s" />
 thrilled. <break time="1.2s" />
@@ -3490,14 +3777,7 @@ inability. <break time="1.2s" />
 jar. <break time="1.2s" />
 mentor. <break time="1.2s" />
 merchandise. <break time="1.2s" />
-monk.
-```
-
-## lv4_0251-0300（単語 Lv4 No.251〜300・50語・1559文字）
-
-保存するファイル名：`lv4_0251-0300.mp3`
-
-```
+monk. <break time="1.2s" />
 gratitude. <break time="1.2s" />
 velocity. <break time="1.2s" />
 alcoholic. <break time="1.2s" />
@@ -3517,7 +3797,14 @@ persistent. <break time="1.2s" />
 slope. <break time="1.2s" />
 dislike. <break time="1.2s" />
 fist. <break time="1.2s" />
-midst. <break time="1.2s" />
+midst.
+```
+
+## lv4_0271-0300（単語 Lv4 No.271〜300・30語・939文字）
+
+保存するファイル名：`lv4_0271-0300.mp3`
+
+```
 nursery. <break time="1.2s" />
 sharply. <break time="1.2s" />
 attachment. <break time="1.2s" />
@@ -3550,9 +3837,9 @@ desirable. <break time="1.2s" />
 diagram.
 ```
 
-## lv4_0301-0350（単語 Lv4 No.301〜350・50語・1579文字）
+## lv4_0301-0330（単語 Lv4 No.301〜330・30語・948文字）
 
-保存するファイル名：`lv4_0301-0350.mp3`
+保存するファイル名：`lv4_0301-0330.mp3`
 
 ```
 favorable. <break time="1.2s" />
@@ -3584,7 +3871,14 @@ inadequate. <break time="1.2s" />
 intentionally. <break time="1.2s" />
 methodology. <break time="1.2s" />
 pardon. <break time="1.2s" />
-Protestant. <break time="1.2s" />
+Protestant.
+```
+
+## lv4_0331-0360（単語 Lv4 No.331〜360・30語・936文字）
+
+保存するファイル名：`lv4_0331-0360.mp3`
+
+```
 dioxide. <break time="1.2s" />
 awe. <break time="1.2s" />
 coffin. <break time="1.2s" />
@@ -3604,14 +3898,7 @@ oppression. <break time="1.2s" />
 stall. <break time="1.2s" />
 vendor. <break time="1.2s" />
 aboriginal. <break time="1.2s" />
-cosmic.
-```
-
-## lv4_0351-0400（単語 Lv4 No.351〜400・50語・1573文字）
-
-保存するファイル名：`lv4_0351-0400.mp3`
-
-```
+cosmic. <break time="1.2s" />
 definite. <break time="1.2s" />
 ecosystem. <break time="1.2s" />
 invalid. <break time="1.2s" />
@@ -3621,7 +3908,14 @@ specify. <break time="1.2s" />
 visibility. <break time="1.2s" />
 conquest. <break time="1.2s" />
 doomed. <break time="1.2s" />
-insufficient. <break time="1.2s" />
+insufficient.
+```
+
+## lv4_0361-0390（単語 Lv4 No.361〜390・30語・922文字）
+
+保存するファイル名：`lv4_0361-0390.mp3`
+
+```
 pathway. <break time="1.2s" />
 vegetation. <break time="1.2s" />
 worm. <break time="1.2s" />
@@ -3651,7 +3945,14 @@ rightly. <break time="1.2s" />
 shrine. <break time="1.2s" />
 thigh. <break time="1.2s" />
 bilateral. <break time="1.2s" />
-cholesterol. <break time="1.2s" />
+cholesterol.
+```
+
+## lv4_0391-0419（単語 Lv4 No.391〜419・29語・882文字）
+
+保存するファイル名：`lv4_0391-0419.mp3`
+
+```
 feasible. <break time="1.2s" />
 knot. <break time="1.2s" />
 verb. <break time="1.2s" />
@@ -3661,14 +3962,7 @@ energetic. <break time="1.2s" />
 respectable. <break time="1.2s" />
 slack. <break time="1.2s" />
 apprentice. <break time="1.2s" />
-contaminated.
-```
-
-## lv4_0401-0450（単語 Lv4 No.401〜450・50語・1538文字）
-
-保存するファイル名：`lv4_0401-0450.mp3`
-
-```
+contaminated. <break time="1.2s" />
 crust. <break time="1.2s" />
 daring. <break time="1.2s" />
 delegate. <break time="1.2s" />
@@ -3687,7 +3981,14 @@ sophomore. <break time="1.2s" />
 stigma. <break time="1.2s" />
 clone. <break time="1.2s" />
 ignition. <break time="1.2s" />
-impaired. <break time="1.2s" />
+impaired.
+```
+
+## lv4_0420-0448（単語 Lv4 No.420〜448・29語・895文字）
+
+保存するファイル名：`lv4_0420-0448.mp3`
+
+```
 ransom. <break time="1.2s" />
 rehearsal. <break time="1.2s" />
 scenery. <break time="1.2s" />
@@ -3716,16 +4017,16 @@ artery. <break time="1.2s" />
 discomfort. <break time="1.2s" />
 drastically. <break time="1.2s" />
 exemption. <break time="1.2s" />
-hypocrisy. <break time="1.2s" />
+hypocrisy.
+```
+
+## lv4_0449-0477（単語 Lv4 No.449〜477・29語・883文字）
+
+保存するファイル名：`lv4_0449-0477.mp3`
+
+```
 inaccurate. <break time="1.2s" />
-kin.
-```
-
-## lv4_0451-0500（単語 Lv4 No.451〜500・50語・1576文字）
-
-保存するファイル名：`lv4_0451-0500.mp3`
-
-```
+kin. <break time="1.2s" />
 maze. <break time="1.2s" />
 refresh. <break time="1.2s" />
 ruthless. <break time="1.2s" />
@@ -3752,7 +4053,14 @@ maximize. <break time="1.2s" />
 aquatic. <break time="1.2s" />
 beforehand. <break time="1.2s" />
 faulty. <break time="1.2s" />
-humane. <break time="1.2s" />
+humane.
+```
+
+## lv4_0478-0506（単語 Lv4 No.478〜506・29語・925文字）
+
+保存するファイル名：`lv4_0478-0506.mp3`
+
+```
 rectangular. <break time="1.2s" />
 wrecked. <break time="1.2s" />
 courthouse. <break time="1.2s" />
@@ -3775,20 +4083,20 @@ overhaul. <break time="1.2s" />
 patriotism. <break time="1.2s" />
 periodically. <break time="1.2s" />
 redundant. <break time="1.2s" />
-slender.
-```
-
-## lv4_0501-0550（単語 Lv4 No.501〜550・50語・1591文字）
-
-保存するファイル名：`lv4_0501-0550.mp3`
-
-```
+slender. <break time="1.2s" />
 competence. <break time="1.2s" />
 improper. <break time="1.2s" />
 influx. <break time="1.2s" />
 tolerant. <break time="1.2s" />
 affirmative. <break time="1.2s" />
-autopsy. <break time="1.2s" />
+autopsy.
+```
+
+## lv4_0507-0535（単語 Lv4 No.507〜535・29語・911文字）
+
+保存するファイル名：`lv4_0507-0535.mp3`
+
+```
 blockade. <break time="1.2s" />
 metropolis. <break time="1.2s" />
 mummy. <break time="1.2s" />
@@ -3817,7 +4125,14 @@ plural. <break time="1.2s" />
 rag. <break time="1.2s" />
 replicate. <break time="1.2s" />
 slang. <break time="1.2s" />
-uneven. <break time="1.2s" />
+uneven.
+```
+
+## lv4_0536-0564（単語 Lv4 No.536〜564・29語・900文字）
+
+保存するファイル名：`lv4_0536-0564.mp3`
+
+```
 administer. <break time="1.2s" />
 articulate. <break time="1.2s" />
 clap. <break time="1.2s" />
@@ -3832,14 +4147,7 @@ waterfall. <break time="1.2s" />
 celestial. <break time="1.2s" />
 conversely. <break time="1.2s" />
 evacuate. <break time="1.2s" />
-fragrance.
-```
-
-## lv4_0551-0600（単語 Lv4 No.551〜600・50語・1568文字）
-
-保存するファイル名：`lv4_0551-0600.mp3`
-
-```
+fragrance. <break time="1.2s" />
 knowledgeable. <break time="1.2s" />
 marvelous. <break time="1.2s" />
 numb. <break time="1.2s" />
@@ -3853,7 +4161,14 @@ alleviate. <break time="1.2s" />
 anarchy. <break time="1.2s" />
 bilingual. <break time="1.2s" />
 chuckle. <break time="1.2s" />
-dependency. <break time="1.2s" />
+dependency.
+```
+
+## lv4_0565-0593（単語 Lv4 No.565〜593・29語・915文字）
+
+保存するファイル名：`lv4_0565-0593.mp3`
+
+```
 doubtful. <break time="1.2s" />
 eruption. <break time="1.2s" />
 subscriber. <break time="1.2s" />
@@ -3882,21 +4197,21 @@ botanical. <break time="1.2s" />
 disadvantaged. <break time="1.2s" />
 enlightened. <break time="1.2s" />
 expectancy. <break time="1.2s" />
-fingerprint. <break time="1.2s" />
+fingerprint.
+```
+
+## lv4_0594-0622（単語 Lv4 No.594〜622・29語・915文字）
+
+保存するファイル名：`lv4_0594-0622.mp3`
+
+```
 flap. <break time="1.2s" />
 intellect. <break time="1.2s" />
 lapse. <break time="1.2s" />
 mimic. <break time="1.2s" />
 tariff. <break time="1.2s" />
 unconditional. <break time="1.2s" />
-weaken.
-```
-
-## lv4_0601-0650（単語 Lv4 No.601〜650・50語・1582文字）
-
-保存するファイル名：`lv4_0601-0650.mp3`
-
-```
+weaken. <break time="1.2s" />
 admirable. <break time="1.2s" />
 commencement. <break time="1.2s" />
 converse. <break time="1.2s" />
@@ -3918,7 +4233,14 @@ disconnect. <break time="1.2s" />
 game-changer. <break time="1.2s" />
 globalization. <break time="1.2s" />
 imbalance. <break time="1.2s" />
-plight. <break time="1.2s" />
+plight.
+```
+
+## lv4_0623-0651（単語 Lv4 No.623〜651・29語・890文字）
+
+保存するファイル名：`lv4_0623-0651.mp3`
+
+```
 rejoice. <break time="1.2s" />
 simplify. <break time="1.2s" />
 stalk. <break time="1.2s" />
@@ -3946,15 +4268,15 @@ discreet. <break time="1.2s" />
 offending. <break time="1.2s" />
 posterior. <break time="1.2s" />
 proficiency. <break time="1.2s" />
-stale.
+stale. <break time="1.2s" />
+stride.
 ```
 
-## lv4_0651-0700（単語 Lv4 No.651〜700・50語・1558文字）
+## lv4_0652-0680（単語 Lv4 No.652〜680・29語・900文字）
 
-保存するファイル名：`lv4_0651-0700.mp3`
+保存するファイル名：`lv4_0652-0680.mp3`
 
 ```
-stride. <break time="1.2s" />
 upbringing. <break time="1.2s" />
 brute. <break time="1.2s" />
 cowardly. <break time="1.2s" />
@@ -3983,7 +4305,14 @@ culprit. <break time="1.2s" />
 leftover. <break time="1.2s" />
 ominous. <break time="1.2s" />
 precaution. <break time="1.2s" />
-scrape. <break time="1.2s" />
+scrape.
+```
+
+## lv4_0681-0709（単語 Lv4 No.681〜709・29語・890文字）
+
+保存するファイル名：`lv4_0681-0709.mp3`
+
+```
 counterfeit. <break time="1.2s" />
 evade. <break time="1.2s" />
 futile. <break time="1.2s" />
@@ -4003,14 +4332,7 @@ conserve. <break time="1.2s" />
 discontent. <break time="1.2s" />
 enlist. <break time="1.2s" />
 eyebrow. <break time="1.2s" />
-haste.
-```
-
-## lv4_0701-0750（単語 Lv4 No.701〜750・50語・1583文字）
-
-保存するファイル名：`lv4_0701-0750.mp3`
-
-```
+haste. <break time="1.2s" />
 inclination. <break time="1.2s" />
 interpersonal. <break time="1.2s" />
 lessen. <break time="1.2s" />
@@ -4019,7 +4341,14 @@ setback. <break time="1.2s" />
 undone. <break time="1.2s" />
 vending. <break time="1.2s" />
 weep. <break time="1.2s" />
-feudal. <break time="1.2s" />
+feudal.
+```
+
+## lv4_0710-0738（単語 Lv4 No.710〜738・29語・915文字）
+
+保存するファイル名：`lv4_0710-0738.mp3`
+
+```
 modernization. <break time="1.2s" />
 pertinent. <break time="1.2s" />
 plentiful. <break time="1.2s" />
@@ -4048,7 +4377,14 @@ frantic. <break time="1.2s" />
 glide. <break time="1.2s" />
 hectic. <break time="1.2s" />
 holistic. <break time="1.2s" />
-inhabit. <break time="1.2s" />
+inhabit.
+```
+
+## lv4_0739-0767（単語 Lv4 No.739〜767・29語・905文字）
+
+保存するファイル名：`lv4_0739-0767.mp3`
+
+```
 mend. <break time="1.2s" />
 scarcely. <break time="1.2s" />
 temperate. <break time="1.2s" />
@@ -4060,14 +4396,7 @@ perish. <break time="1.2s" />
 supervise. <break time="1.2s" />
 dehydration. <break time="1.2s" />
 instruct. <break time="1.2s" />
-aspiration.
-```
-
-## lv4_0751-0800（単語 Lv4 No.751〜800・50語・1573文字）
-
-保存するファイル名：`lv4_0751-0800.mp3`
-
-```
+aspiration. <break time="1.2s" />
 attentive. <break time="1.2s" />
 broaden. <break time="1.2s" />
 bulky. <break time="1.2s" />
@@ -4084,7 +4413,14 @@ retrospect. <break time="1.2s" />
 constraint. <break time="1.2s" />
 degrade. <break time="1.2s" />
 diffuse. <break time="1.2s" />
-harass. <break time="1.2s" />
+harass.
+```
+
+## lv4_0768-0796（単語 Lv4 No.768〜796・29語・902文字）
+
+保存するファイル名：`lv4_0768-0796.mp3`
+
+```
 impractical. <break time="1.2s" />
 recollection. <break time="1.2s" />
 shabby. <break time="1.2s" />
@@ -4113,18 +4449,18 @@ reptile. <break time="1.2s" />
 liberate. <break time="1.2s" />
 loophole. <break time="1.2s" />
 malnutrition. <break time="1.2s" />
-recurrent. <break time="1.2s" />
+recurrent.
+```
+
+## lv4_0797-0825（単語 Lv4 No.797〜825・29語・887文字）
+
+保存するファイル名：`lv4_0797-0825.mp3`
+
+```
 shun. <break time="1.2s" />
 converge. <break time="1.2s" />
 formulate. <break time="1.2s" />
-itinerary.
-```
-
-## lv4_0801-0850（単語 Lv4 No.801〜850・50語・1555文字）
-
-保存するファイル名：`lv4_0801-0850.mp3`
-
-```
+itinerary. <break time="1.2s" />
 puncture. <break time="1.2s" />
 bathe. <break time="1.2s" />
 calamity. <break time="1.2s" />
@@ -4149,7 +4485,14 @@ detour. <break time="1.2s" />
 janitor. <break time="1.2s" />
 repel. <break time="1.2s" />
 skyscraper. <break time="1.2s" />
-vocation. <break time="1.2s" />
+vocation.
+```
+
+## lv4_0826-0854（単語 Lv4 No.826〜854・29語・904文字）
+
+保存するファイル名：`lv4_0826-0854.mp3`
+
+```
 confer. <break time="1.2s" />
 devise. <break time="1.2s" />
 downturn. <break time="1.2s" />
@@ -4174,18 +4517,18 @@ propel. <break time="1.2s" />
 socialize. <break time="1.2s" />
 uproar. <break time="1.2s" />
 contemplation. <break time="1.2s" />
-incline.
-```
-
-## lv4_0851-0900（単語 Lv4 No.851〜900・50語・1577文字）
-
-保存するファイル名：`lv4_0851-0900.mp3`
-
-```
+incline. <break time="1.2s" />
 misunderstand. <break time="1.2s" />
 outburst. <break time="1.2s" />
 proponent. <break time="1.2s" />
-animate. <break time="1.2s" />
+animate.
+```
+
+## lv4_0855-0883（単語 Lv4 No.855〜883・29語・902文字）
+
+保存するファイル名：`lv4_0855-0883.mp3`
+
+```
 furnish. <break time="1.2s" />
 refute. <break time="1.2s" />
 superstitious. <break time="1.2s" />
@@ -4214,7 +4557,14 @@ dreary. <break time="1.2s" />
 tiresome. <break time="1.2s" />
 commendable. <break time="1.2s" />
 compress. <break time="1.2s" />
-unify. <break time="1.2s" />
+unify.
+```
+
+## lv4_0884-0912（単語 Lv4 No.884〜912・29語・898文字）
+
+保存するファイル名：`lv4_0884-0912.mp3`
+
+```
 subdue. <break time="1.2s" />
 sympathize. <break time="1.2s" />
 assimilate. <break time="1.2s" />
@@ -4231,14 +4581,7 @@ atrocity. <break time="1.2s" />
 erode. <break time="1.2s" />
 innumerable. <break time="1.2s" />
 toil. <break time="1.2s" />
-vigor.
-```
-
-## lv4_0901-0950（単語 Lv4 No.901〜950・50語・1575文字）
-
-保存するファイル名：`lv4_0901-0950.mp3`
-
-```
+vigor. <break time="1.2s" />
 bystander. <break time="1.2s" />
 decode. <break time="1.2s" />
 graze. <break time="1.2s" />
@@ -4250,7 +4593,14 @@ evaporate. <break time="1.2s" />
 eyelid. <break time="1.2s" />
 legislate. <break time="1.2s" />
 blister. <break time="1.2s" />
-handout. <break time="1.2s" />
+handout.
+```
+
+## lv4_0913-0941（単語 Lv4 No.913〜941・29語・905文字）
+
+保存するファイル名：`lv4_0913-0941.mp3`
+
+```
 instill. <break time="1.2s" />
 detach. <break time="1.2s" />
 eject. <break time="1.2s" />
@@ -4279,7 +4629,14 @@ reschedule. <break time="1.2s" />
 mumble. <break time="1.2s" />
 cardiologist. <break time="1.2s" />
 botanist. <break time="1.2s" />
-emigrate. <break time="1.2s" />
+emigrate.
+```
+
+## lv4_0942-0970（単語 Lv4 No.942〜970・29語・894文字）
+
+保存するファイル名：`lv4_0942-0970.mp3`
+
+```
 fabricate. <break time="1.2s" />
 asymmetry. <break time="1.2s" />
 checkup. <break time="1.2s" />
@@ -4288,14 +4645,7 @@ populate. <break time="1.2s" />
 depress. <break time="1.2s" />
 pollute. <break time="1.2s" />
 suffocate. <break time="1.2s" />
-immeasurable.
-```
-
-## lv4_0951-1000（単語 Lv4 No.951〜1000・50語・1565文字）
-
-保存するファイル名：`lv4_0951-1000.mp3`
-
-```
+immeasurable. <break time="1.2s" />
 nosy. <break time="1.2s" />
 sprain. <break time="1.2s" />
 bureaucrat. <break time="1.2s" />
@@ -4315,7 +4665,14 @@ perishable. <break time="1.2s" />
 terrify. <break time="1.2s" />
 colonize. <break time="1.2s" />
 termite. <break time="1.2s" />
-dejected. <break time="1.2s" />
+dejected.
+```
+
+## lv4_0971-0999（単語 Lv4 No.971〜999・29語・908文字）
+
+保存するファイル名：`lv4_0971-0999.mp3`
+
+```
 dweller. <break time="1.2s" />
 intelligible. <break time="1.2s" />
 magnify. <break time="1.2s" />
@@ -4344,15 +4701,15 @@ overhear. <break time="1.2s" />
 paralyze. <break time="1.2s" />
 devastate. <break time="1.2s" />
 overwork. <break time="1.2s" />
-deflate. <break time="1.2s" />
-grimace.
+deflate.
 ```
 
-## lv4_1001-1028（単語 Lv4 No.1001〜1028・28語・875文字）
+## lv4_1000-1028（単語 Lv4 No.1000〜1028・29語・906文字）
 
-保存するファイル名：`lv4_1001-1028.mp3`
+保存するファイル名：`lv4_1000-1028.mp3`
 
 ```
+grimace. <break time="1.2s" />
 immigrate. <break time="1.2s" />
 enchant. <break time="1.2s" />
 extrovert. <break time="1.2s" />
@@ -4383,16 +4740,16 @@ bewilder. <break time="1.2s" />
 appall.
 ```
 
-## ilv1_0001-0050（熟語 Lv1 No.1〜50・50語・1686文字）
+## ilv1_0001-0030（熟語 Lv1 No.1〜30・30語・969文字）
 
-保存するファイル名：`ilv1_0001-0050.mp3`
+保存するファイル名：`ilv1_0001-0030.mp3`
 
 ```
 on and on. <break time="1.2s" />
 That is that. <break time="1.2s" />
 in that. <break time="1.2s" />
 that of. <break time="1.2s" />
-it is … that. <break time="1.2s" />
+it is — that. <break time="1.2s" />
 this and that. <break time="1.2s" />
 be to do. <break time="1.2s" />
 as for. <break time="1.2s" />
@@ -4408,57 +4765,64 @@ in all. <break time="1.2s" />
 not all that. <break time="1.2s" />
 not all. <break time="1.2s" />
 so as to do. <break time="1.2s" />
-so … that. <break time="1.2s" />
+so — that. <break time="1.2s" />
 with all. <break time="1.2s" />
 and so on. <break time="1.2s" />
-if … at all. <break time="1.2s" />
-as … as one can. <break time="1.2s" />
-so that … can do. <break time="1.2s" />
+if — at all. <break time="1.2s" />
+as — as one can. <break time="1.2s" />
+so that — can do. <break time="1.2s" />
 at will. <break time="1.2s" />
 will do. <break time="1.2s" />
 Just As, so. <break time="1.2s" />
-be about to do. <break time="1.2s" />
+be about to do.
+```
+
+## ilv1_0031-0060（熟語 Lv1 No.31〜60・30語・1028文字）
+
+保存するファイル名：`ilv1_0031-0060.mp3`
+
+```
 just about. <break time="1.2s" />
 up to. <break time="1.2s" />
-What if … ?. <break time="1.2s" />
-What … for?. <break time="1.2s" />
-What … like?. <break time="1.2s" />
+What if? <break time="1.2s" />
+What — for? <break time="1.2s" />
+What — like? <break time="1.2s" />
 be out to do. <break time="1.2s" />
 what to do. <break time="1.2s" />
-what … is. <break time="1.2s" />
+what — is. <break time="1.2s" />
 All one has to do is to do. <break time="1.2s" />
 when. <break time="1.2s" />
 what is more. <break time="1.2s" />
 If it were not for. <break time="1.2s" />
-Who is it that … ?. <break time="1.2s" />
+Who is it that? <break time="1.2s" />
 as it were. <break time="1.2s" />
 were it not for. <break time="1.2s" />
 There is no doing. <break time="1.2s" />
 which. <break time="1.2s" />
 all the time. <break time="1.2s" />
 at a time. <break time="1.2s" />
-by the time.
-```
-
-## ilv1_0051-0100（熟語 Lv1 No.51〜100・50語・1682文字）
-
-保存するファイル名：`ilv1_0051-0100.mp3`
-
-```
+by the time. <break time="1.2s" />
 from time to time. <break time="1.2s" />
 in no time. <break time="1.2s" />
 in time. <break time="1.2s" />
 in time for. <break time="1.2s" />
 it is about time. <break time="1.2s" />
 on time. <break time="1.2s" />
-the time … when. <break time="1.2s" />
+the time — when. <break time="1.2s" />
 get at. <break time="1.2s" />
 get by. <break time="1.2s" />
-get in on. <break time="1.2s" />
+get in on.
+```
+
+## ilv1_0061-0090（熟語 Lv1 No.61〜90・30語・1008文字）
+
+保存するファイル名：`ilv1_0061-0090.mp3`
+
+```
 get on with. <break time="1.2s" />
 get on. <break time="1.2s" />
 get to. <break time="1.2s" />
-How about … ?. <break time="1.2s" />
+How about? <break time="1.2s" />
 do with. <break time="1.2s" />
 by now. <break time="1.2s" />
 for now. <break time="1.2s" />
@@ -4469,8 +4833,8 @@ no more than. <break time="1.2s" />
 If only. <break time="1.2s" />
 as good as. <break time="1.2s" />
 be good at. <break time="1.2s" />
-do … good. <break time="1.2s" />
-do … good good to. <break time="1.2s" />
+do — good. <break time="1.2s" />
+do — good good to. <break time="1.2s" />
 for good. <break time="1.2s" />
 for the good of. <break time="1.2s" />
 have only to do. <break time="1.2s" />
@@ -4484,7 +4848,14 @@ the first time. <break time="1.2s" />
 for all I know. <break time="1.2s" />
 see to it that. <break time="1.2s" />
 see about doing. <break time="1.2s" />
-see about. <break time="1.2s" />
+see about.
+```
+
+## ilv1_0091-0120（熟語 Lv1 No.91〜120・30語・951文字）
+
+保存するファイル名：`ilv1_0091-0120.mp3`
+
+```
 see to. <break time="1.2s" />
 all over. <break time="1.2s" />
 get over. <break time="1.2s" />
@@ -4494,34 +4865,34 @@ make good. <break time="1.2s" />
 make it. <break time="1.2s" />
 make out. <break time="1.2s" />
 make over. <break time="1.2s" />
-make up for.
-```
-
-## ilv1_0101-0150（熟語 Lv1 No.101〜150・50語・1672文字）
-
-保存するファイル名：`ilv1_0101-0150.mp3`
-
-```
+make up for. <break time="1.2s" />
 make up. <break time="1.2s" />
-make … of A. <break time="1.2s" />
+make — of A. <break time="1.2s" />
 over. <break time="1.2s" />
 think about. <break time="1.2s" />
 think of. <break time="1.2s" />
 think over. <break time="1.2s" />
-as … as any. <break time="1.2s" />
+as — as any. <break time="1.2s" />
 if any. <break time="1.2s" />
 now and then. <break time="1.2s" />
 back on. <break time="1.2s" />
 back up. <break time="1.2s" />
 for want of. <break time="1.2s" />
 want for. <break time="1.2s" />
-as … go. <break time="1.2s" />
+as — go. <break time="1.2s" />
 because of. <break time="1.2s" />
 go about. <break time="1.2s" />
 go at. <break time="1.2s" />
 go back on. <break time="1.2s" />
 go back to. <break time="1.2s" />
-go by. <break time="1.2s" />
+go by.
+```
+
+## ilv1_0121-0150（熟語 Lv1 No.121〜150・30語・1024文字）
+
+保存するファイル名：`ilv1_0121-0150.mp3`
+
+```
 go for. <break time="1.2s" />
 go in for. <break time="1.2s" />
 go on with. <break time="1.2s" />
@@ -4554,9 +4925,9 @@ not so much as do. <break time="1.2s" />
 see much of.
 ```
 
-## ilv1_0151-0200（熟語 Lv1 No.151〜200・50語・1680文字）
+## ilv1_0151-0180（熟語 Lv1 No.151〜180・30語・997文字）
 
-保存するファイル名：`ilv1_0151-0200.mp3`
+保存するファイル名：`ilv1_0151-0180.mp3`
 
 ```
 think much of. <break time="1.2s" />
@@ -4567,7 +4938,7 @@ even if. <break time="1.2s" />
 even up. <break time="1.2s" />
 get even with. <break time="1.2s" />
 may as well do. <break time="1.2s" />
-may as well … as. <break time="1.2s" />
+may as well — as. <break time="1.2s" />
 may want to do. <break time="1.2s" />
 may well do. <break time="1.2s" />
 Here we are. <break time="1.2s" />
@@ -4580,7 +4951,7 @@ work out. <break time="1.2s" />
 all too. <break time="1.2s" />
 for the time being. <break time="1.2s" />
 only too. <break time="1.2s" />
-too … for A to do. <break time="1.2s" />
+too — for A to do. <break time="1.2s" />
 That is why. <break time="1.2s" />
 back off. <break time="1.2s" />
 be well off. <break time="1.2s" />
@@ -4588,9 +4959,16 @@ go off. <break time="1.2s" />
 make off with. <break time="1.2s" />
 see A off. <break time="1.2s" />
 see off. <break time="1.2s" />
-well off. <break time="1.2s" />
+well off.
+```
+
+## ilv1_0181-0210（熟語 Lv1 No.181〜210・30語・1055文字）
+
+保存するファイル名：`ilv1_0181-0210.mp3`
+
+```
 be made of. <break time="1.2s" />
-have … off. <break time="1.2s" />
+have — off. <break time="1.2s" />
 take after. <break time="1.2s" />
 take in. <break time="1.2s" />
 take off. <break time="1.2s" />
@@ -4608,14 +4986,7 @@ have a say in. <break time="1.2s" />
 it is not too much to say. <break time="1.2s" />
 that is to say. <break time="1.2s" />
 back down. <break time="1.2s" />
-get down to.
-```
-
-## ilv1_0201-0250（熟語 Lv1 No.201〜250・50語・1812文字）
-
-保存するファイル名：`ilv1_0201-0250.mp3`
-
-```
+get down to. <break time="1.2s" />
 take down. <break time="1.2s" />
 up and down. <break time="1.2s" />
 get through. <break time="1.2s" />
@@ -4624,13 +4995,20 @@ go through. <break time="1.2s" />
 see through. <break time="1.2s" />
 If someone had done, someone would have done. <break time="1.2s" />
 That's it. <break time="1.2s" />
-What is someone like?. <break time="1.2s" />
-be someone … or. <break time="1.2s" />
+What is someone like? <break time="1.2s" />
+be someone — or.
+```
+
+## ilv1_0211-0240（熟語 Lv1 No.211〜240・30語・1082文字）
+
+保存するファイル名：`ilv1_0211-0240.mp3`
+
+```
 for a while. <break time="1.2s" />
 if someone should. <break time="1.2s" />
 if someone were to do. <break time="1.2s" />
 so that someone will. <break time="1.2s" />
-the last … to do. <break time="1.2s" />
+the last — to do. <break time="1.2s" />
 as such. <break time="1.2s" />
 at best. <break time="1.2s" />
 do one's best. <break time="1.2s" />
@@ -4655,7 +5033,14 @@ have a look at. <break time="1.2s" />
 have a look at. <break time="1.2s" />
 long for. <break time="1.2s" />
 look after. <break time="1.2s" />
-look at. <break time="1.2s" />
+look at.
+```
+
+## ilv1_0241-0270（熟語 Lv1 No.241〜270・30語・1011文字）
+
+保存するファイル名：`ilv1_0241-0270.mp3`
+
+```
 look down on. <break time="1.2s" />
 look for. <break time="1.2s" />
 look into. <break time="1.2s" />
@@ -4663,36 +5048,36 @@ look on. <break time="1.2s" />
 look out for. <break time="1.2s" />
 look over. <break time="1.2s" />
 look to. <break time="1.2s" />
-look to … for. <break time="1.2s" />
+look to — for. <break time="1.2s" />
 look up. <break time="1.2s" />
-look up to.
-```
-
-## ilv1_0251-0300（熟語 Lv1 No.251〜300・50語・1793文字）
-
-保存するファイル名：`ilv1_0251-0300.mp3`
-
-```
+look up to. <break time="1.2s" />
 make use of. <break time="1.2s" />
 use up. <break time="1.2s" />
 all the same. <break time="1.2s" />
 all the same. <break time="1.2s" />
 be used to doing. <break time="1.2s" />
-the same … as. <break time="1.2s" />
+the same — as. <break time="1.2s" />
 used to do. <break time="1.2s" />
 used to do. <break time="1.2s" />
 every now and then. <break time="1.2s" />
 every other. <break time="1.2s" />
 every time. <break time="1.2s" />
 Come on. <break time="1.2s" />
-How come … ?. <break time="1.2s" />
+How come? <break time="1.2s" />
 come about. <break time="1.2s" />
 come after. <break time="1.2s" />
 come before. <break time="1.2s" />
 come by. <break time="1.2s" />
 come down to. <break time="1.2s" />
 come down with. <break time="1.2s" />
-come home to. <break time="1.2s" />
+come home to.
+```
+
+## ilv1_0271-0300（熟語 Lv1 No.271〜300・30語・1089文字）
+
+保存するファイル名：`ilv1_0271-0300.mp3`
+
+```
 come into being. <break time="1.2s" />
 come into. <break time="1.2s" />
 come off. <break time="1.2s" />
@@ -4725,9 +5110,9 @@ find out. <break time="1.2s" />
 get the better of.
 ```
 
-## ilv1_0301-0350（熟語 Lv1 No.301〜350・50語・1830文字）
+## ilv1_0301-0330（熟語 Lv1 No.301〜330・30語・1121文字）
 
-保存するファイル名：`ilv1_0301-0350.mp3`
+保存するファイル名：`ilv1_0301-0330.mp3`
 
 ```
 get the better of. <break time="1.2s" />
@@ -4738,7 +5123,7 @@ not always. <break time="1.2s" />
 think better of. <break time="1.2s" />
 It is high time. <break time="1.2s" />
 help oneself to. <break time="1.2s" />
-help … with. <break time="1.2s" />
+help — with. <break time="1.2s" />
 it is about time. <break time="1.2s" />
 see little of. <break time="1.2s" />
 think little of. <break time="1.2s" />
@@ -4755,11 +5140,18 @@ go under. <break time="1.2s" />
 under way. <break time="1.2s" />
 for one thing. <break time="1.2s" />
 for one thing, for another. <break time="1.2s" />
-one thing, … another. <break time="1.2s" />
+one thing, — another. <break time="1.2s" />
 give in. <break time="1.2s" />
 give in to. <break time="1.2s" />
 give off. <break time="1.2s" />
-give out. <break time="1.2s" />
+give out.
+```
+
+## ilv1_0331-0360（熟語 Lv1 No.331〜360・30語・1023文字）
+
+保存するファイル名：`ilv1_0331-0360.mp3`
+
+```
 give over. <break time="1.2s" />
 give up. <break time="1.2s" />
 give way. <break time="1.2s" />
@@ -4779,14 +5171,7 @@ each other. <break time="1.2s" />
 each time. <break time="1.2s" />
 every time. <break time="1.2s" />
 go without. <break time="1.2s" />
-never do without.
-```
-
-## ilv1_0351-0400（熟語 Lv1 No.351〜400・50語・1699文字）
-
-保存するファイル名：`ilv1_0351-0400.mp3`
-
-```
+never do without. <break time="1.2s" />
 come to an end. <break time="1.2s" />
 end up. <break time="1.2s" />
 in the end. <break time="1.2s" />
@@ -4796,11 +5181,18 @@ show up. <break time="1.2s" />
 be sure of. <break time="1.2s" />
 be sure to do. <break time="1.2s" />
 feel for. <break time="1.2s" />
-feel like doing. <break time="1.2s" />
+feel like doing.
+```
+
+## ilv1_0361-0390（熟語 Lv1 No.361〜390・30語・1010文字）
+
+保存するファイル名：`ilv1_0361-0390.mp3`
+
+```
 feel out. <break time="1.2s" />
 make sure. <break time="1.2s" />
 to be sure. <break time="1.2s" />
-as … as ever. <break time="1.2s" />
+as — as ever. <break time="1.2s" />
 if ever. <break time="1.2s" />
 keep at. <break time="1.2s" />
 keep back. <break time="1.2s" />
@@ -4809,9 +5201,9 @@ keep off. <break time="1.2s" />
 keep to. <break time="1.2s" />
 keep up. <break time="1.2s" />
 keep up with. <break time="1.2s" />
-keep … to oneself. <break time="1.2s" />
+keep — to oneself. <break time="1.2s" />
 might just as well do. <break time="1.2s" />
-might as well … as. <break time="1.2s" />
+might as well — as. <break time="1.2s" />
 put an end to. <break time="1.2s" />
 put down. <break time="1.2s" />
 put in. <break time="1.2s" />
@@ -4821,12 +5213,19 @@ put out. <break time="1.2s" />
 put through. <break time="1.2s" />
 put up with. <break time="1.2s" />
 put up. <break time="1.2s" />
-put … to use. <break time="1.2s" />
+put — to use. <break time="1.2s" />
 to put it another way. <break time="1.2s" />
 to put it. <break time="1.2s" />
 be free from. <break time="1.2s" />
 be free from. <break time="1.2s" />
-be free of. <break time="1.2s" />
+be free of.
+```
+
+## ilv1_0391-0420（熟語 Lv1 No.391〜420・30語・1043文字）
+
+保存するファイル名：`ilv1_0391-0420.mp3`
+
+```
 be free to do. <break time="1.2s" />
 feel free to do. <break time="1.2s" />
 for free. <break time="1.2s" />
@@ -4836,17 +5235,10 @@ do away with. <break time="1.2s" />
 get away with. <break time="1.2s" />
 give away. <break time="1.2s" />
 keep away from. <break time="1.2s" />
-right away.
-```
-
-## ilv1_0401-0450（熟語 Lv1 No.401〜450・50語・1762文字）
-
-保存するファイル名：`ilv1_0401-0450.mp3`
-
-```
+right away. <break time="1.2s" />
 the number of. <break time="1.2s" />
 a lot of. <break time="1.2s" />
-it is not until … that. <break time="1.2s" />
+it is not until — that. <break time="1.2s" />
 one of these days. <break time="1.2s" />
 play a part in. <break time="1.2s" />
 play down. <break time="1.2s" />
@@ -4855,15 +5247,22 @@ play up. <break time="1.2s" />
 these days. <break time="1.2s" />
 in the company of. <break time="1.2s" />
 keep company with. <break time="1.2s" />
-keep … company. <break time="1.2s" />
+keep — company. <break time="1.2s" />
 let down. <break time="1.2s" />
 let go of. <break time="1.2s" />
 let off. <break time="1.2s" />
 let out. <break time="1.2s" />
 let up. <break time="1.2s" />
-let … in. <break time="1.2s" />
+let — in. <break time="1.2s" />
 be different from. <break time="1.2s" />
-having said that. <break time="1.2s" />
+having said that.
+```
+
+## ilv1_0421-0450（熟語 Lv1 No.421〜450・30語・1048文字）
+
+保存するファイル名：`ilv1_0421-0450.mp3`
+
+```
 on second thought. <break time="1.2s" />
 on second thoughts. <break time="1.2s" />
 set about. <break time="1.2s" />
@@ -4873,7 +5272,7 @@ set off. <break time="1.2s" />
 set out. <break time="1.2s" />
 set out to do. <break time="1.2s" />
 set up. <break time="1.2s" />
-set … free. <break time="1.2s" />
+set — free. <break time="1.2s" />
 what is called. <break time="1.2s" />
 in public. <break time="1.2s" />
 on top of. <break time="1.2s" />
@@ -4890,18 +5289,18 @@ in any case. <break time="1.2s" />
 in case. <break time="1.2s" />
 in person. <break time="1.2s" />
 nothing but. <break time="1.2s" />
-nothing is as … as A. <break time="1.2s" />
+nothing is as — as A. <break time="1.2s" />
 there is nothing for it but to do. <break time="1.2s" />
 to say nothing of. <break time="1.2s" />
 just in case.
 ```
 
-## ilv1_0451-0500（熟語 Lv1 No.451〜500・50語・1731文字）
+## ilv1_0451-0480（熟語 Lv1 No.451〜480・30語・1034文字）
 
-保存するファイル名：`ilv1_0451-0500.mp3`
+保存するファイル名：`ilv1_0451-0480.mp3`
 
 ```
-enough … to go around. <break time="1.2s" />
+enough — to go around. <break time="1.2s" />
 a case in point. <break time="1.2s" />
 and yet. <break time="1.2s" />
 as yet. <break time="1.2s" />
@@ -4930,7 +5329,14 @@ once and for all. <break time="1.2s" />
 once in a while. <break time="1.2s" />
 tell off. <break time="1.2s" />
 tell on. <break time="1.2s" />
-stop over. <break time="1.2s" />
+stop over.
+```
+
+## ilv1_0481-0510（熟語 Lv1 No.481〜510・30語・1006文字）
+
+保存するファイル名：`ilv1_0481-0510.mp3`
+
+```
 stop up. <break time="1.2s" />
 water down. <break time="1.2s" />
 be based on. <break time="1.2s" />
@@ -4943,31 +5349,31 @@ call it a day. <break time="1.2s" />
 call off. <break time="1.2s" />
 call on. <break time="1.2s" />
 call up. <break time="1.2s" />
-give … a call. <break time="1.2s" />
+give — a call. <break time="1.2s" />
 head off to. <break time="1.2s" />
 head off. <break time="1.2s" />
 head out. <break time="1.2s" />
 make believe. <break time="1.2s" />
 make believe that. <break time="1.2s" />
 what we call. <break time="1.2s" />
-what we call is called.
-```
-
-## ilv1_0501-0550（熟語 Lv1 No.501〜550・50語・1726文字）
-
-保存するファイル名：`ilv1_0501-0550.mp3`
-
-```
+what we call is called. <break time="1.2s" />
 as far as. <break time="1.2s" />
 as if. <break time="1.2s" />
 as though. <break time="1.2s" />
 by far. <break time="1.2s" />
 far from. <break time="1.2s" />
-give … a try. <break time="1.2s" />
+give — a try. <break time="1.2s" />
 go so far as to do. <break time="1.2s" />
-on the … side. <break time="1.2s" />
+on the — side. <break time="1.2s" />
 so far. <break time="1.2s" />
-try on. <break time="1.2s" />
+try on.
+```
+
+## ilv1_0511-0540（熟語 Lv1 No.511〜540・30語・1039文字）
+
+保存するファイル名：`ilv1_0511-0540.mp3`
+
+```
 try out. <break time="1.2s" />
 try to do. <break time="1.2s" />
 in order. <break time="1.2s" />
@@ -4997,7 +5403,14 @@ as a whole. <break time="1.2s" />
 get together. <break time="1.2s" />
 on the whole. <break time="1.2s" />
 put together. <break time="1.2s" />
-face off. <break time="1.2s" />
+face off.
+```
+
+## ilv1_0541-0570（熟語 Lv1 No.541〜570・30語・1113文字）
+
+保存するファイル名：`ilv1_0541-0570.mp3`
+
+```
 in the face of. <break time="1.2s" />
 kind of. <break time="1.2s" />
 make a face. <break time="1.2s" />
@@ -5007,16 +5420,9 @@ by all means. <break time="1.2s" />
 by means of. <break time="1.2s" />
 by no means. <break time="1.2s" />
 hope for. <break time="1.2s" />
-in the course of.
-```
-
-## ilv1_0551-0600（熟語 Lv1 No.551〜600・50語・1848文字）
-
-保存するファイル名：`ilv1_0551-0600.mp3`
-
-```
+in the course of. <break time="1.2s" />
 last but not least. <break time="1.2s" />
-not … in the least. <break time="1.2s" />
+not — in the least. <break time="1.2s" />
 to say the least. <break time="1.2s" />
 to say the least of it. <break time="1.2s" />
 early on. <break time="1.2s" />
@@ -5025,7 +5431,7 @@ thanks to. <break time="1.2s" />
 talk A into doing. <break time="1.2s" />
 talk down to A. <break time="1.2s" />
 talk up. <break time="1.2s" />
-talk … into doing. <break time="1.2s" />
+talk — into doing. <break time="1.2s" />
 at first hand. <break time="1.2s" />
 on the one hand, on the other hand. <break time="1.2s" />
 as is often the case with. <break time="1.2s" />
@@ -5033,23 +5439,30 @@ as often as not. <break time="1.2s" />
 at hand. <break time="1.2s" />
 by hand. <break time="1.2s" />
 give someone a hand. <break time="1.2s" />
-give … a hand. <break time="1.2s" />
-given. <break time="1.2s" />
+give — a hand. <break time="1.2s" />
+given.
+```
+
+## ilv1_0571-0600（熟語 Lv1 No.571〜600・30語・1067文字）
+
+保存するファイル名：`ilv1_0571-0600.mp3`
+
+```
 hand down. <break time="1.2s" />
 hand in. <break time="1.2s" />
 hand off. <break time="1.2s" />
 hand over. <break time="1.2s" />
-have … in mind. <break time="1.2s" />
-have … on one's mind. <break time="1.2s" />
+have — in mind. <break time="1.2s" />
+have — on one's mind. <break time="1.2s" />
 in fact. <break time="1.2s" />
-keep … in mind. <break time="1.2s" />
+keep — in mind. <break time="1.2s" />
 level off. <break time="1.2s" />
 make up one's mind. <break time="1.2s" />
 more often than not. <break time="1.2s" />
 on the other hand. <break time="1.2s" />
 out of hand. <break time="1.2s" />
 single out. <break time="1.2s" />
-with … in mind. <break time="1.2s" />
+with — in mind. <break time="1.2s" />
 would often do. <break time="1.2s" />
 It is True, but. <break time="1.2s" />
 be true of. <break time="1.2s" />
@@ -5067,9 +5480,9 @@ to death. <break time="1.2s" />
 Something is wrong with.
 ```
 
-## ilv1_0601-0650（熟語 Lv1 No.601〜650・50語・1887文字）
+## ilv1_0601-0630（熟語 Lv1 No.601〜630・30語・1091文字）
 
-保存するファイル名：`ilv1_0601-0650.mp3`
+保存するファイル名：`ilv1_0601-0630.mp3`
 
 ```
 at large. <break time="1.2s" />
@@ -5097,15 +5510,22 @@ hit it off with. <break time="1.2s" />
 hit on. <break time="1.2s" />
 in the air. <break time="1.2s" />
 on the air. <break time="1.2s" />
-as … as possible. <break time="1.2s" />
-as … as possible can. <break time="1.2s" />
+as — as possible. <break time="1.2s" />
+as — as possible can. <break time="1.2s" />
 close in. <break time="1.2s" />
 come close to doing. <break time="1.2s" />
-come to an end close. <break time="1.2s" />
+come to an end close.
+```
+
+## ilv1_0631-0660（熟語 Lv1 No.631〜660・30語・1161文字）
+
+保存するファイル名：`ilv1_0631-0660.mp3`
+
+```
 have no idea. <break time="1.2s" />
 when it comes to. <break time="1.2s" />
 A as well as B. <break time="1.2s" />
-A is not … any more than B is. <break time="1.2s" />
+A is not — any more than B is. <break time="1.2s" />
 A is one thing, and B is another. <break time="1.2s" />
 A, and B at that. <break time="1.2s" />
 Nothing is more A than B. <break time="1.2s" />
@@ -5121,14 +5541,7 @@ keep A from B. <break time="1.2s" />
 look on A as B. <break time="1.2s" />
 make A out of B. <break time="1.2s" />
 make A from B. <break time="1.2s" />
-name A after B.
-```
-
-## ilv1_0651-0700（熟語 Lv1 No.651〜700・50語・1821文字）
-
-保存するファイル名：`ilv1_0651-0700.mp3`
-
-```
+name A after B. <break time="1.2s" />
 not A but B. <break time="1.2s" />
 not only A but also B. <break time="1.2s" />
 not so much A as B. <break time="1.2s" />
@@ -5138,7 +5551,14 @@ out of the question. <break time="1.2s" />
 pay A for B. <break time="1.2s" />
 put A through to B. <break time="1.2s" />
 see A as B. <break time="1.2s" />
-show A around B. <break time="1.2s" />
+show A around B.
+```
+
+## ilv1_0661-0690（熟語 Lv1 No.661〜690・30語・1095文字）
+
+保存するファイル名：`ilv1_0661-0690.mp3`
+
+```
 take A as B. <break time="1.2s" />
 take A for B. <break time="1.2s" />
 talk A into B. <break time="1.2s" />
@@ -5164,11 +5584,18 @@ in the light of. <break time="1.2s" />
 in short. <break time="1.2s" />
 in the future. <break time="1.2s" />
 name A B after C. <break time="1.2s" />
-not … either. <break time="1.2s" />
+not — either. <break time="1.2s" />
 nothing short of. <break time="1.2s" />
 short of. <break time="1.2s" />
 stay away from. <break time="1.2s" />
-stay off. <break time="1.2s" />
+stay off.
+```
+
+## ilv1_0691-0720（熟語 Lv1 No.691〜720・30語・1020文字）
+
+保存するファイル名：`ilv1_0691-0720.mp3`
+
+```
 stay up. <break time="1.2s" />
 The reason is that. <break time="1.2s" />
 a great deal. <break time="1.2s" />
@@ -5178,14 +5605,7 @@ buy out. <break time="1.2s" />
 buy up. <break time="1.2s" />
 come of age. <break time="1.2s" />
 deal in. <break time="1.2s" />
-deal out.
-```
-
-## ilv1_0701-0750（熟語 Lv1 No.701〜750・50語・1747文字）
-
-保存するファイル名：`ilv1_0701-0750.mp3`
-
-```
+deal out. <break time="1.2s" />
 deal with. <break time="1.2s" />
 in turn. <break time="1.2s" />
 it doesn't matter whether. <break time="1.2s" />
@@ -5203,13 +5623,20 @@ turn to. <break time="1.2s" />
 turn up. <break time="1.2s" />
 whether to do. <break time="1.2s" />
 would rather do than. <break time="1.2s" />
-would rather … than. <break time="1.2s" />
+would rather — than. <break time="1.2s" />
 would rather do than. <break time="1.2s" />
-at heart. <break time="1.2s" />
+at heart.
+```
+
+## ilv1_0721-0750（熟語 Lv1 No.721〜750・30語・1042文字）
+
+保存するファイル名：`ilv1_0721-0750.mp3`
+
+```
 check off. <break time="1.2s" />
 check out. <break time="1.2s" />
 check up on. <break time="1.2s" />
-know … by heart. <break time="1.2s" />
+know — by heart. <break time="1.2s" />
 act on. <break time="1.2s" />
 act out. <break time="1.2s" />
 act up. <break time="1.2s" />
@@ -5238,15 +5665,15 @@ bring oneself to do. <break time="1.2s" />
 bring out.
 ```
 
-## ilv1_0751-0800（熟語 Lv1 No.751〜800・50語・1765文字）
+## ilv1_0751-0780（熟語 Lv1 No.751〜780・30語・1073文字）
 
-保存するファイル名：`ilv1_0751-0800.mp3`
+保存するファイル名：`ilv1_0751-0780.mp3`
 
 ```
 bring up. <break time="1.2s" />
-bring … into being. <break time="1.2s" />
-bring … to an end. <break time="1.2s" />
-bring … to light. <break time="1.2s" />
+bring — into being. <break time="1.2s" />
+bring — to an end. <break time="1.2s" />
+bring — to light. <break time="1.2s" />
 meet with. <break time="1.2s" />
 by any chance. <break time="1.2s" />
 by chance. <break time="1.2s" />
@@ -5257,7 +5684,7 @@ take one's word for it. <break time="1.2s" />
 clear out. <break time="1.2s" />
 clear up. <break time="1.2s" />
 come across. <break time="1.2s" />
-get … across. <break time="1.2s" />
+get — across. <break time="1.2s" />
 in other words. <break time="1.2s" />
 run across. <break time="1.2s" />
 at all costs cost. <break time="1.2s" />
@@ -5272,7 +5699,14 @@ cut down. <break time="1.2s" />
 cut down on. <break time="1.2s" />
 cut down on. <break time="1.2s" />
 cut in. <break time="1.2s" />
-down the road. <break time="1.2s" />
+down the road.
+```
+
+## ilv1_0781-0810（熟語 Lv1 No.781〜810・30語・1064文字）
+
+保存するファイル名：`ilv1_0781-0810.mp3`
+
+```
 instead of. <break time="1.2s" />
 it seems that. <break time="1.2s" />
 on board. <break time="1.2s" />
@@ -5292,28 +5726,28 @@ to date. <break time="1.2s" />
 up to date. <break time="1.2s" />
 account for. <break time="1.2s" />
 be all eyes. <break time="1.2s" />
-be similar to.
-```
-
-## ilv1_0801-0850（熟語 Lv1 No.801〜850・50語・1785文字）
-
-保存するファイル名：`ilv1_0801-0850.mp3`
-
-```
+be similar to. <break time="1.2s" />
 on account of. <break time="1.2s" />
 take account of. <break time="1.2s" />
-take … into account. <break time="1.2s" />
-X times as … as. <break time="1.2s" />
+take — into account. <break time="1.2s" />
+X times as — as. <break time="1.2s" />
 above all else. <break time="1.2s" />
 be likely to do. <break time="1.2s" />
 have A in common with B. <break time="1.2s" />
-have … in common with. <break time="1.2s" />
+have — in common with. <break time="1.2s" />
 lead to. <break time="1.2s" />
-live a … life. <break time="1.2s" />
+live a — life.
+```
+
+## ilv1_0811-0840（熟語 Lv1 No.811〜840・30語・1045文字）
+
+保存するファイル名：`ilv1_0811-0840.mp3`
+
+```
 share A with B. <break time="1.2s" />
 a couple of. <break time="1.2s" />
 come into view. <break time="1.2s" />
-from … point of view. <break time="1.2s" />
+from — point of view. <break time="1.2s" />
 happen on. <break time="1.2s" />
 happen to do. <break time="1.2s" />
 hold A by the B. <break time="1.2s" />
@@ -5326,7 +5760,7 @@ hold out. <break time="1.2s" />
 hold over. <break time="1.2s" />
 hold true. <break time="1.2s" />
 hold up. <break time="1.2s" />
-hold … in check. <break time="1.2s" />
+hold — in check. <break time="1.2s" />
 in a sense. <break time="1.2s" />
 in private. <break time="1.2s" />
 in return. <break time="1.2s" />
@@ -5339,7 +5773,14 @@ make sense of. <break time="1.2s" />
 take hold of ^. <break time="1.2s" />
 view A as B. <break time="1.2s" />
 with a view to doing. <break time="1.2s" />
-Give me a break. <break time="1.2s" />
+Give me a break.
+```
+
+## ilv1_0841-0870（熟語 Lv1 No.841〜870・30語・1065文字）
+
+保存するファイル名：`ilv1_0841-0870.mp3`
+
+```
 someone wish. <break time="1.2s" />
 as a result. <break time="1.2s" />
 at present. <break time="1.2s" />
@@ -5349,14 +5790,7 @@ break in on. <break time="1.2s" />
 break in. <break time="1.2s" />
 break into. <break time="1.2s" />
 break off. <break time="1.2s" />
-break out.
-```
-
-## ilv1_0851-0900（熟語 Lv1 No.851〜900・50語・1785文字）
-
-保存するファイル名：`ilv1_0851-0900.mp3`
-
-```
+break out. <break time="1.2s" />
 break up. <break time="1.2s" />
 feel sorry for. <break time="1.2s" />
 for the present. <break time="1.2s" />
@@ -5371,13 +5805,20 @@ result in. <break time="1.2s" />
 take a break. <break time="1.2s" />
 answer for. <break time="1.2s" />
 be of interest. <break time="1.2s" />
-learn … by heart. <break time="1.2s" />
+learn — by heart. <break time="1.2s" />
 bank on. <break time="1.2s" />
 be certain of. <break time="1.2s" />
 be worth doing. <break time="1.2s" />
 change hands. <break time="1.2s" />
-for sure. <break time="1.2s" />
-leave … alone. <break time="1.2s" />
+for sure.
+```
+
+## ilv1_0871-0900（熟語 Lv1 No.871〜900・30語・1042文字）
+
+保存するファイル名：`ilv1_0871-0900.mp3`
+
+```
+leave — alone. <break time="1.2s" />
 let alone. <break time="1.2s" />
 let alone. <break time="1.2s" />
 no longer. <break time="1.2s" />
@@ -5409,9 +5850,9 @@ amount to. <break time="1.2s" />
 be no match for.
 ```
 
-## ilv1_0901-0950（熟語 Lv1 No.901〜950・50語・1733文字）
+## ilv1_0901-0930（熟語 Lv1 No.901〜930・30語・997文字）
 
-保存するファイル名：`ilv1_0901-0950.mp3`
+保存するファイル名：`ilv1_0901-0930.mp3`
 
 ```
 drive at. <break time="1.2s" />
@@ -5443,7 +5884,14 @@ fall on. <break time="1.2s" />
 get O to do. <break time="1.2s" />
 help O to do. <break time="1.2s" />
 hit on. <break time="1.2s" />
-it is … for O to do. <break time="1.2s" />
+it is — for O to do.
+```
+
+## ilv1_0931-0960（熟語 Lv1 No.931〜960・30語・1077文字）
+
+保存するファイル名：`ilv1_0931-0960.mp3`
+
+```
 let O do. <break time="1.2s" />
 look back on. <break time="1.2s" />
 look back upon. <break time="1.2s" />
@@ -5458,29 +5906,29 @@ tell on. <break time="1.2s" />
 cannot help but do. <break time="1.2s" />
 cannot do too. <break time="1.2s" />
 cannot help doing. <break time="1.2s" />
-cannot … too. <break time="1.2s" />
+cannot — too. <break time="1.2s" />
 out of character. <break time="1.2s" />
 pay attention to. <break time="1.2s" />
 send for. <break time="1.2s" />
 send out for. <break time="1.2s" />
-be involved in.
-```
-
-## ilv1_0951-1000（熟語 Lv1 No.951〜1000・50語・1762文字）
-
-保存するファイル名：`ilv1_0951-1000.mp3`
-
-```
+be involved in. <break time="1.2s" />
 be related to. <break time="1.2s" />
 come to terms with. <break time="1.2s" />
 get involved in. <break time="1.2s" />
 in itself. <break time="1.2s" />
 in terms of. <break time="1.2s" />
-on … terms with. <break time="1.2s" />
+on — terms with. <break time="1.2s" />
 Couldn't be better. <break time="1.2s" />
 add A to B. <break time="1.2s" />
 add to. <break time="1.2s" />
-add up to. <break time="1.2s" />
+add up to.
+```
+
+## ilv1_0961-0990（熟語 Lv1 No.961〜990・30語・1053文字）
+
+保存するファイル名：`ilv1_0961-0990.mp3`
+
+```
 enjoy oneself. <break time="1.2s" />
 cover for. <break time="1.2s" />
 cover up. <break time="1.2s" />
@@ -5510,9 +5958,16 @@ figure on. <break time="1.2s" />
 figure out. <break time="1.2s" />
 forget to do. <break time="1.2s" />
 in practice. <break time="1.2s" />
-in some ways. <break time="1.2s" />
+in some ways.
+```
+
+## ilv1_0991-1020（熟語 Lv1 No.991〜1020・30語・1028文字）
+
+保存するファイル名：`ilv1_0991-1020.mp3`
+
+```
 on earth. <break time="1.2s" />
-put … into practice. <break time="1.2s" />
+put — into practice. <break time="1.2s" />
 at risk. <break time="1.2s" />
 have access to. <break time="1.2s" />
 mark down. <break time="1.2s" />
@@ -5520,14 +5975,7 @@ mark out. <break time="1.2s" />
 pass A on to B. <break time="1.2s" />
 pass away. <break time="1.2s" />
 pass down. <break time="1.2s" />
-pass for.
-```
-
-## ilv1_1001-1050（熟語 Lv1 No.1001〜1050・50語・1789文字）
-
-保存するファイル名：`ilv1_1001-1050.mp3`
-
-```
+pass for. <break time="1.2s" />
 pass off. <break time="1.2s" />
 pass off A as B. <break time="1.2s" />
 pass on. <break time="1.2s" />
@@ -5547,7 +5995,14 @@ not to speak of. <break time="1.2s" />
 so to speak. <break time="1.2s" />
 speak for. <break time="1.2s" />
 speak of A as B. <break time="1.2s" />
-speak out. <break time="1.2s" />
+speak out.
+```
+
+## ilv1_1021-1050（熟語 Lv1 No.1021〜1050・30語・1083文字）
+
+保存するファイル名：`ilv1_1021-1050.mp3`
+
+```
 speak out. <break time="1.2s" />
 speak well of. <break time="1.2s" />
 with respect to. <break time="1.2s" />
@@ -5563,8 +6018,8 @@ in effect. <break time="1.2s" />
 in store for. <break time="1.2s" />
 keep an eye on. <break time="1.2s" />
 keep track of. <break time="1.2s" />
-look … in the eye. <break time="1.2s" />
-look … in the eyes. <break time="1.2s" />
+look — in the eye. <break time="1.2s" />
+look — in the eyes. <break time="1.2s" />
 on a charge of. <break time="1.2s" />
 provided. <break time="1.2s" />
 take charge of. <break time="1.2s" />
@@ -5580,9 +6035,9 @@ be content with. <break time="1.2s" />
 be particular about.
 ```
 
-## ilv1_1051-1100（熟語 Lv1 No.1051〜1100・50語・1900文字）
+## ilv1_1051-1080（熟語 Lv1 No.1051〜1080・30語・1101文字）
 
-保存するファイル名：`ilv1_1051-1100.mp3`
+保存するファイル名：`ilv1_1051-1080.mp3`
 
 ```
 be particular about. <break time="1.2s" />
@@ -5608,13 +6063,20 @@ agree with. <break time="1.2s" />
 clean out. <break time="1.2s" />
 make a scene. <break time="1.2s" />
 spend A on B. <break time="1.2s" />
-spend … in doing. <break time="1.2s" />
+spend — in doing. <break time="1.2s" />
 under construction. <break time="1.2s" />
 It happens that. <break time="1.2s" />
 at all costs. <break time="1.2s" />
 be expected to do. <break time="1.2s" />
 be subject to. <break time="1.2s" />
-in search of. <break time="1.2s" />
+in search of.
+```
+
+## ilv1_1081-1110（熟語 Lv1 No.1081〜1110・30語・1143文字）
+
+保存するファイル名：`ilv1_1081-1110.mp3`
+
+```
 it costs someone money to do. <break time="1.2s" />
 search for. <break time="1.2s" />
 to the best of my knowledge. <break time="1.2s" />
@@ -5634,14 +6096,7 @@ second to none. <break time="1.2s" />
 as compared to. <break time="1.2s" />
 be senior to. <break time="1.2s" />
 have an impact on. <break time="1.2s" />
-in secret.
-```
-
-## ilv1_1101-1150（熟語 Lv1 No.1101〜1150・50語・1771文字）
-
-保存するファイル名：`ilv1_1101-1150.mp3`
-
-```
+in secret. <break time="1.2s" />
 make an effort. <break time="1.2s" />
 put into practice. <break time="1.2s" />
 spring from. <break time="1.2s" />
@@ -5651,7 +6106,14 @@ wear out. <break time="1.2s" />
 be supposed to do. <break time="1.2s" />
 dream up. <break time="1.2s" />
 generally speaking. <break time="1.2s" />
-get in touch with. <break time="1.2s" />
+get in touch with.
+```
+
+## ilv1_1111-1140（熟語 Lv1 No.1111〜1140・30語・1030文字）
+
+保存するファイル名：`ilv1_1111-1140.mp3`
+
+```
 keep in touch with. <break time="1.2s" />
 speaking of. <break time="1.2s" />
 touch up. <break time="1.2s" />
@@ -5681,29 +6143,29 @@ on purpose. <break time="1.2s" />
 catch on to. <break time="1.2s" />
 catch up on. <break time="1.2s" />
 catch up with. <break time="1.2s" />
-catch up with. <break time="1.2s" />
-catch … doing. <break time="1.2s" />
+catch up with.
+```
+
+## ilv1_1141-1170（熟語 Lv1 No.1141〜1170・30語・1073文字）
+
+保存するファイル名：`ilv1_1141-1170.mp3`
+
+```
+catch — doing. <break time="1.2s" />
 on the condition. <break time="1.2s" />
 accept A as B. <break time="1.2s" />
 at a distance. <break time="1.2s" />
 exchange A for B. <break time="1.2s" />
-give … a ride. <break time="1.2s" />
+give — a ride. <break time="1.2s" />
 in exchange of. <break time="1.2s" />
 in the distance. <break time="1.2s" />
 prior to. <break time="1.2s" />
-serve … right.
-```
-
-## ilv1_1151-1200（熟語 Lv1 No.1151〜1200・50語・1751文字）
-
-保存するファイル名：`ilv1_1151-1200.mp3`
-
-```
+serve — right. <break time="1.2s" />
 slow down. <break time="1.2s" />
 within walking distance of. <break time="1.2s" />
 be famous for. <break time="1.2s" />
 in demand. <break time="1.2s" />
-it appears to … that. <break time="1.2s" />
+it appears to — that. <break time="1.2s" />
 lie in. <break time="1.2s" />
 take notes on. <break time="1.2s" />
 the bottom line. <break time="1.2s" />
@@ -5713,12 +6175,19 @@ wind up. <break time="1.2s" />
 be forced to do. <break time="1.2s" />
 count for. <break time="1.2s" />
 count on. <break time="1.2s" />
-on a … scale. <break time="1.2s" />
+on a — scale. <break time="1.2s" />
 remain to be seen. <break time="1.2s" />
 remain to do. <break time="1.2s" />
 throw off. <break time="1.2s" />
 throw up. <break time="1.2s" />
-in fashion. <break time="1.2s" />
+in fashion.
+```
+
+## ilv1_1171-1200（熟語 Lv1 No.1171〜1200・30語・1029文字）
+
+保存するファイル名：`ilv1_1171-1200.mp3`
+
+```
 out of fashion. <break time="1.2s" />
 pull back. <break time="1.2s" />
 pull in. <break time="1.2s" />
@@ -5737,7 +6206,7 @@ draw up. <break time="1.2s" />
 enter into. <break time="1.2s" />
 give rise to. <break time="1.2s" />
 it follows that. <break time="1.2s" />
-on a … basis. <break time="1.2s" />
+on a — basis. <break time="1.2s" />
 on the rise. <break time="1.2s" />
 supply A with B. <break time="1.2s" />
 in trouble. <break time="1.2s" />
@@ -5751,9 +6220,9 @@ decide on. <break time="1.2s" />
 fall apart.
 ```
 
-## ilv1_1201-1250（熟語 Lv1 No.1201〜1250・50語・1838文字）
+## ilv1_1201-1230（熟語 Lv1 No.1201〜1230・30語・1084文字）
 
-保存するファイル名：`ilv1_1201-1250.mp3`
+保存するファイル名：`ilv1_1201-1230.mp3`
 
 ```
 have an influence on. <break time="1.2s" />
@@ -5785,9 +6254,16 @@ be unique to. <break time="1.2s" />
 fix up. <break time="1.2s" />
 make both ends meet. <break time="1.2s" />
 roll in. <break time="1.2s" />
-roll out. <break time="1.2s" />
+roll out.
+```
+
+## ilv1_1231-1260（熟語 Lv1 No.1231〜1260・30語・1101文字）
+
+保存するファイル名：`ilv1_1231-1260.mp3`
+
+```
 roll up. <break time="1.2s" />
-take … by surprise. <break time="1.2s" />
+take — by surprise. <break time="1.2s" />
 to be frank with. <break time="1.2s" />
 to one's surprise. <break time="1.2s" />
 treat A to B. <break time="1.2s" />
@@ -5805,14 +6281,7 @@ plenty of. <break time="1.2s" />
 take shape. <break time="1.2s" />
 to make matters worse. <break time="1.2s" />
 be tired from. <break time="1.2s" />
-be tired of.
-```
-
-## ilv1_1251-1300（熟語 Lv1 No.1251〜1300・50語・1776文字）
-
-保存するファイル名：`ilv1_1251-1300.mp3`
-
-```
+be tired of. <break time="1.2s" />
 break one's promise. <break time="1.2s" />
 by accident. <break time="1.2s" />
 get tired from. <break time="1.2s" />
@@ -5822,7 +6291,14 @@ I'm afraid not. <break time="1.2s" />
 be afraid of. <break time="1.2s" />
 be afraid to do. <break time="1.2s" />
 be filled with. <break time="1.2s" />
-follow suit. <break time="1.2s" />
+follow suit.
+```
+
+## ilv1_1261-1290（熟語 Lv1 No.1261〜1290・30語・1042文字）
+
+保存するファイル名：`ilv1_1261-1290.mp3`
+
+```
 have a good command of. <break time="1.2s" />
 limit A to B. <break time="1.2s" />
 be native to. <break time="1.2s" />
@@ -5839,7 +6315,7 @@ on schedule. <break time="1.2s" />
 get angry. <break time="1.2s" />
 pack up. <break time="1.2s" />
 pull one's leg. <break time="1.2s" />
-pull … 's leg. <break time="1.2s" />
+pull — 's leg. <break time="1.2s" />
 strike A as B. <break time="1.2s" />
 be committed to. <break time="1.2s" />
 be equal to. <break time="1.2s" />
@@ -5852,7 +6328,14 @@ lay into. <break time="1.2s" />
 lay off. <break time="1.2s" />
 lay out. <break time="1.2s" />
 phase out. <break time="1.2s" />
-be to blame for. <break time="1.2s" />
+be to blame for.
+```
+
+## ilv1_1291-1320（熟語 Lv1 No.1291〜1320・30語・1046文字）
+
+保存するファイル名：`ilv1_1291-1320.mp3`
+
+```
 be worried about. <break time="1.2s" />
 blame A for B. <break time="1.2s" />
 on display. <break time="1.2s" />
@@ -5862,18 +6345,11 @@ be essential to. <break time="1.2s" />
 be familiar to. <break time="1.2s" />
 be familiar with. <break time="1.2s" />
 be guilty of. <break time="1.2s" />
-fail in.
-```
-
-## ilv1_1301-1350（熟語 Lv1 No.1301〜1350・50語・1764文字）
-
-保存するファイル名：`ilv1_1301-1350.mp3`
-
-```
+fail in. <break time="1.2s" />
 fail to do. <break time="1.2s" />
 never fail to do. <break time="1.2s" />
 take it for granted that. <break time="1.2s" />
-take … for granted. <break time="1.2s" />
+take — for granted. <break time="1.2s" />
 without fail. <break time="1.2s" />
 hang around. <break time="1.2s" />
 hang on. <break time="1.2s" />
@@ -5889,7 +6365,14 @@ admit to. <break time="1.2s" />
 at random. <break time="1.2s" />
 be dedicated to. <break time="1.2s" />
 branch off. <break time="1.2s" />
-in favor of. <break time="1.2s" />
+in favor of.
+```
+
+## ilv1_1321-1350（熟語 Lv1 No.1321〜1350・30語・1059文字）
+
+保存するファイル名：`ilv1_1321-1350.mp3`
+
+```
 make oneself understood. <break time="1.2s" />
 My pleasure. <break time="1.2s" />
 can afford to do. <break time="1.2s" />
@@ -5911,20 +6394,20 @@ by degrees. <break time="1.2s" />
 calm down. <break time="1.2s" />
 catch sight of. <break time="1.2s" />
 in sight. <break time="1.2s" />
-know … by sight. <break time="1.2s" />
+know — by sight. <break time="1.2s" />
 lose sight of. <break time="1.2s" />
 manage to do. <break time="1.2s" />
 out of sight. <break time="1.2s" />
 burn down. <break time="1.2s" />
 burn out. <break time="1.2s" />
-hardly … when. <break time="1.2s" />
+hardly — when. <break time="1.2s" />
 be engaged in. <break time="1.2s" />
 go blind.
 ```
 
-## ilv1_1351-1400（熟語 Lv1 No.1351〜1400・50語・1832文字）
+## ilv1_1351-1379（熟語 Lv1 No.1351〜1379・29語・1065文字）
 
-保存するファイル名：`ilv1_1351-1400.mp3`
+保存するファイル名：`ilv1_1351-1379.mp3`
 
 ```
 hold one's breath. <break time="1.2s" />
@@ -5955,9 +6438,16 @@ make a living. <break time="1.2s" />
 not necessarily. <break time="1.2s" />
 play a trick on. <break time="1.2s" />
 regardless of. <break time="1.2s" />
-occur to. <break time="1.2s" />
+occur to.
+```
+
+## ilv1_1380-1408（熟語 Lv1 No.1380〜1408・29語・1036文字）
+
+保存するファイル名：`ilv1_1380-1408.mp3`
+
+```
 to some extent. <break time="1.2s" />
-to … extent. <break time="1.2s" />
+to — extent. <break time="1.2s" />
 be bound for. <break time="1.2s" />
 be bound to do. <break time="1.2s" />
 be sensitive to. <break time="1.2s" />
@@ -5976,14 +6466,7 @@ be confident of. <break time="1.2s" />
 scores of. <break time="1.2s" />
 on behalf of. <break time="1.2s" />
 on behalf of. <break time="1.2s" />
-participate in.
-```
-
-## ilv1_1401-1450（熟語 Lv1 No.1401〜1450・50語・1811文字）
-
-保存するファイル名：`ilv1_1401-1450.mp3`
-
-```
+participate in. <break time="1.2s" />
 crack up. <break time="1.2s" />
 under repair. <break time="1.2s" />
 a sheet of. <break time="1.2s" />
@@ -5991,7 +6474,14 @@ all of a sudden. <break time="1.2s" />
 back and forth. <break time="1.2s" />
 be convinced that. <break time="1.2s" />
 for the sake of. <break time="1.2s" />
-put forth. <break time="1.2s" />
+put forth.
+```
+
+## ilv1_1409-1437（熟語 Lv1 No.1409〜1437・29語・1040文字）
+
+保存するファイル名：`ilv1_1409-1437.mp3`
+
+```
 smooth over. <break time="1.2s" />
 Serves you right. <break time="1.2s" />
 associate A with B. <break time="1.2s" />
@@ -6020,7 +6510,14 @@ rob A of B. <break time="1.2s" />
 take a risk. <break time="1.2s" />
 tear down. <break time="1.2s" />
 at one's ease. <break time="1.2s" />
-contribute to. <break time="1.2s" />
+contribute to.
+```
+
+## ilv1_1438-1466（熟語 Lv1 No.1438〜1466・29語・1054文字）
+
+保存するファイル名：`ilv1_1438-1466.mp3`
+
+```
 ease into. <break time="1.2s" />
 ill at ease. <break time="1.2s" />
 in principle. <break time="1.2s" />
@@ -6033,14 +6530,7 @@ shake hands with. <break time="1.2s" />
 shake up. <break time="1.2s" />
 blast off. <break time="1.2s" />
 cure A of B. <break time="1.2s" />
-in preparation.
-```
-
-## ilv1_1451-1500（熟語 Lv1 No.1451〜1500・50語・1821文字）
-
-保存するファイル名：`ilv1_1451-1500.mp3`
-
-```
+in preparation. <break time="1.2s" />
 in preparation for. <break time="1.2s" />
 succeed in. <break time="1.2s" />
 be equipped with. <break time="1.2s" />
@@ -6050,13 +6540,20 @@ be composed of. <break time="1.2s" />
 dawn on. <break time="1.2s" />
 at the mercy of. <break time="1.2s" />
 forgive A for B. <break time="1.2s" />
-no sooner … than. <break time="1.2s" />
+no sooner — than. <break time="1.2s" />
 at the expense of. <break time="1.2s" />
 brush up on. <break time="1.2s" />
 on the contrary. <break time="1.2s" />
 substitute A for B. <break time="1.2s" />
 yield to. <break time="1.2s" />
-at stake. <break time="1.2s" />
+at stake.
+```
+
+## ilv1_1467-1495（熟語 Lv1 No.1467〜1495・29語・1030文字）
+
+保存するファイル名：`ilv1_1467-1495.mp3`
+
+```
 in a hurry. <break time="1.2s" />
 dozens of. <break time="1.2s" />
 in accordance with. <break time="1.2s" />
@@ -6085,19 +6582,19 @@ punish A for B. <break time="1.2s" />
 consist in. <break time="1.2s" />
 consist of. <break time="1.2s" />
 be absorbed in. <break time="1.2s" />
-interfere with. <break time="1.2s" />
+interfere with.
+```
+
+## ilv1_1496-1524（熟語 Lv1 No.1496〜1524・29語・1042文字）
+
+保存するファイル名：`ilv1_1496-1524.mp3`
+
+```
 distinguish A from B. <break time="1.2s" />
 per capita. <break time="1.2s" />
 compensate for. <break time="1.2s" />
 attribute A to B. <break time="1.2s" />
-attach A to B.
-```
-
-## ilv1_1501-1524（熟語 Lv1 No.1501〜1524・24語・849文字）
-
-保存するファイル名：`ilv1_1501-1524.mp3`
-
-```
+attach A to B. <break time="1.2s" />
 in vain. <break time="1.2s" />
 owing to. <break time="1.2s" />
 accuse A of B. <break time="1.2s" />
@@ -6124,9 +6621,9 @@ yearn for. <break time="1.2s" />
 confine A to B.
 ```
 
-## ilv2_0001-0050（熟語 Lv2 No.1〜50・50語・1760文字）
+## ilv2_0001-0028（熟語 Lv2 No.1〜28・28語・940文字）
 
-保存するファイル名：`ilv2_0001-0050.mp3`
+保存するファイル名：`ilv2_0001-0028.mp3`
 
 ```
 independent of. <break time="1.2s" />
@@ -6156,9 +6653,16 @@ shut out. <break time="1.2s" />
 make an effort. <break time="1.2s" />
 map out. <break time="1.2s" />
 stick around. <break time="1.2s" />
-stick by. <break time="1.2s" />
-as far as … be concerned. <break time="1.2s" />
-as far as … be concerned. <break time="1.2s" />
+stick by.
+```
+
+## ilv2_0029-0056（熟語 Lv2 No.29〜56・28語・1007文字）
+
+保存するファイル名：`ilv2_0029-0056.mp3`
+
+```
+as far as — be concerned. <break time="1.2s" />
+as far as — be concerned. <break time="1.2s" />
 be busy with. <break time="1.2s" />
 be concerned about. <break time="1.2s" />
 be concerned with. <break time="1.2s" />
@@ -6173,27 +6677,27 @@ shape up. <break time="1.2s" />
 to make matters worse. <break time="1.2s" />
 bear with. <break time="1.2s" />
 keep one's promise. <break time="1.2s" />
-keep … in mind. <break time="1.2s" />
+keep — in mind. <break time="1.2s" />
 feed off. <break time="1.2s" />
 measure up to. <break time="1.2s" />
 fill in for. <break time="1.2s" />
 lay down. <break time="1.2s" />
-wave off.
-```
-
-## ilv2_0051-0100（熟語 Lv2 No.51〜100・50語・1841文字）
-
-保存するファイル名：`ilv2_0051-0100.mp3`
-
-```
+wave off. <break time="1.2s" />
 hang around. <break time="1.2s" />
 hang on to. <break time="1.2s" />
 hang onto to. <break time="1.2s" />
 blow out. <break time="1.2s" />
 for example. <break time="1.2s" />
+ask a favor of.
+```
+
+## ilv2_0057-0084（熟語 Lv2 No.57〜84・28語・1025文字）
+
+保存するファイル名：`ilv2_0057-0084.mp3`
+
+```
 ask a favor of. <break time="1.2s" />
-ask a favor of. <break time="1.2s" />
-ask … a favor. <break time="1.2s" />
+ask — a favor. <break time="1.2s" />
 flag down. <break time="1.2s" />
 mess with. <break time="1.2s" />
 the former A, the latter B. <break time="1.2s" />
@@ -6201,14 +6705,14 @@ the former, the latter. <break time="1.2s" />
 come into being. <break time="1.2s" />
 be drawn into. <break time="1.2s" />
 burn off. <break time="1.2s" />
-hardly … when. <break time="1.2s" />
+hardly — when. <break time="1.2s" />
 A is exposed to B. <break time="1.2s" />
 lock A in B. <break time="1.2s" />
 lock in. <break time="1.2s" />
 take a chance. <break time="1.2s" />
 keep one's fingers. <break time="1.2s" />
-do … harm. <break time="1.2s" />
-do … harm harm to. <break time="1.2s" />
+do — harm. <break time="1.2s" />
+do — harm harm to. <break time="1.2s" />
 in contrast to. <break time="1.2s" />
 acid rain. <break time="1.2s" />
 compare A with B. <break time="1.2s" />
@@ -6219,7 +6723,14 @@ be convinced of. <break time="1.2s" />
 and so on. <break time="1.2s" />
 unsuitable for. <break time="1.2s" />
 be suitable for. <break time="1.2s" />
-remind A of B. <break time="1.2s" />
+remind A of B.
+```
+
+## ilv2_0085-0112（熟語 Lv2 No.85〜112・28語・1006文字）
+
+保存するファイル名：`ilv2_0085-0112.mp3`
+
+```
 settle in. <break time="1.2s" />
 settle up with. <break time="1.2s" />
 spell out. <break time="1.2s" />
@@ -6235,26 +6746,26 @@ clear one's throat. <break time="1.2s" />
 enable O to do. <break time="1.2s" />
 stem from. <break time="1.2s" />
 be derived from. <break time="1.2s" />
-be eligible for.
-```
-
-## ilv2_0101-0150（熟語 Lv2 No.101〜150・50語・1783文字）
-
-保存するファイル名：`ilv2_0101-0150.mp3`
-
-```
+be eligible for. <break time="1.2s" />
 be worthy of. <break time="1.2s" />
 be worthy to do. <break time="1.2s" />
 drag on. <break time="1.2s" />
 drag out. <break time="1.2s" />
 recover from. <break time="1.2s" />
-rely on … for. <break time="1.2s" />
+rely on — for. <break time="1.2s" />
 rely on. <break time="1.2s" />
 tale on. <break time="1.2s" />
 at odds with. <break time="1.2s" />
 be at odds with. <break time="1.2s" />
 be dependent on. <break time="1.2s" />
-be intent on. <break time="1.2s" />
+be intent on.
+```
+
+## ilv2_0113-0139（熟語 Lv2 No.113〜139・27語・934文字）
+
+保存するファイル名：`ilv2_0113-0139.mp3`
+
+```
 be intent on. <break time="1.2s" />
 dependent on. <break time="1.2s" />
 pin down. <break time="1.2s" />
@@ -6281,7 +6792,14 @@ depend on. <break time="1.2s" />
 depend on. <break time="1.2s" />
 wrap up. <break time="1.2s" />
 be beside oneself with. <break time="1.2s" />
-put an emphasis on. <break time="1.2s" />
+put an emphasis on.
+```
+
+## ilv2_0140-0166（熟語 Lv2 No.140〜166・27語・1007文字）
+
+保存するファイル名：`ilv2_0140-0166.mp3`
+
+```
 put emphasis on. <break time="1.2s" />
 be conscious of. <break time="1.2s" />
 be contrary to. <break time="1.2s" />
@@ -6292,14 +6810,7 @@ scratch out. <break time="1.2s" />
 shy away from. <break time="1.2s" />
 strictly speaking. <break time="1.2s" />
 burst into. <break time="1.2s" />
-inform A of B.
-```
-
-## ilv2_0151-0200（熟語 Lv2 No.151〜200・50語・1911文字）
-
-保存するファイル名：`ilv2_0151-0200.mp3`
-
-```
+inform A of B. <break time="1.2s" />
 pile up. <break time="1.2s" />
 be keen on. <break time="1.2s" />
 in pursuit of. <break time="1.2s" />
@@ -6315,7 +6826,14 @@ concentrate A on B. <break time="1.2s" />
 assure A of B. <break time="1.2s" />
 interact with. <break time="1.2s" />
 judging from. <break time="1.2s" />
-on the dot. <break time="1.2s" />
+on the dot.
+```
+
+## ilv2_0167-0193（熟語 Lv2 No.167〜193・27語・1022文字）
+
+保存するファイル名：`ilv2_0167-0193.mp3`
+
+```
 in the meantime. <break time="1.2s" />
 in the meantime. <break time="1.2s" />
 joking aside. <break time="1.2s" />
@@ -6323,10 +6841,10 @@ transform A into B. <break time="1.2s" />
 be suited to. <break time="1.2s" />
 insist on. <break time="1.2s" />
 insist that. <break time="1.2s" />
-at … 's convenience. <break time="1.2s" />
+at — 's convenience. <break time="1.2s" />
 bounce back. <break time="1.2s" />
 get on one's nerves. <break time="1.2s" />
-look up … in the dictionary. <break time="1.2s" />
+look up — in the dictionary. <break time="1.2s" />
 at one's disposal. <break time="1.2s" />
 have a liking for. <break time="1.2s" />
 weigh on. <break time="1.2s" />
@@ -6335,48 +6853,55 @@ expose A to B. <break time="1.2s" />
 take pity on. <break time="1.2s" />
 in succession. <break time="1.2s" />
 stir up. <break time="1.2s" />
-What do you say to … ing?. <break time="1.2s" />
-be busy … ing. <break time="1.2s" />
-be in the habit of … ing. <break time="1.2s" />
-be worth … ing. <break time="1.2s" />
-cannot help … ing. <break time="1.2s" />
-feel like … ing. <break time="1.2s" />
-forget … ing. <break time="1.2s" />
-go on … ing. <break time="1.2s" />
-have a good time … ing. <break time="1.2s" />
-have difficulty in … ing. <break time="1.2s" />
-have trouble in … ing. <break time="1.2s" />
-in … ing. <break time="1.2s" />
-it is no use … ing. <break time="1.2s" />
-keep on … ing. <break time="1.2s" />
-keep … ing.
+What do you say to doing? <break time="1.2s" />
+be busy doing. <break time="1.2s" />
+be in the habit of doing. <break time="1.2s" />
+be worth doing. <break time="1.2s" />
+cannot help doing. <break time="1.2s" />
+feel like doing. <break time="1.2s" />
+forget doing. <break time="1.2s" />
+go on doing.
 ```
 
-## ilv2_0201-0250（熟語 Lv2 No.201〜250・50語・1930文字）
+## ilv2_0194-0220（熟語 Lv2 No.194〜220・27語・1038文字）
 
-保存するファイル名：`ilv2_0201-0250.mp3`
+保存するファイル名：`ilv2_0194-0220.mp3`
 
 ```
-make a point of … ing. <break time="1.2s" />
+have a good time doing. <break time="1.2s" />
+have difficulty in doing. <break time="1.2s" />
+have trouble in doing. <break time="1.2s" />
+in doing. <break time="1.2s" />
+it is no use doing. <break time="1.2s" />
+keep on doing. <break time="1.2s" />
+keep doing. <break time="1.2s" />
+make a point of doing. <break time="1.2s" />
 make a reservation. <break time="1.2s" />
-need … ing. <break time="1.2s" />
-never … without … ing. <break time="1.2s" />
-not … ing. <break time="1.2s" />
-of one's own … ing. <break time="1.2s" />
-on … ing. <break time="1.2s" />
-prevent … from … ing. <break time="1.2s" />
-regret … ing. <break time="1.2s" />
-see O … ing. <break time="1.2s" />
-spend … in … ing. <break time="1.2s" />
-there is no … ing. <break time="1.2s" />
-try … ing. <break time="1.2s" />
-will be … ing. <break time="1.2s" />
-with a view to … ing. <break time="1.2s" />
+need doing. <break time="1.2s" />
+never — without doing. <break time="1.2s" />
+not doing. <break time="1.2s" />
+of one's own doing. <break time="1.2s" />
+on doing. <break time="1.2s" />
+prevent — from doing. <break time="1.2s" />
+regret doing. <break time="1.2s" />
+see O doing. <break time="1.2s" />
+spend — in doing. <break time="1.2s" />
+there is no doing. <break time="1.2s" />
+try doing. <break time="1.2s" />
+will be doing. <break time="1.2s" />
+with a view to doing. <break time="1.2s" />
 by virtue of. <break time="1.2s" />
 be prone to. <break time="1.2s" />
 translate A into B. <break time="1.2s" />
 come to one's senses. <break time="1.2s" />
-impose A on B. <break time="1.2s" />
+impose A on B.
+```
+
+## ilv2_0221-0247（熟語 Lv2 No.221〜247・27語・1041文字）
+
+保存するファイル名：`ilv2_0221-0247.mp3`
+
+```
 at first glance. <break time="1.2s" />
 in all likelihood. <break time="1.2s" />
 be inclined to do. <break time="1.2s" />
@@ -6397,23 +6922,23 @@ for a rainy day. <break time="1.2s" />
 go bankrupt. <break time="1.2s" />
 owing to. <break time="1.2s" />
 be compelled to do. <break time="1.2s" />
-be incapable of … ing. <break time="1.2s" />
+be incapable of doing. <break time="1.2s" />
 vice versa. <break time="1.2s" />
 upwards of. <break time="1.2s" />
 be unwilling to do. <break time="1.2s" />
 scoop up. <break time="1.2s" />
-be on the verge of … ing. <break time="1.2s" />
-be susceptible to. <break time="1.2s" />
+be on the verge of doing. <break time="1.2s" />
+be susceptible to.
+```
+
+## ilv2_0248-0274（熟語 Lv2 No.248〜274・27語・996文字）
+
+保存するファイル名：`ilv2_0248-0274.mp3`
+
+```
 part and parcel. <break time="1.2s" />
 forbid A from B. <break time="1.2s" />
-in earnest.
-```
-
-## ilv2_0251-0300（熟語 Lv2 No.251〜300・50語・1864文字）
-
-保存するファイル名：`ilv2_0251-0300.mp3`
-
-```
+in earnest. <break time="1.2s" />
 avail oneself of. <break time="1.2s" />
 congratulate A on B. <break time="1.2s" />
 be tolerant of. <break time="1.2s" />
@@ -6423,7 +6948,7 @@ for oneself. <break time="1.2s" />
 in oneself. <break time="1.2s" />
 to oneself. <break time="1.2s" />
 lest someone should. <break time="1.2s" />
-lest … should. <break time="1.2s" />
+lest — should. <break time="1.2s" />
 conform to. <break time="1.2s" />
 persist in. <break time="1.2s" />
 boast of. <break time="1.2s" />
@@ -6437,7 +6962,14 @@ in the way of A A's way. <break time="1.2s" />
 to the fullest. <break time="1.2s" />
 aspire to. <break time="1.2s" />
 Suffice it to say that. <break time="1.2s" />
-from … on. <break time="1.2s" />
+from — on.
+```
+
+## ilv2_0275-0301（熟語 Lv2 No.275〜301・27語・1004文字）
+
+保存するファイル名：`ilv2_0275-0301.mp3`
+
+```
 weather permitting. <break time="1.2s" />
 be indifferent to. <break time="1.2s" />
 be devoid of. <break time="1.2s" />
@@ -6457,26 +6989,19 @@ abound in. <break time="1.2s" />
 frown at. <break time="1.2s" />
 be versed in. <break time="1.2s" />
 pave the way for. <break time="1.2s" />
-How come SV?. <break time="1.2s" />
+How come someone does? <break time="1.2s" />
 skim over. <break time="1.2s" />
 furnish A with B. <break time="1.2s" />
 go astray. <break time="1.2s" />
 keep abreast of. <break time="1.2s" />
 inasmuch as much as. <break time="1.2s" />
-ascribe A to B.
-```
-
-## ilv2_0301-0301（熟語 Lv2 No.301〜301・1語・15文字）
-
-保存するファイル名：`ilv2_0301-0301.mp3`
-
-```
+ascribe A to B. <break time="1.2s" />
 something of a.
 ```
 
-## ilv3_0001-0050（熟語 Lv3 No.1〜50・50語・1784文字）
+## ilv3_0001-0030（熟語 Lv3 No.1〜30・30語・1089文字）
 
-保存するファイル名：`ilv3_0001-0050.mp3`
+保存するファイル名：`ilv3_0001-0030.mp3`
 
 ```
 tropical rain forest. <break time="1.2s" />
@@ -6491,13 +7016,13 @@ judging from. <break time="1.2s" />
 stack up. <break time="1.2s" />
 transform A into B. <break time="1.2s" />
 insist on. <break time="1.2s" />
-get on … 's nerves. <break time="1.2s" />
+get on — 's nerves. <break time="1.2s" />
 whip up. <break time="1.2s" />
-at … 's disposal. <break time="1.2s" />
+at — 's disposal. <break time="1.2s" />
 take pity on. <break time="1.2s" />
 rub in. <break time="1.2s" />
 stir in. <break time="1.2s" />
-come close to … ing. <break time="1.2s" />
+come close to doing. <break time="1.2s" />
 cough up. <break time="1.2s" />
 impose A on B. <break time="1.2s" />
 opt for. <break time="1.2s" />
@@ -6508,7 +7033,14 @@ be confronted with. <break time="1.2s" />
 carbon dioxide. <break time="1.2s" />
 of one's own accord will. <break time="1.2s" />
 be destined to do. <break time="1.2s" />
-greenhouse effect. <break time="1.2s" />
+greenhouse effect.
+```
+
+## ilv3_0031-0060（熟語 Lv3 No.31〜60・30語・1047文字）
+
+保存するファイル名：`ilv3_0031-0060.mp3`
+
+```
 nod off. <break time="1.2s" />
 wander off. <break time="1.2s" />
 shove aside. <break time="1.2s" />
@@ -6528,14 +7060,7 @@ aspire to do. <break time="1.2s" />
 be indifferent toward. <break time="1.2s" />
 ozone layer. <break time="1.2s" />
 stumble on. <break time="1.2s" />
-embark on.
-```
-
-## ilv3_0051-0060（熟語 Lv3 No.51〜60・10語・352文字）
-
-保存するファイル名：`ilv3_0051-0060.mp3`
-
-```
+embark on. <break time="1.2s" />
 vending machine. <break time="1.2s" />
 over the hump. <break time="1.2s" />
 be indispensable to. <break time="1.2s" />

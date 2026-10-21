@@ -172,7 +172,7 @@
    "prompt": "熟語の意味を選べ",
    "label": "a piece of ～",
    "options": [
-    "2／3の",
+    "2、3の",
     "言うと",
     "ある程度",
     "１つの～"
@@ -15293,7 +15293,7 @@
    "label": "of one's (own) doing",
    "options": [
     "～が…した",
-    "2／3の",
+    "2、3の",
     "～を解決",
     "～の点で"
    ],
@@ -17195,7 +17195,7 @@
     "突然",
     "時々",
     "～の数",
-    "2／3の"
+    "2、3の"
    ],
    "answerIndex": 2,
    "panelOrder": [],
@@ -20773,7 +20773,7 @@
    "label": "(on (the) one hand ～,) on the other hand ～",
    "options": [
     "～が…した",
-    "2／3の",
+    "2、3の",
     "する人々",
     "他方では"
    ],
@@ -25313,7 +25313,7 @@
    "label": "at all cost(s)/any cost",
    "options": [
     "ぜひとも",
-    "2／3の",
+    "2、3の",
     "たとえば～",
     "～の方では"
    ],
@@ -25932,7 +25932,7 @@
    "prompt": "熟語の意味を選べ",
    "label": "to date",
    "options": [
-    "2／3の",
+    "2、3の",
     "さあ着いた",
     "現在まで",
     "～ところで"
@@ -26315,13 +26315,13 @@
     "のX倍～",
     "進行中で",
     "修理中で",
-    "2／3の"
+    "2、3の"
    ],
    "answerIndex": 3,
    "panelOrder": [],
    "timeLimit": 10,
    "imageUrl": "",
-   "oneLine": "a couple of ～ ＝ 2／3の"
+   "oneLine": "a couple of ～ ＝ 2、3の"
   },
   {
    "id": "ei:ilv1:813:e2j",

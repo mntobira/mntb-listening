@@ -39,16 +39,10 @@ import {
   abortRoom,
   advanceQuestion,
   releaseRoomCode,
-  attestResult,
-  saveHistory,
   startBattle,
   submitAnswer,
-  subscribeRtt,
-  currentRttMs,
-  watchRoom,
 } from '../data/battle';
 import { loadPool } from '../data/battlePool';
-import { applyRatingResult } from '../data/battleRanking';
 import {
   BATTLE_REVEAL_HOLD_MS,
   nationalAutoStartDelayMs,
@@ -62,12 +56,7 @@ import { isClockSkewed, serverNow, toMillis } from '../core/serverClock';
 import {
   canSubmitAnswer,
   connectionQuality,
-  didSuspend,
   offlineNotice,
-  reconnectNotice,
-  resumeNotice,
-  retryDelayMs,
-  type ConnectionState,
 } from '../core/connection';
 import type {
   BattleAnswerSheet,
@@ -78,13 +67,15 @@ import { answerKeyOf } from '../core/types';
 import { COUNTDOWN_TOTAL_MS, firstDeadlineSec } from '../core/battleLive';
 import { preloadTargets, warmAssets } from '../core/preload';
 import {
-  areAttestationsAgreed,
   computeBattleResult,
   evaluateByForfeit,
   extractAnsweredIndexes,
   findFirstLeaver,
 } from './battleRoomSelectors';
 import type { BattleRoomActions, BattleRoomState } from './battleRoomTypes';
+import { useBattleRoomConnection } from './useBattleRoomConnection';
+import { useBattleSuspendTracker, useBattleResumeNotice, useBattleLeaveOnUnmount } from './useBattleRoomLifecycle';
+import { useBattlePostMatch } from './useBattlePostMatch';
 
 export type { BattleRoomActions, BattleRoomState } from './battleRoomTypes';
 
@@ -113,114 +104,15 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
   // ★答えたのに解答が消える★。
   const [now, setNow] = useState(() => serverNow());
   const [panel, setPanel] = useState<number[]>([]);
-  const [rating, setRating] = useState<{ before: number; after: number } | null>(null);
 
-  /**
-   * 通信の状態。
-   * 既定を 'online' にしているのは、購読が始まる前の一瞬に
-   * 「通信が切れています」と出すと誤解を招くため。
-   */
-  const [connection, setConnection] = useState<ConnectionState>('online');
 
-  /** 画面を離れて戻ってきたときに出す知らせ */
-  const [resumeMessage, setResumeMessage] = useState<string | null>(null);
 
-  /** 二重実行を防ぐための記録（進行・申告・レート反映） */
+  /** 二重実行を防ぐための記録（進行）。申告・レート反映の記録は useBattlePostMatch.ts */
   const advancedRef = useRef<number>(-1);
   const revealStartedRef = useRef<{ index: number; at: number } | null>(null);
-  const attestedRef = useRef(false);
-  const ratedRef = useRef(false);
 
-  // ------------------------------------------------------------
-  // 部屋の購読
-  // ------------------------------------------------------------
-  /**
-   * ★購読が切れても自動で張り直す★
-   * Firestore の購読はエラー（権限・一時的な障害・長時間の休止）で止まると、
-   * 二度と通知を返さない。以前はここで「通信が切れました」と出したまま
-   * 画面が固まり、再読み込みするしかなかった。
-   * 0.4秒→0.8秒→…と間隔を空けて張り直し、端末が「オンラインに戻った」
-   * 「画面に戻ってきた」ときは待たずにすぐ張り直す。
-   */
-  const [subscribeNo, setSubscribeNo] = useState(0);
-  const resubAttemptRef = useRef(0);
-  const connectionRef = useRef<ConnectionState>('online');
-  useEffect(() => {
-    if (!roomId) return;
-    const kick = () => { resubAttemptRef.current = 0; setSubscribeNo((n) => n + 1); };
-    const onVisible = () => { if (document.visibilityState === 'visible' && connectionRef.current === 'offline') kick(); };
-    window.addEventListener('online', kick);
-    document.addEventListener('visibilitychange', onVisible);
-    const onOffline = () => setConnection('offline');
-    window.addEventListener('offline', onOffline);
-    return () => {
-      window.removeEventListener('online', kick);
-      window.removeEventListener('offline', onOffline);
-      document.removeEventListener('visibilitychange', onVisible);
-    };
-  }, [roomId]);
-
-  const offlineSinceRef = useRef<number | null>(null);
-  const [reconnectMessage, setReconnectMessage] = useState<string | null>(null);
-  useEffect(() => {
-    const prev = connectionRef.current;
-    connectionRef.current = connection;
-    if (connection === 'offline' && prev !== 'offline') offlineSinceRef.current = Date.now();
-    if (connection === 'online' && prev === 'offline') {
-      const since = offlineSinceRef.current;
-      offlineSinceRef.current = null;
-      const msg = since ? reconnectNotice(Date.now() - since) : null;
-      if (msg) {
-        setReconnectMessage(msg);
-        const t = window.setTimeout(() => setReconnectMessage(null), 2500);
-        return () => window.clearTimeout(t);
-      }
-    }
-    return undefined;
-  }, [connection]);
-
-  useEffect(() => {
-    if (!roomId) {
-      setLoading(false);
-      return;
-    }
-    if (subscribeNo === 0) setLoading(true);
-    let retry: ReturnType<typeof setTimeout> | undefined;
-    let alive = true;
-    const stop = watchRoom(
-      roomId,
-      (next) => {
-        if (!alive) return;
-        setLoading(false);
-        resubAttemptRef.current = 0;
-        if (!next) {
-          setError('この対戦はすでに終了しています。');
-          setRoom(null);
-          return;
-        }
-        // 一時的な通信エラーの表示は、届いた時点で消す
-        setError((e) => (e && /通信/.test(e) ? null : e));
-        setRoom(next);
-      },
-      (e) => {
-        if (!alive) return;
-        setLoading(false);
-        setConnection('offline');
-        // ★張り直す★（権限エラーでも、部屋が閉じたかどうかは次の購読で分かる）
-        const attempt = resubAttemptRef.current;
-        resubAttemptRef.current = attempt + 1;
-        if (attempt >= 8) { setError(e.message); return; }
-        retry = setTimeout(() => setSubscribeNo((n) => n + 1), retryDelayMs(attempt, Math.random(), 500, 8_000));
-      },
-      // 通信の状態を受け取る（圏外でも購読は続くので、これが無いと気付けない）
-      setConnection,
-    );
-    return () => { alive = false; if (retry) clearTimeout(retry); stop(); };
-  }, [roomId, subscribeNo]);
-
-  // 往復時間（アンテナ表示）
-  const [rttMs, setRttMs] = useState<number | null>(() => currentRttMs());
-  useEffect(() => subscribeRtt(setRttMs), []);
+  // 部屋の購読・自動の張り直し・再接続の知らせ・往復時間は useBattleRoomConnection.ts
+  const { connection, reconnectMessage, rttMs } = useBattleRoomConnection(roomId, { setRoom, setLoading, setError });
 
   // ------------------------------------------------------------
   // 教科のプールを読み込む（★選ばれた1教科だけ★）
@@ -253,69 +145,9 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
   // ------------------------------------------------------------
   const status = room?.status;
 
-  /**
-   * 端末が休止していたことを検知するための記録。
-   *
-   * ★タイマーの飛びで判定する理由★
-   * visibilitychange だけでは足りない。機種やブラウザによって
-   * 画面消灯・別アプリへの移動で発火しない場合があるうえ、
-   * 「どれだけの間離れていたか」が分からない。
-   * タイマーが実際に何ミリ秒飛んだかを見れば、
-   * どんな理由で止まっていても確実に分かる。
-   */
-  const lastTickRef = useRef<number>(Date.now());
-  /** 休止に入る直前の状況（復帰時に何が変わったかを比べるため） */
-  const beforeSuspendRef = useRef<{ index: number } | null>(null);
-  /** 復帰の検知フラグ（実際の知らせは下の useEffect が作る） */
-  const [suspendedAt, setSuspendedAt] = useState<number>(0);
-
-  useEffect(() => {
-    if (status !== 'playing') return;
-    lastTickRef.current = Date.now();
-
-    // 200ms 間隔。★1秒間隔にしない理由★
-    // 締切直前の「残り0.4秒」が表示に出ず、
-    // 押せたのに間に合わなかったように見えてしまう。
-    const timer = window.setInterval(() => {
-      const localNow = Date.now();
-      // ★端末が休止していたかを、タイマーの飛びで見る★
-      // 画面消灯・別アプリへの移動・端末の省電力で割り込みは止まる。
-      // 止まっていた間に問題が進んだり試合が終わっていることがあるので、
-      // 復帰したことを記録して、あとで利用者に伝える。
-      if (didSuspend(lastTickRef.current, localNow)) {
-        setSuspendedAt(localNow);
-      }
-      lastTickRef.current = localNow;
-      setNow(serverNow());
-    }, 200);
-    return () => window.clearInterval(timer);
-  }, [status]);
-
-  /**
-   * 画面が見えなくなった瞬間を捉える。
-   *
-   * ★タイマーの飛びだけに頼らない理由★
-   * 離れる「前」の状況（何問目だったか）を覚えておかないと、
-   * 復帰時に「問題が進んだ」ことを判定できない。
-   * visibilitychange は離れる瞬間に発火するので、そこで控えておく。
-   * 発火しない機種のために、タイマーの飛びによる検知も併用している
-   * （どちらか片方でも動けば知らせが出る）。
-   */
+  // 時計（200ms）と端末の休止の検知は useBattleRoomLifecycle.ts
   const currentIndexForSuspend = room?.currentIndex ?? 0;
-  useEffect(() => {
-    if (status !== 'playing') return;
-
-    const onHide = () => {
-      if (document.visibilityState === 'hidden') {
-        beforeSuspendRef.current = { index: currentIndexForSuspend };
-        // タイマーが止まる直前の時刻を入れておく。
-        // これが無いと、復帰時の飛びが「離れていた時間」にならない。
-        lastTickRef.current = Date.now();
-      }
-    };
-    document.addEventListener('visibilitychange', onHide);
-    return () => document.removeEventListener('visibilitychange', onHide);
-  }, [status, currentIndexForSuspend]);
+  const { beforeSuspendRef, suspendedAt, setSuspendedAt } = useBattleSuspendTracker(status, currentIndexForSuspend, setNow);
 
   // ------------------------------------------------------------
   // 部屋の中身を扱いやすい形に直す
@@ -532,35 +364,8 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
     if (roomId && (finished || status === 'aborted')) releaseRoomCode(roomId);
   }, [roomId, finished, status]);
 
-  /**
-   * 復帰したときの知らせを作る。
-   *
-   * ★黙って進めない理由★
-   * 画面を離れている間に問題が進んだり試合が終わったりするのは正しい挙動だが、
-   * 何も言わないと利用者には
-   *   「勝手に進んだ」「答えたのに点が入っていない」
-   * と見える。実際に何が起きたのかをそのまま伝える。
-   */
-  useEffect(() => {
-    if (suspendedAt === 0) return;
-
-    const before = beforeSuspendRef.current;
-    const message = resumeNotice({
-      suspended: true,
-      // 離れる前の問題番号を控えられていた場合だけ比較する。
-      // 控えが無い（visibilitychange が発火しなかった）場合は
-      // 「進んだかどうか」を偽らずに false として扱う。
-      indexChanged: before != null && before.index !== currentIndex,
-      finished,
-    });
-
-    beforeSuspendRef.current = null;
-    setSuspendedAt(0);
-    setResumeMessage(message);
-  }, [suspendedAt, currentIndex, finished]);
-
-  /** 復帰の知らせを消す（画面側から呼ぶ） */
-  const dismissResumeMessage = useCallback(() => setResumeMessage(null), []);
+  // 復帰したときの知らせ（useBattleRoomLifecycle.ts）
+  const { resumeMessage, dismissResumeMessage } = useBattleResumeNotice({ suspendedAt, setSuspendedAt, beforeSuspendRef, currentIndex, finished });
 
   const scores = useMemo(() => {
     if (questions.length === 0) return null;
@@ -622,75 +427,11 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
     [scores, finished, rules, explicitForfeit, firstLeaver, uid],
   );
 
-  // ------------------------------------------------------------
-  // 結果の申告
-  // ------------------------------------------------------------
-  const myAttest = room?.attest?.[uid];
-  const [attestRetry, setAttestRetry] = useState(0);
-  useEffect(() => {
-    if (!roomId || !result || !scores || attestedRef.current) return;
-    // ★結果画面を再読み込みしたときに再申告しない★
-    //   申告はルールで「1人1回・上書き不可」なので、2回目は必ず拒否される。
-    //   以前はここで拒否エラーが未処理例外になっていた（独立検証で指摘）。
-    //   既に自分の申告が部屋にあれば、それを結果として使う。
-    if (myAttest) {
-      attestedRef.current = true;
-      return;
-    }
-    attestedRef.current = true;
-    void attestResult(roomId, {
-      myScore: scores.me.score,
-      opponentScore: scores.other.score,
-      outcome: result.outcome,
-    }).catch((e: Error) => {
-      // ★結果の申告が届かなかったら、通信が戻ったときにもう一度送る★
-      //   ここで諦めると、レートも履歴も残らない試合になる。
-      setError(`${e.message} 通信が戻ると自動で送り直します。`);
-      window.setTimeout(() => { attestedRef.current = false; setAttestRetry((n) => n + 1); }, 4_000);
-    });
-  }, [roomId, result, scores, myAttest, attestRetry]);
-
-  // ------------------------------------------------------------
-  // レート反映（★相互確認が揃ってから★）
-  // ------------------------------------------------------------
-  const attest = room?.attest;
-  useEffect(() => {
-    if (!roomId || !result || !scores || !subject || ratedRef.current) return;
-
-    const mine = attest?.[uid];
-    const theirs = opponentUid ? attest?.[opponentUid] : undefined;
-
-    // 相手が離脱した場合は相手の申告が来ないので、
-    // 不戦勝として（変化量を半分にして）反映する。
-    const forfeit = explicitForfeit || (byForfeit && !theirs);
-    if (!mine) return;
-    if (!theirs && !forfeit) return;
-
-    // 申告が食い違ったら無効試合（レートを動かさない）
-    if (theirs && !areAttestationsAgreed(mine, theirs)) {
-      ratedRef.current = true;
-      return;
-    }
-
-    ratedRef.current = true;
-    const opponentRating = opponent?.rating ?? 1500;
-
-    void applyRatingResult(roomId, opponentRating, result.outcome, forfeit, opponentUid).then((change) => {
-      if (change) setRating(change);
-      void saveHistory({
-        roomId,
-        subject,
-        outcome: result.outcome,
-        myScore: scores.me.score,
-        opponentScore: scores.other.score,
-        opponentNickname: opponent?.nickname || '対戦相手',
-        ratingBefore: change?.before ?? 0,
-        ratingAfter: change?.after ?? 0,
-        // 履歴から「間違えた問題だけ再対戦」できるように、間違えた出題IDを残す（最大30）
-        wrongIds: scores.me.perQuestion.filter((q) => !q.correct).map((q) => questionIds?.[q.index]).filter((id): id is string => typeof id === 'string').slice(0, 30),
-      });
-    });
-  }, [roomId, result, scores, subject, attest, uid, opponentUid, opponent, byForfeit, explicitForfeit]);
+  // 結果の申告・相互確認・レート反映・履歴（useBattlePostMatch.ts）
+  const { rating } = useBattlePostMatch({
+    roomId, room, uid, result, scores, subject, opponentUid, opponent, byForfeit, explicitForfeit,
+    questionIds: room?.questionIds, setError,
+  });
 
   // ------------------------------------------------------------
   // 操作
@@ -895,31 +636,8 @@ export function useBattleRoom(roomId: string | null): BattleRoomState & BattleRo
     void abortRoom(roomId);
   }, [roomId]);
 
-  /**
-   * ★試合中に画面ごと消えたら退出として記録する★
-   *
-   * 下のナビで「ホーム」に移る・タブを閉じる（pagehide）と、
-   * このフックはアンマウントされる。以前は何も書かなかったので、
-   * 相手は無回答が5問続くまで待たされていた。
-   * 進行中（playing）で、まだ試合が終わっていないときだけ書く。
-   * 決着済みの部屋に書くとルールで拒否されるだけなので害は無いが、
-   * 無駄な書き込みを避けるために条件を付ける。
-   */
-  const leavingRef = useRef<{ roomId: string | null; active: boolean }>({ roomId, active: false });
-  leavingRef.current = { roomId, active: status === 'waiting' || (status === 'playing' && !finished) };
-  useEffect(() => {
-    const flush = () => {
-      const cur = leavingRef.current;
-      if (cur.roomId && cur.active) void abortRoom(cur.roomId);
-    };
-    window.addEventListener('pagehide', flush);
-    return () => {
-      window.removeEventListener('pagehide', flush);
-      flush();
-    };
-    // 部屋が変わったときだけ張り直す（status の変化では張り直さない）
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId]);
+  // 試合中に画面ごと消えたら退出として記録する（useBattleRoomLifecycle.ts）
+  useBattleLeaveOnUnmount(roomId, status, finished);
 
   return {
     loading,

@@ -23,7 +23,7 @@ import { claimMissionReward, loadMyGrowth, openChest, subscribeGrowth } from '..
 import { play, primeAudio } from './feedback';
 import { AMBER, BattleButton, BattleLoading, BattleNotice, BattleShell, BattleTitle, GOLD, INK, INK_SUB, LINE } from './BattleParts';
 import type { MissionDestination } from '../core/growth';
-import { GrowthAvatar, LevelBar, MissionRow } from './GrowthParts';
+import { GrowthAvatar, LevelBar, MissionRow, flyCoins } from './GrowthParts';
 import { useMasonrySpans } from '../../hooks/useMasonrySpans';
 import { useIsDesktop } from '../../hooks/useMediaQuery';
 
@@ -87,6 +87,9 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
     setOpening(false);
     if (r?.reward) {
       play(r.reward.jackpot ? 'jackpot' : 'chest');
+      // 宝箱のコインも残高へ飛ばす（ミッションと同じ演出）
+      const chestBtn = document.querySelector<HTMLElement>('[data-chest-open]');
+      if (chestBtn) flyCoins(chestBtn, r.reward.coins);
       setChestReward(r.reward);
       setToast(`${r.reward.jackpot ? '大当たり！ ' : ''}宝箱から +${r.reward.xp} XP ／ +${r.reward.coins} コイン`);
     } else if (r === null) {
@@ -299,7 +302,7 @@ export function BattleMissions({ onBack, onBattle, onReview, onShop, onRush, sta
         </div>
         {chestReady && (
           <div className="mt-3">
-            <BattleButton onClick={() => void open()} disabled={opening} icon={<Gift size={18} />}>
+            <BattleButton data-chest-open onClick={() => void open()} disabled={opening} icon={<Gift size={18} />}>
               {opening ? 'あけています…' : '宝箱をあける'}
             </BattleButton>
           </div>

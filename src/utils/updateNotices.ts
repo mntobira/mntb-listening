@@ -22,7 +22,7 @@
  */
 
 import { UPDATE_NOTICES, type UpdateNotice, type UpdateNoticeKind } from '../data/updateNotices';
-import { safeLocalStorage } from './safeLocalStorage';
+import { safeLocalStorage, safeParseJson } from './safeLocalStorage';
 
 /** localStorage のキー */
 const READ_KEY = 'update_notices_read_v1';
@@ -39,9 +39,8 @@ export function loadReadIds(): Set<string> {
   const storage = safeStorage();
   if (!storage) return new Set();
   try {
-    const raw = storage.getItem(READ_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return new Set(Array.isArray(parsed) ? parsed.filter((v) => typeof v === 'string') : []);
+    const parsed = safeParseJson<unknown[]>(storage.getItem(READ_KEY), [], Array.isArray);
+    return new Set(parsed.filter((v): v is string => typeof v === 'string'));
   } catch {
     return new Set();
   }
@@ -149,9 +148,8 @@ export function mergeNotices(local: readonly UpdateNotice[], remote: readonly Up
 
 function readRemoteCache(): UpdateNotice[] {
   try {
-    const raw = safeStorage()?.getItem(REMOTE_CACHE_KEY);
-    const list = raw ? JSON.parse(raw) : [];
-    return Array.isArray(list) ? list.map((n: { id?: unknown } | null | undefined) => parseRemoteNotice(String(n?.id ?? ''), n)).filter((n): n is UpdateNotice => !!n) : [];
+    const list = safeParseJson<Array<{ id?: unknown } | null | undefined>>(safeStorage()?.getItem(REMOTE_CACHE_KEY), [], Array.isArray);
+    return list.map((n) => parseRemoteNotice(String(n?.id ?? ''), n)).filter((n): n is UpdateNotice => !!n);
   } catch { return []; }
 }
 let remoteCache: UpdateNotice[] = readRemoteCache();

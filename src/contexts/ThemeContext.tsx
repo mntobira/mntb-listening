@@ -1,6 +1,7 @@
 // src/contexts/ThemeContext.tsx
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { safeSetItem } from '../utils/storageGuard';
+import { safeGetItem } from '../utils/safeLocalStorage';
 
 type Theme = 'light' | 'dark';
 type ThemePref = Theme | 'system';
@@ -23,7 +24,8 @@ function getSystemTheme(): Theme {
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [preference, setPreferenceState] = useState<ThemePref>(() => {
     if (typeof window === 'undefined') return 'system';
-    return (localStorage.getItem(STORAGE_KEY) as ThemePref) || 'system';
+    // 読めない端末（プライベートブラウズ等）では描画中に例外を出さず、既定の「システムに合わせる」
+    return (safeGetItem(STORAGE_KEY) as ThemePref) || 'system';
   });
 
   const [theme, setTheme] = useState<Theme>(() =>

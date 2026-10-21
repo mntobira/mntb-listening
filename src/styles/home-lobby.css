@@ -1,0 +1,321 @@
+/* src/styles/home-lobby.css — index.css から分割（C-16）：ホームのロビー・とびら君の豆知識・フォーカスリング。
+ * 読み込み順は index.css の @import の並びで固定（並べ替えるとカスケードが変わる）。 */
+/* Home lobby: one battle stage, peripheral shortcuts, and a study notebook.
+   Scoped to Home so quiz, battle and other screen layouts remain unchanged. */
+.home-lobby {
+  --lobby-rose: #bd5878;
+  --lobby-blue: #287dad;
+  background: radial-gradient(ellipse at 25% 30%, #fffdf8 0, transparent 60%), linear-gradient(150deg, #fff1f5, #fdfbf7 55%, #f5e5ed);
+  color: #344451;
+}
+.home-lobby-lines { position: absolute; inset: 0; pointer-events: none; opacity: .24; background: repeating-linear-gradient(transparent 0 31px, #e6ccd6 31px 32px); }
+.home-lobby-scroll { position: relative; z-index: 10; overscroll-behavior: contain; padding-inline: 18px; padding-top: 18px; }
+.home-lobby-content { width: 100%; max-width: 1120px; margin-inline: auto; padding-bottom: 16px; }
+.home-lobby-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.home-player { min-width: 0; flex: 1; padding-top: 2px; }
+.home-date { color: #7d737d; font-size: 10px; letter-spacing: .12em; margin-bottom: 4px; }
+.home-school { font-size: 11px; font-weight: 700; overflow-wrap: anywhere; margin-bottom: 4px; }
+.home-player h1 { font-family: var(--font-handwriting); font-size: 16px; font-weight: 700; line-height: 1.5; }
+.home-player h1 span { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 21px; }
+.home-streak { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; color: #a85d69; font-size: 10px; margin-top: 5px; }
+.home-streak b { font-size: 15px; }
+.home-milestone { color: #796c75; border-left: 1px solid #dcc6ce; padding-left: 6px; }
+.home-header-tools { flex-shrink: 0; width: 116px; }
+.home-countdown { padding: 3px 8px; text-align: center; border-block: 1px solid #e4baca; border-radius: 4px 4px 16px 16px; background: #fffaf9bf; box-shadow: 0 4px 0 #efdae454; }
+.home-countdown > span { font-size: 10px; letter-spacing: .06em; }
+.home-countdown > div { font-size: 10px; color: #a15370; }
+.home-countdown strong { font-family: var(--font-handwriting); font-size: 26px; line-height: 1.15; margin-inline: 2px; font-variant-numeric: tabular-nums; }
+.home-utility-row { display: flex; justify-content: center; gap: 8px; margin-top: 5px; }
+.home-header-icon { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 44px; min-height: 44px; color: #806574; border-radius: 12px; cursor: pointer; }
+.home-header-icon > span:not(.home-notice-dot) { font-size: 9px; }
+.home-header-icon:hover { background: #fff8fc; }
+.home-notice-dot, .home-review-badge { position: absolute; right: -1px; top: -1px; min-width: 18px; height: 18px; padding-inline: 3px; border: 2px solid #fff8fb; border-radius: 50px; background: #bc4c72; color: white; font: 700 9px/14px var(--font-modern); text-align: center; }
+.home-lobby-layout { display: grid; gap: 18px; margin-top: 10px; align-items: start; }
+.home-arena { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 10px; position: relative; }
+.home-arena-main { min-width: 0; text-align: center; position: relative; padding-top: 6px; }
+.home-eyebrow { color: #638397; font-size: 9px; font-weight: 800; letter-spacing: .22em; }
+.home-arena h2 { font-family: var(--font-handwriting); font-size: clamp(18px, 5.5vw, 25px); line-height: 1.45; font-weight: 700; margin-top: 5px; white-space: nowrap; }
+.home-battle-emblem { position: relative; isolation: isolate; width: 208px; height: 140px; max-width: 100%; margin: 2px auto 6px; display: flex; justify-content: center; align-items: center; }
+.home-battle-emblem::before { content: ''; position: absolute; z-index: -2; inset: -25px -20px -18px; background: radial-gradient(ellipse, #cce8f0a6, #e7f0f151 50%, transparent 70%); }
+.home-emblem-orbit { position: absolute; width: 178px; height: 112px; border: 1px solid #91bbce77; border-radius: 50%; transform: rotate(-18deg); }
+.home-emblem-orbit::after { content: ''; position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #a6cddc; top: 12px; left: 18px; box-shadow: 134px 65px 0 -1px #d89dad; }
+.home-emblem-paper { position: absolute; width: 62px; height: 83px; border-radius: 8px 8px 16px 8px; background: repeating-linear-gradient(#fffdf7 0 16px, #b7d1db66 16px 17px); border: 2px solid #fff; box-shadow: 0 5px 12px #7764801c; display: flex; align-items: center; justify-content: center; color: #7ca5b9; }
+.home-emblem-paper svg { width: 30px; height: 30px; }
+.home-emblem-paper-left { transform: translate(-55px, 3px) rotate(-20deg); }
+.home-emblem-paper-right { transform: translate(55px, -4px) rotate(17deg); color: #c57e96; background: repeating-linear-gradient(#fff7f8 0 16px, #ecc2d166 16px 17px); }
+.home-emblem-core { position: relative; display: grid; place-items: center; width: 98px; height: 98px; background: linear-gradient(145deg, #f9ffff, #d6eaf5); color: #3284b2; border: 5px solid #fff; border-radius: 32px; transform: rotate(-8deg); box-shadow: 0 7px 0 #93b9ce, 0 14px 25px #316c9b25, inset 0 0 0 1px #b9d6e5; }
+.home-emblem-core svg { width: 55px; height: 55px; stroke-width: 1.65; transform: rotate(8deg); filter: drop-shadow(0 2px 0 white); }
+.home-emblem-tag { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%) rotate(-5deg); padding: 2px 19px; border-radius: 4px; color: #88612d; background: #fce6b5; border: 2px solid #fff8e7; box-shadow: 0 3px 6px #92745320; font-size: 13px; font-weight: 800; letter-spacing: .1em; white-space: nowrap; }
+.home-emblem-spark { position: absolute; right: 16px; top: 11px; width: 20px; color: #d5a962; }
+.home-battle-button { position: relative; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 71px; padding: 11px 13px; border: 3px solid #fff; border-radius: 24px 13px 26px 14px; color: white; background: linear-gradient(120deg, #4098c7, #287dad 70%, #256d9a); box-shadow: 0 5px 0 #195d89, 0 10px 22px #367ba736, inset 0 1px 0 #ffffff5c; cursor: pointer; transition: box-shadow .15s, filter .15s; }
+.home-battle-button strong { display: block; font-size: clamp(17px, 5vw, 22px); letter-spacing: .035em; line-height: 1.4; font-weight: 800; white-space: nowrap; }
+.home-battle-button small { display: block; font-size: 10px; color: #edf8ff; margin-top: 2px; }
+.home-battle-arrow { display: grid; place-items: center; width: 29px; height: 29px; flex-shrink: 0; border-radius: 50%; background: #ffffff20; }
+.home-battle-button:hover { filter: brightness(1.08); box-shadow: 0 5px 0 #195d89, 0 12px 24px #367ba749; }
+.home-arena-caption { font-family: var(--font-handwriting); color: #6e7e89; font-size: 11px; margin-top: 12px; }
+.home-shortcuts { display: flex; flex-direction: column; gap: 16px; align-items: center; padding-top: 13px; }
+.home-shortcut { display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center; color: #725468; font-size: 10px; font-weight: 700; width: 100%; min-height: 65px; cursor: pointer; border-radius: 12px; }
+.home-shortcut-disc { position: relative; width: 48px; height: 48px; border-radius: 18px 20px 18px 22px; border: 3px solid #fff; display: grid; place-items: center; color: #b25b7c; background: linear-gradient(145deg, #fff0f6, #f1d4e0); box-shadow: 0 3px 0 #d4aabd, 0 5px 14px #96708016; transform: rotate(-7deg); transition: transform .15s; }
+.home-shortcut-disc > svg { transform: rotate(7deg); }
+.home-shortcut-sage { background: linear-gradient(145deg, #f7fbf2, #dce8d8); color: #6f9275; box-shadow: 0 3px 0 #b6cbb6, 0 5px 14px #96708016; transform: rotate(6deg); border-radius: 50%; }
+.home-shortcut-sage > svg { transform: rotate(-6deg); }
+.home-shortcut:hover .home-shortcut-disc { transform: translateY(-2px); }
+.home-shortcuts .home-feedback-shortcut { display: flex; flex-direction: column; justify-content: center; gap: 6px; width: 100%; min-height: 65px; color: #725468; font-size: 10px; text-decoration: none; border-radius: 12px; }
+.home-feedback-shortcut > svg { box-sizing: content-box; width: 22px; height: 22px; padding: 10px; border: 3px solid white; border-radius: 50%; background: linear-gradient(145deg, #fff9ec, #f1e2c9); color: #a38656; box-shadow: 0 3px 0 #d3bfa0, 0 5px 14px #96708016; }
+.home-study-paper { min-width: 0; position: relative; border: 1px solid #e7cbd6; border-radius: 5px 18px 18px 5px; background: #fffefaeb; padding: 12px 15px 0 20px; box-shadow: 3px 4px 0 -1px #fff9f6, 3px 4px 0 0 #e5d2da, 0 8px 22px #9162790c; }
+.home-study-paper::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; border-left: 1px solid #f3ccd6; pointer-events: none; }
+.home-paper-binding { position: absolute; left: -7px; top: 25px; bottom: 25px; display: flex; flex-direction: column; justify-content: space-between; }
+.home-paper-binding i { width: 13px; height: 6px; border: 1px solid #c7b2bb; border-radius: 8px; background: #fcf5f6; }
+.home-study-topline { margin-block: -4px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.home-study-kicker { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #956a7d; font-weight: 700; flex-shrink: 0; }
+.home-subject-switch { display: flex; align-items: center; gap: 5px; text-align: right; min-height: 44px; font-size: 10px; color: #8b5c71; cursor: pointer; padding: 3px 6px; border-radius: 8px; background: #faf0f3; }
+.home-subject-switch > span { overflow-wrap: anywhere; }
+.home-subject-switch > svg { flex-shrink: 0; }
+.home-study-button { display: flex; gap: 10px; align-items: center; justify-content: space-between; width: 100%; text-align: left; padding: 3px 0 12px; min-height: 65px; cursor: pointer; border-bottom: 1px dashed #e4cad4; }
+.home-study-button strong { display: block; font-family: var(--font-handwriting); font-weight: 700; font-size: 22px; line-height: 1.5; color: #704758; }
+.home-study-button small { display: block; font-size: 10px; color: #8b7680; line-height: 1.5; }
+.home-study-arrow { flex-shrink: 0; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #bd6885; color: #fff; box-shadow: 0 3px 0 #994762; }
+.home-study-button:hover .home-study-arrow { background: #a55170; }
+.home-progress-summary { display: flex; gap: 11px; align-items: center; padding-top: 10px; }
+.home-progress-ring { flex-shrink: 0; width: 47px; height: 47px; border-radius: 50%; padding: 4px; background: conic-gradient(#bd6885 var(--progress), #f1e4e9 0); }
+.home-progress-ring > span { display: flex; justify-content: center; align-items: baseline; padding-top: 9px; background: #fffefa; height: 100%; border-radius: 50%; font-size: 15px; font-weight: 800; color: #a85d78; }
+.home-progress-ring small { font-size: 8px; margin-left: 1px; }
+.home-progress-text { flex: 1; min-width: 0; }
+.home-progress-text h2 { display: flex; align-items: center; flex-wrap: wrap; column-gap: 4px; font-size: 10px; font-weight: 700; color: #705867; }
+.home-progress-text h2 > span { font-size: 9px; font-weight: 400; margin-left: auto; }
+.home-progress-text p { font-size: 10px; margin: 2px 0 4px; color: #7c747b; font-variant-numeric: tabular-nums; }
+.home-progress-text p strong { font-size: 17px; color: #634d5e; }
+.home-progress-track { height: 4px; border-radius: 10px; background: #f1e4e9; overflow: hidden; }
+.home-progress-track > span { display: block; height: 100%; background: linear-gradient(90deg, #e0a0b4, #b65d7d); border-radius: inherit; }
+.home-all-progress > summary { list-style: none; display: flex; align-items: center; justify-content: flex-end; gap: 3px; min-height: 44px; font-size: 10px; font-weight: 700; color: #875870; cursor: pointer; }
+.home-all-progress > summary::-webkit-details-marker { display: none; }
+.home-all-progress[open] > summary svg { transform: rotate(90deg); }
+.home-progress-list { padding: 2px 0 14px; display: grid; gap: 12px; }
+.home-progress-help { font-size: 10px; color: #796e76; }
+.home-subject-progress > div:first-child { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 5px; font-size: 11px; margin-bottom: 5px; }
+.home-subject-progress > div > span:last-child { font-size: 10px; color: #836d79; }
+.home-next-chapter { display: flex; align-items: center; gap: 6px; min-height: 44px; font-size: 11px; text-align: left; color: #9f5a75; cursor: pointer; }
+.home-rika-link { align-items: center; gap: 6px; min-height: 44px; width: 100%; color: #7b4fa8; font-size: 11px; border-top: 1px dashed #e9dce6; cursor: pointer; }
+.home-rika-link svg:last-child { margin-left: auto; }
+.home-lobby-footer { display: grid; gap: 10px; margin-top: 18px; }
+/* とびら君の豆知識。対戦ステージの中（上から2番目の区画）に置くので、
+   下に何が増えても初期表示から押し出されない。
+   ★grid-column: 1 / -1 が要点★ ステージは「本文 + ショートカット列」の
+   2 カラムなので、指定しないと狭い側に入って折り返しが増え、
+   その高さぶん「学習を始める」を画面外へ押し出す（実測 320x568 で 64px）。 */
+.home-arena-tip { grid-column: 1 / -1; margin-top: 10px; padding: 0 2px; text-align: left; }
+.home-arena-study .home-emblem-core { color: #b56984; background: #fae7ef; box-shadow: 0 7px 0 #d5adbd, 0 14px 25px #91648025; }
+/* Focus rings must stay visible on soft pastel backgrounds. */
+.home-lobby :is(button, summary):focus-visible { outline: 3px solid #287dad; outline-offset: 4px; }
+@media (min-width: 768px) {
+  .home-lobby-scroll { padding-inline: 40px; padding-top: 28px; }
+  .home-lobby-content { max-width: 760px; }
+  .home-player h1 { font-size: 19px; }
+  .home-player h1 span { display: inline; font-size: 25px; }
+  .home-date { font-size: 11px; }
+  .home-streak { font-size: 12px; margin-top: 10px; }
+  .home-header-tools { width: 205px; display: flex; flex-direction: row-reverse; gap: 10px; align-items: center; }
+  .home-countdown { min-width: 122px; }
+  .home-utility-row { margin: 0; }
+  .home-arena { grid-template-columns: minmax(0, 1fr) 82px; gap: 22px; }
+  .home-arena h2 { font-size: 32px; }
+  .home-lobby-layout { margin-top: 24px; }
+  .home-battle-emblem { width: 260px; height: 170px; margin-block: 10px; }
+  .home-emblem-core { width: 116px; height: 116px; }
+  .home-emblem-core svg { width: 66px; height: 66px; }
+  .home-emblem-paper-left { transform: translate(-70px, 3px) rotate(-20deg); }
+  .home-emblem-paper-right { transform: translate(70px, -4px) rotate(17deg); }
+  .home-emblem-orbit { width: 220px; height: 142px; }
+  .home-emblem-tag { bottom: 9px; }
+  .home-battle-button { max-width: 440px; margin: auto; }
+  .home-battle-button strong { font-size: 25px; }
+  .home-battle-button small { font-size: 12px; }
+  .home-shortcuts { gap: 22px; padding-top: 25px; }
+  .home-shortcut, .home-shortcuts .home-feedback-shortcut { font-size: 11px; }
+  .home-study-paper { padding: 15px 22px 0 27px; }
+  .home-study-button { min-height: 80px; }
+  .home-study-button strong { font-size: 27px; }
+  .home-study-button small { font-size: 12px; }
+  .home-study-topline > span, .home-subject-switch, .home-progress-text h2, .home-progress-text p, .home-all-progress > summary { font-size: 12px; }
+  .home-progress-text h2 > span { font-size: 11px; }
+  .home-progress-summary { padding-top: 16px; }
+  .home-all-progress > summary { min-height: 44px; }
+  .home-subject-switch { min-height: 44px; }
+}
+@media (min-width: 1024px) {
+  .home-lobby-scroll { padding-inline: 56px; }
+  .home-lobby-content { max-width: 1080px; }
+  .home-lobby-layout { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 45px; margin-top: 28px; }
+  .home-study-paper { margin-top: 22px; }
+  .home-arena { grid-template-columns: minmax(0, 1fr) 78px; gap: 16px; }
+  .home-arena h2 { font-size: 29px; }
+  .home-arena-caption { font-size: 13px; }
+  .home-lobby-footer { margin-top: 24px; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 22px 45px; align-items: center; }
+}
+@media (max-width: 359px) {
+  .home-lobby-scroll { padding-inline: 13px; padding-top: 12px; }
+  .home-arena { grid-template-columns: minmax(0, 1fr) 65px; gap: 7px; }
+  .home-header-tools { width: 105px; }
+  .home-player h1 span { font-size: 18px; }
+  .home-milestone { display: none; }
+  .home-battle-button { padding-inline: 8px; gap: 4px; }
+  .home-battle-button strong { font-size: 17px; }
+  .home-battle-button small { font-size: 9px; }
+  .home-battle-arrow { width: 22px; }
+  .home-arena h2 { font-size: 19px; }
+  .home-study-paper { padding-right: 12px; }
+}
+@media (max-height: 720px) and (max-width: 767px) {
+  .home-lobby-scroll { padding-top: 10px; }
+  .home-lobby-layout { gap: 13px; margin-top: 2px; }
+  .home-battle-emblem { height: 108px; margin-block: 0 4px; }
+  .home-emblem-core { width: 77px; height: 77px; border-radius: 25px; }
+  .home-emblem-core svg { width: 44px; height: 44px; }
+  .home-emblem-paper { width: 52px; height: 65px; }
+  .home-emblem-orbit { height: 92px; }
+  .home-emblem-tag { bottom: 0; font-size: 10px; }
+  .home-shortcuts { gap: 9px; padding-top: 0; }
+  .home-arena-caption { margin-top: 9px; }
+  .home-study-button { min-height: 58px; }
+  .home-lobby-footer { margin-top: 14px; }
+  /* 豆知識を上へ移した分の高さは、この画面では飾りから返してもらう
+     （下の .home-battle-emblem / .home-arena-caption の縮小を参照）。
+     吹き出し自身の余白も詰めるが、文字サイズは変えない＝読めるまま。 */
+  .home-arena-tip { margin-top: 6px; }
+}
+
+/*
+ * とびら君の豆知識を「最初の画面」へ上げたことで、
+ * 縦の短いスマホでは 320x568 で 57px / 360x640 で 29px ぶん
+ * 「学習を始める」がはみ出した（実測）。
+ * その高さは ★飾りだけ★ から返してもらう。
+ *   ・紋章（対戦のイラスト）… 情報を持たない純粋な装飾
+ *   ・スローガンの余白       … 文字は残し、周りの空きだけ詰める
+ * 操作できるもの（対戦ボタン・学習を始める・進捗・ショートカット）と
+ * 読むもの（豆知識の本文）は一切縮めない。
+ * 幅 767px 以下に閉じてあるので、パソコン・タブレットの見た目は変わらない。
+ */
+@media (max-height: 700px) and (max-width: 767px) {
+  /*
+   * ★「おかえり、○○さん」を1行にする（クラス参加者だけ落ちるのを止める）★
+   *
+   * 学校名（.home-school）はクラスに参加している生徒にだけ出る要素。
+   * 出ると 1 行（実測 19px）ぶんヘッダーが高くなり、その生徒だけ
+   * 「学習を始める」が 320x568 で 10px / 360x640 で 11px
+   * 画面外へ落ちていた（実測）。★自分の端末では起きない不具合★である。
+   *
+   * ここで返してもらうのは、挨拶が使っている2行目。
+   * スマホ幅では既定で「おかえり、」と「○○さん」が改行して 2 行になる
+   * （.home-player h1 span が display:block）。
+   * 名前を横に続けて 1 行にすれば、学校名の 1 行ぶんとちょうど入れ替わる。
+   * ★情報は何も消していない★（学校名・日付・挨拶・名前はすべて残る）。
+   * 名前が長い場合は従来どおり省略記号で丸める（text-overflow: ellipsis）。
+   *
+   * 学校名を消す／小さくする選択は取らなかった。
+   * クラスの生徒にとっては「自分の学校のアプリ」であることの目印なので、
+   * そこを削るのは飾りではなく情報を削る行為になる。
+   */
+  .home-player h1 span { display: inline; }
+
+  /*
+   * ★2カラムのままにしておく（横並びにしてはいけない）★
+   *
+   * 一度ここでもショートカットを横並びにしたが、360x640 で
+   * はみ出しが 0px → 70px へ ★悪化した★（実測）。
+   *
+   * 理由：2カラムのままだと行の高さは max(本文列, ショートカット列) なので、
+   * 紋章の高さは「ショートカット列 237px の内側に隠れている」＝タダで済む。
+   * 横並びにすると
+   *     本文列（紋章込み）+ ショートカット1段
+   * が縦に足し算されるので、隠れていた紋章の高さが表に出てしまう。
+   * 縦積みが常に損、とは限らないという例なので記録しておく。
+   * （横並びが得になるのは、紋章まで畳む 600px 以下の段だけ。）
+   */
+  .home-battle-emblem { height: 88px; margin-block: 0 2px; }
+  .home-emblem-core { width: 66px; height: 66px; border-radius: 22px; }
+  .home-emblem-core svg { width: 38px; height: 38px; }
+  .home-emblem-paper { width: 45px; height: 56px; }
+  .home-emblem-paper svg { width: 22px; height: 22px; }
+  .home-emblem-orbit { width: 158px; height: 76px; }
+  .home-emblem-paper-left { transform: translate(-46px, 3px) rotate(-20deg); }
+  .home-emblem-paper-right { transform: translate(46px, -4px) rotate(17deg); }
+  .home-emblem-spark { width: 16px; right: 22px; top: 6px; }
+  .home-arena-caption { margin-top: 5px; }
+  .home-arena-tip { margin-top: 4px; }
+}
+
+@media (max-height: 600px) and (max-width: 767px) {
+  /* Reserve the first screen for usable controls; shrink only decoration. */
+  .home-lobby-header { align-items: center; }
+  .home-player h1 { font-size: 13px; }
+  .home-player h1 span { font-size: 17px; }
+  .home-header-tools { display: flex; flex-direction: column; }
+  .home-countdown { padding-block: 0; }
+  .home-countdown strong { font-size: 21px; }
+  .home-utility-row { gap: 7px; margin-top: 0; }
+  .home-arena h2 { font-size: 18px; }
+  .home-battle-emblem { height: 84px; }
+  .home-emblem-core { width: 61px; height: 61px; border-radius: 21px; }
+  .home-emblem-core svg { width: 33px; height: 33px; }
+  .home-emblem-paper { height: 53px; width: 43px; }
+  .home-emblem-orbit { width: 155px; height: 70px; }
+  .home-arena-caption { font-size: 10px; }
+  /*
+   * ★いちばん縦の短い端末（iPhone SE 第1世代 320x568 など）★
+   *
+   * ここだけは、上の段階的な圧縮でもまだ 51px 足りなかった（実測）。
+   * 使える高さは（568 − ヘッダー − 下部ナビ）＝ 497px しかないのに、
+   * この画面には「対戦」「学習を始める」「進捗」「豆知識」が同居する。
+   *
+   * ■ ★最初にやって失敗した直し方を記録しておく★
+   *   「紋章（剣と紙のイラスト）を display:none にすれば 86px 空く」と考えて
+   *   実際にやってみたが、はみ出しは 51px から ★1px も減らなかった★。
+   *
+   *   理由：対戦ステージは grid で
+   *     ┌────────────┬──────────┐
+   *     │ 本文列      │ ショートカット列 │  ← 行の高さ = 高いほうに合わせられる
+   *     └────────────┴──────────┘
+   *   という2カラム。実測すると
+   *     本文列 237px ／ ショートカット列 237px（69+9+69+9+81）
+   *   で ★偶然ほぼ同じ★ だった。
+   *   紋章を隠すと本文列は 237→151px に縮むが、行の高さは
+   *   ショートカット列の 237px で決まるので、外側は縮まない。
+   *   つまり「絵を失って何も得ない」取引だったので取り消した。
+   *
+   * ■ 実際に効く場所は「ショートカット列」だった
+   *   3つのショートカット（学習ノート・アプリ紹介・ご意見）は
+   *   min-height 65px を縦に積んでいる。この端末に限り横並びにすると
+   *   列の高さが 237px → 1段ぶん（実測 69px）に減る。
+   *   ★押せる的の大きさ（44px 以上）は保つ★ので操作性は落ちない。
+   *   ボタンは3つとも残す（消さない）。
+   *
+   * ■ 併せて、余った本文列の飾りも詰める
+   *   横並びにすると本文列が行の高さを決める側になるため、
+   *   紋章と英字ラベルの圧縮が今度は実際に効く。
+   *     ・.home-battle-emblem … 剣と紙のイラスト（対戦ボタン自体が「対戦」と語っている）
+   *     ・.home-eyebrow       … "ONLINE QUIZ BATTLE"（真下の日本語見出しと同じ意味）
+   *   どちらも押せず、読む価値のある情報を持たない純粋な飾り。
+   *
+   * ■ ★絶対に畳まないもの★
+   *   対戦ボタン／学習を始める／進捗／ショートカットの3つ／豆知識の本文。
+   *   「1画面に入れる」ために操作や情報を削るのは本末転倒なので、
+   *   足りないぶんは必ず飾りと余白から返してもらう。
+   */
+  .home-arena { grid-template-columns: minmax(0, 1fr); }
+  .home-shortcuts { flex-direction: row; justify-content: space-around; gap: 4px; padding-top: 0; }
+  .home-shortcuts > * { width: auto; flex: 1; min-height: 56px; }
+  .home-shortcut-disc { width: 40px; height: 40px; }
+  .home-shortcut-disc > svg { width: 19px; height: 19px; }
+  .home-feedback-shortcut > svg { width: 18px; height: 18px; padding: 8px; }
+  .home-shortcuts .home-feedback-shortcut { align-items: center; min-height: 56px; }
+  .home-battle-emblem { display: none; }
+  .home-eyebrow { display: none; }
+  .home-arena h2 { margin-top: 0; }
+  /* 上の圧縮で残ったはみ出しは実測 5px。
+     豆知識が3行に折り返した回（＝いちばん長い文）でも入り切るように、
+     区画のあいだの空きだけを詰める。文字サイズは一切変えない。 */
+  .home-lobby-layout { gap: 9px; margin-top: 0; }
+  .home-arena-caption { margin-top: 3px; }
+  .home-arena-tip { margin-top: 2px; }
+  .home-study-topline { margin-block: -6px; }
+}

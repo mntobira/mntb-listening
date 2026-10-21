@@ -29,6 +29,13 @@ import { formatText } from '../utils/textFormatter';
 import { answerCardMarker } from '../utils/questionDisplay';
 import { handleInputFocusScroll } from '../utils/quizInputScroll';
 
+/** バーの1行（約14文字）に収まらない設問文か。見出し（Monday / 1st step 等）は短いのでバーに残す。 */
+const isLongBlankHint = (hint: unknown) => {
+  const t = String(hint ?? '');
+  const width = [...t].reduce((w, ch) => w + (/[\u0000-\u00ff]/.test(ch) ? 0.55 : 1), 0);
+  return width > 14;
+};
+
 export interface AnswerPaneProps {
   /** いま表示している大問。 */
   currentQuestion: Problem;
@@ -209,7 +216,7 @@ export function AnswerPane({
             左右の黒い小さな矢印で表示する解答欄を切り替える）。
             位置表示（n / 全体）で「あといくつ解答欄があるか」も分かるようにする。 */}
         {!isDesktop && !listeningMaterialsMobile && mobileAnswerSubs.length > 1 && (
-          <div className="text-center text-[11px] font-bold text-gray-400 tracking-widest select-none -mb-1">
+          <div className="text-center text-xs font-bold text-gray-400 tracking-widest select-none -mb-1">
             {safeMobileAnsIdx + 1} / {mobileAnswerSubs.length}
           </div>
         )}
@@ -270,7 +277,7 @@ export function AnswerPane({
                         {formatText(marker)}
                       </span>
                     )}
-                    {cur?.blankHint && (
+                    {cur?.blankHint && !isLongBlankHint(cur.blankHint) && (
                       <span className="min-w-0 truncate text-[12px] text-[#2C3E50] font-modern">
                         {formatText(String(cur.blankHint), [], { prose: true })}
                       </span>
@@ -288,6 +295,21 @@ export function AnswerPane({
             </div>
           </nav>
         )}
+        {/*
+          ★長い設問文はバーの下に全文を出す（ご指摘「第6問B 問36 … 問題が切れててみずらい」）★
+          バーの左は 前の小問／次の小問 に幅を取られ、
+          「会話が終わった時点で、以前よりも…3人のうち何人ですか。」（55文字）が
+          「会話が終わった時点で、以…」で切れていた。設問の肝（何を数えるか）が
+          後半にあるので、見出し程度の短いもの（Monday・1st step など）だけバーに残し、
+          長いものはバーの直下に折り返して全文を出す。
+        */}
+        {listeningMaterialsMobile && (() => {
+          const hint = mobileAnswerSubs[safeMobileAnsIdx]?.sq?.blankHint;
+          if (!hint || !isLongBlankHint(hint)) return null;
+          return <p data-answer-prompt className="mb-1 mt-1 px-0.5 text-sm font-bold leading-snug text-[#2C3E50] font-modern">
+            {formatText(String(hint), [], { prose: true })}
+          </p>;
+        })()}
         <div className={isDesktop ? 'contents' : 'flex items-stretch gap-1'}>
           {!isDesktop && !listeningMaterialsMobile && mobileAnswerSubs.length > 1 && (
             <button

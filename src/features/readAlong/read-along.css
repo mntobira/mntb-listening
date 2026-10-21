@@ -64,7 +64,8 @@
 .ra-w[data-level=focus] .ra-word { font-size: 1.12em; font-weight: 800; color: #12233a; }
 .ra-w[data-level=strong] .ra-word { font-weight: 700; color: #1c2a39; }
 .ra-w[data-level=mid] .ra-word { font-weight: 500; color: #2b3a4a; }
-.ra-w[data-level=weak] .ra-word { font-size: .86em; font-weight: 400; color: #7d8894; }
+/* 2026-10-21：弱く読む語も AA（4.5:1）を満たす濃さに。#7d8894（3.4〜3.6:1）→ #646f7b（4.8〜5.1:1）。小さく・細いので強い語とは区別できる */
+.ra-w[data-level=weak] .ra-word { font-size: .86em; font-weight: 400; color: #646f7b; }
 
 /* 強弱：丸（音節ごとに1つ、その音節の真上。大＝いちばん強い・中＝強い・小＝ふつう・点＝弱い） */
 .ra-annot.has-stress .ra-w { padding-top: 17px; }

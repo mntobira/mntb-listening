@@ -23,13 +23,17 @@ const ROOT = path.resolve(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(ROOT, p), 'utf-8');
 
 // 復習用のスクリプト表示（ListeningEvidenceScript）は ListeningEvidenceScript.tsx へ分離したため合わせて読む
-const PLAYER = read('src/components/ListeningAudioPlayer.tsx') + '\n' + read('src/components/ListeningEvidenceScript.tsx');
+const PLAYER = read('src/components/ListeningAudioPlayer.tsx') + '\n' + read('src/components/ListeningEvidenceScript.tsx')
+  // C-10：再生の中身（状態・再生・2回読み・読み上げ代替）は useListeningPlayback.ts へ移した
+  + '\n' + read('src/components/useListeningPlayback.ts');
 const QUIZ = read('src/components/Quiz.tsx');
 // 問題文ペイン（左58%／スマホ上）の JSX は components/ProblemPane.tsx へ切り出した。
 const PROBLEM = read('src/components/ProblemPane.tsx');
 // 解答・解説の JSX は 2026-10-14 のリファクタリングで一部を components/explanation/ へ切り出した。
 // 左カラムの問題文ブロック（復習用の音源を含む）は explanation/ProblemStatement.tsx にある。
-const EXPLANATION = read('src/components/Explanation.tsx') + read('src/components/explanation/ProblemStatement.tsx');
+const EXPLANATION = read('src/components/Explanation.tsx') + read('src/components/explanation/ProblemStatement.tsx')
+  // C-03：右カラム（大問1つぶんの採点結果・音源）は explanation/ExplanationAnswerItem.tsx へ移した
+  + read('src/components/explanation/ExplanationAnswerItem.tsx');
 // 設問から作る「表示用の派生値」（useMemo 17個）は
 // hooks/useQuestionDerived.ts へ切り出した。
 const DERIVED = read('src/hooks/useQuestionDerived.ts');

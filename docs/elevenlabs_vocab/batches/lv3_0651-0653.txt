@@ -1,3 +1,0 @@
-microbe. <break time="1.2s" />
-fascinate. <break time="1.2s" />
-astonish.

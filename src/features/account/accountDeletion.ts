@@ -20,6 +20,7 @@ import { submitFeedback } from '../../utils/feedback';
 import { PUBLIC_STUDY_PROFILES } from '../../utils/publicStudyProfile';
 import { clanCall } from '../../utils/manaClan';
 import { reportError } from '../../utils/reportError';
+import { safeLocalStorage } from '../../utils/safeLocalStorage';
 
 /** 1件の削除を試す。失敗しても残りの削除は続け、失敗は記録しておく（戻り値は従来どおり成否） */
 async function quiet(p: Promise<unknown>): Promise<boolean> {
@@ -88,9 +89,8 @@ export function clearLocalData(uid: string, store: Storage | null = safeStorage(
   return keys.length;
 }
 
-function safeStorage(): Storage | null {
-  try { return globalThis.localStorage ?? null; } catch { return null; }
-}
+// localStorage の取り出し口は safeLocalStorage に集約した（C-17）。呼び名は従来どおり safeStorage()
+const safeStorage = safeLocalStorage;
 
 export type DeleteOutcome = { ok: true } | { ok: false; reason: 'recent_login' | 'failed' };
 

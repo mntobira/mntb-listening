@@ -63,7 +63,7 @@ export function FeedbackButton({
           </div>
           <div className="flex-1 min-w-0">
             <div className="font-handwriting font-bold text-[#1B2631] text-base md:text-lg">{buttonLabel}</div>
-            <div className="text-[11px] md:text-xs text-[#8895A0] font-modern mt-0.5">
+            <div className="text-xs md:text-xs text-[#8895A0] font-modern mt-0.5">
               {subLabel || '気づいたことを開発者に伝える'}
             </div>
           </div>

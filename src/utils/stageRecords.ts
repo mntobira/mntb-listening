@@ -14,7 +14,7 @@
  *   stage_history_v1_<uid> = [{ k, title, c, j, t }]（新しい順・最大 HISTORY_MAX 件）
  *   壊れた値は読み飛ばす（学習を止めない）。
  */
-import { safeLocalStorage } from './safeLocalStorage';
+import { isPlainObject, safeLocalStorage, safeParseJson } from './safeLocalStorage';
 
 export const STAGE_CLEAR_PERFECTS = 3;
 const HISTORY_MAX = 40;
@@ -65,10 +65,9 @@ export function writeOtherDeviceStages(uid: string | null | undefined, total: Re
 
 function parseRecords(prefix: string, uid: string | null | undefined): Record<string, StageRecord> {
   try {
-    const parsed = JSON.parse(safeLocalStorage()?.getItem(keyOf(prefix, uid)) || '{}');
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    const parsed = safeParseJson<Record<string, unknown>>(safeLocalStorage()?.getItem(keyOf(prefix, uid)), {}, isPlainObject);
     const out: Record<string, StageRecord> = {};
-    for (const [k, raw] of Object.entries(parsed as Record<string, unknown>)) {
+    for (const [k, raw] of Object.entries(parsed)) {
       const v = raw as Partial<StageRecord> | null;
       if (v && num(v.p) && num(v.n) && num(v.b) && num(v.t) && v.p <= v.n) out[k] = { p: v.p, n: v.n, b: Math.min(100, v.b), t: v.t };
     }
@@ -78,8 +77,7 @@ function parseRecords(prefix: string, uid: string | null | undefined): Record<st
 
 export function readStageHistory(uid: string | null | undefined): StageHistoryEntry[] {
   try {
-    const parsed = JSON.parse(safeLocalStorage()?.getItem(keyOf(HISTORY, uid)) || '[]');
-    if (!Array.isArray(parsed)) return [];
+    const parsed = safeParseJson<unknown[]>(safeLocalStorage()?.getItem(keyOf(HISTORY, uid)), [], Array.isArray);
     return parsed.filter((e: unknown): e is StageHistoryEntry => {
       const item = e as Partial<StageHistoryEntry> | null;
       return Boolean(item && typeof item.k === 'string' && typeof item.title === 'string' && num(item.c) && num(item.j) && num(item.t) && item.c <= item.j);

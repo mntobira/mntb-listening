@@ -1,0 +1,27 @@
+put emphasis on. <break time="1.2s" />
+be conscious of. <break time="1.2s" />
+be contrary to. <break time="1.2s" />
+to the contrary. <break time="1.2s" />
+from scratch. <break time="1.2s" />
+leave nothing to be desired. <break time="1.2s" />
+scratch out. <break time="1.2s" />
+shy away from. <break time="1.2s" />
+strictly speaking. <break time="1.2s" />
+burst into. <break time="1.2s" />
+inform A of B. <break time="1.2s" />
+pile up. <break time="1.2s" />
+be keen on. <break time="1.2s" />
+in pursuit of. <break time="1.2s" />
+be all the rage. <break time="1.2s" />
+in harmony with. <break time="1.2s" />
+go to the polls. <break time="1.2s" />
+be anxious for. <break time="1.2s" />
+surrender to. <break time="1.2s" />
+a white elephant. <break time="1.2s" />
+the elephant in the room. <break time="1.2s" />
+adjust A to B. <break time="1.2s" />
+concentrate A on B. <break time="1.2s" />
+assure A of B. <break time="1.2s" />
+interact with. <break time="1.2s" />
+judging from. <break time="1.2s" />
+on the dot.

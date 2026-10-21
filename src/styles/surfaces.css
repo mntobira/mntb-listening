@@ -1,0 +1,313 @@
+/* src/styles/surfaces.css — index.css から分割（C-16）：7〜13. ノート地・カード・タッチ・スクロールバー・アニメーション・解説オーバーレイ・桜・カルーセル。
+ * 読み込み順は index.css の @import の並びで固定（並べ替えるとカスケードが変わる）。 */
+/* =========================================================
+ * 7. Notebook / Paper textures
+ * ========================================================= */
+.notebook-paper {
+  background-color: var(--color-surface);
+  background-image: linear-gradient(var(--color-line) 1px, transparent 1px);
+  background-size: 100% 2.5rem;
+  background-position: 0 1.25rem;
+  box-shadow: var(--shadow-card);
+  border-left: 2px solid color-mix(in srgb, var(--color-dusty-pink) 70%, transparent);
+}
+
+.fabric-texture {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='1'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+.sticky-note {
+  background-color: #FEF9E7;
+  box-shadow: 3px 5px 15px rgba(0,0,0,0.08);
+  position: relative;
+  transform: rotate(-1deg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.sticky-note:hover {
+  transform: rotate(0deg) scale(1.02);
+  box-shadow: 5px 8px 20px rgba(0,0,0,0.12);
+}
+
+.hand-drawn-border {
+  border-radius: 25px 22px 28px 20px / 22px 25px 20px 28px;
+}
+
+.masking-tape {
+  position: relative;
+}
+.masking-tape::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 140px;
+  height: 28px;
+  background-color: rgba(249, 231, 159, 0.8);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+/* =========================================================
+ * 8. Card / Glass utilities
+ * ========================================================= */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-card);
+}
+
+.glass {
+  background-color: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  backdrop-filter: saturate(140%) blur(12px);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+}
+
+/* =========================================================
+ * 9. Touch target (WCAG 2.5.5)
+ * ========================================================= */
+.tap-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* =========================================================
+ * 10. Scrollbar (subtle)
+ * ========================================================= */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-ink-sub) 30%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-ink-sub) 50%, transparent);
+  background-clip: padding-box;
+}
+
+/* =========================================================
+ * 11. Animations
+ * ========================================================= */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.4s ease-out both; }
+
+/* ★L-05★ background-position の無限アニメはやめ、光の帯（::after）を translate で流す */
+@keyframes shimmer {
+  0% { translate: -100% 0; }
+  100% { translate: 100% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--color-line) 50%, transparent) 0%,
+    color-mix(in srgb, var(--color-line) 30%, transparent) 50%,
+    color-mix(in srgb, var(--color-line) 50%, transparent) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, #fff 45%, transparent), transparent);
+  pointer-events: none;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/*
+ * 消去法：選択肢に斜線を引いた瞬間のフィードバック。
+ * 「押した結果いま状態が変わった」ことを動きで伝えるのが目的（視覚差の強化）。
+ * 色や透明度の差だけだと2段階あることに気づかれない、というご指摘への対応。
+ */
+@keyframes strikeOutOption {
+  0%   { transform: translateX(0) scale(1); }
+  35%  { transform: translateX(-2px) scale(0.985); }
+  70%  { transform: translateX(1px) scale(0.995); }
+  100% { transform: translateX(0) scale(1); }
+}
+.animate-strike-out { animation: strikeOutOption 0.28s ease-out both; }
+
+/* 斜線そのものを左から右へ引く（紙に線を引く動作の再現） */
+@keyframes drawStrikeLine {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.animate-draw-strike {
+  transform-origin: left center;
+  animation: drawStrikeLine 0.24s ease-out both;
+}
+
+/* 動きを減らす設定の端末では、上記アニメーションを無効化する */
+@media (prefers-reduced-motion: reduce) {
+  .animate-strike-out,
+  .animate-draw-strike {
+    animation: none;
+  }
+}
+
+/* Keep legacy keyframe for compatibility */
+@keyframes fadeOutExplanationHint {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(10px); visibility: hidden; }
+}
+
+/* =========================================================
+ * 11b. Explanation / Result full-screen overlay
+ * 結果・解説画面は単体の全画面オーバーレイとして表示し、
+ * 背後にホーム等の前画面が透けて見えないようにする。
+ * ========================================================= */
+/* -----------------------------------------------------------------
+ * スマホ:解答解説の「自然フィット + 縦スクロール」レイアウト
+ * -----------------------------------------------------------------
+ * 画面全体を無理に縮小する俯瞰表示はやめ、スマートフォンの画面幅に
+ * 自然にフィットする通常サイズのレイアウトで表示する。
+ * 内容が収まりきらない場合は通常の縦スクロールで閲覧できる。
+ * 図・フローチャートなど横幅の大きい要素だけは個別にピンチ拡大を許容する。
+ * （wrapper 側の overflow / scale 制御は Explanation.tsx 内の Tailwind クラスで行う）
+ * ----------------------------------------------------------------- */
+.explanation-scroll-hint {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  text-align: center;
+  font-size: 0.7rem;
+  padding: 6px 8px;
+  color: #fff;
+  background-color: rgba(27, 38, 49, 0.85);
+  animation: fadeOutExplanationHint 0.5s ease-out 4s forwards;
+}
+
+/* =========================================================
+ * 11c. 桜の花びら（タイトル画面の装飾）
+ * ========================================================= */
+.sakura-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+.sakura-petal {
+  position: absolute;
+  top: -24px;
+  display: block;
+  border-radius: 100% 0 100% 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transform: rotate(0deg);
+  animation-name: sakura-fall, sakura-sway;
+  animation-duration: var(--fall-duration, 12s), 3s;
+  animation-delay: var(--fall-delay, 0s), var(--fall-delay, 0s);
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-direction: normal, alternate;
+  /* ★L-05★ 以前は top と margin-left を毎フレーム動かしていた（花びら14枚ぶんのレイアウト再計算が無限に続く）。
+   *   落下は transform、横揺れは translate（どちらも GPU のコンポジタだけで動く）。軌跡・速さは従来と同じ */
+  will-change: transform, translate;
+}
+
+/* 落ちる距離は「入れ物の高さの 110% + 開始位置の 24px」。入れ物の高さは cqh で取る（使えない古い端末は 100vh で代用） */
+@keyframes sakura-fall {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  100% { transform: translate3d(0, calc(110vh + 24px), 0) rotate(540deg); }
+}
+@supports (height: 1cqh) {
+  .sakura-container { container-type: size; }
+  .sakura-petal { animation-name: sakura-fall-cq, sakura-sway; }
+  @keyframes sakura-fall-cq {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    100% { transform: translate3d(0, calc(110cqh + 24px), 0) rotate(540deg); }
+  }
+}
+
+@keyframes sakura-sway {
+  0% { translate: 0 0; }
+  100% { translate: var(--sway, 30px) 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sakura-petal {
+    animation: none !important;
+    display: none;
+  }
+}
+
+/* =========================================================
+ * 12. Container query helpers (optional)
+ * ========================================================= */
+.container-card {
+  container-type: inline-size;
+}
+
+/* =========================================================
+ * 13. 横スクロールカルーセル（科目選択）
+ * ---------------------------------------------------------
+ * スクロールバーを消しても操作に迷わないよう、
+ * 画面側で「矢印・ドット・案内文」を必ず添えて使う。
+ *
+ * ※ 既存の `no-scrollbar` は実体が定義されていない no-op のため、
+ *   既存画面の見た目を変えないよう、あえて別名の専用クラスにしている。
+ * ========================================================= */
+.carousel-x {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* 旧 Edge / IE */
+}
+.carousel-x::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;                  /* Chrome / Safari */
+}
+
+/* =========================================================
+ * 13.5 スクロールする箱の「安全な中央寄せ」
+ * ---------------------------------------------------------
+ * ★実際に起きた不具合（ご指摘）★
+ *   > PCバージョンのタイトル画面で上にスクロールできず、
+ *   > お知らせや科目変更ができません。
+ *
+ * ★原因★
+ *   スクロールする箱（overflow-y:auto）に中央寄せ
+ *   （align-items:center / justify-content:center）を付けると、
+ *   中身が箱より高いときに はみ出しを上と下へ「半分ずつ」押し出す。
+ *   ところがブラウザがスクロールで見せてくれるのは ★下側だけ★。
+ *   上側はスクロール位置の最小値が 0（箱の上辺）なので到達できない。
+ *
+ *   実測（Chromium・箱300px／中身600px）:
+ *     align-items:center      → 上に 150px 到達不能（scrollHeight が 450 に減る）
+ *     align-items:safe center → 到達可能（scrollHeight は 600 のまま）
+ *   scrollHeight 自体が減るので、
+ *   「スクロールできない」のではなく ★はみ出しが存在しないものとして
+ *   扱われている★ のが分かる。JS でどう頑張っても到達できない。
+ *
+ * ★safe キーワード★
+ *   `safe center` は「収まるなら中央、はみ出すなら先頭寄せ」に
+ *   自動で切り替わる。実測でも
+ *     収まるとき（箱400/中身200）… 先頭位置 100px＝中央（center と一致）
+ *     はみ出すとき（箱400/中身800）… 上まで到達できる
+ *   の両方を満たした。
+ *
+ * ★フォールバックを安全側に倒す★
+ *   safe は比較的新しいキーワードで、対応していないブラウザは
+ *   その宣言ごと無視する。そこで
+ *     1行目に flex-start（＝上まで届く安全な側）
+ *     2行目に safe center（対応ブラウザだけが上書き）
+ *   と書く。こうすると未対応ブラウザでは
+ *   「中央には寄らないが、押せない領域は生まれない」に着地する。
+ *   逆順に書くと未対応時に center が残り、不具合が再発する。
+ * ========================================================= */
+.items-safe-center {
+  align-items: flex-start;   /* 未対応ブラウザ用（安全側） */
+  align-items: safe center;  /* 対応ブラウザはこちらで上書き */
+}
+
+.justify-safe-center {
+  justify-content: flex-start;
+  justify-content: safe center;
+}

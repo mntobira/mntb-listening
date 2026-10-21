@@ -157,7 +157,7 @@ export function FeedbackModal({
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-lg font-bold text-[#1B2631] leading-tight">ご意見・ご感想をお寄せください</h2>
-              <p className="text-[11px] text-[#5D6D7E] font-modern mt-1 leading-snug">{headerNote}</p>
+              <p className="text-xs text-[#5D6D7E] font-modern mt-1 leading-snug">{headerNote}</p>
             </div>
             <button
               onClick={onClose}
@@ -233,9 +233,9 @@ export function FeedbackModal({
                   空欄が混ざると平均が崩れるので入力を必須にし、
                   同じ星を再タップしても 0 に戻らない（解除できない）。 */}
               <div>
-                <label className="block text-[11px] font-bold text-[#8895A0] font-modern tracking-wider mb-2">
+                <label className="block text-xs font-bold text-[#8895A0] font-modern tracking-wider mb-2">
                   満足度
-                  <span className="ml-1.5 inline-block px-1.5 py-[1px] rounded-md bg-[#FBE0E9] text-[#D9466E] text-[9px] align-middle">必須</span>
+                  <span className="ml-1.5 inline-block px-1.5 py-[1px] rounded-md bg-[#FBE0E9] text-[#D9466E] text-xs align-middle">必須</span>
                 </label>
                 <div className="flex items-center gap-1.5" role="radiogroup" aria-label="満足度">
                   {[1, 2, 3, 4, 5].map((value) => (
@@ -260,13 +260,13 @@ export function FeedbackModal({
                   )}
                 </div>
                 {rating === 0 && (
-                  <p className="mt-1.5 text-[10px] text-[#8895A0] font-modern">星をタップして満足度を選んでください。</p>
+                  <p className="mt-1.5 text-xs text-[#8895A0] font-modern">星をタップして満足度を選んでください。</p>
                 )}
               </div>
 
               {/* 種類 */}
               <div>
-                <label className="block text-[11px] font-bold text-[#8895A0] font-modern tracking-wider mb-2">
+                <label className="block text-xs font-bold text-[#8895A0] font-modern tracking-wider mb-2">
                   ご意見の種類
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -290,7 +290,7 @@ export function FeedbackModal({
 
               {/* 本文 */}
               <div>
-                <label htmlFor="feedback-message" className="block text-[11px] font-bold text-[#8895A0] font-modern tracking-wider mb-2">
+                <label htmlFor="feedback-message" className="block text-xs font-bold text-[#8895A0] font-modern tracking-wider mb-2">
                   内容<span className="text-[#D9466E] ml-1">必須</span>
                 </label>
                 <textarea
@@ -307,7 +307,7 @@ export function FeedbackModal({
                   className="w-full rounded-2xl border border-[#E4E8EC] bg-white px-3.5 py-3 text-sm text-[#1B2631] font-modern leading-relaxed placeholder:text-[#B8C4CE] focus:outline-none focus:border-[#E8688E] focus:ring-2 focus:ring-[#FBE0E9] resize-y"
                 />
                 <div className="flex justify-end mt-1">
-                  <span className={`text-[10px] font-modern tabular-nums ${remaining < 100 ? 'text-[#D9466E] font-bold' : 'text-[#B8C4CE]'}`}>
+                  <span className={`text-xs font-modern tabular-nums ${remaining < 100 ? 'text-[#D9466E] font-bold' : 'text-[#B8C4CE]'}`}>
                     残り {remaining} 文字
                   </span>
                 </div>
@@ -315,7 +315,7 @@ export function FeedbackModal({
 
               {/* 返信用メール（任意） */}
               <div>
-                <label htmlFor="feedback-contact" className="block text-[11px] font-bold text-[#8895A0] font-modern tracking-wider mb-2">
+                <label htmlFor="feedback-contact" className="block text-xs font-bold text-[#8895A0] font-modern tracking-wider mb-2">
                   返信用メールアドレス（任意）
                 </label>
                 <input
@@ -341,7 +341,7 @@ export function FeedbackModal({
               )}
 
               {/* 送信先の案内（収集先が増えても自動で追記される） */}
-              <p className="text-[10px] text-[#8895A0] font-modern leading-relaxed bg-white/70 border border-[#E4E8EC] rounded-xl px-3 py-2">
+              <p className="text-xs text-[#8895A0] font-modern leading-relaxed bg-white/70 border border-[#E4E8EC] rounded-xl px-3 py-2">
                 送信先：{sinks.join(' ／ ')}<br />
                 お名前・メールアドレスは未入力でも送信できます。学習の記録や成績には影響しません。
               </p>

@@ -326,3 +326,24 @@ describe('難易度表記の分離', () => {
     expect(checked).toBeGreaterThanOrEqual(13);
   });
 });
+
+describe('parseListeningBriefing（2026-10-21：説明ページを1画面に）', () => {
+  it('第4問〜第6問：選択肢・表・Conditions は落とし、題・説明・状況・配点を残す', async () => {
+    const { EL4_A_PROBLEMS, EL4_B_PROBLEMS, EL5_PROBLEMS, EL6_A_PROBLEMS, EL6_B_PROBLEMS } = await import('../src/data/englishListeningQ4to6Problems');
+    const { buildListeningLeadText, parseListeningBriefing } = await import('../src/utils/listeningOptions');
+    for (const list of [EL4_A_PROBLEMS, EL4_B_PROBLEMS, EL5_PROBLEMS, EL6_A_PROBLEMS, EL6_B_PROBLEMS]) {
+      for (const p of list) {
+        const b = parseListeningBriefing(buildListeningLeadText(p.text));
+        const all = JSON.stringify(b);
+        expect(b.title).toMatch(/^第\d+回　第[4-6]問/u);
+        expect(b.title).not.toContain('難易度');
+        expect(b.paragraphs.length).toBeGreaterThan(0);
+        expect(b.situations.length).toBeGreaterThan(0);
+        expect(b.points).toBeTruthy();
+        expect(all).not.toMatch(/[①②③④⑤⑥] /u);
+        expect(all).not.toContain('Conditions');
+        expect(all.length).toBeLessThan(900);
+      }
+    }
+  });
+});

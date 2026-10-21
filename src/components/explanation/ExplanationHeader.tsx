@@ -44,7 +44,7 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
             }`}>
               解答・解説
             </h3>
-            <div className={`mt-0.5 md:mt-1 ${reorderMobile ? 'text-[10px]' : 'text-xs md:text-sm'} ${
+            <div className={`mt-0.5 md:mt-1 ${reorderMobile ? 'text-xs' : 'text-xs md:text-sm'} ${
               'text-gray-500'
             }`}>
               {chapter.realTitle}
@@ -93,7 +93,7 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
                 aria-label="答え合わせ"
                 title="答え合わせ"
                 className={`flex items-center font-bold rounded-full border shrink-0 ${
-                  reorderMobile ? 'gap-0 text-[10px] px-1 py-0.5' : 'gap-1 text-[11px] md:text-xs px-2.5 py-1'
+                  reorderMobile ? 'gap-0 text-xs px-1 py-0.5' : 'gap-1 text-xs md:text-xs px-2.5 py-1'
                 } ${
                 'bg-emerald-50 text-emerald-700 border-emerald-200'
               }`}>
@@ -102,7 +102,7 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
               </div>
 
               <div className={`font-bold rounded-full shadow-sm border shrink-0 ${
-                reorderMobile ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2.5 py-0.5'
+                reorderMobile ? 'text-xs px-1.5 py-0.5' : 'text-xs px-2.5 py-0.5'
               } ${
                 'bg-emerald-50 text-emerald-700 border-emerald-200'
               }`}>
@@ -112,7 +112,7 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
               {/* カテゴリだけは長さが可変なので、1行に収める調整役にする。
                   min-w-0 + truncate で「余った幅ぶんだけ表示」になる。 */}
               <div className={`font-bold truncate ${
-                reorderMobile ? 'text-[10px] min-w-0 flex-1' : 'text-xs md:text-sm max-w-[120px] sm:max-w-[200px]'
+                reorderMobile ? 'text-xs min-w-0 flex-1' : 'text-xs md:text-sm max-w-[120px] sm:max-w-[200px]'
               } ${
                 'text-gray-800'
               }`}>
@@ -125,7 +125,7 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
                 aria-label={savingNote[questions[0].id] ? 'ノートに保存中' : 'ノートに保存'}
                 title={savingNote[questions[0].id] ? '保存中...' : 'ノートに保存'}
                 className={`flex items-center rounded-full font-bold transition-colors border shrink-0 ${
-                  reorderMobile ? 'gap-0 text-[10px] px-1 py-0.5' : 'gap-1 text-[11px] px-2.5 py-1'
+                  reorderMobile ? 'gap-0 text-xs px-1 py-0.5' : 'gap-1 text-xs px-2.5 py-1'
                 } ${
                   savingNote[questions[0].id] 
                     ? ('bg-gray-100 text-gray-500 border-gray-200') 
@@ -148,9 +148,9 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
                     {/* スマホでは「正答率:」の見出しを省き、数値だけを出す
                         （aria-label / title で意味は残す）。 */}
                     {!reorderMobile && (
-                      <span className={`font-bold text-[10px] md:text-xs ${'text-gray-500'}`}>正答率:</span>
+                      <span className={`font-bold text-xs md:text-xs ${'text-gray-500'}`}>正答率:</span>
                     )}
-                    <span className={`font-mono font-bold ${reorderMobile ? 'text-[11px]' : 'text-xs md:text-sm'} ${
+                    <span className={`font-mono font-bold ${reorderMobile ? 'text-xs' : 'text-xs md:text-sm'} ${
                       scorePercentage >= 80 
                         ? ('text-emerald-600') 
                         : scorePercentage <= 40 

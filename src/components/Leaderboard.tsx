@@ -1,5 +1,5 @@
 import './ranking.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { ArrowLeft, Trophy, RefreshCw, Swords, Shield, Gift, Clock } from 'lucide-react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_CONFIGURED, USE_EMULATORS, auth } from '../firebase';
@@ -11,6 +11,7 @@ import { displaySafeNickname, displaySafePublicText } from '../features/safety/n
 import { useWithoutBlocked } from '../features/safety/useBlockedFilter';
 import { UserSafetyMenu } from '../features/safety/UserSafetyMenu';
 import { ManaClan } from './ManaClan';
+import { ListSkeleton } from './ui';
 import { ComingSoon } from './ComingSoon';
 import { SOCIAL_FEATURES } from '../config/features';
 import { clanCall } from '../utils/manaClan';
@@ -18,6 +19,9 @@ import { fetchStudyTimeRanking, refreshPublicStudyTime, watchPublicStudyProfiles
 import { formatStudyTime, readStudyTime } from '../utils/studyTime';
 import { logRejection } from '../utils/reportError';
 interface LeaderboardProps { onBack: () => void; initialTab?: 'national' | 'friend' | 'clan'; onRequireLogin?: () => void; isGuest?: boolean; initialChapterId?: string | null; initialSubject?: string; onBattle?: () => void; onGacha?: () => void; }
+/** 次のリーグまでのバーの色（リーグの文字色は濃くてバーにすると暗く見えるので、明るい色を別に持つ。2026-10-20） */
+const BAR_COLORS: Record<string, string> = { bronze: '#d98b4f', silver: '#9fb1c4', gold: '#f2c14e', platinum: '#4fc3d4', manatobi: '#b07ce0' };
+
 export function Leaderboard({ onBack, onBattle, onGacha, initialTab = 'national', onRequireLogin }: LeaderboardProps) {
   const [uid, setUid] = useState(auth.currentUser?.uid ?? '');
   const [tab, setTab] = useState<'national' | 'friend' | 'clan'>(initialTab);
@@ -79,7 +83,8 @@ export function Leaderboard({ onBack, onBattle, onGacha, initialTab = 'national'
   const end = fmtDay(season.end);
   const myJoin = SEASON_REWARDS.participation[league.id as LeagueId];
   return <section className="league-hall" data-rating-ranking>
-    <header className="league-header"><button type="button" onClick={onBack} aria-label="ホームへ戻る"><ArrowLeft size={20}/></button><div><small>BATTLE LEAGUES</small><h1><Trophy size={23}/>ランキング</h1></div><button type="button" onClick={() => setRetry(n => n + 1)} disabled={loading} aria-label="ランキングを再読み込み"><RefreshCw size={19}/></button></header>
+    <header className="league-header"><button type="button" onClick={onBack} aria-label="ホームへ戻る"><ArrowLeft size={20}/></button><div><h1><Trophy size={23}/>ランキング</h1></div><button type="button" onClick={() => setRetry(n => n + 1)} disabled={loading} aria-label="ランキングを再読み込み"><RefreshCw size={19}/></button></header>
+    {onBattle && <nav className="league-top-switch" aria-label="ランキングと対戦の切替"><button type="button" aria-current="page"><Trophy size={18}/>ランキング</button><button type="button" onClick={onBattle}><Swords size={18}/>とびらバトル</button></nav>}
     {onGacha && <nav className="league-actions" aria-label="ガチャとランキング"><button type="button" onClick={onGacha}><Gift size={18}/>ガチャ</button><button type="button" aria-current="page"><Trophy size={18}/>ランキング</button></nav>}
     {/* ★2026-10-11★ 上：何で競うか（対戦レート／学習時間）、下：だれと（全国／フレンド／マナクラン）。どちらも低く・一覧を広く */}
     <div className="league-metric mt-segment" role="tablist" aria-label="ランキングの種目">
@@ -90,13 +95,19 @@ export function Leaderboard({ onBack, onBattle, onGacha, initialTab = 'national'
     <div className="league-tabs is-scope" role="tablist" aria-label="ランキングの範囲">{([['national','全国'],['friend','フレンド'],['clan','マナクラン']] as const).filter(([id]) => metric === 'rate' || id !== 'clan').map(([id,label]) => <button role="tab" type="button" aria-selected={tab === id} key={id} onClick={() => setTab(id)} data-scope={id}><span>{label}</span>{id === 'clan' && !SOCIAL_FEATURES.manaClan && <small className="soon-tag">準備中</small>}</button>)}</div>
     {tab !== 'clan' && metric === 'time' && <section className="league-my-card is-time"><Clock size={26} aria-hidden="true"/><div><small>{uid ? 'あなたの学習時間（演習・解説）' : 'Google連携でランキングに参加'}</small><strong>{formatStudyTime(mySeconds)}</strong><span>{!uid ? 'ゲストは端末の中だけで記録します' : myTimeRow ? `${tab === 'friend' ? 'フレンド' : '全国'}で${timeRankOf(myTimeRow.profile.studySeconds)}位` : '設定で「プロフィールを公開」にすると載ります'}</span></div></section>}
     {tab !== 'clan' && metric === 'rate' && <><section className="league-my-card" style={{ background: league.tint, borderColor: league.color }}><Shield size={28} style={{color:league.color}}/><div><small>{uid ? 'あなたのリーグ' : 'Google連携で公式レートを記録'}</small><strong>{uid ? `${league.label}リーグ` : 'ゲスト・練習モード'}</strong><span>{me ? `${me.wins}勝 ${me.losses}敗 ${me.draws}分` : '初期レート1500・AI戦では変動なし'}</span></div><label className="league-other" data-league-other><span aria-hidden="true">{filter === 'all' ? <>他のリーグ<br/>を見る</> : <>{LEAGUES.find(l => l.id === filter)?.label}<br/>を表示中</>}</span><select value={filter} onChange={e => setFilter(e.target.value as LeagueId | 'all')} aria-label="他のリーグを見る"><option value="all">全リーグ</option>{LEAGUES.map(l => <option value={l.id} key={l.id}>{l.label}（{l.min}〜）</option>)}</select></label><b>{uid ? rating.toLocaleString() : '—'}<small>レート</small></b></section>
-    {uid && <div className="league-progress"><progress value={progress.ratio} max={1} aria-label="次のリーグへの進捗"/><span>{progress.next ? `${progress.next.label}まであと${progress.remain}` : '最高リーグに到達'}</span></div>}
+    {/* ★次のリーグまで（2026-10-20 ご要望「質素すぎる」）★ いまのリーグ色→次のリーグ色のグラデーション、両端に札、残りは大きな数字 */}
+    {uid && <div className="league-progress league-progress-rich" style={{ ['--from' as string]: BAR_COLORS[league.id] ?? league.color, ['--to' as string]: BAR_COLORS[(progress.next ?? league).id] ?? league.color } as CSSProperties}>
+      <span className="lp-chip" style={{ background: league.color }}>{league.label}</span>
+      <div className="lp-track" role="progressbar" aria-label="次のリーグへの進捗" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress.ratio * 100)}><i style={{ width: `${Math.max(4, Math.round(progress.ratio * 100))}%` }} /></div>
+      {progress.next && <span className="lp-chip" style={{ background: progress.next.color }}>{progress.next.label}</span>}
+      <b className="lp-remain">{progress.next ? <>あと<strong>{progress.remain}</strong></> : '最高リーグ'}</b>
+    </div>}
     </>}
     {tab !== 'clan' && metric === 'rate' && <details className="season-card" data-season-card>
       <summary>
         <span className="season-badge">{season.started ? `シーズン${season.number}` : 'シーズン1'}</span>
         <span className="season-when">{season.started ? `${fmtDay(season.start)}〜${end}（締切 ${end} 0:00）` : `${fmtDay(season.start)} 0:00 スタート`}</span>
-        <span className="season-mine">{uid ? `いまの参加賞：${myJoin}マナコイン` : 'もらえるもの'}</span>
+        {uid && <span className="season-mine">{`いまの参加賞：${myJoin}マナコイン`}</span>}
       </summary>
       <div className="season-body">
         <p className="season-cond">条件：シーズン中に<b>全国対戦（対人）を{SEASON_REWARDS.minMatches}試合以上</b>。締切のときのリーグで決まります。プレゼントはマイページの「プレゼント」に届きます。</p>
@@ -109,11 +120,11 @@ export function Leaderboard({ onBack, onBattle, onGacha, initialTab = 'national'
       </div>
     </details>}
     <div className="league-scroll" tabIndex={0} aria-label="ランキング一覧">
-      {tab !== 'clan' && metric === 'time' ? <>{!uid ? <p className="league-empty">学習時間ランキングを見るにはGoogle連携が必要です。</p> : loading ? <p role="status">順位表を読み込み中…</p> : error ? <p role="alert" className="league-error">{error}</p> : !visibleTime.length ? <p className="league-empty">まだ公開している人がいません。設定で「プロフィールを公開」にすると、ここに載ります。</p> : <ol className="league-rows" data-time-ranking>{visibleTime.map(r => { const mine = r.uid === uid; const rank = timeRankOf(r.profile.studySeconds); return <li key={r.uid} data-me={mine} data-top={rank <= 3}><b>{rank <= 3 ? <Trophy size={16} aria-hidden="true"/> : null}{rank}</b><span><strong>{mine ? 'あなた' : displayNicknameForNational(displaySafeNickname(r.nickname || 'なまえ未設定'), true)}</strong><small className="league-public-profile">{displaySafePublicText(r.profile.targetSchool) || '志望校未設定'}{r.profile.level != null ? ` · Lv.${r.profile.level}` : ''}</small>{r.profile.motto && <small className="league-public-motto">「{displaySafePublicText(r.profile.motto)}」</small>}</span>{!mine && <UserSafetyMenu target={{uid:r.uid,nickname:displaySafeNickname(r.nickname),where:'ranking'}}/>}<em className="is-time">{formatStudyTime(r.profile.studySeconds)}</em></li>; })}</ol>}
+      {tab !== 'clan' && metric === 'time' ? <>{!uid ? <p className="league-empty">学習時間ランキングを見るにはGoogle連携が必要です。</p> : loading ? <ListSkeleton label="順位表を読み込み中…" /> : error ? <p role="alert" className="league-error">{error}</p> : !visibleTime.length ? <p className="league-empty">まだ公開している人がいません。設定で「プロフィールを公開」にすると、ここに載ります。</p> : <ol className="league-rows" data-time-ranking>{visibleTime.map(r => { const mine = r.uid === uid; const rank = timeRankOf(r.profile.studySeconds); return <li key={r.uid} data-me={mine} data-top={rank <= 3}><b>{rank <= 3 ? <Trophy size={16} aria-hidden="true"/> : null}{rank}</b><span><strong>{mine ? 'あなた' : displayNicknameForNational(displaySafeNickname(r.nickname || 'なまえ未設定'), true)}</strong><small className="league-public-profile">{displaySafePublicText(r.profile.targetSchool) || '志望校未設定'}{r.profile.level != null ? ` · Lv.${r.profile.level}` : ''}</small>{r.profile.motto && <small className="league-public-motto">「{displaySafePublicText(r.profile.motto)}」</small>}</span>{!mine && <UserSafetyMenu target={{uid:r.uid,nickname:displaySafeNickname(r.nickname),where:'ranking'}}/>}<em className="is-time">{formatStudyTime(r.profile.studySeconds)}</em></li>; })}</ol>}
         <details className="league-info"><summary>学習時間ランキングについて</summary><p>演習・解説の画面を開いて学んだ時間の累計です（1分間なにも操作がない時間は数えません）。</p><p>「設定」でプロフィールを公開した人だけが載ります。公開をやめると、すぐに一覧から消えます。</p></details></>
-      : tab === 'clan' ? (SOCIAL_FEATURES.manaClan ? <ManaClan key={uid} onRequireLogin={onRequireLogin}/> : <ComingSoon title="マナクラン">仲間とクランを作って、クラン対抗で競えるようになります。もうすぐ公開します。</ComingSoon>) : <>{loading ? <p role="status">順位表を読み込み中…</p> : error ? <p role="alert" className="league-error">{error}</p> : !rows.length ? <p className="league-empty">{tab === 'friend' && !uid ? 'フレンド順位を見るにはGoogle連携が必要です。' : 'まだこの範囲に対戦記録がありません。'}</p> : <ol className="league-rows">{visible.map(r => { const mine = r.uid === uid; const l = leagueOf(r.rating); const rank = rankOf(r); const profile = profiles.viewer === uid ? profiles.data[r.uid] : undefined; return <li key={r.uid} data-me={mine} data-top={rank <= 3} style={{borderLeftColor:l.color}}><b>{rank <= 3 ? <Trophy size={16} aria-hidden="true"/> : null}{rank}</b><span><strong>{mine ? 'あなた' : displayNicknameForNational(displaySafeNickname(r.nickname), !!profile)}</strong><small style={{color:l.color}}>{l.label} · {r.wins}勝 {r.losses}敗</small>{profile && <small className="league-public-profile" data-public-profile title="公開設定済み・この端末の演習／解説の学習累計（最後に同期した値）">{displaySafePublicText(profile.targetSchool) || '志望校未設定'} · 学習 {formatStudyTime(profile.studySeconds)}{profile.stagesCleared != null ? ` · 達成 ${profile.stagesCleared}` : ''}{profile.level != null ? ` · Lv.${profile.level}` : ''}</small>}{profile?.motto && <small className="league-public-motto" data-public-motto>「{displaySafePublicText(profile.motto)}」</small>}</span>{!mine && <UserSafetyMenu target={{uid:r.uid,nickname:displaySafeNickname(r.nickname),where:'ranking'}}/>}<em>{r.rating.toLocaleString()}<small>レート</small></em></li>; })}</ol>}
+      : tab === 'clan' ? (SOCIAL_FEATURES.manaClan ? <ManaClan key={uid} onRequireLogin={onRequireLogin}/> : <ComingSoon title="マナクラン">仲間とクランを作って、クラン対抗で競えるようになります。もうすぐ公開します。</ComingSoon>) : <>{loading ? <ListSkeleton label="順位表を読み込み中…" /> : error ? <p role="alert" className="league-error">{error}</p> : !rows.length ? <p className="league-empty">{tab === 'friend' && !uid ? 'フレンド順位を見るにはGoogle連携が必要です。' : 'まだこの範囲に対戦記録がありません。'}</p> : <ol className="league-rows">{visible.map(r => { const mine = r.uid === uid; const l = leagueOf(r.rating); const rank = rankOf(r); const profile = profiles.viewer === uid ? profiles.data[r.uid] : undefined; return <li key={r.uid} data-me={mine} data-top={rank <= 3} style={{borderLeftColor:l.color}}><b>{rank <= 3 ? <Trophy size={16} aria-hidden="true"/> : null}{rank}</b><span><strong>{mine ? 'あなた' : displayNicknameForNational(displaySafeNickname(r.nickname), !!profile)}</strong><small style={{color:l.color}}>{l.label} · {r.wins}勝 {r.losses}敗</small>{profile && <small className="league-public-profile" data-public-profile title="公開設定済み・この端末の演習／解説の学習累計（最後に同期した値）">{displaySafePublicText(profile.targetSchool) || '志望校未設定'} · 学習 {formatStudyTime(profile.studySeconds)}{profile.stagesCleared != null ? ` · 達成 ${profile.stagesCleared}` : ''}{profile.level != null ? ` · Lv.${profile.level}` : ''}</small>}{profile?.motto && <small className="league-public-motto" data-public-motto>「{displaySafePublicText(profile.motto)}」</small>}</span>{!mine && <UserSafetyMenu target={{uid:r.uid,nickname:displaySafeNickname(r.nickname),where:'ranking'}}/>}<em>{r.rating.toLocaleString()}<small>レート</small></em></li>; })}</ol>}
       <details className="league-info"><summary>5つのリーグと隔週プレゼント</summary><ul>{LEAGUES.map((l,i) => <li key={l.id} style={{color:l.color}}><strong>{l.label}</strong> {l.min}〜{LEAGUES[i+1] ? LEAGUES[i+1].min-1 : '上限なし'}</li>)}</ul><p>志望校・学習時間は「設定」で公開を選んだ人だけ表示します。学習時間は最後に同期した端末の演習・解説の累計で、対戦レートや聞く力の測定値ではありません。</p><p>得点ではなく対戦レートで順位が決まります。同レートは同順位。表示は上位100名までです。</p><p>{`シーズンは2週間ごと（シーズン1は10月16日(金) 0:00 開始）。次の締切 ${end}。もらえるものは上の「シーズン」を開くと見られます。同順位は同じ扱いです。`}</p><p>報酬はマイページの「プレゼント」に届きます。集計方法・メンバー別貢献値は非公開です。</p></details></>}
     </div>
-    {tab !== 'clan' && metric === 'rate' && <footer className="league-footer"><span>{me && rows.some(r => r.uid === uid) ? `この範囲で${rankOf(me)}位` : me ? '上位表示の圏外／別リーグ' : '公式戦でレートを記録しよう'}</span>{onBattle && <button type="button" onClick={onBattle}><Swords size={18}/>対戦へ</button>}</footer>}
+    {/* 「この範囲で○位・対戦へ」の下のバーは削除（2026-10-20）。一覧を広くするため。対戦へは上の切替から行ける */}
   </section>;
 }

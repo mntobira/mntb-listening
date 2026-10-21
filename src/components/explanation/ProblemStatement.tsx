@@ -59,7 +59,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                             {savingNote[question.id] ? '保存中...' : 'ノートに保存'}
                           </button>
                           <div className="flex flex-col items-end">
-                            <div className={`text-[10px] md:text-xs font-bold mb-0.5 ${'text-gray-500'}`}>あなたの正答率</div>
+                            <div className={`text-xs md:text-xs font-bold mb-0.5 ${'text-gray-500'}`}>あなたの正答率</div>
                             <div className={`font-mono font-bold text-base md:text-lg ${scorePercentage >= 80 ? ('text-emerald-600') : scorePercentage <= 40 ? ('text-red-500') : ('text-amber-500')}`}>
                               {scorePercentage}%
                             </div>
@@ -277,7 +277,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                         if (reorderMobile && isEnglishChapter && extractListeningQuestionRows(question)) return null;
                         return (
                           <div className={`mt-4 pt-3 border-t border-dashed ${'border-gray-300'}`}>
-                            <div className={`text-[11px] font-bold mb-2 flex items-center gap-1.5 ${'text-gray-500'}`}>
+                            <div className={`text-xs font-bold mb-2 flex items-center gap-1.5 ${'text-gray-500'}`}>
                               <ListOrdered size={13} />
                               <span>設問一覧</span>
                             </div>

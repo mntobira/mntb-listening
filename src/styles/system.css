@@ -78,7 +78,8 @@
 .mt-rarity[data-rarity=SR]::before { content: '✦'; font-size: 10px; }
 /* UR：目玉（虹のパステル地・金の二重縁・王冠） */
 .mt-rarity[data-rarity=UR] { background: var(--mt-rare-ur-grad); border: 2px solid var(--mt-rare-ur-line); color: var(--mt-rare-ur-ink); box-shadow: 0 0 0 2px #fff, 0 0 0 3px #f1d189; }
-.mt-rarity[data-rarity=UR]::before { content: '👑'; font-size: 11px; }
+.mt-rarity[data-rarity=UR]::before { content: none; }
+.mt-rarity-crown { flex: none; }
 .mt-rarity[data-size=lg] { min-height: 32px; padding: 2px 14px; font-size: 18px; }
 .mt-rarity[data-size=xl] { min-height: 48px; padding: 4px 22px; font-size: 32px; letter-spacing: .08em; }
 
@@ -126,6 +127,17 @@
 .mt-loading > i { width: 28px; height: 28px; border: 3px solid var(--mt-line); border-top-color: var(--mt-brand); border-radius: 50%; animation: mt-spin .9s linear infinite; }
 @keyframes mt-spin { to { transform: rotate(360deg); } }
 .mt-toast { position: fixed; left: 50%; bottom: calc(var(--app-nav-h, 72px) + 12px); z-index: 80; transform: translateX(-50%); max-width: min(92vw, 420px); padding: 10px 16px; border-radius: var(--mt-radius-lg); background: #3b4a56; color: #fff; font: var(--mt-text-sm); box-shadow: var(--mt-shadow-2); }
+/* 一覧のスケルトン（ListSkeleton） */
+.mt-skeleton-list { display: grid; gap: 6px; }
+.mt-skeleton-row { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ece4d6; border-radius: 15px; background: #fff; }
+.mt-skeleton-row span { flex: 1; display: grid; gap: 7px; }
+.mt-skeleton-row i { display: block; height: 11px; border-radius: 6px; background: #ece5d9; animation: mt-skeleton 1.3s ease-in-out infinite alternate; }
+.mt-skeleton-row .mt-skeleton-dot { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; }
+/* 低スペック端末でも 60fps：明滅は opacity だけ（L-05） */
+@keyframes mt-skeleton { from { opacity: 1; } to { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .mt-skeleton-row i { animation: none; } }
+/* アプリ内トースト（AppToast）：タップで消せる・中央寄せの文・ノッチや下ナビに重ならない */
+.app-toast { z-index: 400; width: max-content; text-align: center; font-size: 14px; line-height: 1.5; cursor: pointer; min-height: 44px; display: flex; align-items: center; justify-content: center; bottom: calc(var(--app-nav-h, 72px) + 12px + env(safe-area-inset-bottom, 0px)); }
 @media (prefers-reduced-motion: reduce) { .mt-loading > i { animation: none; } }
 
 /* ---------- C3 アプリ全体のタイポグラフィ統一 ----------

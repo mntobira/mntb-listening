@@ -171,7 +171,7 @@ function restoreMath(html: string, slots: string[]): string {
 // 分子・分母はそのまま埋め込み、後段の化学式処理で変数（w, M など）も適切にイタリック化される。
 function buildFractionHtml(numerator: string, denominator: string) {
   return (
-    '<span class="inline-flex flex-col justify-center text-center mx-1" style="font-size: 0.85em; vertical-align: middle; line-height: 1;">' +
+    '<span class="inline-flex flex-col justify-center text-center mx-1" style="font-size:max(12px, 0.85em); vertical-align: middle; line-height: 1;">' +
       '<span class="border-b border-stone-400 pb-[1.5px] leading-none px-1 font-serif font-medium">' + numerator + '</span>' +
       '<span class="leading-none pt-[1.5px] px-1 font-serif font-medium">' + denominator + '</span>' +
     '</span>'

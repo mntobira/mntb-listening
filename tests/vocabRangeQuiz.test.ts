@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { applyQuizResult, buildRangeQuiz, clampRange, COUNT_OPTIONS, DEFAULT_PREFS, rangeWords, readQuizPrefs, readQuizRecord, wordNumbers, writeQuizPrefs } from '../src/data/vocabQuiz';
+import { applyQuizResult, buildRangeQuiz, clampRange, COUNT_OPTIONS, DEFAULT_PREFS, rangeWords, readQuizPrefs, readQuizRecord, wordNumbers, writeQuizPrefs, type VocabQuizRecord } from '../src/data/vocabQuiz';
 import { launchCueSchedule, SWELL_LEAD_MS } from '../src/battle/audio/launchSfx';
 
 /** e2j しか無い語（熟語レベルと同じ）を混ぜて、向きの指定で語が抜けないことも確かめる */
@@ -39,26 +39,28 @@ describe('英単語：出題の設定（範囲・問題数・順番・出す語�
   });
 
   it('番号順 × まだの語だけ：解くたびに続きの番号から出て、100語に抜けが出ない', () => {
-    let rec = { version: 1 as const, missed: [] as string[], best: {}, mastered: [] as string[] };
+    // applyQuizResult は VocabQuizRecord（mastered は省略可）を返すので、受ける変数もその型にする
+    let rec: VocabQuizRecord = { version: 1 as const, missed: [] as string[], best: {}, mastered: [] as string[] };
     const seen = new Set<string>();
     for (let round = 0; round < 5; round++) {
-      const { items } = buildRangeQuiz(block, { count: 20, order: 'number', only: 'unlearned' }, { mastered: new Set(rec.mastered), seed: round + 1 });
+      const { items } = buildRangeQuiz(block, { count: 20, order: 'number', only: 'unlearned' }, { mastered: new Set(rec.mastered ?? []), seed: round + 1 });
       expect(items.map(x => x.wordId)).toEqual(Array.from({ length: 20 }, (_, i) => `lv1:${round * 20 + i + 1}`));
       items.forEach(x => seen.add(x.wordId));
       rec = applyQuizResult(rec, items.map(x => ({ wordId: x.wordId, correct: true })), 'lv1:1-100');
     }
     expect(seen.size).toBe(100);
     // 全部覚えたら、すべての語から出す
-    const done = buildRangeQuiz(block, { count: 10, order: 'number', only: 'unlearned' }, { mastered: new Set(rec.mastered) });
+    const done = buildRangeQuiz(block, { count: 10, order: 'number', only: 'unlearned' }, { mastered: new Set(rec.mastered ?? []) });
     expect(done.allLearned).toBe(true);
     expect(done.items).toHaveLength(10);
   });
 
   it('間違えた語は ✓ が外れて、次の番号順でまた先頭に出る', () => {
-    let rec = { version: 1 as const, missed: [] as string[], best: {}, mastered: [] as string[] };
+    // applyQuizResult は VocabQuizRecord（mastered は省略可）を返すので、受ける変数もその型にする
+    let rec: VocabQuizRecord = { version: 1 as const, missed: [] as string[], best: {}, mastered: [] as string[] };
     const first = buildRangeQuiz(block, { count: 10, order: 'number', only: 'unlearned' }).items;
     rec = applyQuizResult(rec, first.map((x, i) => ({ wordId: x.wordId, correct: i !== 3 })), 'k');
-    const next = buildRangeQuiz(block, { count: 10, order: 'number', only: 'unlearned' }, { mastered: new Set(rec.mastered) }).items;
+    const next = buildRangeQuiz(block, { count: 10, order: 'number', only: 'unlearned' }, { mastered: new Set(rec.mastered ?? []) }).items;
     expect(next[0]!.wordId).toBe('lv1:4');
     expect(next[1]!.wordId).toBe('lv1:11');
     expect(rec.missed).toEqual(['lv1:4']);

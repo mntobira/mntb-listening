@@ -90,7 +90,7 @@ export function SortingControl({
         <div className="flex-grow flex flex-col gap-3 w-full">
           <div className="text-xs text-gray-400 font-bold flex items-center justify-between">
             <span>タップで並べ替え :</span>
-            <span className="text-[10px] text-[#A9CCE3] font-normal">左から順に並べる</span>
+            <span className="text-xs text-[#A9CCE3] font-normal">左から順に並べる</span>
           </div>
           <div className="flex flex-col gap-2 p-3 bg-gray-50/80 border border-gray-200 rounded-2xl">
             {activeOrder.map((item: string, idx: number) => {
@@ -103,7 +103,7 @@ export function SortingControl({
                   `}
                 >
                   {/* 番号 */}
-                  <span className="text-[11px] bg-stone-100 text-stone-500 rounded px-1.5 py-0.5 text-center select-none font-mono font-semibold shrink-0 w-6">{idx + 1}</span>
+                  <span className="text-xs bg-stone-100 text-stone-500 rounded px-1.5 py-0.5 text-center select-none font-mono font-semibold shrink-0 w-6">{idx + 1}</span>
                   {/* 本体：タップで選択／入れ替え */}
                   <button
                     type="button"
@@ -179,7 +179,7 @@ export function SortingControl({
         <div className="flex flex-col gap-2.5">
           <div className="text-xs text-gray-400 font-bold flex items-center justify-between">
             <span>ドラッグで順序を並べ替え :</span>
-            <span className="text-[10px] text-[#A9CCE3] font-normal">左から順に並べる</span>
+            <span className="text-xs text-[#A9CCE3] font-normal">左から順に並べる</span>
           </div>
           <div className="flex flex-wrap items-center gap-2.5 p-3.5 bg-gray-50/80 border border-gray-200 rounded-2xl min-h-[72px]">
             {activeOrder.map((item: string, idx: number) => {
@@ -221,7 +221,7 @@ export function SortingControl({
                 >
                   <GripVertical size={13} className="text-gray-400 font-bold shrink-0" />
                   <span className="font-bold text-gray-800 text-sm whitespace-nowrap">{formatText(item)}</span>
-                  <span className="text-[10px] bg-stone-100 text-stone-500 rounded px-1.5 py-0.5 text-center select-none font-mono font-semibold shrink-0">{idx + 1}</span>
+                  <span className="text-xs bg-stone-100 text-stone-500 rounded px-1.5 py-0.5 text-center select-none font-mono font-semibold shrink-0">{idx + 1}</span>
                 </div>
               );
             })}

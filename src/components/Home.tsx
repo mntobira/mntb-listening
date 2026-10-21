@@ -1,7 +1,8 @@
 import './home-legibility.css';
 import './home-pillars.css';
+import './my-tobira-tag.css';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { ChevronRight, Edit3, BarChart3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Trophy, Store, Shirt, Award, Target, Zap, BookHeart } from 'lucide-react';
+import { ChevronRight, Edit3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Target, Zap, BookHeart } from 'lucide-react';
 import { createPortal } from 'react-dom';
 const PhilosophyPage = React.lazy(() => import('./PhilosophyPage').then(m => ({ default: m.PhilosophyPage })));
 import { auth } from '../firebase';
@@ -81,7 +82,7 @@ import { profileKey, streakKey, lastActiveKey, completedKey } from '../utils/use
 import { loadSchoolBrand } from '../utils/classroom';
 import { UpdateNoticeModal } from './UpdateNoticeModal';
 import { unreadNoticeCount, refreshRemoteNotices } from '../utils/updateNotices';
-import { readJsonArray } from '../utils/safeLocalStorage';
+import { readJsonArray, requireLocalStorage, setItemOrThrow } from '../utils/safeLocalStorage';
 import { KineticText } from '../motion';
 
 interface HomeProps {
@@ -224,7 +225,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         const uid = auth.currentUser ? auth.currentUser.uid : 'guest';
 
         // Load Profile Name/Details
-        const localProfile = localStorage.getItem(profileKey(uid));
+        const ls = requireLocalStorage();
+        const localProfile = ls.getItem(profileKey(uid));
         if (localProfile) {
           setProfile(JSON.parse(localProfile));
         } else {
@@ -232,8 +234,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         }
 
         // Calculate streak
-        const lastActive = localStorage.getItem(lastActiveKey(uid));
-        const storedStreak = parseInt(localStorage.getItem(streakKey(uid)) || '0', 10);
+        const lastActive = ls.getItem(lastActiveKey(uid));
+        const storedStreak = parseInt(ls.getItem(streakKey(uid)) || '0', 10);
 
         const today = new Date().toDateString();
         setDaysAway(lastActive ? Math.max(0, Math.round((new Date(today).getTime() - new Date(lastActive).getTime()) / 86_400_000)) : -1);
@@ -245,12 +247,12 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           if (lastActive === yesterday.toDateString()) {
             const newStreak = storedStreak + 1;
             setStreak(newStreak);
-            localStorage.setItem(streakKey(uid), newStreak.toString());
-            localStorage.setItem(lastActiveKey(uid), today);
+            setItemOrThrow(streakKey(uid), newStreak.toString());
+            setItemOrThrow(lastActiveKey(uid), today);
           } else {
             setStreak(1);
-            localStorage.setItem(streakKey(uid), '1');
-            localStorage.setItem(lastActiveKey(uid), today);
+            setItemOrThrow(streakKey(uid), '1');
+            setItemOrThrow(lastActiveKey(uid), today);
           }
         }
 
@@ -372,7 +374,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           </div>
         </header>
         {onGrowth && <React.Suspense fallback={<div className="game-hud-placeholder">成長記録を読み込んでいます…</div>}>
-          <GrowthHomeStrip expanded homeLayout onProfile={() => onGrowth('outfit')} onShop={() => onGrowth('shop')} onGacha={() => onGrowth('gacha')}
+          <GrowthHomeStrip expanded homeLayout onProfile={() => onGrowth('outfit')} onShop={() => onGrowth('gacha-shop')} onGacha={() => onGrowth('gacha')}
             onBadges={() => onGrowth('badges')} onMissions={() => onGrowth('missions')} onWallet={() => onGrowth('overview')} />
         </React.Suspense>}
         <section className="game-mascot-stage" aria-label="とびら君のホームステージ" ref={stageRef}>
@@ -386,19 +388,13 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
             <SpinMascot className="home-mascot-wrap" label="とびら君（左右にドラッグで回す・押すと着せ替え）" onTap={onGrowth ? () => onGrowth('outfit') : undefined}>
               <img className="home-mascot-art" src={equippedPoseSrc(growth)} alt="あなたのとびら君" draggable={false} /><TobiraAccessories progress={growth} />
             </SpinMascot>
-            <span>MY TOBIRA <b>Lv.{levelOf(growth.xp).level}</b></span>
-          </div>}
-          {onGrowth && <div className="game-stage-shortcuts" aria-label="ゲームメニュー">
-            {/* ガチャは下のナビにあるので、ここはランキング（2026-10-04） */}
-            <button className="stage-gacha" type="button" onClick={onLeaderboard} aria-label="ランキングを見る"><Trophy /><span>ランキング</span></button>
-            <button className="stage-shop" type="button" onClick={() => onGrowth('shop')}><Store /><span>ショップ</span></button>
-            <button className="stage-outfit" type="button" onClick={() => onGrowth('outfit')}><Shirt /><span>きせかえ</span></button>
-            <button className="stage-badges" type="button" onClick={() => onGrowth('badges')}><Award /><span>称号</span></button>
+            {/* 「マイとびら」の札（2026-10-20）：名前とレベルを別の色にし、レベルは金のメダル風に */}
+            <span className="my-tobira-tag"><i className="my-tobira-name">マイとびら</i><b className="my-tobira-lv">Lv.{levelOf(growth.xp).level}</b></span>
           </div>}
         </section>
         {/* ★ホームの3本柱（2026-10-01）★
             演習する（ひとりで学ぶ）／対戦する（ひとりで・みんなで）を同じ大きさで左右に、
-            その下に復習ノート（苦手をなくす）を横長で。科目の帯は「演習する」の中（科目選択）へ移した。 */}
+            その下に復習・記録（苦手をなくす）を横長で。科目の帯は「演習する」の中（科目選択）へ移した。 */}
         <section className={`game-action-deck home-pillars ${!onBattle ? 'without-battle' : ''}`} aria-label="学習の入口" data-home-arena={onBattle ? '' : undefined}>
           <button type="button" className="home-pillar home-pillar-solo game-solo" data-home-practice onClick={onPractice ?? (() => (onStudyMode ? onStudyMode('practice') : onStart()))}>
             <span className="home-pillar-icon" aria-hidden="true"><Edit3 /></span><strong>演習する</strong><small>ひとりで学ぶ</small>
@@ -408,18 +404,16 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           </button>}
         </section>
         <section className="home-review-rush" aria-label="復習と短時間チャレンジ">
-        <button type="button" className="home-review-wide game-review" aria-label={`復習ノート（苦手をなくす）${reviewDueCount > 0 ? `・今日の復習 ${reviewDueCount}問` : ''}`} onClick={onNoteList} data-home-review>
+        <button type="button" className="home-review-wide game-review" aria-label={`復習・記録（苦手をなくす）${reviewDueCount > 0 ? `・今日の復習 ${reviewDueCount}問` : ''}`} onClick={onNoteList} data-home-review>
           <span className="home-pillar-icon" aria-hidden="true"><Repeat2 /></span>
-          <span className="home-review-text"><strong>復習ノート</strong><small>苦手をなくす</small></span>
+          <span className="home-review-text"><strong>復習・記録</strong><small>苦手をなくす</small></span>
           {reviewDueCount > 0 ? <b>今日 {reviewDueCount}問</b> : <ChevronRight aria-hidden="true" />}
         </button>
           {onGrowth && <button type="button" className="home-rush-card" onClick={() => onGrowth('rush')} aria-label="マナラッシュ（60秒チャレンジ）を開く" data-home-rush><Zap size={20} /><span><strong>マナラッシュ</strong><small>60秒チャレンジ</small></span></button>}
         </section>
-        <div className="game-home-utility arena-home-bottom has-four">
-          {onGrowth && <button type="button" onClick={() => onGrowth('missions')}><Target size={17} />ミッション</button>}
-          {/* 「学習状況」はやめ、直近3日の「学習記録」（どの問題をやって、どこを間違えたか）へ。マイページの学習記録と同じ画面 */}
-          <button type="button" onClick={() => (onGrowth ? onGrowth('stats') : progressDialog.current?.showModal())} data-home-record><BarChart3 size={17} />学習記録</button>
+        <div className="game-home-utility arena-home-bottom has-three">
           <button type="button" aria-label="アプリ紹介を開く" onClick={onIntro}><ShieldCheck size={17} />使い方</button>
+          {onGrowth && <button type="button" onClick={() => onGrowth('missions')}><Target size={17} />ミッション</button>}
           {/* ★開発者の想い「学びの扉」をホームからも（2026-10-05 ご要望「もう少し見やすいところに」）★ タイトル画面だけだと一度しか目に入らない */}
           <button type="button" className="home-philosophy-entry" onClick={() => setShowPhilosophy(true)} aria-label="学びの扉（開発者の想い）を読む" data-open-philosophy><BookHeart size={17} />学びの扉</button>
         </div>
@@ -432,7 +426,6 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           <div className="mt-progress" role="progressbar" aria-label={`${subjectLabel}の学習進捗`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}><i style={{ width: `${progressPercent}%` }} /></div>
           {/* ゼロには次の一手を */}
           {reviewDueCount === 0 && <p className="study-next">{solvedQuestions === 0 ? '最初の1問で、扉がひとつ開くよ' : '復習はゼロ。新しい大問に進もう'}</p>}
-          <button type="button" onClick={() => (onGrowth ? onGrowth('stats') : progressDialog.current?.showModal())}>学習記録を見る <ChevronRight size={16} /></button>
         </section>
       </div>
       <dialog ref={progressDialog} className="game-details-dialog" aria-labelledby="home-progress-title">

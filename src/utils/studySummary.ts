@@ -36,99 +36,11 @@
 
 import type { ReviewItem } from './reviewList';
 import type { SolvedMap } from './studySyncCore';
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-/** 日付を「その日の0時」に丸めた epoch ms（日単位の集計に使う） */
-export function startOfDay(time: number): number {
-  const date = new Date(time);
-  date.setHours(0, 0, 0, 0);
-  return date.getTime();
-}
-
-/** YYYY-MM-DD 文字列（CSV や表示に使う。ローカルタイム基準） */
-export function toDateKey(time: number): string {
-  const date = new Date(time);
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
-// ===================================================================
-// 学習した日の集計
-// ===================================================================
-
-/**
- * 進捗マップ（値 = 初回解答時刻）から「学習した日」の集合を作る。
- *
- * solvedMap は初回解答時刻しか持たないため、
- * 「2回目以降に解いた日」は拾えない。これは既知の限界で、
- * 少なく見積もる方向の誤差なので評価上は安全側に働く。
- * （復習リストの updatedAt も併せて見ることで精度を上げる）
- */
-export function collectStudyDays(
-  solved: SolvedMap | null | undefined,
-  reviewItems: ReviewItem[] | null | undefined = [],
-): string[] {
-  const days = new Set<string>();
-
-  if (solved && typeof solved === 'object') {
-    Object.values(solved).forEach((time) => {
-      const value = Number(time);
-      if (Number.isFinite(value) && value > 0) days.add(toDateKey(value));
-    });
-  }
-
-  if (Array.isArray(reviewItems)) {
-    reviewItems.forEach((item) => {
-      const value = Number(item?.updatedAt);
-      if (Number.isFinite(value) && value > 0) days.add(toDateKey(value));
-    });
-  }
-
-  return Array.from(days).sort();
-}
-
-/**
- * 直近 windowDays 日のうち、何日学習したか。
- * 「先週ちゃんとやったか」を見るための指標で、
- * 連続日数（streak）より実態を反映しやすい
- * （週末に休む生徒が不当に低く出ないため）。
- */
-export function countActiveDaysWithin(
-  studyDays: string[],
-  windowDays: number,
-  now: number = Date.now(),
-): number {
-  const threshold = startOfDay(now) - (windowDays - 1) * DAY_MS;
-  return studyDays.filter((day) => {
-    const time = new Date(`${day}T00:00:00`).getTime();
-    return Number.isFinite(time) && time >= threshold;
-  }).length;
-}
-
-// ===================================================================
-// 復習の実行状況（＝「主体的に取り組む態度」の中核）
-// ===================================================================
-
-export interface ReviewDiscipline {
-  /** 復習リストに載っている総数 */
-  total: number;
-  /** 期限が来ているのに未対応の数 */
-  overdue: number;
-  /** box が最終段階まで進んだ（＝定着した）数 */
-  mastered: number;
-  /** 復習で解き直した回数の合計 */
-  retryCount: number;
-  /** 間違えた回数の合計 */
-  wrongCount: number;
-  /**
-   * 立て直し率 = 解き直した回数 / 間違えた回数
-   * 「間違えたあと、実際に戻って解き直したか」を表す。
-   * 1.0 に近いほど、間違いを放置していない。
-   */
-  recoveryRate: number;
-}
+import { collectStudyDays, countActiveDaysWithin } from './studyPeriods';
+import type { ReviewDiscipline, EngagementScore, StudentSummary } from './studySummaryTypes';
+export type { ReviewDiscipline, EngagementScore, StudentSummary } from './studySummaryTypes';
+export { escapeCsvCell, buildCsvText, STUDENT_CSV_HEADERS, buildStudentCsv, CHAPTER_CSV_HEADERS } from './studySummaryCsv';
+export { startOfDay, toDateKey, collectStudyDays, countActiveDaysWithin } from './studyPeriods';
 
 export function summarizeReviewDiscipline(
   items: ReviewItem[] | null | undefined,
@@ -243,20 +155,6 @@ export interface EngagementInput {
   reviewTotal: number;
 }
 
-export interface EngagementScore {
-  /** 0〜100 の目安値 */
-  score: number;
-  /** 内訳（先生が自分で判断し直せるように必ず併記する） */
-  breakdown: {
-    /** 継続（最大50点）：直近14日のうち何日やったか */
-    continuity: number;
-    /** 立て直し（最大35点）：間違いを解き直しているか */
-    recovery: number;
-    /** 未処理（最大15点）：期限超過を放置していないか */
-    upkeep: number;
-  };
-}
-
 /**
  * 「主体的に学習に取り組む態度」の目安値。
  *
@@ -363,23 +261,6 @@ export function buildStudyBaseMetrics(
   };
 }
 
-// ===================================================================
-// 生徒1人分のサマリー
-// ===================================================================
-
-export interface StudentSummary {
-  uid: string;
-  displayName: string;
-  /** 解いた大問の総数 */
-  solvedTotal: number;
-  /** 直近14日で学習した日数 */
-  activeDaysIn14: number;
-  /** 最終学習日（YYYY-MM-DD、記録が無ければ null） */
-  lastStudiedAt: string | null;
-  review: ReviewDiscipline;
-  engagement: EngagementScore;
-}
-
 export function buildStudentSummary(params: {
   uid: string;
   displayName: string;
@@ -403,111 +284,4 @@ export function buildStudentSummary(params: {
     engagement: base.engagement,
   };
 }
-
-// ===================================================================
-// CSV 出力
-// ===================================================================
-
-/**
- * CSV のセルを安全にエスケープする。
- *
- * ⚠️ セキュリティ上の注意（CSV インジェクション）
- * Excel は先頭が = + - @ のセルを数式として解釈するため、
- * 生徒の入力（ニックネーム等）がそのまま入ると意図しない実行につながる。
- * 先頭に ' を付けて無効化する。学校へ配る成果物なので、ここは必須。
- */
-export function escapeCsvCell(value: unknown): string {
-  const text = value === null || value === undefined ? '' : String(value);
-  const neutralized = /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
-  if (/[",\r\n]/.test(neutralized)) {
-    return `"${neutralized.replace(/"/g, '""')}"`;
-  }
-  return neutralized;
-}
-
-/**
- * ★重複していたので1つにまとめた組み立て★
- *
- * CSV の「外側の骨組み」は3か所（buildStudentCsv / buildChapterCsv /
- * kantenReport.ts の buildKantenCsv）にまったく同じ形で書かれていた。
- *   1. 見出し行を escapeCsvCell に通して , で連結
- *   2. 各行も同じように連結
- *   3. 行区切りは CRLF、最後にも改行を1つ付ける
- *   4. withBom なら先頭に BOM を付ける
- *
- * これは見た目の重複ではなく、**間違えると実害が出る部分**なので
- * 1か所にまとめる必要があった。
- *   - BOM を落とすと Excel で日本語が文字化けする（現場で最も多い躓き）
- *   - escapeCsvCell を通し忘れると CSV インジェクションが通る
- *     （先頭が = + - @ のセルを Excel が数式として実行してしまう）
- *   - 改行が LF だと古い Excel で1行に潰れる
- * 3か所に散らしたままだと、片方だけ直して片方が穴のまま、という
- * いちばん危ない状態になりうる。学校へ配る成果物なのでここは統一する。
- *
- * ※ 中身（どの列を出すか）は3つでまったく違うため、
- *   まとめたのは骨組みだけである。列の並びは各関数に残している。
- */
-export function buildCsvText(
-  headers: readonly unknown[],
-  rows: readonly unknown[][],
-  withBom = true,
-): string {
-  const lines: string[] = [];
-  lines.push(headers.map(escapeCsvCell).join(','));
-  rows.forEach((row) => {
-    lines.push(row.map(escapeCsvCell).join(','));
-  });
-  const body = `${lines.join('\r\n')}\r\n`;
-  return withBom ? `\uFEFF${body}` : body;
-}
-
-export const STUDENT_CSV_HEADERS = [
-  '生徒名',
-  '解いた大問数',
-  '直近14日の学習日数',
-  '最終学習日',
-  '復習リスト件数',
-  '未処理の復習',
-  '定着した問題数',
-  '間違えた回数',
-  '解き直した回数',
-  '立て直し率',
-  '取り組み度',
-  '内訳:継続',
-  '内訳:立て直し',
-  '内訳:未処理',
-] as const;
-
-/**
- * 先生がそのまま Excel で開ける CSV を作る。
- *
- * BOM を付けるのは、Excel が UTF-8 を自動判別せず
- * 日本語が文字化けするため（現場で最も多い躓きどころ）。
- */
-export function buildStudentCsv(rows: StudentSummary[], withBom = true): string {
-  // 骨組み（見出し・CRLF・BOM・エスケープ）は buildCsvText に任せ、
-  // ここは「どの列をどの順で出すか」だけを持つ。
-  return buildCsvText(
-    STUDENT_CSV_HEADERS,
-    rows.map((row) => [
-      row.displayName,
-      row.solvedTotal,
-      row.activeDaysIn14,
-      row.lastStudiedAt ?? '未学習',
-      row.review.total,
-      row.review.overdue,
-      row.review.mastered,
-      row.review.wrongCount,
-      row.review.retryCount,
-      `${Math.round(row.review.recoveryRate * 100)}%`,
-      row.engagement.score,
-      row.engagement.breakdown.continuity,
-      row.engagement.breakdown.recovery,
-      row.engagement.breakdown.upkeep,
-    ]),
-    withBom,
-  );
-}
-
-export const CHAPTER_CSV_HEADERS = ['単元', '大問数', 'クラス平均到達率(%)', '未処理の復習(合計)'] as const;
 

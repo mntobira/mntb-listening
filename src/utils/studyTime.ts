@@ -9,7 +9,7 @@
  * 放置で増え続けないよう、1回に足せるのは最大90秒・1日の上限は12時間。
  * days は直近60日だけ残す（容量を増やし続けない）。
  */
-import { safeLocalStorage } from './safeLocalStorage';
+import { safeLocalStorage, safeParseJson } from './safeLocalStorage';
 
 export interface StudyTimeLog { total: number; days: Record<string, number> }
 const PREFIX = 'study_time_v1_';
@@ -31,7 +31,7 @@ export function activeStudySeconds(from: number, to: number, lastActive: number,
 
 export function readStudyTime(uid: string | null | undefined): StudyTimeLog {
   try {
-    const p = JSON.parse(safeLocalStorage()?.getItem(studyTimeKey(uid)) || '{}');
+    const p = safeParseJson<{ total?: number; days?: Record<string, unknown> } | null>(safeLocalStorage()?.getItem(studyTimeKey(uid)), {});
     const total = Number.isFinite(p?.total) && p.total > 0 ? Math.floor(p.total) : 0;
     const days: Record<string, number> = {};
     if (p?.days && typeof p.days === 'object') for (const [k, v] of Object.entries(p.days)) if (/^\d{4}-\d{2}-\d{2}$/.test(k) && typeof v === 'number' && v > 0) days[k] = Math.floor(v);

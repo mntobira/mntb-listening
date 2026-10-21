@@ -7,16 +7,21 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+// 低スペック端末の軽量化（html[data-perf=lite] のときだけ効く）。各画面の CSS より後に読む
+import './styles/perf-lite.css';
 // モーション層（キネティック・タイポ／UIの動き／インフォグラフィック）。index.css の後に読む
 import { installRipple } from './motion';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppWallpaper } from './components/AppWallpaper';
 import { installChunkRecovery } from './utils/chunkRecovery';
+import { installDevicePerf } from './utils/devicePerf';
 import { initializeAdMob } from './utils/adService';
 
 import { isNativeApp, getAppPlatform } from './native/platform';
 
 installChunkRecovery();
+// 端末スペックを判定して <html data-perf> を付ける（波紋・見出しの動きより先に）
+installDevicePerf();
 installRipple();
 initializeAdMob();
 if (typeof document !== 'undefined') {

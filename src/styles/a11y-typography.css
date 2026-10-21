@@ -1,0 +1,70 @@
+/* src/styles/a11y-typography.css — index.css から分割（C-16）：5. アクセシビリティ・6. 文字組み。
+ * 読み込み順は index.css の @import の並びで固定（並べ替えるとカスケードが変わる）。 */
+/* =========================================================
+ * 5. Accessibility
+ * ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* iOS Safari の下部ツールバー / ホームインジケータでボタンが隠れて
+   押せなくなるのを防ぐための安全余白ユーティリティ。
+   通常のパディングに加えて safe-area-inset-bottom を足す。 */
+.pb-safe {
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+}
+.pb-safe-lg {
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+}
+
+/* 画面下部の固定ナビ（ホーム／学習／ランキング／設定）のぶんだけ
+   スクロール領域の末尾に余白を作るユーティリティ。
+
+   ★なぜ専用のクラスが必要か★
+   下部ナビは position:fixed のオーバーレイなので、レイアウト上の高さを
+   1px も占めない。そのため各画面が自前で「ナビと同じ高さの余白」を
+   末尾に用意しないと、スクロールを最後まで送っても最後の要素が
+   ナビの裏に隠れたままになる（＝押せないボタンが生まれる）。
+
+   以前は各画面が pb-32（＝128px）などの決め打ちで、
+   実際のナビ高さ（約70px＋安全領域）と合っておらず、
+   「余白が多すぎて1画面に入らない」原因にもなっていた。
+   ここで実測に合わせた一箇所の定義に集約する。 */
+.pb-app-nav {
+  padding-bottom: calc(var(--app-nav-h, 76px) + 4px);
+}
+
+/* =========================================================
+ * 6. Typography utilities
+ * ========================================================= */
+.font-handwriting { font-family: var(--font-handwriting); }
+.font-modern { font-family: var(--font-modern); }
+
+/* 数式・化学式向けユーティリティ。
+ * 化学式や計算式（H⁺ / CH₃COOH / 1.0×10⁻³ mol/L / pH = −log[H⁺] など）に適用すると、
+ * 上付き・下付き・演算子・等号が手書きフォントよりも正確に読めるようになる。 */
+.font-math {
+  font-family: var(--font-math);
+  font-feature-settings: "liga" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+/* font-math を当てた要素の中の上付き・下付きを少しだけ整える */
+.font-math sup, .font-math sub {
+  font-size: 0.72em;
+}

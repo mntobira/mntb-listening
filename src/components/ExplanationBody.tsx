@@ -1,103 +1,8 @@
 import React from 'react';
 import { formatText } from '../utils/textFormatter';
-
-/**
- * ExplanationBody
- * ------------------------------------------------------------------
- * 学習フローチャート（ロジックツリー）のノード解説本文をレンダリングする。
- *
- * 【背景・方針】
- *  従来の解説テキストでは、表を「特徴 ｜ 純物質 ｜ 混合物」のように
- *  全角パイプを並べた “疑似テーブル” で表現していた。
- *  これは折り返しで列がずれて意味を失い、支援技術からも表として認識されない。
- *
- *  そこで解説データは **Markdown 形式のテーブル**（`| 見出し | 見出し |`）で記述し、
- *  このコンポーネントが本物の <table> 要素（thead / tbody / th / td）へ変換する。
- *  テーブル以外の行は従来どおり formatText（化学式の添字処理など）を通す。
- */
-
-/** Markdown テーブルの区切り行（例: |---|:--:|---|） */
-const DELIMITER_ROW = /^\s*\|?\s*:?-{1,}:?\s*(\|\s*:?-{1,}:?\s*)+\|?\s*$/;
-/** Markdown テーブルの行（先頭が | で始まる行） */
-const TABLE_ROW = /^\s*\|.*\|\s*$/;
-
-type Alignment = 'left' | 'center' | 'right';
-
-interface TableBlock {
-  kind: 'table';
-  header: string[];
-  rows: string[][];
-  align: Alignment[];
-}
-
-interface TextBlock {
-  kind: 'text';
-  text: string;
-}
-
-type Block = TableBlock | TextBlock;
-
-/** `| a | b |` 形式の1行をセル配列へ分解する。 */
-function splitRow(line: string): string[] {
-  const trimmed = line.trim().replace(/^\|/, '').replace(/\|$/, '');
-  return trimmed.split('|').map((cell) => cell.trim());
-}
-
-/** 区切り行（:--- / :---: / ---:）から各列の揃え方を決める。 */
-function parseAlignments(line: string): Alignment[] {
-  return splitRow(line).map((cell) => {
-    const left = cell.startsWith(':');
-    const right = cell.endsWith(':');
-    if (left && right) return 'center';
-    if (right) return 'right';
-    return 'left';
-  });
-}
-
-/**
- * 解説テキストを「テキストブロック」と「テーブルブロック」に分解する。
- * Markdown テーブルとして成立しない `|` 行は、誤変換を避けてテキスト扱いにする。
- */
-export function parseExplanationBlocks(text: string): Block[] {
-  const lines = text.split('\n');
-  const blocks: Block[] = [];
-  let buffer: string[] = [];
-
-  const flushText = () => {
-    if (buffer.length === 0) return;
-    const joined = buffer.join('\n');
-    // 前後の余分な空行だけのブロックは捨てる（テーブル前後の間隔は CSS で調整する）
-    if (joined.trim() !== '') blocks.push({ kind: 'text', text: joined.replace(/^\n+|\n+$/g, '') });
-    buffer = [];
-  };
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const next = lines[i + 1];
-
-    // 「ヘッダー行 + 区切り行」が揃っているときだけテーブルとして解釈する
-    if (TABLE_ROW.test(line) && next !== undefined && DELIMITER_ROW.test(next)) {
-      flushText();
-      const header = splitRow(line);
-      const align = parseAlignments(next);
-      const rows: string[][] = [];
-      let j = i + 2;
-      while (j < lines.length && TABLE_ROW.test(lines[j])) {
-        rows.push(splitRow(lines[j]));
-        j++;
-      }
-      blocks.push({ kind: 'table', header, rows, align });
-      i = j - 1;
-      continue;
-    }
-
-    buffer.push(line);
-  }
-
-  flushText();
-  return blocks;
-}
-
+import { parseExplanationBlocks, groupSections, boxTone } from './explanationBlocks';
+import type { Alignment, TableBlock, Section, ExplanationTone } from './explanationBlocks';
+export { parseExplanationBlocks } from './explanationBlocks';
 
 const alignClass: Record<Alignment, string> = {
   left: 'text-left',
@@ -109,7 +14,8 @@ const alignClass: Record<Alignment, string> = {
  * 表の配色。解説は「明るい下地（ミニテスト・学習フロー）」と
  * 「暗い下地（演習モードの解説パネル）」の両方に出るため、両対応させる。
  */
-export type ExplanationTone = 'light' | 'dark';
+// ExplanationTone は explanationBlocks.ts へ移した（循環を作らないため・C-20）。ここからも再エクスポートする
+export type { ExplanationTone } from './explanationBlocks';
 
 const toneStyles: Record<ExplanationTone, {
   wrapper: string;
@@ -141,12 +47,16 @@ const toneStyles: Record<ExplanationTone, {
 interface ExplanationTableProps {
   block: TableBlock;
   tone: ExplanationTone;
+  /** 英語の表なら true（散文として組む）。数式・化学の表は false のまま */
+  prose?: boolean;
   // このリポジトリは @types/react を導入していないため、JSX の key が
   // props として型チェックされる。明示的に受け取って型エラーを避ける。
   key?: React.Key;
 }
 
-function ExplanationTable({ block, tone }: ExplanationTableProps) {
+function ExplanationTable({ block, tone, prose = false }: ExplanationTableProps) {
+  // 2026-10-21：英語の表（第4問B の条件表・第6問B など）は prose で組む。数式用のセリフ体に化けるのを防ぐ
+  const cellText = (cell: string) => formatText(cell, [], { prose });
   const colCount = block.header.length;
   const t = toneStyles[tone];
   return (
@@ -193,7 +103,7 @@ function ExplanationTable({ block, tone }: ExplanationTableProps) {
         1か所（土台）だけになり、将来書体を変えるときもここを触らずに済む。
         数式の単元では土台が font-math になるので、表も自動で数式書体に揃う。
       */}
-      <table className="w-full min-w-full border-collapse text-[11px] sm:text-xs">
+      <table className="w-full min-w-full border-collapse text-xs sm:text-xs">
         <thead>
           <tr>
             {block.header.map((cell, i) => (
@@ -207,7 +117,7 @@ function ExplanationTable({ block, tone }: ExplanationTableProps) {
                   alignClass[block.align[i] ?? 'left'],
                 ].join(' ')}
               >
-                {formatText(cell)}
+                {cellText(cell)}
               </th>
             ))}
           </tr>
@@ -229,7 +139,7 @@ function ExplanationTable({ block, tone }: ExplanationTableProps) {
                         alignClass[block.align[c] ?? 'left'],
                       ].join(' ')}
                     >
-                      {formatText(cell)}
+                      {cellText(cell)}
                     </th>
                   );
                 }
@@ -242,7 +152,7 @@ function ExplanationTable({ block, tone }: ExplanationTableProps) {
                       alignClass[block.align[c] ?? 'left'],
                     ].join(' ')}
                   >
-                    {formatText(cell)}
+                    {cellText(cell)}
                   </td>
                 );
               })}
@@ -253,88 +163,6 @@ function ExplanationTable({ block, tone }: ExplanationTableProps) {
     </div>
   );
 }
-
-/**
- * 「行全体が【…】だけ」の見出し行。
- * 例：「【会話文】」「【資料2　米の生産量と輸出量（2023年・おおよその値）】」
- * 行内に【】が現れるだけのもの（本文中の強調）は対象にしない。
- */
-const SECTION_HEADING = /^【[^】\n]+】\s*$/u;
-
-/** 四角囲みの1区画。見出し＋その中身（地の文・表が混在しうる） */
-interface Section {
-  heading: string | null;
-  blocks: Block[];
-}
-
-/**
- * ブロック列を「見出し（【…】）で始まる区画」へまとめ直す。
- *
- * ★なぜ「テキストブロック単位」で切ってはいけないのか（実測で判明）★
- *   parseExplanationBlocks は表の前後でテキストを分断するため、
- *       【資料2　米の生産量と輸出量】   ← テキストブロック
- *       | 国 | 生産量 | 輸出量 |        ← テーブルブロック（別ブロック）
- *   のように、見出しと表が別ブロックになる。
- *   最初の実装は「テキストブロックの中だけ」で見出しを探したので、
- *   Playwright 実測の結果
- *       【資料2 …】の枠  … top=747 / 高さ 76px（見出しだけの空箱）
- *       表              … top=836（枠の外）
- *   となり、★資料名の枠と中身の表が分離★していた。
- *   実物の冊子は「資料名・表・注記」がひとつの枠に入っている。
- *
- * ★直し方★
- *   見出しの探索をブロック列より上位で行い、表ブロックも
- *   直前の見出しの区画に属させる。これで表が枠の中に入る。
- */
-function groupSections(blocks: Block[]): Section[] {
-  const out: Section[] = [];
-  let current: Section = { heading: null, blocks: [] };
-
-  const flush = () => {
-    if (current.heading !== null || current.blocks.length > 0) out.push(current);
-  };
-
-  for (const block of blocks) {
-    if (block.kind === 'table') {
-      // 表は直前の見出しの区画に入れる（見出しが無ければ現在の区画）
-      current.blocks.push(block);
-      continue;
-    }
-
-    // テキストブロックは見出し行で区画を切り替える
-    let buf: string[] = [];
-    const flushText = () => {
-      const body = buf.join('\n').replace(/^\n+|\n+$/g, '');
-      if (body !== '') current.blocks.push({ kind: 'text', text: body });
-      buf = [];
-    };
-
-    for (const line of block.text.split('\n')) {
-      if (SECTION_HEADING.test(line.trim())) {
-        flushText();
-        flush();
-        current = { heading: line.trim(), blocks: [] };
-        continue;
-      }
-      buf.push(line);
-    }
-    flushText();
-  }
-
-  flush();
-  return out;
-}
-
-const boxTone: Record<ExplanationTone, { box: string; heading: string }> = {
-  light: {
-    box: 'border-slate-400 bg-slate-50/60',
-    heading: 'text-slate-700',
-  },
-  dark: {
-    box: 'border-[#3A506B] bg-[#1C2541]/40',
-    heading: 'text-[#5BC0BE]',
-  },
-};
 
 interface SectionBoxProps {
   section: Section;
@@ -383,7 +211,7 @@ function SectionBox({ section, tone, highlights, prose }: SectionBoxProps) {
   /** 区画の中身（地の文・表）。枠の内でも外でも同じ描画を使う。 */
   const inner = section.blocks.map((block, i) =>
     block.kind === 'table' ? (
-      <ExplanationTable key={`t-${i}`} block={block} tone={tone} />
+      <ExplanationTable key={`t-${i}`} block={block} tone={tone} prose={prose} />
     ) : (
       <div key={`p-${i}`} className="whitespace-pre-wrap">
         {formatText(block.text, highlights, { prose })}
@@ -501,7 +329,7 @@ export function ExplanationBody({
     <div className={className}>
       {blocks.map((block, i) =>
         block.kind === 'table' ? (
-          <ExplanationTable key={`t-${i}`} block={block} tone={tone} />
+          <ExplanationTable key={`t-${i}`} block={block} tone={tone} prose={prose} />
         ) : (
           <div key={`p-${i}`} className="whitespace-pre-wrap">
             {formatText(block.text, highlights, { prose })}

@@ -1,0 +1,359 @@
+/* src/styles/navigation-screens.css — index.css から分割（C-16）：ナビゲーション画面（科目・学習机・単元・対戦ロビー・記録・ランキング入口）。
+ * 読み込み順は index.css の @import の並びで固定（並べ替えるとカスケードが変わる）。 */
+/* Shared visual language for navigation screens: paper, ink, and purposeful hierarchy.
+   Quiz/answer/explanation and live match controls are deliberately not targeted. */
+.mtb-page { background: radial-gradient(ellipse at 20% 10%, #fff9fa, transparent 60%), repeating-linear-gradient(transparent 0 31px, #ebd9e144 31px 32px), #fcf6f5; color: #344451; }
+.mtb-page-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; }
+.mtb-page-header > .mtb-kicker { margin-left: auto; }
+.mtb-page-header > div:last-child { width: auto; }
+.mtb-back { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; gap: 5px; min-height: 44px; min-width: 44px; padding: 8px 12px; border: 1px solid #e5cdd6; border-radius: 50px; background: #fffdfa; color: #815d73; font-size: 12px; font-weight: 700; box-shadow: 0 3px 0 #eddce466; cursor: pointer; }
+.mtb-kicker { font: 700 10px/1.5 var(--font-modern); color: #9a7489; letter-spacing: .17em; }
+.mtb-section-label { color: #947386; font-size: 11px; font-weight: 700; letter-spacing: .08em; }
+.mtb-page :is(button, summary, a):focus-visible { outline: 3px solid #287dad; outline-offset: 3px; }
+.mtb-paper { border: 1px solid #e8d3dd; border-radius: 5px 18px 18px 5px; background: #fffefbf5; box-shadow: 3px 4px 0 #f2e6eb; }
+.mtb-tabs { display: flex; align-items: stretch; gap: 6px; padding: 0; border: 0; border-bottom: 1px solid #dec6d2; border-radius: 0; background: transparent; }
+.mtb-tabs > button { flex: 1; min-height: 44px; border: 0; border-radius: 13px 13px 0 0; box-shadow: none; }
+.mtb-tabs > button[aria-selected="true"], .mtb-tabs > button[aria-pressed="true"] { background: #bd6885; color: #fff; }
+.mtb-round-link { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 7px; padding: 4px 8px; min-height: 90px; cursor: pointer; }
+.mtb-round-link > span:first-child { width: 50px; height: 50px; display: grid; place-items: center; border-radius: 50%; border: 3px solid white; color: #9c7c4c; background: #f4e7cd; box-shadow: 0 3px 0 #dac6a1; }
+.mtb-round-link strong { font-size: 12px; color: #6f5864; }
+.mtb-round-link small { font-size: 10px; line-height: 1.6; color: #8a7580; }
+.mtb-round-link:hover > span:first-child { transform: translateY(-2px); }
+/* Subject selection is a bookshelf, not a stack of app-launch buttons. */
+.subject-library .subject-library-scroll { padding-top: 68px; }
+.subject-library-heading { text-align: left; max-width: 1020px; width: 100%; margin: 0 auto 24px; }
+.subject-library-heading h1 { font: 700 32px/1.5 var(--font-handwriting); color: #6a495d; margin-block: 3px; }
+.subject-library-heading > p:not(.mtb-kicker) { font-size: 12px; color: #83717c; }
+.subject-library-note { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: #778798; font-size: 11px; }
+.subject-library .subject-bookshelf { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 21px 13px; max-width: 1020px; margin: auto; }
+.subject-bookshelf > [data-subject-card] { position: relative; min-width: 0; }
+.subject-bookshelf > [data-subject-card]::after { content: ''; position: absolute; left: -4px; right: -4px; bottom: -8px; height: 4px; border-radius: 3px; background: #dfc9cb; box-shadow: 0 3px 0 #efe2e2; }
+.subject-library [data-subject-book] { min-height: 115px; padding: 14px 12px 12px 17px; border-radius: 4px 13px 13px 4px; border: 1px solid #dbcbd5; border-left: 6px solid var(--subject-accent); background: #fffdfbf5; box-shadow: 3px 3px 0 var(--subject-soft), inset 3px 0 0 #ffffff; overflow: visible; }
+.subject-library [data-subject-book] > span.absolute { display: none; }
+.subject-library .subject-book-title { gap: 8px; flex-wrap: wrap; margin: 0; }
+.subject-library .subject-book-title > div:nth-child(2) { flex-basis: 100%; }
+.subject-library .subject-book-title h2 { font-size: 16px; line-height: 1.35; color: #493f50; }
+.subject-library .subject-book-icon { width: 28px; height: 28px; border-radius: 8px; color: var(--subject-accent); background: color-mix(in srgb, var(--subject-soft) 45%, white); }
+.subject-library .subject-book-icon svg { width: 19px; height: 19px; }
+.subject-library .subject-book-title > svg { position: absolute; right: 10px; top: 19px; width: 16px; height: 16px; color: var(--subject-accent); }
+.subject-library .subject-book-title p { font-size: 10px; line-height: 1.5; letter-spacing: 0; overflow-wrap: anywhere; }
+@media (min-width: 640px) {
+  .subject-library [data-subject-book] { min-height: 255px; padding: 20px 20px 14px; }
+  .subject-library .subject-book-title { margin-bottom: 12px; }
+  .subject-library .subject-book-title h2 { font-size: 22px; }
+  .subject-library .subject-book-icon { width: 40px; height: 40px; }
+  .subject-library .subject-book-title > div:nth-child(2) { flex-basis: auto; }
+  .subject-library .subject-bookshelf { gap: 28px; }
+}
+@media (min-width: 1024px) { .subject-library .subject-bookshelf { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-height: 740px) and (max-width: 639px) {
+  .subject-library .subject-library-scroll { padding-top: 65px; padding-inline: 15px; }
+  .subject-library-heading { margin-bottom: 15px; }
+  .subject-library-heading h1 { font-size: 27px; }
+  .subject-library-note { margin-top: 4px; font-size: 10px; }
+  .subject-library [data-subject-book] { min-height: 101px; padding-top: 10px; padding-bottom: 9px; }
+  .subject-library .subject-book-icon { width: 22px; height: 22px; }
+  .subject-library .subject-book-title { gap: 4px; }
+  .subject-library .subject-book-title h2 { font-size: 15px; }
+  .subject-library .subject-bookshelf { gap: 16px 12px; }
+}
+/* The study desk: practice is the main action; reading is a separate paper. */
+.mode-desk { border-radius: 24px; padding: 18px 22px 32px; }
+.mode-heading { margin: 22px 0 16px; text-align: center; }
+.mode-heading h1 { font: 700 32px/1.5 var(--font-handwriting); color: #6d4c61; margin-top: 3px; }
+.mode-heading > p:last-child { font-size: 12px; color: #8a7380; }
+.mode-battle-bridge { display: flex; align-items: center; gap: 8px; margin: 0 auto 20px; min-height: 44px; padding: 6px 12px; border-radius: 50px; background: #edf4f8; color: #2d7298; border: 1px solid #c7dce6; font-size: 12px; cursor: pointer; }
+.mode-battle-bridge small { display: block; color: #648191; font-size: 12px; }
+.mode-battle-bridge > svg:last-child { margin-left: 12px; }
+.mode-workspace { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: center; max-width: 800px; margin: auto; }
+.mode-workspace-solo { grid-template-columns: minmax(0, 1fr); max-width: 480px; }
+.mode-practice-stage { min-width: 0; padding: 10px 0; text-align: center; }
+.mode-practice-art { position: relative; width: 130px; height: 106px; margin: 0 auto 18px; display: grid; place-items: center; border-radius: 18px 34px 20px 30px; background: linear-gradient(140deg, #fff, var(--subject-soft)); border: 4px solid white; box-shadow: 0 6px 0 color-mix(in srgb, var(--subject-accent) 35%, white), 0 14px 30px #9a728920; transform: rotate(-7deg); color: var(--subject-accent); }
+.mode-practice-art > svg { width: 51px; height: 51px; stroke-width: 1.5; }
+.mode-practice-art > span { position: absolute; top: -8px; right: -12px; background: #f5e2b9; padding: 4px 10px; font-size: 12px; font-weight: 800; color: #927046; border: 2px solid white; border-radius: 4px; transform: rotate(14deg); }
+.mode-practice-art > i { position: absolute; bottom: 5px; right: 10px; font-size: 18px; font-style: normal; opacity: .5; }
+.mode-practice-copy h2 { font: 700 26px/1.5 var(--font-handwriting); color: #63465d; margin-block: 3px; }
+.mode-practice-copy > p { font-size: 12px; line-height: 1.8; color: #7f717e; max-width: 360px; margin: auto; }
+.mode-primary { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 56px; margin-top: 18px; padding: 12px 17px; border-radius: 20px 12px 22px 12px; border: 3px solid #fff; color: white; background: #b56686; box-shadow: 0 4px 0 #874961, 0 8px 16px #ad718729; font-size: 15px; font-weight: 700; cursor: pointer; }
+.mode-input-paper { position: relative; text-align: left; min-width: 0; padding: 28px 22px 18px; border: 1px solid #dfd2ca; border-left: 4px solid #c3b392; border-radius: 4px 16px 16px 4px; background: repeating-linear-gradient(transparent 0 27px, #e9dfd54f 27px 28px), #fffef8; box-shadow: 4px 5px 0 #ede2d5; transform: rotate(2deg); cursor: pointer; }
+.mode-input-paper > svg { color: #ae8e56; margin-bottom: 14px; }
+.mode-input-paper h2 { font: 700 20px/1.5 var(--font-handwriting); color: #78604e; }
+.mode-input-subtitle { color: #a38b6b; font-size: 12px; }
+.mode-input-paper p { font-size: 12px; line-height: 1.8; color: #7f746e; margin-block: 12px 18px; }
+.mode-page-tab { position: absolute; right: 18px; top: -9px; font-size: 12px; font-weight: 700; letter-spacing: .15em; background: #ebdcb7; border: 2px solid white; border-radius: 3px; color: #8a7045; padding: 4px 10px; }
+.mode-input-open { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: #9c7752; font-weight: 700; border-top: 1px dashed #e4d8c4; padding-top: 12px; }
+.mode-tools { margin: 26px auto 0; max-width: 600px; text-align: center; }
+.mode-tools > div { display: flex; justify-content: center; gap: 32px; margin-top: 12px; }
+.mode-footnote { text-align: center; font-size: 12px; color: #917f89; line-height: 1.8; margin-top: 24px; }
+@media (max-width: 639px) {
+  .mode-desk { padding: 12px 16px 28px; }
+  .mode-heading { margin: 12px 0; }
+  .mode-heading h1 { font-size: 26px; }
+  .mode-workspace { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .mode-practice-stage { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 5px 13px; align-items: center; text-align: left; }
+  .mode-practice-art { width: 87px; height: 86px; margin: 0; }
+  .mode-practice-art > svg { width: 42px; height: 42px; }
+  .mode-practice-copy h2 { font-size: 23px; }
+  .mode-practice-copy > p { font-size: 12px; line-height: 1.65; }
+  .mode-practice-copy .mtb-kicker { font-size: 12px; letter-spacing: .07em; }
+  .mode-primary { grid-column: 1 / -1; margin-top: 10px; }
+  .mode-input-paper { transform: none; padding: 15px 14px 10px 58px; }
+  .mode-input-paper > svg { position: absolute; left: 14px; top: 23px; width: 28px; height: 28px; }
+  .mode-input-paper h2 { font-size: 18px; }
+  .mode-input-paper p { margin-block: 5px 9px; font-size: 12px; }
+  .mode-input-subtitle { display: none; }
+  .mode-input-open { padding-top: 8px; font-size: 12px; }
+  .mode-tools { margin-top: 21px; }
+  .mode-tools > div { gap: 16px; }
+  .mode-tools .mtb-round-link > span:first-child { width: 44px; height: 44px; }
+}
+/* Unit selection: a chapter index and a numbered route through its units. */
+.chapter-route > button:first-child, .field-library > button:first-child { min-height: 44px; border: 1px solid #e5cdd6; color: #815d73; box-shadow: 0 3px 0 #efdee6; }
+.chapter-route-heading { padding-inline: 70px; margin-top: 48px; margin-bottom: 16px; }
+.chapter-route-heading h2 { color: #6d4c61; }
+.chapter-route-heading > p:last-child { font-size: 12px; color: #8a7380; }
+.chapter-index [role="tab"] { border-radius: 12px 12px 3px 3px; border-color: #dfccd6; min-height: 58px; background: #fffdf8; }
+.chapter-index [role="tab"][aria-selected="true"] { background: #ad6f88; border-color: #ad6f88; color: #fff; box-shadow: 0 3px 0 #8a536b; }
+.chapter-index [role="tab"][aria-selected="true"] > span:first-child { color: #fff0e1 !important; }
+.chapter-route #chapter-tab-panel { border-color: #e3d1da; background: #fffdf9b3; border-radius: 4px 20px 20px 4px; }
+.chapter-route .chapter-route-list { grid-template-columns: minmax(0, 1fr); gap: 14px; padding-left: 24px; border-left: 2px solid #ead7df; margin-left: 8px; }
+.chapter-route .chapter-route-card { position: relative; min-height: 0; padding: 15px; border: 1px solid #e6d6dc; background: #fffdf9; border-radius: 4px 16px 16px 4px; box-shadow: 3px 3px 0 #f3e9ed; }
+.chapter-route-card::before { content: attr(data-route-index); position: absolute; top: 17px; left: -37px; height: 24px; width: 24px; display: grid; place-items: center; border-radius: 50%; border: 2px solid white; background: #d6a4b8; color: #fff; font: 700 10px var(--font-modern); }
+.chapter-route-card h4 { font-size: 16px; line-height: 1.5; color: #654c5f; }
+.chapter-unit-count { font: 600 10px/1.7 var(--font-modern); color: #ad7b91; }
+.chapter-route-card button { min-height: 40px; }
+.chapter-route-card button[title="単元のフローチャートを確認"] { min-width: 40px; border-radius: 50%; }
+.chapter-route-card > div:last-child { border-top-color: #eadde3; }
+.chapter-route-card > div:last-child > div:first-child > button:first-child { border-radius: 50px; background: #aa6c87; min-height: 44px; }
+.chapter-route #chapter-tab-panel > div:first-child { border-bottom-style: dashed; border-bottom-color: #decad5; }
+.field-library > div:nth-of-type(2) { margin-top: 55px; }
+.field-folder { position: relative; border-width: 1px; border-left-width: 5px; border-radius: 5px 20px 20px 5px; margin-top: 12px; box-shadow: 4px 4px 0 #e7dbe0; }
+.field-folder::before { content: ''; position: absolute; left: -5px; top: -10px; width: 75px; height: 12px; border-radius: 9px 14px 0 0; background: var(--field-accent); opacity: .45; }
+.field-folder-number { position: absolute; top: 15px; right: 18px; font: 800 35px/1 var(--font-modern); color: var(--field-accent); opacity: .1; pointer-events: none; }
+.field-folder > div { position: relative; }
+@media (min-width: 1024px) {
+  .chapter-route-heading { margin-top: 0; padding-inline: 100px; }
+  .chapter-route .chapter-workspace { flex-direction: row; gap: 22px; }
+  .chapter-index { width: 220px; min-height: 0; margin-bottom: 0; padding-right: 8px; overflow-y: auto; border: 0; }
+  .chapter-index [role="tablist"] { display: flex; flex-direction: column; gap: 10px; }
+  .chapter-index [role="tab"] { flex-shrink: 0; width: 100%; max-width: none; border-radius: 4px 14px 14px 4px; min-height: 68px; }
+  .chapter-route .chapter-route-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+  .field-folder { min-height: 245px; padding: 25px; }
+  .field-library > div:nth-of-type(2) { margin-top: 30px; }
+}
+@media (max-width: 639px) {
+  .chapter-route-heading { padding-inline: 0; }
+  .chapter-route .chapter-route-card { padding: 12px; }
+  .chapter-route-card h4 { font-size: 15px; }
+  .field-folder { min-height: 140px; padding: 15px 18px; }
+}
+/* Battle lobby styles never target live match controls. */
+#battle-shell.battle-lobby { background: #fcf6f5 !important; padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+.battle-lobby > main { max-width: 980px; }
+.battle-lobby > main > .notebook-paper { background: transparent; border: 0; box-shadow: none; }
+.battle-lobby > footer { max-width: 380px; margin-top: 10px; }
+.battle-lobby #battle-title { margin-bottom: 22px; }
+.battle-lobby #battle-title h1 { color: #654c60 !important; }
+.lobby-player-pass { border-radius: 5px 20px 20px 5px; border-width: 1px; border-left-width: 5px; box-shadow: 3px 4px 0 #eadce2; max-width: 540px; width: 100%; align-self: center; }
+.lobby-match-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 13px; align-items: start; }
+.lobby-mode { min-width: 0; position: relative; padding: 18px 16px 10px; border-width: 1px; border-radius: 5px 21px 21px 5px; }
+.lobby-mode-friend { grid-column: 1 / -1; background: linear-gradient(140deg, #fffdf7, #fcf0df) !important; padding: 21px 22px 12px; }
+.lobby-mode > header > span:first-child { width: 44px; height: 44px; border: 3px solid white; border-radius: 50%; box-shadow: 0 3px 0 #ddc6b955; }
+.lobby-mode-friend > header > span:first-child { width: 58px; height: 58px; }
+.lobby-mode-friend > header > span:first-child svg { width: 29px; height: 29px; }
+.lobby-mode > header h2 { font-size: 21px; }
+.lobby-mode-friend > header h2 { font-size: 26px; }
+.lobby-mode-caption { margin-block: 8px; font: 700 14px/1.6 var(--font-handwriting); color: #695465; }
+.lobby-mode-tags { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-bottom: 14px; font-size: 10px; font-weight: 600; color: #8a7480; }
+.lobby-mode-tags > span::before { content: ''; display: inline-block; width: 4px; height: 4px; background: var(--mode-accent); border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+.lobby-mode-actions { display: grid; gap: 9px; }
+.lobby-mode-actions > button { min-height: 48px; padding: 10px 12px; font-size: 13px; border-radius: 18px 10px 18px 10px; }
+.lobby-mode-friend .lobby-mode-actions { grid-template-columns: 1.1fr 1fr; }
+.lobby-mode-friend .lobby-mode-actions > button:first-child { background: #b78240 !important; color: white !important; border-color: white !important; box-shadow: 0 4px 0 #946533 !important; }
+.lobby-mode-national .lobby-mode-actions > button { background: #3284b1 !important; color: white !important; border-color: white !important; box-shadow: 0 4px 0 #286a92; }
+.lobby-mode-ai .lobby-mode-actions > button { border-color: #d8bedf !important; color: #895c9f !important; }
+.lobby-mode-details { margin-top: 10px; }
+.lobby-mode-details > summary { min-height: 44px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: #8b7780; font-size: 10px; list-style: none; border-top: 1px dashed #e4d8df; }
+.lobby-mode-details > summary::-webkit-details-marker { display: none; }
+.lobby-mode-details > summary::after { content: '+'; font-size: 17px; margin-left: 6px; }
+.lobby-mode-details[open] > summary::after { content: '−'; }
+.lobby-mode-details dl { padding: 10px; }
+.lobby-mode-details dl > div { flex-wrap: wrap; row-gap: 2px; }
+.lobby-record-links { max-width: 440px; width: 100%; margin: 18px auto 0; gap: 20px; }
+.lobby-record-links > button { border: 0; background: transparent !important; font-size: 11px; }
+.lobby-record-links > button > svg { box-sizing: content-box; padding: 13px; width: 22px; height: 22px; border: 3px solid white; border-radius: 50%; background: #f3e4e9; box-shadow: 0 3px 0 #d8b9c6; margin-bottom: 5px; }
+.battle-guest-stage { display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 18px 0; text-align: center; }
+.battle-guest-stage > div:first-child { width: 85px; height: 85px; border: 4px solid white; border-radius: 25px; background: #dbeaf5 !important; color: #3284b1 !important; transform: rotate(-7deg); box-shadow: 0 5px 0 #a6c4d6; }
+.battle-guest-stage > div:first-child svg { width: 43px; height: 43px; }
+.battle-guest-stage > div:nth-child(3) > button { background: #3284b1 !important; border-color: white !important; color: white !important; border-radius: 21px 12px; box-shadow: 0 4px 0 #286a92 !important; }
+.battle-guest-ai { max-width: 510px; border-width: 1px; border-left-width: 4px; border-radius: 4px 18px 18px 4px; box-shadow: 3px 4px 0 #ece0ef; }
+.battle-guest-ai > button { border-radius: 50px; font-size: 14px; min-height: 48px; }
+@media (min-width: 768px) {
+  .lobby-match-options { grid-template-columns: 1.15fr 1fr; gap: 22px; }
+  .lobby-mode-friend { grid-column: 1; grid-row: 1 / 3; padding-top: 30px; }
+  .lobby-mode-friend > header { flex-wrap: wrap; }
+  .lobby-mode-friend > header > span:first-child { width: 78px; height: 78px; }
+  .lobby-mode-friend .lobby-mode-caption { margin-block: 22px 12px; font-size: 17px; }
+  .lobby-mode-friend .lobby-mode-actions { grid-template-columns: 1fr; margin-top: 25px; }
+  .lobby-player-pass { margin-bottom: 28px; }
+  .battle-guest-stage { max-width: 550px; width: 100%; align-self: center; }
+}
+@media (max-width: 479px) {
+  .battle-lobby > main { padding-inline: 4px; }
+  .battle-lobby > main > .notebook-paper { padding-inline: 12px; }
+  .lobby-mode { padding: 12px 10px 5px; }
+  .lobby-mode-friend { padding: 16px 15px 8px; }
+  .lobby-mode:not(.lobby-mode-friend) > header { flex-direction: column; align-items: flex-start; }
+  .lobby-mode > header h2 { font-size: 18px; }
+  .lobby-mode-friend > header h2 { font-size: 23px; }
+  .lobby-mode:not(.lobby-mode-friend) .lobby-mode-caption { font-size: 12px; }
+  .lobby-mode-actions > button { font-size: 12px; padding-inline: 5px; }
+  .lobby-mode-details > summary { font-size: 9px; }
+  .lobby-mode-details dl > div { flex-direction: column; }
+}
+
+/*
+ * ★対戦ロビーを「1画面」に収める（縦の短いスマホ）★
+ *
+ * ご指摘（原文）：
+ *   > この対戦画面なんだけど、全国対戦とAI対戦の下が隠れてるよね？
+ *   > 俺一画面に基本全部入れろって指示を出したはずだよね。
+ *
+ * ■ 実測（ログイン済み・レート1500・変更前）
+ *   360x640 … 全国／AI の「相手をさがす」「AIと対戦する」ボタンが
+ *             下部ナビの下に 128px / 109px 隠れる。履歴・ランキングは 392px 下。
+ *   375x667 … 同 101px / 82px
+ *   320x568 … 同 218px
+ *   390x844 … ボタンは見えるが履歴・ランキングは 169px 下
+ *
+ *   内訳（360x640）：見出し 65 ＋ レートカード 124 ＋ フレンド 253 ＋ 全国/AI 301
+ *   ＝ 743 に余白を足して 830px。使えるのは 639px。約 190px 足りない。
+ *
+ * ■ 何を詰めたか（★情報・ボタンは 1 つも消していない★）
+ *   ・見出し「対戦モード」の下線・副題まわりの余白      … 飾り
+ *   ・レートカードの内側余白と称号バーの上下              … 余白
+ *   ・各カードの見出しアイコン（58px → 40px）と余白      … 飾り
+ *   ・カードのキャッチコピー行の行間                      … 余白
+ *   ・「ルール・相手の表示を確認」（details）の高さ 44→34 … 押せる大きさは保つ
+ *   ・カード間の gap                                     … 余白
+ *   ・ランキング・履歴の丸ボタンを小さく                  … 押せる大きさは保つ
+ *   ・全国/AI カードの見出しを 1 行（アイコン＋文字を横並び）に戻す
+ *     ＝ 479px 以下で縦積みにしていたのを止める（縦積みは 1 行ぶん高い）
+ *
+ * ■ 幅 767px 以下・高さ 760px 以下に閉じる
+ *   パソコン・タブレットの見た目は変えない。
+ */
+@media (max-height: 760px) and (max-width: 767px) {
+  #battle-shell.battle-lobby > main { padding-top: 6px; }
+  .battle-lobby > main > .notebook-paper { padding-top: 8px; padding-bottom: 8px; }
+  .battle-lobby #battle-title { margin-bottom: 10px; }
+  .battle-lobby #battle-title h1 { font-size: 20px; }
+  .battle-lobby #battle-title h1 svg { width: 18px; height: 18px; }
+  .battle-lobby #battle-title > div { margin-top: 2px; height: 3px; }
+  .battle-lobby #battle-title p { margin-top: 3px; font-size: 10px; }
+  .lobby-player-pass { padding: 9px 12px; margin-bottom: 10px; }
+  .lobby-player-pass .text-3xl { font-size: 24px; line-height: 1.1; }
+  .lobby-player-pass > .mt-3 { margin-top: 6px; }
+  .lobby-player-pass .h-2 { height: 5px; }
+  .lobby-match-options { gap: 9px 8px; }
+  .lobby-mode { padding: 9px 10px 3px; }
+  .lobby-mode-friend { padding: 10px 12px 3px; }
+  .lobby-mode > header { margin-bottom: 2px; }
+  .lobby-mode > header > span:first-child { width: 34px; height: 34px; border-width: 2px; }
+  .lobby-mode > header > span:first-child svg { width: 17px; height: 17px; }
+  .lobby-mode-friend > header > span:first-child { width: 40px; height: 40px; }
+  .lobby-mode-friend > header > span:first-child svg { width: 20px; height: 20px; }
+  .lobby-mode > header h2 { font-size: 17px; }
+  .lobby-mode-friend > header h2 { font-size: 21px; }
+  /* 全国/AI の見出しは横並び 1 行に戻す（縦積みは 1 行ぶん高い） */
+  .lobby-mode:not(.lobby-mode-friend) > header { flex-direction: row; align-items: center; }
+  .lobby-mode-caption { margin-block: 3px; font-size: 12px; line-height: 1.4; }
+  .lobby-mode:not(.lobby-mode-friend) .lobby-mode-caption { font-size: 11px; }
+  .lobby-mode-tags { margin-bottom: 7px; gap: 2px 7px; }
+  .lobby-mode-actions { gap: 6px; }
+  .lobby-mode-actions > button { min-height: 44px; padding: 7px 8px; }
+  /* 「合言葉で参加する」が 360px 幅で 2 行に折れていた（実測）。
+     文字を縮めるのではなく、幅を均等（1fr 1fr）にして 1 行に収める。 */
+  .lobby-mode-friend .lobby-mode-actions { grid-template-columns: 1fr 1fr; }
+  .lobby-mode-friend .lobby-mode-actions > button { font-size: 12px; padding-inline: 6px; gap: 4px; }
+  .lobby-mode-details { margin-top: 3px; }
+  .lobby-mode-details > summary { min-height: 34px; }
+  .battle-lobby .mt-3.rounded-2xl { margin-top: 8px; padding: 6px 10px; font-size: 9px; line-height: 1.5; }
+  .lobby-record-links { margin-top: 8px; padding-top: 4px; gap: 12px; }
+  .lobby-record-links > button { padding-block: 4px; }
+  .lobby-record-links > button > svg { padding: 9px; width: 18px; height: 18px; margin-bottom: 2px; }
+}
+
+/*
+ * 縦 761〜940px のスマホ（iPhone 14/15/Pro Max・多くの Android）。
+ * ボタンは元から見えていたが、ランキング・履歴が 80〜170px 下に隠れていた（実測）。
+ * 上の段よりゆるい圧縮（余白と飾りの一部だけ）で、末尾まで 1 画面に入れる。
+ */
+@media (min-height: 761px) and (max-height: 940px) and (max-width: 767px) {
+  #battle-shell.battle-lobby > main { padding-top: 8px; }
+  .battle-lobby > main > .notebook-paper { padding-top: 10px; }
+  .battle-lobby #battle-title { margin-bottom: 12px; }
+  .lobby-player-pass { padding: 12px 14px; margin-bottom: 12px; }
+  .lobby-player-pass > .mt-3 { margin-top: 8px; }
+  .lobby-match-options { gap: 12px 10px; }
+  .lobby-mode { padding: 12px 12px 4px; }
+  .lobby-mode-friend { padding: 14px 16px 4px; }
+  .lobby-mode-friend > header > span:first-child { width: 46px; height: 46px; }
+  .lobby-mode-friend > header > span:first-child svg { width: 23px; height: 23px; }
+  .lobby-mode-caption { margin-block: 5px; }
+  .lobby-mode-tags { margin-bottom: 9px; }
+  .lobby-mode:not(.lobby-mode-friend) > header { flex-direction: row; align-items: center; }
+  .lobby-mode-details { margin-top: 4px; }
+  .lobby-mode-details > summary { min-height: 36px; }
+  .battle-lobby .mt-3.rounded-2xl { margin-top: 8px; padding: 7px 10px; }
+  .lobby-record-links { margin-top: 10px; padding-top: 6px; }
+  .lobby-record-links > button > svg { padding: 10px; width: 20px; height: 20px; }
+}
+
+/* iPhone SE 第1世代（320x568）級。上の圧縮でもまだ足りないぶんを飾りから返してもらう。 */
+@media (max-height: 600px) and (max-width: 767px) {
+  .battle-lobby #battle-title p { display: none; }         /* 副題「1対1のリアルタイム対戦」：見出しと同じ意味 */
+  .battle-lobby #battle-title > div { display: none; }     /* 見出し下の金の下線：飾り */
+  .lobby-player-pass > .mt-3 > div:first-child { display: none; } /* 「つぎ: 上級 / あと150」の文字行（バーは残す） */
+  .lobby-mode-tags { display: none; }                      /* 「レート変動あり」等のタグ：details の中に同じ情報がある */
+  .lobby-mode-caption { margin-block: 2px; }
+  .battle-lobby .mt-3.rounded-2xl { display: none; }       /* 「どれも出題・制限時間…同じです」：details の中と重複 */
+}
+
+/* 幅 320px 級では「合言葉で参加する」が横並びだと 2 行に折れる（実測 54px）。
+   上の圧縮で縦に余裕ができているので、縦に積んで 1 行ずつにする。 */
+@media (max-width: 339px) {
+  .lobby-mode-friend .lobby-mode-actions { grid-template-columns: 1fr; }
+  .lobby-mode:not(.lobby-mode-friend) .lobby-mode-details > summary { font-size: 8px; white-space: nowrap; }
+}
+/* Learning journal: the record is the content; controls become page tabs. */
+.study-journal > div { max-width: 880px; }
+.study-journal .mtb-page-header h2, .profile-journal h2, .ranking-hall h2 { color: #704f64; }
+.study-journal .mtb-page-header p:not(.mtb-kicker) { font-size: 11px; line-height: 1.7; }
+.study-journal-summary { border-block: 1px solid #e5cbd6; padding-block: 12px; gap: 0; background: #fff9f8aa; }
+.study-journal-summary > div { border: 0; border-radius: 0; box-shadow: none; background: transparent; padding: 6px 8px; }
+.study-journal-summary > div + div { border-left: 1px solid #ead7df; }
+.study-journal-summary > div:first-child > div:first-child { font-size: 37px; line-height: 1.1; color: #b36584; }
+.study-journal-summary > div:first-child { align-self: center; }
+.study-journal-summary > div > div:last-child { font-size: 10px; color: #866d7d; }
+.study-journal-tabs > button { white-space: nowrap; font-size: 12px; padding-inline: 10px; }
+.study-retention { box-shadow: none; padding: 0 12px; }
+.study-retention > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; list-style: none; min-height: 48px; font-size: 12px; color: #8a6a7c; cursor: pointer; }
+.study-retention > summary::-webkit-details-marker { display: none; }
+.study-retention > summary > span { display: inline-flex; align-items: center; gap: 7px; }
+.study-retention[open] > summary > svg { transform: rotate(180deg); }
+.study-retention > div { margin-block: 8px 12px; }
+.study-empty-state { padding: 40px 18px; border-style: dashed; background: #fffcf9ba; box-shadow: none; color: #8a7a82; }
+.study-empty-state > svg { padding: 13px; box-sizing: content-box; border: 3px solid white; border-radius: 50%; background: #f1e9df; color: #af9775; width: 30px; height: 30px; }
+.study-journal ul > li { border-radius: 4px 17px 17px 4px; }
+/* Ranking hall: a record sheet, with filter tabs instead of repeated tiles. */
+.ranking-hall-header { margin-bottom: 20px; }
+.ranking-hall-header > button { width: 44px; height: 44px; border-radius: 50%; border-color: #e4ccd6; }
+.ranking-hall-header > div:nth-child(2) > div:first-child { border: 3px solid white; width: 49px; height: 49px; border-radius: 18px; background: #f4e6c4; box-shadow: 0 3px 0 #d9c398; transform: rotate(-6deg); }
+.ranking-hall-caption { text-align: center; font: 700 22px/1.6 var(--font-handwriting); color: #87694f; margin-block: 22px 18px; }
+.ranking-scope { max-width: 420px; margin-inline: auto; border-radius: 50px; background: #f0e5e8; border: 0; padding: 4px; }
+.ranking-scope > button { min-height: 44px; border-radius: 50px; }
+.ranking-scope > button[aria-pressed="true"] { background: #fffdf8; color: #9c637d; box-shadow: 0 2px 4px #a17d8422; }
+.ranking-tabs { margin-top: 20px; }
+.ranking-record-paper { border-top: 5px solid #d3b984; min-height: 180px; }
+.ranking-record-paper li { min-height: 65px; }

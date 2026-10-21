@@ -23,6 +23,7 @@ import { useEffect, useRef, useState } from 'react';
 import { parseStoredStringArrayRecord } from '../utils/progress';
 import { quizElimKey } from '../utils/quizStorageKeys';
 import { safeSetItem } from '../utils/storageGuard';
+import { safeGetItem, safeLocalStorage } from '../utils/safeLocalStorage';
 
 /**
  * ★消去法の操作説明（タップで選択→斜線→…）を見たかどうかの保存キー。
@@ -64,15 +65,24 @@ export function useElimination(chapterId: string, mode: string): UseEliminationR
   // ■ 形
   //   { [設問ID]: 消去した選択肢の配列 }
   //   選択肢そのものの文字列で持つ（並び替えや添字ズレに影響されないため）。
-  const [eliminated, setEliminated] = useState<Record<string, string[]>>(() =>
-    parseStoredStringArrayRecord(localStorage.getItem(quizElimKey(chapterId, mode))),
-  );
+  //   ★読み出しは描画中（useState の初期化）なので、例外を外へ出さない（C-17）★
+  //     iOS Safari のプライベートブラウズ等では localStorage を参照した瞬間に SecurityError が飛ぶ。
+  //     使える Storage だけを受け取り、読めなければ「消去なし」で始める。
+  const [eliminated, setEliminated] = useState<Record<string, string[]>>(() => {
+    const localStorage = safeLocalStorage();
+    if (!localStorage) return {};
+    try {
+      return parseStoredStringArrayRecord(localStorage.getItem(quizElimKey(chapterId, mode)));
+    } catch {
+      return {}; // 読めないキーは「保存されていない」と同じ
+    }
+  });
 
   // ★消去法の操作説明（タップで選択→斜線→…）は初回だけ表示する（ご要望）。
   //   毎問同じ説明が並ぶと選択肢の視認性を下げるので、
   //   一度でも見たら隠し、代わりに「?」アイコンで呼び出せるようにする。
   const [elimHintOpen, setElimHintOpen] = useState<boolean>(() => {
-    try { return localStorage.getItem(ELIM_HINT_SEEN_KEY) !== 'true'; } catch { return true; }
+    return safeGetItem(ELIM_HINT_SEEN_KEY) !== 'true'; // 読めない端末では「まだ見ていない」
   });
   /** 初回表示を「見た」ことにして閉じる（以降は ? アイコンから開閉） */
   const dismissElimHint = () => {

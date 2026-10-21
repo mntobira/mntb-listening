@@ -73,6 +73,9 @@ export function Confetti({ count = 18, hues = [45, 38, 205, 150] }: { count?: nu
 /**
  * from → to へ 0.9 秒で刻む。刻みごとに小さな音（tick）を最大 8 回。
  * 差が 0 ならそのまま出す。reduced-motion なら即 to。
+ *
+ * ★L-02★ 刻んでいる途中は React の state を更新せず、React が持つ文字ノードの中身だけを書き換える
+ *   （毎フレーム setValue → 再レンダーをやめ、最後の1回だけ state に入れる）。DOM・見た目は従来と同じ。
  */
 export function BattleCountUp({
   from,
@@ -93,6 +96,7 @@ export function BattleCountUp({
 }) {
   const [value, setValue] = useState(from);
   const lastTick = useRef(-1);
+  const spanRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     if (from === to || prefersReducedMotion()) {
       setValue(to);
@@ -100,19 +104,27 @@ export function BattleCountUp({
     }
     let raf = 0;
     let start = 0;
+    const write = (v: number) => {
+      const node = spanRef.current?.firstChild;
+      if (node && node.nodeType === 3) node.nodeValue = String(v);
+    };
     const timer = setTimeout(() => {
       const step = (now: number) => {
         if (!start) start = now;
         const t = Math.min(1, (now - start) / duration);
         const eased = 1 - Math.pow(1 - t, 3);
         const v = Math.round(from + (to - from) * eased);
-        setValue(v);
         const bucket = Math.floor(t * 8);
         if (tick && bucket !== lastTick.current && t < 1) {
           lastTick.current = bucket;
           play('tick', false);
         }
-        if (t < 1) raf = requestAnimationFrame(step);
+        if (t < 1) {
+          write(v);
+          raf = requestAnimationFrame(step);
+        } else {
+          setValue(v);
+        }
       };
       raf = requestAnimationFrame(step);
     }, delay);
@@ -122,7 +134,7 @@ export function BattleCountUp({
     };
   }, [from, to, duration, delay, tick]);
   return (
-    <span className={className} style={style}>
+    <span ref={spanRef} className={className} style={style}>
       {value}
     </span>
   );

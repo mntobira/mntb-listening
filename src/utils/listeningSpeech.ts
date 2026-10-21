@@ -1,3 +1,4 @@
+import { stopVocabAudio } from './vocabAudio';
 /**
  * ===================================================================
  * listeningSpeech.ts ― リスニング音源の「MP3が無いとき」の読み上げ
@@ -109,6 +110,7 @@ export function getSpeakingId(): string | null {
 
 /** 読み上げを止める。onEnd は呼ばれる（UI の再生アイコンを必ず戻すため）。 */
 export function stopSpeech(): void {
+  stopVocabAudio(); // 英単語の録音（utils/vocabAudio）も一緒に止める＝画面を変えても音が残らない
   if (!isSpeechSupported()) return;
   try {
     window.speechSynthesis.cancel();

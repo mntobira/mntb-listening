@@ -112,13 +112,13 @@ export function DoorMascot({
               豆知識の本文は残す（消すのは飾りの分類だけ）。sm 以上は従来どおり。 */}
           {showCategory && category && (
             <span
-              className={`hidden sm:inline-flex items-center gap-1 mb-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${theme.chipBgClass} ${theme.chipTextClass}`}
+              className={`hidden sm:inline-flex items-center gap-1 mb-1.5 px-2 py-0.5 rounded-full text-xs font-bold ${theme.chipBgClass} ${theme.chipTextClass}`}
             >
               <span aria-hidden>{category.emoji}</span>
               <span>{category.label}</span>
             </span>
           )}
-          <p className="text-[11px] sm:text-xs leading-snug sm:leading-relaxed text-[#2C3E50] font-bold font-handwriting break-words">{tip.text}</p>
+          <p className="text-xs sm:text-xs leading-snug sm:leading-relaxed text-[#2C3E50] font-bold font-handwriting break-words">{tip.text}</p>
         </div>
       )}
     </div>

@@ -301,6 +301,9 @@ export default defineConfig(({mode}) => {
           if (id.includes('/src/data/subjectLabels')) return undefined;
           // 理念の文章は宣伝用ページ（/message）からも読むので、1MB の data チャンクに入れない（2026-10-05）
           if (id.includes('/src/data/philosophy')) return undefined;
+          // 英文解釈の本文（約100KB）は「英文解釈」を開いたときだけ読む（ReadingQuiz の遅延チャンクに同居させる・2026-10-21）
+          //   src/data/reading/* は utils の葉（safeLocalStorage / storageGuard）と自分自身しか import しないので、循環は生まれない
+          if (id.includes('/src/data/reading/')) return undefined;
 
 
           /*

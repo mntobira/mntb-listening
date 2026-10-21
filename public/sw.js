@@ -10,7 +10,8 @@
  *   - 容量が膨らまないよう、実行時キャッシュは件数に上限を設ける。
  *   - Range リクエスト（音声のシーク）はキャッシュしない（206 を保存すると壊れる）。
  */
-const VERSION = 'v3';
+// デプロイ済みアセットを確実に取り直すため、UI更新時は世代を上げる。
+const VERSION = 'v5';
 /** 画面（HTML）の取得をこれ以上待たない（電波が弱いとき白い画面のまま待ち続けないため） */
 const NAV_TIMEOUT_MS = 8000;
 const SHELL = `manatobi-shell-${VERSION}`;
@@ -110,6 +111,9 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.startsWith('/__') || url.pathname.startsWith('/_vercel')) return;
   // 学習プリント PDF はサイズが大きいので SW では扱わない（ブラウザの通常キャッシュに任せる）
   if (url.pathname.startsWith('/prints/') && url.pathname.endsWith('.pdf')) return;
+  // 英単語の録音の一覧は、届いた録音がすぐ使えるよう SW で古いものを返さない（ブラウザの通常の取得に任せる）。
+  // 音声そのもの（/audio/vocab/*.mp3?v=版）は版が変わると URL が変わるので、下の stale-while-revalidate でよい。
+  if (url.pathname === '/audio/vocab/index.json') return;
 
   if (request.mode === 'navigate') {
     event.respondWith(networkFirstPage(request));

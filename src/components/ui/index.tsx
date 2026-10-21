@@ -8,7 +8,7 @@
  *   SectionHeader / Tabs / ListItem・ListGroup / Dialog / Badge / RarityBadge / ItemCard / Loading / Toast
  */
 import React, { useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Crown } from 'lucide-react';
 import { KineticText } from '../../motion/KineticText';
 export { BottomNavigation, type BottomNavItem, type BottomNavId } from './BottomNavigation';
 
@@ -93,9 +93,9 @@ export function Badge({ tone, children }: { tone?: 'new' | 'gold' | 'muted'; chi
   return <span className="mt-badge" data-tone={tone}>{children}</span>;
 }
 const RARITY_NAME: Record<Rarity, string> = { UR: 'ウルトラレア', SR: 'スーパーレア', R: 'レア', N: 'ノーマル' };
-/** レア度の札。N→R→SR→UR で色・枠の太さ・装飾（✦・王冠）が段階的に増える */
+/** レア度の札。N→R→SR→UR で色・枠の太さ・装飾（✦・王冠アイコン）が段階的に増える */
 export function RarityBadge({ rarity, size, label }: { rarity: Rarity; size?: 'lg' | 'xl'; label?: string }) {
-  return <span className="mt-rarity" data-rarity={rarity} data-size={size} aria-label={label ?? RARITY_NAME[rarity]}>{rarity}</span>;
+  return <span className="mt-rarity" data-rarity={rarity} data-size={size} aria-label={label ?? RARITY_NAME[rarity]}>{rarity === 'UR' && <Crown className="mt-rarity-crown" size={11} strokeWidth={2.5} aria-hidden="true" />}{rarity}</span>;
 }
 
 /** アイテムの札（画像＋名前＋補足）。ガチャの注目・結果・コレクションで共通 */
@@ -124,6 +124,19 @@ export const Modal = Dialog;
 
 export function Loading({ label = '読み込み中…' }: { label?: string }) {
   return <div className="mt-loading" role="status"><i aria-hidden="true" />{label}</div>;
+}
+/**
+ * 一覧の読み込み中に出す骨組み（スケルトン）。
+ * 「読み込み中…」の1行だと、読み込み後に行が一気に増えて画面が跳ね、何が出るのかも分からない。
+ * 実際の行と同じ高さの灰色の行を並べておき、届いたら差し替える（ランキング・フレンド一覧）。
+ * 動きを減らす設定では明滅を止める。読み上げは label を1回だけ読む。
+ */
+export function ListSkeleton({ rows = 5, rowHeight = 64, label = '読み込み中…' }: { rows?: number; rowHeight?: number; label?: string }) {
+  return <div className="mt-skeleton-list" role="status" aria-label={label} data-skeleton>
+    {Array.from({ length: rows }, (_, i) => <div key={i} className="mt-skeleton-row" style={{ minHeight: rowHeight }} aria-hidden="true">
+      <i className="mt-skeleton-dot" /><span><i style={{ width: `${62 - (i % 3) * 12}%` }} /><i style={{ width: `${38 + (i % 2) * 14}%` }} /></span>
+    </div>)}
+  </div>;
 }
 export function Toast({ message }: { message: string | null }) {
   return message ? <div className="mt-toast" role="status">{message}</div> : null;

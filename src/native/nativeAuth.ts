@@ -22,14 +22,10 @@ export async function nativeSignIn(method: SignInMethod): Promise<GoogleSignInOu
     let rawNonce: string | undefined;
 
     if (method === 'google') {
-      const res = await FirebaseAuthentication.signInWithGoogle({
-        skipNativeAuth: true,
-      });
+      const res = await FirebaseAuthentication.signInWithGoogle();
       idToken = res.credential?.idToken;
     } else if (method === 'apple') {
-      const res = await FirebaseAuthentication.signInWithApple({
-        skipNativeAuth: true,
-      });
+      const res = await FirebaseAuthentication.signInWithApple();
       idToken = res.credential?.idToken;
       rawNonce = res.credential?.nonce;
     }

@@ -83,6 +83,7 @@ type Screen =
 
 export function BattleMode({
   onExit,
+  onRanking,
   onRequireLogin,
   onPractice,
   onActiveChange,
@@ -94,6 +95,8 @@ export function BattleMode({
   onOpenFriends?: () => void;
   /** 対戦モードを抜けてアプリのホームに戻る */
   onExit: () => void;
+  /** 対戦ロビー上部からランキングへ切り替える */
+  onRanking?: () => void;
   /** ログインしていないときにログイン画面へ送る */
   onRequireLogin?: () => void;
   /**
@@ -437,6 +440,7 @@ export function BattleMode({
           <BattleHome
             onChoose={handleHomeChoice}
             onExit={onExit}
+            onRanking={onRanking}
             onRequireLogin={onRequireLogin}
             notice="対戦を開始できませんでした。もう一度お試しください。"
           />
@@ -482,6 +486,7 @@ export function BattleMode({
         <BattleHome
           onChoose={handleHomeChoice}
           onExit={onExit}
+          onRanking={onRanking}
           onRequireLogin={onRequireLogin}
           notice={notice}
         />

@@ -1,7 +1,7 @@
+import { useVirtualKeyboard } from '../hooks/useVirtualKeyboard';
 import { useLatest } from '../hooks/useLatest';
 import { useMountEffect } from '../hooks/useMountEffect';
-import React, { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 // 記号パレット（解答入力の補助キーボード）は components/SymbolPalette.tsx にある。
 // 実際に置いているのは解答ペイン（AnswerPane.tsx）なので、
 // このファイルは「どの設問に出すか」の判定（questionNeedsMathPalette）だけを持つ。
@@ -9,9 +9,10 @@ import { ArrowLeft } from 'lucide-react';
 import { SortingControl } from './SortingControl';
 import { MultipleChoiceControl } from './MultipleChoiceControl';
 // 消去法（斜線）のしくみ一式は hooks/useElimination.ts に集約
-import { useElimination } from '../hooks/useElimination';
+import { ELIM_HINT_SEEN_KEY, useElimination } from '../hooks/useElimination';
 // 設問から作る表示用の派生値（useMemo 17個）は hooks/useQuestionDerived.ts へ
 import { useQuestionDerived } from '../hooks/useQuestionDerived';
+import { useQuizInputFocus } from '../hooks/useQuizInputFocus';
 // 問題文ペイン（左58%／スマホ上）の JSX は components/ProblemPane.tsx へ
 import { ProblemPane } from './ProblemPane';
 // 解答ペイン（右42%／スマホ下）の JSX は components/AnswerPane.tsx へ
@@ -29,11 +30,12 @@ import { ExplanationScreen } from './ExplanationScreen';
 // リスニングの「問題の説明ページ」（早期 return の JSX 64行）は
 // components/ListeningBriefing.tsx へ
 import { ListeningBriefing } from './ListeningBriefing';
+import { QuizEmptyState } from './QuizEmptyState';
 // 「解答と解説を見る」を押した瞬間の採点処理（137行）は utils/quizScoring.ts へ
 import { createScoreCurrentQuestion } from '../utils/quizScoring';
+import { createQuizFocusActions, createQuizStepActions } from '../utils/quizNavigationActions';
 import { QuizTimerBar } from './QuizTimerBar';
 import { calcQuestionTimeLimit, type ScoreBreakdown } from '../utils/scoring';
-import { submitChapterScore } from '../utils/leaderboard';
 import {
   parseStoredNonNegativeInteger,
   parseStoredStringRecord,
@@ -46,13 +48,12 @@ import {
   quizStepKey,
 } from '../utils/quizStorageKeys';
 // 章の途中経過（点数・コンボ・所要時間）の型と読み書きは utils/quizRunState.ts に集約
-import { clearRun, loadRun, type ChapterRunState } from '../utils/quizRunState';
+import { loadRun, type ChapterRunState } from '../utils/quizRunState';
 // 記号パレットを「この設問に出すか」の判定ルールは utils/quizPaletteRules.ts に集約。
 // 実際に呼ぶのは派生値フック（hooks/useQuestionDerived.ts）なので、
 // このファイルからは import しなくなった。
 // スマホでソフトウェアキーボードに入力欄が隠れないようにするスクロール調整。
 // focus 時の調整（handleInputFocusScroll）は入力欄を持つ AnswerPane.tsx 側。
-import { scrollInputIntoView } from '../utils/quizInputScroll';
 // 設問ラベルからの空欄トークン推定と短答判定（純関数）
 import { isShortAnswerType } from '../utils/quizBlanks';
 // cleanQuestionText は解説画面（Explanation.tsx）と同じ実装が必要なので
@@ -61,9 +62,8 @@ import { buildListeningSteps, buildProgressPill, isPerSubQuestionListening, step
 import { usePreventZoom } from '../hooks/usePreventZoom';
 import { useIsDesktop } from '../hooks/useMediaQuery';
 import { safeSetItem } from '../utils/storageGuard';
-import { stageKey } from '../utils/stageRecords';
-import { recordStagePlayAndSync } from '../utils/stagePlay';
-import { auth } from '../firebase';
+import { safeGetItem } from '../utils/safeLocalStorage';
+import { resolveQuizRange } from '../utils/quizRange';
 import { logRejection } from '../utils/reportError';
 import type { Chapter, Problem, SubQuestion } from '../types/curriculum';
 
@@ -152,19 +152,19 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   });
 
   const [answers, setAnswers] = useState<Record<string, string>>(() =>
-    parseStoredStringRecord(localStorage.getItem(quizAnswersKey(chapter.id, mode))),
+    parseStoredStringRecord(safeGetItem(quizAnswersKey(chapter.id, mode))),
   );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
     const questionCount = mode === 'mini_test'
       ? (chapter.miniTest || []).length
       : (chapter.practiceProblems || []).length;
     return parseStoredNonNegativeInteger(
-      localStorage.getItem(quizIndexKey(chapter.id, mode)),
+      safeGetItem(quizIndexKey(chapter.id, mode)),
       Math.max(0, questionCount - 1),
     );
   });
   const [showingExplanation, setShowingExplanation] = useState(() => {
-    return localStorage.getItem(quizExplKey(chapter.id, mode)) === 'true';
+    return safeGetItem(quizExplKey(chapter.id, mode)) === 'true';
   });
 
   /**
@@ -178,7 +178,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
    * 中断して戻ってきたときに問1からやり直しにならないよう端末に保存する。
    */
   const [stepIndex, setStepIndex] = useState(() =>
-    parseStoredNonNegativeInteger(localStorage.getItem(quizStepKey(chapter.id, mode))),
+    parseStoredNonNegativeInteger(safeGetItem(quizStepKey(chapter.id, mode))),
   );
 
   // 一人で学ぶ：この単元を開いてからもらったマナコイン・XP を数え直す（結果画面に出す）
@@ -250,14 +250,6 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   // 解答中の画面からはリード文（毎回同じ説明）を撤去し、
   // その分のスペースを選択肢・図の表示に当てる。
   const [showingBriefing, setShowingBriefing] = useState(false);
-  // ソフトキーボードが表示されているか（visualViewport で推定）。
-  // 表示中のみ、短答穴埋め用のフローティング入力バーを画面下部に出す。
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-  // フローティング入力バーをキーボード上端に追従させるためのオフセット（px）。
-  // visualViewport から算出した「画面下端からキーボード上端までの距離」。
-  // iOS Safari では position:fixed + bottom:0 がキーボードに隠れるため、
-  // ここで動的に bottom 値を与えてキーボードに貼り付くようにする。
-  const [keyboardOffset, setKeyboardOffset] = useState(0);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   // スマホ（タッチ）並べ替え用：タップで選択中の要素インデックス。
@@ -376,51 +368,21 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     }
   }, [currentQuestionIndex, showingExplanation]);
 
-  // ソフトキーボードの表示/非表示を visualViewport の高さ変化で推定する。
-  // キーボードが閉じたら、フローティング入力欄も閉じて「問題文全体＋入力欄」を
-  // 同時に見られる通常表示に戻す（要件1）。
-  useEffect(() => {
-    const vv: VisualViewport | null | undefined = window.visualViewport;
-    if (!vv) return;
-    // 初期のフル高さ。キーボード表示で vv.height はこれより小さくなる。
-    const baseline = () => Math.max(vv.height, window.innerHeight || 0);
-    let base = baseline();
-    const onResize = () => {
-      const full = Math.max(base, window.innerHeight || 0);
-      // 可視領域が 15% 以上縮んだらキーボード表示とみなす。
-      const shrink = full - vv.height;
-      const visible = shrink > full * 0.15;
-      setKeyboardVisible(visible);
-      if (visible) {
-        // キーボード上端の位置（レイアウトビューポート下端からの距離）。
-        // layout viewport の高さ - (visualViewport の可視下端) がキーボード高さに相当。
-        // offsetTop はページスクロール分、height は可視高さ。
-        const layoutH = window.innerHeight || full;
-        const kbTopFromBottom = Math.max(0, layoutH - (vv.height + vv.offsetTop));
-        setKeyboardOffset(kbTopFromBottom);
-      } else {
-        setKeyboardOffset(0);
-        // キーボードが閉じたらフォーカス状態も解除（通常表示へ）。
-        // ただし選択式・並べ替え等のテキスト非入力設問は元々キーボードを
-        // 開かないため、この resize 起因の解除対象から除外する
-        // （除外しないと固定パネルが即座に閉じてしまう）。
-        setFocusedSubId((prev) => {
-          if (!prev) return prev;
-          const cur = (currentQuestionRef.current?.subQuestions || []).find(
-            (sq) => sq.id === prev
-          );
-          const isText = cur && (isShortAnswerType(cur) || cur.type === 'descriptive');
-          return isText ? null : prev;
-        });
-      }
-    };
-    vv.addEventListener('resize', onResize);
-    vv.addEventListener('scroll', onResize);
-    return () => {
-      vv.removeEventListener('resize', onResize);
-      vv.removeEventListener('scroll', onResize);
-    };
-  }, []);
+  // ソフトキーボードの表示/非表示と、入力バーを貼り付ける位置（hooks/useVirtualKeyboard.ts）。
+  // キーボードが閉じたら、テキスト入力の設問だけフォーカスを外して通常表示に戻す（要件1）。
+  // ただし選択式・並べ替え等のテキスト非入力設問は元々キーボードを
+  // 開かないため、この resize 起因の解除対象から除外する
+  // （除外しないと固定パネルが即座に閉じてしまう）。
+  const { keyboardVisible, keyboardOffset } = useVirtualKeyboard(() => {
+    setFocusedSubId((prev) => {
+      if (!prev) return prev;
+      const cur = (currentQuestionRef.current?.subQuestions || []).find(
+        (sq) => sq.id === prev
+      );
+      const isText = cur && (isShortAnswerType(cur) || cur.type === 'descriptive');
+      return isText ? null : prev;
+    });
+  });
 
   // 問題が切り替わったらフォーカス・キーボード状態・並べ替えの選択をリセット
   useEffect(() => {
@@ -435,8 +397,8 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     // 自動で閉じる（閉じるボタンを押し忘れても2問目からは出ない）。
     if (currentQuestionIndex > 0 && elimHintOpen) {
       try {
-        if (localStorage.getItem('quiz_elim_hint_seen') !== 'true') {
-          safeSetItem('quiz_elim_hint_seen', 'true');
+        if (safeGetItem(ELIM_HINT_SEEN_KEY) !== 'true') {
+          safeSetItem(ELIM_HINT_SEEN_KEY, 'true');
           setElimHintOpen(false);
         }
       } catch { /* 保存不可の環境ではそのまま */ }
@@ -445,112 +407,8 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestionIndex]);
 
-  // 「次へ/前へ」やキーボードの next キーによる移動時は、再レンダー直後・描画前に
-  // 同期でフォーカスを移す（useLayoutEffect）。iOS はユーザー操作に続く同期的な
-  // focus 移動であればソフトキーボードを閉じないため、「次へ」で入力状態が一瞬
-  // 解除される不具合を防げる（課題2）。
-  useLayoutEffect(() => {
-    if (isDesktop) return;
-    if (!focusedSubId) return;
-    if (pendingFocusIdRef.current !== focusedSubId) return;
-    pendingFocusIdRef.current = null;
-    // テキスト非入力（選択式・並べ替え）はキーボードを開かないため
-    // フォーカス移動は不要。
-    {
-      const cur = (currentQuestionRef.current?.subQuestions || []).find((sq) => sq.id === focusedSubId);
-      const isText = cur && (isShortAnswerType(cur) || cur.type === 'descriptive');
-      if (!isText) return;
-    }
-    // ★入力欄は「カード内の実入力欄」1つだけ（ご指摘「タップしたらなんで
-    //   重複して解答欄が出てくるかわからん」への対応で、下部バーの複製
-    //   入力欄を廃止した）。前へ/次へでの移動先もカード内の入力欄になる。
-    const el = inputRefs.current[focusedSubId] ?? null;
-    if (el) {
-      el.focus({ preventScroll: true });
-      try {
-        const len = (el.value || '').length;
-        el.setSelectionRange?.(len, len);
-      } catch {
-        /* noop */
-      }
-    }
-  }, [focusedSubId, isDesktop]);
-
-  // 選択中の空欄（focusedSubId）が変わったら、そのカード内の入力欄へ
-  // 実フォーカスを移してソフトキーボードを開く。
-  //
-  // ★入力欄は「カード内」の1か所だけ（ご指摘対応）
-  // ─────────────────────────────────────────────
-  // ご指摘：「タップしたらなんで重複して解答欄が出てくるかわからん。
-  //          普通に入力できるようにしてよ。」
-  // 以前は「カード＝表示専用チップ／実入力＝下部バーの複製入力欄」の
-  // 2段構えで、同じ設問の解答欄が画面に2つ見えていた。
-  // いまはカード内の入力欄に直接書き込む方式なので、フォーカスも
-  // カード内の入力欄（inputRefs）へ移すだけでよい。
-  // （移動由来の pendingFocus は上の useLayoutEffect が処理済みなのでスキップ）
-  useEffect(() => {
-    if (isDesktop) return;
-    if (!focusedSubId) return;
-    // テキスト非入力（選択式・並べ替え）はキーボードを開かないため、
-    // カードのスクロールのみ行いフォーカス移動はしない。
-    const curSub = (currentQuestionRef.current?.subQuestions || []).find((sq) => sq.id === focusedSubId);
-    const isTextFocus = curSub && (isShortAnswerType(curSub) || curSub.type === 'descriptive');
-    if (!isTextFocus) {
-      const card = document.getElementById(`ans-card-${focusedSubId}`);
-      if (card) {
-        const raf = requestAnimationFrame(() => setTimeout(() => scrollInputIntoView(card), 150));
-        return () => cancelAnimationFrame(raf);
-      }
-      return;
-    }
-    const raf = requestAnimationFrame(() => {
-      const el = inputRefs.current[focusedSubId] ?? null;
-      // すでにフォーカス済み（useLayoutEffect で処理済み・ユーザーの直接タップ等）
-      // なら二重処理しない
-      if (el && document.activeElement !== el) {
-        el.focus({ preventScroll: true });
-        try {
-          const len = (el.value || '').length;
-          el.setSelectionRange?.(len, len);
-        } catch {
-          /* noop */
-        }
-      }
-      // 選択中の入力欄がキーボード・下部バーに隠れないようスクロール
-      if (el) setTimeout(() => scrollInputIntoView(el), 320);
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [focusedSubId, isDesktop]);
-
-  // ─────────────────────────────────────────────
-  // G-3：キーボード表示中でも「いま入力している穴抜きのカッコ」が見えるようにする
-  // ─────────────────────────────────────────────
-  // ご要望：「文字の入力欄を出す時に、全体が上に上がりすぎて問題が見えなく
-  //          なるので、うまいこと工夫して問題(穴抜きなどのカッコの場所)は
-  //          見えるようにしたい」
-  // キーボード表示中は問題ペインが max-h-[24vh] に縮むが、縮んだだけでは
-  // 該当の空欄が画面外（スクロール下）にあることが多い。そこで、
-  // フォーカス中の空欄に対応する黄色ハイライト（<mark>）を問題ペイン内で
-  // 探し、ペインのスクロール位置をそのハイライトが中央に来るよう合わせる。
-  // ハイライトの描画（combinedHighlights 反映）後に走らせたいので
-  // 少し遅延させる。ページ全体は fixed なので window は動かない。
-  useEffect(() => {
-    if (isDesktop) return;
-    if (!focusedSubId) return;
-    const timer = setTimeout(() => {
-      const pane = problemScrollRef.current;
-      if (!pane) return;
-      const mark = pane.querySelector('mark');
-      if (!mark) return;
-      const paneRect = pane.getBoundingClientRect();
-      const markRect = (mark as HTMLElement).getBoundingClientRect();
-      // ペイン内でのハイライトの相対位置 → ペインの中央に来る scrollTop
-      const offsetInPane = markRect.top - paneRect.top + pane.scrollTop;
-      const target = Math.max(0, offsetInPane - pane.clientHeight / 2 + markRect.height / 2);
-      pane.scrollTo({ top: target, behavior: 'smooth' });
-    }, 200);
-    return () => clearTimeout(timer);
-  }, [focusedSubId, isDesktop]);
+  // 選んだ解答欄へのフォーカス・スクロール（effect 3つ。順番はそのまま）は hooks/useQuizInputFocus.ts
+  useQuizInputFocus({ focusedSubId, isDesktop, pendingFocusIdRef, inputRefs, getCurrentQuestion: () => currentQuestionRef.current, problemScrollRef });
 
   const handleTextSelection = () => {
     const selection = window.getSelection();
@@ -649,38 +507,8 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   // 章内の図版へ通し番号（図1・図2 …）を割り当てるためのマップ。
   const figureNumberMap = useMemo(() => buildFigureNumberMap(questions), [questions]);
 
-  /**
-   * 今回解く範囲（両端を含む）。
-   *
-   * ■ 設計の要点：`questions` は章の全問のまま据え置く
-   *   `currentQuestionIndex` は「章の中の通し番号」であり、
-   *     ・localStorage の `quiz_idx_*`
-   *     ・解説画面へ渡す singleQuestionIndex
-   *     ・図版の通し番号（図1・図2…）
-   *   がすべてこの番号を前提にしている。
-   *   ここで配列そのものを切り出すと番号の意味がズレて、
-   *   「解説に別の問題が出る」「図番号が飛ぶ」といった不具合になる。
-   *   そこで配列は切らず、「どこからどこまでを1回とみなすか」だけを持つ。
-   *
-   * ■ 値の丸め方
-   *   データ追加・削除で範囲が配列の外を指しても落ちないよう、
-   *   必ず 0〜(最終問) に収める。範囲指定が無ければ章の全問が範囲。
-   */
-  const lastIndex = Math.max(0, questions.length - 1);
-  const rangeStart = questionRange
-    ? Math.min(Math.max(0, questionRange.startIndex), lastIndex)
-    : 0;
-  const rangeEnd = questionRange
-    ? Math.min(Math.max(rangeStart, questionRange.endIndex), lastIndex)
-    : lastIndex;
-  /** 範囲内の問題数（進捗ピルの分母） */
-  const rangeCount = rangeEnd - rangeStart + 1;
-  /** 範囲内での現在位置（1始まり・進捗ピルの分子） */
-  const rangePosition = Math.min(
-    rangeCount,
-    Math.max(1, currentQuestionIndex - rangeStart + 1),
-  );
-
+  // 今回解く範囲（両端を含む）と進捗ピルの位置は utils/quizRange.ts（純粋関数。丸め方の理由もそちら）
+  const { rangeStart, rangeEnd, rangeCount, rangePosition } = resolveQuizRange(questions.length, questionRange, currentQuestionIndex);
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -821,84 +649,11 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     return inputNavSubs.findIndex((sq) => sq.id === focusedSubId);
   }, [focusedSubId, inputNavSubs]);
 
-  /**
-   * フローティング入力バーの 前へ/次へ で、フォーカスする設問を移動する。
-   * dir=-1 で前、dir=1 で次。移動後は該当入力欄へ実フォーカスも移す。
-   * 対象は入力欄を持つ全設問（短答穴埋め・記述/計算）。
-   */
-  const moveFocus = (dir: -1 | 1) => {
-    if (inputNavSubs.length === 0) return;
-    let idx = focusedIndex;
-    if (idx < 0) idx = 0;
-    else idx = Math.min(inputNavSubs.length - 1, Math.max(0, idx + dir));
-    const target = inputNavSubs[idx];
-    if (!target) return;
-    if (target.id === focusedSubId) return;
-    // iOS でソフトキーボードを閉じさせないために、ここでは blur せず
-    // 「次にフォーカスすべき設問」を記録して state を更新するだけにする。
-    // 実際の .focus() は再レンダー直後の useLayoutEffect（描画前・同期）で行う。
-    // これにより「次へ」押下時にフォーカス（入力状態）が一瞬解除される不具合を防ぐ。
-    pendingFocusIdRef.current = target.id;
-    setFocusedSubId(target.id);
-    // スマホは「1ページ＝1解答欄」の固定表示なので、フォーカス移動先の
-    // 入力欄が実際に描画されるよう、ページ（mobileAnsIdx）も同じ設問に合わせる。
-    // （ページを合わせないと、フォーカス先の input が未マウントで移動できない）
-    const pageIdx = mobileAnswerSubs.findIndex((m) => m.sq.id === target.id);
-    if (pageIdx >= 0) setMobileAnsIdx(pageIdx);
-  };
-
-  /**
-   * スマホの解答欄ページ送り（解答欄の左右に置いた黒の小さな矢印）。
-   * dir=-1 で前の設問、dir=1 で次の設問へ。
-   * ご要望：「(1)の入力欄を下半分に最初固定した状態にして、右と左の矢印で
-   *          固定する解答欄を変える。解答欄のスクロールがすごいうざい」
-   * テキスト入力中（キーボード表示中）に矢印で移動した場合は、
-   * 移動先がテキスト設問ならフォーカスを引き継いでキーボードを維持する。
-   */
-  const goMobileAns = (dir: -1 | 1) => {
-    if (mobileAnswerSubs.length === 0) return;
-    const next = Math.min(mobileAnswerSubs.length - 1, Math.max(0, safeMobileAnsIdx + dir));
-    if (next === safeMobileAnsIdx) return;
-    setMobileAnsIdx(next);
-    const target = mobileAnswerSubs[next]?.sq;
-    const targetIsText = target && (isShortAnswerType(target) || target.type === 'descriptive');
-    if (focusedSubId && targetIsText) {
-      // キーボードを閉じさせないため blur せず、次フォーカス先を予約して
-      // 再レンダー直後の useLayoutEffect で実 .focus() する（moveFocus と同じ方式）。
-      pendingFocusIdRef.current = target.id;
-      setFocusedSubId(target.id);
-    } else if (focusedSubId) {
-      // 移動先が選択式など入力欄なしの設問なら、入力状態は終了する。
-      setFocusedSubId(null);
-    }
-  };
-
-  /** この設問がテキスト入力ナビ（前へ/次へ）の最後か。Enter キーのヒントに使う。 */
-  const isLastNavSub = (sq: SubQuestion) => {
-    const idx = inputNavSubs.findIndex((s) => s.id === sq.id);
-    return idx < 0 || idx >= inputNavSubs.length - 1;
-  };
-
-  /**
-   * スマホのカード内入力欄の Enter キー処理。
-   * ・短答（input）    : Enter＝次の空欄へ移動。最後の空欄なら入力を確定して閉じる。
-   * ・記述（textarea） : Enter＝通常の改行。最後の設問でも改行を優先する
-   *                      （長い答案の途中で誤って閉じない）。
-   * 入力欄はカード内の1か所だけなので、ここで移動すれば
-   * 「解答欄が2つ出る」ことはない（ご指摘対応）。
-   */
-  const handleMobileCardKeyDown = (sq: SubQuestion) => (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (e.key !== 'Enter') return;
-    if (sq.type === 'descriptive') return; // 記述は改行を許可
-    e.preventDefault();
-    const idx = inputNavSubs.findIndex((s) => s.id === sq.id);
-    if (idx >= 0 && idx < inputNavSubs.length - 1) {
-      moveFocus(1);
-    } else {
-      (e.currentTarget as HTMLElement).blur();
-      setFocusedSubId(null);
-    }
-  };
+  // フォーカス移動・スマホの解答欄ページ送り・Enter キーは utils/quizNavigationActions.ts（フックなし）
+  const { moveFocus, goMobileAns, isLastNavSub, handleMobileCardKeyDown } = createQuizFocusActions({
+    inputNavSubs, mobileAnswerSubs, focusedSubId, focusedIndex, safeMobileAnsIdx,
+    pendingFocusIdRef, setFocusedSubId, setMobileAnsIdx,
+  });
 
   /**
    * 現在の問題を採点して run state を更新する。
@@ -920,107 +675,13 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
     currentQuestionIndex, onScored,
   });
 
-  /**
-   * 章のラン全体が終わった時に Firestore へ章ベストを送る
-   */
-  const finalizeChapterRun = async (latestRun: ChapterRunState) => {
-    if (isGuest) return; // ゲストは同期しない
-    try {
-      const correctRate =
-        latestRun.totalJudgeable > 0 ? latestRun.totalCorrect / latestRun.totalJudgeable : 0;
-      await submitChapterScore({
-        chapterId: chapter.id,
-        score: latestRun.totalScore,
-        correctRate,
-        totalCorrect: latestRun.totalCorrect,
-        totalQuestions: latestRun.totalJudgeable,
-        timeUsedSec: latestRun.totalTimeSec,
-      });
-    } catch (e) {
-      console.error('[Quiz] submitChapterScore failed:', e);
-    }
-  };
-
-  const handleNext = () => {
-    if (!showingExplanation) {
-      // 解答提出 → 採点して解説へ
-      const scored = scoreCurrentQuestionIfNeeded();
-      
-      // スコアアニメーションのデータを取得
-      if (scored) {
-        const scoreData = scored.breakdown;
-        setScoreAnimationData({
-          breakdown: scoreData,
-          totalScore: scored.addedScore,
-        });
-        setShowScoreAnimation(true);
-        // アニメーション終了後に自動的に非表示に
-        setTimeout(() => setShowScoreAnimation(false), 3500);
-      }
-      
-      setShowingExplanation(true);
-      if (onExplanationChange) onExplanationChange(true);
-    } else {
-      // ★1問ずつモード：まず同じ回の次の問へ進む★
-      // 問1の解説 →「次へ」→ 問2 → … と進み、その回の4問を終えてから
-      // 次の回（または結果画面）へ移る。
-      if (perStep && !isLastStep) {
-        setStepIndex(safeStepIndex + 1);
-        setShowingExplanation(false);
-        if (onExplanationChange) onExplanationChange(false);
-      } else if (!isLastQuestion) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        // 次の回は必ず問1から始める。
-        setStepIndex(0);
-        setShowingExplanation(false);
-        if (onExplanationChange) onExplanationChange(false);
-      } else {
-        // 章全体が完了 → ランキング送信
-        // run state は React 更新が非同期なので、ここでは保存済みの最新を取り直す
-        const latest = loadRun(chapter.id, mode);
-        // ステージの挑戦記録（満点3回で達成・利用履歴）。回だけを選んだときはその回、それ以外は単元。
-        try {
-          const single = questionRange && rangeStart === rangeEnd ? questions[rangeStart] : null;
-          const unitTitle = String(chapter.abstractTitle || chapter.title || chapter.id);
-          recordStagePlayAndSync(auth.currentUser?.uid || 'guest', stageKey(chapter.id, single?.id),
-            single ? `${unitTitle} ${single.title || `第${rangeStart + 1}回`}` : unitTitle,
-            latest.totalCorrect, latest.totalJudgeable);
-        } catch { /* 記録の失敗で学習を止めない */ }
-        finalizeChapterRun(latest);
-        // 新たな挑戦のためにラン状態リセット
-        clearRun(chapter.id, mode);
-        onFinish(answers, latest);
-        if (onExplanationChange) onExplanationChange(false);
-      }
-    }
-  };
-
-  const handlePrevious = () => {
-    if (showingExplanation) {
-      setShowingExplanation(false);
-      if (onExplanationChange) onExplanationChange(false);
-    } else if (perStep && safeStepIndex > 0) {
-      // ★1問ずつモード：同じ回の1つ前の問（の解説）へ戻る★
-      // 問3を解いている途中で「問2の答えをもう一度見たい」という戻り方を
-      // 回をまたがずにできるようにする。
-      setStepIndex(safeStepIndex - 1);
-      setShowingExplanation(true);
-      if (onExplanationChange) onExplanationChange(true);
-    } else if (currentQuestionIndex > rangeStart) {
-      // 「前へ」で今回の範囲より前（別の回）へは戻さない。
-      // 選んだ回だけを解いているのに前の回が出てくると、
-      // どの回を解いているのか分からなくなるため。
-      setCurrentQuestionIndex(prev => prev - 1);
-      // 前の回に戻るときは、その回の最後の問から見えるようにする。
-      const prevQuestion = questions[currentQuestionIndex - 1];
-      const prevSteps = isPerSubQuestionListening(prevQuestion)
-        ? buildListeningSteps(prevQuestion)
-        : [];
-      setStepIndex(prevSteps.length > 0 ? prevSteps.length - 1 : 0);
-      setShowingExplanation(true);
-      if (onExplanationChange) onExplanationChange(true);
-    }
-  };
+  // 次へ／前へ（採点 → 解説 → 次の問 → 次の回 → 結果）と章の送信は utils/quizNavigationActions.ts（フックなし）
+  const { handleNext, handlePrevious } = createQuizStepActions({
+    chapter, mode, isGuest, questions, answers, questionRange, rangeStart, rangeEnd,
+    currentQuestionIndex, perStep, isLastStep, isLastQuestion, safeStepIndex, showingExplanation,
+    scoreCurrentQuestionIfNeeded, setScoreAnimationData, setShowScoreAnimation, setShowingExplanation,
+    setStepIndex, setCurrentQuestionIndex, onExplanationChange, onFinish,
+  });
 
   // C6: キーボードで問題を送り/戻しできるようにする（→ / ←）。
   // 入力欄（input/textarea/contenteditable）にフォーカス中や修飾キー併用時は
@@ -1056,29 +717,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
   //   問題が空 → 非空に変わるとフックの数が変わってクラッシュする構造だった。
   //   ここより前の計算は currentQuestion が undefined でも安全に動く（?. と既定値で受けている）。
   if (questions.length === 0) {
-    return (
-      <div className="w-full bg-white rounded-2xl shadow-xl p-6 md:p-12 border border-gray-100 text-center relative">
-        <button 
-          onClick={onBack}
-          className="absolute top-[calc(1rem+env(safe-area-inset-top,0px))] left-4 md:top-6 md:left-6 flex items-center gap-2 text-gray-500 hover:text-[#2C3E50] transition-colors font-bold bg-gray-50 px-4 py-2 rounded-full shadow-sm"
-        >
-          <ArrowLeft size={20} />
-          <span>戻る</span>
-        </button>
-        <h2 className="text-xl md:text-2xl font-modern font-bold text-gray-800 mb-4 mt-12 md:mt-8">
-          {chapter.abstractTitle}
-        </h2>
-        <p className="text-sm md:text-base text-gray-500 font-modern mb-8">
-          この単元の問題はまだ追加されていません。
-        </p>
-        <button
-          onClick={onBack}
-          className="bg-[#1B2631] text-white px-6 py-3 rounded-xl font-bold w-full sm:w-auto"
-        >
-          単元選択に戻る
-        </button>
-      </div>
-    );
+    return <QuizEmptyState abstractTitle={chapter.abstractTitle} onBack={onBack} />;
   }
 
   /**

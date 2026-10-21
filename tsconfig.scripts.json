@@ -18,5 +18,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler"
   },
-  "include": ["scripts/**/*.mts", "src/**/*"]
+  "include": ["scripts/**/*.mts", "src/**/*"],
+  // dump-science.mts は理科・化学・数学のデータ（2026-10-16 にアプリから外した）を
+  // 一時的に戻したときだけ動かす作業用。データが無い普段の状態では型が通らないので外す。
+  "exclude": ["scripts/gacha-prints/dump-science.mts"]
 }

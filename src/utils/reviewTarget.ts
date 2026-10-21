@@ -50,3 +50,30 @@ export function resolveReviewTarget(note: ReviewLocator, subjects: Subject[]) {
   if (questionIndex < 0 || questionIndex >= questions.length) return null;
   return { subject: entry.subject, chapterId: entry.chapter.id, questionIndex };
 }
+
+/**
+ * 解き直しの始め方（App の handleReviewNote から切り出した。判定は以前と同じ）。
+ *   whole   … 学習記録の「解きなおす」（2026-10-11）：その大問1つだけを、小問ぜんぶで
+ *   focused … 間違えた小問だけ（2026-10-04 ご要望）：その大問1つだけを範囲にして、小問も間違えた分に絞る。
+ *             絞り込み後の並びはその大問だけになるので、先頭から・範囲なしで始める
+ *   from    … その問題から（範囲なし）
+ */
+export type ReviewLaunch =
+  | { kind: 'whole'; chapterId: string; questionIndex: number }
+  | { kind: 'focused'; chapterId: string; targets: { questionId: string; subQuestionIds: string[] }[] }
+  | { kind: 'from'; chapterId: string; questionIndex: number };
+
+export function reviewLaunchOf(
+  note: ReviewRequest,
+  target: { chapterId: string; questionIndex: number },
+): ReviewLaunch {
+  const subIds: string[] = Array.isArray(note.subQuestionIds) ? note.subQuestionIds.map(String)
+    : note.subQuestionId && note.questionId ? [String(note.subQuestionId)] : [];
+  if (note.wholeQuestion && note.questionId) {
+    return { kind: 'whole', chapterId: target.chapterId, questionIndex: target.questionIndex };
+  }
+  if (subIds.length > 0 && note.questionId) {
+    return { kind: 'focused', chapterId: target.chapterId, targets: [{ questionId: String(note.questionId), subQuestionIds: subIds }] };
+  }
+  return { kind: 'from', chapterId: target.chapterId, questionIndex: target.questionIndex };
+}

@@ -104,6 +104,9 @@
 #battle-shell .font-handwriting, .arena-menu .font-handwriting { font-family: var(--mt-font-display) !important; }
 .arena-menu-header h1 { font: var(--mt-text-lg) !important; color: var(--mt-ink-warm); }
 .arena-menu-header > button { border: var(--mt-border); border-radius: var(--mt-r-pill); background: var(--mt-bg-card); box-shadow: var(--mt-shadow-press); padding: 0 12px; min-height: 44px; font: 700 13px/1 var(--mt-font-body); }
+.arena-top-switch { display: flex; flex: 1; gap: 5px; min-width: 0; }
+.arena-top-switch button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; padding: 4px 7px; border: 1px solid #d8c7a5; border-radius: 12px; background: #fffdf7; color: #5d503f; font: 800 13px/1 var(--mt-font-body); }
+.arena-top-switch button[aria-selected="true"] { background: #f6e4b6; border-color: #b18434; color: #3d3222; }
 .arena-menu-player { border-radius: var(--mt-radius-lg) !important; }
 .arena-menu-player strong { font-family: var(--mt-font-display); }
 .arena-lobby-side { border-radius: var(--mt-radius-lg) !important; }

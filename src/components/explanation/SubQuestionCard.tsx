@@ -85,7 +85,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: SubQuesti
                                 <ol className="list-none space-y-2">
                                   {sq.detailedExplanation.steps.map((step: string, idx: number) => (
                                     <li key={idx} className="flex items-start gap-2.5">
-                                      <span className={`shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold ${'bg-emerald-100 text-emerald-700 border border-emerald-300'}`}>
+                                      <span className={`shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${'bg-emerald-100 text-emerald-700 border border-emerald-300'}`}>
                                         {idx + 1}
                                       </span>
                                       {/* 書体は直書きせず土台から継承する（(C) 書体統一） */}
@@ -146,7 +146,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: SubQuesti
 
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                  <div className={`text-[10px] md:text-xs mb-1 ${'text-gray-500'}`}>あなたの解答</div>
+                                  <div className={`text-xs md:text-xs mb-1 ${'text-gray-500'}`}>あなたの解答</div>
                                   <div className={`font-bold text-sm md:text-base p-3 rounded-lg border break-words whitespace-pre-wrap ${
                                     isCorrect
                                         ? ('bg-white border-emerald-200 text-emerald-700')
@@ -160,7 +160,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: SubQuesti
                                   </div>
                                 </div>
                                 <div>
-                                  <div className={`text-[10px] md:text-xs mb-1 ${'text-gray-500'}`}>正解</div>
+                                  <div className={`text-xs md:text-xs mb-1 ${'text-gray-500'}`}>正解</div>
                                   <div className={`font-bold text-sm md:text-base p-3 rounded-lg border break-words ${'text-emerald-700 bg-white border-emerald-200'}`}>
                                     {formatText(sq.correctAnswer)}
                                     {(() => { const oi = Array.isArray(sq.options) ? sq.options.indexOf(String(sq.correctAnswer ?? '')) : -1; const pic = pictureCellOf(sq, oi, sq.options?.length ?? 0); return pic ? <span className="lx-answer-pic" role="img" aria-label="正解のイラスト" style={pic} /> : null; })()}
@@ -209,7 +209,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: SubQuesti
                             </div>
 
                             {sq.partialCreditCriteria && (
-                              <div className={`border-t text-[10px] md:text-xs p-3 flex items-start gap-2 ${'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                              <div className={`border-t text-xs md:text-xs p-3 flex items-start gap-2 ${'bg-amber-50 text-amber-700 border-amber-200'}`}>
                                 <AlertCircle className="shrink-0 mt-0.5 w-4 h-4" />
                                 <span className="leading-relaxed">{formatText(sq.partialCreditCriteria)}</span>
                               </div>

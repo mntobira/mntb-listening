@@ -5,7 +5,7 @@
  * 決まり
  *   1. 完成状態は素の CSS。動きは `prefers-reduced-motion: no-preference` の中だけに書く
  *      → 動きを減らす設定・印刷では、今までと同じ画面がそのまま出る
- *   2. 動きは opacity と translate / scale / rotate / filter だけ（transform は各画面の :active の沈みに空けておく）
+ *   2. 動きは opacity と translate / scale / rotate だけ（filter・box-shadow・top/left は毎フレーム描き直しになるので動かさない）（transform は各画面の :active の沈みに空けておく）
  *      → 既存の「押すと沈む」や配置（translate:-50% など）と打ち消し合わない
  *   3. 入場は1回だけ（animation-fill-mode: backwards＝終わったら各画面の元の指定に戻る。:active の沈み・ホバーを邪魔しない）。くり返す動きは「注意を引く1点」だけ
  *   4. 1画面に収める決まり（CLAUDE.md）を崩さない：大きさ・余白・行の高さは変えない
@@ -42,7 +42,10 @@
   .kt[data-kt=wave] .kt-ch { animation-name: kt-rise, kt-wave; animation-duration: var(--mo-slow), .9s;
     animation-delay: calc(var(--kt-delay, 0ms) + var(--i) * var(--kt-step, 38ms)), calc(var(--kt-delay, 0ms) + 700ms + var(--i) * 45ms); animation-timing-function: var(--mo-ease-out), ease-in-out; }
   .kt-whole { display: inline-block; animation: kt-rise var(--mo-slow) var(--mo-ease-out) backwards; animation-delay: var(--kt-delay, 0ms); }
-  @keyframes kt-rise { from { opacity: 0; translate: 0 .55em; rotate: 8deg; filter: blur(5px); } to { opacity: 1; translate: 0 0; rotate: 0deg; filter: blur(0); } }
+  /* ★L-01★ 以前は filter: blur(5px)→0 も動かしていた。最大28個の .kt-ch で同時に動的ぼかしを掛けると
+   *   格安 Android・古い iPad の GPU は 16.6ms に収まらず、400〜800ms 固まってから最後のコマへ飛んでいた。
+   *   GPU のコンポジタだけで完結する opacity / translate / rotate に絞る（立ち上がりの軌跡・時間は同じ） */
+  @keyframes kt-rise { from { opacity: 0; translate: 0 .55em; rotate: 8deg; } to { opacity: 1; translate: 0 0; rotate: 0deg; } }
   @keyframes kt-pop { 0% { opacity: 0; scale: .2; translate: 0 .3em; } 100% { opacity: 1; scale: 1; translate: 0 0; } }
   @keyframes kt-wave { 0%, 100% { translate: 0 0; } 40% { translate: 0 -.18em; } }
 
@@ -170,8 +173,10 @@
   @keyframes mo-logo { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0 0 0 0); } }
   .game-home .game-home-hud, .game-home .mana-dashboard { animation: mo-card-in .55s var(--mo-ease-out) .1s backwards; }
   /* 復習待ちのバッジ：注意を引く1点だけ、ゆっくり脈打つ */
-  .game-home .home-review-wide > b { animation: mo-pop-in .5s var(--mo-spring) .8s backwards, mo-pulse 2.4s ease-in-out 1.6s infinite; }
-  @keyframes mo-pulse { 0%, 100% { box-shadow: 0 0 0 0 #c8879166; } 50% { box-shadow: 0 0 0 7px #c8879100; } }
+  /* ★L-05★ 以前は box-shadow を無限に動かしていた。輪は ::after に描き、opacity と scale だけを動かす（見た目は同じ「広がって消える輪」） */
+  .game-home .home-review-wide > b { animation: mo-pop-in .5s var(--mo-spring) .8s backwards; }
+  .game-home .home-review-wide > b::after { content: ''; position: absolute; inset: -2px; border-radius: inherit; box-shadow: 0 0 0 3px #c8879166; pointer-events: none; opacity: 0; will-change: opacity, scale; animation: mo-pulse 2.4s ease-in-out 1.6s infinite; }
+  @keyframes mo-pulse { 0%, 100% { opacity: 0; scale: 1; } 15% { opacity: 1; scale: 1; } 50% { opacity: 0; scale: 1.18; } }
 }
 
 /* 波紋の入れ物：押したボタンの真上に同じ形で重ねる（MoRipple.ts）。中身が消えると入れ物も消える */

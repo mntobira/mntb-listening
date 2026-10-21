@@ -73,11 +73,11 @@ export function UsageMeterPanel() {
       <div className="flex items-center gap-2">
         <Activity size={18} className="text-[#E67E22]" />
         <h2 className="font-bold text-sm flex-1">Firebase 使用量（この端末）</h2>
-        <a href={FIREBASE_USAGE_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[11px] font-bold text-[#2980B9]">
+        <a href={FIREBASE_USAGE_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-[#2980B9]">
           全体はコンソールで <ExternalLink size={12} />
         </a>
       </div>
-      <p className="text-[11px] text-gray-400 leading-relaxed">
+      <p className="text-xs text-gray-400 leading-relaxed">
         このアプリがこの端末で行った Firestore の読み取り・書き込み・削除の回数です（14日分・キャッシュ分は除外）。
         プロジェクト全体の合計は右上のリンク（Firebase コンソール → Firestore → 使用量）で確認できます。
       </p>
@@ -111,7 +111,7 @@ export function UsageMeterPanel() {
                 ['削除', day.deletes, FREE_DAILY_LIMITS.deletes, '#E74C3C'],
               ] as const).map(([label, v, max, color]) => (
                 <div key={label} className="space-y-0.5">
-                  <div className="flex justify-between text-[11px]">
+                  <div className="flex justify-between text-xs">
                     <span className="font-bold">{label}</span>
                     <span className="tabular-nums text-gray-500">{v.toLocaleString()} / 無料枠 {max.toLocaleString()}（{((v / max) * 100).toFixed(2)}%）</span>
                   </div>
@@ -119,7 +119,7 @@ export function UsageMeterPanel() {
                 </div>
               ))}
 
-              <table className="w-full text-[11px] mt-2">
+              <table className="w-full text-xs mt-2">
                 <thead>
                   <tr className="text-gray-400">
                     <th className="text-left font-normal py-1">機能</th>
@@ -145,7 +145,7 @@ export function UsageMeterPanel() {
           <div className="flex justify-end">
             <button
               onClick={() => { if (confirmAction('この端末の使用量の記録を消しますか？')) { clearUsage(); reload(); } }}
-              className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-[#C0392B]"
+              className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-[#C0392B]"
             >
               <Trash2 size={12} /> 記録を消す
             </button>

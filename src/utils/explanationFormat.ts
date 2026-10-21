@@ -60,6 +60,14 @@ import {
   extractFlowchartSteps,
   type FlowchartStepLike,
 } from './explanationSupplement';
+import type { SubQuestionLike, QuestionLike } from './explanationShapes';
+import { plainLine, subMarkerCandidates, splitBodyBySubQuestions, questionGroupKey, splitBodyByQuestionGroups, dedupeAgainstSteps } from './explanationMarkers';
+import type { BodySegments } from './explanationMarkers';
+import { GROUP_MARK, SQ_MARK, SQ_BODY_MARK, SQ_SHARED_MARK } from './explanationSlices';
+export { GROUP_MARK, SQ_MARK, SQ_BODY_MARK, SQ_SHARED_MARK, sliceEnhancedBySubQuestion, sliceEnhancedByQuestion } from './explanationSlices';
+export type { SubQuestionSlices, EnhancedSlices } from './explanationSlices';
+export { subMarkerCandidates, splitBodyBySubQuestions, questionGroupKey, splitBodyByQuestionGroups, dedupeAgainstSteps } from './explanationMarkers';
+export type { BodySegments } from './explanationMarkers';
 export {
   ANS,
   ANS_STYLE,
@@ -83,22 +91,6 @@ export type {
   ConversionHop,
   UnitConversionWalk,
 } from '../data/teachingTypes';
-
-/** 整形に必要な小問の最小形 */
-interface SubQuestionLike {
-  id?: string;
-  label?: string;
-  type?: string;
-  correctAnswer?: string;
-  detailedExplanation?: { steps?: string[]; theme?: string } | null;
-}
-
-/** 整形に必要な問題の最小形 */
-interface QuestionLike {
-  id?: string;
-  explanation?: string;
-  subQuestions?: SubQuestionLike[];
-}
 
 // -------------------------------------------------------------------
 // セクション生成
@@ -292,7 +284,6 @@ function formatTeachingSteps(teaching: UnitTeaching): string {
     .join('\n');
 }
 
-
 export function buildStepsBlock(
   question: QuestionLike,
   teaching?: UnitTeaching,
@@ -332,470 +323,6 @@ export function buildStepsBlock(
   return parts.join('\n\n');
 }
 
-// -------------------------------------------------------------------
-// 問（問1・問2…）単位への再構成
-// -------------------------------------------------------------------
-
-/** 全角数字を半角に寄せる（ラベルの表記ゆれ対策） */
-function toHalfWidthDigits(text: string): string {
-  return text.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0));
-}
-
-/**
- * 小問マーカーの表記ゆれを吸収する正規化。
- *
- * ■ なぜ必要か（実測にもとづく）
- * 教材データは人の手で長期間書き足されてきたため、同じ「(1)」でも
- *   ・全角括弧「（1）」／半角括弧「(1)」
- *   ・全角数字「（１）」／半角数字「(1)」
- *   ・全角スペース「（1） 答え」／半角スペース
- * が混在している。全174問を機械的に走査したところ、この表記ゆれだけが原因で
- * 「本文には見出しがあるのに、小問と結び付かない」問題が多数あった。
- * ここで両者を同じ土俵に載せてから比較する。
- *
- * ★注意★ この正規化は「比較のためだけ」に使う。
- * 本文そのものは1文字も書き換えない（情報を失わせないための鉄則）。
- */
-function normalizeMarker(text: string): string {
-  return toHalfWidthDigits(String(text || ''))
-    .replace(/[（]/g, '(')
-    .replace(/[）]/g, ')')
-    .replace(/[\u3000\s]+/g, ' ')
-    .trim();
-}
-
-/** タグを取り除いて素の文字にする（見出し判定用） */
-function plainLine(line: string): string {
-  return normalizeMarker(String(line || '').replace(/<[^>]*>/g, ''));
-}
-
-/**
- * 小問ラベルから「本文中で見出しになりうるマーカー」の候補を取り出す。
- *
- * 例）
- *   「問2 (1) 中和点のpH」 → ['問2(1)', '(1)']
- *   「（ア）」             → ['(ア)']
- *   「(3) ろ過の図」       → ['(3)']
- *   「① 斜方硫黄」        → ['①']
- *
- * 候補を複数返すのは、本文側が「問2(1)」と書く場合と、
- * 「問2」のセクションの中で単に「(1)」と書く場合の両方があるため。
- * 長いマーカー（より限定的なもの）から順に並べる。
- */
-export function subMarkerCandidates(label?: string): string[] {
-  const s = normalizeMarker(label);
-  if (!s) return [];
-  const out: string[] = [];
-
-  // 「問2 (1) …」形式
-  const withQ = s.match(/^問\s*(\d+)\s*\(\s*([^)]{1,8}?)\s*\)/);
-  if (withQ) {
-    out.push(`問${withQ[1]}(${withQ[2]})`);
-    out.push(`(${withQ[2]})`);
-  }
-
-  // 「(1)(a)」のような二段の入れ子
-  const nested = s.match(/^\(\s*([^)]{1,8}?)\s*\)\s*\(\s*([^)]{1,8}?)\s*\)/);
-  if (nested) {
-    out.push(`(${nested[1]})(${nested[2]})`);
-    out.push(`(${nested[2]})`);
-    out.push(`(${nested[1]})`);
-  }
-
-  // 「A (1)価電子数」「A(1)」形式（大問中でさらに物質A・B・Cに枝分かれするタイプ）
-  const alphaParen = s.match(/^([A-Za-z])\s*\(\s*([^)]{1,8}?)\s*\)/);
-  if (alphaParen) {
-    out.push(`${alphaParen[1]}(${alphaParen[2]})`);
-    out.push(`${alphaParen[1]} (${alphaParen[2]})`);
-  }
-
-  // 「(ア)」「(1)」形式
-  const paren = s.match(/^\(\s*([^)]{1,8}?)\s*\)/);
-  if (paren) out.push(`(${paren[1]})`);
-
-  // 「問4」だけの形式
-  const onlyQ = s.match(/^問\s*(\d+)/);
-  if (onlyQ) out.push(`問${onlyQ[1]}`);
-
-  // 「① …」形式
-  const circled = s.match(/^([①-⑮])/);
-  if (circled) out.push(circled[1]);
-
-  // 「a」「b」「c」だけの形式（穴埋めの空欄記号）。
-  // 1文字は偶然の一致が起きやすいので、照合側で「直後が区切り文字」であることを必須にする。
-  const bareAlpha = s.match(/^([A-Za-z])(?:\s|[:：.．、,]|$)/);
-  if (bareAlpha) out.push(bareAlpha[1]);
-
-  // 上のどれにも当てはまらない「説明的なラベル」
-  // （例：「化合物Aに含まれる金属元素の元素記号」）は、ラベルそのものを見出しとみなす。
-  // 本文側も同じ文言で書き出されていることが多く、これで結び付けられる。
-  if (out.length === 0 && s.length >= 4) out.push(s);
-
-  return [...new Set(out.filter(Boolean))];
-}
-
-/** 記号ではない「素の語」で始まるマーカーか（境界チェックを厳しくする対象） */
-function isWordMarker(marker: string): boolean {
-  return /^[A-Za-z0-9]/.test(marker);
-}
-
-/**
- * 本文の各行が「どの小問の見出しか」を判定して、行番号→マーカーの対応を作る。
- * 行頭がマーカーで始まる行だけを境界とみなす（文中に出てくる (1) は無視）。
- */
-function findSubAnchors(
-  lines: string[],
-  markersInOrder: { key: string; markers: string[] }[],
-): { index: number; key: string }[] {
-  const anchors: { index: number; key: string }[] = [];
-  const used = new Set<string>();
-
-  lines.forEach((line, index) => {
-    const plain = plainLine(line);
-    if (!plain) return;
-    for (const entry of markersInOrder) {
-      if (used.has(entry.key)) continue;
-      const matched = entry.markers.some((marker) => {
-        if (!plain.startsWith(marker)) return false;
-        const rest = plain.slice(marker.length);
-        // 「(1)」が「(10)」の先頭に一致してしまう事故を防ぐ
-        if (/^[0-9０-９]/.test(rest)) return false;
-        // 「a」が「acid」の先頭に一致してしまう事故を防ぐ
-        // （素の語で始まるマーカーは、直後が区切り文字か行末であることを必須にする）
-        if (isWordMarker(marker) && rest !== '' && !/^[\s(（:：.．、,／/─\-]/.test(rest)) return false;
-        return true;
-      });
-      if (matched) {
-        anchors.push({ index, key: entry.key });
-        used.add(entry.key);
-        return;
-      }
-    }
-  });
-
-  return anchors.sort((a, b) => a.index - b.index);
-}
-
-/**
- * 1行に複数の小問がまとめ書きされている本文を、小問ごとの行に開く。
- *
- * ■ なぜ必要か（実データで確認した最大の壁）
- * 教材データには、こう書かれた解説が多数ある：
- *
- *   （ア）熱運動 （イ）大きく （ウ）絶対零度 （エ）−273 （オ）絶対温度 （カ）ケルビン
- *
- * 6問ぶんの答えが1行に詰まっているため、「行の境界で切る」方式では
- * どこにも切れ目が無く、小問ごとに解説を配ることができなかった。
- * ここで各マーカーの直前に改行を入れて、切れる形に整える。
- *
- * ★情報は1文字も減らない★
- * 行わない操作：削除・要約・並べ替え・語句の書き換え。
- * 行う操作：マーカー直前の「空白を改行に置き換える」だけ。
- * 表示上も、6つの答えが横1列から縦6行になって *読みやすくなる* 方向にしか変わらない。
- * 表（|を含む行）と、そもそもマーカーが1つ以下の行には一切手を触れない。
- */
-function explodeInlineMarkers(
-  body: string,
-  markersInOrder: { key: string; markers: string[] }[],
-): string {
-  // 照合に使うマーカー（最長一致を優先）
-  const all = [...new Set(markersInOrder.flatMap((entry) => entry.markers))].sort(
-    (a, b) => b.length - a.length,
-  );
-  if (all.length < 2) return body;
-
-  return body
-    .split('\n')
-    .map((line) => {
-      if (line.includes('|')) return line; // 表は絶対に壊さない
-      if (/<(?:div|table|tr|td|th)\b/i.test(line)) return line; // ブロック要素も触らない
-
-      // この行に「行頭以外の位置で」現れるマーカーの数を数える
-      const plain = plainLine(line);
-      const found = all.filter((marker) => plain.includes(marker));
-      if (found.length < 2) return line; // まとめ書きではないので触らない
-
-      // 実際の（正規化していない）行に対して、全角・半角どちらの表記でも
-      // マーカーの直前にある空白を改行へ置き換える。
-      let out = line;
-      for (const marker of found) {
-        // 「(ア)」→ 全角・半角どちらでも当たる正規表現に変換する
-        const pattern = marker
-          .split('')
-          .map((ch) => {
-            if (ch === '(') return '[(（]';
-            if (ch === ')') return '[)）]';
-            if (ch === ' ') return '[\\s　]*';
-            if (/[0-9]/.test(ch)) {
-              return `[${ch}${String.fromCharCode(ch.charCodeAt(0) + 0xfee0)}]`;
-            }
-            return ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          })
-          .join('');
-        // 行頭のマーカーは対象外（すでに切れ目になっている）。
-        // 直前が空白のときだけ、その空白を改行にする。
-        out = out.replace(new RegExp(`([^\\n])[\\s　]+(?=${pattern})`, 'g'), '$1\n');
-      }
-      return out;
-    })
-    .join('\n');
-}
-
-/**
- * 詳しい解説の本文を「小問（(ア)/(1)/①…）」の見出し行で切り分ける。
- *
- * ■ 無損失であることが絶対条件（要件の最重要事項）
- * splitBodyByQuestionGroups と同じく「行を落とさず・並べ替えず、境界で切るだけ」。
- *   lead + segments を順に連結すると、必ず元の本文に戻る。
- * 2つ以上の境界が見つからない場合は null を返し、呼び出し側は従来表示のままにする。
- */
-export function splitBodyBySubQuestions(
-  body: string,
-  subs: SubQuestionLike[],
-): BodySegments | null {
-  if (!body || !subs || subs.length < 2) return null;
-
-  const markersInOrder = subs
-    .map((sub) => ({ key: String(sub.id || sub.label || ''), markers: subMarkerCandidates(sub.label) }))
-    .filter((entry) => entry.key && entry.markers.length > 0);
-  if (markersInOrder.length < 2) return null;
-
-  const lines = explodeInlineMarkers(body, markersInOrder).split('\n');
-  const anchors = findSubAnchors(lines, markersInOrder);
-  // 少なくとも2箇所で切れないと「問ごとに完結」にならない
-  if (anchors.length < 2) return null;
-
-  const lead = lines.slice(0, anchors[0].index).join('\n');
-  const segments = anchors.map((anchor, i) => ({
-    key: anchor.key,
-    text: lines
-      .slice(anchor.index, i + 1 < anchors.length ? anchors[i + 1].index : lines.length)
-      .join('\n'),
-  }));
-
-  return { lead, segments };
-}
-
-/**
- * 小問ラベルから「どの問に属するか」のキーを取り出す。
- * 「問2 (1) …」→ '2'、「(ア)」など問番号を持たないものは '' を返す。
- */
-export function questionGroupKey(label?: string): string {
-  const matched = toHalfWidthDigits(String(label || '').trim()).match(/^問\s*(\d+)/);
-  return matched ? matched[1] : '';
-}
-
-/** 詳しい解説本文を問ごとに切り分けた結果 */
-export interface BodySegments {
-  /** 最初の「問N」見出しより前にある共通のリード文 */
-  lead: string;
-  /** 問キー → その問に属する本文（出現順） */
-  segments: { key: string; text: string }[];
-}
-
-/**
- * 詳しい解説の本文を「問N」の見出し行を境界にして切り分ける。
- *
- * ■ 無損失であることが絶対条件
- * 情報量を絶対に減らさないという要件のため、
- * 「行を落とさず・並べ替えず、境界で切るだけ」に徹している。
- *   lead + segments を順に連結すると、必ず元の本文に戻る。
- * 境界が1つも見つからない場合は null を返し、呼び出し側は分割せず従来表示にする。
- */
-export function splitBodyByQuestionGroups(body: string, keys: string[]): BodySegments | null {
-  if (!body || keys.length === 0) return null;
-  const lines = body.split('\n');
-  const anchors: { index: number; key: string }[] = [];
-
-  lines.forEach((line, index) => {
-    const matched = toHalfWidthDigits(line).match(/^\s*(?:【\s*)?問\s*(\d+)/);
-    if (matched && keys.includes(matched[1])) anchors.push({ index, key: matched[1] });
-  });
-
-  if (anchors.length === 0) return null;
-
-  const lead = lines.slice(0, anchors[0].index).join('\n');
-  const segments = anchors.map((anchor, i) => ({
-    key: anchor.key,
-    text: lines
-      .slice(anchor.index, i + 1 < anchors.length ? anchors[i + 1].index : lines.length)
-      .join('\n'),
-  }));
-
-  return { lead, segments };
-}
-
-/**
- * 「解法の思考手順」と「詳しい解説」の両方に *まったく同じ一文* が
- * 書かれている場合だけ、詳しい解説側の重複行を落とす。
- *
- * ■ 情報量を絶対に減らさないためのガード（実データで検証済み）
- * 次のいずれかに当てはまる行は、たとえ一致しても絶対に落とさない。
- *   ・表の行（|）……… 表が壊れる
- *   ・見出し行（■◆【）… 文章の骨格が消える
- *   ・「=」「→」を含む行… 計算式・反応式の途中が消えて筋道が追えなくなる
- *     （例：「2.0=25.0c」の次の「c=0.080 mol/L」を落とすと答えが消える）
- *   ・短い行（10文字未満）… 偶然の一致が起こりうる
- * この条件で実際に落ちるのは全174大問で1行だけであり、
- * 「重複していて、かつ落としても情報が失われない」ものに限定できている。
- */
-export function dedupeAgainstSteps(body: string, stepsText: string): string {
-  if (!body || !stepsText) return body;
-
-  const normalize = (line: string): string =>
-    line
-      .replace(/<[^>]*>/g, '')
-      .replace(/[①-⑮]/g, '')
-      // 思考手順側の箇条書き記号（└ ├ ─ など）も落として、同じ文なら同じ鍵になるようにする
-      .replace(/[└├─―\-‐‑–—]/g, '')
-      .replace(/[\s　・■※（）()「」【】。、,.：:→＝=＋+]/g, '')
-      .trim();
-
-  const stepLines = new Set(
-    stepsText.split('\n').map(normalize).filter((s) => s.length >= 16),
-  );
-  if (stepLines.size === 0) return body;
-
-  const kept = body.split('\n').filter((line) => {
-    const plain = line.replace(/<[^>]*>/g, '');
-    if (line.includes('|')) return true; // 表は絶対に壊さない
-    if (/^\s*[■◆【]/.test(plain)) return true; // 見出しは消さない
-    if (/[=＝→⟶]/.test(plain)) return true; // 計算式・反応式は消さない
-    if (/答え|よって|したがって|ゆえに|求める/.test(plain)) return true; // 結論行は消さない
-    if (line.includes(ANS_STYLE) || line.includes(KEY_STYLE)) return true; // 強調済みは消さない
-    const normalized = normalize(line);
-    // 短い行は偶然の一致が起こりやすいので落とさない（16文字以上の完全一致のみ）
-    if (normalized.length < 16) return true;
-    return !stepLines.has(normalized);
-  });
-
-  return kept.join('\n');
-}
-
-/**
- * 問ごとのセクションに付ける「機械可読の目印」。
- *
- * 採点画面（Explanation.tsx）の小問アコーディオンは、この目印を頼りに
- * 「この小問が属する問の解説だけ」を切り出して表示する。
- * HTML コメントなので画面には一切出ない（textFormatter はコメントをそのまま通す）。
- */
-export const GROUP_MARK = (key: string): string => `<!--grp:${key}-->`;
-const GROUP_MARK_PATTERN = /<!--grp:([^-]*)-->/g;
-
-/**
- * 小問（(ア)/(1)/① …）ごとのセクションに付ける目印。
- *
- * ■ なぜ「問N」用とは別の目印が要るのか（実測にもとづく設計判断）
- * 教材データの小問ラベルは「(ア)」「(1)」が主流で、「問N」形式は少数派だった。
- * そのため <!--grp:N--> だけでは全174問中15問（8.6%）にしか目印が付かず、
- * 「採点結果のアコーディオンを開いても解説が出てこない」状態が
- * 残り91%の問題で起きていた。
- *
- * ここでは小問 id をそのまま鍵にする。id は問題データ内で一意なので、
- * ラベルの表記ゆれ（全角/半角括弧など）に一切影響されずに結び付けられる。
- * HTML コメントなので画面には出ない。
- */
-export const SQ_MARK = (id: string): string => `<!--sq:${id}-->`;
-const SQ_MARK_PATTERN = /<!--sq:([^>]*?)-->/g;
-
-/**
- * 小問セクションの「見出しの終わり／本文の始まり」を示す目印。
- *
- * ■ なぜ2つ目の目印が必要か
- * 全文まとめ読みでは「(ア) — テーマ ／ 答え」という見出しカードが要る。
- * しかし採点アコーディオンの中では、そのすぐ上のタブに同じ (ア) と正解が
- * すでに出ているので、見出しを再掲すると同じ情報が二重に並んでしまう（要件③）。
- * そこで「見出しはここまで」を機械的に示し、アコーディオン側はこの目印から後ろ
- * ＝［解法の思考手順］＋［詳しい解説］だけを取り出せるようにする。
- */
-export const SQ_BODY_MARK = '<!--sqb-->';
-
-/**
- * 「この大問のすべての小問に共通する解説」の始まりを示す目印。
- *
- * ■ なぜ必要か（要件⑤「1問を見ればその場で完結する」）
- * 大問全体に1本しかない思考手順や、全小問の前提になるリード文は、
- * 特定の小問に配り直すことができない。かといって共通部分だけ画面の別の場所に
- * 置いてしまうと、アコーディオンを開いた生徒はまた上へスクロールする羽目になる。
- * そこでこの目印から後ろ・最初の小問セクションまでを「共通部分」とし、
- * 画面側がどの小問のアコーディオンにも必ず添えて表示する。
- * 本文は複製されるだけで、1文字も削られない。
- */
-export const SQ_SHARED_MARK = '<!--sqall-->';
-
-export interface SubQuestionSlices {
-  /** 全小問に共通する部分（解答一覧・リード文など） */
-  common: string;
-  /** どの小問のアコーディオンにも添える共通解説（無ければ空文字） */
-  shared: string;
-  /** 小問 id ごとの部分（見出しを含む・全文まとめ読み用） */
-  subs: { id: string; text: string; body: string }[];
-}
-
-/**
- * 整形済み解説を「小問」単位に切り出す。目印が無ければ null。
- * 文字を書き換えずに切るだけなので、common + subs.text を連結すると元に戻る。
- */
-export function sliceEnhancedBySubQuestion(text: string): SubQuestionSlices | null {
-  const source = String(text || '');
-  if (!source) return null;
-  const marks: { index: number; id: string; length: number }[] = [];
-  SQ_MARK_PATTERN.lastIndex = 0;
-  let matched: RegExpExecArray | null;
-  while ((matched = SQ_MARK_PATTERN.exec(source)) !== null) {
-    marks.push({ index: matched.index, id: matched[1], length: matched[0].length });
-  }
-  if (marks.length === 0) return null;
-
-  const common = source.slice(0, marks[0].index);
-
-  // 共通解説（<!--sqall--> 〜 最初の小問セクション）を取り出す
-  const sharedAt = common.indexOf(SQ_SHARED_MARK);
-  const shared = sharedAt >= 0 ? common.slice(sharedAt + SQ_SHARED_MARK.length) : '';
-
-  const subs = marks.map((mark, i) => {
-    const text = source.slice(
-      mark.index + mark.length,
-      i + 1 < marks.length ? marks[i + 1].index : source.length,
-    );
-    // 見出しの後ろ（＝思考手順＋詳しい解説）だけを body として取り出す
-    const bodyAt = text.indexOf(SQ_BODY_MARK);
-    const body = bodyAt >= 0 ? text.slice(bodyAt + SQ_BODY_MARK.length) : text;
-    return { id: mark.id, text, body };
-  });
-
-  return { common, shared, subs };
-}
-
-export interface EnhancedSlices {
-  /** 全問に共通する部分（解答一覧・リード文・共通の思考手順など） */
-  common: string;
-  /** 問ごとの部分 */
-  groups: { key: string; text: string }[];
-}
-
-/**
- * 整形済み解説を「問N」単位に切り出す。目印が無い（＝単一の問の大問）場合は null。
- * 文字を書き換えずに切るだけなので、common + groups を連結すると元に戻る。
- */
-export function sliceEnhancedByQuestion(text: string): EnhancedSlices | null {
-  const source = String(text || '');
-  if (!source) return null;
-  const marks: { index: number; key: string; length: number }[] = [];
-  GROUP_MARK_PATTERN.lastIndex = 0;
-  let matched: RegExpExecArray | null;
-  while ((matched = GROUP_MARK_PATTERN.exec(source)) !== null) {
-    marks.push({ index: matched.index, key: matched[1], length: matched[0].length });
-  }
-  if (marks.length === 0) return null;
-  const common = source.slice(0, marks[0].index);
-  const groups = marks.map((mark, i) => ({
-    key: mark.key,
-    text: source.slice(mark.index + mark.length, i + 1 < marks.length ? marks[i + 1].index : source.length),
-  }));
-  return { common, groups };
-}
-
 /**
  * 小問1つぶんの「見出しカード」。
  *
@@ -820,7 +347,7 @@ function subQuestionCard(sub: SubQuestionLike, index: number): string {
   const rows: string[] = [];
   rows.push(
     '<div style="background-color:#FFF1F5; border-left:6px solid #D9466E; border-radius:8px; padding:8px 12px; margin-top:6px;">' +
-      `<span style="display:inline-block; background-color:#D9466E; color:#FFFFFF; font-weight:bold; font-size:0.86em; padding:1px 12px; border-radius:999px;">${label}</span>` +
+      `<span style="display:inline-block; background-color:#D9466E; color:#FFFFFF; font-weight:bold; font-size:max(12px, 0.86em); padding:1px 12px; border-radius:999px;">${label}</span>` +
       (theme
         ? `<span style="color:#8A2E4A; font-weight:bold; margin-left:8px;">${theme}</span>`
         : '') +
@@ -978,7 +505,7 @@ function buildSubQuestionSections(
   const hasSubSteps = subs.some((sub) => (sub.detailedExplanation?.steps || []).length > 0);
   if (!hasSubSteps && fallbackSteps) {
     sharedRows.push(
-      `${LABEL(STEPS_TITLE)}<span style="font-size:0.8em; color:#B03A5B; margin-left:6px;">（この大問のすべての問に共通）</span>\n${fallbackSteps}`,
+      `${LABEL(STEPS_TITLE)}<span style="font-size:max(12px, 0.8em); color:#B03A5B; margin-left:6px;">（この大問のすべての問に共通）</span>\n${fallbackSteps}`,
     );
   }
   if (segmented.lead.trim()) {
@@ -987,7 +514,7 @@ function buildSubQuestionSections(
     // ★文言を変えているだけで、本文は1文字も削っていない★
     sharedRows.push(
       hasAnswerBlock
-        ? `${LABEL('この大問全体の解説')}<span style="font-size:0.8em; color:#B03A5B; margin-left:6px;">（すべての問に共通）</span>\n${segmented.lead}`
+        ? `${LABEL('この大問全体の解説')}<span style="font-size:max(12px, 0.8em); color:#B03A5B; margin-left:6px;">（すべての問に共通）</span>\n${segmented.lead}`
         : segmented.lead,
     );
   }
@@ -1005,7 +532,7 @@ function buildSubQuestionSections(
     // これは「他の小問の思考手順」なので、自分の問の手順と取り違えないよう
     // 見出しで明示する。手順そのものは1つも省いていない。
     sharedRows.push(
-      `${LABEL('関連する問の思考手順')}<span style="font-size:0.8em; color:#B03A5B; margin-left:6px;">（この大問のほかの問）</span>\n${orphanSteps.join('\n\n')}`,
+      `${LABEL('関連する問の思考手順')}<span style="font-size:max(12px, 0.8em); color:#B03A5B; margin-left:6px;">（この大問のほかの問）</span>\n${orphanSteps.join('\n\n')}`,
     );
   }
 
@@ -1183,7 +710,7 @@ function buildInterleavedSections(
   const hasGroupSteps = groups.some((group) => Boolean(group.steps));
   if (!hasGroupSteps && fallbackSteps) {
     sections.push(
-      `${LABEL(STEPS_TITLE)}<span style="font-size:0.8em; color:#B03A5B; margin-left:6px;">（この大問のすべての問に共通）</span>\n${fallbackSteps}`,
+      `${LABEL(STEPS_TITLE)}<span style="font-size:max(12px, 0.8em); color:#B03A5B; margin-left:6px;">（この大問のすべての問に共通）</span>\n${fallbackSteps}`,
     );
   }
 
@@ -1390,7 +917,7 @@ export function buildSupplement(
       sections.push(
         `${SQ_SHARED_MARK}${flowBlock.replace(
           `${LABEL(STEPS_TITLE)}\n`,
-          `${LABEL('この大問全体の流れ')}<span style="font-size:0.8em; color:#B03A5B; margin-left:6px;">（フローチャートの読み方）</span>\n`,
+          `${LABEL('この大問全体の流れ')}<span style="font-size:max(12px, 0.8em); color:#B03A5B; margin-left:6px;">（フローチャートの読み方）</span>\n`,
         )}`,
       );
     }

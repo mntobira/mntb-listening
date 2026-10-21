@@ -16,7 +16,7 @@ export const KEY = (text: string): string =>
   `<span style="${KEY_STYLE}">${text}</span>`;
 
 export const LABEL = (text: string): string =>
-  `<span style="display:inline-block; border:1.5px solid #D9466E; color:#D9466E; background-color:#FFF1F5; font-weight:bold; font-size:0.86em; padding:1px 10px; border-radius:999px;">${text}</span>`;
+  `<span style="display:inline-block; border:1.5px solid #D9466E; color:#D9466E; background-color:#FFF1F5; font-weight:bold; font-size:max(12px, 0.86em); padding:1px 10px; border-radius:999px;">${text}</span>`;
 
 export const BOX = (body: string): string =>
   `<div style="background-color:#FFF4E5; border:2px solid #FB8C00; border-left:9px solid #FB8C00; border-radius:10px; padding:10px 14px; margin-top:14px; color:#3E2723;">${body}</div>`;

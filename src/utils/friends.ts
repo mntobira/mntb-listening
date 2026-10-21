@@ -166,27 +166,26 @@ export async function ensureFriendProfile(): Promise<FriendProfile | null> {
 
   const profile: FriendProfile = { uid: user.uid, nickname, photoURL, friendCode };
 
-  // 保存に失敗してもコード自体は表示できるようにプロフィールを返す。
-  try {
-    await setDoc(
-      doc(db, 'friend_profiles', user.uid),
-      { ...profile, updatedAt: serverTimestamp() },
-      { merge: true }
-    );
-  } catch (e) {
-    console.error('フレンドプロフィールの保存に失敗しました（コードは利用できます）:', e);
-  }
+  /*
+    ★書き込みの「サーバーで確定」は待たない（2026-10-19）★
+    setDoc の Promise はサーバーが受け取ったと返事をするまで終わらない。
+    電波が悪い・書き込みの通信が詰まっていると、ここで何十秒も（オフラインなら永久に）止まり、
+    フレンド画面はコードが「発行中…」のまま、一覧も読みに行かなかった（エミュレータで再現）。
+    書き込みは端末側のキューに入った時点で、通信が戻れば SDK が送り直すので、
+    待たずにプロフィールを返す。失敗はこれまでどおりログに残す。
+  */
+  void setDoc(
+    doc(db, 'friend_profiles', user.uid),
+    { ...profile, updatedAt: serverTimestamp() },
+    { merge: true }
+  ).catch((e) => console.error('フレンドプロフィールの保存に失敗しました（コードは利用できます）:', e));
 
   // 逆引きインデックス。これが無いと相手からコード検索されない。
-  try {
-    await setDoc(
-      doc(db, 'friend_codes', friendCode),
-      { uid: user.uid, nickname, photoURL, updatedAt: serverTimestamp() },
-      { merge: true }
-    );
-  } catch (e) {
-    console.error('フレンドコードの登録に失敗しました:', e);
-  }
+  void setDoc(
+    doc(db, 'friend_codes', friendCode),
+    { uid: user.uid, nickname, photoURL, updatedAt: serverTimestamp() },
+    { merge: true }
+  ).catch((e) => console.error('フレンドコードの登録に失敗しました:', e));
 
   return profile;
 }

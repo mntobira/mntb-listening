@@ -28,7 +28,7 @@ import { readStudyTime, formatStudyTime } from '../utils/studyTime';
 import { GOAL_OPTIONS, TARGET_SCHOOL_MAX, normalizeTargetSchool, readGoal, writeGoal, type GoalId } from '../utils/vocabGoal';
 import './profile-settings.css';
 import { ReminderSettings, AnalyticsSetting } from './ReminderSettings';
-import { readJsonArray } from '../utils/safeLocalStorage';
+import { readJsonArray, requireLocalStorage, setItemOrThrow } from '../utils/safeLocalStorage';
 import { logRejection } from '../utils/reportError';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 
@@ -101,7 +101,8 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   useEffect(() => {
     try {
       const uid = auth.currentUser?.uid || 'guest';
-      const localProfile = localStorage.getItem(profileKey(uid));
+      const ls = requireLocalStorage();
+      const localProfile = ls.getItem(profileKey(uid));
       if (localProfile) {
         const data = JSON.parse(localProfile);
         setName(data.name || '');
@@ -113,7 +114,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
         setName(auth.currentUser?.displayName || (auth.currentUser ? 'ユーザー' : 'ゲスト'));
         setGrade('高校生');
       }
-      setStreak(parseInt(localStorage.getItem(streakKey(uid)) || '0', 10));
+      setStreak(parseInt(ls.getItem(streakKey(uid)) || '0', 10));
       setCompletedCount(readJsonArray(completedKey(uid)).length);
     } catch (error) {
       console.error('プロフィール取得エラー:', error);
@@ -147,7 +148,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
               : 'プロフィールの公開だけ保存できませんでした。ほかの設定は保存しました。少し時間をおいてもう一度保存してください。';
         }
       }
-      localStorage.setItem(profileKey(uid), JSON.stringify({
+      setItemOrThrow(profileKey(uid), JSON.stringify({
         name: name.trim(), grade: grade.trim(), stream, profilePublic: publishFailed ? wasPublic : profilePublic, targetSchool: normalizeTargetSchool(targetSchool), motto: normalizeMotto(motto), iconUrl: auth.currentUser?.photoURL || '',
       }));
       writeGoal(goal);
@@ -219,8 +220,9 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
 
         <header className="mt-app-header mb-2 sm:mb-3 relative z-10 shrink-0">
           {/* 上の「＜」（マイページへ戻る）は廃止（2026-10-11）。設定は下のナビから出入りする */}
-          <div className="mt-app-header-title"><p className="mt-kicker">MY ACCOUNT</p><h2>設定</h2></div>
-          <DoorMascot showSpeech={false} size="mini" className="w-auto ml-auto -my-2" />
+          {/* 見出しは中央（2026-10-21・マイページとそろえる）。英字のキッカーは外した */}
+          <div className="mt-app-header-title"><h2>設定</h2></div>
+          <span className="door-mascot-slot"><DoorMascot showSpeech={false} size="mini" className="w-auto -my-2" /></span>
         </header>
 
         <div className="profile-tabs mt-tabs mb-2 sm:mb-3 relative z-10 shrink-0" role="group" aria-label="設定のページ">
@@ -235,7 +237,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
           </button>
         </div>
 
-        <main className="relative z-10 flex-1 min-h-0">
+        <main className="relative z-10 flex flex-1 min-h-0 flex-col overflow-hidden">
           {tab === 'friends' && auth.currentUser ? (
             <FriendPanel />
           ) : tab === 'class' && !SOCIAL_FEATURES.classroom ? (
@@ -271,16 +273,13 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
                     <div className="ps-id">
                       <label className="ps-name">
                         <span className="sr-only">ニックネーム</span>
-                        <input value={name} maxLength={NICKNAME_MAX} onChange={(event) => setName(event.target.value)} placeholder="ニックネーム" aria-invalid={!!name.trim() && !nameCheck.ok} aria-describedby="nickname-help" />
+                        <input value={name} maxLength={NICKNAME_MAX} onChange={(event) => setName(event.target.value)} placeholder="ニックネーム" aria-invalid={!!name.trim() && !nameCheck.ok} aria-describedby={name.trim() && !nameCheck.ok ? 'nickname-help' : undefined} />
                         <Pencil size={16} aria-hidden="true" />
                       </label>
                       <div className="ps-rank"><TitleChip progress={growth} rating={rating} size="md" /><span>Lv.{levelOf(growth.xp).level}</span></div>
                     </div>
                   </div>
-                  {/* 注意書きは名前に問題があるときだけ出す（普段は入力欄の説明＝aria で伝える） */}
-                  <p id="nickname-help" role={name.trim() && !nameCheck.ok ? 'alert' : undefined} className="ps-help" data-error={(name.trim() && !nameCheck.ok) || undefined}>
-                    {name.trim() && !nameCheck.ok ? nameCheck.message : '名前は対戦・ランキングで表示されます（本名・連絡先は不可）'}
-                  </p>
+                  {name.trim() && !nameCheck.ok && <p id="nickname-help" role="alert" className="ps-help" data-error>{nameCheck.message}</p>}
                   <dl className="ps-stats">
                     <div><dt><Flame size={15} aria-hidden="true" />連続</dt><dd>{streak}<small>日</small></dd></div>
                     <div><dt><Clock size={15} aria-hidden="true" />学習時間</dt><dd>{formatStudyTime(studySeconds)}</dd></div>
@@ -328,9 +327,8 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
               <div className="ps-col-app space-y-2 sm:space-y-3 flex flex-col">
                 <h3 className="ps-group-title">アプリ（サウンド）</h3>
                 <section className="ps-sound mt-card" aria-label="サウンド">
-                  <Toggle label="BGM" sub="学習中・待ち時間・対戦の音楽（ひとつでON/OFF）" checked={isBgmEnabled} onChange={toggleBgm} icon={isBgmEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />} />
+                  <Toggle label="BGM" checked={isBgmEnabled} onChange={toggleBgm} icon={isBgmEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />} />
                   <Volume label="BGM音量" value={bgmVolume} onChange={setBgmVolume} />
-                  <p className="ps-help">タイトル・待機・対戦で共通。効果音もこの音量に合わせます。</p>
                   <p className="ps-sub"><Swords size={14} aria-hidden="true" />対戦モードの音</p>
                   <Toggle label="対戦効果音" sub="正解・逆転など" checked={battleAudioSettings.sfx} onChange={() => { updateBattleAudio({ sfx: !battleAudioSettings.sfx }); if (!battleAudioSettings.sfx) window.setTimeout(() => battleAudio().play('correct'), 50); }} tone="gold" />
                 </section>
@@ -449,4 +447,3 @@ function Volume({ label, value, onChange, onCommit, tone = 'blue' }: { label: st
     <output>{pct}%</output>
   </div>;
 }
-

@@ -21,6 +21,7 @@
 import type { ScoreBreakdown } from './scoring';
 import { isPlainRecord } from './progress';
 import { quizRunKey } from './quizStorageKeys';
+import { requireLocalStorage, setItemOrThrow } from './safeLocalStorage';
 
 /**
  * 章単位の累積スコアを localStorage に保持するためのキー生成。
@@ -73,7 +74,7 @@ export function nonNegativeFinite(value: unknown, fallback = 0): number {
 
 export function loadRun(chapterId: string, mode: string): ChapterRunState {
   try {
-    const raw = localStorage.getItem(chapterRunKey(chapterId, mode));
+    const raw = requireLocalStorage().getItem(chapterRunKey(chapterId, mode));
     if (!raw) return emptyRun();
 
     const parsed: unknown = JSON.parse(raw);
@@ -100,7 +101,7 @@ export function loadRun(chapterId: string, mode: string): ChapterRunState {
 
 export function saveRun(chapterId: string, mode: string, run: ChapterRunState) {
   try {
-    localStorage.setItem(chapterRunKey(chapterId, mode), JSON.stringify(run));
+    setItemOrThrow(chapterRunKey(chapterId, mode), JSON.stringify(run));
   } catch {
     /* noop */
   }
@@ -109,7 +110,7 @@ export function saveRun(chapterId: string, mode: string, run: ChapterRunState) {
 /** 章の記録を捨てる（結果送信後のリセット用） */
 export function clearRun(chapterId: string, mode: string) {
   try {
-    localStorage.removeItem(chapterRunKey(chapterId, mode));
+    requireLocalStorage().removeItem(chapterRunKey(chapterId, mode));
   } catch {
     /* noop */
   }

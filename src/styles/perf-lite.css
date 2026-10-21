@@ -1,0 +1,81 @@
+/*
+ * 低スペック端末・重なり時の軽量化（2026-10-17 L-04 / L-06 / L-07 / L-08）
+ *
+ *   html[data-perf=lite] … src/utils/devicePerf.ts が起動時に自動で付ける（メモリ・コア数・実測フレーム時間）
+ *
+ * 決まり
+ *   1. 動きそのものは止めない。重いもの（巨大マスク・多量の粒・背景の常時ループ）だけを省く
+ *   2. 文言・DOM・レイアウト（大きさ・余白）は変えない。見えなくするのは装飾の粒だけ（aria-hidden の中）
+ *   3. 各画面の CSS より後から読まれても負けないよう、html[data-perf=lite] を頭に付ける
+ *   4. 動きを減らす設定（prefers-reduced-motion）は各画面の CSS がすでに止めているので、ここでは触れない
+ */
+
+/* ======================================================================
+ * L-06 モーダル・全面の演出が開いている間は、背景の飾りのループを止める
+ *   （星の点滅・オーラ・背景の光の筋・桜・ロビーの脈動）。主役（開いた画面の入場）に GPU を回す。
+ *   ※ :has() に未対応の古い端末では何も起きない（今までどおり動く）だけ
+ * ==================================================================== */
+html:has(dialog[open], [aria-modal=true], .mission-clear, .gacha-reveal, .cb-root) :is(
+  .game-stage-backdrop i,
+  .tobira-aura-bit,
+  .sakura-petal,
+  .arena-background-fx i,
+  .arena-vs-mark
+),
+html:has(dialog[open], [aria-modal=true], .mission-clear, .gacha-reveal, .cb-root) :is(.battle-sheen, .arena-vs-unknown, .home-review-wide > b)::after
+{ animation-play-state: paused !important; }
+/* ★疑似要素（::after）は :is() の中に書けない（書くとルール全体が無効になる）ので、必ず :is(...)::after の形で外に出す★ */
+
+/* ======================================================================
+ * L-06 低スペック端末：背景の飾りの無限ループは最初から止めておく（完成状態の絵はそのまま）
+ * ==================================================================== */
+html[data-perf=lite] :is(
+  .game-stage-backdrop i,
+  .tobira-aura-bit,
+  .arena-background-fx i,
+  .arena-vs-mark
+),
+html[data-perf=lite] :is(.battle-sheen, .arena-vs-unknown)::after
+{ animation-play-state: paused !important; }
+/* とびら君の呼吸・揺れは主役なので止めない。ただし大きな絵の影は動かさない層に固定済み（tobira-buddy.css） */
+
+/* 桜：半分だけ降らせる（14枚 → 7枚）。描く枚数が半分になる */
+html[data-perf=lite] .sakura-petal:nth-child(even) { display: none; }
+
+/* ======================================================================
+ * L-04 正解・ガチャ・ミッション達成の演出：粒を半分にし、マスクを外す
+ * ==================================================================== */
+/* 正解の紙吹雪 28粒 → 14粒（偶数番を出さない） */
+html[data-perf=lite] .cb-confetti b:nth-child(even) { display: none; }
+/* 正解の後光：マスク（画素ごとの合成）を外し、中心だけ色の付いた透過グラデーションにする。回転は残す */
+html[data-perf=lite] .cb-rays {
+  width: min(100vmax, 640px); height: min(100vmax, 640px);
+  background: radial-gradient(circle, var(--cb-soft) 0 10%, transparent 45%);
+  -webkit-mask: none; mask: none;
+}
+/* ガチャの確定演出：光の筋のマスクを外して軽い放射グラデーションに、火花 12個 → 6個 */
+html[data-perf=lite] .gacha-reveal-rays {
+  inset: -10%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--c1) 45%, transparent) 0%, transparent 60%) !important;
+  -webkit-mask: none; mask: none !important;
+}
+html[data-perf=lite] .gacha-reveal-sparks i:nth-child(even) { display: none; }
+/* 大当たりの細かい震え（.12秒の無限ループ）は省く。脈動は残す */
+html[data-perf=lite] .gacha-reveal[data-stage=ur]:not([data-burst]) .gacha-reveal-orb { animation: gacha-orb-pulse .35s ease-in-out infinite; }
+/* 結果の後光：マスクは元々無いが、画面より大きい回転面を小さくする */
+html[data-perf=lite] .gacha-result-halo { inset: -25%; }
+/* ミッション達成：光の筋のマスクを外す、紙吹雪 18粒 → 9粒 */
+html[data-perf=lite] .mission-clear-rays {
+  inset: -15%;
+  background: radial-gradient(circle, #f6b93b40 0%, transparent 60%);
+  -webkit-mask: none; mask: none;
+}
+html[data-perf=lite] .mission-clear-confetti i:nth-child(even) { display: none; }
+
+/* ======================================================================
+ * L-07 動画（<video>）と CSS 演出の衝突を避ける
+ *   ・動画の入れ物は別レイヤー（contain: layout paint）にして、周りの演出の再描画に巻き込まない
+ *   ・低スペック端末では、動画が再生されている間だけ周りの光の筋・火花を止める（動画のデコードを優先）
+ * ==================================================================== */
+.cinematic-clip { contain: layout paint; }
+html[data-perf=lite] .gacha-reveal:has(.cinematic-clip.is-playing) :is(.gacha-reveal-rays, .gacha-reveal-sparks i) { animation-play-state: paused; }

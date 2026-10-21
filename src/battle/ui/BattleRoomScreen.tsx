@@ -16,7 +16,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { LogOut, X } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { auth } from '../../firebase';
 import { useBattleRoom } from '../hooks/useBattleRoom';
 import { normalizeRule } from '../core/battleRules';
@@ -35,10 +35,9 @@ import {
   BattleNotice,
   BattleShell,
   BattleTitle,
-  INK,
-  LINE,
 } from './BattleParts';
 import { logRejection } from '../../utils/reportError';
+import { renderBattleQuitControl } from './BattleQuitControl';
 
 /** 結果画面に切り替わるまでの間（最後の1問の正解を見る時間） */
 const REVEAL_HOLD_MS = 3500;
@@ -386,40 +385,8 @@ export function BattleRoomScreen({
         押し間違いで負けにならないよう、1回目は確認にする。
       */}
       <div className="mt-3">
-        {confirmQuit ? (
-          <div
-            className="grid gap-2 rounded-2xl border-2 p-3"
-            style={{ borderColor: LINE, background: '#FFFFFF' }}
-          >
-            <p className="text-center text-xs font-black" style={{ color: INK }}>
-              対戦をやめますか？ やめると<span style={{ color: '#C0392B' }}>この試合は負け</span>になります。
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <BattleButton variant="ghost" onClick={() => setConfirmQuit(false)}>
-                つづける
-              </BattleButton>
-              <BattleButton
-                variant="danger"
-                onClick={() => {
-                  leave();
-                  onExit('対戦をやめました。この試合は負けとして記録されます。');
-                }}
-                icon={<X size={16} />}
-              >
-                やめる
-              </BattleButton>
-            </div>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setConfirmQuit(true)}
-            className="w-full min-h-11 py-1 text-center text-xs font-bold underline-offset-2 hover:underline"
-            style={{ color: '#9A948A' }}
-          >
-            対戦をやめる
-          </button>
-        )}
+        {/* 中身は BattleQuitControl.tsx（元の JSX のまま・C-21） */}
+        {renderBattleQuitControl({ confirmQuit, setConfirmQuit, leave, onExit })}
       </div>
     </>
   );

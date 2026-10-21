@@ -15,10 +15,12 @@
  *    これは新規の独立モジュールであり、既存の problem JSON / Firestore スキーマを変更しない。
  */
 
+import { recordReviewDone } from './reviewProgress';
 import {
   fingerprintProblem,
   } from './problemVersion';
 import { logRejection } from './reportError';
+import { requireLocalStorage, safeParseJson, setItemOrThrow } from './safeLocalStorage';
 
 const STORAGE_PREFIX = 'review_list_';
 
@@ -104,11 +106,7 @@ function boxToDue(box: number, from: number = Date.now()): number {
 
 export function loadReviewList(uid: string | null | undefined): ReviewItem[] {
   try {
-    const raw = localStorage.getItem(storageKey(uid));
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed as ReviewItem[];
+    return safeParseJson<ReviewItem[]>(requireLocalStorage().getItem(storageKey(uid)), [], Array.isArray);
   } catch {
     return [];
   }
@@ -116,7 +114,7 @@ export function loadReviewList(uid: string | null | undefined): ReviewItem[] {
 
 export function saveReviewList(uid: string | null | undefined, items: ReviewItem[]): void {
   try {
-    localStorage.setItem(storageKey(uid), JSON.stringify(items));
+    setItemOrThrow(storageKey(uid), JSON.stringify(items));
   } catch {
     /* noop: ストレージ枯渇時などは黙って無視 */
   }
@@ -246,6 +244,8 @@ export function markReviewedCorrect(uid: string | null | undefined, key: string)
     };
   });
   saveReviewList(uid, next);
+  // 「今日なおした」「今週」の表示用の日誌（2026-10-21）。書けなくても復習は止めない
+  if (items.some(it => it.key === key)) recordReviewDone(uid, key, now);
   // Optional personal reward; never block review scheduling or add growth code to initial study load.
   if (uid && items.some(it => it.key === key)) {
     void import('../battle/data/growthStore').then(({ recordReviewGrowth }) => recordReviewGrowth(uid, key)).catch(logRejection('growth.recordReview'));

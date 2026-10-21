@@ -1,0 +1,27 @@
+have a good time doing. <break time="1.2s" />
+have difficulty in doing. <break time="1.2s" />
+have trouble in doing. <break time="1.2s" />
+in doing. <break time="1.2s" />
+it is no use doing. <break time="1.2s" />
+keep on doing. <break time="1.2s" />
+keep doing. <break time="1.2s" />
+make a point of doing. <break time="1.2s" />
+make a reservation. <break time="1.2s" />
+need doing. <break time="1.2s" />
+never — without doing. <break time="1.2s" />
+not doing. <break time="1.2s" />
+of one's own doing. <break time="1.2s" />
+on doing. <break time="1.2s" />
+prevent — from doing. <break time="1.2s" />
+regret doing. <break time="1.2s" />
+see O doing. <break time="1.2s" />
+spend — in doing. <break time="1.2s" />
+there is no doing. <break time="1.2s" />
+try doing. <break time="1.2s" />
+will be doing. <break time="1.2s" />
+with a view to doing. <break time="1.2s" />
+by virtue of. <break time="1.2s" />
+be prone to. <break time="1.2s" />
+translate A into B. <break time="1.2s" />
+come to one's senses. <break time="1.2s" />
+impose A on B.

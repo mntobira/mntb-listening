@@ -51,7 +51,7 @@
  *   （uid ごとに分けるのは、既存の profile_/streak_/completed_ と同じ作法）
  */
 
-import { safeLocalStorage } from './safeLocalStorage';
+import { isPlainObject, safeLocalStorage, safeParseJson } from './safeLocalStorage';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { completedKey } from './userStorageKeys';
 // 章 × モードごとの旧キー名も utils/quizStorageKeys.ts が唯一の定義
@@ -87,35 +87,24 @@ export function isPlainRecord(value: unknown): value is Record<string, unknown> 
 
 /** 解答保存形式（設問ID → 文字列）だけを復元し、異なる形は空へ戻す。 */
 export function parseStoredStringRecord(raw: string | null): Record<string, string> {
-  if (!raw) return {};
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (!isPlainRecord(parsed) || !Object.values(parsed).every((value) => typeof value === 'string')) {
-      return {};
-    }
-    return parsed as Record<string, string>;
-  } catch {
-    return {};
-  }
+  return safeParseJson<Record<string, string>>(
+    raw,
+    {},
+    (parsed) => isPlainRecord(parsed) && Object.values(parsed).every((value) => typeof value === 'string'),
+  );
 }
 
 /** 消去法の保存形式（設問ID → 選択肢文字列の配列）だけを復元する。 */
 export function parseStoredStringArrayRecord(raw: string | null): Record<string, string[]> {
-  if (!raw) return {};
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (
-      !isPlainRecord(parsed) ||
-      !Object.values(parsed).every(
+  return safeParseJson<Record<string, string[]>>(
+    raw,
+    {},
+    (parsed) =>
+      isPlainRecord(parsed) &&
+      Object.values(parsed).every(
         (value) => Array.isArray(value) && value.every((item) => typeof item === 'string'),
-      )
-    ) {
-      return {};
-    }
-    return parsed as Record<string, string[]>;
-  } catch {
-    return {};
-  }
+      ),
+  );
 }
 
 /** 保存された添字を有限・非負の整数に限定する。 */
@@ -148,11 +137,7 @@ export function readSolvedMap(uid: string | null | undefined): Record<string, nu
   const ls = storage();
   if (!ls) return {};
   try {
-    const raw = ls.getItem(solvedKey(uid));
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
-    return parsed as Record<string, number>;
+    return safeParseJson<Record<string, number>>(ls.getItem(solvedKey(uid)), {}, isPlainObject);
   } catch {
     return {};
   }
@@ -319,8 +304,7 @@ export function backfillLegacyProgress(
     // normalizeUid はこのファイルの決め方（空なら 'guest'）。
     // キー名の作り方だけを completedKey に任せている。
     const raw = ls.getItem(completedKey(normalizeUid(uid)));
-    const parsed = raw ? JSON.parse(raw) : [];
-    if (Array.isArray(parsed)) completedChapters = parsed.map(String);
+    completedChapters = safeParseJson<unknown[]>(raw, [], Array.isArray).map(String);
   } catch {
     /* 壊れていれば無視 */
   }
@@ -342,7 +326,8 @@ export function backfillLegacyProgress(
       try {
         const raw = ls.getItem(quizRunKey(chapter.id, mode));
         if (raw) {
-          const run = JSON.parse(raw);
+          // 壊れた JSON は null（＝点数なし）。中身の形はここで確かめず、下の Number() で弾く（元のまま）
+          const run = safeParseJson<{ perQuestion?: Record<string, { finalScore?: unknown } | null> } | null>(raw, null);
           const perQuestion = run?.perQuestion || {};
           Object.keys(perQuestion).forEach((questionId) => {
             const score = Number(perQuestion[questionId]?.finalScore);
@@ -357,7 +342,7 @@ export function backfillLegacyProgress(
       try {
         const raw = ls.getItem(quizAnswersKey(chapter.id, mode));
         if (raw) {
-          const answers = JSON.parse(raw);
+          const answers = safeParseJson<Record<string, unknown> | null>(raw, null);
           if (answers && typeof answers === 'object') {
             Object.keys(answers).forEach((subId) => {
               const value = answers[subId];

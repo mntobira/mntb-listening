@@ -14,7 +14,7 @@
  *
  * 壊れた値は読み飛ばす（学習を止めない）。
  */
-import { safeLocalStorage } from './safeLocalStorage';
+import { isPlainObject, safeLocalStorage, safeParseJson } from './safeLocalStorage';
 
 export const UNIT_STATS_PREFIX = 'unit_stats_v1_';
 export interface UnitStat { c: number; j: number; t: number }
@@ -29,10 +29,7 @@ const isStat = (v: unknown): v is UnitStat => {
 
 export function readUnitStats(uid: string | null | undefined): UnitStatsMap {
   try {
-    const raw = safeLocalStorage()?.getItem(keyOf(uid));
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    const parsed = safeParseJson<Record<string, unknown>>(safeLocalStorage()?.getItem(keyOf(uid)), {}, isPlainObject);
     const out: UnitStatsMap = {};
     for (const [id, v] of Object.entries(parsed)) if (isStat(v)) out[id] = v;
     return out;

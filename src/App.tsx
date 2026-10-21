@@ -8,8 +8,8 @@ import { PdfViewerHost } from './components/PdfViewer';
 import { usePdfOpen } from './hooks/usePdfOpen';
 import React, { useState, useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { setReviewFocus, type ReviewTargetItem } from './utils/reviewFocus';
 import { BottomNavigation } from './components/ui/BottomNavigation';
+import { DoorTransition } from './components/ui/DoorTransition';
 import { ListeningHome as Home } from './components/ListeningHome';
 import { ListeningSubjectSelection } from './components/ListeningSubjectSelection';
 import { LaunchScreen } from './components/LaunchScreen';
@@ -68,16 +68,13 @@ const QuizScreens = React.lazy(() =>
   import('./components/QuizScreens').then((m) => ({ default: m.QuizScreens })),
 );
 import { Leaderboard } from './components/Leaderboard';
-import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import { Intro } from './components/Intro';
 import { NoteDetail } from './components/NoteDetail';
 import { StudyHub, type StudyHubView } from './components/StudyHub';
 import { ScreenLoading, ScreenUnavailable } from './components/ScreenStatus';
-import { studyEntry, isLearningScreen } from './utils/studyNavigation';
-import { DEFAULT_SUBJECT, SUBJECT_IDS } from './data/subjects';
+import { studyEntry } from './utils/studyNavigation';
 import { useStudyTimeTracker } from './hooks/useStudyTimeTracker';
-import { resolveReviewTarget, type ReviewRequest } from './utils/reviewTarget';
 import type { ChapterRunState } from './utils/quizRunState';
 import type { StudyNote } from './types/studyNote';
 import { Onboarding } from './components/Onboarding';
@@ -87,9 +84,17 @@ import { getSubjectLabel, isSubjectId, type SubjectId } from './data/subjectLabe
  * ★何も import しない葉ファイルなので、ここから読んでも問題データは付いてこない★
  * （tests/subjectLabels.test.ts が「葉であること」を機械で見張っている）
  */
-import { isExternalSubject } from './data/externalSubjects';
-import { readJsonArray } from './utils/safeLocalStorage';
 import { safeSetItem } from './utils/storageGuard';
+import { safeGetItem, safeRemoveItem } from './utils/safeLocalStorage';
+import { STORAGE_KEYS } from './utils/storageKeysCatalog';
+import { useAppPersistence, isScreenshotLaunch } from './hooks/useAppPersistence';
+import { trackScreen } from './utils/analytics';
+import { AppToast } from './components/AppToast';
+import { useAppBackgroundSync } from './hooks/useAppBackgroundSync';
+import { useBattleReturn } from './hooks/useBattleReturn';
+import { useScreenPrefetch } from './hooks/useScreenPrefetch';
+import { useAuthRouting } from './hooks/useAuthRouting';
+import { useQuizLaunch } from './hooks/useQuizLaunch';
 /*
   公開/非公開の判断は src/config/features.ts が唯一の出どころ。
 
@@ -104,7 +109,7 @@ import { safeSetItem } from './utils/storageGuard';
   ★見えないのに入れてしまう状態は、見えているより悪い。★
   だから入口ではなく「受け口」でも必ず判定する。
 */
-import { isSubjectEnabled, fallbackSubjectId, FEATURES } from './config/features';
+import { isSubjectEnabled, FEATURES } from './config/features';
 /*
   BGM を ON にしていても一定時間で自然に消えるようにする計算。
   「経過ミリ秒 → 音量」の対応だけを別ファイルの純粋関数に置いてある
@@ -128,7 +133,6 @@ import { isSubjectEnabled, fallbackSubjectId, FEATURES } from './config/features
 import { useGlobalClickSound } from './hooks/useGlobalClickSound';
 import { useIdleReset } from './hooks/useIdleReset';
 import { useIsMobile } from './hooks/useMediaQuery';
-import { countIncomingFriendRequests } from './utils/friends';
 /*
  * ErrorBoundary の import もここから外した。
  * 演習画面・結果画面を包んでいたのが唯一の用途で、
@@ -136,25 +140,8 @@ import { countIncomingFriendRequests } from './utils/friends';
  * ★包む対象・ラベル・onReset の中身は変えていない★
  * （「演習画面」「結果・解説画面」というラベルもそのまま持っていった）。
  */
-import { flushFeedbackQueue, getFeedbackWebhookUrl } from './utils/feedback';
-import { recordUserPresence } from './utils/userRegistry';
-import { ensureRankingEntry } from './utils/leaderboard';
-import { parseStoredStringRecord, countSolvedProblemsIn } from './utils/progress';
+import { countSolvedProblemsIn } from './utils/progress';
 import { getChapterIndexOfSubject as getUnitIndexOf } from './data/chapterIndex.generated';
-// ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
-import { profileKey, completedKey } from './utils/userStorageKeys';
-// 章 × モードごとの保存キー名は utils/quizStorageKeys.ts が唯一の定義
-import {
-  quizAnswersKey,
-  quizRunKey,
-  quizExplKey,
-  quizIndexKey,
-  quizStepKey,
-} from './utils/quizStorageKeys';
-import { pullStudyData, installStudySyncFlush, resetStudySyncState } from './utils/studySync';
-import { startUserDataSync, stopUserDataSync, installUserDataSyncFlush, USER_DATA_SYNCED_EVENT } from './utils/userDataSync';
-import { installUsageFlush, trackScreen } from './utils/analytics';
-import { rescheduleReminders } from './utils/studyRemindersRuntime';
 import { TeacherDashboard } from './components/TeacherDashboard';
 import { useTitleBgmController } from './hooks/useTitleBgmController';
 import { FeedbackAdminPanel } from './components/FeedbackAdminPanel';
@@ -165,60 +152,12 @@ import type { GrowthPage } from './components/GrowthHub';
 import './styles/world.css';
 import { usePreventZoom, NATIVE_CONTROLS_SELECTOR } from './hooks/usePreventZoom';
 import { useAutomationHooks } from './hooks/useAutomationHooks';
-import { logRejection } from './utils/reportError';
-import { notify, confirmAction } from './utils/dialog';
+import { confirmAction } from './utils/dialog';
+import type { AppState, AppMode } from './appState';
+export { isAppState, isAppMode } from './appState';
+export type { AppState, AppMode } from './appState';
 const GrowthHub = React.lazy(() => import('./components/GrowthHub').then(m => ({ default: m.GrowthHub })));
 const MissionToast = React.lazy(() => import('./components/MissionToast').then(m => ({ default: m.MissionToast })));
-
-export type AppState = 'home' | 'mode_selection' | 'chapters' | 'quiz' | 'explanation' | 'intro' | 'study_hub' | 'note_detail' | 'onboarding' | 'settings' | 'leaderboard' | 'subject_selection' | 'teacher_dashboard' | 'feedback_admin' | 'battle' | 'growth' | 'foundation' | 'study';
-export type AppMode = 'mini_test' | 'practice' | 'learning';
-
-/*
- * 復元してよい画面の一覧。
- * 統合版にあった 'learning'（まとめプリント）・'advanced_fields'（化学の分野選択）・'rika'（高校入試 理科）・
- * 'logical_tree'・'mock_exam' はリスニング版に画面が無いので含めない。古い保存値は isAppState が false を返し、
- * オンボーディング（またはホーム）へ倒れる（'flowchart' と同じ扱い）。
- */
-const APP_STATES = new Set<AppState>([
-  'home', 'mode_selection', 'chapters', 'quiz', 'explanation', 'intro',
-  'study_hub', 'note_detail', 'onboarding', 'settings',
-  'leaderboard', 'subject_selection', 'teacher_dashboard',
-  'feedback_admin', 'battle', 'growth',
-  /** 英文法・英単語を固める（単語・熟語／聞き取りの文法／その他）。下のナビを残す1画面のページ。 */
-  'foundation',
-  'study',
-]);
-const APP_MODES = new Set<AppMode>(['mini_test', 'practice', 'learning']);
-
-export function isAppState(value: unknown): value is AppState {
-  return typeof value === 'string' && APP_STATES.has(value as AppState);
-}
-
-export function isAppMode(value: unknown): value is AppMode {
-  return typeof value === 'string' && APP_MODES.has(value as AppMode);
-}
-
-/** 科目選択の保存キー（次回起動時に前回の科目を復元する） */
-const SELECTED_SUBJECT_KEY = 'savedSelectedSubject';
-/**
- * BGM を ON にしたかどうかの保存先。
- * 値は 'on' / 'off' の2種類だけ。
- * ★キーを未設定のままにしておくことに意味がある★
- *   未設定＝「まだ選んでいない」なので、
- *   FEATURES.bgm の既定値（OFF）に従う。
- *   0/1 や true/false を初期値として書き込んでしまうと、
- *   あとで既定値を変えても既存ユーザーに届かなくなる。
- */
-
-/**
- * 通常 BGM を止める画面。
- *   quiz / explanation … 従来どおり（問題を読む場面では音を止める）
- *   battle             … ★臨場感アップデートで追加★
- *     対戦中は専用の BGM・効果音（src/battle/audio）が鳴るので、
- *     通常 BGM と重なると濁る。対戦モードの間だけ通常 BGM を止め、
- *     戻ってきたら従来どおり再開する（フェードの計測も止まる）。
- */
-/** 化学（発展）で最後に選んだ分野の保存キー */
 
 /**
  * 無操作でホーム画面に戻るまでの時間（30分）。
@@ -226,28 +165,10 @@ const SELECTED_SUBJECT_KEY = 'savedSelectedSubject';
  * かつ放置された端末が学習画面のまま残らない長さにしている。
  */
 const IDLE_RESET_MS = 30 * 60 * 1000;
-/** ログインできずに「この端末だけで続ける」を選んだ印（ゲスト入口の廃止後の逃げ道） */
-const LOGIN_FALLBACK_KEY = 'login_fallback_local_v1';
-function isScreenshotMode(): boolean {
-  try {
-    return new URLSearchParams(window.location.search).get('screenshot') === '1' || localStorage.getItem('screenshot_mode') === 'true';
-  } catch { return false; }
-}
 
 export default function App() {
-  const [hasEntered, setHasEntered] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const p = new URLSearchParams(window.location.search);
-        if (p.get('screenshot') === '1' || localStorage.getItem('screenshot_mode') === 'true') {
-          return true;
-        }
-      } catch {
-        // localStorage が使えない環境（プライベートモード等）は通常の起動に倒す
-      }
-    }
-    return false;
-  });
+  // 画面検証（?screenshot=1 / screenshot_mode）では起動画面を飛ばす
+  const [hasEntered, setHasEntered] = useState(isScreenshotLaunch);
   useGlobalClickSound();
   useEffect(() => installFriendPresence(), []);
   useEffect(() => {
@@ -257,103 +178,21 @@ export default function App() {
     return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); };
   }, []);
 
-  const [appState, setAppState] = useState<AppState>(() => {
-    const saved = localStorage.getItem('savedAppState');
-    if (isAppState(saved)) return saved;
-    if (typeof window !== 'undefined') {
-      try {
-        const p = new URLSearchParams(window.location.search);
-        if (p.get('screenshot') === '1' || localStorage.getItem('screenshot_mode') === 'true' || localStorage.getItem('hasCompletedOnboarding') === 'true') {
-          return 'home';
-        }
-      } catch {
-        // localStorage が使えない環境（プライベートモード等）は通常の起動に倒す
-      }
-    }
-    return 'onboarding';
-  });
-  const [appMode, setAppMode] = useState<AppMode>(() => {
-    const saved = localStorage.getItem('savedAppMode');
-    return isAppMode(saved) ? saved : 'practice';
-  });
-  /**
-   * 理科の入口で最初に開くタブ（演習／まとめ／出題傾向）。
-   *
-   * ★localStorage に保存しない★
-   *   本体の appState / appMode は「閉じた場所から続けられる」ように保存しているが、
-   *   理科のタブは3つ並んでいて指1本で切り替えられる。
-   *   保存すると「対戦の結果から演習を開いた次にホームから開いたとき、
-   *   なぜか演習が開いている」という、押した覚えのない状態が残る。
-   *   ここは毎回まっさらな 'practice' から始める。
-   */
-  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(() => localStorage.getItem('savedSelectedChapterId'));
-  /**
-   * 「今回はこの範囲だけを解く」ときの範囲（両端を含む・章内の通し番号）。
-   *
-   * ■ 何のために持つのか（ご要望）
-   *   英語リスニングは「第1問A のページ → 第1回演習〜第14回演習のボタン」の形にした。
-   *   ボタンで1回を選んだら、その1回だけを解き、その1回だけを振り返れるようにする。
-   *   （これまでは14回分がひと続きで、途中でやめると中途半端な位置に取り残されていた）
-   *
-   * ■ 章IDを分けずに範囲で表す理由
-   *   回ごとに章IDを作ると、保存キーや進捗台帳・ランキングの宛先が変わって
-   *   これまでの学習記録が迷子になる。章IDは据え置き、範囲だけを別に持つ。
-   *
-   * ■ localStorage に載せている理由
-   *   演習中にアプリを閉じて開き直したとき、範囲を忘れていると
-   *   「第3回だけのはずが章の最後まで続く」ことになり、
-   *   選んだはずの回と実際に解く範囲が食い違ってしまう。
-   */
-  const [quizRange, setQuizRange] = useState<{ startIndex: number; endIndex: number } | null>(() => {
-    try {
-      const raw = localStorage.getItem('savedQuizRange');
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      if (
-        parsed &&
-        Number.isSafeInteger(parsed.startIndex) && parsed.startIndex >= 0 &&
-        Number.isSafeInteger(parsed.endIndex) && parsed.endIndex >= parsed.startIndex
-      ) return { startIndex: parsed.startIndex, endIndex: parsed.endIndex };
-      return null;
-    } catch {
-      return null;
-    }
-  });
+  // 閉じた場所から続けるための画面状態（復元と保存）は hooks/useAppPersistence.ts
+  const {
+    appState, setAppState, appMode, setAppMode, selectedChapterId, setSelectedChapterId,
+    quizRange, setQuizRange, quizAnswers, setQuizAnswers, isGuest, setIsGuest,
+    selectedSubject, setSelectedSubject,
+  } = useAppPersistence();
+  // 使われ方の記録：どの画面を開いたか（設定でオフにできる。utils/analytics.ts）
+  useEffect(() => { trackScreen(hasEntered ? appState : 'launch'); }, [appState, hasEntered]);
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
   const [studyHubView, setStudyHubView] = useState<StudyHubView>({ tab: 'today', subjectTab: 'all' });
   const [chapterGroups, setChapterGroups] = useState<Record<string, string>>({});
-  const [battleReturnActive, setBattleReturnActive] = useState(false);
   const [battleActive, setBattleActive] = useState(false);
   const [growthPage, setGrowthPage] = useState<GrowthPage>('overview');
-  const battleScrollRef = useRef<HTMLDivElement | null>(null);
-  const savedBattleScroll = useRef(0);
-  const restoreBattleScroll = useRef(false);
-  useEffect(() => {
-    if (appState !== 'battle' || !restoreBattleScroll.current) return;
-    const frame = requestAnimationFrame(() => {
-      if (battleScrollRef.current) battleScrollRef.current.scrollTop = savedBattleScroll.current;
-      restoreBattleScroll.current = false;
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [appState]);
-  useEffect(() => {
-    if (!['battle', 'quiz', 'explanation'].includes(appState)) setBattleReturnActive(false);
-  }, [appState]);
-  useEffect(() => {
-    let owner = auth.currentUser?.uid || 'guest';
-    return onAuthStateChanged(auth, user => {
-      const next = user?.uid || 'guest';
-      if (next !== owner) setBattleReturnActive(false);
-      owner = next;
-      // 積み上げ（満点・レベル）を端末共通に（ほかの端末で解いたぶんも「満点 n/3」に反映）
-      if (user && !user.isAnonymous) void import('./utils/achievementsSync').then(m => m.scheduleAchievementsSync(1500)).catch(logRejection('achievements.scheduleSync'));
-    });
-  }, []);
-  const returnToBattle = () => {
-    restoreBattleScroll.current = true;
-    setBattleReturnActive(false);
-    setAppState('battle');
-  };
+  // 対戦 → 演習 → 対戦に戻る導線とスクロール位置は hooks/useBattleReturn.ts
+  const { battleReturnActive, setBattleReturnActive, battleScrollRef, returnToBattle, rememberBattleScroll } = useBattleReturn(appState, setAppState);
   const navigateMain = (next: AppState) => {
     if (appState === 'battle' && next !== 'battle' && battleActive &&
       !confirmAction('進行中の対戦・待機を終了して移動しますか？オンライン対戦では途中退出扱いになります。')) return;
@@ -363,12 +202,6 @@ export default function App() {
   };
   // 学習時間の計測（演習・解説の画面にいる間だけ）。中身は hooks/useStudyTimeTracker.ts
   useStudyTimeTracker(appState === 'quiz' || appState === 'explanation', appState);
-  const reviewRequest = useRef(0);
-  const reviewBusy = useRef(false);
-  useEffect(() => { reviewRequest.current += 1; reviewBusy.current = false; }, [appState]);
-  const [quizAnswers, setQuizAnswers] = useState<Record<string, string>>(() =>
-    parseStoredStringRecord(localStorage.getItem('savedQuizAnswers')),
-  );
   // ユーザーエージェントによるモバイル端末判定（初回のみ・不変）。
   // 画面幅の判定は共有フック useIsMobile に一元化する（C2）。
   const isMobileUserAgent = useRef(
@@ -377,166 +210,22 @@ export default function App() {
   const isNarrowViewport = useIsMobile();
   // 「モバイル端末」= UA がモバイル or 画面幅が md 未満。
   const isMobileDevice = isMobileUserAgent || isNarrowViewport;
-  /*
-   * isGuest ＝「ログインせずに、この端末だけで使っている」状態。
-   * 2026-10-19 ゲストで始める入口は廃止した（ログイン必須）。
-   * ただし「ログインがどうしても通らない／オンライン機能が設定前」のときに
-   * アプリへ入れなくなるのが一番まずいので、ログイン画面で失敗したときだけ
-   * 「この端末だけで続ける」を出す（Onboarding の onOffline）。その印が LOGIN_FALLBACK_KEY。
-   * 以前のゲスト（savedIsGuest）は引き継がない＝次の起動でログイン画面が出る。
-   * ログインすると、この端末の記録は userDataSync.migrateGuestData でアカウントへ移る。
-   */
-  const [isGuest, setIsGuest] = useState(() => localStorage.getItem(LOGIN_FALLBACK_KEY) === 'true');
-  // 選択中の科目。ログイン直後の科目選択画面（＝タイトル画面）で決まる。
-  // 保存値が今の科目一覧に無い（＝古い/壊れた値）場合は化学基礎に戻す。
-  const [selectedSubject, setSelectedSubject] = useState<SubjectId>(() => {
-    const saved = localStorage.getItem(SELECTED_SUBJECT_KEY);
-    /*
-      ★ここがルーティング側の門（4箇所のうちの3番目）★
-
-      保存値の検査を2段にしている。
-        1. isSubjectId  … そもそも科目IDとして成立しているか（従来どおり）
-        2. isSubjectEnabled … いま公開している科目か（今回追加）
-
-      2 が無いと、「数学を選んだまま非公開にした」ユーザーが
-      次に開いたときに数学の画面へ復元されてしまう。
-      カードを消しても、この経路が残っていれば意味がない。
-
-      戻す先は fallbackSubjectId が公開中のものから選ぶ。
-      「必ず化学基礎」と書かないのは、将来化学基礎を非公開にした日に
-      非公開の科目へ倒す処理になってしまうからである。
-      公開中の科目が1つも無い場合だけ登録簿の先頭（DEFAULT_SUBJECT）を使う
-      （その状態はアプリとして成立していないので、
-        画面が真っ白になるのを避けるための最後の受け皿）。
-    */
-    if (isSubjectId(saved) && isSubjectEnabled(saved)) return saved;
-    const fallback = fallbackSubjectId(SUBJECT_IDS);
-    return (fallback as SubjectId) ?? DEFAULT_SUBJECT;
-  });
   const [isExplanationView, setIsExplanationView] = useState(false);
   const [prevAppState, setPrevAppState] = useState<AppState>('home');
   /** 設定を開いたとき最初に見せるページ（対戦から「フレンドを追加」で来たときだけ 'friends'） */
   const [settingsTab, setSettingsTab] = useState<'general' | 'friends' | 'class'>('general');
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
   /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
-  const [foundationTab, setFoundationTab] = useState<'words' | 'quiz' | 'grammar' | 'more'>('words');
+  const [foundationTab, setFoundationTab] = useState<'words' | 'quiz' | 'reading' | 'grammar' | 'more'>('words');
   /** アプリ内の PDF ビューが開いているか（開いている間は広告を出さない） */
   const pdfOpen = usePdfOpen();
   const [foundationBackTo, setFoundationBackTo] = useState<'home' | 'study'>('home');
   // 演習する（科目→コンテンツ）。選んだ科目・前回のコンテンツは端末に覚えておく
-  const [studyCatalogSubject, setStudyCatalogSubject] = useState<string | null>(() => localStorage.getItem('study_catalog_subject_v1'));
-  const [studyLastContent, setStudyLastContent] = useState<string | null>(() => localStorage.getItem('study_catalog_last_v1'));
+  const [studyCatalogSubject, setStudyCatalogSubject] = useState<string | null>(() => safeGetItem(STORAGE_KEYS.studyCatalogSubject));
+  const [studyLastContent, setStudyLastContent] = useState<string | null>(() => safeGetItem(STORAGE_KEYS.studyCatalogLast));
   const [lastQuizResult, setLastQuizResult] = useState<ChapterRunState | null>(null);
-  // 届いているフレンド申請件数（設定ボタンのバッジ表示用）
-  const [pendingFriendRequests, setPendingFriendRequests] = useState(0);
-
-  // フレンド申請件数を定期的に確認する（ログイン時のみ）。
-  // 設定画面を閉じた直後にも再取得して、承諾/拒否の結果をバッジに反映する。
-  useEffect(() => {
-    let cancelled = false;
-    const refresh = async () => {
-      if (!auth.currentUser) {
-        if (!cancelled) setPendingFriendRequests(0);
-        return;
-      }
-      const n = await countIncomingFriendRequests();
-      if (!cancelled) setPendingFriendRequests(n);
-    };
-    refresh();
-    // 画面が見えていないときは読みに行かない（裏で開きっぱなしのタブが読み取りを使い続けないように）
-    const id = window.setInterval(() => { if (document.visibilityState === 'visible') void refresh(); }, 60000);
-    const unsub = onAuthStateChanged(auth, () => refresh());
-    return () => { cancelled = true; window.clearInterval(id); unsub(); };
-  }, [appState]);
-
-  // 送信に失敗して端末に溜まっているフィードバックを、起動時とオンライン復帰時に自動再送する。
-  // （電波の悪い教室や機内モードで書いた意見を取りこぼさないための保険）
-  useEffect(() => {
-    const flush = () => { void flushFeedbackQueue().catch(logRejection('feedback.flushQueue')); };
-    const timer = window.setTimeout(flush, 2500);
-    window.addEventListener('online', flush);
-    return () => { window.clearTimeout(timer); window.removeEventListener('online', flush); };
-  }, []);
-
-  // 利用状況（総ユーザー数・登録 Google アカウント）を記録する。
-  // ログイン状態が確定してから送りたいので onAuthStateChanged に乗せる。
-  // 送りすぎないよう、初回と「前回から24時間以上あいたとき」だけ記録される
-  // （判定は userRegistry 側が行う）。失敗してもアプリは止めない。
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, () => {
-      window.setTimeout(() => {
-        void recordUserPresence(getFeedbackWebhookUrl()).catch(logRejection('presence.record'));
-      }, 4000);
-    });
-    return unsub;
-  }, []);
-
-  // ランキングへの参加登録（ご要望：0pt のユーザーも掲載する）
-  // ─────────────────────────────────────────────
-  // これまで leaderboard_total の枠は「初めてスコアを更新したとき」に
-  // しか作られず、連携したばかりの人はランキングに存在しなかった。
-  // Google 連携が確定した時点で totalScore: 0 の枠を作り、
-  // 「連携済みなら必ず載る」状態にする。
-  // 既にスコアがある人は名前とアイコンの更新だけが走る（スコアは触らない）。
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (!user) return; // ゲストは掲載対象外
-      window.setTimeout(() => {
-        void ensureRankingEntry().catch(logRejection('ranking.ensureEntry'));
-      }, 3000);
-    });
-    return unsub;
-  }, []);
-
-  // ============================================================
-  // 学習進捗・復習リストのクラウド同期
-  // ============================================================
-  // これまで進捗は端末の localStorage だけにあり、
-  // 機種変更やキャッシュ削除で全部消えていた。
-  // ログインしている場合はクラウドと**マージ**して引き継ぐ。
-  //
-  // ・上書きではなくマージなので、オフラインで解いた分も残る
-  // ・失敗しても学習は止めない（次回起動で再試行）
-  // ・ゲストは同期しない（他人の記録と混ざらないようにする）
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        // ログアウトしたら同期状態を捨てる（別アカウントと混ざらないように）
-        resetStudySyncState();
-        stopUserDataSync();
-        return;
-      }
-      // レベル・コイン・ガチャ・単語の✓・学習時間・メモなど、端末だけにあった記録も
-      // アカウントへ保存する（ゲストで使っていた分はここでアカウントへ移る）
-      startUserDataSync(user.uid);
-      // ログイン直後は他の初期化処理と競合しやすいので少し待つ
-      window.setTimeout(() => {
-        void pullStudyData().then((result) => {
-          if (result.addedProblems > 0 || result.addedReviews > 0) {
-            console.info(
-              `[studySync] クラウドから引き継ぎました: 進捗 +${result.addedProblems} / 復習 +${result.addedReviews}`,
-            );
-          }
-        });
-      }, 1500);
-    });
-    return unsub;
-  }, []);
-
-  // 画面を離れるとき（スマホでアプリを切り替えたときを含む）に
-  // 未送信の学習データを送る。iOS Safari は beforeunload が
-  // 発火しないことがあるため pagehide / visibilitychange を使う。
-  useEffect(() => installStudySyncFlush(), []);
-  useEffect(() => installUserDataSyncFlush(), []);
-  useEffect(() => installUsageFlush(), []);
-  // 学習のお知らせ（通知）：開いたとき・裏から戻ったときに予約し直す（復習日・連続日数が変わるため）
-  useEffect(() => {
-    const again = () => { if (document.visibilityState !== 'hidden') void rescheduleReminders(); };
-    const t = window.setTimeout(again, 3000);
-    document.addEventListener('visibilitychange', again);
-    window.addEventListener(USER_DATA_SYNCED_EVENT, again);
-    return () => { window.clearTimeout(t); document.removeEventListener('visibilitychange', again); window.removeEventListener(USER_DATA_SYNCED_EVENT, again); };
-  }, []);
+  // 届いているフレンド申請件数（設定ボタンのバッジ）・再送・利用状況・ランキング登録・クラウド同期は hooks/useAppBackgroundSync.ts
+  const { pendingFriendRequests } = useAppBackgroundSync(appState);
 
   // iOS のピンチ・ダブルタップズームを抑止する（解答・解説画面と入力欄・ボタン・リンクは除く）
   usePreventZoom({
@@ -546,86 +235,8 @@ export default function App() {
   });
 
 
-  useEffect(() => { safeSetItem('savedAppState', appState); }, [appState]);
-  // 使われ方の記録：どの画面を開いたか（設定でオフにできる。utils/analytics.ts）
-  useEffect(() => { trackScreen(hasEntered ? appState : 'launch'); }, [appState, hasEntered]);
-  useEffect(() => { safeSetItem('savedAppMode', appMode); }, [appMode]);
-  useEffect(() => {
-    if (selectedChapterId) {
-      safeSetItem('savedSelectedChapterId', selectedChapterId);
-    } else {
-      localStorage.removeItem('savedSelectedChapterId');
-    }
-  }, [selectedChapterId]);
-  useEffect(() => {
-    if (quizRange) {
-      safeSetItem('savedQuizRange', JSON.stringify(quizRange));
-    } else {
-      localStorage.removeItem('savedQuizRange');
-    }
-  }, [quizRange]);
-  useEffect(() => { safeSetItem('savedQuizAnswers', JSON.stringify(quizAnswers)); }, [quizAnswers]);
-  useEffect(() => {
-    safeSetItem(LOGIN_FALLBACK_KEY, isGuest.toString());
-    try { localStorage.removeItem('savedIsGuest'); } catch { /* 古い印の掃除。消せなくても読まないので害はない */ }
-  }, [isGuest]);
-  useEffect(() => { safeSetItem(SELECTED_SUBJECT_KEY, selectedSubject); }, [selectedSubject]);
-  
-  useEffect(() => {
-    if (isLearningScreen(appState)) {
-      safeSetItem('savedLastLearnState', appState);
-    }
-  }, [appState]);
-
-  // 画面遷移時に常に最上部へスクロール（前画面のスクロール位置を引き継がない）
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [appState]);
-
-  /*
-   * ★「先読み」＝次に行く画面を、まだ表示していないうちに裏で読み始める★
-   *
-   * ■ なぜ必要なのか（これが無いと見え方が変わってしまう）
-   *
-   * 単元選択・演習・解説の3画面は遅延読み込みにした。
-   * 遅延読み込みは「その画面に入った瞬間に読み始める」ので、
-   * 何もしないと通信が遅い端末で★画面に入った直後に何も出ない時間★ができる。
-   * 元のアプリには無かった見え方であり、これは避けなければならない。
-   *
-   * そこで「まだその画面に入っていないが、次に行く可能性が高い」段階で
-   * 裏側で読み込みを始めておく。ユーザーがモードを選んでいる数秒間や
-   * 単元を選んでいる数秒間が、そのまま読み込み時間になる。
-   *
-   * ■ なぜ起動時（ホーム）には先読みしないのか
-   *
-   * ホームで先読みしてしまうと、結局起動と同時に問題データを取りに行くことになり、
-   * ★遅延読み込みにした意味が消える。★
-   * 「学習を始める」を押してモード選択に入った時点＝
-   * 「この人は問題を解く気がある」と分かった時点から読み始める。
-   *
-   * ■ 正直な注意
-   *
-   * これは「必ず間に合う」保証ではない。回線が極端に遅ければ待ちは残る。
-   * ただし「入った瞬間から読み始める」よりは確実に早く、
-   * 起動時に全部持ってくるよりは確実に軽い。
-   *
-   * catch は空にしている。先読みは失敗しても実害が無く
-   * （本番でその画面に入ったときに改めて読み込みが走る）、
-   * ここでエラー表示を出すと「まだ見てもいない画面のエラー」を
-   * 見せることになってしまうため。
-   */
-  useEffect(() => {
-    // モード選択にいる ＝ 次は単元選択の可能性が高い
-    if (appState === 'mode_selection') {
-      import('./components/ChapterSelection').catch(logRejection('chunk.prefetch.ChapterSelection'));
-    }
-    // 単元選択にいる ＝ 次は演習画面の可能性が高い
-    if (appState === 'chapters') {
-      import('./components/QuizScreens').catch(logRejection('chunk.prefetch.QuizScreens'));
-    }
-  }, [appState]);
-
-  const isFirstLoad = useRef(true);
+  // 画面が変わったら最上部へ・次の画面の先読み（hooks/useScreenPrefetch.ts）
+  useScreenPrefetch(appState);
 
   /**
    * 科目選択画面を「どこから開いたか」。科目を選んだあとの遷移先に使う。
@@ -678,7 +289,7 @@ export default function App() {
       setSelectedChapterId(null);
       setQuizRange(null);
       setLastQuizResult(null);
-      safeSetItem('savedLastLearnState', 'chapters');
+      safeSetItem(STORAGE_KEYS.lastLearnState, 'chapters');
     }
     setSelectedSubject(subject);
     setAppMode('practice');
@@ -689,12 +300,12 @@ export default function App() {
   /** 演習する（B2〜B6）：コンテンツを押したら既存の画面へ。科目ごとの分岐はここ1か所だけ（データの action で決まる） */
   const openStudyContent = (content: import('./data/studyCatalog').StudyContent) => {
     setStudyLastContent(content.id);
-    safeSetItem('study_catalog_last_v1', content.id);
+    safeSetItem(STORAGE_KEYS.studyCatalogLast, content.id);
     if (content.action.kind === 'units') {
       if (isSubjectId(content.action.subject)) openSubjectUnits(content.action.subject, 'study');
       return;
     }
-    setFoundationTab(content.action.kind === 'vocabQuiz' ? 'quiz' : content.action.tab);
+    setFoundationTab(content.action.kind === 'vocabQuiz' ? 'quiz' : content.action.kind === 'reading' ? 'reading' : content.action.tab);
     setFoundationBackTo('study');
     setAppState('foundation');
   };
@@ -708,7 +319,7 @@ export default function App() {
   };
   const setStudySubject = (id: string | null) => {
     setStudyCatalogSubject(id);
-    if (id) safeSetItem('study_catalog_subject_v1', id); else localStorage.removeItem('study_catalog_subject_v1');
+    if (id) safeSetItem(STORAGE_KEYS.studyCatalogSubject, id); else safeRemoveItem(STORAGE_KEYS.studyCatalogSubject);
   };
 
   const handleSelectSubject = (subject: SubjectId) => {
@@ -726,42 +337,15 @@ export default function App() {
       setSelectedChapterId(null);
       setQuizRange(null);
       setLastQuizResult(null);
-      safeSetItem('savedLastLearnState', entry);
+      safeSetItem(STORAGE_KEYS.lastLearnState, entry);
     }
     setSelectedSubject(subject);
     setAppMode('practice');
     setAppState(subjectPickerOrigin === 'start' ? entry : 'home');
   };
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      const wasFirstLoad = isFirstLoad.current;
-      isFirstLoad.current = false;
-
-      if (!user) {
-        // ログイン必須（2026-10-19）。起動時に未ログインならログイン画面へ。
-        // 例外：ログインできずに「この端末だけで続ける」を選んだ人・スクリーンショット撮影
-        if (!isGuest && !(wasFirstLoad && isScreenshotMode())) {
-          setAppState('onboarding');
-        }
-      } else {
-        setIsGuest(false);
-        try {
-          // Firestoreの代わりにlocalStorageを使用
-          const localProfile = localStorage.getItem(profileKey(user.uid));
-          if (!localProfile) {
-            setAppState('onboarding');
-          } else if (!wasFirstLoad) {
-            setAppState('home');
-          }
-        } catch (error) {
-          console.error("Error in onAuthStateChanged:", error);
-          setAppState('onboarding');
-        }
-      }
-    });
-    return unsubscribe;
-  }, [isGuest]);
+  // ログイン状態が変わったときの画面の振り分け（hooks/useAuthRouting.ts）
+  useAuthRouting({ isGuest, setIsGuest, setAppState });
   
   // BGM（タイトル曲）の制御は hooks/useTitleBgmController.tsx にまとめた
   const {
@@ -813,185 +397,14 @@ export default function App() {
     setAppState('chapters');
   };
 
-  const handleSelectChapter = (
-    chapterId: string,
-    questionIndex = 0,
-    resume = false,
-    /**
-     * 「この範囲だけを1回として解く」ときの範囲（両端を含む）。
-     * 英語リスニングの「第N回演習」ボタンから渡す。
-     * 省略時は範囲なし＝章の全問を通しで解く（化学基礎・化学は従来のまま）。
-     */
-    range: { startIndex: number; endIndex: number } | null = null,
-    targetMode: AppMode = appMode,
-  ) => {
-    // 通常の演習を始めるときは、復習ノートの「間違えた小問だけ」の絞り込みを外す（復習ノートからは後で付け直す）
-    setReviewFocus(null);
-    setSelectedChapterId(chapterId);
-    setQuizRange(range);
-    setAppState('quiz');
-    setLastQuizResult(null);
-
-    if (!resume) {
-      setQuizAnswers({});
-      localStorage.removeItem(quizAnswersKey(chapterId, targetMode));
-      localStorage.removeItem(quizRunKey(chapterId, targetMode));
-      localStorage.removeItem(quizExplKey(chapterId, targetMode));
-      localStorage.removeItem(quizStepKey(chapterId, targetMode));
-      safeSetItem(quizIndexKey(chapterId, targetMode), questionIndex.toString());
-    }
-  };
-
-  /**
-   * ★対戦のリザルトから、その単元の演習へ移る（請求⑦-A）★
-   *
-   * -------------------------------------------------------------------
-   * ■ これが「① 対戦 ⇒ ② 演習」の橋である
-   * -------------------------------------------------------------------
-   * 対戦は「表側＝楽しい」を担い、演習は「裏側＝つまずきを直す」を担う。
-   * 負けた直後・間違えた直後がいちばん学ぶ気になっている瞬間なので、
-   * リザルト画面からワンタップでその単元の演習に入れるようにする。
-   *
-   * -------------------------------------------------------------------
-   * ■ ★教科も一緒に切り替える理由★
-   * -------------------------------------------------------------------
-   * 対戦の教科は、アプリで選んでいる教科（selectedSubject）と違うことがある
-   * （化学基礎を選んだまま、対戦だけ生物基礎で遊ぶ、など）。
-   * 章IDだけ渡して演習に飛ばすと、教科が食い違って
-   * ★単元選択に戻ったときに別教科の一覧が出る★ という迷子になる。
-   * 章と教科は必ずセットで切り替える。
-   *
-   * -------------------------------------------------------------------
-   * ■ 演習モード（practice）に固定する理由
-   * -------------------------------------------------------------------
-   * 対戦で出しているのは演習問題（practiceProblems）を割ったものなので、
-   * 対応する問題があるのは演習モードである。
-   * ミニテストに飛ばすと「対戦で間違えた問題が出てこない」ことになる。
-   * 既存の復習ノートからの遷移（handleReviewNote）と同じ扱いにしている。
-   */
-  const handlePracticeFromBattle = async (subject: string, chapterId: string, problemId?: string, subQuestionId?: string) => {
-    if (reviewBusy.current) return;
-    reviewBusy.current = true;
-    const request = ++reviewRequest.current;
-    try {
-      if (isExternalSubject(subject)) {
-        // 英単語・英熟語は対戦専用（本体に演習画面が無い）。
-        // リザルトは onPractice を渡されても vocab では出さない（BattleResult 側で判定）が、
-        // 履歴など別経路から来たときのためにここでも止める。
-        throw new Error('この科目は対戦専用です。答えはリザルトの解答欄で確認できます。');
-      }
-      const { getPartsOfSubject, miniTestProblemsOf } = await import('./data/allChapters');
-      if (request !== reviewRequest.current) return;
-      if (!isSubjectId(subject)) throw new Error('対応する科目が見つかりません。');
-      const parts = getPartsOfSubject(subject);
-      const part = parts.find((p) => p.chapters.some((c) => c.id === chapterId));
-      const chapter = part?.chapters.find((c) => c.id === chapterId);
-      if (!chapter) throw new Error('対応する単元が見つかりません。');
-      let mode: 'practice' | 'mini_test' = 'practice';
-      let problems = chapter.practiceProblems || [];
-      let index = problemId ? problems.findIndex((p) => p.id === problemId) : 0;
-      if (problemId && index < 0) {
-        mode = 'mini_test';
-        problems = miniTestProblemsOf(chapter);
-        index = problems.findIndex((p) => p.id === problemId);
-      }
-      if (!problems[index] || (subQuestionId && !problems[index].subQuestions?.some((q) => q.id === subQuestionId))) {
-        throw new Error('対応する問題が見つかりません。教材が更新された可能性があります。');
-      }
-      savedBattleScroll.current = battleScrollRef.current?.scrollTop || 0;
-      setBattleReturnActive(true);
-      setSelectedSubject(subject as SubjectId);
-      setAppMode(mode);
-      handleSelectChapter(chapterId, index, false, problemId ? { startIndex: index, endIndex: index } : null, mode);
-    } catch (error) {
-      if (request === reviewRequest.current) notify(error instanceof Error ? error.message : '演習を読み込めませんでした。もう一度お試しください。');
-    } finally {
-      if (request === reviewRequest.current) reviewBusy.current = false;
-    }
-  };
-
-  const handleFinishQuiz = (answers: Record<string, string>, result?: ChapterRunState) => {
-    setQuizAnswers(answers);
-    setLastQuizResult(result || null);
-    setAppState('explanation');
-    
-    // Track chapter completion if not guest
-    if (!isGuest && auth.currentUser && selectedChapterId) {
-      const uid = auth.currentUser.uid;
-      const key = completedKey(uid);
-      try {
-        const completed = readJsonArray<string>(key);
-        if (!completed.includes(selectedChapterId)) {
-          completed.push(selectedChapterId);
-          safeSetItem(key, JSON.stringify(completed));
-        }
-      } catch (e) {
-        console.error('Failed to save completion:', e);
-      }
-    }
-  };
-
-  const handleBackToChapters = () => {
-    setAppState('chapters');
-    setSelectedChapterId(null);
-  };
-
-  /**
-   * 「間違えた問題だけ解き直す」を始める。
-   * 演習画面には、間違いを含む大問（それぞれ間違えた小問だけ）の並びが渡るので、
-   * 位置は先頭・範囲指定なしで開始する（範囲は絞り込み前の通し番号なので使えない）。
-   */
-  const startFocusedRetry = (chapterId: string, targets: ReviewTargetItem[], targetMode: AppMode) => {
-    if (targets.length === 0) return;
-    handleSelectChapter(chapterId, 0, false, null, targetMode);
-    setReviewFocus({ chapterId, targets });
-  };
-
-  /**
-   * 学習ノートの問題項目から、対応する演習問題へ遷移する（要件5）。
-   * ノートに保存された chapterId / questionId を優先して問題位置を特定し、
-   * 見つからなければ questionIndex（1始まり表示番号）でフォールバックする。
-   */
-  const handleReviewNote = async (note: ReviewRequest | null | undefined) => {
-    if (!note || reviewBusy.current) return;
-    reviewBusy.current = true;
-    const request = ++reviewRequest.current;
-    try {
-      // 問題本体は押されたときだけ読む。全科目を起動時には読み込まない。
-      const { SUBJECTS, getPartsOfSubject } = await import('./data/allChapters');
-      if (request !== reviewRequest.current) return;
-      const target = resolveReviewTarget(note, SUBJECTS
-        .filter(entry => isSubjectEnabled(entry.id))
-        .map(entry => ({ id: entry.id, parts: getPartsOfSubject(entry.id) })));
-      if (!target) {
-        notify(note.subQuestionId && !note.chapterId && !note.questionId
-          ? 'この確認問題は現在の教材に見つかりませんでした。問題が差し替えられた可能性があります。'
-          : '対応する問題を見つけられませんでした。教材が更新された可能性があります。ノートはそのまま残しています。');
-        return;
-      }
-      setSelectedSubject(target.subject);
-      setAppMode('practice');
-      // ★間違えた小問だけを解き直す（2026-10-04 ご要望）★ その大問1つだけを範囲にして、小問も間違えた分に絞る
-      const subIds: string[] = Array.isArray(note.subQuestionIds) ? note.subQuestionIds.map(String)
-        : note.subQuestionId && note.questionId ? [String(note.subQuestionId)] : [];
-      if (note.wholeQuestion && note.questionId) {
-        // ★学習記録の「解きなおす」（2026-10-11）★ その大問1つだけを、小問ぜんぶで
-        setReviewFocus(null);
-        handleSelectChapter(target.chapterId, target.questionIndex, false, { startIndex: target.questionIndex, endIndex: target.questionIndex }, 'practice');
-      } else if (subIds.length > 0 && note.questionId) {
-        // 絞り込み後の並びはその大問だけになるので、先頭から・範囲なしで始める
-        startFocusedRetry(target.chapterId, [{ questionId: String(note.questionId), subQuestionIds: subIds }], 'practice');
-      } else {
-        handleSelectChapter(target.chapterId, target.questionIndex, false, null, 'practice');
-      }
-    } catch {
-      if (request === reviewRequest.current) {
-        notify('問題データの読み込みに失敗しました。通信状況を確認して、もう一度お試しください。');
-      }
-    } finally {
-      if (request === reviewRequest.current) reviewBusy.current = false;
-    }
-  };
+  // 演習の始め方（単元・対戦・解説・解き直し・復習ノート）は hooks/useQuizLaunch.ts
+  const {
+    handleSelectChapter, handlePracticeFromBattle, handleFinishQuiz, handleBackToChapters, startFocusedRetry, handleReviewNote,
+  } = useQuizLaunch({
+    appState, appMode, isGuest, selectedChapterId,
+    setAppState, setAppMode, setSelectedChapterId, setQuizRange, setQuizAnswers,
+    setSelectedSubject, setLastQuizResult, setBattleReturnActive, rememberBattleScroll,
+  });
 
   /*
    * ★選択中の章（単元）を探す処理は、ここから components/QuizScreens.tsx へ移した★
@@ -1055,6 +468,8 @@ export default function App() {
 
   return (
     <>
+      {/* お知らせ（notify）はアプリ内のトーストで出す（components/AppToast.tsx） */}
+      <AppToast />
       <>
         {/*
           ===== アプリの外枠の高さについて =====
@@ -1199,6 +614,7 @@ export default function App() {
                 className={appState === 'battle' ? `h-full min-h-0 overflow-y-auto overscroll-contain ${battleActive ? 'battle-no-nav' : 'pb-app-nav'}` : 'hidden'}>
               <BattleMode
                 onExit={() => setAppState('home')}
+                onRanking={() => setAppState('leaderboard')}
                 /* ★フレンド対戦はフレンドどうしだけ★ 対戦画面の「フレンドを追加」から設定のフレンドを開く */
                 onOpenFriends={() => { setSettingsTab('friends'); navigateMain('settings'); }}
                 onRequireLogin={() => setAppState('onboarding')}
@@ -1281,7 +697,7 @@ export default function App() {
                 />
               </React.Suspense>
             )}
-            {appState === 'study_hub' && <StudyHub view={studyHubView} onViewChange={setStudyHubView} onBack={() => setAppState('home')} onPractice={() => handleSelectMode('practice')} isGuest={isGuest} onSelectNote={(note) => { setSelectedNote(note); setAppState('note_detail'); }} onReview={handleReviewNote} />}
+            {appState === 'study_hub' && <StudyHub view={studyHubView} onViewChange={setStudyHubView} onBack={() => setAppState('home')} onPractice={() => handleSelectMode('practice')} isGuest={isGuest} onSelectNote={(note) => { setSelectedNote(note); setAppState('note_detail'); }} onReview={handleReviewNote} onRetry={(t) => { void handleReviewNote({ chapterId: t.chapterId, questionId: t.questionId, subQuestionIds: t.wrongOnly ? t.subQuestionIds : undefined, wholeQuestion: !t.wrongOnly }); }} />}
             {/* ★英文法・英単語を固める（A1/A17/A18）★
                 リスニング（主役・学習タブ）とは別のページ。下のナビを残したまま1画面で完結させる。
                 英文法の4択演習・単語の例から解くリスニングは、どちらも通常の演習と同じ経路を通す。 */}
@@ -1347,8 +763,8 @@ export default function App() {
                   } },
                   // 対戦はランキングより前（結果を見る画面より先）。FEATURES.battle が false なら席ごと消す
                   { id: 'battle', label: '対戦', ariaLabel: 'オンライン対戦へ移動', current: appState === 'battle', hidden: !FEATURES.battle, onClick: () => navigateMain('battle') },
-                  { id: 'gacha', label: 'ガチャ', ariaLabel: 'ガチャ画面へ移動', current: appState === 'growth' && growthPage === 'gacha', onClick: () => { setGrowthPage('gacha'); navigateMain('growth'); } },
-                  { id: 'mypage', label: 'マイページ', ariaLabel: 'マイページへ移動', current: appState === 'growth' && growthPage !== 'gacha' && growthPage !== 'rush', onClick: () => { setGrowthPage('overview'); navigateMain('growth'); } },
+                  { id: 'gacha', label: 'ガチャ', ariaLabel: 'ガチャ画面へ移動', current: appState === 'growth' && (growthPage === 'gacha' || growthPage === 'gacha-shop'), onClick: () => { setGrowthPage('gacha'); navigateMain('growth'); } },
+                  { id: 'mypage', label: 'マイページ', ariaLabel: 'マイページへ移動', current: appState === 'growth' && growthPage !== 'gacha' && growthPage !== 'gacha-shop' && growthPage !== 'rush', onClick: () => { setGrowthPage('overview'); navigateMain('growth'); } },
                   { id: 'settings', label: '設定', ariaLabel: pendingFriendRequests > 0 ? `設定画面へ移動（フレンド申請が${pendingFriendRequests}件届いています）` : '設定画面へ移動',
                     current: appState === 'settings', badge: pendingFriendRequests, onClick: () => navigateMain('settings') },
                 ]}
@@ -1367,6 +783,7 @@ export default function App() {
       {/* ミッション達成のお知らせ（どの画面でも上に出る。「報酬を受け取る」はその場で受け取る・2026-10-11） */}
       <React.Suspense fallback={null}>
         <MissionToast />
+        <DoorTransition screen={appState} />
       </React.Suspense>
 
     </>

@@ -60,6 +60,7 @@ import {
   fromSyncedReviewItems,
   type SolvedMap,
 } from './studySyncCore';
+import { setItemOrThrow } from './safeLocalStorage';
 
 /** Firestore のコレクション名 */
 export const STUDY_PROGRESS_COLLECTION = 'study_progress';
@@ -92,7 +93,7 @@ function currentUid(): string | null {
  */
 function writeSolvedMapLocal(uid: string, map: SolvedMap): void {
   try {
-    localStorage.setItem(`${SOLVED_KEY_PREFIX}${uid}`, JSON.stringify(map));
+    setItemOrThrow(`${SOLVED_KEY_PREFIX}${uid}`, JSON.stringify(map));
   } catch {
     /* 容量超過などは無視（学習は継続させる） */
   }

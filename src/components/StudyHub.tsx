@@ -1,5 +1,5 @@
 import { useMountEffect } from '../hooks/useMountEffect';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { StudyNote } from '../types/studyNote';
 import type { ReviewRequest } from '../utils/reviewTarget';
 import {
@@ -16,6 +16,9 @@ import {
   ChevronDown,
   PenLine,
   TrendingUp,
+  Medal,
+  Check,
+  CalendarDays,
 } from 'lucide-react';
 import { auth } from '../firebase';
 import {
@@ -28,7 +31,10 @@ import {
   type ReviewItem,
 } from '../utils/reviewList';
 import { ForgettingCurveChart } from './ForgettingCurveChart';
+import { StudyRecord, type StudyRetry } from './StudyRecord';
 import './review-note.css';
+import './review-record.css';
+import { loadReviewDone, summarizeReviewDone, type ReviewDay, type ReviewDone } from '../utils/reviewProgress';
 import { stripHtmlToText } from '../utils/sanitizeHtml';
 import { KineticText } from '../motion';
 import {
@@ -44,6 +50,7 @@ import {
   REVIEW_SUBJECT_LABELS,
   type SubjectTabId,
 } from '../utils/reviewSubject';
+import { requireLocalStorage } from '../utils/safeLocalStorage';
 
 /**
  * StudyHub — 「ノート」と「復習リスト」を1画面に統合した学習ハブ。
@@ -73,9 +80,12 @@ interface StudyHubProps {
   onReview?: (target: ReviewRequest) => void;
   /** 復習が空のときの「演習する」 */
   onPractice?: () => void;
+  /** 学習記録から、その大問を解きなおす（2026-10-19 復習と学習記録を1つに） */
+  onRetry?: (t: StudyRetry) => void;
 }
 
-type Tab = 'today' | 'notes' | 'important' | 'all';
+/** App 側に覚えておく表示（旧IDの 'important' は「ノート」に読み替える） */
+type Tab = 'today' | 'notes' | 'important' | 'all' | 'record' | 'mastered';
 
 // ============================================================
 // 表示用の小道具
@@ -297,23 +307,122 @@ const NoteCard: React.FC<{ note: StudyNote; onSelect: (note: StudyNote) => void 
 );
 
 // ============================================================
+// 達成の見える化（2026-10-21 作り直し）
+// ============================================================
+//
+// ■ ご要望
+//   「復習・記録」を変に融合したせいで UI のバグと使い勝手が悪い。思いきり作り直して、
+//   どちらの役割も果たし、復習したものが目に見えて喜べる形に。
+// ■ 形
+//   ① 上：達成の帯「今日なおした ○問」＋今日の輪（なおした / 今日の分）＋7日の扉グラフ＋連続日数
+//   ② 主ボタン「復習を始める」（今日の分があるとき）／ないときは次の予定と「演習する」
+//   ③ 大きな2つの切り替え：［復習ノート］［学習記録］。復習ノートの中に 今日・苦手・習得・ノート の小タブ
+//   ④ 習得済みは「金のメダルの棚」に並べる（集めたものが見えると嬉しい）
+//   ⑤ 学習記録は直近3日の時系列（StudyRecord をそのまま中に置く。見出しの重複は消す）
+
+/** 今日の輪：なおした数 / （なおした数 + まだの数） */
+function TodayRing({ done, left }: { done: number; left: number }) {
+  const total = done + left;
+  const rate = total === 0 ? 0 : done / total;
+  const size = 56, stroke = 7, r = (size - stroke) / 2;
+  const complete = left === 0 && done > 0;
+  return (
+    <div className="rr-ring" data-complete={complete || undefined} aria-hidden="true">
+      <svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`}>
+        <defs><linearGradient id="rr-ring-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffc94a" /><stop offset="1" stopColor="#2fa86b" /></linearGradient></defs>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--rr-ring-bg)" strokeWidth={stroke} />
+        <circle className="rr-ring-fg" cx={size / 2} cy={size / 2} r={r} fill="none" stroke="url(#rr-ring-grad)" strokeWidth={stroke} strokeLinecap="round"
+          pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - rate} transform={`rotate(-90 ${size / 2} ${size / 2})`} />
+      </svg>
+      <span className="rr-ring-label">{complete ? <Check size={22} strokeWidth={3.4} /> : <><b>{done}</b><small>/{total}</small></>}</span>
+    </div>
+  );
+}
+
+/** 7日の扉グラフ（小さく）：その日なおした数だけ扉が高くなる。今日は金。数字は今日と最大の日だけ */
+function WeekDoors({ week }: { week: ReviewDay[] }) {
+  const max = Math.max(3, ...week.map(d => d.count));
+  return (
+    <ol className="rr-week" aria-label={`この7日でなおした数：${week.map(d => `${d.label}${d.count}問`).join('、')}`}>
+      {week.map((d, i) => (
+        <li key={d.date} data-today={d.isToday || undefined} data-zero={d.count === 0 || undefined} title={`${d.label} ${d.count}問`}
+          style={{ ['--h' as string]: `${Math.max(14, Math.round(d.count / max * 100))}%`, ['--i' as string]: i } as React.CSSProperties}>
+          <i />
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** 一覧だけスクロールする枠。上に影（スクロール済み）・下にうすいフェード（続きあり）を出して、どこまで見たか分かるように */
+function ScrollArea({ children }: { children: React.ReactNode; key?: React.Key }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [edge, setEdge] = useState<{ top: boolean; more: boolean }>({ top: false, more: false });
+  const measure = () => {
+    const el = ref.current;
+    if (!el) return;
+    const top = el.scrollTop > 2;
+    const more = el.scrollTop + el.clientHeight < el.scrollHeight - 2;
+    setEdge(prev => (prev.top === top && prev.more === more ? prev : { top, more }));
+  };
+  useEffect(() => {
+    measure();
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    if (el.firstElementChild) ro.observe(el.firstElementChild);
+    return () => ro.disconnect();
+  });
+  return (
+    <div ref={ref} className="rr-scroll" data-rr-scroll data-scrolled={edge.top || undefined} data-more={edge.more || undefined} onScroll={measure}>
+      <div className="rr-scroll-inner">{children}</div>
+    </div>
+  );
+}
+
+/** 習得済みの棚：1問＝金のメダル1枚 */
+function MasteredShelf({ items, onRemove }: { items: ReviewItem[]; onRemove: (key: string) => void }) {
+  if (items.length === 0) return <EmptyState icon={<Medal size={28} aria-hidden="true" />} title="まだメダルはありません" desc="間違えた問題を、日をあけて何回かなおすとメダルになります。" />;
+  return (
+    <ul className="rr-shelf" aria-label={`習得済み ${items.length}問`}>
+      {items.map((it, i) => (
+        <li key={it.key} style={{ ['--i' as string]: Math.min(i, 12) } as React.CSSProperties}>
+          <span className="rr-medal" aria-hidden="true"><Medal size={22} /></span>
+          <span className="rr-shelf-text"><strong>{formatScope(it)}</strong><small>{summarizeQuestion(it.questionText, 28) || '（問題文なし）'}・{it.correctCount}回なおした</small></span>
+          <button type="button" className="rr-shelf-remove" onClick={() => onRemove(it.key)} aria-label={`${formatScope(it)}を一覧から外す`}><Trash2 size={16} aria-hidden="true" /></button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// ============================================================
 // メイン
 // ============================================================
 
-export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, view, onViewChange }: StudyHubProps) {
+type Section = 'review' | 'record';
+type ReviewTab = 'today' | 'all' | 'mastered' | 'notes';
+
+export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, onRetry, view, onViewChange }: StudyHubProps) {
   const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
 
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(() => getAllReviewItems(uid));
   const [notes, setNotes] = useState<StudyNote[]>([]);
-  const [tab, setTab] = useState<Tab>(view?.tab ?? 'today');
   const [now, setNow] = useState(() => Date.now());
+  const [doneLog, setDoneLog] = useState<ReviewDone[]>(() => loadReviewDone(uid));
+  // 旧タブID（'important' など）は App 側に覚えられている場合があるので、ここで新しい形に読み替える
+  const initial = view?.tab ?? 'today';
+  const [section, setSection] = useState<Section>(initial === 'record' ? 'record' : 'review');
+  const [tab, setTab] = useState<ReviewTab>(initial === 'all' ? 'all' : initial === 'mastered' ? 'mastered' : initial === 'notes' || initial === 'important' ? 'notes' : 'today');
+  /** 「できた」を押した直後だけ出す小さなお祝い（+1） */
+  const [cheer, setCheer] = useState(0);
 
   const loadNotes = () => {
     try {
-      const raw = localStorage.getItem(`notes_${uid || 'guest'}`);
+      const raw = requireLocalStorage().getItem(`notes_${uid || 'guest'}`);
       const list = raw ? JSON.parse(raw) : [];
       if (!Array.isArray(list)) return [];
-      // 重要 → 新しい順
       (list as StudyNote[]).sort((a, b) => {
         if (!!a.isImportant !== !!b.isImportant) return (b.isImportant ? 1 : 0) - (a.isImportant ? 1 : 0);
         return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
@@ -325,19 +434,18 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, 
   };
 
   const refresh = () => {
-    setNow(Date.now());
+    const t = Date.now();
+    setNow(t);
     setReviewItems(getAllReviewItems(uid));
     setNotes(loadNotes());
+    setDoneLog(loadReviewDone(uid, t));
   };
 
-  useMountEffect(() => {
-    refresh();
-  });
+  useMountEffect(() => { refresh(); });
 
-  // 科目の一覧は「実際に復習アイテムがある科目」だけから作る（空の科目タブを出さない）。
   const subjectSummaries = useMemo(() => summarizeBySubject(reviewItems, now), [reviewItems, now]);
   const [subjectTab, setSubjectTab] = useState<SubjectTabId>(view?.subjectTab ?? ALL_SUBJECTS);
-  useEffect(() => { onViewChange?.({ tab, subjectTab }); }, [tab, subjectTab, onViewChange]);
+  useEffect(() => { onViewChange?.({ tab: section === 'record' ? 'record' : tab, subjectTab }); }, [section, tab, subjectTab, onViewChange]);
   useEffect(() => {
     if (subjectTab === ALL_SUBJECTS) return;
     if (!subjectSummaries.some((s) => s.subject === subjectTab)) setSubjectTab(ALL_SUBJECTS);
@@ -345,123 +453,136 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, 
 
   const scopedItems = useMemo(() => filterBySubjectTab(reviewItems, subjectTab), [reviewItems, subjectTab]);
   const scopedDueItems = useMemo(
-    () => scopedItems.filter((it) => it.dueAt <= now).sort((a, b) => a.dueAt - b.dueAt || b.wrongCount - a.wrongCount),
+    () => scopedItems.filter((it) => it.dueAt <= now && !isMastered(it)).sort((a, b) => a.dueAt - b.dueAt || b.wrongCount - a.wrongCount),
     [scopedItems, now]
   );
-  /** 「苦手リスト」は期限の近い順 → 習得済みは最後 */
-  const sortedScopedItems = useMemo(
-    () => [...scopedItems].sort((a, b) => Number(isMastered(a)) - Number(isMastered(b)) || a.dueAt - b.dueAt),
-    [scopedItems]
-  );
+  /** 苦手：まだ習得していないもの（期限の近い順） */
+  const weakItems = useMemo(() => scopedItems.filter(it => !isMastered(it)).sort((a, b) => a.dueAt - b.dueAt), [scopedItems]);
+  const masteredItems = useMemo(() => scopedItems.filter(isMastered).sort((a, b) => b.updatedAt - a.updatedAt), [scopedItems]);
   const scopedSubjectLabel = subjectTab === ALL_SUBJECTS ? undefined : REVIEW_SUBJECT_LABELS[subjectTab];
 
-  const dueItems = useMemo(() => getDueReviewItems(uid, now), [reviewItems, now, uid]);
+  const dueItems = useMemo(() => getDueReviewItems(uid, now).filter(it => !isMastered(it)), [reviewItems, now, uid]);
   const masteredCount = useMemo(() => reviewItems.filter(isMastered).length, [reviewItems]);
-  const weakCount = useMemo(() => dueItems.filter(it => it.wrongCount >= 2).length, [dueItems]);
-  const importantNotes = useMemo(() => notes.filter((n) => n.isImportant), [notes]);
-  const masteredPercent = reviewItems.length > 0 ? Math.round(masteredCount / reviewItems.length * 100) : 0;
+  const summary = useMemo(() => summarizeReviewDone(doneLog, now), [doneLog, now]);
   const nextUpcoming = useMemo(() => reviewItems.filter(it => it.dueAt > now && !isMastered(it)).sort((a, b) => a.dueAt - b.dueAt)[0], [reviewItems, now]);
 
-  const { handleCorrect, handleWrong, handleRemove } = createReviewActions(uid, refresh);
+  const actions = createReviewActions(uid, refresh);
+  const handleCorrect = (key: string) => { actions.handleCorrect(key); setCheer(n => n + 1); };
+  const { handleWrong, handleRemove } = actions;
 
-  // 旧タブIDはそのまま（App 側が view を覚えているため）。'all' は「苦手リスト（全件）」として出す。
-  const tabs: { id: Tab; label: string; count: number }[] = [
+  const reviewTabs: { id: ReviewTab; label: string; count: number }[] = [
     { id: 'today', label: '今日', count: scopedDueItems.length },
-    { id: 'all', label: '苦手リスト', count: scopedItems.length },
+    { id: 'all', label: '苦手', count: weakItems.length },
+    { id: 'mastered', label: '習得', count: masteredItems.length },
     { id: 'notes', label: 'ノート', count: notes.length },
-    { id: 'important', label: '重要', count: importantNotes.length },
   ];
-  const showSubjectFilter = (tab === 'today' || tab === 'all') && subjectSummaries.length > 1;
+  const showSubjectFilter = section === 'review' && tab !== 'notes' && subjectSummaries.length > 1;
   const first = scopedDueItems[0];
+  const allDone = dueItems.length === 0 && summary.today > 0;
+  const startReview = () => {
+    if (!first || !onReview) return;
+    const g = groupReviewItems(scopedDueItems).find(x => x.key === `${first.chapterId}::${first.questionId}`);
+    onReview({ ...first, subQuestionIds: g?.subQuestionIds ?? [first.subQuestionId] });
+  };
 
   return (
-    <div className="review-note" data-review-note>
+    <div className="review-note rr-page" data-review-note data-section={section}>
       <div className="rn-wrap">
-        {/* ヘッダー：1行。説明文は置かない（画面を見れば分かる） */}
         <header className="rn-header">
           <button type="button" onClick={onBack} aria-label="ホームに戻る" className="rn-back"><ArrowLeft size={20} aria-hidden="true" /></button>
-          <h1><KineticText text="復習ノート" /></h1>
-          <span className="rn-header-stat" aria-label={`習得済み ${masteredCount}問`}><CheckCircle2 size={16} aria-hidden="true" />習得 {masteredCount}</span>
+          <h1><KineticText text="復習・記録" /></h1>
+          <button type="button" className="rn-header-stat rr-medal-pill" onClick={() => { setSection('review'); setTab('mastered'); }} aria-label={`メダル（習得済み） ${masteredCount}問を見る`}><Medal size={16} aria-hidden="true" /><b>{masteredCount}</b></button>
         </header>
 
-        {/* 今日の復習：数字1つ＋主ボタン1つ */}
-        <section className="rn-hero" aria-labelledby="rn-hero-title" data-empty={dueItems.length === 0 || undefined}>
-          <div className="rn-hero-count">
-            <p id="rn-hero-title">今日の復習</p>
-            <strong>{dueItems.length}<small>問</small></strong>
+        {/* ① 達成の帯 */}
+        <section className="rr-hero" aria-label="今日の復習の達成" data-all-done={allDone || undefined}>
+          <TodayRing done={summary.today} left={dueItems.length} />
+          <div className="rr-hero-main">
+            <p className="rr-hero-big"><span>今日なおした</span><b key={summary.today} className="rr-pop">{summary.today}</b><span>問</span>
+              {cheer > 0 && <i key={cheer} className="rr-plus" aria-hidden="true">+1</i>}</p>
+            <p className="rr-hero-sub">
+              <span className="rr-hero-left">{allDone ? '今日は完了！' : dueItems.length > 0 ? `あと${dueItems.length}問` : '今日の分なし'}</span>
+              <span className="rr-streak" aria-label={`${summary.streak}日連続`}><Flame size={14} aria-hidden="true" />{summary.streak}<small>日</small></span>
+            </p>
           </div>
-          <div className="rn-hero-side">
-            {dueItems.length > 0 ? (
-              <p>{weakCount > 0 ? <><Flame size={14} aria-hidden="true" />2回以上ミスした問題 {weakCount}問</> : '忘れかけたころが、いちばん覚えられるタイミング。'}</p>
-            ) : (
-              <p>{nextUpcoming ? `次の復習は${formatDue(nextUpcoming.dueAt, now)}。` : reviewItems.length === 0 ? '間違えた問題が、ここに自動で集まります。' : '今日の分は完了。'}</p>
-            )}
-            <div className="rn-hero-meter">
-              <span className="mt-meter" data-status="done" role="progressbar" aria-label="習得済みの割合" aria-valuemin={0} aria-valuemax={100} aria-valuenow={masteredPercent}><i style={{ width: `${masteredPercent}%` }} /></span>
-              <small>習得 {masteredCount} / {reviewItems.length}</small>
-            </div>
-          </div>
+          <div className="rr-hero-week"><WeekDoors week={summary.week} /><small>今週 {summary.weekTotal}問</small></div>
           {first && onReview ? (
-            <button type="button" className="mt-btn mt-btn-accent rn-hero-cta" onClick={() => { const g = groupReviewItems(scopedDueItems).find(x => x.key === `${first.chapterId}::${first.questionId}`); onReview({ ...first, subQuestionIds: g?.subQuestionIds ?? [first.subQuestionId] }); }}>
+            <button type="button" className="mt-btn mt-btn-accent rr-cta" onClick={startReview}>
               <RotateCcw size={18} aria-hidden="true" />
               <span><strong>復習を始める</strong><small>1問目：{formatScope(first)}</small></span>
             </button>
-          ) : onPractice ? (
-            <button type="button" className="mt-btn mt-btn-secondary rn-hero-cta" onClick={onPractice}>
-              <PenLine size={18} aria-hidden="true" /><span><strong>演習で新しく解く</strong></span>
-            </button>
-          ) : null}
+          ) : (
+            <div className="rr-hero-next">
+              <p>{nextUpcoming ? `次の復習は${formatDue(nextUpcoming.dueAt, now)}` : '新しく解いて、苦手を集めよう'}</p>
+              {onPractice && <button type="button" className="mt-btn mt-btn-secondary" onClick={onPractice}><PenLine size={16} aria-hidden="true" />演習する</button>}
+            </div>
+          )}
         </section>
 
-        {/* 表示切替：1本のセグメント（横スクロールしない） */}
-        <div className="mt-segment rn-tabs" role="tablist" aria-label="復習ノートの表示切替">
-          {tabs.map(t => (
-            <button key={t.id} type="button" role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}>
-              {t.label}<span className="rn-tab-count">{t.count}</span>
-            </button>
-          ))}
+        {/* ② 大きな2つの切り替え */}
+        <div className="rr-switch" role="tablist" aria-label="復習と記録の切り替え" data-active={section}>
+          <button type="button" role="tab" aria-selected={section === 'review'} onClick={() => setSection('review')} data-rr-section="review">
+            <RotateCcw size={18} aria-hidden="true" />復習ノート{dueItems.length > 0 && <span>{dueItems.length}</span>}
+          </button>
+          <button type="button" role="tab" aria-selected={section === 'record'} onClick={() => setSection('record')} data-rr-section="record" data-rn-record>
+            <CalendarDays size={18} aria-hidden="true" />学習記録<small>3日分</small>
+          </button>
         </div>
 
-        {showSubjectFilter && (
-          <div className="rn-subjects" role="group" aria-label="科目で絞り込む">
-            {[{ id: ALL_SUBJECTS as SubjectTabId, label: 'すべて', total: reviewItems.length }, ...subjectSummaries.map(s => ({ id: s.subject as SubjectTabId, label: s.shortLabel, total: s.total }))].map(t => (
-              <button key={t.id} type="button" aria-pressed={subjectTab === t.id} onClick={() => setSubjectTab(t.id)}>{t.label}<span>{t.total}</span></button>
+        {section === 'review' && <>
+          <div className="mt-segment rn-tabs rr-tabs" role="tablist" aria-label="復習ノートの表示切替">
+            {reviewTabs.map(t => (
+              <button key={t.id} type="button" role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)} data-rr-tab={t.id}>
+                {t.id === 'mastered' && <Medal size={14} aria-hidden="true" />}{t.label}<span className="rn-tab-count">{t.count}</span>
+              </button>
             ))}
           </div>
-        )}
 
-        <div className="rn-panel" role="tabpanel">
-          {tab === 'today' && (scopedDueItems.length === 0
-            ? <EmptyState icon={<CheckCircle2 size={28} aria-hidden="true" />} title={scopedSubjectLabel ? `${scopedSubjectLabel}の今日の復習は完了` : '今日の復習は完了'} desc="問題を解いて間違えると、ここに自動で追加されます。" action={onPractice && (first && onReview) ? { label: '演習する', onClick: onPractice } : undefined} />
-            : <CollapsibleReviewList items={scopedDueItems} now={now} onCorrect={handleCorrect} onWrong={handleWrong} onRemove={handleRemove} onReview={onReview} showSubject={subjectTab === ALL_SUBJECTS} />)}
+          {showSubjectFilter && (
+            <div className="rn-subjects" role="group" aria-label="科目で絞り込む">
+              {[{ id: ALL_SUBJECTS as SubjectTabId, label: 'すべて', total: reviewItems.length }, ...subjectSummaries.map(s => ({ id: s.subject as SubjectTabId, label: s.shortLabel, total: s.total }))].map(t => (
+                <button key={t.id} type="button" aria-pressed={subjectTab === t.id} onClick={() => setSubjectTab(t.id)}>{t.label}<span>{t.total}</span></button>
+              ))}
+            </div>
+          )}
 
-          {tab === 'all' && (sortedScopedItems.length === 0
-            ? <EmptyState icon={<Sparkles size={28} aria-hidden="true" />} title="苦手はまだありません" desc="間違えた問題は、忘却曲線にそって自動で並びます。" action={onPractice && (first && onReview) ? { label: '演習する', onClick: onPractice } : undefined} />
-            : <CollapsibleReviewList items={sortedScopedItems} now={now} onCorrect={handleCorrect} onWrong={handleWrong} onRemove={handleRemove} onReview={onReview} showSubject={subjectTab === ALL_SUBJECTS} />)}
+          {/* タブを変えたら一覧は先頭から（key で作り直す）。スクロールするのはここだけ */}
+          <ScrollArea key={`${tab}-${subjectTab}`}>
+          <div className="rn-panel" role="tabpanel">
+            {tab === 'today' && (scopedDueItems.length === 0
+              ? <EmptyState icon={<CheckCircle2 size={28} aria-hidden="true" />} tone="done" title={scopedSubjectLabel ? `${scopedSubjectLabel}の今日の復習は完了` : '今日の復習は完了'} desc={summary.today > 0 ? `今日は${summary.today}問なおしました。よくがんばったね。` : '問題を解いて間違えると、ここに自動で追加されます。'} />
+              : <CollapsibleReviewList items={scopedDueItems} now={now} onCorrect={handleCorrect} onWrong={handleWrong} onRemove={handleRemove} onReview={onReview} showSubject={subjectTab === ALL_SUBJECTS} />)}
 
-          {tab === 'notes' && (notes.length === 0
-            ? <EmptyState icon={<BookOpen size={28} aria-hidden="true" />} title="ノートはまだありません" desc="解説ページの「ノートに保存」から、まとめを追加できます。" />
-            : <ul className="rn-list">{notes.map(n => <NoteCard key={n.id} note={n} onSelect={onSelectNote} />)}</ul>)}
+            {tab === 'all' && (weakItems.length === 0
+              ? <EmptyState icon={<Sparkles size={28} aria-hidden="true" />} tone="done" title="苦手はありません" desc="間違えた問題は、忘却曲線にそって自動で並びます。" />
+              : <CollapsibleReviewList items={weakItems} now={now} onCorrect={handleCorrect} onWrong={handleWrong} onRemove={handleRemove} onReview={onReview} showSubject={subjectTab === ALL_SUBJECTS} />)}
 
-          {tab === 'important' && (importantNotes.length === 0
-            ? <EmptyState icon={<Star size={28} aria-hidden="true" />} title="重要マークのノートはありません" desc="ノート詳細で「重要」をつけると、ここに集まります。" />
-            : <ul className="rn-list">{importantNotes.map(n => <NoteCard key={n.id} note={n} onSelect={onSelectNote} />)}</ul>)}
-        </div>
+            {tab === 'mastered' && <MasteredShelf items={masteredItems} onRemove={handleRemove} />}
 
-        {(tab === 'today' || tab === 'all') && scopedItems.length > 0 && (
-          <details className="rn-chart">
-            <summary><TrendingUp size={16} aria-hidden="true" />定着のグラフを見る<ChevronDown size={16} aria-hidden="true" /></summary>
-            <ForgettingCurveChart items={scopedItems} now={now} subjectLabel={scopedSubjectLabel} />
-          </details>
-        )}
+            {tab === 'notes' && (notes.length === 0
+              ? <EmptyState icon={<BookOpen size={28} aria-hidden="true" />} title="ノートはまだありません" desc="解説ページの「ノートに保存」から、まとめを追加できます。重要マークのノートは上に並びます。" />
+              : <ul className="rn-list">{notes.map(n => <NoteCard key={n.id} note={n} onSelect={onSelectNote} />)}</ul>)}
+          </div>
+
+          {(tab === 'today' || tab === 'all') && scopedItems.length > 0 && (
+            <details className="rn-chart">
+              <summary><TrendingUp size={16} aria-hidden="true" />定着のグラフを見る<ChevronDown size={16} aria-hidden="true" /></summary>
+              <ForgettingCurveChart items={scopedItems} now={now} subjectLabel={scopedSubjectLabel} />
+            </details>
+          )}
+          </ScrollArea>
+        </>}
+
+        {/* 学習記録（直近3日）。見出しは上の切り替えが兼ねるので StudyRecord 側の見出しは出さない */}
+        {section === 'record' && <ScrollArea key="record"><StudyRecord embedded onRetry={onRetry} /></ScrollArea>}
       </div>
     </div>
   );
 }
 
-function EmptyState({ icon, title, desc, action }: { icon: React.ReactNode; title: string; desc: string; action?: { label: string; onClick: () => void } }) {
+function EmptyState({ icon, title, desc, action, tone }: { icon: React.ReactNode; title: string; desc: string; action?: { label: string; onClick: () => void }; tone?: 'done' }) {
   return (
-    <div className="rn-empty">
+    <div className="rn-empty" data-tone={tone}>
       <span className="rn-empty-icon">{icon}</span>
       <p className="rn-empty-title">{title}</p>
       <p className="rn-empty-desc">{desc}</p>

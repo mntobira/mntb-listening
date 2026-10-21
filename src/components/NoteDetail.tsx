@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Save, Trash2, Star, RotateCw, Tag, PenLine } from 'lucide-react';
 import { formatText } from '../utils/textFormatter';
 import { auth } from '../firebase';
-import { readJsonArray } from '../utils/safeLocalStorage';
+import { readJsonArray, setItemOrThrow } from '../utils/safeLocalStorage';
 import { notify, confirmAction } from '../utils/dialog';
 import type { StudyNote } from '../types/studyNote';
 
@@ -37,7 +37,7 @@ export function NoteDetail({ note, onBack, onReview }: NoteDetailProps) {
       const key = notesKey;
       const localNotes = readJsonArray<StudyNote>(key);
       const updatedNotes = localNotes.map((n) => (n.id === note.id ? { ...n, ...patch } : n));
-      localStorage.setItem(key, JSON.stringify(updatedNotes));
+      setItemOrThrow(key, JSON.stringify(updatedNotes));
       // 一覧へ戻ったときに古い値が見えないよう、渡されたノート自体も更新する。
       Object.assign(note, patch);
       return true;
@@ -71,7 +71,7 @@ export function NoteDetail({ note, onBack, onReview }: NoteDetailProps) {
     try {
       const localNotes = readJsonArray<StudyNote>(notesKey);
       const updatedNotes = localNotes.filter((n) => n.id !== note.id);
-      localStorage.setItem(notesKey, JSON.stringify(updatedNotes));
+      setItemOrThrow(notesKey, JSON.stringify(updatedNotes));
       onBack();
     } catch (error) {
       console.error('削除エラー:', error);

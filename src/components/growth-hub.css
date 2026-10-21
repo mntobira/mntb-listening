@@ -8,10 +8,15 @@
 /* ヘッダー：ホームへ戻る（共通の丸いピル） */
 .mana-hub-header button { border: var(--mt-border); border-radius: var(--mt-r-pill) !important; background: var(--mt-bg-card); box-shadow: var(--mt-shadow-press); color: var(--mt-ink); font: 700 14px/1 var(--mt-font-body) !important; padding: 0 14px 0 10px !important; }
 .growth-shared-label { font: var(--mt-text-xs); color: var(--mt-ink-muted); }
-/* ガチャ／マイページの切替＝共通タブ */
-.growth-shared-switch { border: 0 !important; border-radius: var(--mt-radius-lg) !important; background: var(--mt-bg-sunken) !important; box-shadow: inset 0 0 0 1px var(--mt-line); }
-.growth-shared-switch button { border-radius: calc(var(--mt-radius-lg) - 4px) !important; color: var(--mt-ink-2) !important; font: 700 14px/1 var(--mt-font-body) !important; }
-.growth-shared-switch button[aria-current=page] { background: var(--mt-bg-card) !important; color: var(--mt-ink-warm) !important; font-weight: 800 !important; box-shadow: 0 2px 0 #e6dccb, 0 1px 4px rgba(80, 60, 30, .08) !important; }
+/* ガチャ欄専用の切替（マイページのタブとは別UI） */
+.gacha-page-switch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: calc(100% - 24px); max-width: 680px; margin: 4px auto 8px; padding: 4px; border: 1px solid var(--mt-line) !important; border-radius: var(--mt-radius-lg) !important; background: var(--mt-bg-sunken) !important; box-shadow: inset 0 0 0 1px rgba(255,255,255,.55); }
+.gacha-page-switch button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; width: 100%; padding: 8px 12px; border: 1px solid transparent !important; border-radius: calc(var(--mt-radius-lg) - 4px) !important; background: transparent !important; color: var(--mt-ink-2) !important; font: 800 15px/1.2 var(--mt-font-body) !important; cursor: pointer; transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+.gacha-page-switch button[aria-current=page] { background: var(--mt-bg-card) !important; color: var(--mt-ink-warm) !important; font-weight: 800 !important; box-shadow: 0 2px 0 #e6dccb, 0 1px 4px rgba(80, 60, 30, .08) !important; }
+.gacha-page-switch button:active { transform: translateY(1px); }
+/* ガチャ画面の親レイアウトに旧マイページUIが残っても、階層に関係なく表示しない */
+.mana-hub-gacha[data-gacha-page] .mana-hub-header,
+.mana-hub-gacha[data-gacha-page] .mypage-tabs,
+.mana-hub-gacha[data-gacha-page] .mypage-entries { display: none !important; }
 
 /* マイページ本体 */
 .mana-hub-main .mana-eyebrow { font: var(--mt-text-kicker); letter-spacing: var(--mt-kicker-spacing); color: var(--mt-ink-muted); }
@@ -30,11 +35,11 @@
 .mana-rush-banner { border-radius: var(--mt-radius-lg) !important; box-shadow: 0 3px 0 #d39a1a; }
 .mana-rush-banner strong { font: 800 18px/1.2 var(--mt-font-display) !important; }
 .mana-rush-banner small { font: 700 12px/1.3 var(--mt-font-body) !important; }
-/* ショップ・きせかえ・称号・ミッション・記録 のタブ＝共通タブ */
+/* きせかえ・称号・ミッション・記録のタブ＝共通タブ */
 .mana-hub-tabs { background: var(--mt-bg-sunken); border-radius: var(--mt-radius-lg); padding: 4px !important; gap: 3px !important; box-shadow: inset 0 0 0 1px var(--mt-line); width: calc(100% - 24px); }
 .mana-hub-tabs button { border: 0 !important; border-radius: calc(var(--mt-radius-lg) - 4px) !important; background: transparent !important; color: var(--mt-ink-2) !important; font: 700 12px/1.1 var(--mt-font-body) !important; min-height: 52px; }
 .mana-hub-tabs button[aria-current=page] { background: var(--mt-bg-card) !important; color: var(--mt-ink-warm) !important; font-weight: 800 !important; box-shadow: 0 2px 0 #e6dccb !important; }
-/* マイページ内の見出し（ショップ・ミッション）も丸ゴシック */
+/* マイページ内の見出し（ミッションなど）も丸ゴシック */
 .mana-hub h1.font-handwriting, .mana-hub .font-handwriting { font-family: var(--mt-font-display) !important; }
 /* マイページの「とびら君」カード（GrowthHomeStrip）：共通カード＋12px以上 */
 .mana-hub .mana-dashboard { border: 1.5px solid #e3c77f; border-radius: var(--mt-radius-xl) !important; box-shadow: 0 3px 0 #d7b865, 0 6px 14px rgba(120, 90, 20, .08); }
@@ -243,3 +248,43 @@
 @media (min-width: 1024px) {
   .missions-shell .missions-toast { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 5; margin: 0 !important; min-width: 360px; }
 }
+
+/* ★マイページの入口（2026-10-19）★ きせかえ・称号。ショップはガチャ欄に独立 */
+.mypage-entries { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 2px 4px 12px 0; }
+.mypage-entries button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 92px; padding: 10px 4px; border: 1.5px solid #e2d3b6; border-radius: 18px; color: #1f3354; box-shadow: 0 4px 0 #d9c8a3; transition: transform .14s cubic-bezier(.3,1.6,.5,1), box-shadow .14s; }
+.mypage-entries button:active { transform: translateY(4px); box-shadow: 0 0 0 #d9c8a3; }
+.mypage-entries button strong { font: 900 16px/1.2 var(--mt-font-display); white-space: nowrap; }
+.mypage-entries button > svg:last-child { display: none; }
+.mypage-entries [data-mypage-entry=outfit] { background: #ffc6da; }
+.mypage-entries [data-mypage-entry=badges] { background: #fff1b8; }
+@media (prefers-reduced-motion: reduce) { .mypage-entries button { transition: none; } .mypage-entries button:active { transform: none; } }
+
+/* ★ショップの背景（2026-10-19 ご要望「質素すぎる」）★ 屋台の日よけ（ストライプ）と、方眼の床。
+   商品カードは縁取り＋ずらし影でホームと同じ「押せる」質感に。中身・並び・操作は変えない */
+.my-collection[data-my-collection=shop] { position: relative; isolation: isolate; border-radius: 22px 22px 0 0; padding-top: 34px;
+  background:
+    linear-gradient(#e9dfcc66 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(90deg, #e9dfcc66 1px, transparent 1px) 0 0 / 20px 20px,
+    radial-gradient(ellipse at 50% 0%, #fff4cf 0%, transparent 60%),
+    #fdf8ee; }
+.my-collection[data-my-collection=shop]::before { content: ''; position: absolute; z-index: -1; left: 0; right: 0; top: 0; height: 26px;
+  background: repeating-linear-gradient(90deg, #ff9db8 0 26px, #fffaf0 26px 52px);
+  border-bottom: 1.5px solid #e2b7c6;
+  -webkit-mask: radial-gradient(13px at 13px 100%, #0000 98%, #000) 0 0 / 26px 100%; mask: radial-gradient(13px at 13px 100%, #0000 98%, #000) 0 0 / 26px 100%; }
+.my-collection[data-my-collection=shop]::after { content: ''; position: absolute; z-index: -1; right: 14px; top: 40px; width: 64px; height: 64px; border-radius: 50%; background: #ffd257; opacity: .35; }
+.my-collection[data-my-collection=shop] > header h2 { font-family: var(--mt-font-display); }
+.my-collection[data-my-collection=shop] > header b { padding: 4px 12px; border: 1.5px solid #e2d3b6; border-radius: 999px; background: #ffd257; box-shadow: 0 2px 0 #d9c8a3; }
+.my-collection[data-my-collection=shop] .collection-grid > li { border: 1.5px solid #e2d3b6 !important; box-shadow: 0 3px 0 #d9c8a3 !important; background: #fff !important; }
+.my-collection[data-my-collection=shop] .store-guide { border: 1.5px dashed #d9c8a3; background: #fffaf0cc; }
+
+/* 2026-10-19 見直し：黒い縁取り・斜めの影はやめ、ホームと同じ「各色の濃い色で真下に影」 */
+.mypage-entries [data-mypage-entry=outfit] { border-color: #ecb7cb; box-shadow: 0 4px 0 #c98aa6; }
+.mypage-entries [data-mypage-entry=badges] { border-color: #ead48a; box-shadow: 0 4px 0 #c9a640; }
+.my-collection[data-my-collection=shop]::before { background: repeating-linear-gradient(90deg, #f7b9c9 0 26px, #fffaf0 26px 52px); opacity: .9; }
+.my-collection[data-my-collection=shop] .collection-grid > li { border-color: #e6d7b8 !important; box-shadow: 0 3px 0 #e6d7b8 !important; }
+/* ショップ上の「ショップとガチャの違い」は1行に */
+.store-guide.is-compact { display: flex !important; align-items: center; gap: 10px; padding: 8px 10px !important; }
+.store-guide.is-compact p { flex: 1; margin: 0; font-size: 13px; line-height: 1.45; color: #3c4f6b; }
+.store-guide.is-compact p b { color: #1f3354; }
+.store-guide.is-compact p strong { color: #b8641a; }
+.store-guide.is-compact button { flex-shrink: 0; width: auto !important; min-height: 44px; padding: 0 14px !important; margin: 0 !important; white-space: nowrap; }

@@ -305,3 +305,51 @@ export function stripListeningDifficulty(text: string): string {
     .replace(/[ \t]+$/gmu, '')
     .trim();
 }
+
+/**
+ * 説明ページ（ListeningBriefing）に出す内容を、読みやすい形に分けて取り出す。
+ *
+ * ■ なぜ（2026-10-21 ご指摘）
+ *   「問題文の表示のところがフォント見づらいしスクロール大変やししんどい」
+ *   第4問〜第6問のリード文には「■ 問26 …」以降に Conditions・表・選択肢まで
+ *   そのまま入っていて、説明ページが 900〜1800 文字の縦長になっていた。
+ *   選択肢・表・Conditions は解答画面（資料欄と解答欄）に出るので、ここでは
+ *     ・題（第1回　第4問 B（問26・1回読み））
+ *     ・何をする問題か（説明文）
+ *     ・状況（解答画面の「状況・場面を確認」をやめたので、ここで読む）
+ *     ・活動1〜3（第5問）
+ *     ・本番の配点
+ *   だけを出し、1画面に収める。
+ */
+export interface ListeningBriefingParts {
+  title: string;
+  paragraphs: string[];
+  situations: { label?: string; text: string }[];
+  activities: string[];
+  points?: string;
+}
+export function parseListeningBriefing(lead: string): ListeningBriefingParts {
+  const blocks = String(lead || '').split(/\n\s*─{4,}\s*\n/u);
+  const head = (blocks.shift() ?? '').split('\n').map(l => stripListeningDifficulty(l));
+  const out: ListeningBriefingParts = { title: head.shift() ?? '', paragraphs: [], situations: [], activities: [] };
+  const situationOf = (line: string) => line.match(/^状況\s*[:：]\s*(.+)$/u)?.[1];
+  for (const line of head) {
+    if (!line) continue;
+    const points = line.match(/^【\s*本番の配点\s*】\s*(.+)$/u)?.[1];
+    if (points) { out.points = points; continue; }
+    const situation = situationOf(line);
+    if (situation) { out.situations.push({ text: situation }); continue; }
+    if (/^活動\s*\d/u.test(line)) { out.activities.push(line); continue; }
+    if (/^メモ欄\s*[:：]/u.test(line)) continue;
+    out.paragraphs.push(line);
+  }
+  for (const block of blocks) {
+    const lines = block.split('\n').map(l => l.trim());
+    const label = lines[0]?.match(/^■\s*(問\s*[\d〜～・]+)/u)?.[1];
+    for (const line of lines) {
+      const situation = situationOf(line);
+      if (situation) out.situations.push({ label, text: situation });
+    }
+  }
+  return out;
+}

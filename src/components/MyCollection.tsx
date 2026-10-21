@@ -13,7 +13,7 @@ import { openPdf } from '../utils/pdfViewer';
 /** プレゼント（隔週リーグ報酬）でしか手に入らないアイテム */
 const LEAGUE_GIFT_ITEM = 'frame_league_aurora';
 const LEAGUE_LABEL: Record<string, string> = { bronze: 'ブロンズ', silver: 'シルバー', gold: 'ゴールド', platinum: 'プラチナ', manatobi: 'マナトビ' };
-export function MyCollection({ view = 'owned', onGacha, initialKind = 'all' }: { view?: 'owned' | 'prints' | 'shop'; key?: string; onGacha?: () => void; initialKind?: string }) {
+export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gachaMode = false }: { view?: 'owned' | 'prints' | 'shop'; key?: string; onGacha?: () => void; initialKind?: string; gachaMode?: boolean }) {
   const { progress, uid } = useGrowthProgress();
   const [kind, setKind] = useState(initialKind); const [search, setSearch] = useState('');
   const [state, setState] = useState<'owned' | 'available' | 'all'>(view === 'shop' ? 'available' : 'owned');
@@ -32,7 +32,7 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all' }: {
   const list = base.filter(i => (kind === 'all' || i.kind === kind) && (!search || i.label.includes(search)) && (view === 'prints' || state === 'all' || (state === 'owned') === owned.includes(i.id)));
   const pager = useFitPager(list.length, `${view}:${kind}:${search}:${state}`);
   if (!progress) return <p role="alert">所有記録を読み込めません。ブラウザの保存設定を確認してください。</p>;
-  const titles = { owned: 'もっているもの', prints: 'マイPDF', shop: 'ショップ（選んで交換）' };
+  const titles = { owned: 'もっているもの', prints: 'マイPDF', shop: gachaMode ? 'ガチャショップ（選んで交換）' : 'ショップ（選んで交換）' };
   const perform = async (item: ItemDef) => {
     if (busy) return;
     const owned = progress.owned.includes(item.id);

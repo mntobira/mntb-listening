@@ -19,6 +19,7 @@
  *     profile     … 名前・学年・文理
  *     completed   … 修了した章
  *     notes       … 学習ノート（メモ・重要マーク）
+ *     reading     … 英文解釈（内容一致4択）の文章ごとの最高点・間違えた設問（2026-10-21）
  *
  * ■ 合わせ方（3-way マージ）
  *   「前回そろえたときの値（base）」を端末に覚えておき、
@@ -206,6 +207,22 @@ function mergeVocabQuiz(l: Obj | null, r: Obj | null, b?: Obj | null): Obj | nul
   return { version: 1, missed, best: mergeMaxMap(l.best, r.best), mastered };
 }
 
+/** 英文解釈：最高点は文章ごとに高い方（同点なら新しい方）、間違えた設問は集合の 3-way */
+function mergeReading(l: Obj | null, r: Obj | null, b?: Obj | null): Obj | null {
+  if (!l) return r; if (!r) return l;
+  const lb = isObj(l.best) ? l.best : {}; const rb = isObj(r.best) ? r.best : {};
+  const best: Obj = {};
+  for (const k of new Set([...Object.keys(lb), ...Object.keys(rb)])) {
+    if (!SAFE_KEY(k)) continue;
+    const a = lb[k]; const c = rb[k];
+    if (!isObj(a)) { if (isObj(c)) best[k] = c; continue; }
+    if (!isObj(c)) { best[k] = a; continue; }
+    const sa = n0(a.score); const sc = n0(c.score);
+    best[k] = sa !== sc ? (sa > sc ? a : c) : (n0(a.at) >= n0(c.at) ? a : c);
+  }
+  return { version: 1, best, missed: mergeSet(strs(l.missed), strs(r.missed), b ? strs(b.missed) : null) };
+}
+
 function mergeSupport(l: Obj | null, r: Obj | null, b?: Obj | null): Obj | null {
   if (!l) return r; if (!r) return l;
   return { version: 1,
@@ -319,6 +336,8 @@ export const SYNC_SECTIONS: readonly SyncSection[] = [
   jsonSection('completed', uid => `completed_${uid}`,
     (l, r, b) => (l == null ? r : r == null ? l : mergeSet(strs(l), strs(r), b ? strs(b) : null)), Array.isArray),
   jsonSection('notes', uid => `notes_${uid}`, mergeNotes, Array.isArray),
+  jsonSection('reading', uid => 'reading_quiz_v1_' + enc(uid), (l, r, b) => mergeReading(l as Obj | null, r as Obj | null, b as Obj | null),
+    v => isObj(v) && v.version === 1 && isObj(v.best) && Array.isArray(v.missed)),
   {
     // 連続日数は2つのキー（数と日付）に分かれているので、1つにまとめて扱う
     id: 'streak',

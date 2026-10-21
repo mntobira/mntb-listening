@@ -48,7 +48,8 @@ describe('battle range and league revision',()=>{
     expect((await loadPool('english_listening')).every(q=>!!q.audioUrl)).toBe(true);
   });
   it('server aggregation is never imported by the frontend and nav has an independent My Page',()=>{
-    expect(readFileSync('src/components/Leaderboard.tsx','utf8')).not.toContain('clanPower');expect(readFileSync('src/App.tsx','utf8')).toContain("id: 'mypage'");expect(readFileSync('src/components/GrowthHub.tsx','utf8')).not.toContain('ガチャとランキング');expect(readFileSync('src/components/Home.tsx','utf8')).toContain('ランキングを見る');
+    expect(readFileSync('src/components/Leaderboard.tsx','utf8')).not.toContain('clanPower');expect(readFileSync('src/App.tsx','utf8')).toContain("id: 'mypage'");expect(readFileSync('src/components/GrowthHub.tsx','utf8')).not.toContain('ガチャとランキング');// ★2026-10-20★ ランキングの入口は #58 でホームから外し、対戦画面の「ランキング／とびらバトル」切替に移った
+    expect(readFileSync('src/battle/ui/BattleHome.tsx','utf8')).toContain('onRanking');
   });
 });
 

@@ -108,9 +108,11 @@ try {
   await next.click();
   assert.equal(await page.locator('[data-listening-answer-pane] img').count(), 0);
   assert.equal(await page.locator('[data-material-graph] img').count(), 4);
-  assert.ok(await page.locator('[data-material-graph]').first().evaluate(e => {
-    const p = e.closest('[aria-label="資料をスクロール"]'); return p.scrollTop > 0;
-  }));
+  // 2026-10-21：グラフ4枚はスクロールせずに資料欄へ収まる
+  assert.ok(await page.locator('[data-material-figure-tap]').evaluateAll(list => list.every(e => {
+    const r = e.getBoundingClientRect(), p = e.closest('[aria-label="資料をスクロール"]').getBoundingClientRect();
+    return r.top >= p.top - 1 && r.bottom <= p.bottom + 1 && r.width > 100;
+  })));
   await page.setViewportSize({ width: 1280, height: 800 });
   await mount('EL5_PROBLEMS');
   assert.equal(await page.locator('[data-listening-answer-pane]').count(), 0);

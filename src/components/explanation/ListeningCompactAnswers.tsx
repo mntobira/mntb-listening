@@ -22,6 +22,9 @@ import type { AudioTrack, Problem, SubQuestion } from '../../types/curriculum';
  *   ・その下にスクリプトと和訳を直接出す（押さなくても読める）
  *   ・解説／思考手順／押さえたい表現はタップで開く
  *
+ * ★2026-10-21：要点（lx-core）と思考手順（lx-steps）の英語も prose で組む★
+ *   以前は formatText(theme) のままで、英単語が化学式・数式用のセリフ体（Cambria Math）に化けていた。
+ *
  * 開閉の状態（openExplanationBySq）は親が持ったまま。ここでは読むのと、親の setter を呼ぶだけ。
  */
 export function ListeningCompactAnswers({
@@ -123,12 +126,12 @@ export function ListeningCompactAnswers({
                                           </button>
                                           {open && (
                                             <div className={`lx-fold-body ${explBodyBaseClass}`}>
-                                              {theme && <p className="lx-core"><KeyRound size={14} aria-hidden="true" />{formatText(theme)}</p>}
+                                              {theme && <p className="lx-core"><KeyRound size={14} aria-hidden="true" />{formatText(theme, [], { prose: isEnglishChapter })}</p>}
                                               {slice.trim()
                                                 ? <ExplanationBody text={slice} tone="light" prose={isEnglishChapter} className={`${explBodyFontClass} text-gray-700`} />
                                                 : !theme && <p className="text-xs text-gray-500">この問の解説は下の「共通ポイント」にまとめています。</p>}
                                               {steps.length > 0 && isPracticeMode && (
-                                                <ol className="lx-steps">{steps.map((step, i) => <li key={i}><b>{i + 1}</b><span>{formatText(step)}</span></li>)}</ol>
+                                                <ol className="lx-steps">{steps.map((step, i) => <li key={i}><b>{i + 1}</b><span>{formatText(step, [], { prose: isEnglishChapter })}</span></li>)}</ol>
                                               )}
                                             </div>
                                           )}

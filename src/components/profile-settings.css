@@ -124,13 +124,13 @@
 /* 2026-10-11：保存バーはスクロールの外（下）に固定。sticky は使わない */
 .ps-savebar.is-fixed { position: static !important; margin: 0 !important; padding: 0 !important; background: none !important; }
 
-/* ===== 2026-10-16 PC：設定を画面いっぱい・スクロールなしにする =====
+/* ===== 2026-10-16 PC：設定を画面いっぱいに表示する =====
    以前は最大幅 896px の2列で、右列（サウンド・連携・データ）と左列の下が画面の外に出ていた（448px）。
    PC では幅いっぱいの3列にする：プロフィール／アプリ（サウンド）／アカウント連携・データ。
    スマホは従来どおり1列（md の2列も変えない）。 */
 @media (min-width: 1100px) {
   .profile-frame { max-width: 1400px !important; }
-  .profile-workspace { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr) !important; overflow: hidden !important; align-content: start; }
+  .profile-workspace { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr) !important; overflow-x: hidden !important; overflow-y: auto !important; align-content: start; }
 }
 @media (min-width: 768px) and (max-width: 1099.98px) {
   /* 2列のときは、サウンドと連携を右列に縦に積む（従来どおりの並び） */
@@ -154,4 +154,18 @@
   .profile-frame > .mt-app-header { margin-bottom: 8px !important; }
   .profile-frame > .profile-tabs { align-self: center; margin-bottom: 8px !important; }
   .profile-frame > main { grid-column: 1 / -1; }
+}
+
+/* 2026-10-21 設定の見出しを中央へ（マイページと同じ 23px・900）。とびら君は右に固定。
+   戻す: このブロックを削除し、ProfileModal の MY ACCOUNT を戻す */
+.profile-journal .mt-app-header { position: relative; justify-content: center; }
+.profile-journal .mt-app-header > .mt-app-header-title { flex: 0 1 auto; text-align: center; padding-inline: 56px; }
+.profile-journal .mt-app-header-title > h2 { margin: 0; font: 900 23px/1.2 var(--mt-font-display) !important; color: #1c2a39 !important; }
+.profile-journal .mt-app-header > .door-mascot-slot { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+@media (min-width: 1024px) { .profile-journal .mt-app-header-title > h2 { font-size: 28px !important; letter-spacing: .04em; } }
+@media (min-width: 1100px) {
+  /* 見出しは1行目で中央（マイページと同じ）、タブは2行目いっぱい（2026-10-21） */
+  .profile-frame { grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto auto minmax(0, 1fr) !important; }
+  .profile-frame > .mt-app-header { grid-column: 1 / -1; margin-bottom: 4px !important; }
+  .profile-frame > .profile-tabs { grid-column: 1 / -1; }
 }

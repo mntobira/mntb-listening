@@ -4,7 +4,7 @@
  * 単語帳（FoundationWords）と設定（ProfileModal）の両方から読み書きするので、
  * 重いデータを読み込まない小さなモジュールに分けた。保存先は以前と同じ localStorage のキー。
  */
-import { safeLocalStorage } from './safeLocalStorage';
+import { safeLocalStorage, safeParseJson } from './safeLocalStorage';
 
 export const VOCAB_PREF_KEY = 'foundation_prefs_v1';
 
@@ -19,8 +19,8 @@ export type GoalId = typeof GOAL_OPTIONS[number]['id'];
 
 function readRaw(): Record<string, unknown> {
   try {
-    const v = JSON.parse(safeLocalStorage()?.getItem(VOCAB_PREF_KEY) || '{}');
-    return v && typeof v === 'object' ? v : {};
+    const v = safeParseJson<unknown>(safeLocalStorage()?.getItem(VOCAB_PREF_KEY), {});
+    return v && typeof v === 'object' ? v as Record<string, unknown> : {};
   } catch { return {}; }
 }
 

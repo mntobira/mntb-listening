@@ -1,0 +1,295 @@
+/* src/styles/game-extras.css — index.css から分割（C-16）：マナラッシュ・ガチャのレア枠・トースト・UR・タイトル画面・アクセサリ。
+ * 読み込み順は index.css の @import の並びで固定（並べ替えるとカスケードが変わる）。 */
+/* ===== マナラッシュ（60秒チャレンジ）・5連ガチャ・宝箱 ===== */
+.mana-rush-title { display: flex; align-items: center; gap: 8px; font-family: var(--font-handwriting); font-size: clamp(24px, 6vw, 32px); font-weight: 900; color: #7a5a14; margin: 4px 0 6px; }
+.mana-rush-title svg { width: 28px; height: 28px; color: #e0a800; }
+.mana-rush-rules { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0; }
+.mana-rush-rules li { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border: 1px solid #ebe2cf; border-radius: 12px; background: #fffdf5; font-size: 11px; font-weight: 700; color: #5f6b75; }
+.mana-rush-rules svg { flex-shrink: 0; color: #c98a1d; }
+.mana-rush-subtitle { margin: 14px 0 8px; font-size: 13px; font-weight: 800; color: #5f6b75; }
+.mana-rush-subjects { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 7px; }
+.mana-rush-subjects button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 56px; padding: 8px 11px; border: 2px solid #e5dccc; border-radius: 14px; background: #fff; text-align: left; }
+.mana-rush-subjects button strong { font-size: 13px; }
+.mana-rush-subjects button small { font-size: 10px; color: #7b8590; font-weight: 700; }
+.mana-rush-subjects button[aria-checked=true] { box-shadow: 0 3px 0 #0000001a; }
+.mana-rush-best { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 12px 14px; border-radius: 18px; background: linear-gradient(135deg, #fff8e0, #fdebc0); border: 1px solid #ecd6a0; }
+.mana-rush-best > div { display: flex; flex-direction: column; min-width: 0; }
+.mana-rush-best span { font-size: 11px; font-weight: 700; color: #8a6d2f; }
+.mana-rush-best strong { font-size: 28px; font-weight: 900; color: #6d4c0f; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.mana-rush-best strong small { font-size: 12px; margin-left: 2px; }
+.mana-rush-coin { margin-top: 8px; font-size: 11px; color: #7b8590; font-weight: 700; }
+.mana-rush-error { margin-top: 8px; font-size: 12px; color: #b42318; font-weight: 700; }
+.mana-rush-start { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 58px; margin: 14px 0 10px; border-radius: 18px; border: 3px solid #fffaf0; background: linear-gradient(#ffd24d, #f0a500); color: #5a3d00; font-size: 20px; font-weight: 900; box-shadow: 0 5px 0 #c98200, 0 0 0 1px #e0b24a; }
+.mana-rush-start:active { transform: translateY(3px); box-shadow: 0 2px 0 #c98200; }
+.mana-rush-start:disabled { opacity: .6; }
+.mana-rush-countdown { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; gap: 12px; }
+.mana-rush-countdown p { font-weight: 800; color: #7b8590; }
+.mana-rush-countdown strong { font-size: 96px; font-weight: 900; color: #e0a800; text-shadow: 0 5px 0 #f7dc8a; animation: rush-pop .6s ease-out; }
+@keyframes rush-pop { from { transform: scale(1.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.mana-rush-play { max-width: 640px; margin: auto; padding: 10px 14px 20px; transition: background .3s; }
+.mana-rush-play.is-fever { background: radial-gradient(circle at 50% 0%, #fff1c2 0%, transparent 70%); }
+.mana-rush-hud { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+.mana-rush-lives { display: flex; gap: 3px; }
+.mana-rush-score { font-size: 28px; font-weight: 900; color: #3a2f16; font-variant-numeric: tabular-nums; }
+.mana-rush-score small { font-size: 12px; margin-left: 2px; }
+.mana-rush-time { justify-self: end; display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; background: #fff; border: 1px solid #e5dccc; font-size: 18px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.mana-rush-timebar { height: 8px; margin: 8px 0 4px; border-radius: 999px; background: #eee8dc; overflow: hidden; }
+.mana-rush-timebar i { display: block; height: 100%; border-radius: inherit; transition: width .1s linear; }
+.mana-rush-combo { position: relative; display: flex; justify-content: center; align-items: center; gap: 10px; min-height: 30px; }
+.mana-rush-combo b { padding: 2px 12px; border-radius: 999px; background: #3a2f16; color: #ffd24d; font-size: 13px; font-weight: 900; letter-spacing: .04em; animation: rush-pop .3s ease-out; }
+.is-fever .mana-rush-combo b { background: linear-gradient(90deg, #ff6b6b, #ffb400, #ff6b6b); color: #fff; }
+.mana-rush-combo em { font-style: normal; font-weight: 900; color: #1f9d55; animation: rush-float .45s ease-out forwards; }
+@keyframes rush-float { from { transform: translateY(6px); opacity: 0; } to { transform: translateY(-4px); opacity: 1; } }
+.mana-rush-question { margin: 6px 0 12px; padding: 14px 16px; border: 2px solid; border-radius: 18px; min-height: 96px; }
+.mana-rush-prompt { font-size: 13px; color: #5d6d7e; line-height: 1.7; margin-bottom: 6px; white-space: pre-wrap; }
+.mana-rush-label { font-size: 16px; font-weight: 800; color: #2c3e50; line-height: 1.7; }
+.mana-rush-options { display: grid; gap: 8px; }
+.mana-rush-options button { display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 10px 14px; border: 2px solid #e5dccc; border-radius: 16px; background: #fff; text-align: left; font-size: 15px; font-weight: 700; color: #2c3e50; box-shadow: 0 3px 0 #e5dccc; }
+.mana-rush-options button > span:first-child { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px; background: #f4efe4; font-size: 12px; font-weight: 900; color: #8a7a5a; }
+.mana-rush-options button:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #e5dccc; }
+.mana-rush-options button[data-state=correct] { border-color: #1f9d55; background: #e9f9ef; box-shadow: 0 3px 0 #1f9d55; }
+.mana-rush-options button[data-state=wrong] { border-color: #d64545; background: #fdecec; box-shadow: 0 3px 0 #d64545; animation: rush-shake .3s; }
+@keyframes rush-shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.mana-rush-foot { margin-top: 10px; text-align: center; font-size: 11px; color: #7b8590; font-weight: 700; }
+.mana-rush-result { text-align: center; }
+.mana-rush-rank { display: inline-flex; flex-direction: column; align-items: center; margin: 6px auto; padding: 8px 26px; border-radius: 22px; background: #3a2f16; color: #ffd24d; }
+.mana-rush-rank span { font-size: 11px; letter-spacing: .2em; font-weight: 800; }
+.mana-rush-rank strong { font-size: 64px; font-weight: 900; line-height: 1; animation: rush-pop .5s ease-out; }
+.mana-rush-rank[data-rank=S] { background: linear-gradient(135deg, #ff6b6b, #ffb400); color: #fff; }
+.mana-rush-rank[data-rank=A] { background: linear-gradient(135deg, #7c3aed, #3b82f6); color: #fff; }
+.mana-rush-final { font-size: 44px; font-weight: 900; color: #3a2f16; font-variant-numeric: tabular-nums; }
+.mana-rush-final small { font-size: 16px; margin-left: 3px; }
+.mana-rush-newbest { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; border-radius: 999px; background: #fff3c4; color: #8a5a00; font-weight: 900; }
+.mana-rush-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+.mana-rush-stats > div { padding: 10px 6px; border: 1px solid #e5dccc; border-radius: 14px; background: #fff; }
+.mana-rush-stats dt { font-size: 11px; color: #7b8590; font-weight: 700; }
+.mana-rush-stats dd { font-size: 22px; font-weight: 900; color: #2c3e50; font-variant-numeric: tabular-nums; }
+.mana-rush-stats dd small { font-size: 12px; }
+.mana-rush-reward { font-weight: 800; color: #8a5a00; }
+.mana-rush-reward b { color: #7c3aed; }
+.mana-rush-misses { margin-top: 14px; text-align: left; border: 1px solid #e5dccc; border-radius: 14px; background: #fff; padding: 10px 14px; }
+.mana-rush-misses summary { cursor: pointer; font-weight: 800; font-size: 13px; color: #5f6b75; }
+.mana-rush-misses li { padding: 10px 0; border-top: 1px dashed #e5dccc; font-size: 13px; line-height: 1.6; }
+.mana-rush-misses li:first-child { border-top: 0; }
+.mana-rush-misses .is-wrong { color: #b42318; }
+.mana-rush-misses .is-right { color: #1f7a45; font-weight: 700; }
+.mana-rush-actions { display: grid; gap: 4px; margin-top: 8px; }
+.mana-rush-banner { display: flex; align-items: center; gap: 12px; width: 100%; margin: 4px 0 14px; padding: 14px 16px; border-radius: 20px; border: 2px solid #fffaf0; background: linear-gradient(120deg, #ffd24d, #ffb400 60%, #ff8a3d); color: #4a2f00; text-align: left; box-shadow: 0 4px 0 #c98200, 0 0 0 1px #e0b24a; }
+.mana-rush-banner > svg { width: 32px; height: 32px; flex-shrink: 0; }
+.mana-rush-banner > span { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.mana-rush-banner strong { font-size: 18px; font-weight: 900; }
+.mana-rush-banner small { font-size: 11px; font-weight: 700; opacity: .85; }
+.mana-rush-banner em { display: inline-flex; align-items: center; gap: 3px; padding: 3px 9px; border-radius: 999px; background: #fffaf0cc; font-style: normal; font-weight: 900; font-size: 12px; }
+.game-home .game-home-utility.has-rush { grid-template-columns: repeat(4, 1fr); }
+@media (min-width: 1100px) { .game-home .game-home-utility.has-rush { grid-template-columns: 1fr 1fr; } }
+.game-home .game-home-utility .game-rush-entry { background: linear-gradient(#fff4cf, #ffe08a); border-color: #e9c35a; color: #7a5200; font-weight: 800; }
+.gacha-pull-multi { margin-top: 8px; background: linear-gradient(#ffe7a3, #f7c948) !important; }
+.gacha-multi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; margin: 10px 0; }
+.gacha-multi-grid li { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px; border: 1px solid #e5dccc; border-radius: 14px; background: #fff; font-size: 11px; }
+.gacha-multi-grid li[data-new=true] { border-color: #e0a800; background: #fff8e0; }
+.gacha-multi-grid li strong { font-size: 11px; color: #8a5a00; }
+.gacha-multi-grid li button { min-height: 32px; padding: 2px 10px; border-radius: 10px; background: #f4d03f; font-weight: 800; font-size: 11px; }
+.daily-chest.is-ready .daily-chest-icon { animation: chest-wiggle 1.2s ease-in-out infinite; }
+@keyframes chest-wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-8deg); } 40% { transform: rotate(8deg); } 60% { transform: rotate(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .mana-rush-countdown strong, .mana-rush-combo b, .mana-rush-combo em, .mana-rush-rank strong,
+  .mana-rush-options button[data-state=wrong], .daily-chest.is-ready .daily-chest-icon { animation: none; }
+}
+
+/* ===== ガチャのレア枠（N / R / SR） ===== */
+.gacha-rarity { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; padding: 1px 6px; border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: .04em; line-height: 1.5; vertical-align: middle; }
+.gacha-rarity[data-rarity=N] { background: #eef1f4; color: #5d6d7e; border: 1px solid #d5dbe1; }
+.gacha-rarity[data-rarity=R] { background: linear-gradient(135deg,#fff3c4,#f2c94c); color: #7a5200; border: 1px solid #d9a92a; }
+.gacha-rarity[data-rarity=SR] { background: linear-gradient(120deg,#ff6b9d,#ffd93d,#6bcbff,#c77dff); color: #fff; text-shadow: 0 1px 1px #0005; border: 1px solid #fff; box-shadow: 0 0 8px #c77dff99; }
+.gacha-rarity-rates { display: flex; justify-content: center; gap: 8px; margin: 6px 0 0; padding: 0; list-style: none; font-size: 12px; font-weight: 800; }
+.gacha-rarity-rates li { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; background: #fff; border: 1px solid #eadfc9; }
+.gacha-rarity-rates small { font-weight: 600; color: #8b98a5; font-size: 10px; }
+.gacha-guarantee { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 8px; background: #7a5200; color: #fff3c4; font-size: 10px; }
+.gacha-cinema[data-rarity=R] { box-shadow: 0 0 0 3px #f2c94c, 0 0 28px #f2c94c99; border-radius: 20px; }
+.gacha-cinema[data-rarity=SR] { box-shadow: 0 0 0 3px #fff, 0 0 32px #c77dffcc, 0 0 60px #6bcbff88; border-radius: 20px; animation: gacha-sr-glow 1.6s ease-in-out infinite; }
+.gacha-result[data-rarity=R] { border-color: #f2c94c; background: radial-gradient(ellipse at top,#fffbe6,#fbe7a8); }
+.gacha-result[data-rarity=SR] { border-color: transparent; background: linear-gradient(#fffaf5,#fff4fb) padding-box, conic-gradient(#ff6b9d,#ffd93d,#6bcb77,#4d96ff,#c77dff,#ff6b9d) border-box; animation: arena-reward-in .5s ease-out, gacha-sr-glow 1.8s ease-in-out infinite; }
+.gacha-sr-banner { margin: 2px 0 6px; font-size: 22px !important; font-weight: 1000; letter-spacing: .12em; background: linear-gradient(90deg,#ff6b9d,#ffb13d,#4d96ff,#c77dff); -webkit-background-clip: text; background-clip: text; color: transparent; animation: gacha-sr-pop .7s cubic-bezier(.2,1.6,.4,1) both; }
+.gacha-multi-grid li { animation: gacha-card-in .45s ease-out both; }
+.gacha-multi-grid li[data-rarity=R] { border-color: #e0a800; background: linear-gradient(#fffbe8,#fff1bf); }
+.gacha-multi-grid li[data-rarity=SR] { border: 2px solid transparent; background: linear-gradient(#fff,#fff6fd) padding-box, conic-gradient(#ff6b9d,#ffd93d,#6bcb77,#4d96ff,#c77dff,#ff6b9d) border-box; box-shadow: 0 0 14px #c77dff88; }
+[data-frame-pattern=prism] { border-color: transparent !important; background: linear-gradient(#fff,#fff) padding-box, conic-gradient(from 45deg,#ff6b9d,#ffd93d,#6bcbff,#c77dff,#ff6b9d) border-box !important; box-shadow: 0 0 12px #c77dffaa, 0 0 24px #6bcbff66 !important; }
+[data-frame-pattern=galaxy] { border-color: #1e1b4b !important; background-image: radial-gradient(circle at 20% 30%,#fff 0 1px,transparent 2px),radial-gradient(circle at 70% 60%,#c7d2fe 0 1.5px,transparent 2.5px),radial-gradient(circle at 40% 80%,#f0abfc 0 1px,transparent 2px),linear-gradient(135deg,#312e8155,#7c3aed33) !important; background-size: 18px 18px,24px 24px,20px 20px,100% 100% !important; box-shadow: 0 0 0 2px #7c3aed, 0 0 18px #4338ca99 !important; }
+/* ★L-05★ 以前は filter: drop-shadow() を無限に動かしていた（毎フレーム、要素全体のぼかしを描き直す）。
+ *   光は静止した drop-shadow を1枚だけ置き、その「強さ」は scale と opacity の脈動で見せる（コンポジタだけで動く）。
+ *   ★元の要素の opacity は1未満にしない★（ガチャの結果は読めることが最優先）ので、.9〜1 の幅にとどめる */
+@keyframes gacha-sr-glow { 0%,100% { scale: 1; opacity: 1; } 50% { scale: 1.012; opacity: .94; } }
+.gacha-cinema[data-rarity=SR], .gacha-cinema[data-rarity=UR], .gacha-result[data-rarity=SR], .gacha-result[data-rarity=UR], .gacha-multi-grid li[data-rarity=UR] { filter: drop-shadow(0 0 8px #c77dff88); will-change: scale, opacity; }
+@keyframes gacha-sr-pop { 0% { opacity: 0; transform: scale(.4) rotate(-6deg); } 100% { opacity: 1; transform: none; } }
+@keyframes gacha-card-in { 0% { opacity: 0; transform: translateY(10px) scale(.9); } 100% { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .gacha-cinema[data-rarity], .gacha-result[data-rarity=SR], .gacha-sr-banner, .gacha-multi-grid li { animation: none !important; } .gacha-cinema[data-rarity], .gacha-result[data-rarity], .gacha-multi-grid li[data-rarity] { filter: none; } }
+
+/* ===== ミッション達成トースト ===== */
+.mission-toast { position: fixed; top: max(12px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 10000; width: min(420px, calc(100vw - 24px)); display: flex; align-items: center; gap: 10px; padding: 12px 12px 14px; border-radius: 18px; background: linear-gradient(135deg,#fffbe8,#ffeeb8); border: 2px solid #e0a800; box-shadow: 0 10px 30px #7a520033, 0 0 0 4px #fff8; color: #5b3d00; overflow: hidden; animation: mission-toast-in .5s cubic-bezier(.2,1.4,.4,1) both; }
+.mission-toast-icon { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: #e0a800; color: #fff; box-shadow: 0 0 0 4px #fff3c4; animation: mission-toast-pop .8s ease-out .15s both; }
+.mission-toast-body { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3; text-align: left; }
+.mission-toast-body strong { font-size: 13px; font-weight: 900; letter-spacing: .04em; color: #a86b00; }
+.mission-toast-body span { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mission-toast-body small { font-size: 11px; color: #7a5200; }
+.mission-toast-claim { flex: none; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #7a5200; color: #fff3c4; font-weight: 900; font-size: 12px; }
+.mission-toast-close { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; color: #a86b00; }
+.mission-toast-timer { position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; background: #e0a800; transform-origin: left; animation: mission-toast-timer linear forwards; }
+@keyframes mission-toast-in { 0% { opacity: 0; transform: translate(-50%, -30px) scale(.9); } 100% { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes mission-toast-pop { 0% { transform: scale(.3) rotate(-30deg); } 60% { transform: scale(1.2) rotate(8deg); } 100% { transform: none; } }
+@keyframes mission-toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) { .mission-toast, .mission-toast-icon { animation: none; } }
+
+/* ===== 対戦中の電波アンテナ ===== */
+.connection-meter { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 6px; font-size: 10px; font-weight: 800; color: #6b7785; }
+.connection-meter-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
+.connection-meter-bars i { display: block; width: 4px; border-radius: 1px; }
+.connection-meter[data-quality=offline] .connection-meter-label { color: #C0392B; }
+.connection-meter-sending { padding: 1px 6px; border-radius: 8px; background: #EAF2F8; color: #2980B9; animation: connection-pulse 1s ease-in-out infinite; }
+@keyframes connection-pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .connection-meter-sending { animation: none; } }
+
+/* ===== 数学の選び方（数ⅠA/ⅡB/ⅢC → 科目 → 分野） ===== */
+.math-nav-levels, .math-nav-courses { display: flex; gap: 6px; }
+.math-nav-levels button { flex: 1; min-height: 44px; border-radius: 14px; border: 2px solid #d5dbe1; background: #fff; font-weight: 900; font-size: 15px; color: #2C3E50; }
+.math-nav-levels button[aria-pressed=true] { background: #2C3E50; border-color: #2C3E50; color: #fff; box-shadow: 0 3px 0 #1b2631; }
+.math-nav-courses button { flex: 1; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; border: 1px solid #d5dbe1; background: #f8fafc; font-weight: 800; font-size: 13px; color: #34495e; }
+.math-nav-courses button small { font-size: 10px; font-weight: 700; color: #8b98a5; }
+.math-nav-courses button[aria-pressed=true] { background: #EAF2F8; border-color: #3498DB; color: #1f618d; }
+.math-nav-courses button[aria-pressed=true] small { color: #2980B9; }
+
+/* ===== 対戦の図・絵（リスニング第1問B・第2問など） ===== */
+.battle-figure { position: relative; margin: 8px 0 0; }
+.battle-figure-button { position: relative; display: block; width: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; }
+.battle-figure img { display: block; width: 100%; max-height: min(36vh, 300px); object-fit: contain; border-radius: 12px; background: #fff; transition: opacity .2s; }
+.battle-figure[data-picture] img { aspect-ratio: 1 / 1; }
+.battle-figure-skeleton { position: relative; min-height: 160px; border-radius: 12px; overflow: hidden; background: #f1f5f9; }
+/* ★L-05★ 読み込み中の光は background-position ではなく ::after の translate で流す（見た目は同じ帯が左から右へ） */
+.battle-figure-skeleton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9); translate: 100% 0; will-change: translate; animation: battle-figure-shine 1.2s linear infinite; }
+.battle-figure[data-picture] .battle-figure-skeleton { aspect-ratio: 1 / 1; max-height: min(36vh, 300px); margin: 0 auto; }
+.battle-figure.is-zoom { position: fixed; inset: 0; z-index: 10001; margin: 0; display: flex; align-items: center; justify-content: center; background: rgba(15,23,42,.85); padding: 12px; }
+.battle-figure.is-zoom .battle-figure-button { cursor: zoom-out; }
+.battle-figure.is-zoom img { max-height: 92vh; max-width: 96vw; width: auto; }
+@keyframes battle-figure-shine { from { translate: 100% 0; } to { translate: -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .battle-figure-skeleton, .battle-figure-skeleton::after { animation: none; } .battle-figure-skeleton::after { display: none; } }
+
+/* ===== 演習：この単元のポイント ===== */
+.unit-points-backdrop { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center; background: rgba(27,38,49,.4); padding: 12px; }
+@media (min-width: 768px) { .unit-points-backdrop { align-items: center; } }
+.unit-points { width: min(460px, 100%); max-height: 80vh; overflow-y: auto; border-radius: 20px; background: #fffdf5; border: 2px solid #F4D03F; padding: 16px; box-shadow: 0 16px 40px #0003; animation: unit-points-in .25s ease-out; }
+.unit-points header { display: flex; align-items: center; gap: 8px; color: #8a6d00; }
+.unit-points header h3 { flex: 1; font-size: 15px; font-weight: 900; color: #5b4700; }
+.unit-points header button { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: #8a6d00; }
+.unit-points-title { margin: 4px 0 10px; font-size: 13px; font-weight: 800; color: #2C3E50; }
+.unit-points ol { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; counter-reset: pt; }
+.unit-points li { counter-increment: pt; position: relative; padding: 8px 10px 8px 34px; border-radius: 12px; background: #fff; border: 1px solid #f0e3a8; font-size: 14px; font-weight: 700; color: #2C3E50; line-height: 1.5; }
+.unit-points li::before { content: counter(pt); position: absolute; left: 10px; top: 9px; width: 18px; height: 18px; border-radius: 50%; background: #F4D03F; color: #5b4700; font-size: 11px; font-weight: 900; display: grid; place-items: center; }
+.unit-points-note { margin: 10px 0; font-size: 11px; color: #7a6a2a; line-height: 1.6; }
+.unit-points-close { width: 100%; min-height: 44px; border-radius: 12px; background: #2C3E50; color: #fff; font-weight: 900; }
+@keyframes unit-points-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .unit-points { animation: none; } }
+
+/* ---- 通報・ブロック（App Store 1.2） ---- */
+.user-safety-trigger { display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; border-radius:9999px; color:#8895A0; flex-shrink:0; }
+.user-safety-trigger:hover, .user-safety-trigger:focus-visible { background:#F1EDE4; color:#1B2631; }
+.user-safety-dialog, .legal-dialog { border:0; border-radius:18px; padding:0; width:min(92vw,360px); box-shadow:0 20px 50px rgba(0,0,0,.25); margin:auto; max-height:calc(100dvh - 24px); overflow-y:auto; } /* 2026-10-14 Tailwind の初期化で margin:0 になり、iPad で左上に張り付いていた */
+.user-safety-dialog::backdrop, .legal-dialog::backdrop { background:rgba(20,28,36,.45); }
+.user-safety-body { padding:16px; display:grid; gap:10px; font-size:13px; color:#1B2631; }
+.user-safety-body h2 { font-size:15px; font-weight:800; }
+.user-safety-actions, .user-safety-report, .user-safety-done { display:grid; gap:8px; }
+.user-safety-body button { display:flex; align-items:center; justify-content:center; gap:6px; min-height:44px; border-radius:12px; border:1px solid #E5E1D8; background:#fff; font-weight:700; }
+.user-safety-body button[data-danger="true"] { color:#C0392B; border-color:#F5B7B1; }
+.user-safety-body button[data-primary] { background:#1B2631; color:#fff; border-color:#1B2631; }
+.user-safety-body button:disabled { opacity:.5; }
+.user-safety-body fieldset { display:grid; gap:6px; border:0; padding:0; }
+.user-safety-body legend { font-weight:800; margin-bottom:4px; }
+.user-safety-body fieldset label { display:flex; gap:8px; align-items:center; min-height:32px; }
+.user-safety-detail { display:grid; gap:4px; font-size:12px; }
+.user-safety-detail textarea { border:1px solid #E5E1D8; border-radius:10px; padding:8px; font-size:16px; }
+.user-safety-row { display:grid; grid-template-columns:1fr 2fr; gap:8px; }
+.user-safety-done p { display:flex; gap:6px; align-items:flex-start; line-height:1.6; }
+/* ---- 利用規約・プライバシー ---- */
+.account-link { display:flex; align-items:center; justify-content:center; gap:4px; min-height:40px; border-radius:12px; border:1px solid #E5E1D8; background:#FAFAF7; font-size:10px; font-weight:700; color:#34495E; }
+.legal-dialog { width:min(94vw,560px); max-height:86dvh; }
+.legal-dialog header { position:sticky; top:0; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#fff; border-bottom:1px solid #EEE; }
+.legal-dialog header h2 { font-size:15px; font-weight:800; }
+.legal-dialog header button { min-height:40px; padding:0 12px; border-radius:10px; border:1px solid #E5E1D8; font-weight:700; }
+.legal-body { padding:12px 16px 20px; overflow-y:auto; font-size:13px; line-height:1.7; color:#1B2631; }
+.legal-body h3 { margin-top:12px; font-weight:800; }
+.legal-body ul { list-style:disc; padding-left:1.2em; }
+.legal-updated { font-size:11px; color:#8895A0; }
+/* ---- 数学：分野タブの中の段階見出し ---- */
+.math-stage-heading { display:flex; align-items:baseline; gap:8px; margin-top:4px; padding:4px 2px 2px; border-bottom:2px solid #E5E1D8; font-size:13px; font-weight:800; color:#2C3E50; }
+.math-stage-heading:first-child { margin-top:0; }
+.math-stage-heading small { font-size:11px; font-weight:700; color:#8895A0; }
+.math-stage-heading[data-stage="basic"] { border-color:#A9CCE3; }
+.math-stage-heading[data-stage="full"] { border-color:#F4D03F; }
+.math-stage-heading[data-stage="pattern"] { border-color:#E8688E; }
+.chapter-route-card .math-unit-source { font-size:10px; line-height:1.4; font-weight:700; color:#8895A0; margin-bottom:2px; }
+.math-stage-heading[data-stage="unit"] { border-color:#7FB3D5; }
+.math-stage-heading[data-stage="exam"] { border-color:#E8688E; }
+.math-stage-heading[data-stage="empty"] { border-color:#D5D8DC; color:#8895A0; }
+.chapter-route .chapter-route-list > .math-stage-heading { margin-left:-24px; padding-left:24px; background:linear-gradient(90deg,#fffdf9,#fffdf900); }
+.chapter-route-card[data-empty="true"] { opacity:.62; }
+.chapter-tab-status { margin-top:3px; align-self:flex-start; border-radius:9999px; padding:1px 6px; font-size:9px; font-weight:800; background:#EEF0F2; color:#7F8C8D; }
+.chapter-tab-status[data-ready="true"] { background:#FEF5E7; color:#B9770E; }
+[aria-selected="true"] .chapter-tab-status { background:rgba(255,255,255,.22); color:#fff; }
+
+/* ── ガチャ UR（大当たり＝学習プリント PDF）── */
+.gacha-rarity[data-rarity=UR] { background: linear-gradient(120deg,#111827,#7c3aed 35%,#f59e0b 70%,#111827); color: #fff7d6; text-shadow: 0 1px 1px #0008; border: 1px solid #fde68a; box-shadow: 0 0 10px #f59e0bcc, 0 0 4px #7c3aed; }
+.gacha-ur-lead { color: #7c3aed; }
+.gacha-print-thumb { position: relative; display: inline-flex; flex: none; overflow: hidden; border-radius: 6px; background: #fff; border: 1px solid #d8cfbd; box-shadow: 0 2px 8px #0002; }
+.gacha-print-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.gacha-print-thumb em { position: absolute; left: 0; right: 0; bottom: 0; padding: 1px 2px; font-style: normal; font-size: 9px; font-weight: 900; text-align: center; color: #fff; background: linear-gradient(90deg,#7c3aed,#f59e0b); }
+.gacha-exhibit[data-kind=print] .gacha-print-thumb { max-height: 150px; width: auto !important; aspect-ratio: 1 / 1.414; height: 100% !important; }
+.gacha-exhibit[data-kind=print] .gacha-print-thumb em { font-size: 12px; padding: 2px 3px; }
+.gacha-print-links { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 4px 0; }
+.gacha-print-links a { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 6px 12px; border-radius: 12px; font-weight: 800; font-size: 13px; text-decoration: none; color: #3b1d78; background: linear-gradient(135deg,#fef3c7,#ede9fe); border: 1px solid #c4b5fd; }
+.gacha-print-links.is-compact { gap: 4px; }
+.gacha-print-links.is-compact a { min-height: 32px; padding: 2px 8px; font-size: 11px; border-radius: 10px; }
+.gacha-print-links a:focus-visible { outline: 3px solid #7c3aed; outline-offset: 2px; }
+.gacha-cinema[data-rarity=UR] { box-shadow: 0 0 0 3px #fde68a, 0 0 36px #f59e0bcc, 0 0 70px #7c3aed99; border-radius: 20px; animation: gacha-sr-glow 1.2s ease-in-out infinite; }
+.gacha-result[data-rarity=UR] { border: 2px solid transparent; background: linear-gradient(#fffdf5,#faf5ff) padding-box, conic-gradient(#f59e0b,#fde68a,#7c3aed,#ec4899,#f59e0b) border-box; animation: arena-reward-in .5s ease-out, gacha-sr-glow 1.4s ease-in-out infinite; }
+.gacha-ur-banner { background: linear-gradient(90deg,#7c3aed,#f59e0b,#ec4899,#7c3aed) !important; -webkit-background-clip: text !important; background-clip: text !important; }
+.gacha-multi-grid li[data-rarity=UR] { border: 2px solid transparent; background: linear-gradient(#fffdf5,#faf5ff) padding-box, conic-gradient(#f59e0b,#fde68a,#7c3aed,#ec4899,#f59e0b) border-box; box-shadow: 0 0 16px #f59e0b99; }
+.gacha-collection-grid li[data-owned=false] .gacha-print-thumb img { filter: blur(2px) grayscale(.6); opacity: .7; }
+.gacha-my-prints { margin: 12px 0; padding: 12px; border-radius: 16px; border: 1px solid #ddd6fe; background: linear-gradient(#fffdf7,#f7f3ff); text-align: left; }
+.gacha-my-prints h2 { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; font-size: 15px; font-weight: 900; color: #3b1d78; }
+.gacha-my-prints h2 small { font-size: 11px; color: #7c6f9a; }
+.gacha-my-prints ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; max-height: 320px; overflow-y: auto; }
+.gacha-my-prints li { display: flex; gap: 10px; align-items: center; padding: 6px; border-radius: 12px; background: #fff; border: 1px solid #ede9fe; }
+.gacha-my-prints li > span { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+.gacha-my-prints li strong { font-size: 12px; line-height: 1.35; }
+.gacha-my-prints li small { font-size: 10px; color: #7c6f9a; }
+@media (prefers-reduced-motion: reduce) { .gacha-cinema[data-rarity=UR], .gacha-result[data-rarity=UR] { animation: none !important; } }
+.gacha-preview-info strong { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gacha-exhibit[data-kind=print] { bottom: 44px; }
+.gacha-exhibit[data-kind=print] .gacha-print-thumb { max-height: 132px; }
+.gacha-print-thumb em { white-space: nowrap; overflow: hidden; text-overflow: clip; font-size: 8px; letter-spacing: -.02em; }
+
+/* ── タイトル画面：動画（720×720・2秒）と静止画シーンを「同じ正方形・同じ位置」に重ねる ──
+   位置は title.mp4 の最後のコマを実測した値（LaunchScreen.tsx のコメント参照）。
+   動画の縁は背景色にぼかして、四角い「カード」が見えないようにする。 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── 部位ごとのアクセサリ（とびら君に重ねる SVG）── */
+.tobira-accessories { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.home-mascot-wrap { position: relative; display: block; width: 100%; height: 100%; }
+
+.tobira-aura-bit { animation: tobira-aura-float 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes tobira-aura-float { 0%,100% { transform: translateY(0) scale(1); opacity: .85; } 50% { transform: translateY(-6%) scale(1.12); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .tobira-aura-bit { animation: none; } }

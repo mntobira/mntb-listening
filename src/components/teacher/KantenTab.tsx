@@ -126,7 +126,7 @@ export function KantenTab({ reports, loading, theme, activeClass, onRefresh }: K
             <div className="grid sm:grid-cols-2 gap-3 mb-3">
               {/* 知識・技能 */}
               <div className="rounded-xl bg-[#FAF8F2] border border-[#E8E5DC] p-3">
-                <p className="text-[11px] font-bold text-[#6B7280] mb-1.5">知識・技能の材料</p>
+                <p className="text-xs font-bold text-[#6B7280] mb-1.5">知識・技能の材料</p>
                 <p className="text-sm text-[#1B2631] mb-1">
                   到達率{' '}
                   <strong style={{ color: theme.accent }}>{report.knowledge.ratePercent}%</strong>
@@ -151,7 +151,7 @@ export function KantenTab({ reports, loading, theme, activeClass, onRefresh }: K
 
               {/* 主体的に学習に取り組む態度 */}
               <div className="rounded-xl bg-[#FAF8F2] border border-[#E8E5DC] p-3">
-                <p className="text-[11px] font-bold text-[#6B7280] mb-1.5">
+                <p className="text-xs font-bold text-[#6B7280] mb-1.5">
                   主体的に学習に取り組む態度の材料
                 </p>
                 <p className="text-xs text-[#4B5563] leading-relaxed">
@@ -177,10 +177,10 @@ export function KantenTab({ reports, loading, theme, activeClass, onRefresh }: K
             {/* 所見の下書き */}
             <div className="rounded-xl border border-[#D9E4EC] bg-[#F8FBFD] p-3">
               <div className="flex items-center justify-between gap-2 mb-1.5">
-                <p className="text-[11px] font-bold text-[#3C5A6E]">所見の下書き（編集前提）</p>
+                <p className="text-xs font-bold text-[#3C5A6E]">所見の下書き（編集前提）</p>
                 <button
                   onClick={() => void handleCopyDraft(report)}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] border border-[#C9D2DA] text-[#4B5563] bg-white hover:bg-[#FAF8F2] transition-colors"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs border border-[#C9D2DA] text-[#4B5563] bg-white hover:bg-[#FAF8F2] transition-colors"
                 >
                   {copiedUid === report.uid ? (
                     <>

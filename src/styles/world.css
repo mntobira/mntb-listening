@@ -114,8 +114,10 @@
 .arena-vs-me, .arena-vs-foe { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; text-align: center; }
 .arena-vs-avatar { display: grid; place-items: center; width: 60px; height: 60px; border-radius: 18px; background: #ffffff1a; box-shadow: inset 0 0 0 2px #ffffff40; overflow: hidden; }
 .arena-vs-me .arena-vs-avatar { background: linear-gradient(#ffe7a8, #f6b93b); box-shadow: 0 0 0 2px #fff, 0 0 18px #f6b93b88; }
-.arena-vs-unknown { font: 900 28px/1 var(--mt-font-display); color: #ffffffb0; animation: w-foe 2.4s ease-in-out infinite; }
-@keyframes w-foe { 0%, 100% { box-shadow: inset 0 0 0 2px #ffffff40; } 50% { box-shadow: inset 0 0 0 2px #e58f6acc, 0 0 16px #e58f6a66; } }
+.arena-vs-unknown { position: relative; overflow: visible; font: 900 28px/1 var(--mt-font-display); color: #ffffffb0; }
+/* ★L-05★ 以前は box-shadow を無限に動かしていた。オレンジの縁と光は ::after に1回だけ描き、opacity だけを動かす */
+.arena-vs-unknown::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 2px #e58f6acc, 0 0 16px #e58f6a66; pointer-events: none; opacity: 0; will-change: opacity; animation: w-foe 2.4s ease-in-out infinite; }
+@keyframes w-foe { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
 .arena-vs-me strong, .arena-vs-foe strong { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 14px/1.2 var(--mt-font-display); color: #fff; }
 .arena-vs-me small, .arena-vs-foe small { display: flex; align-items: center; gap: 4px; font-size: 12px !important; font-weight: 700; color: #cfe0ff; white-space: nowrap; }
 .arena-vs-me small .arena-rank-chip { padding: 1px 6px; border-radius: 999px; color: #fff; font-size: 12px; }
@@ -198,7 +200,7 @@
   .arena-rule-chips { gap: 4px; } .arena-rule-chips li { padding-inline: 7px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .arena-vs-unknown, .arena-vs-mark { animation: none !important; }
+  .arena-vs-unknown, .arena-vs-unknown::after, .arena-vs-mark { animation: none !important; }
   .arena-menu .arena-lobby-card[data-tone=ai] { transform: none; }
 }
 /* 調整：主役ボタンの文字は1行、スマホはルールチップを1行、カードの縦を詰める */

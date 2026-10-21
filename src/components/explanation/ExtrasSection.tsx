@@ -62,7 +62,7 @@ export function ExtrasSection({ wrapClassName, questions, isEnglishChapter, fold
                             return (
                               <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${'bg-blue-50 border-blue-200'}`}>
                                 <div className={`absolute top-0 left-0 w-1.5 h-full ${'bg-blue-400'}`}></div>
-                                <div className={`inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-blue-600 border-blue-200'}`}>
+                                <div className={`inline-flex items-center gap-1.5 text-xs md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-blue-600 border-blue-200'}`}>
                                   <BookOpen size={14} />
                                   {/* 見出しバッジも prose 対象。英語では見出しに英単語が
                                       そのまま入ることがあり、ここを素の formatText に
@@ -110,7 +110,7 @@ export function ExtrasSection({ wrapClassName, questions, isEnglishChapter, fold
                           return (
                             <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${'bg-amber-50 border-amber-200'}`}>
                               <div className={`absolute top-0 left-0 w-1.5 h-full ${'bg-amber-400'}`}></div>
-                              <div className={`inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-amber-600 border-amber-200'}`}>
+                              <div className={`inline-flex items-center gap-1.5 text-xs md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-amber-600 border-amber-200'}`}>
                                 <Lightbulb size={14} />
                                 {/* 【】が無い深掘りでは title = 1行目まるごとになり、
                                     英文（usually / on weekdays など）を含みうる。

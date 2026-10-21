@@ -147,7 +147,7 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
     <div className="space-y-2.5">
       {/* 参加中のクラス（＝いま見られている相手） */}
       <section className="bg-white border border-gray-150 rounded-2xl p-3 shadow-sm">
-        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
           参加中のクラス
         </h3>
 
@@ -170,17 +170,17 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-[10px] text-gray-400 truncate">{membership.schoolName}</p>
+                      <p className="text-xs text-gray-400 truncate">{membership.schoolName}</p>
                       <p className="text-xs font-bold text-[#1B2631] truncate">
                         {membership.className}
                       </p>
                       <div className="flex flex-wrap items-center gap-1.5 mt-1">
                         <span
-                          className={`px-1.5 py-0.5 rounded text-[9px] ${theme.chipTextClass} ${theme.chipBgClass}`}
+                          className={`px-1.5 py-0.5 rounded text-xs ${theme.chipTextClass} ${theme.chipBgClass}`}
                         >
                           {theme.label}
                         </span>
-                        <span className="text-[9px] text-gray-400">
+                        <span className="text-xs text-gray-400">
                           先生の画面での表示名：{membership.rosterName}
                         </span>
                       </div>
@@ -188,7 +188,7 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
                     <button
                       onClick={() => handleLeave(membership)}
                       disabled={leavingClassId === membership.classId}
-                      className="shrink-0 flex items-center gap-1 px-2 py-1.5 rounded-lg border border-red-100 bg-red-50 text-[10px] font-bold text-red-600 disabled:opacity-50"
+                      className="shrink-0 flex items-center gap-1 px-2 py-1.5 rounded-lg border border-red-100 bg-red-50 text-xs font-bold text-red-600 disabled:opacity-50"
                     >
                       {leavingClassId === membership.classId ? (
                         <Loader2 size={12} className="animate-spin" />
@@ -208,25 +208,25 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
       {/* 何が見えるのか（同意の中身） */}
       {memberships.length > 0 && (
         <section className="rounded-2xl bg-[#F4F7FA] border border-[#D9E4EC] p-3">
-          <p className="flex items-center gap-1.5 text-[11px] font-bold text-[#3C5A6E] mb-1.5">
+          <p className="flex items-center gap-1.5 text-xs font-bold text-[#3C5A6E] mb-1.5">
             <Eye size={13} />
             先生に見えていること
           </p>
-          <ul className="space-y-0.5 text-[10px] text-[#3C5A6E] leading-snug">
+          <ul className="space-y-0.5 text-xs text-[#3C5A6E] leading-snug">
             <li>・解いた大問の数と、学習した日</li>
             <li>・復習リストの件数と、期限が来ているのに残っている数</li>
             <li>・間違えた回数と、解き直した回数</li>
           </ul>
-          <p className="flex items-center gap-1.5 text-[11px] font-bold text-[#3C5A6E] mt-2 mb-1.5">
+          <p className="flex items-center gap-1.5 text-xs font-bold text-[#3C5A6E] mt-2 mb-1.5">
             <Info size={13} />
             見えていないこと
           </p>
-          <ul className="space-y-0.5 text-[10px] text-[#3C5A6E] leading-snug">
+          <ul className="space-y-0.5 text-xs text-[#3C5A6E] leading-snug">
             <li>・あなたが書いた答案の中身やノートのメモ</li>
             <li>・クラスの科目以外の学習内容</li>
             <li>・成績や評定（先生が判断する材料としてだけ使われます）</li>
           </ul>
-          <p className="text-[9px] text-[#5A7A8E] mt-2 leading-snug">
+          <p className="text-xs text-[#5A7A8E] mt-2 leading-snug">
             「抜ける」を押した時点で、先生からは見えなくなります。
           </p>
         </section>
@@ -234,10 +234,10 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
 
       {/* 参加コードの入力 */}
       <section className="bg-white border border-gray-150 rounded-2xl p-3 shadow-sm space-y-2">
-        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
           クラスに参加する
         </h3>
-        <p className="text-[10px] text-gray-500 leading-snug">
+        <p className="text-xs text-gray-500 leading-snug">
           先生から聞いた{JOIN_CODE_LENGTH}文字のコードを入力してください。
         </p>
 
@@ -267,14 +267,14 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
           </button>
         </div>
 
-        <p className="text-[9px] text-gray-400 leading-snug">
+        <p className="text-xs text-gray-400 leading-snug">
           コードには <strong>O・0</strong>、<strong>I・1</strong> のような
           見間違えやすい文字は使われていません。打ち間違えても自動で直します。
         </p>
       </section>
 
       {notice && (
-        <div className="flex items-start gap-1.5 rounded-xl bg-[#F5FCFA] border border-[#A9E0D8] px-2.5 py-2 text-[10px] leading-snug text-[#2F7C74]">
+        <div className="flex items-start gap-1.5 rounded-xl bg-[#F5FCFA] border border-[#A9E0D8] px-2.5 py-2 text-xs leading-snug text-[#2F7C74]">
           <Check size={13} className="shrink-0 mt-[1px]" />
           <span>{notice}</span>
         </div>
@@ -283,14 +283,14 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
       {error && (
         <div
           role="alert"
-          className="flex items-start gap-1.5 rounded-xl bg-[#FDEDEC] border border-[#E74C3C]/40 px-2.5 py-2 text-[10px] leading-snug text-[#C0392B]"
+          className="flex items-start gap-1.5 rounded-xl bg-[#FDEDEC] border border-[#E74C3C]/40 px-2.5 py-2 text-xs leading-snug text-[#C0392B]"
         >
           <AlertTriangle size={13} className="shrink-0 mt-[1px]" />
           <span>{error}</span>
         </div>
       )}
 
-      <p className="flex items-start gap-1.5 text-[9px] text-gray-400 leading-snug px-1">
+      <p className="flex items-start gap-1.5 text-xs text-gray-400 leading-snug px-1">
         <Users size={11} className="shrink-0 mt-[1px]" />
         <span>
           先生の側からあなたを勝手にクラスへ追加することはできません。

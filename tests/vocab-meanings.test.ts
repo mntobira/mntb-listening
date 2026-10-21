@@ -9,5 +9,7 @@ it('単語帳・対戦の意味に「第／の」のような表記くずれが�
   expect(bad.map((w: { word: string }) => w.word)).toEqual([]);
   const first = d.words.find((w: { word: string }) => w.word === 'first');
   expect(first.meaning).toContain('最初の');
+  const couple = d.words.find((w: { word: string }) => w.word === 'a couple of ～');
+  expect(couple.meaning).toBe('2、3の');
   expect(readFileSync('src/battle/data/pool.english_vocab.generated.ts', 'utf8')).not.toContain('第／の');
 });

@@ -10,6 +10,8 @@
  * - 環境変数 (VITE_DISABLE_ADS === 'true')
  * のいずれかが指定された場合、すべての広告・枠・余白が自動で完全無効化されます。
  */
+import { requireLocalStorage } from './safeLocalStorage';
+import { STORAGE_KEYS } from './storageKeysCatalog';
 
 function isAdDisabled(): boolean {
   if (typeof window === 'undefined') return false;
@@ -19,7 +21,8 @@ function isAdDisabled(): boolean {
     if ((window as Window & { __SCREENSHOT_MODE__?: unknown }).__SCREENSHOT_MODE__) return true;
     const params = new URLSearchParams(window.location.search);
     if (params.get('no_ads') === '1' || params.get('screenshot') === '1') return true;
-    if (localStorage.getItem('no_ads') === '1' || localStorage.getItem('screenshot_mode') === 'true') return true;
+    const ls = requireLocalStorage();
+    if (ls.getItem(STORAGE_KEYS.noAds) === '1' || ls.getItem(STORAGE_KEYS.screenshotMode) === 'true') return true;
   } catch {
     // URL・localStorage を読めない環境では広告の無効化指定なしとして扱う
   }

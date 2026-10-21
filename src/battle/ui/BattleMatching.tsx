@@ -43,7 +43,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { Bot, Radar, Wifi, X, Zap } from 'lucide-react';
+import { Bot, Wifi, X, Zap } from 'lucide-react';
 import { subjectTheme } from '../../data/subjectTheme';
 import type { SubjectKey } from '../../data/allChapters';
 import { fetchMyRating, findOrEnqueue, leaveQueue, watchMatched } from '../data/battle';
@@ -65,6 +65,7 @@ import {
   LINE,
 } from './BattleParts';
 import { ConnectionCheckPanel } from './ConnectionCheckPanel';
+import { BattleMatchingRadar } from './BattleMatchingRadar';
 
 /**
  * これ以上待ったら「AI と対戦しませんか」と案内する秒数。
@@ -375,41 +376,7 @@ export function BattleMatching({
           外側に広がる輪 3つ（時間差）＋ 中を回る走査線 ＋ 中心のアイコン。
           「探索が続いている」ことを、秒数以外の手段でも伝える。
         */}
-        <div className="relative flex h-36 w-36 items-center justify-center">
-          {['0s', '0.8s', '1.6s'].map((delay) => (
-            <span
-              key={delay}
-              className="battle-radar-ring absolute inset-0 rounded-full border-2"
-              style={
-                {
-                  borderColor: `${theme.accent}55`,
-                  '--ring-delay': delay,
-                } as CSSProperties
-              }
-            />
-          ))}
-
-          {/* 走査線（円錐グラデーションの扇形） */}
-          <span
-            className="battle-radar-sweep absolute inset-3 rounded-full"
-            style={{
-              background: `conic-gradient(from 0deg, ${theme.accent}00 0deg, ${theme.accent}00 300deg, ${theme.accent}3D 350deg, ${theme.accent}66 360deg)`,
-            }}
-            aria-hidden
-          />
-
-          {/* 中心 */}
-          <span
-            className="relative flex h-16 w-16 items-center justify-center rounded-full border-2"
-            style={{
-              background: '#FFFFFF',
-              borderColor: `${theme.accent}77`,
-              boxShadow: `0 4px 0 ${theme.accent}22`,
-            }}
-          >
-            <Radar size={30} style={{ color: theme.accent }} />
-          </span>
-        </div>
+        <BattleMatchingRadar theme={theme} />
 
         {/* 段階の説明＋秒数 */}
         <div className="text-center">

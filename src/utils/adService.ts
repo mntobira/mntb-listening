@@ -8,6 +8,7 @@ import {
 import { Capacitor } from '@capacitor/core';
 import { AD_TOGGLES, getEffectiveBannerId, getEffectiveInterstitialId, getEffectiveRewardedId } from './adConfig';
 import { registerRewardedAdProvider } from '../ads/rewardedAd';
+import { requireLocalStorage, setItemOrThrow } from './safeLocalStorage';
 
 let isInitialized = false;
 let isBannerShowing = false;
@@ -136,9 +137,9 @@ export async function showInterstitialAtBreakpoint(): Promise<void> {
     if (!isDemo) {
       let count = 0;
       try {
-        const stored = localStorage.getItem(BREAKPOINT_COUNT_KEY);
+        const stored = requireLocalStorage().getItem(BREAKPOINT_COUNT_KEY);
         count = (stored ? parseInt(stored, 10) : 0) + 1;
-        localStorage.setItem(BREAKPOINT_COUNT_KEY, String(count));
+        setItemOrThrow(BREAKPOINT_COUNT_KEY, String(count));
       } catch {
         count = 1;
       }
@@ -151,7 +152,7 @@ export async function showInterstitialAtBreakpoint(): Promise<void> {
       const now = Date.now();
       let lastShown = 0;
       try {
-        const storedLast = localStorage.getItem(LAST_SHOWN_TIME_KEY);
+        const storedLast = requireLocalStorage().getItem(LAST_SHOWN_TIME_KEY);
         lastShown = storedLast ? parseInt(storedLast, 10) : 0;
       } catch {
         lastShown = 0;
@@ -164,7 +165,7 @@ export async function showInterstitialAtBreakpoint(): Promise<void> {
 
     await AdMob.showInterstitial();
     try {
-      localStorage.setItem(LAST_SHOWN_TIME_KEY, String(Date.now()));
+      setItemOrThrow(LAST_SHOWN_TIME_KEY, String(Date.now()));
     } catch {
       // 表示時刻を保存できない環境では、頻度制限なしで続ける（広告の表示自体は成功している）
     }

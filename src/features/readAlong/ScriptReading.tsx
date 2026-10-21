@@ -6,6 +6,8 @@ import { DictationTip, ReadAlongStudio } from './ReadAlongStudio';
 import { locateListeningEvidence } from '../../utils/listeningExplanation';
 import './read-along.css';
 import { pauseAllAudio } from '../../utils/audioElements';
+import { safeGetItem } from '../../utils/safeLocalStorage';
+import { safeSetItem } from '../../utils/storageGuard';
 
 /**
  * 解答・解説のスクリプトを「読み方つき」で出す（2026-10-08）
@@ -94,7 +96,7 @@ interface Track { subId: string; label: string; audioUrl?: string; script: strin
 export function ScriptReading({ track, fallback, after, compact = false }: { track: Track; fallback: React.ReactNode; after?: React.ReactNode; compact?: boolean }) {
   const [data, setData] = useState<ReadAlong | null | undefined>(undefined);
   const [opts, setOpts] = useAnnotOpts();
-  const [on, setOn] = useState<boolean>(() => { try { return localStorage.getItem('mtb_readalong_inline') !== 'off'; } catch { return true; } });
+  const [on, setOn] = useState<boolean>(() => safeGetItem('mtb_readalong_inline') !== 'off');
   const [studio, setStudio] = useState(false);
   const [picked, setPicked] = useState(-1);
   const [settings, setSettings] = useState(false);
@@ -122,7 +124,7 @@ export function ScriptReading({ track, fallback, after, compact = false }: { tra
     void a.play().catch(() => undefined);
   };
   useEffect(() => () => { audio.current?.pause(); }, []);
-  const toggleOn = () => { const v = !on; setOn(v); try { localStorage.setItem('mtb_readalong_inline', v ? 'on' : 'off'); } catch { /* noop */ } };
+  const toggleOn = () => { const v = !on; setOn(v); safeSetItem('mtb_readalong_inline', v ? 'on' : 'off'); };
 
   // 並び：スクリプト → 和訳 → [読み方 / 音読練習 / 表示] の1行 → 書き取りのすすめ（たたんだ状態）
   //   スクリプトの上には何も置かない（解説を読むじゃまにしない）。

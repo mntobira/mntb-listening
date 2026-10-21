@@ -31,6 +31,7 @@
 .sc-title { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .sc-title strong { font: 800 17px/1.25 var(--mt-font-display); color: #3d3222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sc-title em { flex-shrink: 0; padding: 1px 8px; border-radius: 999px; background: var(--mt-brand-soft); color: var(--mt-brand); font: 700 12px/1.5 var(--mt-font-body); font-style: normal; }
+.sc-title em[data-badge=new] { background: #d9483b; color: #fff; font-weight: 800; letter-spacing: .04em; box-shadow: 0 2px 0 #a3302a; }
 .sc-desc { font-size: 13px; line-height: 1.4; color: var(--sc-ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .sc-meta { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .sc-meta small { font-size: 12px; font-weight: 700; color: #7a6a4c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -87,3 +88,12 @@
   :root[data-ad-banner=true] .sc-card { min-height: 58px; padding: 5px 12px; }
   :root[data-ad-banner=true] .sc-desc { display: none; }
 }
+
+/* 2026-10-21 見出しをマイページと同じ「中央・23px・900」にそろえる（左寄りだった）。
+   戻す: このブロックを削除 */
+.sc-head { position: relative; justify-content: center; }
+.sc-head > .sc-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+.sc-head-title { flex: 0 1 auto; text-align: center; }
+.sc-head:has(.sc-back) .sc-head-title { padding-inline: 92px; }
+.sc-head-title h1 { font: 900 23px/1.2 var(--mt-font-display); color: #1c2a39; }
+@media (min-width: 1024px) { .sc-head-title h1 { font-size: 28px; letter-spacing: .04em; } }

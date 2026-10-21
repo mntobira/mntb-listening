@@ -2,7 +2,9 @@
 .cb-root { position: fixed; inset: 0; z-index: 9000; -webkit-transform: translateZ(0); pointer-events: none; overflow: hidden; --cb: #3e8e63; --cb-soft: #7cd99255; }
 .cb-root[data-hot] { --cb: #e08a00; --cb-soft: #ffd36b66; }
 .cb-edge { position: absolute; inset: 0; box-shadow: inset 0 0 0 6px var(--cb), inset 0 0 60px 18px var(--cb-soft); border-radius: 0; animation: cb-edge 1.2s ease-out both; }
-.cb-rays { position: absolute; left: 50%; top: 45%; width: 160vmax; height: 160vmax; translate: -50% -50%; background: repeating-conic-gradient(from 0deg, var(--cb-soft) 0 6deg, transparent 6deg 18deg); -webkit-mask: radial-gradient(circle, #000 0 8%, transparent 42%); mask: radial-gradient(circle, #000 0 8%, transparent 42%); animation: cb-rays 1s ease-out both; }
+/* ★L-04★ 以前は 160vmax 四方（画面の数倍の画素）を回していた。マスクで見えているのは中心の約 42% だけなので、
+ *   見える範囲ぶん（min(150vmax, 1100px)）に抑え、別レイヤー（will-change / contain）で塗る */
+.cb-rays { position: absolute; left: 50%; top: 45%; width: min(150vmax, 1100px); height: min(150vmax, 1100px); translate: -50% -50%; will-change: transform, opacity; contain: strict; background: repeating-conic-gradient(from 0deg, var(--cb-soft) 0 6deg, transparent 6deg 18deg); -webkit-mask: radial-gradient(circle, #000 0 8%, transparent 42%); mask: radial-gradient(circle, #000 0 8%, transparent 42%); animation: cb-rays 1s ease-out both; }
 .cb-confetti b { position: absolute; bottom: -12px; width: 10px; height: 14px; background: var(--c); border-radius: 2px; opacity: 0; animation: cb-bit 1.25s cubic-bezier(.15, .7, .3, 1) var(--d) both; }
 .cb-confetti b[data-shape='1'] { width: 9px; height: 9px; border-radius: 50%; }
 .cb-confetti b[data-shape='2'] { width: 6px; height: 16px; }

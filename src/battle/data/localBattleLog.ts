@@ -13,6 +13,7 @@
  *
  * 保存するのは「教科・単元・勝敗・点数・間違えた問題ID（最大30）」だけ。個人情報は持たない。
  */
+import { requireLocalStorage, safeParseJson, setItemOrThrow } from '../../utils/safeLocalStorage';
 
 export interface LocalBattleLogItem {
   /** 同じ試合を2回書かないための鍵（部屋ID・AI の試合番号など） */
@@ -46,8 +47,8 @@ function isItem(v: unknown): v is LocalBattleLogItem {
 
 export function loadLocalBattleLog(uid: string | null | undefined): LocalBattleLogItem[] {
   try {
-    const raw = JSON.parse(localStorage.getItem(keyOf(uid)) || '[]');
-    return (Array.isArray(raw) ? raw : []).filter(isItem).slice(0, MAX_ITEMS);
+    const raw = safeParseJson<unknown[]>(requireLocalStorage().getItem(keyOf(uid)), [], Array.isArray);
+    return raw.filter(isItem).slice(0, MAX_ITEMS);
   } catch {
     return [];
   }
@@ -58,7 +59,7 @@ export function recordLocalBattle(uid: string | null | undefined, item: LocalBat
   try {
     const rest = loadLocalBattleLog(uid).filter((x) => x.key !== item.key);
     const next = [{ ...item, wrongIds: item.wrongIds.slice(0, 30) }, ...rest].slice(0, MAX_ITEMS);
-    localStorage.setItem(keyOf(uid), JSON.stringify(next));
+    setItemOrThrow(keyOf(uid), JSON.stringify(next));
   } catch {
     // 保存できなくても対戦結果には影響させない
   }

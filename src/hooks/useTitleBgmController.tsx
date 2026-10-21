@@ -13,6 +13,7 @@ import { writeAudioPreferences, readAudioPreferences } from '../battle/audio/aud
 import { setTitleBgmVolume, unlockTitleBgm } from '../battle/audio/titleMediaAudio';
 import { battleAudio } from '../battle/audio/battleAudio';
 import { BGM_ENABLED_KEY, BGM_SILENT_STATES } from './titleBgmConstants';
+import { requireLocalStorage } from '../utils/safeLocalStorage';
 
 /** audio.play() 失敗時のログ文言（どの場面で失敗したかで少しずつ違う。文言は以前のまま） */
 interface BgmPlayErrorMessages { decode: string; decodeHint?: string; blocked: string; unexpected: string }
@@ -75,7 +76,7 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
   */
   const [isBgmEnabled, setIsBgmEnabled] = useState(() => {
     try {
-      const saved = localStorage.getItem(BGM_ENABLED_KEY);
+      const saved = requireLocalStorage().getItem(BGM_ENABLED_KEY);
       if (saved === 'on') return true;
       if (saved === 'off') return false;
     } catch {

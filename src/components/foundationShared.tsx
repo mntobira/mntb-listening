@@ -4,7 +4,9 @@ import { parseSupportProgress, supportStorageKey, type SupportProgress } from '.
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { speak, stopSpeech, isSpeechSupported } from '../utils/listeningSpeech';
 import { pauseAllAudio } from '../utils/audioElements';
-import { playVocabAudio, stopVocabAudio } from '../utils/vocabAudio';
+import { playVocabAudio, prefetchVocabAudioIndex, stopVocabAudio } from '../utils/vocabAudio';
+
+export { prefetchVocabAudioIndex };
 
 /** 「英文法・英単語を固める」ページ（FoundationPage）の共通部品。 */
 
@@ -22,7 +24,8 @@ export function say(text: string, onEnd?: () => void): boolean {
 export function sayWord(wordId: string, text: string): void {
   pauseAllAudio();
   stopSpeech();
-  void playVocabAudio(wordId).then(ok => { if (!ok) say(text); });
+  // 待たずに鳴らす（iPhone はタップの中で play() しないと音が出ない）。録音が無い・壊れていれば端末の読み上げ
+  if (!playVocabAudio(wordId, () => say(text))) say(text);
 }
 
 export function ReadAloud({ text, label = '読み上げ' }: { text: string; label?: string } & React.Attributes) {

@@ -71,7 +71,7 @@ export function ResultScoreCard({ compactResult, resultTotalCorrect, resultTotal
                 解いた直後は「ここが分かりにくい」が一番鮮明なタイミングなので、
                 スコアカードの直下に常設する。単元ID・スコア・正答数を自動で添付する。 */}
             <div className="mt-4 pt-4 border-t border-[#F4D03F]/40 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-              <p className="text-[11px] text-[#4B5563]/80 font-modern leading-snug flex-1">
+              <p className="text-xs text-[#4B5563]/80 font-modern leading-snug flex-1">
                 この単元の問題文・解説で気づいたこと（分かりにくい、誘導が欲しい、誤字・表示崩れなど）をお寄せください。
               </p>
               <FeedbackButton
@@ -205,7 +205,7 @@ export function WeakAreasPanel({ weakAreas, isMobile }: {
                          style={{ backgroundImage: 'linear-gradient(45deg,rgba(255,255,255,.2) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.2) 75%,transparent 75%,transparent)', backgroundSize: '1rem 1rem' }} 
                     />
                   </div>
-                  <div className={`flex justify-between mt-1 text-[10px] md:text-xs font-mono ${
+                  <div className={`flex justify-between mt-1 text-xs md:text-xs font-mono ${
                     'text-gray-400'
                   }`}>
                     <span>0%</span>

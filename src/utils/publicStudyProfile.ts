@@ -6,6 +6,7 @@ import { normalizeTargetSchool } from './vocabGoal';
 import { profileKey } from './userStorageKeys';
 import { readStudyTime } from './studyTime';
 import { logRejection } from './reportError';
+import { requireLocalStorage } from './safeLocalStorage';
 export const PUBLIC_STUDY_PROFILES = 'public_study_profiles';
 export const MOTTO_MAX = 40;
 export interface PublicStudyProfile {
@@ -61,7 +62,7 @@ export async function refreshPublicStudyTime(): Promise<void> {
   const uid = auth.currentUser?.uid;
   if (!uid) return;
   let local: Record<string, unknown>;
-  try { local = JSON.parse(localStorage.getItem(profileKey(uid)) || '{}'); } catch { return; }
+  try { local = JSON.parse(requireLocalStorage().getItem(profileKey(uid)) || '{}'); } catch { return; }
   if (local.profilePublic !== true) return;
   // Updates cannot recreate a missing document; the owner must opt in explicitly.
   const { updateDoc } = await import('./firestoreMetered');

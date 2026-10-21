@@ -5,15 +5,16 @@
  * 判定そのものは core/matchFallback.ts（純関数）。ここは localStorage の読み書きだけ。
  */
 import { QUOTA_COOLDOWN_MS, isQuotaError, quotaBlockedUntil } from '../core/matchFallback';
+import { requireLocalStorage, safeGetItem, setItemOrThrow } from '../../utils/safeLocalStorage';
 
 const QUOTA_KEY = 'battle_quota_blocked_until';
 const RATING_KEY = 'battle_last_rating';
 
 function read(key: string): string | null {
-  try { return localStorage.getItem(key); } catch { return null; }
+  return safeGetItem(key);
 }
 function write(key: string, value: string | null) {
-  try { if (value == null) localStorage.removeItem(key); else localStorage.setItem(key, value); } catch { /* 保存できない環境は何もしない */ }
+  try { if (value == null) requireLocalStorage().removeItem(key); else setItemOrThrow(key, value); } catch { /* 保存できない環境は何もしない */ }
 }
 
 /** Firestore のエラーを見て、無料枠の上限なら覚える */

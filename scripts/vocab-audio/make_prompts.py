@@ -4,7 +4,7 @@
   python3 scripts/vocab-audio/make_prompts.py
 
 出力（docs/elevenlabs_vocab/）
-  batches/<レベル>_<開始番号>-<終了番号>.txt … 1回の生成に貼る原稿（50語）
+  batches/<レベル>_<開始番号>-<終了番号>.txt … 1回の生成に貼る原稿（30語）
   ALL_PROMPTS.md                               … 全バッチを1つにまとめたもの（上から順にコピー）
   manifest.json                                … バッチ名 → 語ID の並び（cut.py が使う）
 
@@ -13,11 +13,12 @@
 """
 import json, os, sys
 sys.path.insert(0, os.path.dirname(__file__))
-from spoken import spoken
+from spoken import spoken, line_for_prompt
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 OUT = os.path.join(ROOT, 'docs', 'elevenlabs_vocab')
-BATCH = 50
+# 1回 30 語（＝間のタグ 29 個）。ElevenLabs 公式：「break タグが多すぎると、読む速さが上がったり雑音が入ることがある」
+BATCH = 30
 BREAK = '<break time="1.2s" />'
 LEVEL_ORDER = ['lv1', 'lv2', 'lv3', 'lv4', 'ilv1', 'ilv2', 'ilv3']
 LEVEL_LABEL = {'lv1': '単語 Lv1', 'lv2': '単語 Lv2', 'lv3': '単語 Lv3', 'lv4': '単語 Lv4', 'ilv1': '熟語 Lv1', 'ilv2': '熟語 Lv2', 'ilv3': '熟語 Lv3'}
@@ -31,12 +32,17 @@ def main():
     manifest, md, total_chars = {}, [], 0
     for lv in LEVEL_ORDER:
         ws = by[lv]
-        for i in range(0, len(ws), BATCH):
-            chunk = ws[i:i + BATCH]
+        # 均等に分ける（最後の回が1〜2語だけになると、間の数で確かめられない）
+        k = -(-len(ws) // BATCH)
+        base, extra = divmod(len(ws), k)
+        sizes = [base + (1 if j < extra else 0) for j in range(k)]
+        starts = [sum(sizes[:j]) for j in range(k)]
+        for i, size in zip(starts, sizes):
+            chunk = ws[i:i + size]
             a, b = i + 1, i + len(chunk)
             name = f'{lv}_{a:04d}-{b:04d}'
-            # 文末に「.」を付けて、1語ずつ言い切る読み方にする（疑問調・続く調子にしない）
-            lines = [spoken(w['word']).rstrip('.') + '.' for w in chunk]
+            # 文末に「.」を付けて、1語ずつ言い切る読み方にする（疑問文だけは ? のまま）
+            lines = [line_for_prompt(w['word']) for w in chunk]
             text = f' {BREAK}\n'.join(lines)
             open(os.path.join(OUT, 'batches', name + '.txt'), 'w').write(text + '\n')
             manifest[name] = {'level': lv, 'from': a, 'to': b, 'ids': [w['id'] for w in chunk],

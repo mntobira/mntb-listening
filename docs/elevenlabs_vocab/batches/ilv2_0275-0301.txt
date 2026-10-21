@@ -1,0 +1,27 @@
+weather permitting. <break time="1.2s" />
+be indifferent to. <break time="1.2s" />
+be devoid of. <break time="1.2s" />
+diagnose A as B. <break time="1.2s" />
+embark on. <break time="1.2s" />
+inquire into. <break time="1.2s" />
+in haste. <break time="1.2s" />
+make haste. <break time="1.2s" />
+make allowances for. <break time="1.2s" />
+be indispensable to. <break time="1.2s" />
+make amends for. <break time="1.2s" />
+be considerate of. <break time="1.2s" />
+in retrospect. <break time="1.2s" />
+objectively speaking. <break time="1.2s" />
+specialize in. <break time="1.2s" />
+abound in. <break time="1.2s" />
+frown at. <break time="1.2s" />
+be versed in. <break time="1.2s" />
+pave the way for. <break time="1.2s" />
+How come someone does? <break time="1.2s" />
+skim over. <break time="1.2s" />
+furnish A with B. <break time="1.2s" />
+go astray. <break time="1.2s" />
+keep abreast of. <break time="1.2s" />
+inasmuch as much as. <break time="1.2s" />
+ascribe A to B. <break time="1.2s" />
+something of a.

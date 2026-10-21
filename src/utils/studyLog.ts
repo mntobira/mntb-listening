@@ -9,6 +9,7 @@
  *     ・対戦       … 1試合
  *   items には小問ごとの ○× と、間違えたときの正解を持つ。
  */
+import { requireLocalStorage, safeParseJson, setItemOrThrow } from './safeLocalStorage';
 export const STUDY_LOG_DAYS = 3;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_ENTRIES = 120;
@@ -45,10 +46,8 @@ const keyOf = (uid: string | null | undefined) => `study_log_v1_${uid || 'guest'
 
 export function loadStudyLog(uid: string | null | undefined, now = Date.now()): StudyLogEntry[] {
   try {
-    const raw = localStorage.getItem(keyOf(uid));
-    const list = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(list)) return [];
-    return (list as StudyLogEntry[])
+    const list = safeParseJson<StudyLogEntry[]>(requireLocalStorage().getItem(keyOf(uid)), [], Array.isArray);
+    return list
       .filter(e => e && typeof e.at === 'number' && now - e.at < STUDY_LOG_DAYS * DAY_MS && Array.isArray(e.items))
       .sort((a, b) => b.at - a.at);
   } catch { return []; }
@@ -67,7 +66,7 @@ export function recordStudyLog(uid: string | null | undefined, entry: StudyLogEn
       merged = { ...prev, ...entry, items: [...byId.values()] };
       list.splice(at, 1);
     }
-    localStorage.setItem(keyOf(uid), JSON.stringify([merged, ...list].slice(0, MAX_ENTRIES)));
+    setItemOrThrow(keyOf(uid), JSON.stringify([merged, ...list].slice(0, MAX_ENTRIES)));
   } catch { /* 記録できなくても学習は止めない */ }
 }
 

@@ -7,6 +7,7 @@ import { isNativeApp } from '../native/platform';
 import { loadReviewList } from './reviewList';
 import { lastActiveKey, streakKey } from './userStorageKeys';
 import { planReminders, readReminderPrefs, type PlannedReminder } from './studyReminders';
+import { requireLocalStorage } from './safeLocalStorage';
 
 export type ReminderPermission = 'granted' | 'denied' | 'prompt' | 'unsupported';
 
@@ -14,8 +15,9 @@ function currentInput(now = Date.now()) {
   const uid = auth.currentUser?.uid || 'guest';
   let streak = 0; let lastActive: string | null = null;
   try {
-    streak = parseInt(localStorage.getItem(streakKey(uid)) || '0', 10) || 0;
-    lastActive = localStorage.getItem(lastActiveKey(uid));
+    const ls = requireLocalStorage(); // 読めない端末では同じ catch に入る（元の動きのまま・C-17）
+    streak = parseInt(ls.getItem(streakKey(uid)) || '0', 10) || 0;
+    lastActive = ls.getItem(lastActiveKey(uid));
   } catch { /* 読めなければ連続日数の通知は出さない */ }
   return { now, reviewDueAts: loadReviewList(uid).map(i => i.dueAt).filter(Number.isFinite), streak, lastActive };
 }

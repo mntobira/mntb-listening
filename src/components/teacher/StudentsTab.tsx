@@ -316,7 +316,7 @@ const StudentRow: React.FC<StudentRowProps> = ({
             <p className="text-lg font-bold leading-none" style={{ color: theme.accent }}>
               {engagement.score}
             </p>
-            <p className="text-[10px] text-[#9BA3AE]">取り組み度</p>
+            <p className="text-xs text-[#9BA3AE]">取り組み度</p>
           </div>
         )}
       </div>
@@ -342,7 +342,7 @@ const StudentRow: React.FC<StudentRowProps> = ({
           title={`未処理 ${engagement.breakdown.upkeep}/15`}
         />
       </div>
-      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-[#6B7280] mb-2.5">
+      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-[#6B7280] mb-2.5">
         <span>継続 {engagement.breakdown.continuity}/50</span>
         <span>立て直し {engagement.breakdown.recovery}/35</span>
         <span>未処理 {engagement.breakdown.upkeep}/15</span>

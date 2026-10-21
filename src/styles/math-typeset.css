@@ -1,0 +1,221 @@
+/* src/styles/math-typeset.css — index.css から分割（C-16）：6b〜6d. 数式表記・KaTeX・記号パレット。
+ * 読み込み順は index.css の @import の並びで固定（並べ替えるとカスケードが変わる）。 */
+/* =========================================================
+ * 6b. 数学記法（textFormatter の convertMathNotation が生成）
+ *  教科書と同じ見た目で ∫Σlim・根号・分数を描画するためのクラス。
+ *  数式は font-math（STIX Two Math 系）で統一する。
+ * ========================================================= */
+
+/* 上下限つきの大きな演算子（∫[a→b]・Σ[k=1→n]） */
+.math-bigop {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 0.08em;
+  font-family: var(--font-math);
+}
+.math-bigop-sym {
+  font-size: 1.9em;
+  line-height: 1;
+  font-weight: 400;
+}
+.math-bigop-lims {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-self: stretch;
+  font-size: 0.62em;
+  line-height: 1.15;
+  padding: 0.1em 0 0.1em 0.12em;
+  text-align: left;
+}
+/* 上下限のない ∫・Σ 単体も教科書サイズに */
+.math-bigop-solo {
+  font-family: var(--font-math);
+  font-size: 1.55em;
+  line-height: 1;
+  vertical-align: -0.12em;
+  margin: 0 0.05em;
+}
+
+/* 極限 lim（真下に n→∞） */
+.math-lim {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 0.15em;
+  font-family: var(--font-math);
+  line-height: 1;
+}
+.math-lim-main { font-size: 1.05em; }
+.math-lim-under { font-size: 0.62em; margin-top: 0.15em; }
+
+/* 根号：中身の真上に横線を伸ばす */
+.math-sqrt {
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: middle;
+  font-family: var(--font-math);
+  margin: 0 0.06em;
+}
+.math-sqrt-body {
+  border-top: 1.5px solid currentColor;
+  padding: 0.08em 0.15em 0 0.1em;
+  margin-left: -0.08em;
+  line-height: 1.25;
+}
+
+/* =========================================================
+ * 6c. KaTeX で組んだ数式（mathTypeset.ts → renderLatex）
+ *
+ *  ■ 方針
+ *   数式そのものの字形・配置は KaTeX（TeX の組版アルゴリズム）に任せる。
+ *   ここで足すのは「本文となじませるための調整」だけ:
+ *     ・和文本文の中で数式が浮かないサイズ・行間
+ *     ・暗い背景（演習モードの解説）でも読める色
+ *     ・長い式がスマホで画面外に切れずに横スクロールできること
+ * ========================================================= */
+.mtb-math {
+  /* 数式は本文（手書き系フォント）より少し大きい方が字形が読み取れる */
+  font-size: 1.06em;
+  /* 数式の途中で改行されないようにし、はみ出す場合だけ横スクロールさせる */
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: .15em;
+}
+.mtb-math .katex {
+  /* KaTeX 既定の 1.21em は和文の中では大きすぎるので、本文比で揃える */
+  font-size: 1.05em;
+  /* 数式の色は本文の色をそのまま継承（明背景・暗背景の両方に対応） */
+  color: inherit;
+  line-height: 1.35;
+}
+/* 別行立て（$$…$$）は中央寄せせず左揃えにする。
+ * 教科書の例題は左揃えの方が「途中式の縦の並び」が追いやすい。 */
+.mtb-math-block {
+  display: block;
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* スマホで横スクロールするときに端が切れて見えないよう余白を持たせる */
+  padding-bottom: 0.15em;
+}
+.mtb-math-block .katex-display {
+  margin: 0;
+  text-align: left;
+}
+.mtb-math-block .katex-display > .katex {
+  text-align: left;
+}
+/* 行内の長い数式がスマホ幅を超えたときの保険（切り捨てず横スクロール） */
+.mtb-math > .katex {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+/* KaTeX の変換に失敗した場合のフォールバック（元テキストを等幅で見せる） */
+.mtb-math-fallback {
+  font-family: var(--font-math), 'Cambria Math', 'Times New Roman', serif;
+  font-style: italic;
+}
+
+/* 対戦では分数の高さを確保し、長い式も省略せず読めるようにする。 */
+.battle-text {
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+}
+.battle-text .mtb-math {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25em 0.1em;
+  vertical-align: middle;
+  white-space: normal;
+  overflow-wrap: normal;
+}
+.battle-text .mtb-math > .katex {
+  overflow: visible;
+}
+
+/* 数学の問題・解説を大きく読みやすくするラッパー
+ * （Quiz / Explanation で科目が数学のときに付与する） */
+.math-content {
+  font-size: 1.13em;
+  line-height: 2.05;
+}
+.math-content .math-bigop { margin: 0.1em 0.12em; }
+/* 数学ページでは数式をさらに一段大きく（分数の分母・指数まで読めるように） */
+.math-content .mtb-math .katex { font-size: 1.12em; }
+@media (min-width: 768px) {
+  .math-content { font-size: 1.18em; }
+}
+
+/* =========================================================
+ * 6d. 記号パレットのボタン面（化学記号パレット／数学記号パレット）
+ *
+ *  ■ 方針
+ *   パレットのボタンには「解答欄・解説に実際に出るのと同じ組版」を
+ *   KaTeX / mhchem で描いている（src/data/symbolPalettes.ts の tex）。
+ *   ただし本文用のサイズ（1.05em）だと 56px 角のボタンの中では小さく、
+ *   H₂O の添字や □² の上付きが読み取れない。
+ *   ボタンの中だけ一段大きくし、指で押す前に何の記号か分かるようにする。
+ *
+ *  ■ ボタン面では横スクロールさせない
+ *   本文の .mtb-math は長い式を横スクロールさせるが、ボタンの中に
+ *   スクロール領域があるとタップがスクロール操作に取られて反応しなくなる。
+ *   ボタン面の式はどれも短いので、スクロールを無効にする。
+ * ========================================================= */
+.palette-face .mtb-math {
+  /* ボタン内での縦位置を中央に揃える（caption と重心を合わせる） */
+  vertical-align: middle;
+}
+.palette-face .mtb-math .katex {
+  /* 本文 1.05em → 1.3em。□ の添字・上付きが視認できる最小サイズ。 */
+  font-size: 1.3em;
+  line-height: 1.2;
+}
+.palette-face .mtb-math > .katex {
+  /* ★タップを奪うスクロールを作らない★ */
+  overflow: visible;
+}
+
+/* Marker highlight (蛍光ペン風) */
+.marker {
+  background: linear-gradient(transparent 60%, var(--color-highlight) 60%);
+  padding: 0 0.15em;
+}
+
+/* 本文・化学式・解説エリアのタイポグラフィ・ユーティリティ（C3）。
+ * CSS 変数を参照するため、テーマ側の値変更が一箇所で反映される。 */
+.text-body {
+  font-size: var(--font-body);
+  line-height: 1.7;
+}
+.text-chem {
+  font-size: var(--font-chem);
+  line-height: 1.6;
+}
+.leading-explanation {
+  line-height: var(--leading-explanation);
+}
+
+/* セマンティックカラー・ユーティリティ（色だけに依存しないよう、
+ * 使用側で ✓ / ✗ / 💡 アイコンやラベルと併用すること）。 */
+.text-correct { color: var(--color-correct); }
+.text-wrong   { color: var(--color-wrong); }
+.text-hint    { color: var(--color-hint); }
+.bg-correct-soft { background-color: color-mix(in srgb, var(--color-correct) 12%, white); }
+.bg-wrong-soft   { background-color: color-mix(in srgb, var(--color-wrong) 12%, white); }
+.bg-hint-soft    { background-color: color-mix(in srgb, var(--color-hint) 14%, white); }
+.border-correct { border-color: color-mix(in srgb, var(--color-correct) 40%, transparent); }
+.border-wrong   { border-color: color-mix(in srgb, var(--color-wrong) 40%, transparent); }
+.border-hint    { border-color: color-mix(in srgb, var(--color-hint) 40%, transparent); }

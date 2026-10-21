@@ -35,7 +35,7 @@
 
 import { doc, setDoc, serverTimestamp } from './firestoreMetered';
 import { auth, db } from '../firebase';
-import { safeLocalStorage } from './safeLocalStorage';
+import { safeLocalStorage, safeParseJson } from './safeLocalStorage';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey, streakKey, completedKey } from './userStorageKeys';
 // タイムアウト付き fetch と 15秒のタイムアウト値は、フィードバック
@@ -136,11 +136,13 @@ function readLocalStats(uid: string): { streak: number; completedCount: number; 
   let grade: string | null = null;
   try {
     streak = parseInt(storage?.getItem(streakKey(uid)) || '0', 10) || 0;
+    // ★ここは safeParseJson にしない（C-18）★ 壊れていたら、この下のプロフィールも読まずに既定値で返す。
+    //   握りつぶすと「完了数 0・名前あり」という、今までと違う組み合わせを返してしまう。
     const completed = JSON.parse(storage?.getItem(completedKey(uid)) || '[]');
     completedCount = Array.isArray(completed) ? completed.length : 0;
     const raw = storage?.getItem(profileKey(uid));
     if (raw) {
-      const parsed = JSON.parse(raw);
+      const parsed = safeParseJson<{ name?: string; grade?: string } | null>(raw, null);
       profileName = parsed?.name || null;
       grade = parsed?.grade || null;
     }
@@ -249,8 +251,8 @@ function decideEvent(uid: string): UserEventType | null {
   const storage = safeStorage();
   if (!storage) return 'active'; // 記録できない環境では毎回 active 扱い（数は追える）
   try {
-    const raw = storage.getItem(LAST_SYNC_KEY);
-    const map = raw ? JSON.parse(raw) : {};
+    // 壊れた JSON は {}（＝未同期）。元の catch と同じく 'signup' になる
+    const map = safeParseJson<Record<string, unknown> | null>(storage.getItem(LAST_SYNC_KEY), {});
     const last = map?.[uid];
     if (!last) return 'signup';
     if (Date.now() - Number(last) >= ACTIVE_RESYNC_INTERVAL_MS) return 'active';
@@ -264,6 +266,7 @@ function markSynced(uid: string): void {
   const storage = safeStorage();
   if (!storage) return;
   try {
+    // ★ここは safeParseJson にしない（C-18）★ 壊れた記録を {} で上書きしない（元のまま書き込みを諦める）
     const raw = storage.getItem(LAST_SYNC_KEY);
     const map = raw ? JSON.parse(raw) : {};
     map[uid] = Date.now();

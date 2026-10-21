@@ -1,0 +1,188 @@
+/* src/styles/theme-base.css — index.css から分割（C-16）：Tailwind テーマトークン（@theme）・Base・Form。
+ * 読み込み順は index.css の @import の並びで固定（並べ替えるとカスケードが変わる）。 */
+
+/* =========================================================
+ * 1. Tailwind Theme Tokens (Tailwind v4)
+ * ========================================================= */
+@theme {
+  /* Brand */
+  --color-ivory: #FDFBF7;
+  --color-paper: #F4F1EA;
+  --color-dusty-pink: #D9A0A0;
+  --color-sky-blue: #A9CCE3;
+  --color-mild-yellow: #F9E79F;
+  --color-navy: #1B2631;
+  --color-navy-ink: #2C3E50;
+
+  /* Semantic (Light Default) */
+  --color-bg: #F4F1EA;
+  --color-surface: #FDFBF7;
+  --color-surface-2: #FFFFFF;
+  --color-ink: #1B2631;
+  --color-ink-sub: #5D6D7E;
+  --color-line: #E5E7EB;
+  --color-accent: #D9A0A0;
+  --color-accent-2: #A9CCE3;
+  --color-highlight: #F9E79F;
+  --color-success: #58D68D;
+  --color-warning: #F5B041;
+  --color-danger: #E74C3C;
+
+  /* Semantic feedback colors (採点フィードバック用・アイコンと併用) — C3
+   * WCAG AA（本文コントラスト比 4.5:1 以上）を意識した濃いめの色を採用。 */
+  --color-correct: #1E7D46;  /* 正解（緑・濃いめ） */
+  --color-wrong:   #C0392B;  /* 不正解（赤・濃いめ） */
+  --color-hint:    #B7791F;  /* ヒント/注意（アンバー・濃いめ） */
+
+  /* Typography sizes (C3)
+   * 本文はスマホでも最小 16px を確保し、可読性を担保する。
+   * 化学式エリアは上付き・下付きが潰れないよう 1.1rem 以上。 */
+  --font-body: 1rem;        /* = 16px 本文最小サイズ */
+  --font-chem: 1.1rem;      /* 化学式エリア（1.1rem 以上） */
+  --leading-explanation: 1.7;  /* 解説エリアの行間 */
+
+  /* Typography */
+  /* 手書き風フォント（日本語対応 Google Fonts）。
+     Yomogi を主体に、Klee One / Kaisei Decol をフォールバックとして併用し、
+     ロジックツリー・フローチャートの文字を手書き感のある表示に統一する。 */
+  --font-handwriting: 'Yomogi', 'Klee One', 'Kaisei Decol', "Hiragino Maru Gothic ProN", "Hiragino Sans", cursive;
+  --font-modern: 'Inter', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', sans-serif; /* = --mt-font-body */
+  /* 数式・化学式向けフォント。
+   * 上付き／下付き（H⁺, CH₃, 10⁻³ など）や演算子が崩れない、
+   * 数学組版に適したセリフ系を優先しつつ、日本語は明朝/ゴシックでフォールバックする。 */
+  --font-math: 'STIX Two Math', 'Cambria Math', 'Latin Modern Math', 'Times New Roman', 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+
+  /* Shadow */
+  --shadow-soft: 0 4px 12px rgba(28, 38, 49, 0.06), 0 2px 4px rgba(28, 38, 49, 0.04);
+  --shadow-card: 0 10px 25px -8px rgba(28, 38, 49, 0.10), 0 4px 8px -4px rgba(28, 38, 49, 0.06);
+  --shadow-pop: 0 20px 40px -12px rgba(28, 38, 49, 0.18);
+}
+
+/* =========================================================
+ * 3. Base
+ * ========================================================= */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* キーボード操作時のフォーカスリング（アクセシビリティ向上）
+ * - マウス/タップ時は表示せず、Tabキー等のキーボード操作時のみ表示 */
+:focus-visible {
+  outline: 2px solid #E8688E;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* インタラクティブ要素の押下フィードバックを統一（軽い沈み込み） */
+button:not(:disabled):active,
+a:active,
+[role="button"]:not([aria-disabled="true"]):active {
+  transform: translateY(0.5px) scale(0.995);
+}
+
+html {
+  scroll-behavior: smooth;
+  /* オーバースクロールによるブラウザの引っ張り更新（pull-to-refresh）を抑止。
+   * スマホでピンチ/オーバースクロール時に意図しないリロードが起きる問題への対策。 */
+  overscroll-behavior-y: none;
+}
+
+/* 上付き・下付きの標準スタイル（C3）。
+ * H₂O / Cu²⁺ / 10⁻³ などが行の高さを崩さず、かつ読みやすいサイズに。 */
+sub, sup {
+  font-size: 0.85em;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+body {
+  /* ダブルタップズームの遅延・誤作動を避けつつ通常操作を維持する。
+   * （ピンチによる拡大自体はアクセシビリティのため viewport 側で許可） */
+  touch-action: manipulation;
+  overscroll-behavior-y: none;
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(rgba(28, 38, 49, 0.06) 1.2px, transparent 1.2px),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  background-size: 28px 28px, 220px 220px;
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-modern);
+  font-feature-settings: "palt";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Safe areas belong to the app shell/nav, not outside a 100dvh child. */
+  margin: 0;
+  min-height: 100dvh;
+}
+
+/* =========================================================
+ * 4. Form (iOS friendly)
+ * ========================================================= */
+input, textarea, select, button {
+  font-family: inherit;
+}
+
+/* 設定画面専用のコンパクトフォーム。機能を維持したまま1画面に収める。 */
+.compact-input {
+  width: 100%;
+  padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: #1B2631;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.compact-action {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* iOS/モバイルの自動ズーム防止。
+ * 入力欄（input/textarea/select）の実効 font-size が 16px 未満だと、
+ * iOS Safari はフォーカス時に画面を自動拡大する。
+ * これを全画面・全問題形式で確実に防ぐため、以下の2条件のいずれかで 16px を強制する。
+ *   1) ビューポート幅 768px 以下（従来のスマホ相当）
+ *   2) 粗いポインタ＝タッチ主体のデバイス（幅が 768px を超える
+ *      タブレット/横向き等でも、md: ブレークポイントで text-sm(14px) に
+ *      戻ってしまうケースを含めて確実にズームを防ぐ）
+ * Tailwind の md:text-sm 等より優先させるため !important を付与する。 */
+@media screen and (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+@media (pointer: coarse) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+input, textarea, select {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible {
+  outline: 2px solid var(--color-accent-2);
+  outline-offset: 2px;
+}

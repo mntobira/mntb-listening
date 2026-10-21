@@ -1,4 +1,4 @@
-import {mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync} from 'node:fs';
+import {mkdirSync, readFileSync, writeFileSync, existsSync} from 'node:fs';
 import {resolve, dirname, basename, relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';

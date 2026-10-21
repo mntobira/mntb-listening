@@ -5,6 +5,8 @@ import { stopSpeech } from '../utils/listeningSpeech';
 import { useSupportProgress } from './foundationShared';
 import { FoundationWords } from './FoundationWords';
 import { VocabQuiz } from './VocabQuiz';
+// 英文解釈は本文データが大きいので、開いたときだけ読み込む
+const ReadingQuiz = React.lazy(() => import('./ReadingQuiz').then(m => ({ default: m.ReadingQuiz })));
 import './foundation.css';
 import { pauseAllAudio } from '../utils/audioElements';
 
@@ -21,7 +23,7 @@ import { pauseAllAudio } from '../utils/audioElements';
  *   - リスニング（主役）とは別のページ。リスニングは「学習」から、ここはホームの帯から入る。
  */
 /** 'grammar'（旧：聞き取りの文法）は 2026-10-01 に廃止。古い保存値・呼び出しは単語帳に寄せる */
-export type FoundationTab = 'words' | 'quiz' | 'more' | 'grammar';
+export type FoundationTab = 'words' | 'quiz' | 'reading' | 'more' | 'grammar';
 
 export interface FoundationPageProps {
   tab: FoundationTab;
@@ -42,7 +44,7 @@ export interface FoundationPageProps {
 export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = 'ホーム', onGrammarUnits, onPractice, onBattle, onReview, onListening }: FoundationPageProps) {
   // ★2026-10-01 夜：暗記帳（単語帳）と問題（4択）は1ページの中のタブで分けず、別々のページにする★
   //   「演習する」で 問題＝他の単元と同じ列、暗記帳＝「覚える」の別枠 から入る。'more'（その他）は廃止して暗記帳へ。
-  const tab: 'words' | 'quiz' = rawTab === 'quiz' ? 'quiz' : 'words';
+  const tab: 'words' | 'quiz' | 'reading' = rawTab === 'quiz' ? 'quiz' : rawTab === 'reading' ? 'reading' : 'words';
   void onGrammarUnits; void onBattle; void onReview; void onListening;
   const { progress, error, mark } = useSupportProgress(uid);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -55,18 +57,28 @@ export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = '�
   return <main className="fd-page" data-foundation data-tab={tab}>
     <header className="fd-head">
       <button type="button" className="fd-back" onClick={onBack} aria-label={`${backLabel}へ戻る`}><ChevronLeft size={18} aria-hidden="true" /><span>{backLabel}</span></button>
-      <div className="fd-head-title">{tab === 'quiz'
+      <div className="fd-head-title">{tab === 'reading'
+        ? <><h1>英文解釈</h1><p>段落ごとに読んで、内容一致の4択。</p></>
+        : tab === 'quiz'
         ? <><h1>英単語・英熟語</h1><p>4択の問題で確かめる。</p></>
         : <><h1>英単語帳（暗記帳）</h1><p>100語ずつめくって覚える。</p></>}</div>
       <div className="fd-info">
-        <button type="button" className="fd-info-btn" aria-expanded={infoOpen} aria-controls="fd-info-pop" aria-label="保存と収録についての説明" onClick={() => setInfoOpen(v => !v)}><Info size={18} aria-hidden="true" /></button>
+        <button type="button" className="fd-info-btn" aria-expanded={infoOpen} aria-controls="fd-info-pop" aria-label={tab === 'reading' ? '英文解釈についての説明' : '保存と収録についての説明'} onClick={() => setInfoOpen(v => !v)}><Info size={18} aria-hidden="true" /></button>
         {infoOpen && <div id="fd-info-pop" role="dialog" aria-label="保存と収録について" className="fd-info-pop">
           <button type="button" aria-label="説明を閉じる" onClick={() => setInfoOpen(false)}><X size={16} aria-hidden="true" /></button>
+          {tab === 'reading' ? <>
+          <p>文章はすべてマナトビのオリジナルです（実在の入試問題・市販教材の文章は使っていません）。</p>
+          <p>Lv1 基礎（高1・共通テスト基礎）／Lv2 標準（共通テスト・日東駒専）／Lv3 応用（GMARCH・関関同立・地方国立）／Lv4 難関（早慶・旧帝大）／Lv5 最難関（東大・京大・医学部）。Lv4・5 は問いも英語です。</p>
+          <p>1段落ずつ読んで答えます（スクロールなしで読める長さ）。前の段落は ①②③ で見返せます。</p>
+          <p>解説には根拠の英文と和訳・構文・重要表現と、その形式がよく出る大学（一般的な出題傾向の目安）を載せています。</p>
+          <p>記録（最高点・間違えた設問）はこの端末とアカウントに保存します。</p>
+          </> : <>
           <p>覚えた印はこの端末・アカウントに保存します（クラウド同期・コイン加算なし）。</p>
           <p>単語・熟語は全{VOCABULARY_COUNT.toLocaleString()}語。複数の公開語彙リストを合算し、重要度で再編したマナトビ独自の編成です。</p>
           <p>「リスニングに出る語」は教材スクリプトに同じ綴りがある語です。語形変化・言い換えは結び付けていません。</p>
           <p>「志望校別」は、志望校の出題レベルに合わせて範囲を自分で選びます。</p>
           <p>読み上げの声・対応状況は端末によって異なります。</p>
+          </>}
         </div>}
       </div>
     </header>
@@ -74,6 +86,8 @@ export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = '�
     {error && <p role="alert" className="fd-error">{error}</p>}
 
     {tab === 'words' && <FoundationWords known={known} onMark={(id, done) => mark('words', id, done)} onPractice={onPractice} />}
+
+    {tab === 'reading' && <React.Suspense fallback={<section className="fd-panel fd-loading" role="status">文章を読み込んでいます…</section>}><ReadingQuiz uid={uid} /></React.Suspense>}
 
     {tab === 'quiz' && <VocabQuiz uid={uid} known={known} onMark={(id) => mark('words', id, true)} onWordbook={() => onTab('words')} />}
 

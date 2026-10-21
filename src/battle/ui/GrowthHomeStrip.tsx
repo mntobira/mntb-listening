@@ -45,7 +45,7 @@ export function GrowthHomeStrip({ onProfile, onMissions, onShop, onBadges, onWal
     <div className="mana-player-row">
       {!homeLayout && <><button type="button" onClick={onProfile} className="mana-avatar-button" aria-label="とびら君をきせかえる"><GrowthAvatar progress={progress} size={76} /></button>
       <div className="mana-player-info">
-        <p className="mana-eyebrow">MY TOBIRA</p>
+        <p className="mana-eyebrow">マイとびら</p>
         <p className="mana-title">{equippedTitleLabel(progress) || 'とびら君と、ひとつ先へ。'}</p>
         <LevelBar xp={progress.xp} compact />
         <p className="mana-player-meta"><Flame size={12} /> ボーナス連続 {progress.loginStreak}日 <span>累計 {progress.xp.toLocaleString()} XP</span></p>

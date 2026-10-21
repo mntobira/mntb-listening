@@ -27,7 +27,7 @@ export function ClassesTab({ classrooms, theme, copiedCode, onCopyCode, onToggle
                 <p className="text-xs text-[#6B7280]">{room.schoolName}</p>
                 <p className="text-base font-bold text-[#1B2631]">{room.className}</p>
                 <span
-                  className={`inline-block mt-1.5 px-2 py-0.5 rounded-md text-[11px] ${roomTheme.chipTextClass} ${roomTheme.chipBgClass}`}
+                  className={`inline-block mt-1.5 px-2 py-0.5 rounded-md text-xs ${roomTheme.chipTextClass} ${roomTheme.chipBgClass}`}
                 >
                   {roomTheme.label}
                 </span>

@@ -44,6 +44,9 @@
 .league-tabs,.league-actions { display:flex; gap:5px; flex-shrink:0; }
 .league-tabs button,.league-actions button { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; }
 .league-tabs [aria-selected=true],.league-actions [aria-current=page] { background:#f6e4b6; border-color:#b18434; }
+.league-top-switch { display:flex; gap:5px; flex-shrink:0; }
+.league-top-switch button { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; min-height:44px; border:1px solid #d8c7a5; border-radius:12px; background:#fffdf7; color:#5d503f; font-weight:900; }
+.league-top-switch button[aria-current=page] { background:#f6e4b6; border-color:#b18434; color:#3d3222; }
 .league-my-card { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1.5px solid; border-radius:18px; flex-shrink:0; }
 .league-my-card div { flex:1; min-width:0; }
 .league-my-card strong { display:block; font-size:19px; font-weight:900; }
@@ -168,3 +171,72 @@
 .league-other > span { display: block; padding: 4px 8px; border: 1px solid #b9ad97; border-radius: 10px; background: rgba(255,255,255,.85); color: #4b5a66; font-size: 12px; font-weight: 800; line-height: 1.25; text-align: center; white-space: nowrap; }
 .league-other select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
 .league-other:focus-within > span { outline: 2px solid #b18434; outline-offset: 1px; }
+
+/* ===== 2026-10-20：ランキングの見直し =====
+   ① 次のリーグまでのバー：いまのリーグ色→次のリーグ色のグラデーション＋両端の札＋「あと○」を大きく
+   ② スマホ：上の部品を低くまとめ、一覧（.league-scroll）の高さを広げる。下の「この範囲で1位」バーは削除済み
+   元に戻すときはこのブロックを消し、Leaderboard.tsx の league-progress-rich を元の <progress> に戻す */
+.league-progress-rich { display: flex; align-items: center; gap: 6px; padding: 7px 10px; border: 1.5px solid #e6d6b2; border-radius: 14px; background: linear-gradient(180deg, #fffdf6, #fbf2dc); flex-shrink: 0; }
+.league-progress-rich .lp-chip { flex-shrink: 0; padding: 2px 8px; border-radius: 999px; color: #fff; font-size: 12px; font-weight: 900; line-height: 1.4; letter-spacing: .02em; box-shadow: inset 0 -1.5px 0 #0003; }
+.league-progress-rich .lp-track { position: relative; flex: 1; min-width: 40px; height: 14px; border: 1.5px solid #e2d3b6; border-radius: 999px; background: #fff; overflow: hidden; box-shadow: inset 0 1px 2px #0000001a; }
+.league-progress-rich .lp-track i { position: relative; display: block; height: 100%; overflow: hidden; border-radius: inherit; background: linear-gradient(90deg, var(--from), var(--to)); transition: width .9s cubic-bezier(.34, 1.56, .64, 1); }
+/* つやの帯（transform だけで流す・低スペック規則 L-05） */
+.league-progress-rich .lp-track i::after { content: ''; position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, #ffffff8c, transparent); transform: translateX(-120%); animation: lp-shine 2.4s linear infinite; }
+@keyframes lp-shine { from { transform: translateX(-120%); } to { transform: translateX(320%); } }
+.league-progress-rich .lp-remain { flex-shrink: 0; font-size: 12px; font-weight: 800; color: #3c4f6b; white-space: nowrap; }
+.league-progress-rich .lp-remain strong { margin-left: 2px; font-size: 20px; font-weight: 900; line-height: 1; color: #1f3354; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .league-progress-rich .lp-track i { transition: none; } .league-progress-rich .lp-track i::after { animation: none; display: none; } }
+
+@media (max-width: 899px) {
+  .league-hall { gap: 6px; padding-inline: 10px; }
+  .league-hall .league-header { min-height: 44px; }
+  .league-hall .league-header h1 { font-size: 20px; }
+  /* 自分のカード：説明文は1行で切る・高さを詰める */
+  .league-hall .league-my-card { padding: 5px 10px; gap: 8px; }
+  .league-hall .league-my-card small, .league-hall .league-my-card span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .league-hall .league-my-card > svg { width: 22px; height: 22px; flex-shrink: 0; }
+  /* シーズンの帯は1行だけ（期間はたたむ） */
+  .league-hall .season-card > summary { min-height: 40px; padding: 4px 10px; }
+  .league-hall .season-card > summary .season-when { display: none; }
+  /* 一覧はできるだけ広く */
+  .league-hall .league-scroll { min-height: 240px; flex: 1 1 auto; }
+}
+@media (max-width: 899px) and (max-height: 700px) {
+  .league-hall .league-metric button, .league-hall .league-tabs.is-scope button { min-height: 44px; padding-block: 0; }
+  .league-hall .league-my-card span { display: none; }
+  .league-hall .league-scroll { min-height: 160px; }
+}
+/* シーズン報酬を開いたときは中身だけスクロール（一覧を押し出しすぎない） */
+.season-card[open] > .season-body { max-height: 42dvh; overflow-y: auto; overscroll-behavior: contain; }
+/* スマホ：見出しの行と「ランキング／とびらバトル」の切替を1行にまとめて、一覧を広げる（2026-10-20）
+   見出しの「ランキング」の文字は切替ボタンが兼ねるので隠し、戻る・再読み込みは左右の端に置く */
+@media (max-width: 899px) {
+  .league-hall { position: relative; }
+  .league-hall > .league-header { position: absolute; top: 6px; left: 10px; right: 10px; min-height: 44px; pointer-events: none; }
+  .league-hall > .league-header > * { pointer-events: auto; }
+  .league-hall:has(> .league-top-switch) > .league-header > div { visibility: hidden; }
+  .league-hall:has(> .league-top-switch) > .league-top-switch { margin-inline: 52px; }
+  .league-hall:not(:has(> .league-top-switch)) > .league-header { position: static; }
+  .league-hall > .league-top-switch button { padding-inline: 6px; font-size: 14px; white-space: nowrap; }
+  .league-hall > .league-scroll { min-height: 0 !important; flex: 1 1 0; }
+}
+@media (max-width: 899px) and (max-height: 700px) {
+  .league-hall .league-metric { padding: 2px; }
+  .league-hall .league-metric button { min-height: 44px; font-size: 13px; }
+  .league-hall .league-my-card { padding-block: 3px; }
+  .league-hall .league-my-card > svg { display: none; }
+}
+/* 「もらえるもの」が左右に2回出ていたので右端の札だけに（2026-10-20） */
+.season-card > summary::after { content: 'もらえるもの ▼'; }
+.season-card[open] > summary::after { content: '閉じる ▲'; }
+/* スマホの一覧の行を低く（1画面に入る人数を増やす） */
+@media (max-width: 899px) {
+  .league-hall .league-rows li { min-height: 52px; padding-block: 6px !important; }
+  .league-hall .league-rows li em { display: flex; align-items: baseline; gap: 3px; }
+  .league-hall .league-rows li em small { font-size: 12px; }
+}
+@media (max-width: 899px) and (max-height: 700px) {
+  .league-hall .league-my-card small { display: none; }
+}
+/* 低い画面でも「他のリーグを見る」は押せる幅を残す */
+.league-hall .league-my-card .league-other { flex-shrink: 0; min-width: 64px; }

@@ -5,7 +5,8 @@ import { Dialog } from './ui';
 import { VOCAB_LEVELS, type ListeningWord, type VocabularyData } from '../data/listeningSupport';
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { stopSpeech, isSpeechSupported } from '../utils/listeningSpeech';
-import { sayWord } from './foundationShared';
+import { sayWord, prefetchVocabAudioIndex } from './foundationShared';
+import { hasVocabAudio, stopVocabAudio } from '../utils/vocabAudio';
 import { VOCAB_PREF_KEY } from '../utils/vocabGoal';
 import { wordNumbers } from '../data/vocabQuiz';
 import { pauseAllAudio } from '../utils/audioElements';
@@ -97,6 +98,8 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
   const [stage, setStage] = useState<'range' | 'book'>('range');
   const listRef = useRef<HTMLOListElement>(null);
 
+  // 録音の一覧を先に読んでおく（🔊のタップで待たずに鳴らすため）。画面を離れたら音を止める
+  useEffect(() => { prefetchVocabAudioIndex(); return () => stopVocabAudio(); }, []);
   useEffect(() => { try { safeLocalStorage()?.setItem(PREF_KEY, JSON.stringify(prefs)); } catch { /* 保存できなくても表示は続ける */ } }, [prefs]);
   useEffect(() => { try { safeLocalStorage()?.setItem(POS_KEY, JSON.stringify(pos)); } catch { /* 同上 */ } }, [pos]);
   useEffect(() => {
@@ -247,7 +250,7 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
                 <span className="fd-word-ja" data-hidden={(hide === 'ja' && !open && !peek.has(w.id)) || undefined}>{w.meaning}</span>
                 {(searching || w.examples.length > 0) && <span className="fd-word-tags">{searching && <i>{VOCAB_LEVELS[w.level]}</i>}{w.examples.length > 0 && <i className="fd-tag-listen">リスニング</i>}</span>}
               </button>
-              <button type="button" className="fd-icon" aria-label={`${w.word} を読み上げる`} disabled={!isSpeechSupported()} onClick={() => sayWord(w.id, w.word)}><Volume2 size={18} aria-hidden="true" /></button>
+              <button type="button" className="fd-icon" aria-label={`${w.word} を読み上げる`} disabled={!isSpeechSupported() && !hasVocabAudio(w.id)} onClick={() => sayWord(w.id, w.word)}><Volume2 size={18} aria-hidden="true" /></button>
               <button type="button" className="fd-icon fd-mark" aria-pressed={isKnown} aria-label={isKnown ? `${w.word} の覚えた印を外す` : `${w.word} を覚えた語にする`} onClick={() => onMark(w.id, !isKnown)}><Check size={18} aria-hidden="true" /></button>
             </div>
             {open && <WordDetail word={w} onPractice={onPractice} />}

@@ -1,0 +1,324 @@
+/* src/styles/ranking-screens.css — index.css から分割（C-16）：ランキング・設定・紹介・学習ナビ・読み物モード。
+ * 読み込み順は index.css の @import の並びで固定（並べ替えるとカスケードが変わる）。 */
+/* =========================================================
+ * ランキング（学習量）— スマホでは「固定＋スクロール」の2層にする
+ * =========================================================
+ *
+ * 利用者の指示：
+ *   「ランキング画面も基本一画面に入るでしょ？ モンストのランキングとかそういうのって、
+ *     固定されるところとスクロールしてるところが明確になってるわけでしょ？」
+ *
+ * 以前（スマホ 390x844 実測）：見出し 52 → 橋 48 → 説明文 22px+余白 40 → 全国/フレンド 52
+ *   → タブ 46 → 表彰台 ~230 → 自分カード ~110 → 一覧（1行 65px × 100 行）で、
+ *   ページ全体が縦にスクロールし、タブも見出しも一緒に流れて消えていた。
+ *
+ * 今：
+ *   ・.ranking-hall を画面の高さ（100dvh − 下部ナビ）に固定し、縦の flex にする
+ *   ・見出し／橋／全国・フレンド／タブ／章・期間 は上に留まる（flex: none）
+ *   ・.ranking-scroll（表彰台・自分カード・一覧）だけが中でスクロールする（flex: 1, min-height: 0）
+ *   ・「あなた」のカードは .ranking-scroll の中で position: sticky; top: 0 にして、
+ *     一覧を下へ流しても自分の順位が上に貼り付いて見え続ける（既存アプリと同じ作法）
+ *   ・下部ナビ（71px + safe-area）ぶんはスクロール領域の下に余白として確保する
+ *
+ * ★PC は 1px も変えない★ … すべて max-width: 767px の中。
+ * ★情報は 1 つも消していない★ … 説明文（キャプション）は小さくするだけ。
+ */
+@media (max-width: 767px) {
+  .ranking-hall {
+    /* min-h-screen（Tailwind）を上書きして、画面の高さぴったりに固定する。
+       下部ナビは fixed なので、ここでは 100dvh をそのまま使い、
+       ナビの高さは中のスクロール領域の下余白で吸収する。 */
+    height: 100dvh;
+    min-height: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+  }
+  .ranking-hall-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    padding-top: 12px;
+    padding-bottom: 0;
+  }
+  /* 固定される部分は伸び縮みしない */
+  .ranking-hall-inner > :not(.ranking-scroll) { flex: none; }
+  .ranking-hall-header { margin-bottom: 10px; min-height: 48px; }
+  .ranking-battle-bridge { margin-bottom: 8px; min-height: 44px; padding-block: 6px; }
+  .ranking-hall-caption { font-size: 14px; line-height: 1.4; margin-block: 4px 8px; }
+  .ranking-scope { margin-bottom: 8px; }
+  .ranking-scope > button { min-height: 40px; }
+  .ranking-tabs { margin-top: 0; margin-bottom: 8px; }
+  .ranking-tabs > button { padding-block: 8px; }
+  .ranking-subselect { margin-bottom: 8px; }
+
+  /* スクロールする部分 */
+  .ranking-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    /* 下部ナビ（実測 71px）＋ safe-area のぶんだけ最後の行が隠れないようにする */
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    /* 横方向の影が切れないように左右に 2px 余裕を持たせる */
+    margin-inline: -2px;
+    padding-inline: 2px;
+    /* 上端に薄い線を置き、「ここから下が動く」ことを目で分かるようにする */
+    border-top: 1px dashed #e4ccd6;
+    padding-top: 8px;
+  }
+  /* 「あなた」の順位カード：一覧を流しても上に貼り付く */
+  .ranking-scroll .ranking-me-card {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    box-shadow: 0 6px 14px -6px #1b263166;
+  }
+  .ranking-scroll .ranking-me-card > div:first-child > div:first-child > div:first-child {
+    width: 34px; height: 34px;
+  }
+  .ranking-podium-wrap { margin-bottom: 10px; }
+  .ranking-record-paper { min-height: 0; }
+  .ranking-record-paper li { min-height: 56px; }
+}
+
+/* 対戦ランキング（BattleRanking）— 同じ考え方。見出し・タブ・「もどる」は固定、一覧だけ中でスクロール。
+   下部ナビ（実測 71px）は fixed なので、その高さぶん shell の下余白で避ける。 */
+@media (max-width: 767px) {
+  #battle-shell.battle-ranking {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: calc(71px + env(safe-area-inset-bottom));
+  }
+  #battle-shell.battle-ranking > main { min-height: 0; padding-bottom: 8px; }
+  #battle-shell.battle-ranking > main > .notebook-paper { min-height: 0; }
+  #battle-shell.battle-ranking #battle-title { margin-bottom: 10px; }
+  #battle-shell.battle-ranking #battle-ranking-tabs { margin-bottom: 8px; }
+  #battle-shell.battle-ranking #battle-ranking-list {
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    margin-inline: -4px;
+    padding-inline: 4px;
+    border-top: 1px dashed #e4ccd6;
+    padding-top: 8px;
+  }
+  #battle-shell.battle-ranking .battle-ranking-note { padding-top: 12px; padding-bottom: 4px; }
+  #battle-shell.battle-ranking > footer { padding-bottom: 8px; }
+}
+
+/* 縦の短い端末（iPhone SE 系 568〜667px）：固定部をさらに詰めて一覧の行が 2 つ以上見えるようにする */
+@media (max-width: 767px) and (max-height: 700px) {
+  .ranking-hall-inner { padding-top: 8px; }
+  .ranking-hall-header { margin-bottom: 6px; min-height: 44px; }
+  .ranking-hall-header > button { width: 40px; height: 40px; }
+  .ranking-hall-header > div:nth-child(2) > div:first-child { width: 40px; height: 40px; }
+  .ranking-hall-caption { font-size: 12px; margin-block: 2px 6px; }
+  .ranking-scope > button { min-height: 36px; }
+  .ranking-tabs > button { padding-block: 6px; }
+  .ranking-podium-wrap { transform-origin: top center; }
+}
+/* Settings: readable notebook sections, never clip controls on short desktops. */
+.profile-journal .profile-tabs { margin-top: 12px; margin-bottom: 18px; }
+.profile-journal .profile-workspace { overflow-y: auto; align-items: start; gap: 16px; padding: 1px 5px 18px 1px; }
+.profile-workspace > div { display: flex; flex-direction: column; gap: 15px; }
+.profile-workspace section { border: 1px solid #e7d5de; border-radius: 4px 17px 17px 4px; padding: 17px; box-shadow: 3px 3px 0 #f1e3e9; background: #fffdfaf5; }
+.profile-workspace section h3 { color: #9c7088; border-bottom: 1px dashed #ead7e0; padding-bottom: 9px; margin-bottom: 12px; font-size: 11px; }
+.profile-journal header > button { min-height: 44px; min-width: 44px; border-radius: 50%; }
+.profile-workspace input:not([type="range"]), .profile-workspace select { min-height: 44px; }
+.profile-workspace .compact-action { min-height: 44px; border-radius: 50px; }
+/* App introduction reads as a guide, not as a wall of equal cards. */
+.intro-guide .intro-guide-paper { border: 0; box-shadow: none; background: transparent; padding: 16px 12px 80px; }
+.intro-guide .mtb-page-header button { min-width: 44px; min-height: 44px; }
+.intro-guide-lead { margin: 22px 0 30px; text-align: center; }
+.intro-guide-lead > p { font: 700 32px/1.5 var(--font-handwriting); color: #6b4f64; margin-top: 7px; }
+.intro-guide-paper > div:last-child > div { border-radius: 4px 20px 20px 4px; box-shadow: 3px 4px 0 #e5dce3; border-color: #e4d3df; }
+.intro-guide-paper > div:last-child > div:first-child { border-left: 5px solid #85b3cd; }
+.intro-guide-paper > div:last-child > div:nth-child(2) { border-left: 5px solid #d4bd8e; }
+.intro-guide-paper > div:last-child > div:last-child { border: 0; box-shadow: none; }
+.intro-guide a { background: transparent; border: 0; border-radius: 0; padding: 12px 5px; }
+@media (max-width: 479px) {
+  .study-journal-tabs > button { padding-inline: 7px; font-size: 11px; }
+  .ranking-hall-caption { font-size: 20px; }
+  .profile-journal .profile-tabs { margin-bottom: 12px; }
+}
+
+/* Final mobile legibility and safe reachability adjustments. */
+.mode-desk { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom)); }
+.intro-guide-paper > div:last-child > div:first-child > button { margin-top: 0; margin-bottom: 18px; }
+.intro-guide-paper > div:last-child > div:first-child > h3 { display: block; width: fit-content; }
+.field-library > div:last-child > p { color: #81737d; }
+.battle-lobby > footer { margin-top: 22px; padding-bottom: 22px; }
+.profile-workspace section > div.flex > div.flex-1 { min-width: 0; }
+@media (max-width: 359px) {
+  .subject-library .subject-book-title h2 { font-size: 14px; }
+  .subject-library .subject-book-title p { font-size: 10px; }
+}
+
+/* Later listening: preserve text size, reclaim padding rather than shrinking worksheets. */
+[data-listening-compact-options] button[aria-pressed] {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  min-height: 44px;
+}
+[data-listening-compact-options] button[aria-pressed] span {
+  line-height: 1.45;
+}
+
+[data-listening-compact-options] > .grid {
+  gap: 6px;
+}
+[data-listening-audio] button, [data-listening-audio] select {
+  min-height: 44px;
+}
+
+/* Shared study navigation: keep the paper/mascot language, reduce visual noise.
+   Deliberately excludes Home, live quiz panes and live battle controls. */
+@media screen {
+  .mode-desk .mode-practice-copy > p, .mode-desk .mode-input-paper p { font-size: 14px; line-height: 1.8; color: #5e5560; }
+  .mode-desk .mode-heading > p:last-child { font-size: 14px; color: #695965; }
+  .mode-desk .mode-input-paper { border-radius: 6px 20px 20px 6px; transform: none; border-left-color: #c4a97a; box-shadow: 3px 4px 0 #ece3d6; }
+  .mode-desk .mode-input-open { font-size: 14px; min-height: 44px; color: #785a3a; }
+  .mode-desk .mode-primary { min-height: 48px; font-size: 15px; }
+  .mode-desk .mode-battle-bridge { min-height: 52px; border-radius: 16px; }
+  .mode-desk .mode-battle-bridge small { font-size: 12px; color: #645762; line-height: 1.6; }
+  .mode-desk .mode-footnote { font-size: 12px; line-height: 1.8; color: #756472; }
+  .chapter-route .chapter-workspace { font-family: var(--font-modern); }
+  .chapter-route-heading { margin-top: 44px; margin-bottom: 12px; }
+  .chapter-route-heading > p:last-child { font-size: 14px; color: #685663; }
+  .chapter-route .chapter-route-card { border-radius: 16px; box-shadow: 0 3px 10px #49374705; }
+  .chapter-route-card h4 { color: #443d48; font-size: 16px; line-height: 1.65; }
+  .chapter-route .chapter-unit-count { font-size: 12px; color: #765f70; margin-top: 4px; }
+  .chapter-route-card > div:first-child > p:not(.chapter-unit-count) { font-size: 13px; font-weight: 400; color: #62606b; line-height: 1.75; }
+  .chapter-route-card button { min-height: 44px; font-size: 13px; }
+  .chapter-route-card button[title="単元のフローチャートを確認"] { min-width: 44px; border-radius: 12px; padding-inline: 8px; }
+  .chapter-route-card > div:last-child > div:first-child > button:first-child { border-radius: 12px; background: #96637e; }
+  .chapter-question-list button { padding: 10px; line-height: 1.65; }
+  .chapter-route #chapter-tab-panel { border-radius: 16px; }
+  .study-journal .mtb-page-header p:not(.mtb-kicker) { font-size: 13px; }
+  .study-journal-tabs > button { min-height: 44px; font-size: 13px; }
+  .study-journal .study-subject-tabs > button { min-height: 44px; }
+  .battle-lobby .lobby-mode { border-radius: 18px; }
+  .battle-lobby .lobby-mode-caption { font-family: var(--font-modern); font-size: 15px; font-weight: 500; }
+  .battle-lobby .lobby-mode-tags { font-size: 12px; line-height: 1.7; color: #695b67; }
+  .battle-lobby .lobby-mode-details > summary { font-size: 13px; color: #695b67; }
+  .battle-lobby .lobby-mode-actions > button { min-height: 48px; font-size: 14px; border-radius: 14px; }
+  .battle-lobby .lobby-mode-details dl > div { font-size: 13px; line-height: 1.7; }
+  .battle-lobby .battle-guest-stage p:not(.font-handwriting) { font-size: 14px; font-weight: 400; }
+  .battle-lobby .battle-guest-stage { gap: 16px; }
+  @media (max-width: 639px) {
+    .mode-desk { padding-inline: 14px; }
+    .mode-desk .mode-practice-stage { grid-template-columns: 64px minmax(0,1fr); gap: 10px 14px; border: 1px solid #e7dbe1; border-radius: 20px; background: #fffdfa; padding: 16px; }
+    .mode-desk .mode-practice-art { width: 60px; height: 68px; border-width: 2px; box-shadow: 0 4px 0 #eadce6; }
+    .mode-desk .mode-practice-art > svg { width: 32px; height: 32px; }
+    .mode-desk .mode-practice-art > i { font-size: 12px; }
+    .mode-desk .mode-practice-copy h2 { font-size: 22px; }
+    .mode-desk .mode-practice-copy > p { font-size: 14px; }
+    .mode-desk .mode-primary { margin-top: 4px; }
+    .mode-desk .mode-input-paper { padding: 20px 16px 16px 60px; }
+    .mode-desk .mode-input-paper > svg { top: 22px; }
+    .mode-desk .mode-input-paper h2 { font-size: 22px; }
+    .mode-desk .mode-input-paper p { font-size: 14px; margin-block: 8px 12px; }
+    .mode-desk .mode-workspace { gap: 16px; }
+    .mode-desk .mode-tools { margin-top: 24px; }
+    .chapter-route .chapter-route-list { margin-left: 0; padding-left: 0; border-left: 0; gap: 12px; }
+    .chapter-route .chapter-route-card { padding: 14px; }
+    .chapter-route-card::before { left: 14px; top: 16px; background: #89637b; }
+    .chapter-route-card h4 { padding-left: 32px; min-height: 27px; }
+    .chapter-route-card .chapter-unit-count { padding-left: 32px; }
+    .chapter-route-card .math-unit-source { padding-left: 32px; }
+    .chapter-route .chapter-route-list > .math-stage-heading { margin-left: 0; padding-left: 2px; background: none; }
+    .chapter-route-card > div:last-child > div:first-child { gap: 8px; }
+    .battle-lobby .lobby-match-options { grid-template-columns: minmax(0,1fr); gap: 14px; }
+    .battle-lobby .lobby-mode:not(.lobby-mode-friend) > header { flex-direction: row; align-items: center; }
+    .battle-lobby .lobby-mode { padding: 18px 16px 10px; }
+    .battle-lobby .lobby-mode-friend > header h2 { font-size: 23px; }
+    .battle-lobby .battle-guest-stage > div:first-child { width: 64px; height: 64px; border-radius: 20px; }
+    .battle-lobby .battle-guest-stage > div:first-child svg { width: 30px; height: 30px; }
+    .study-journal-tabs > button { padding-inline: 9px; font-size: 13px; }
+  }
+}
+
+/* Reading mode is deliberately screen-only; the established A4 layouts remain intact. */
+@media screen {
+  .learning-reader { --reader-text: 16px; --reader-accent: #79566b; color: #2c3e50; }
+  .learning-reader[data-reading-size="large"] { --reader-text: 19px; }
+  .reader-header { background: #fdfbf7f5; border-bottom: 1px solid #e6dce0; box-shadow: 0 3px 12px #49374706; }
+  .reader-topbar { max-width: 1000px; margin: auto; display: flex; align-items: center; gap: 12px; padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 12px; }
+  .reader-heading { flex: 1; min-width: 0; }
+  .reader-heading > span { display: block; font-size: 10px; letter-spacing: .06em; color: #766470; }
+  .reader-heading h1 { font: 700 23px/1.4 var(--font-handwriting); color: #674c60; }
+  .reader-icon-button { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border: 1px solid #e4d9dc; border-radius: 14px; background: #fffefa; color: #79566b; cursor: pointer; }
+  .reader-print-button { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; gap: 7px; min-height: 44px; padding: 10px 13px; border-radius: 14px; border: 1px solid #d7c4ce; background: #f5eaf0; color: #674c60; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .reader-course-picker { display: none; }
+  .reader-paper { padding: 24px; background-image: none; }
+  .reader-body { padding-left: 0; max-width: 860px; }
+  .reader-margin-line { display: none; }
+  .learning-reader .learning-content { --lc-accent: #89637b; --lc-accent-d: #654b60; --lc-accent-l: #f7f0f5; --lc-line: #e5dce3; --lc-ink: #2c3e50; background: #fffefa; border: 1px solid #e8e1da; border-radius: 18px; padding: 24px; font-size: var(--reader-text); line-height: 1.9; overflow-wrap: anywhere; }
+  .learning-reader .learning-content :is(p, li) { font-size: var(--reader-text); line-height: 1.85; }
+  .learning-reader .learning-content p { margin-block: 12px; }
+  .learning-reader .learning-content :is(h1,h2,h3,h4,h5) { line-height: 1.6; scroll-margin-top: 130px; }
+  .learning-reader .learning-content h3 { font-size: 1.16em; border-left-color: #d9a0a0; }
+  .learning-reader .learning-content > :first-child { margin-top: 0; }
+  .learning-reader .learning-content .box { padding: 16px; margin-block: 20px; border-width: 1px; border-left-width: 3px; border-radius: 12px; box-shadow: none; }
+  .learning-reader .learning-content .box :is(h3,h4):first-child { margin-top: 0; }
+  .learning-reader .learning-content :is(.figfull,.figrow) { width: 100%; max-width: 100%; margin-inline: 0; }
+  .learning-reader .learning-content :is(.formula,.reaction,.katex-display) { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+  .learning-reader .learning-content .lc-ans-sum { min-height: 48px; font-size: 15px; line-height: 1.6; }
+  .learning-reader .learning-content .lc-ans-ico { display: none; }
+  .learning-reader .learning-content table { display: block; width: 100%; max-width: 100%; overflow-x: auto; font-size: max(14px, calc(var(--reader-text) - 2px)); }
+  .learning-reader .learning-content :is(th,td) { min-width: 5em; padding: 10px; }
+  .reader-topics { border: 1px solid #e5dce3; background: #fffefa; box-shadow: none; }
+  .reader-topic-select { display: none; }
+  .reader-settings { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-bottom: 14px; font-size: 13px; color: #655762; }
+  .reader-settings > span { margin-right: 8px; }
+  .reader-settings button { min-height: 44px; min-width: 64px; padding: 8px 12px; border: 1px solid #ddd2d8; border-radius: 12px; background: #fffdfa; cursor: pointer; }
+  .reader-settings button[aria-pressed="true"] { background: #79566b; color: white; border-color: #79566b; }
+  /* Native modal top layer: not clipped by transformed/sticky application ancestors. */
+  .reader-print-dialog { position: fixed; inset: 0; margin: auto; padding: 0; width: min(480px, calc(100vw - 24px)); max-width: none; max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; border: 1px solid #e0d1d8; border-radius: 24px; background: #fdfbf7; color: #2c3e50; box-shadow: 0 24px 80px #2c3e5033; }
+  .reader-print-dialog::backdrop { background: #2c334066; }
+  .reader-print-panel { padding: 24px; }
+  .reader-print-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  .reader-print-heading span { color: #856777; font-size: 10px; font-weight: 700; letter-spacing: .12em; }
+  .reader-print-heading h2 { font: 700 23px/1.6 var(--font-handwriting); color: #674c60; }
+  #reader-print-description { font-size: 14px; font-weight: 600; padding: 12px; border-radius: 12px; background: #f0e8ed; overflow-wrap: anywhere; }
+  .reader-print-help { font-size: 13px; line-height: 1.75; color: #685e67; margin-block: 14px; }
+  .reader-print-option { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 76px; padding: 14px; margin-block: 10px; text-align: left; border: 1px solid #d9c9d1; border-radius: 16px; background: #fffefa; cursor: pointer; }
+  .reader-print-option > svg { flex-shrink: 0; color: #89637b; }
+  .reader-print-option > span { flex: 1; min-width: 0; }
+  .reader-print-option strong { display: block; font-size: 16px; }
+  .reader-print-option small { display: block; font-size: 12px; line-height: 1.7; color: #6c606a; margin-top: 4px; }
+  .reader-print-option:hover { border-color: #b3829b; background: #faf2f6; }
+  .reader-print-cancel { width: 100%; min-height: 48px; border: 1px solid #e4d9dc; border-radius: 14px; background: #f3eeea; font-size: 14px; font-weight: 600; cursor: pointer; }
+  @media (max-width: 639px) {
+    .reader-topbar { padding: 8px 12px; gap: 8px; }
+    .reader-heading h1 { font-size: 19px; }
+    .reader-heading > span { font-size: 10px; letter-spacing: 0; }
+    .reader-print-button { font-size: 12px; padding-inline: 10px; gap: 5px; }
+    .reader-print-button svg { width: 15px; }
+    .reader-course-picker { display: flex; align-items: center; gap: 8px; margin: 0 12px 10px; padding: 0 10px; border: 1px solid #e0d5dd; border-radius: 12px; background: #fffefa; color: #674c60; }
+    .reader-course-picker select { min-height: 44px; flex: 1; min-width: 0; width: 0; background: transparent; font-size: 16px; }
+    .reader-desktop-tabs { display: none; }
+    .reader-paper { padding: 16px 12px 24px; }
+    .learning-reader .learning-content { padding: 16px 0; border: 0; border-radius: 0; background: transparent; }
+    .learning-reader .learning-content .box { padding: 14px 12px; }
+    .learning-reader .learning-content .figfull, .learning-reader .learning-content .figrow { padding: 10px; }
+    .learning-reader .learning-content :is(ol,ul) { padding-left: 1.6em; }
+    .learning-reader .learning-content .box ol > li::before { left: -1.7em; width: 1.7em; }
+    .reader-topics { padding: 12px; margin-bottom: 16px; }
+    .reader-topics > div:first-child, .reader-topics > p, .reader-topic-chips { display: none; }
+    .reader-topic-select { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 5px 8px; align-items: center; }
+    .reader-topic-select label { grid-column: 1/-1; font-size: 12px; font-weight: 600; color: #6e5b69; }
+    .reader-topic-select select { width: 100%; min-width: 0; min-height: 44px; font-size: 16px; background: transparent; }
+    .reader-topic-arrows { display: flex; gap: 4px; }
+    .reader-topic-arrows button { min-height: 44px; min-width: 44px; display: grid; place-items: center; border: 1px solid #e0d5dd; border-radius: 10px; background: white; color: #79566b; }
+    .reader-topic-arrows button:disabled { opacity: .3; }
+    .reader-print-dialog { margin: auto auto 12px; border-radius: 24px; max-height: calc(100dvh - 24px); }
+    .reader-print-panel { padding: 20px 16px max(16px, env(safe-area-inset-bottom)); }
+  }
+}

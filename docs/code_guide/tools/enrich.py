@@ -69,7 +69,8 @@ stats = {
  'branch': commit()[2],
  'tracked': len(tracked()),
  'srcFiles': int(src_files), 'srcLines': int(src_lines),
- 'screens': len(re.findall(r"'(\w+)'", re.search(r'export type AppState = ([^;]+);', open(f'{ROOT}/src/App.tsx').read()).group(1))),
+ # AppState は C-01 で src/appState.ts へ移った（古い版は App.tsx）。どちらにあっても数える
+ 'screens': len(re.findall(r"'(\w+)'", next(m.group(1) for f in ('src/appState.ts', 'src/App.tsx') if os.path.exists(f'{ROOT}/{f}') for m in [re.search(r'export type AppState = ([^;]+);', open(f'{ROOT}/{f}').read())] if m))),
  'testCases': len(vl), 'testFiles': len({x['file'] for x in vl}),
  'listening': cnt['english_listening'], 'grammar': cnt['english_grammar'],
  'vocab': int(re.search(r'VOCABULARY_COUNT = (\d+)', open(f'{ROOT}/src/data/listeningVocabularyMeta.generated.ts').read()).group(1)),

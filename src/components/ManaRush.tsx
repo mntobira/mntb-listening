@@ -30,6 +30,8 @@ import type { SubjectKey } from '../data/allChapters';
 import { NextBadgeHint } from '../battle/ui/GrowthParts';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { KineticText } from '../motion';
+import { safeGetItem } from '../utils/safeLocalStorage';
+import { safeSetItem } from '../utils/storageGuard';
 
 export const RUSH_DURATION_MS = 60_000;
 export const RUSH_MAX_MS = 90_000;
@@ -91,7 +93,7 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
   const { progress } = useGrowthProgress();
   const subjects = useMemo(() => rushSubjects(), []);
   const [subject, setSubject] = useState<string>(() => {
-    const saved = (() => { try { return localStorage.getItem(LAST_SUBJECT_KEY); } catch { return null; } })();
+    const saved = safeGetItem(LAST_SUBJECT_KEY);
     return [saved, defaultSubject].find((s): s is string => !!s && subjects.includes(s)) || subjects[0] || 'chemistry_basic';
   });
   const [phase, setPhase] = useState<Phase>('menu');
@@ -119,7 +121,7 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
   const question = queue.length ? queue[qi % queue.length] : undefined;
   const best = progress?.rushBestBy[subject] ?? 0;
 
-  useEffect(() => { try { localStorage.setItem(LAST_SUBJECT_KEY, subject); } catch { /* 保存できなくても遊べる */ } }, [subject]);
+  useEffect(() => { safeSetItem(LAST_SUBJECT_KEY, subject); /* 保存できなくても遊べる（safeSetItem は投げない） */ }, [subject]);
 
   const finish = useCallback(async (reason: 'time' | 'lives') => {
     if (ended.current) return;

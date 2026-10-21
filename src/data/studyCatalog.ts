@@ -9,12 +9,14 @@
  */
 import { getSubjectStats } from './chapterIndex.generated';
 import { VOCABULARY_COUNT } from './listeningVocabularyMeta.generated';
+import { READING_PASSAGE_COUNT } from './reading/meta';
 
 /** コンテンツを押したときに開く既存の画面。App 側で1か所にまとめて解釈する */
 export type StudyAction =
   | { kind: 'units'; subject: string }           // 既存の単元一覧（ChapterSelection）
   | { kind: 'foundation'; tab: 'words' | 'grammar' | 'more' } // 既存の固めるページの各タブ
-  | { kind: 'vocabQuiz' };                       // 英単語の4択演習（2026-10-01）
+  | { kind: 'vocabQuiz' }                         // 英単語の4択演習（2026-10-01）
+  | { kind: 'reading' };                         // 英文解釈（内容一致の4択）2026-10-21
 
 export type StudyIcon = 'headphones' | 'pen' | 'letters' | 'book' | 'flask' | 'sigma' | 'globe';
 
@@ -37,6 +39,8 @@ export interface StudyContent {
   section?: 'practice' | 'memorize';
   /** 進捗の集計に使う科目ID（単元一覧を持つコンテンツだけ） */
   progressSubject?: string;
+  /** タイトル横の小さな札（例：'NEW'）。「前回」のほうが優先 */
+  badge?: string;
   action: StudyAction;
 }
 
@@ -56,7 +60,7 @@ export const STUDY_CATALOG: readonly StudySubject[] = [
   {
     id: 'english',
     label: '英語',
-    description: 'リスニング・英文法・英単語',
+    description: 'リスニング・英文法・英単語・英文解釈',
     icon: 'headphones',
     contents: [
       {
@@ -80,6 +84,13 @@ export const STUDY_CATALOG: readonly StudySubject[] = [
         description: '4択の問題を10問ずつ。間違いは復習ノートへ',
         meta: 'レベル別・英→日／日→英',
         action: { kind: 'vocabQuiz' },
+      },
+      {
+        // 2026-10-21：英文解釈。1画面に収まる英文を読んで、内容一致の4択（Lv1基礎〜Lv5東大・京大）
+        id: 'english_reading', title: '英文解釈', icon: 'book', badge: 'NEW',
+        description: '段落ごとに読んで4択。解説に出題傾向つき',
+        meta: `${READING_PASSAGE_COUNT}題・Lv1〜5（共通テスト〜東大・京大）`,
+        action: { kind: 'reading' },
       },
       {
         // ★暗記帳は「単語」の中のタブではなく、最初から別の枠（覚える）に置く（2026-10-01 夜）★

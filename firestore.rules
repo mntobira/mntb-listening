@@ -730,7 +730,7 @@ service cloud.firestore {
         return data.keys().hasOnly([
                  'uid', 'updatedAt',
                  's_growth', 's_vocabQuiz', 's_vocabPrefs', 's_support', 's_studyTime', 's_studyLog',
-                 's_unitStats', 's_stageHistory', 's_battleLog', 's_profile', 's_completed', 's_notes', 's_streak'
+                 's_unitStats', 's_stageHistory', 's_battleLog', 's_profile', 's_completed', 's_notes', 's_streak', 's_reading'
                ])
           && data.uid == userId
           && data.uid == request.auth.uid
@@ -738,6 +738,7 @@ service cloud.firestore {
           && sec(data, 's_support') && sec(data, 's_studyTime') && sec(data, 's_studyLog')
           && sec(data, 's_unitStats') && sec(data, 's_stageHistory') && sec(data, 's_battleLog')
           && sec(data, 's_profile') && sec(data, 's_completed') && sec(data, 's_notes') && sec(data, 's_streak')
+          && sec(data, 's_reading')
           && (!('updatedAt' in data) || data.updatedAt == request.time);
       }
       allow get: if isOwner(userId);

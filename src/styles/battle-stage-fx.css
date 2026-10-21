@@ -1,0 +1,218 @@
+/* src/styles/battle-stage-fx.css — index.css から分割（C-16）：14. 対戦モードの演出・臨場感アップデート。
+ * 読み込み順は index.css の @import の並びで固定（並べ替えるとカスケードが変わる）。 */
+/* =========================================================
+ * 14. 対戦モードの演出（アイボリー地のまま「ゲームらしさ」を出す）
+ * ---------------------------------------------------------
+ * ★なぜ専用のクラスを足したのか★
+ * 利用者から「マッチングのところがフレンドと全国で少しわかんない」
+ * 「ポケポケとかイーフットボールみたいにすごい感じにして」と要望があった。
+ *
+ * それらのゲームの「すごい感じ」の正体は、暗い背景ではなく
+ *   ① 主動線が画面の主役として大きく置かれている
+ *   ② 待ち時間に「何かが動いている」＝ゲームが生きている合図がある
+ *   ③ 押したとき／始まるときに一瞬の光や震えがある
+ * という3点にある。だから ①②③ を CSS で用意し、
+ * 地色は既存アプリ（アイボリー・ノート罫線）から一切変えない。
+ *
+ * ★アニメーションを CSS 側に置いた理由★
+ * 各画面の JSX に style で書くと prefers-reduced-motion への配慮が
+ * 抜け落ちる。ここに集めれば、末尾の1ブロックで全部止められる。
+ * ========================================================= */
+
+/* --- ① 主動線カードの光沢（ゆっくり左から右へ流れる帯） ------------- */
+@keyframes battleSheen {
+  0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  18%  { opacity: 0.9; }
+  60%  { opacity: 0.55; }
+  100% { transform: translateX(230%) skewX(-18deg); opacity: 0; }
+}
+.battle-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.battle-sheen::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 42%;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    rgba(255, 255, 255, 0.72) 50%,
+    rgba(255, 255, 255, 0.05) 70%,
+    transparent 100%);
+  animation: battleSheen 4.2s ease-in-out infinite;
+  animation-delay: var(--sheen-delay, 0s);
+  z-index: 1;
+}
+
+/* --- ② レーダー：全国対戦の「探している感」 ----------------------- */
+@keyframes battleRadarRing {
+  0%   { transform: scale(0.45); opacity: 0.75; }
+  100% { transform: scale(1.6);  opacity: 0; }
+}
+.battle-radar-ring {
+  animation: battleRadarRing 2.4s ease-out infinite;
+  animation-delay: var(--ring-delay, 0s);
+}
+
+/* レーダーの走査線（円の中をぐるぐる回る扇形） */
+@keyframes battleRadarSweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.battle-radar-sweep {
+  animation: battleRadarSweep 2.6s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+/* --- ③ VS の鼓動（対戦カードの中央） ----------------------------- */
+@keyframes battleVsPulse {
+  0%, 100% { transform: scale(1)    rotate(-4deg); }
+  50%      { transform: scale(1.12) rotate(-4deg); }
+}
+.battle-vs-pulse { animation: battleVsPulse 1.5s ease-in-out infinite; }
+
+/* --- ④ 見つかった瞬間の閃光（マッチ成立の合図） -------------------- */
+@keyframes battleFlash {
+  0%   { opacity: 0; transform: scale(0.7); }
+  35%  { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+.battle-flash { animation: battleFlash 0.9s ease-out both; }
+
+/* --- ⑤ 画面に入るときのカードの立ち上がり ------------------------- */
+@keyframes battleCardIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+.battle-card-in {
+  animation: battleCardIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--card-delay, 0s);
+}
+
+/* --- ⑥ 待機中の点々（相手を待っている合図） ---------------------- */
+@keyframes battleDot {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40%           { opacity: 1;    transform: translateY(-3px); }
+}
+.battle-dot {
+  animation: battleDot 1.2s ease-in-out infinite;
+  animation-delay: var(--dot-delay, 0s);
+}
+
+/* --- ⑦ 数字カウントの跳ね（レート増減・スコア） ------------------- */
+@keyframes battlePop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  55%  { transform: scale(1.14); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+.battle-pop {
+  animation: battlePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: var(--pop-delay, 0s);
+}
+
+/* =========================================================
+ * ★臨場感アップデート（対戦中の実況・演出）★
+ * 方針: 短く（0.3〜1.4秒）・小さく・pointer-events を遮らない。
+ * 問題文と選択肢の位置は動かさない（レイアウトに影響する transform のみ）。
+ * ========================================================= */
+
+/* --- ⑧ 得点の加算「+120」がふわっと浮いて消える -------------------- */
+@keyframes battleLiveDelta {
+  0%   { opacity: 0; transform: translateY(6px); }
+  20%  { opacity: 1; transform: translateY(0); }
+  70%  { opacity: 1; transform: translateY(-4px); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+.battle-live-delta { animation: battleLiveDelta 1.1s ease-out both; }
+
+/* --- ⑨ 相手の状態が変わった瞬間の小さな跳ね ------------------------ */
+@keyframes battleLivePop {
+  0%   { transform: scale(0.85); opacity: 0.4; }
+  60%  { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+.battle-live-pop { animation: battleLivePop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* --- ⑩ 実況ログの1行が下から入る ----------------------------------- */
+@keyframes battleLiveFeedIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.battle-live-feed-in { animation: battleLiveFeedIn 0.28s ease-out both; }
+
+/* --- ⑪ トースト（CORRECT! / COMBO / 逆転）：出て、止まって、消える --- */
+@keyframes battleLiveToast {
+  0%   { opacity: 0; transform: scale(0.7) translateY(8px); }
+  18%  { opacity: 1; transform: scale(1.06) translateY(0); }
+  30%  { transform: scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: scale(0.98) translateY(-6px); }
+}
+.battle-live-toast { animation: battleLiveToast 1.4s ease-out both; }
+
+/* --- ⑫ カウントダウンの数字 ---------------------------------------- */
+@keyframes battleLiveCount {
+  0%   { transform: scale(1.35); opacity: 0; }
+  30%  { transform: scale(1);    opacity: 1; }
+  100% { transform: scale(0.94); opacity: 1; }
+}
+.battle-live-count { animation: battleLiveCount 0.8s ease-out both; }
+
+/* --- ⑬ FINAL QUESTION の帯（ゆっくり呼吸する） ---------------------- */
+/* ★L-05★ 以前は box-shadow そのものを無限に動かしていた（毎フレーム描き直し）。
+ *   金の輪は ::after に1回だけ描き、その opacity と scale だけを動かす（コンポジタだけで動く） */
+@keyframes battleLiveFinal {
+  0%, 100% { opacity: 0; scale: .98; }
+  50%      { opacity: 1; scale: 1; }
+}
+.battle-live-final { position: relative; }
+.battle-live-final::after { content: ''; position: absolute; inset: -4px; border-radius: calc(0.75rem + 4px); box-shadow: inset 0 0 0 4px rgba(244, 208, 63, 0.35); pointer-events: none; opacity: 0; will-change: opacity, scale; animation: battleLiveFinal 1.6s ease-in-out infinite; }
+/* 最終問題は問題の枠だけを金の細い縁で囲む（中身の配置は変えない） */
+.battle-live-final-frame { box-shadow: 0 0 0 2px rgba(244, 208, 63, 0.75); }
+
+/* --- ⑭ リザルトの WIN / LOSE / DRAW ------------------------------- */
+@keyframes battleLiveHero {
+  0%   { transform: scale(0.8); opacity: 0; }
+  55%  { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.battle-live-hero { animation: battleLiveHero 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/*
+ * ★動きを減らす設定では全部止める★
+ * 対戦は「制限時間つきで文字を読む」場面が続くので、
+ * 動きに酔う人にとっては読みづらさが直接不利につながる。
+ * 光沢・レーダー・鼓動は装飾なので、止めても情報は失われない
+ * （待っていることは秒数の表示で分かる）。
+ */
+@media (prefers-reduced-motion: reduce) {
+  .battle-sheen::after,
+  .battle-radar-ring,
+  .battle-radar-sweep,
+  .battle-vs-pulse,
+  .battle-flash,
+  .battle-card-in,
+  .battle-dot,
+  .battle-pop,
+  .battle-live-delta,
+  .battle-live-pop,
+  .battle-live-feed-in,
+  .battle-live-toast,
+  .battle-live-count,
+  .battle-live-final,
+  .battle-live-hero {
+    animation: none !important;
+  }
+  .battle-sheen::after { display: none; }
+  .battle-live-final::after, .shimmer::after { animation: none !important; display: none; }
+  /* トーストは動かさず、そのまま一定時間見せる。得点の「+120」も動かさず見せる */
+  .battle-live-toast { opacity: 1; }
+  .battle-live-delta { opacity: 1; }
+  .battle-live-count { opacity: 1; }
+}

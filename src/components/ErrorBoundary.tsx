@@ -66,7 +66,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             表示に失敗しました。学習の記録は保存されていますので、
             下のボタンからやり直してください。
           </p>
-          <p className="text-[11px] text-[#7A8B99] font-mono break-all bg-[#F8F9F9] border border-[#EAECEE] rounded-lg p-2 mb-5 text-left">
+          <p className="text-xs text-[#7A8B99] font-mono break-all bg-[#F8F9F9] border border-[#EAECEE] rounded-lg p-2 mb-5 text-left">
             {error.message || String(error)}
           </p>
           <div className="flex flex-col sm:flex-row gap-2 justify-center">

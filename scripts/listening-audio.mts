@@ -607,7 +607,7 @@ function cmdReceive(args: string[]): void {
   }
   if (!apply) { console.log(`\n※ 下見のみ。--apply で ${relative(ROOT, dir)}/ に保存します。`); return; }
   mkdirSync(dir, {recursive: true});
-  for (const [i, f] of files.entries()) if (rows.find(r => r.originalFilename === basename(f))) copyFileSync(f, join(dir, basename(f)));
+  for (const f of files) if (rows.find(r => r.originalFilename === basename(f))) copyFileSync(f, join(dir, basename(f)));
   const receiptPath = join(dir, 'receipt.json');
   const prev = existsSync(receiptPath) ? JSON.parse(readFileSync(receiptPath, 'utf8')) : {};
   writeFileSync(receiptPath, JSON.stringify({

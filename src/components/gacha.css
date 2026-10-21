@@ -152,8 +152,8 @@
 @media (max-height: 600px) {
   .mana-hub-gacha > .mana-hub-header { padding-top: 0 !important; }
   .mana-hub-gacha > .mana-hub-header button { min-height: 44px; padding-block: 0; }
-  .mana-hub-gacha > .growth-shared-switch { margin-block: 2px !important; padding: 3px; }
-  .mana-hub-gacha > .growth-shared-switch button { min-height: 44px; }
+  .mana-hub-gacha > .gacha-page-switch { margin-block: 2px !important; padding: 3px; }
+  .mana-hub-gacha > .gacha-page-switch button { min-height: 44px; }
   .gacha-head { display: none; }
   .gacha-hero { min-height: 64px; }
   .gacha-hero-art .gacha-print-thumb em { display: none; }
@@ -231,7 +231,7 @@
 /* D: a single task screen. Long odds and result collections scroll internally. */
 .compact-gacha { height:100%; min-height:0; display:flex; flex-direction:column; overflow:hidden; padding-bottom:calc(var(--app-nav-h,72px) + 6px); }
 .compact-gacha > .mana-hub-header { padding:4px 12px !important; min-height:48px; flex-shrink:0; }
-.compact-gacha > .growth-shared-switch { margin:2px auto 6px !important; width:calc(100% - 24px); max-width:680px; flex-shrink:0; }
+.compact-gacha > .gacha-page-switch { margin:2px auto 6px !important; width:calc(100% - 24px); max-width:680px; flex-shrink:0; }
 .compact-gacha .gacha-room { display:flex !important; flex-direction:column; width:100%; max-width:680px; min-height:0; flex:1; margin:auto; gap:6px; padding:2px 12px 6px !important; }
 .compact-gacha .gacha-head { display:block; flex-shrink:0; }
 .compact-gacha .gacha-head h1 { font-size:20px !important; }
@@ -275,4 +275,21 @@
 @media(max-height:610px) {
  .compact-gacha .gacha-room > .gacha-machine { display:none; }
  .compact-gacha .gacha-featured { margin-block:auto; }
+}
+
+/* 提供割合・コレクションの長文を短い見出しと小さな情報ブロックに分割 */
+.game-details-dialog .gacha-odds { display:grid; gap:10px; line-height:1.55; }
+.gacha-odds-summary, .gacha-odds-section { padding:10px 12px; border:1px solid #e7decb; border-radius:12px; background:#fffdf8; }
+.gacha-odds-summary { background:#fff6df; border-color:#ead7a8; }
+.gacha-odds-summary > strong, .gacha-odds-section > h3 { display:block; margin:0 0 4px; color:#59451f; font:800 13px/1.35 var(--mt-font-body); }
+.gacha-odds-summary > p, .gacha-odds-section > p { margin:0; }
+.gacha-odds-section > p + p { margin-top:6px; }
+.gacha-odds-rate-list, .gacha-odds-bonus-rates { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; margin:8px 0; padding:0; list-style:none; }
+.gacha-odds-rate-list > li, .gacha-odds-bonus-rates > li { display:flex; align-items:center; justify-content:center; gap:5px; min-height:34px; padding:4px; border:1px solid #eee4d0; border-radius:9px; background:#fff; white-space:nowrap; }
+.gacha-odds-rate-list .mt-rarity { min-width:0; min-height:20px; padding:0 5px; font-size:12px; }
+.gacha-odds-rate-list .mt-rarity-crown { display:none; }
+.gacha-odds-bonus-rates > li { color:#6a5940; font-size:12px; }
+.gacha-odds-bonus-rates b { color:#473916; font-variant-numeric:tabular-nums; }
+@media(max-width:420px) {
+ .gacha-odds-rate-list, .gacha-odds-bonus-rates { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
