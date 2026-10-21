@@ -58,13 +58,14 @@
 
 /* ---------- HUD（コイン・ボーナス・レベル） ---------- */
 .home-v2 .game-home-hud { padding: 8px 10px 8px !important; border: 1.5px solid var(--hv-line) !important; border-radius: var(--hv-radius) !important; background: var(--hv-paper) !important; box-shadow: 0 3px 0 #e6d7b8 !important; }
-.home-v2 .game-hud-top { grid-template-columns: 1.15fr 1fr; gap: 10px; }
+.home-v2 .game-hud-top { grid-template-columns: minmax(0, 1.28fr) minmax(0, 1fr); gap: 10px; }
 .home-v2 .game-hud-top button { min-height: 48px; border-radius: 13px; padding: 4px 10px; }
 .home-v2 .game-hud-wallet { --edge: #e8b93a; --lift: #d49a17; background: var(--hv-yellow) !important; color: var(--hv-ink) !important; }
-.home-v2 .game-hud-wallet > span { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; min-width: 0; }
+.home-v2 .game-hud-wallet > span { display: flex; flex: 1 1 0; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; min-width: 0; }
 /* ★コインの数字が主役。ラベルは小さく1行（「マナコイ/ン」「枚」が折り返さない）★ */
-.home-v2 .game-hud-wallet strong { font: 900 clamp(20px, 5.4vw, 26px)/1 var(--mt-font-display) !important; color: var(--hv-ink) !important; white-space: nowrap; overflow-wrap: normal !important; font-variant-numeric: tabular-nums; }
-.home-v2 .game-hud-wallet .game-hud-label { display: block !important; font: 800 12px/1.1 var(--mt-font-body) !important; color: var(--hv-ink-2); white-space: nowrap; letter-spacing: 0; }
+.home-v2 .game-hud-wallet strong { display: flex; align-items: baseline; min-width: 0; max-width: 100%; font: 900 clamp(14px, 4.2vw, 24px)/1.1 var(--mt-font-display) !important; color: var(--hv-ink) !important; white-space: nowrap; overflow-wrap: normal !important; font-variant-numeric: tabular-nums; }
+.home-v2 .game-hud-wallet strong small { flex-shrink: 0; font-size: 10px !important; }
+.home-v2 .game-hud-wallet .game-hud-label { display: block !important; flex-shrink: 0; max-width: 100%; font: 800 12px/1.1 var(--mt-font-body) !important; color: var(--hv-ink-2); white-space: nowrap !important; letter-spacing: 0; }
 .home-v2 .game-hud-wallet > svg { color: var(--hv-ink); }
 .home-v2 .game-hud-bonus { background: #fff !important; color: var(--hv-ink) !important; }
 .home-v2 .game-hud-bonus span { font-size: 12px !important; color: var(--hv-ink-2); white-space: nowrap; }
@@ -286,7 +287,7 @@
 
 /* PC：HUD の「今日のボーナス」が切れないように、左列が狭いときはラベルを短い札に */
 @media (min-width: 1100px) {
-  .home-v2 .game-hud-top { grid-template-columns: 1fr 1fr; }
+  .home-v2 .game-hud-top { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
   .home-v2 .game-hud-bonus span { overflow: hidden; text-overflow: ellipsis; }
 }
 /* 古い「低い画面ではヘッダーの p を隠す」規則にカウントダウン札が巻き込まれないように */
