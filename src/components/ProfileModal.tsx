@@ -203,14 +203,14 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   /* ★対戦で相手に見えるカードのプレビュー（A16）★ 名前・称号を変えるとその場で反映される。
      PC の3列（1100px〜）ではプロフィール列が縦に長くなるので、余白のあるサウンド列に置く。 */
   const preview = (
-    <section className="ps-preview mt-card" aria-label="対戦で相手に見えるカード">
-      <p>対戦で相手に見えるカード</p>
+    <button type="button" className="ps-preview mt-card" onClick={onOpenOutfit} disabled={!onOpenOutfit} aria-label="対戦で相手に見えるカード。押してきせかえ">
+      <p>対戦で相手に見えるカード（押してきせかえ）</p>
       <div className="ps-mini" aria-hidden="true">
         <span className="ps-mini-avatar"><GrowthAvatar progress={growth} size={44} showLevel={false} /></span>
         <div><strong>{name.trim() || 'ニックネーム'}</strong><span><TitleChip progress={growth} rating={rating} /> Lv.{levelOf(growth.xp).level}</span></div>
         <b>VS</b>
       </div>
-    </section>
+    </button>
   );
 
   return (

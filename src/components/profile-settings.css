@@ -41,6 +41,9 @@
 
 /* 対戦カードのプレビュー */
 .ps-preview > p { font: 700 12px/1.4 var(--mt-font-body); color: var(--ps-ink-2); margin-bottom: 6px; }
+.profile-workspace button.ps-preview { display: block; width: 100%; border: 1.5px solid var(--mt-line); border-radius: var(--mt-radius-lg); background: var(--mt-bg-card); box-shadow: var(--mt-shadow-card); color: inherit; text-align: left; cursor: pointer; }
+.profile-workspace button.ps-preview:focus-visible { outline: 3px solid #287dad; outline-offset: 2px; }
+.profile-workspace button.ps-preview:disabled { cursor: default; opacity: .7; }
 .ps-mini { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; background: linear-gradient(#eaf5fb, #d3e8f4); box-shadow: 0 3px 0 #a3c3d6, 0 0 0 1px #bcd5e3; }
 .ps-mini > div { flex: 1; min-width: 0; display: grid; gap: 3px; }
 .ps-mini strong { font: 800 15px/1.2 var(--mt-font-display); color: #2b5d7a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
