@@ -2,10 +2,7 @@
  * 設定 › 基本設定（ProfileModal）。ホームと同じクリーム地・細い線・やわらかい影。
  * ★UIの決まり★ 文字12px以上・タップ44px以上・つまみはトラックの内側。
  */
-.profile-journal { --ps-line: #e5dccc; --ps-card: #fffdf5; --ps-ink: #344451; --ps-ink-2: #5a6573; padding-bottom: calc(var(--app-nav-h, 120px) + 24px); }
-@media (min-width: 640px) {
-  .profile-journal { padding-bottom: 6rem; }
-}
+.profile-journal { --ps-line: #e5dccc; --ps-card: #fffdf5; --ps-ink: #344451; --ps-ink-2: #5a6573; padding-bottom: var(--app-nav-h, 120px); }
 .profile-journal .mtb-kicker { font-size: 12px; }
 .profile-journal .profile-tabs button { min-height: 44px; font-size: 13px; }
 .profile-workspace .ps-card, .profile-workspace .ps-preview, .profile-workspace .ps-sound { padding: 12px; }
