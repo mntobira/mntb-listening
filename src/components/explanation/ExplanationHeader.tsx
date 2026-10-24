@@ -169,16 +169,9 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
         {singleQuestionIndex !== undefined && onNextQuestion ? (
           // ★スマホの1問ごとの答え合わせでは、このボタン行は画面下部の
           //   固定ナビ（親指の届く位置・演習画面と同じ操作感）に移すため隠す。
+          // ★答え合わせの後に「問題に戻る」は置かない（2026-10-23 ご指摘「正解か不正解かが出てから元に戻れるのが意味が解らない」）★
+          //   採点はもう済んでいて答えも変えられないので、戻っても同じ問題を眺めるだけになる。進む方向だけにする。
           <div className={`${reorderMobile ? 'hidden' : 'flex'} items-center gap-3 w-full md:w-auto`}>
-            <button 
-              onClick={onBack}
-              className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border flex-1 md:flex-none justify-center ${
-                'text-gray-500 hover:text-[#2C3E50] border-gray-200 hover:border-[#2C3E50] bg-gray-50'
-              }`}
-            >
-              <ArrowLeft size={18} />
-              <span>問題に戻る</span>
-            </button>
             <button 
               onClick={onNextQuestion}
               className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border flex-1 md:flex-none justify-center ${

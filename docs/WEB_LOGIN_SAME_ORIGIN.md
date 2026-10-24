@@ -1,3 +1,31 @@
+# Web 版ログイン（2026-10-23 更新：まずここを読む）
+
+## 2026-10-23 の結論（根本原因と今回の修正）
+- **10/21 に壊れた原因はコード**：1.0.2（`b7a25cb`、main には PR #79 で 10/21 11:36 JST に入った）で
+  `getAuth` → `initializeAuth` に変えたとき、Web 用の `popupRedirectResolver` を入れ忘れた（`auth/argument-error`）。
+  10/21 より前は `firebaseapp.com` のままでも Web ログインは動いていた ＝ 「別ドメインだから止まる」は主因ではなかった。
+- **Apple は 10/22 夕方の `VITE_AUTH_SAME_ORIGIN=true` で別に壊れた**：Apple に `redirect_uri=https://mntb-listening.vercel.app/__/auth/handler`
+  を送ると `Invalid web redirect url.`（invalid_request）。`firebaseapp.com` の戻り先なら正常（本番で実測）。
+- **「連携中…」で固まる経路がコードにあった**：ポップアップを閉じる／Google と Apple を続けて押す →
+  自動で `signInWithRedirect` → 成功時に終わらない Promise を待ち続ける。など。
+
+## 今回のコード修正（PR: fix/web-login-stuck）
+| 何を | ファイル |
+|---|---|
+| Web だけ `initializeAuth` に resolver を入れる（アプリ版は入れない） | `src/firebase.ts`（`authDependencies`） |
+| 同じドメイン化は **`VITE_AUTH_SAME_ORIGIN` と `VITE_AUTH_SAME_ORIGIN_APPLE_READY` の両方が true のときだけ** | `src/authDomainPolicy.ts` |
+| キャンセルで redirect しない／Google・Apple を同時に動かさない／復元を成功と取り違えない／redirect の終わらない Promise を待たない | `src/utils/webSignInCore.ts`（テスト `tests/webSignInCore.test.ts`） |
+| ボタンの「連携中…」を必ず戻す（try/finally・ブラウザの「戻る」でも） | `src/hooks/useSignInGuard.ts`、Onboarding / ProfileModal / GoogleLinkBanner / AppleSignInButton |
+| ログイン済みなのにログイン画面に残ったら先へ進める | `src/components/Onboarding.tsx`、`src/hooks/useAuthRouting.ts` |
+
+**今の Vercel 設定（`VITE_AUTH_SAME_ORIGIN=true` のみ）のままで、自動的に従来の `firebaseapp.com` 方式に戻る。**
+同じドメイン方式にしたくなったら、下の「2. Apple Developer」を済ませてから
+Vercel に `VITE_AUTH_SAME_ORIGIN_APPLE_READY=true` を足して Redeploy する。
+
+---
+
+# 以下は 2026-10-22 時点の記録（同じドメイン方式の手順。手順4のスイッチは上の2つ目も必要）
+
 # Web 版ログインを「同じドメイン」で行う設定（2026-10-22）
 
 ## 何が起きていたか

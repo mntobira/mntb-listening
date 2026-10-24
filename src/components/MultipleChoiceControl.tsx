@@ -19,7 +19,6 @@ import type { SubQuestion } from '../types/curriculum';
 import { formatText } from '../utils/textFormatter';
 import { optionCircledMark } from '../utils/questionDisplay';
 import './quiz-compact.css';
-import { renderEliminationHint } from './quiz/EliminationHintBanner';
 
 export interface MultipleChoiceControlProps {
   sq: SubQuestion;
@@ -72,9 +71,6 @@ export function MultipleChoiceControl({
   strikeOptionAnimated,
   beginLongPress,
   endLongPress,
-  elimHintOpen,
-  setElimHintOpen,
-  dismissElimHint,
   listeningOptionTexts,
   isEnglishProse,
   justStruck,
@@ -155,8 +151,9 @@ export function MultipleChoiceControl({
       */}
       {/* 操作説明は初回のみ展開し、以降は「?」アイコンで呼び出す（ご要望：
           毎問同じ説明が常時表示され選択肢の邪魔になる、への対応）。 */}
-      {/* 消去法の操作説明。中身は quiz/EliminationHintBanner.tsx（元の JSX のまま・C-19） */}
-      {renderEliminationHint({ elimHintOpen, dismissElimHint, setElimHintOpen })}
+      {/* ★消去法の操作説明（ア 選ぶ → ア 斜線 → ア 戻す／?操作説明）は全問題で出さない（2026-10-24 ご指摘「いらない」）★
+          選択肢の高さを削るだけで、操作は各ボタンの aria-label（選択中。タップで斜線…）でも伝わる。
+          説明の部品 quiz/EliminationHintBanner.tsx は残してあるが、どこからも描画しない。 */}
 
       {/*
         ★図が無い大問（第1問A・第3問・第2問）は選択肢の背を伸ばす★

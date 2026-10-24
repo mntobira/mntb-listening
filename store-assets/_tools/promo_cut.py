@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from promo_engine import *  # noqa: F401,F403
 
 ROOT = os.environ.get('MNTB_ROOT') or os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-REC = os.environ.get('PROMO_REC') or os.path.join(ROOT, '.tmpwork')
+REC = os.environ.get('PROMO_REC') or os.path.join(ROOT, 'store-assets', '_footage')
 args = [a for a in sys.argv[1:] if not a.startswith('--')]
 OUT = args[0]; WHICH = args[1:] or ['reel', 'feed', 'youtube']
 DRAFT = '--draft' in sys.argv

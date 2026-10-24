@@ -17,6 +17,7 @@ import React, { useCallback, useState } from 'react';
 import { motion } from 'motion/react';
 import { CloudUpload, Check, Loader2, AlertTriangle, X } from 'lucide-react';
 import { signInWithGoogle, GOOGLE_LINK_BENEFITS } from '../utils/googleAuth';
+import { useSignInGuard } from '../hooks/useSignInGuard';
 
 /** Google の「G」マーク（公式配色）。画像に頼らず SVG で描く */
 export function GoogleMark({ size = 16 }: { size?: number }) {
@@ -47,14 +48,16 @@ export function GoogleLinkBanner({
   onLinked,
   className = '',
 }: GoogleLinkBannerProps) {
-  const [state, setState] = useState<'idle' | 'signing' | 'done'>('idle');
+  const [state, setState] = useState<'idle' | 'done'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
 
+  // 「連携中…」は useSignInGuard が必ず元に戻す（想定外の例外・ブラウザの「戻る」でも）
+  const guard = useSignInGuard();
+  const runGuard = guard.run;
   const handleLink = useCallback(async () => {
-    setState('signing');
     setError(null);
-    const outcome = await signInWithGoogle();
+    const outcome = await runGuard(signInWithGoogle);
     if (outcome.redirecting) return; // ページ遷移するのでこのまま待つ
     if (outcome.ok) {
       setState('done');
@@ -63,7 +66,7 @@ export function GoogleLinkBanner({
     }
     setState('idle');
     setError(outcome.message || 'ログインに失敗しました。');
-  }, [onLinked]);
+  }, [onLinked, runGuard]);
 
   if (hidden || state === 'done') return null;
 
@@ -101,10 +104,10 @@ export function GoogleLinkBanner({
           <button
             type="button"
             onClick={handleLink}
-            disabled={state === 'signing'}
+            disabled={guard.anyBusy}
             className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#E8688E] to-[#D9466E] px-3 py-1.5 text-xs font-bold text-white shadow-[0_8px_18px_-10px_rgba(217,70,110,0.9)] transition-colors hover:from-[#E0567F] hover:to-[#C93C61] disabled:opacity-50"
           >
-            {state === 'signing' ? <Loader2 size={13} className="animate-spin" aria-hidden="true" /> : <CloudUpload size={13} aria-hidden="true" />}
+            {guard.busy ? <Loader2 size={13} className="animate-spin" aria-hidden="true" /> : <CloudUpload size={13} aria-hidden="true" />}
             連携する
           </button>
           {dismissible && (
@@ -185,10 +188,10 @@ export function GoogleLinkBanner({
           <button
             type="button"
             onClick={handleLink}
-            disabled={state === 'signing'}
+            disabled={guard.anyBusy}
             className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#E8688E] to-[#D9466E] px-4 py-3 text-[13px] font-bold text-white shadow-[0_12px_26px_-12px_rgba(217,70,110,0.9)] transition-colors hover:from-[#E0567F] hover:to-[#C93C61] disabled:opacity-50 disabled:shadow-none"
           >
-            {state === 'signing'
+            {guard.busy
               ? <><Loader2 size={16} className="animate-spin" aria-hidden="true" />連携中…</>
               : <><CloudUpload size={16} aria-hidden="true" />いま連携する</>}
           </button>

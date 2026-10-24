@@ -158,7 +158,8 @@ export function BattleQuestionView({
             <span className="mx-0.5">/</span>
             {total}もん
           </p>
-          {notice && <div className="bq-progress-notice min-w-0 flex-1 text-center">{notice}</div>}
+          {/* ★「相手は回答ずみ！」の枠は常に置く（出る・消えるで下の4択が動かないように・2026-10-23）★ */}
+          <div className="bq-progress-notice min-w-0 flex-1 text-center" data-empty={!notice || undefined}>{notice || null}</div>
           <span
             className="shrink-0 rounded-full px-2 py-0.5 text-xs font-black"
             style={{ background: `${theme.accent}26`, color: theme.accent }}

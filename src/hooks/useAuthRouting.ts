@@ -14,12 +14,17 @@ import { isScreenshotLaunch } from './useAppPersistence';
  *     あれば（起動直後でなければ）ホームへ
  *   ・起動直後の1回目は、復元した画面をそのまま使う（勝手にホームへ飛ばさない）
  */
-export function useAuthRouting({ isGuest, setIsGuest, setAppState }: {
+export function useAuthRouting({ isGuest, setIsGuest, setAppState, appState }: {
   isGuest: boolean;
   setIsGuest: (v: boolean) => void;
   setAppState: (s: AppState) => void;
+  /** いまの画面（ログイン画面に居るかの判定だけに使う。省略時は従来どおり） */
+  appState?: AppState;
 }): void {
   const isFirstLoad = useRef(true);
+  // 購読を張り直さずに最新の画面を読むため ref に入れる
+  const appStateRef = useRef(appState);
+  appStateRef.current = appState;
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       const wasFirstLoad = isFirstLoad.current;
@@ -38,7 +43,9 @@ export function useAuthRouting({ isGuest, setIsGuest, setAppState }: {
           const localProfile = safeGetItem(profileKey(user.uid));
           if (!localProfile) {
             setAppState('onboarding');
-          } else if (!wasFirstLoad) {
+          } else if (!wasFirstLoad || appStateRef.current === 'onboarding') {
+            // 起動直後は復元した画面をそのまま使う。ただしログイン画面のままなら、ログイン済み＆プロフィールありなのでホームへ
+            // （2026-10-23：ポップアップの結果だけ届かず「ログイン画面から進まない」を防ぐ）
             setAppState('home');
           }
         } catch (error) {

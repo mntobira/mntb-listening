@@ -236,7 +236,12 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
       {/* ★相手が先に答えた★ 自分がまだのときだけ、急かしすぎない一言 */}
       {/* ★相手が先に答えた★ は問題の「1/10もん」と「4つからえらぶ」の間に出す（1行ぶん上に詰める・2026-10-01） */}
       <LiveFeed entries={live.feed} />
-      {!counting && (p.answered || p.reveal) && p.opponentAnswered && <div className="arena-opponent-answer" role="status"><span>相手の確定回答 {selectedNumber}</span><BattleText text={theirText || '無回答'} subject={p.question.subject}/></div>}
+      {/* ★相手の確定回答は「答え合わせ（reveal）」のときだけ、高さの決まった枠に出す（2026-10-23）★
+          以前は相手が答えた瞬間に枠が増えて、自分が押す前の4択ボタンが下に動いていた。
+          枠は常に同じ高さで置いておき、中身だけ入れ替える（ボタンが動かない）。 */}
+      <div className="arena-opponent-answer" role="status" data-opponent-answer-slot data-empty={!(!counting && p.reveal && p.opponentAnswered) || undefined}>
+        {!counting && p.reveal && p.opponentAnswered ? <><span>相手の確定回答 {selectedNumber}</span><BattleText text={theirText || '無回答'} subject={p.question.subject}/></> : null}
+      </div>
 
 
       {p.notices}

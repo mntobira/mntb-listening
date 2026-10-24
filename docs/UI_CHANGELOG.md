@@ -5,6 +5,47 @@
 
 ---
 
+## 2026-10-24 ご指摘4点（PR: fix/battle-choice-shift-and-q6b-carousel）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 対戦：相手／自分が答えると 🔵🔴 の札・相手の確定回答・「相手は回答ずみ！」が出て、4択ボタンが上下に揺れて押し間違える | 3つとも「高さを先に決めた枠」にして中身だけ入れ替える（実況は最新1行・28px、相手の確定回答は答え合わせのときだけ・34px、お知らせ行18px）。低い画面で進捗行が出たり消えたりしていたのも常時表示に | `src/battle/ui/BattleLiveParts.tsx`、`BattleLiveStage.tsx`、`BattleQuestionView.tsx`、`battle-question.css` |
+| 正解/不正解が出たあとに解答画面へ戻れる | 「問題に戻る」（上部・スマホ下部）を撤去、← キーと「前へ」も解説表示中は無効 | `src/components/explanation/ExplanationHeader.tsx`、`BottomBars.tsx`、`src/utils/quizNavigationActions.ts`、`src/components/Quiz.tsx` |
+| 第6問B のグラフ4枚が並んで小さい | 1枚ずつ大きく表示。‹ › ボタン（44px）・①〜④ボタン・左右スワイプ・← → キーで切り替え（端で反対へ回る） | `src/components/ListeningMaterials.tsx`（`FigureCarousel`） |
+| 選択肢の下の操作説明「ア 選ぶ → ア 斜線 → ア 戻す／閉じる」「?操作説明」 | 全問題で表示しない（操作そのもの＝タップで選択→もう一度で斜線→戻す は残す） | `src/components/MultipleChoiceControl.tsx` |
+
+**戻し方**：このPRを `git revert`。操作説明だけ戻すなら `MultipleChoiceControl.tsx` に `renderEliminationHint({ elimHintOpen, dismissElimHint, setElimHintOpen })` を戻す。
+
+---
+
+## 2026-10-24 英文解釈：本文の全訳を解説に（PR: feat/reading-translation）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 解説（答えたあと） | 根拠の英文＋和訳の下に「第N段落の全訳」（タップで開く）。根拠の部分は太字＋黄色マーカー。ふだんは閉じているので1画面に収まる | `src/components/ReadingQuiz.tsx`、`src/components/foundation.css` |
+| 結果画面 | 「本文と全訳を見る」（タップで開く）。段落ごとに英文→和訳 | 同上 |
+| データ | 全60題・208段落の全訳。設問の根拠の和訳と同じ言い回し | `src/data/reading/ja/level1〜5.ts` |
+
+**戻し方**：`ReadingQuiz.tsx` の `data-reading-translation` と `data-reading-translation-all` の `<details>` を消す（データは残しても害なし）。
+
+---
+
+## 2026-10-23 Web ログインの「連携中…」と Apple の失敗（PR: fix/web-login-stuck）
+
+見た目の変更はほぼ無し。
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| ポップアップを閉じたとき | 画面全体の遷移に切り替えず「ログインをキャンセルしました。もう一度ボタンを押すとやり直せます。」 | `src/utils/webSignInCore.ts` |
+| Google と Apple のボタン | 片方の処理中はもう片方も押せない | `src/hooks/useSignInGuard.ts` ほか4画面 |
+| ログイン済みなのにログイン画面のまま | 自動でプロフィール確認・ホームへ | `Onboarding.tsx`、`useAuthRouting.ts` |
+| Apple が Invalid web redirect url | 同じドメイン化を二重スイッチに（`VITE_AUTH_SAME_ORIGIN_APPLE_READY`） | `src/authDomainPolicy.ts` |
+
+詳細は `docs/WEB_LOGIN_SAME_ORIGIN.md` の冒頭。
+
+**戻し方**：このPRを `git revert`。
+
+---
+
 ## 2026-10-23 とびら君の背景なしモーション（準備）＋ガチャのやり込み強化（PR: feat/tobira-motion-gacha-depth）
 
 | 何を | どう変えた | ファイル |

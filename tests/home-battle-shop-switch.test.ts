@@ -16,11 +16,13 @@ describe('ホーム周辺の切替導線', () => {
     expect(battleHome).not.toContain('>ホームへ</button>');
   });
 
-  it('装飾ガチャとショップを相互に切り替えられる', () => {
-    expect(gacha).toContain('collection-mode-switch');
-    expect(gacha).toContain('onShop');
-    expect(collection).toContain('ショップと装飾ガチャの切替');
+  // 2026-10-20 30045bd「remove duplicate gacha shop switch」で上部の切替ボタンは重複として撤去した
+  // （UI の決まり「同じ操作を1画面に2つ置かない」）。行き来はガチャ説明文のリンクとショップ側の onGacha で残っている
+  it('装飾ガチャとショップを行き来でき、重複の切替ボタンは置かない', () => {
+    expect(gacha).toContain('「ショップ」へ');
+    expect(gacha).not.toContain('collection-mode-switch');
     expect(collection).toContain('onGacha');
+    expect(collection).not.toContain('collection-mode-switch');
   });
 
   it('単一科目の演習画面には左上のホーム戻るボタンを置かない', () => {

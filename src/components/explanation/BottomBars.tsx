@@ -9,23 +9,15 @@ import type { ReviewNav } from './types';
  */
 
 /**
- * ★スマホ：下部固定ナビ（問題に戻る / 次の問題へ）。
+ * ★スマホ：下部固定ナビ（次の問題へ）。2026-10-23 に「問題に戻る」は外した。
  * 演習画面の「前へ / 解答と解説を見る」と同じ位置・同じ操作感にして、
  * 親指だけで「解く→答え合わせ→次を解く」を回せるようにする。
  */
-export function MobileAnswerNav({ onBack, onNextQuestion, isLastQuestion }: { onBack: () => void; onNextQuestion: () => void; isLastQuestion?: boolean }) {
+export function MobileAnswerNav({ onNextQuestion, isLastQuestion }: { onBack?: () => void; onNextQuestion: () => void; isLastQuestion?: boolean }) {
   return (
           <div className="order-4 fixed left-0 right-0 bottom-0 z-50 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.10)] px-3 pt-2.5 pb-[calc(0.6rem+env(safe-area-inset-bottom))]">
             <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
-              <button
-                onClick={onBack}
-                title="問題に戻る"
-                aria-label="問題に戻る"
-                className="flex items-center justify-center p-3 rounded-xl font-bold transition-all duration-200 border-2 shrink-0 cursor-pointer border-[#A9CCE3] text-[#2C3E50] active:bg-[#A9CCE3] active:text-white bg-white shadow-sm"
-              >
-                <ArrowLeft size={18} className="stroke-[2.5]" aria-hidden="true" />
-                <span className="ml-1 text-xs">問題に戻る</span>
-              </button>
+              {/* 「問題に戻る」は置かない（答え合わせの後は進むだけ。2026-10-23） */}
               <button
                 onClick={onNextQuestion}
                 className="flex shadow-md active:translate-y-0.5 items-center justify-center gap-1.5 px-5 py-3 rounded-xl font-bold tracking-wider transition-all duration-200 text-sm bg-[#2C3E50] text-white active:bg-[#1B2631] flex-1 cursor-pointer"

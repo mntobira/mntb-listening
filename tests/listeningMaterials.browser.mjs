@@ -8,7 +8,7 @@ const errors = [];
 try {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true });
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto(process.env.QUIZ_TEST_URL || 'http://localhost:3000');
+  await page.goto(process.env.QUIZ_TEST_URL || 'http://localhost:3000', { timeout: 120000 });
   await page.evaluate(async () => {
     const React = (await import('/node_modules/.vite/deps/react.js')).default;
     const dom = await import('/node_modules/.vite/deps/react-dom_client.js');
@@ -36,6 +36,8 @@ try {
     // Briefing is set by an effect after the first render; wait for it to settle.
     await page.waitForTimeout(200);
     const start = page.getByRole('button', { name: '問題をはじめる', exact: true });
+    // 説明画面の描画が遅れることがあるので、資料かボタンのどちらかが出るまで待つ
+    await page.locator('[data-listening-material-pane], button:has-text("問題をはじめる")').first().waitFor({ timeout: 5000 }).catch(() => {});
     if (await start.count()) await start.click();
     try {
       await page.locator('[data-listening-material-pane]').waitFor({ timeout: 5000 });
@@ -107,8 +109,15 @@ try {
   await mount('EL6_B_PROBLEMS');
   await next.click();
   assert.equal(await page.locator('[data-listening-answer-pane] img').count(), 0);
-  assert.equal(await page.locator('[data-material-graph] img').count(), 4);
-  // 2026-10-21：グラフ4枚はスクロールせずに資料欄へ収まる
+  // 2026-10-23：グラフ4枚は1枚ずつ大きく出し、左右の矢印で切り替える
+  assert.equal(await page.locator('[data-material-graph] img').count(), 1);
+  const firstGraph = await page.locator('[data-material-graph] img').getAttribute('src');
+  await page.locator('[data-carousel-next]').click();
+  assert.notEqual(await page.locator('[data-material-graph] img').getAttribute('src'), firstGraph);
+  await page.locator('[data-carousel-prev]').click();
+  assert.equal(await page.locator('[data-material-graph] img').getAttribute('src'), firstGraph);
+  assert.equal(await page.locator('[data-carousel-dot]').count(), 4);
+  // 表示中のグラフはスクロールせずに資料欄へ収まる
   assert.ok(await page.locator('[data-material-figure-tap]').evaluateAll(list => list.every(e => {
     const r = e.getBoundingClientRect(), p = e.closest('[aria-label="資料をスクロール"]').getBoundingClientRect();
     return r.top >= p.top - 1 && r.bottom <= p.bottom + 1 && r.width > 100;

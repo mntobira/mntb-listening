@@ -133,6 +133,44 @@ function FigureGrid({ count, children }: { count: number; children: React.ReactN
   </div>;
 }
 
+/**
+ * ★図が複数（第6問B のグラフ①〜④）のときは、1枚ずつ大きく出して左右の矢印で切り替える★（2026-10-23 ご要望）
+ *   「第6問Bの図が4つ並べてある → 1つずつ並べて、左右の両矢印でタップして変えられるように」
+ *   ・◀ ▶ ボタン（44px）、①〜④の番号ボタン、左右スワイプ、キーボードの ← → で切り替え
+ *   ・端まで行ったら反対の端へ回る（4枚しかないので迷わない）
+ *   ・図ごとの ○× の書き込みは図の src ごとに持っているので、切り替えても消えない
+ */
+export function FigureCarousel({ count, labels, children }: { count: number; labels: string[]; children: (index: number) => React.ReactNode }) {
+  const [index, setIndex] = useState(0);
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const go = (d: number) => setIndex(i => (i + d + count) % count);
+  return <div data-material-carousel className="flex min-h-0 flex-1 flex-col" style={{ minHeight: 120 }}
+    onKeyDown={(e) => { if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); } else if (e.key === 'ArrowRight') { e.preventDefault(); go(1); } }}
+    onTouchStart={(e) => { const t = e.touches[0]; touch.current = { x: t.clientX, y: t.clientY }; }}
+    onTouchEnd={(e) => {
+      const s = touch.current; touch.current = null; const t = e.changedTouches[0];
+      if (!s || !t) return;
+      const dx = t.clientX - s.x, dy = t.clientY - s.y;
+      if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+    }}>
+    <div className="relative flex min-h-0 flex-1 items-stretch gap-1">
+      <button type="button" onClick={() => go(-1)} aria-label="前の図" data-carousel-prev
+        className="flex w-11 shrink-0 items-center justify-center rounded-lg border border-gray-300 bg-white text-2xl font-black text-[#2C3E50] active:bg-gray-100">‹</button>
+      <div data-material-figures data-cols={1} className="grid min-h-0 min-w-0 flex-1" style={{ gridTemplateColumns: 'minmax(0, 1fr)', gridTemplateRows: 'minmax(0, 1fr)', minHeight: 96 }} aria-live="polite" aria-label={`図 ${index + 1} / ${count}（${labels[index]}）`}>
+        {children(index)}
+      </div>
+      <button type="button" onClick={() => go(1)} aria-label="次の図" data-carousel-next
+        className="flex w-11 shrink-0 items-center justify-center rounded-lg border border-gray-300 bg-white text-2xl font-black text-[#2C3E50] active:bg-gray-100">›</button>
+    </div>
+    <div className="mt-1 flex shrink-0 items-center justify-center gap-1.5" role="tablist" aria-label="図を選ぶ">
+      {labels.map((label, i) => <button key={i} type="button" role="tab" aria-selected={i === index} data-carousel-dot={i}
+        onClick={() => setIndex(i)}
+        className={`flex h-11 min-w-11 items-center justify-center rounded-full border px-2 text-sm font-bold ${
+          i === index ? 'border-[#2C3E50] bg-[#2C3E50] text-white' : 'border-gray-300 bg-white text-gray-700'}`}>{label}</button>)}
+    </div>
+  </div>;
+}
+
 /** Render only printed question data. The shared document never follows answer-page keys. */
 export function ListeningMaterials({ material, activeSubId }: {
   material: ListeningMaterial;
@@ -252,15 +290,20 @@ export function ListeningMaterials({ material, activeSubId }: {
         以前は幅いっぱい（縦はなりゆき）で描いていたので、第6問B（メモ表＋グラフ4枚）は
         資料欄 359px に対して中身が 1540px あり、グラフが選択肢の下に隠れていた。
         いまは資料欄の残りの高さに、縦横比を保ったまま幅にも高さにも収まる大きさで描く
-        （FitFigure）。グラフが複数あるときは 2×2 か 4×1 の大きく見える方に並べる（FigureGrid）。細部は「拡大」で確かめる。
+        （FitFigure）。グラフが複数あるときは 1枚ずつ大きく出し、左右の矢印で切り替える（FigureCarousel・2026-10-23）。細部は「拡大」で確かめる。
         資料欄がとても低い端末（320x568 など）では下限の高さを守り、はみ出すぶんだけ縦にスクロールする。
       */}
-      {images.length > 0 && <FigureGrid count={images.length}>
-        {images.map((image, i) => <React.Fragment key={image.src}><FitFigure image={image}
-          badge={images.length > 1 ? (image.caption.match(/^\S+/)?.[0] ?? String(i + 1)) : undefined}
+      {images.length > 1 ? <FigureCarousel count={images.length} labels={images.map((image, i) => image.caption.match(/^\S+/)?.[0] ?? String(i + 1))}>
+        {(i) => { const image = images[i]; return <React.Fragment key={image.src}><FitFigure image={image}
+          badge={image.caption.match(/^\S+/)?.[0] ?? String(i + 1)}
           marks={figureMarks[image.src] ?? []}
           onMarks={(next) => setFigureMarks(m => ({ ...m, [image.src]: next }))}
-          onZoom={() => setZoomed(image)} /></React.Fragment>)}
+          onZoom={() => setZoomed(image)} /></React.Fragment>; }}
+      </FigureCarousel> : images.length === 1 && <FigureGrid count={1}>
+        <FitFigure image={images[0]}
+          marks={figureMarks[images[0].src] ?? []}
+          onMarks={(next) => setFigureMarks(m => ({ ...m, [images[0].src]: next }))}
+          onZoom={() => setZoomed(images[0])} />
       </FigureGrid>}
       {/*
         ★図の下の「(18) 1st step (19) 2nd step …」は出さない（2026-10-21 ご指摘「いらない」）★

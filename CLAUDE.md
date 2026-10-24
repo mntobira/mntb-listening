@@ -8,3 +8,6 @@ This is the listening derivative. Read README.md and DERIVATIVE_HANDOFF.md. Pres
 3. **Keep the home look.** The home screen's colour balance (cream paper, gold coin card, pastel side buttons, light-blue round battle button) is the reference. Other screens (battle, review note, lists) match its feel; do not recolour the home.
 4. **Legibility.** Text ≥ 12px, tap targets ≥ 44px, AA contrast. Tokens live in `src/styles/tokens.css`.
 5. **Verify** at 320×568, 375×667, 390×844 and 1280×800: no document scroll, no text < 12px, no overlapping buttons.
+
+## Promo videos (Instagram / YouTube)
+When asked to make an advertising / announcement video, **read `store-assets/VIDEO_PLAYBOOK.md` first**. Everything is in the repo: the editing engine (`store-assets/_tools/promo_engine.py`), recorders, measuring tools, the raw screen recordings (`store-assets/_footage/`, Git LFS — run `bash store-assets/_tools/setup.sh`), BGM rules and credits. Use real app recordings only (no AI-generated video), never claim guaranteed results, and keep the BGM credit (創作堂さくら紅葉 https://yukizakura.net/) in captions.

@@ -61,8 +61,8 @@
 /* 低い画面（SE・320×568）：1列の選択肢でも4つ目まで画面に収める */
 @media (max-height: 640px) {
   #battle-question > .mb-3:first-child { margin-bottom: 4px; }
-  #battle-question > .mb-3:first-child > .mb-2:not(:has(.bq-progress-notice)) { display: none; }
-  #battle-question > .mb-3:first-child > .mb-2:has(.bq-progress-notice) { margin-bottom: 2px; }
+  /* 進捗の行は常に出す（以前は「相手は回答ずみ！」が出たときだけ行が現れ、4択が下に動いていた・2026-10-23） */
+  #battle-question > .mb-3:first-child > .bq-progress-row { margin-bottom: 2px; }
   #battle-question .grid.grid-cols-1 { gap: 6px; }
   #battle-question .grid > button.min-h-\[58px\] { min-height: 44px; padding-block: 4px; }
   .arena-question-prompt:not([data-picture-grid]) { padding: 6px 10px !important; margin-bottom: 6px !important; }
@@ -212,3 +212,24 @@
 @keyframes battle-finish-slam { 0% { opacity: 0; transform: scale(2.4) rotate(-6deg); } 70% { opacity: 1; transform: scale(.94) rotate(1deg); } 100% { transform: scale(1) rotate(-2deg); } }
 @keyframes battle-finish-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .battle-finish-overlay, .battle-finish-word, .battle-finish-sub { animation: none; } }
+
+/* ===== 2026-10-23 回答中に4択ボタンが上下に揺れる問題の修正 =====
+ * 実況（🔵/🔴 の札）・相手の確定回答・「相手は回答ずみ！」が出たり消えたりするたびに高さが変わり、
+ * 下の4択ボタンが動いて押し間違いが起きていた。どれも「高さを先に決めた箱」にして、中身だけ入れ替える。 */
+.arena-live-stage { --live-feed-h: 28px; --opp-answer-h: 34px; }
+.arena-live-stage #battle-live-feed[data-live-feed-fixed] {
+  display: flex !important; flex-direction: column; justify-content: flex-end; gap: 0 !important;
+  height: var(--live-feed-h) !important; min-height: var(--live-feed-h) !important; max-height: var(--live-feed-h) !important;
+  margin-block: 2px 4px !important; padding: 0 !important; overflow: hidden !important; flex-shrink: 0;
+}
+/* いちばん新しい札だけを見せる（古い札は箱の上にはみ出して隠れる） */
+.arena-live-stage #battle-live-feed[data-live-feed-fixed] > li { flex-shrink: 0; line-height: 22px !important; min-height: 24px; }
+.arena-live-stage #battle-live-feed[data-live-feed-fixed] > li:not(:last-child) { display: none !important; }
+.arena-live-stage > .arena-opponent-answer[data-opponent-answer-slot] {
+  height: var(--opp-answer-h); min-height: var(--opp-answer-h); max-height: var(--opp-answer-h) !important;
+  margin-bottom: 4px; padding-block: 4px; overflow: hidden; flex-shrink: 0; align-items: center;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+.arena-live-stage > .arena-opponent-answer[data-empty] { visibility: hidden; }
+/* 問題文の上の「相手は回答ずみ！」も1行の高さを固定（出ても消えても下が動かない） */
+#battle-question .bq-progress-notice { min-height: 18px; max-height: 18px; overflow: hidden; }

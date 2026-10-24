@@ -270,10 +270,16 @@ export function OpponentActivityLabel({ status, compact }: { status: OpponentSta
 // 実況ログ
 // ============================================================
 
+/**
+ * ★実況（🔵/🔴 の札）は「高さの決まった箱」の中に出す（2026-10-23 ご指摘）★
+ *   以前は札が出る・消えるたびに箱の高さが 0〜80px で変わり、下の4択ボタンが上下に揺れて
+ *   「押したかったのと違うボタンを押してしまう」原因になっていた。
+ *   いまは札の有無にかかわらず同じ高さ（battle-question.css の --live-feed-h）で、最新が下に1行だけ見える。
+ */
 export function LiveFeed({ entries }: { entries: FeedEntry[] }) {
-  if (entries.length === 0) return <div className="h-[18px]" aria-hidden />;
   return (
     <ol
+      data-live-feed-fixed
       id="battle-live-feed"
       className="mb-1 flex flex-col items-start gap-0.5 overflow-hidden"
       aria-live="polite"

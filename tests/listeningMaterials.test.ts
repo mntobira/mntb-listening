@@ -58,14 +58,18 @@ describe('later listening printed materials', () => {
     });
   });
 
-  it('shows Q6 memo names and all four graphs, not answer/explanation metadata', () => {
+  it('shows Q6 memo names and the four graphs one at a time, not answer/explanation metadata', () => {
     q6.sets.forEach((source, i) => {
       const material = EL6_B_PROBLEMS[i].audioTracks[0].material!;
       expect(material.table!.rows).toEqual(source.partB.memoTable.rows.map(row => [row.who, row.note]));
       expect(material.images).toHaveLength(4);
       expect(material.images!.map(image => image.src)).toEqual(EL6_B_PROBLEMS[i].subQuestions[1].optionImages);
       const html = renderToStaticMarkup(React.createElement(ListeningMaterials, { material }));
-      expect(html.match(/<img /g)).toHaveLength(4);
+      // 2026-10-23：4枚は並べず1枚ずつ表示し、左右の矢印と4つの点で切り替える
+      expect(html.match(/<img /g)).toHaveLength(1);
+      expect(html).toContain('data-carousel-prev');
+      expect(html).toContain('data-carousel-next');
+      expect(html.match(/data-carousel-dot/g)).toHaveLength(4);
       expect(html).not.toContain(source.partB.q37.basis.utterance);
     });
   });

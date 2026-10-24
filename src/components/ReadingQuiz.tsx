@@ -11,6 +11,7 @@ import {
   applyReadingResult, evidencePara, examNote, isCleared, passagesOf, phrasesIn, READING_LEVELS, readReadingRecord, shuffledOptions, splitEvidence, stepsOf, TYPE_LABEL, writeReadingRecord,
   type ReadingLevel, type ReadingPassage, type ReadingQuestion, type ReadingRecord, type ReadingStep,
 } from '../data/reading';
+import { paragraphJa } from '../data/reading/ja';
 
 /**
  * 英文解釈（段落ごとに読む・内容一致の4択）2026-10-21
@@ -108,6 +109,8 @@ export function ReadingQuiz({ uid }: { uid: string }) {
     const ev = splitEvidence(paraText, answered && evPara === shownPara ? q.evidence : null);
     const note = examNote(passage.level, q.type);
     const phrases = phrasesIn(passage, evPara);
+    // 根拠の段落の全訳（2026-10-24）。根拠の一節の訳は太字で示す
+    const evJa = paragraphJa(passage.id, evPara);
     const next = steps[i + 1];
 
     const quit = () => {
@@ -188,6 +191,10 @@ export function ReadingQuiz({ uid }: { uid: string }) {
           {answered && <div className="rq-ex" data-reading-explain>
             <p className="rq-ex-judge" data-ok={ok || undefined}>{ok ? '正解！' : <>正解は {'①②③④'[view.answerIndex]}</>}<small>{TYPE_LABEL[q.type]}・第{evPara}段落</small></p>
             <div className="rq-ex-ev"><p lang="en">{q.evidence}</p><p>{q.evidenceJa}</p></div>
+            {evJa && <details className="rq-ex-ja" key={`${q.id}-ja`} data-reading-translation>
+              <summary>第{evPara}段落の全訳</summary>
+              <p>{markJa(evJa, q.evidenceJa)}</p>
+            </details>}
             <p className="rq-ex-text">{q.explanation}</p>
             {q.point && <p className="rq-ex-point"><b>構文</b>{q.point}</p>}
             <p className="rq-ex-exam" data-reading-exam><GraduationCap size={15} aria-hidden="true" /><span><b>{note.where}</b>{note.tip}</span></p>
@@ -235,6 +242,13 @@ export function ReadingQuiz({ uid }: { uid: string }) {
           <p className="rq-result-x">{examNote(passage.level, x.type).where}</p>
         </li>;
       })}</ul>
+      <details className="rq-ja-all" data-reading-translation-all>
+        <summary>本文と全訳を見る</summary>
+        <ol>{passage.paragraphs.map((en, k) => <li key={k}>
+          <p lang="en">{en}</p>
+          {paragraphJa(passage.id, k + 1) && <p>{paragraphJa(passage.id, k + 1)}</p>}
+        </li>)}</ol>
+      </details>
       <div className="vq-done-actions">
         {wrong.length > 0 && <button type="button" className="vq-next" onClick={() => begin(passage, wrong)} data-reading-retry><RotateCcw size={17} aria-hidden="true" />間違えた{wrong.length}問だけもう一度</button>}
         {nx && nx.id !== passage.id && <button type="button" className={wrong.length ? 'fd-secondary' : 'vq-next'} onClick={() => begin(nx)} data-reading-continue>次の文章へ（{nx.title}）<ChevronRight size={16} aria-hidden="true" /></button>}
@@ -270,6 +284,14 @@ export function ReadingQuiz({ uid }: { uid: string }) {
       <button type="button" className="vq-next vq-start" onClick={() => first && begin(first)} disabled={!first} data-reading-start><Play size={18} aria-hidden="true" />{cleared === list.length ? 'もう一度はじめから解く' : '次の文章を解く'}</button>
     </div>
   </section>;
+}
+
+/** 段落の全訳の中で、根拠の一節の訳（evidenceJa）に当たる部分を太字にする（鉤括弧の有無の違いは吸収） */
+function markJa(full: string, part: string) {
+  const key = part.replace(/^「|」$/g, '');
+  const at = key ? full.indexOf(key) : -1;
+  if (at < 0) return full;
+  return <>{full.slice(0, at)}<b>{full.slice(at, at + key.length)}</b>{full.slice(at + key.length)}</>;
 }
 
 function streakAt(steps: readonly ReadingStep[], picks: readonly (number | null)[], i: number): number {

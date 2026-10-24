@@ -555,7 +555,7 @@ export function Quiz({ mode, chapter, onFinish, onBack, onReturnToBattle, isGues
    * 押せる状態にしておくと、壊れているように見えるため）。
    */
   const canGoPrevious = showingExplanation
-    ? true
+    ? false
     : (perStep && safeStepIndex > 0) || currentQuestionIndex > rangeStart;
 
   // 「最後の問題か」＝範囲の終わりに来たか。

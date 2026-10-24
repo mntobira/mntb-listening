@@ -234,10 +234,10 @@ export function createQuizStepActions({
   };
 
   const handlePrevious = () => {
-    if (showingExplanation) {
-      setShowingExplanation(false);
-      if (onExplanationChange) onExplanationChange(false);
-    } else if (perStep && safeStepIndex > 0) {
+    // ★答え合わせ（解説）を出したあとは、解答画面へ戻さない（2026-10-23 ご指摘）★
+    //   採点済みで答えも変えられないので、戻っても意味がない。← キーも同じ。
+    if (showingExplanation) return;
+    if (perStep && safeStepIndex > 0) {
       // ★1問ずつモード：同じ回の1つ前の問（の解説）へ戻る★
       // 問3を解いている途中で「問2の答えをもう一度見たい」という戻り方を
       // 回をまたがずにできるようにする。

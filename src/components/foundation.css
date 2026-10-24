@@ -509,6 +509,20 @@
 .rq-ex-ev p { margin: 0; font-size: 13px; line-height: 1.6; color: var(--fd-ink-2); }
 .rq-ex-ev p[lang=en] { margin-bottom: 4px; font: 600 14px/1.55 'Inter', var(--mt-font-body); color: var(--fd-ink); }
 .rq-ex-text { margin: 0; font-size: 14px; line-height: 1.65; color: var(--fd-ink); }
+/* 根拠の段落の全訳（2026-10-24）。ふだんは閉じておき、開くと段落の和訳。根拠の部分は太字 */
+.rq-ex-ja { border-radius: 12px; background: #f7f9fc; border: 1px solid #e3e9f2; }
+.rq-ex-ja summary { min-height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 12px; cursor: pointer; font: 800 13px/1.4 var(--mt-font-body); color: #14315f; list-style: none; }
+.rq-ex-ja summary::-webkit-details-marker { display: none; }
+.rq-ex-ja summary::before { content: '▶'; font-size: 12px; transition: transform .15s; }
+.rq-ex-ja[open] summary::before { transform: rotate(90deg); }
+.rq-ex-ja p { margin: 0; padding: 0 12px 10px; font-size: 13px; line-height: 1.75; color: var(--fd-ink-2); }
+.rq-ex-ja b { color: var(--fd-ink); background: linear-gradient(transparent 60%, #ffe8a3 60%); font-weight: 700; }
+/* 結果画面：本文と全訳（段落ごとに英文→和訳） */
+.rq-ja-all { margin: 10px 0 0; border-radius: 14px; background: #fff; border: 1px solid #e3e9f2; }
+.rq-ja-all summary { min-height: 44px; display: flex; align-items: center; padding: 0 14px; cursor: pointer; font: 800 14px/1.4 var(--mt-font-body); color: #14315f; }
+.rq-ja-all ol { margin: 0; padding: 0 14px 12px 32px; display: grid; gap: 10px; }
+.rq-ja-all p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--fd-ink-2); }
+.rq-ja-all p[lang=en] { margin-bottom: 4px; font: 500 13px/1.6 'Inter', var(--mt-font-body); color: var(--fd-ink); }
 .rq-ex-point { margin: 0; display: flex; gap: 8px; align-items: baseline; font-size: 13px; line-height: 1.6; color: var(--fd-ink-2); }
 .rq-ex-point b, .rq-ex-phrases::before { flex-shrink: 0; padding: 1px 8px; border-radius: 99px; background: #e7eef8; color: #14315f; font: 800 12px/18px var(--mt-font-body); }
 .rq-ex-exam { margin: 0; display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border-radius: 12px; background: #fdf2f6; box-shadow: inset 0 0 0 1px #ecc9d7; font-size: 12px; line-height: 1.55; color: #6d4c61; }

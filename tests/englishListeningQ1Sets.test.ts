@@ -370,13 +370,12 @@ describe('解答画面：消去法（選択肢を直接タップして斜線を�
     expect(MC).toContain("handleOptionSelect(sq.id, opt);");
   });
 
-  it('操作方法を選択肢の上に示している（モード表示の代わり）', () => {
-    // 文字だけの一行説明から、各状態の見本を並べた表示に変更した。
-    // 「2段階あることに気づかれない」というご指摘への対応。
-    expect(QUIZ).toContain('タップで選択');
-    expect(MC).toContain('もう一度で斜線');
-    expect(MC).toContain('さらにタップで元に戻る');
-    expect(MC).toContain('長押しでこの設問の斜線をまとめて消す');
+  it('消去法の操作説明（ア 選ぶ → 斜線 → 戻す）は全問題で出さない（2026-10-24 ご指摘「いらない」）', () => {
+    const control = read('src/components/MultipleChoiceControl.tsx');
+    expect(control).not.toContain('renderEliminationHint(');
+    expect(control).not.toContain("from './quiz/EliminationHintBanner'");
+    // 操作そのもの（選択→斜線→戻す）は残っている
+    expect(control).toContain('選択中。タップで斜線を引きます');
   });
 
   it('消去済みの選択肢は取り消し線で表示される', () => {

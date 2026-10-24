@@ -1,0 +1,5 @@
+# 宣伝動画の録画・編集に使う Python ライブラリ（2026-10-24 時点で動作確認した版）
+opencv-python-headless==4.11.0.86
+numpy==2.3.5
+Pillow==12.3.0
+playwright==1.63.0

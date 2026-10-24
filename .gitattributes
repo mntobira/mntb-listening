@@ -1,0 +1,2 @@
+# 宣伝動画の録画素材（大きい動画）は Git LFS に置く
+store-assets/_footage/**/*.mp4 filter=lfs diff=lfs merge=lfs -text

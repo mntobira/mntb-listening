@@ -5,6 +5,7 @@ import { GrowthAvatar } from '../battle/ui/GrowthParts';
 import { printOf, type ItemDef, type GachaRarity, type GrowthProgress } from '../battle/core/growth';
 import { wallpaperOf } from '../battle/core/tobiraParts';
 import { savePdf } from '../utils/pdfShare';
+import { notify } from '../utils/dialog';
 
 /**
  * GachaParts
@@ -108,7 +109,7 @@ export function PrintLinks({ item, compact = false }: { item: ItemDef; compact?:
   const name = `${print.label.replace(/[\\/:*?"<>|\s]+/g, '_')}.pdf`;
   return (
     <span className={`gacha-print-links ${compact ? 'is-compact' : ''}`}>
-      <a href={print.file} download={name} aria-label={`${print.label}をダウンロード`} onClick={e => { e.preventDefault(); void savePdf(print.file, name, print.label).catch(() => window.alert('PDFを保存できませんでした。接続を確認して、もう一度お試しください。')); }}>
+      <a href={print.file} download={name} aria-label={`${print.label}をダウンロード`} onClick={e => { e.preventDefault(); void savePdf(print.file, name, print.label).catch(() => notify('PDFを保存できませんでした。接続を確認して、もう一度お試しください。')); }}>
         <Download size={compact ? 14 : 16} aria-hidden="true" />
         {compact ? '保存' : '保存する'}
       </a>
