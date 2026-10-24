@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-10-24 英文解釈：本文の全訳を解説に（PR: feat/reading-translation）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 解説（答えたあと） | 根拠の英文＋和訳の下に「第N段落の全訳」（タップで開く）。根拠の部分は太字＋黄色マーカー。ふだんは閉じているので1画面に収まる | `src/components/ReadingQuiz.tsx`、`src/components/foundation.css` |
+| 結果画面 | 「本文と全訳を見る」（タップで開く）。段落ごとに英文→和訳 | 同上 |
+| データ | 全60題・208段落の全訳。設問の根拠の和訳と同じ言い回し | `src/data/reading/ja/level1〜5.ts` |
+
+**戻し方**：`ReadingQuiz.tsx` の `data-reading-translation` と `data-reading-translation-all` の `<details>` を消す（データは残しても害なし）。
+
+---
+
 ## 2026-10-22 Web ログインが「連携中…」で止まる件（PR: fix/web-login-same-origin）
 
 見た目の変更はほぼ無し。
