@@ -95,6 +95,7 @@
 .gacha-room .gacha-confirm button { min-height: 44px; border-radius: var(--mt-radius-md); }
 .gacha-room .gacha-cinema { min-height: 220px; border-radius: var(--mt-radius-xl); }
 .gacha-room .gacha-cinema:not(.gacha-reveal) > p { font: 800 15px/1.4 var(--mt-font-display); color: var(--mt-ink-warm); }
+.gacha-room .gacha-result[data-rarity=LR] { border: 2px solid var(--mt-rare-lr-line); background: linear-gradient(#fffaf7, var(--mt-rare-lr-bg)); box-shadow: 0 0 0 4px #fff, 0 4px 0 6px #7a1230; animation: gacha-pop .45s ease-out both; }
 .gacha-room .gacha-cinema[data-rarity=UR] { animation: none; box-shadow: 0 0 0 3px #fde68a, 0 0 24px rgba(245, 158, 11, .35); }
 .gacha-room .gacha-cinema > button { font: 700 13px/1 var(--mt-font-body); }
 

@@ -78,6 +78,9 @@
 .mt-rarity[data-rarity=SR]::before { content: '✦'; font-size: 10px; }
 /* UR：目玉（虹のパステル地・金の二重縁・王冠） */
 .mt-rarity[data-rarity=UR] { background: var(--mt-rare-ur-grad); border: 2px solid var(--mt-rare-ur-line); color: var(--mt-rare-ur-ink); box-shadow: 0 0 0 2px #fff, 0 0 0 3px #f1d189; }
+/* LR：最上位（深紅の地・金の三重縁・王冠） */
+.mt-rarity[data-rarity=LR] { background: var(--mt-rare-lr-grad); border: 2px solid var(--mt-rare-lr-line); color: var(--mt-rare-lr-ink); box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #b8860b, 0 0 10px rgba(184, 134, 11, .55); text-shadow: 0 1px 1px #0008; }
+.mt-rarity[data-rarity=LR] .mt-rarity-crown { color: #ffd76a; }
 .mt-rarity[data-rarity=UR]::before { content: none; }
 .mt-rarity-crown { flex: none; }
 .mt-rarity[data-size=lg] { min-height: 32px; padding: 2px 14px; font-size: 18px; }
@@ -96,6 +99,8 @@
 .mt-item-card[data-rarity=SR] > .mt-item-art { background: radial-gradient(circle at 50% 40%, #fff, #ece1ff); }
 .mt-item-card[data-rarity=UR] { border: 2px solid var(--mt-rare-ur-line); background: linear-gradient(#fffdf6, var(--mt-rare-ur-bg)); box-shadow: 0 0 0 3px #fff6dd, 0 4px 0 #e8c46e, 0 8px 18px rgba(200, 140, 30, .18); }
 .mt-item-card[data-rarity=UR] > .mt-item-art { background: var(--mt-rare-ur-grad); }
+.mt-item-card[data-rarity=LR] { border: 2px solid var(--mt-rare-lr-line); background: linear-gradient(#fffdf8, var(--mt-rare-lr-bg)); box-shadow: 0 0 0 3px #f6e2b0, 0 4px 0 #7a1230, 0 8px 18px rgba(122, 18, 48, .22); }
+.mt-item-card[data-rarity=LR] > .mt-item-art { background: var(--mt-rare-lr-grad); }
 .mt-item-card[data-owned=false] > .mt-item-art > * { filter: saturate(.85); }
 
 /* ---------- Buttons（PrimaryButton / SecondaryButton は tokens.css の .mt-btn を使う） ---------- */

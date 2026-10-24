@@ -87,6 +87,12 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 .gacha-reveal-meter li[data-on][data-stage=gold] { background: #ffc53d; box-shadow: 0 0 8px #ffc53d; }
 .gacha-reveal-meter li[data-on][data-stage=rainbow] { background: linear-gradient(90deg,#ff6b9d,#ffd93d,#4d96ff,#c77dff); box-shadow: 0 0 10px #c77dff; }
 .gacha-reveal-meter li[data-on][data-stage=ur] { background: linear-gradient(90deg,#fde68a,#f59e0b,#a855f7); box-shadow: 0 0 12px #f59e0b; }
+.gacha-reveal-meter li[data-on][data-stage=lr] { background: linear-gradient(90deg,#ffd76a,#a3173f,#ffd76a); box-shadow: 0 0 14px #ff3d6e; }
+/* LR：深紅の夜空に金の光（UR よりさらに上の確定演出） */
+.gacha-reveal[data-stage=lr] { --c1: #ffd76a; --c2: #ff3d6e; background: radial-gradient(circle at 50% 45%, #5c0f27 0%, #12030a 72%); }
+.gacha-reveal[data-stage=lr] .gacha-reveal-rays { background: repeating-conic-gradient(from 0deg, #ffd76acc 0deg 5deg, transparent 5deg 12deg, #ff3d6eaa 12deg 18deg, transparent 18deg 26deg); animation-duration: 1.4s; mask: radial-gradient(circle, #000 0%, #000a 45%, transparent 72%); }
+.gacha-reveal[data-stage=lr] .gacha-reveal-orb { box-shadow: 0 0 0 6px #ffd76a, 0 0 40px 12px #ff3d6e, 0 0 90px 28px #ffd76a, 0 0 150px 46px #a3173f99; animation: gacha-orb-pulse .3s ease-in-out infinite, gacha-orb-shake .1s linear infinite; }
+.gacha-reveal[data-stage=lr] .gacha-reveal-caption { font-size: 22px !important; background: linear-gradient(90deg,#ffd76a,#fff,#ff7a9a,#ffd76a); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; filter: drop-shadow(0 0 8px #ff3d6e) drop-shadow(0 0 16px #ffd76a); animation: gacha-caption-pop .45s cubic-bezier(.2,1.7,.4,1) both, gacha-shine .8s linear infinite; }
 .gacha-reveal-flash { position: absolute; inset: 0; z-index: 3; pointer-events: none; background: radial-gradient(circle at 50% 45%, #fff 0%, var(--c2) 40%, transparent 75%); opacity: 0; }
 .gacha-reveal[data-burst] .gacha-reveal-flash { animation: gacha-flash .45s ease-out forwards; }
 .gacha-reveal[data-burst] .gacha-reveal-orb { animation: gacha-orb-burst .45s ease-in forwards; }
@@ -95,13 +101,15 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 .gacha-stars { display: flex; justify-content: center; gap: 2px; font-size: 20px; line-height: 1; color: #f5b301; text-shadow: 0 0 6px #ffd76a, 0 1px 0 #a36b00; }
 .gacha-stars i { font-style: normal; animation: gacha-star-in .35s cubic-bezier(.2,1.8,.4,1) both; }
 .gacha-multi-grid .gacha-stars { font-size: 11px; }
+.gacha-result[data-rarity=LR] .gacha-stars, .gacha-multi-grid li[data-rarity=LR] .gacha-stars { color: #ffd76a; text-shadow: 0 0 6px #ff3d6e, 0 0 12px #ffd76a, 0 1px 0 #3b0a1a; }
 .gacha-result[data-rarity=UR] .gacha-stars, .gacha-multi-grid li[data-rarity=UR] .gacha-stars { color: #fde68a; text-shadow: 0 0 6px #f59e0b, 0 0 12px #a855f7, 0 1px 0 #7c2d12; }
 .gacha-result[data-rarity=SR] .gacha-stars, .gacha-multi-grid li[data-rarity=SR] .gacha-stars { color: #fff; text-shadow: 0 0 5px #ff6b9d, 0 0 10px #4d96ff, 0 1px 0 #7c3aed; }
 .gacha-result { position: relative; overflow: hidden; isolation: isolate; }
 .gacha-result-halo { position: absolute; inset: -60%; z-index: -1; pointer-events: none; will-change: transform; contain: strict; background: repeating-conic-gradient(from 0deg, #ffd93d33 0deg 10deg, transparent 10deg 24deg); animation: gacha-rays-spin 10s linear infinite; }
+.gacha-result[data-rarity=LR] .gacha-result-halo { background: repeating-conic-gradient(from 0deg, #ffd76a55 0deg 7deg, transparent 7deg 16deg, #a3173f44 16deg 24deg, transparent 24deg 34deg); animation-duration: 5s; }
 .gacha-result[data-rarity=UR] .gacha-result-halo { background: repeating-conic-gradient(from 0deg, #f59e0b40 0deg 8deg, transparent 8deg 18deg, #a855f733 18deg 26deg, transparent 26deg 36deg); animation-duration: 6s; }
-.gacha-result[data-rarity=UR] .gacha-result-art, .gacha-result[data-rarity=SR] .gacha-result-art { animation: gacha-art-in .6s cubic-bezier(.2,1.6,.4,1) both; }
-.gacha-multi-grid li[data-rarity=UR] { animation: gacha-card-in .45s ease-out both, gacha-sr-glow 1.2s ease-in-out infinite; }
+.gacha-result[data-rarity=LR] .gacha-result-art, .gacha-result[data-rarity=UR] .gacha-result-art, .gacha-result[data-rarity=SR] .gacha-result-art { animation: gacha-art-in .6s cubic-bezier(.2,1.6,.4,1) both; }
+.gacha-multi-grid li[data-rarity=LR], .gacha-multi-grid li[data-rarity=UR] { animation: gacha-card-in .45s ease-out both, gacha-sr-glow 1.2s ease-in-out infinite; }
 @keyframes gacha-rays-spin { to { transform: rotate(360deg); } }
 @keyframes gacha-orb-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
 @keyframes gacha-orb-shake { 0% { translate: 0 0; } 25% { translate: 2px -1px; } 50% { translate: -2px 1px; } 75% { translate: 1px 2px; } 100% { translate: 0 0; } }
@@ -112,7 +120,7 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 @keyframes gacha-flash { 0% { opacity: 0; } 35% { opacity: 1; } 100% { opacity: 1; } }
 @keyframes gacha-star-in { 0% { opacity: 0; transform: scale(2.2) rotate(-30deg); } 100% { opacity: 1; transform: none; } }
 @keyframes gacha-art-in { 0% { opacity: 0; transform: scale(.3) rotate(-10deg); } 100% { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .gacha-reveal *, .gacha-result-halo, .gacha-stars i, .gacha-result-art, .gacha-multi-grid li[data-rarity=UR] { animation: none !important; } .gacha-reveal-sparks { display: none; } }
+@media (prefers-reduced-motion: reduce) { .gacha-reveal *, .gacha-result-halo, .gacha-stars i, .gacha-result-art, .gacha-multi-grid li[data-rarity=UR], .gacha-multi-grid li[data-rarity=LR] { animation: none !important; } .gacha-reveal-sparks { display: none; } }
 /* 配置：光のメーター（上）→ 光る円（中）→ 文字（下）→ 結果を見る（左下）。どの高さでも重ならないよう割合で置く */
 .gacha-reveal { min-height: 240px; }
 .gacha-reveal-meter { position: absolute; top: 10px; left: 50%; translate: -50% 0; margin: 0; }
@@ -124,7 +132,7 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 /* 演出中は説明文と提供割合を隠して舞台を広く（結果・抽選画面では元どおり表示） */
 .gacha-room:has(.gacha-reveal) > :is(.home-eyebrow, h1 + p, .gacha-rarity-rates) { display: none; }
 .gacha-reveal-caption { white-space: nowrap; }
-@media (max-width: 360px) { .gacha-reveal-caption { font-size: 15px !important; } .gacha-reveal[data-stage=ur] .gacha-reveal-caption { font-size: 17px !important; } }
+@media (max-width: 360px) { .gacha-reveal-caption { font-size: 15px !important; } .gacha-reveal[data-stage=ur] .gacha-reveal-caption, .gacha-reveal[data-stage=lr] .gacha-reveal-caption { font-size: 17px !important; } }
 @media (max-width: 360px) { .gacha-rarity-rates { gap: 4px; } .gacha-rarity-rates li { padding: 3px 5px; gap: 3px; } }
 
 /* 2026-09-30 通信チェック（対戦メニュー・マッチング失敗時） */

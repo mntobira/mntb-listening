@@ -44,14 +44,16 @@ export function GachaSingleResult({ result, progress, freeResult, collectionLine
 }) {
   return (
     <div className="gacha-result gacha-outcome" role="status" data-rarity={result.rarity} data-gacha-result>
-      {(result.rarity === 'UR' || result.rarity === 'SR') && (
+      {(result.rarity === 'LR' || result.rarity === 'UR' || result.rarity === 'SR') && (
         <span className="gacha-result-halo" aria-hidden="true" />
       )}
       {/* ★C10・C11 結果の順★ レア度 → アイテム → 名前 → コレクションに追加。URは大きく、でも点滅させない */}
       <p className="gacha-reveal-rarity">
-        <RarityTag rarity={result.rarity} size={result.rarity === 'UR' || result.rarity === 'SR' ? 'xl' : 'lg'} />
+        <RarityTag rarity={result.rarity} size={result.rarity === 'LR' || result.rarity === 'UR' || result.rarity === 'SR' ? 'xl' : 'lg'} />
         <RarityStars count={RARITY_STARS[result.rarity]} />
-        {result.rarity === 'UR' ? (
+        {result.rarity === 'LR' ? (
+          <span>レジェンドレア！</span>
+        ) : result.rarity === 'UR' ? (
           <span>大当たり！</span>
         ) : result.rarity === 'SR' ? (
           <span>スーパーレア！</span>

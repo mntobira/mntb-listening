@@ -84,7 +84,7 @@ export function GachaSetsModal({ dialog, progress }: { dialog: RefObject<HTMLDia
         ) : (
           <>
             <p className="gacha-sets-lead">
-              ダブると貯まる（N {SHARDS_PER_DUPLICATE.N}・R {SHARDS_PER_DUPLICATE.R}・SR {SHARDS_PER_DUPLICATE.SR}・UR {SHARDS_PER_DUPLICATE.UR}）。
+              ダブると貯まる（N {SHARDS_PER_DUPLICATE.N}・R {SHARDS_PER_DUPLICATE.R}・SR {SHARDS_PER_DUPLICATE.SR}・UR {SHARDS_PER_DUPLICATE.UR}・LR {SHARDS_PER_DUPLICATE.LR}）。
               未所持の装飾を<b>選んで</b>交換できます（学習プリントは対象外）。
             </p>
             {exchangeable.length === 0 ? <p>交換できる装飾はすべて持っています。</p> : (

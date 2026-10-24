@@ -10,7 +10,7 @@ describe('ガチャ「今回の注目アイテム」（C6・C8・C23）', () => 
     const f = gachaFeatured({ now: new Date(2026, 9, 1) });
     expect(f.hero && tiers.UR.includes(f.hero.item)).toBe(true);
     const order = f.others.map(e => e.rarity);
-    expect(order).toEqual([...order].sort((a, b) => ['UR', 'SR', 'R', 'N'].indexOf(a) - ['UR', 'SR', 'R', 'N'].indexOf(b)));
+    expect(order).toEqual([...order].sort((a, b) => ['LR', 'UR', 'SR', 'R', 'N'].indexOf(a) - ['LR', 'UR', 'SR', 'R', 'N'].indexOf(b)));
     for (const e of f.others) expect(tiers[e.rarity].includes(e.item)).toBe(true);
   });
   it('表示する割合は本物の抽選表（gachaItemRate）と同じ', () => {

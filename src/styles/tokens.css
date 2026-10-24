@@ -136,6 +136,9 @@
   --mt-rare-sr-bg: #f6efff;  --mt-rare-sr-line: #a77be8; --mt-rare-sr-ink: #5b2a9e;
   --mt-rare-ur-bg: #fff4dc;  --mt-rare-ur-line: #e2a83a; --mt-rare-ur-ink: #7a3e00;
   --mt-rare-ur-grad: linear-gradient(120deg, #ffe7a6, #ffd1e8 35%, #d9ccff 65%, #c8f0ff);
+  /* LR（レジェンドレア＝共通テスト予想問題）：UR より上。深紅×金。文字は白で 4.5:1 以上 */
+  --mt-rare-lr-bg: #fbeef1;  --mt-rare-lr-line: #b8860b; --mt-rare-lr-ink: #ffffff;
+  --mt-rare-lr-grad: linear-gradient(120deg, #3b0a1a, #7a1230 40%, #a3173f 60%, #3b0a1a);
 }
 @media (min-width: 1100px) {
   :root { --mt-fs-xs: 13px; }

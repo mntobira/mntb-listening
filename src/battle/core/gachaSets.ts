@@ -10,7 +10,7 @@
  * このファイルは ITEMS を import しない（growthBadges → ここ の循環を避けるため、ID だけ持つ）。
  */
 /** growthItems の GachaRarity と同じ（import すると growthItems → growthBadges → ここ で循環するので、ここでも定義する） */
-type GachaRarity = 'N' | 'R' | 'SR' | 'UR';
+type GachaRarity = 'N' | 'R' | 'SR' | 'UR' | 'LR';
 
 export interface GachaSetDef {
   id: string;
@@ -53,6 +53,6 @@ export function setsOfItem(id: string): GachaSetDef[] {
 // ============================================================
 
 /** ダブったときにもらえるかけら（コイン返還とは別。無料の動画ガチャでももらえる） */
-export const SHARDS_PER_DUPLICATE: Record<GachaRarity, number> = { N: 1, R: 2, SR: 5, UR: 8 };
+export const SHARDS_PER_DUPLICATE: Record<GachaRarity, number> = { N: 1, R: 2, SR: 5, UR: 8, LR: 10 };
 /** 交換に必要なかけら。SR を 40 にして「SR がダブり続けても、8回で好きな SR が1つ確定」くらいにする */
-export const SHARD_EXCHANGE_COST: Record<GachaRarity, number> = { N: 8, R: 16, SR: 40, UR: 60 };
+export const SHARD_EXCHANGE_COST: Record<GachaRarity, number> = { N: 8, R: 16, SR: 40, UR: 60, LR: 80 };

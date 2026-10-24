@@ -1,6 +1,7 @@
 /** growth.ts から分割（growthItems）。外部からは従来どおり growth.ts 経由で import できる。 */
 import { GACHA_PRINTS } from '../../data/gachaPrints.generated';
 import type { GachaPrintDef } from '../../data/gachaPrints.generated';
+import { KYOTSU_MOCK_PRINTS } from '../../data/kyotsuMockPrints';
 import { ACCESSORY_SLOTS, type AccessorySlot } from './tobiraParts';
 import type { GrowthProgress } from './growthTypes';
 import { badgeById } from './growthBadges';
@@ -21,8 +22,8 @@ export type ItemKind = 'pose' | 'frame' | AccessorySlot | 'wallpaper' | 'print';
 export type EquipKind = Exclude<ItemKind, 'print'>;
 /** 外せる種類（アクセサリと壁紙。ポーズと枠は常に何か1つ） */
 export const REMOVABLE_KINDS: readonly EquipKind[] = [...ACCESSORY_SLOTS, 'wallpaper'];
-/** ガチャのレア度：N（ノーマル）/ R（レア）/ SR（スーパーレア）/ UR（大当たり＝学習プリント） */
-export type GachaRarity = 'N' | 'R' | 'SR' | 'UR';
+/** ガチャのレア度：N（ノーマル）/ R（レア）/ SR（スーパーレア）/ UR（大当たり＝学習プリント）/ LR（レジェンドレア＝共通テスト予想問題） */
+export type GachaRarity = 'N' | 'R' | 'SR' | 'UR' | 'LR';
 
 export interface ItemDef {
   id: string;
@@ -201,17 +202,20 @@ export const ITEMS: readonly ItemDef[] = [
   { id: 'frame_set_collector', kind: 'frame', rarity: 'UR', label: 'コレクターの虹フレーム（3セット完成）', value: '#E76F51', pattern: 'rainbow', unlock: { badge: 'b_set_collector' } },
   // ── UR（大当たり）：学習プリント PDF。ガチャからだけ出る（一覧は gachaPrints.generated.ts）──
   ...GACHA_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'UR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  // ── LR（レジェンドレア）：共通テスト 英語 予想問題（リーディング・リスニング 5回分）。UR より上（一覧は kyotsuMockPrints.ts）──
+  ...KYOTSU_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
   // ── レベル報酬（2026-10-04 ご要望「レベルを上げる意味」）：このレベルでしか手に入らないもの ──
   ...LEVEL_REWARD_ITEMS,
 ];
 
 /** 学習プリント（UR）の詳細（サムネイル・ページ数など）。プリントでなければ undefined */
 export function printOf(id: string): GachaPrintDef | undefined {
-  return GACHA_PRINTS.find((p) => p.id === id) ?? LEVEL_PRINTS.find((p) => p.id === id);
+  return GACHA_PRINTS.find((p) => p.id === id) ?? KYOTSU_MOCK_PRINTS.find((p) => p.id === id) ?? LEVEL_PRINTS.find((p) => p.id === id);
 }
 
 /**
  * ガチャのレア度。
+ *   LR … レジェンドレア：共通テスト予想問題（rarity:'LR' 指定のみ）
  *   UR … 大当たりの学習プリント（rarity:'UR' 指定のみ）
  *   SR … ガチャ限定のもの（rarity:'SR' 指定・または unlock:{gacha:true}）
  *   R  … 模様つきフレーム・200枚以上の交換品・称号で解放されるポーズ

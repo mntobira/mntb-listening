@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-10-24 ガチャに LR（レジェンドレア）を追加＝共通テスト英語 予想問題 5回分（PR: feat/kyotsu-mock-lr）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| レア度 | UR の上に **LR** を新設。提供割合 LR 1%（UR 5% は据え置き、N を 65→64%）。重複は100枚返還・かけら10 | `growthItems.ts`、`arenaEconomy.ts`、`gachaSets.ts`、`gachaFeatured.ts` |
+| 確定演出 | 青→金→虹→UR の後に **深紅×金の「伝説降臨」段階**（星6つ）。演出全体は約5.9秒（安全装置8秒未満） | `gachaRevealSteps.ts`、`src/index.css` |
+| レア度の札・結果画面 | LR の札（深紅の地・金の縁・王冠）、結果に「レジェンドレア！」、提供割合の表に LR 行 | `ui/index.tsx`、`system.css`、`tokens.css`、`game-extras.css`、`gacha.css`、`gacha/GachaResultStage.tsx`、`gacha/GachaCollectionModal.tsx`、`gacha/GachaSetsModal.tsx` |
+| LR の景品 | 共通テスト 英語リーディング（80分・100点・大問8・44解答）／リスニング（30分・100点・大問6・37問）の**予想問題 各5回＝10冊**。本番と同じ白黒の問題冊子レイアウト（表紙の注意事項・四角囲みの解答番号・マークシート型解答欄）＋正解と配点＋全問解説。リスニングは全スクリプト＋全訳つき | `public/prints/print_lr_kyotsu_*.pdf`、`src/data/kyotsuMockPrints.ts`、`scripts/gacha-prints/kyotsu_mock/` |
+
+**戻し方**：このPRを `git revert`。LR を引いた人の所持データ（`owned` の id）は残るが、古い版では該当アイテムが無いので表示されないだけで壊れない。
+
+---
+
 ## 2026-10-23 とびら君の背景なしモーション（準備）＋ガチャのやり込み強化（PR: feat/tobira-motion-gacha-depth）
 
 | 何を | どう変えた | ファイル |

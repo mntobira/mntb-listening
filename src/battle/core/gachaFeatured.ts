@@ -59,10 +59,10 @@ export function gachaFeatured({ now = new Date(), preferSubjects = [], srCount =
   return {
     hero,
     others: [...sr, ...r].map(entry),
-    counts: { UR: tiers.UR.length, SR: tiers.SR.length, R: tiers.R.length, N: tiers.N.length },
+    counts: { LR: tiers.LR.length, UR: tiers.UR.length, SR: tiers.SR.length, R: tiers.R.length, N: tiers.N.length },
     week,
   };
 }
 function tierOf(tiers: Record<GachaRarity, ItemDef[]>, item: ItemDef): GachaRarity {
-  return (['UR', 'SR', 'R', 'N'] as const).find(r => tiers[r].includes(item)) ?? 'N';
+  return (['LR', 'UR', 'SR', 'R', 'N'] as const).find(r => tiers[r].includes(item)) ?? 'N';
 }

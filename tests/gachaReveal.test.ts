@@ -8,16 +8,17 @@ describe('ガチャの確定演出（青→金→虹→大当たり）', () => {
     expect(revealSteps('R').map(s => s.stage)).toEqual(['blue', 'gold']);
     expect(revealSteps('SR').map(s => s.stage)).toEqual(['blue', 'gold', 'rainbow']);
     expect(revealSteps('UR').map(s => s.stage)).toEqual(['blue', 'gold', 'rainbow', 'ur']);
+    expect(revealSteps('LR').map(s => s.stage)).toEqual(['blue', 'gold', 'rainbow', 'ur', 'lr']);
   });
   it('大当たりほど長く、どれも動画の安全装置（8秒）より短い', () => {
-    const t = (['N', 'R', 'SR', 'UR'] as const).map(revealTotalMs);
+    const t = (['N', 'R', 'SR', 'UR', 'LR'] as const).map(revealTotalMs);
     expect(t).toEqual([...t].sort((a, b) => a - b));
     for (const ms of t) expect(ms).toBeLessThan(8000);
     expect(t[0]).toBeLessThan(1500);
   });
   it('星の数と弾けたときの音', () => {
-    expect([RARITY_STARS.N, RARITY_STARS.R, RARITY_STARS.SR, RARITY_STARS.UR]).toEqual([2, 3, 4, 5]);
-    expect(burstSfx('UR')).toBe('jackpot'); expect(burstSfx('SR')).toBe('jackpot'); expect(burstSfx('N')).toBe('gacha');
+    expect([RARITY_STARS.N, RARITY_STARS.R, RARITY_STARS.SR, RARITY_STARS.UR, RARITY_STARS.LR]).toEqual([2, 3, 4, 5, 6]);
+    expect(burstSfx('LR')).toBe('jackpot'); expect(burstSfx('UR')).toBe('jackpot'); expect(burstSfx('SR')).toBe('jackpot'); expect(burstSfx('N')).toBe('gacha');
   });
   it('ガチャ画面が確定演出を使い、「結果を見る」で飛ばせる', () => {
     const room = readFileSync('src/components/GachaRoom.tsx', 'utf8');
