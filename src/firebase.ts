@@ -4,47 +4,73 @@ import {
   initializeAuth,
   indexedDBLocalPersistence,
   browserLocalPersistence,
+  browserPopupRedirectResolver,
   GoogleAuthProvider,
-  connectAuthEmulator
+  connectAuthEmulator,
+  type Dependencies,
 } from 'firebase/auth';
 import { getFirestore, initializeFirestore, connectFirestoreEmulator, disableNetwork, type Firestore } from 'firebase/firestore';
+// authDomain を「同じドメイン」にするかの判定（Firebase を初期化せずにテストできるよう別ファイル。説明もそちら）
+import { shouldUseSameOriginAuth } from './authDomainPolicy';
 const env = import.meta.env;
 export const FIREBASE_CONFIGURED = Boolean(env.VITE_FIREBASE_API_KEY && env.VITE_FIREBASE_PROJECT_ID && env.VITE_FIREBASE_AUTH_DOMAIN && env.VITE_FIREBASE_APP_ID);
 export const USE_EMULATORS = env.VITE_USE_EMULATORS === 'true';
 if (env.VITE_FIREBASE_PROJECT_ID === 'mntb-4ef06') throw new Error('統合版のFirebaseには接続できません。リスニング専用プロジェクトを設定してください。');
 const projectId = FIREBASE_CONFIGURED ? env.VITE_FIREBASE_PROJECT_ID : 'demo-manatobi-listening';
-/**
- * ★Web 版のログインを「同じドメイン」で行う（2026-10-22）★
- *   ログイン画面（/__/auth/handler）が別ドメイン（<project>.firebaseapp.com）だと、
- *   Safari・Chrome の「別サイトの保存領域を分ける」仕組みで結果が画面に戻らず「連携中…」で止まる。
- *   vercel.json で /__/auth/* を firebaseapp.com へ中継しているので、authDomain を今のドメインにすれば同じドメインで完結する。
- *   ・VITE_AUTH_SAME_ORIGIN=true のときだけ（Google / Apple の管理画面にこのドメインの戻り先を登録してから入れる。docs/WEB_LOGIN_SAME_ORIGIN.md）
- *   ・アプリ版（Capacitor：localhost / capacitor://）と開発環境では使わない＝今までどおり
- */
+
+/** アプリ版（Capacitor の端末内）で動いているか。firebase.ts は native/platform を読まない（初期化順を変えないため） */
+function isCapacitorNative(): boolean {
+  try {
+    const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+    return Boolean(cap?.isNativePlatform?.());
+  } catch {
+    // window が無い（テスト・SSR）ときは Web 扱い
+    return false;
+  }
+}
+
 function resolveAuthDomain(configured: string): string {
   try {
-    if (env.VITE_AUTH_SAME_ORIGIN !== 'true' || typeof window === 'undefined') return configured;
-    // アプリ版（Capacitor）は端末のログインを使うので、ここは常に今までどおり
-    const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
-    if (cap?.isNativePlatform?.()) return configured;
-    const { protocol, host, hostname } = window.location;
-    if (protocol !== 'https:' || hostname === 'localhost' || hostname.startsWith('127.') || hostname.endsWith('.local')) return configured;
-    return host;
-  } catch { return configured; }
+    if (typeof window === 'undefined') return configured;
+    const ok = shouldUseSameOriginAuth(
+      { sameOrigin: env.VITE_AUTH_SAME_ORIGIN, appleReady: env.VITE_AUTH_SAME_ORIGIN_APPLE_READY },
+      window.location,
+      isCapacitorNative(),
+    );
+    return ok ? window.location.host : configured;
+  } catch {
+    // 判定に失敗したら従来どおり（安全側）
+    return configured;
+  }
 }
+
+const authDomain = FIREBASE_CONFIGURED ? resolveAuthDomain(env.VITE_FIREBASE_AUTH_DOMAIN) : 'demo-manatobi-listening.firebaseapp.com';
+/** いま「同じドメイン」でログインしているか（true のときだけ、ポップアップが使えない環境でリダイレクトに切り替える） */
+export const AUTH_SAME_ORIGIN_ACTIVE = FIREBASE_CONFIGURED && authDomain !== env.VITE_FIREBASE_AUTH_DOMAIN;
 const app = initializeApp({
   apiKey: FIREBASE_CONFIGURED ? env.VITE_FIREBASE_API_KEY : 'demo-listening-key',
-  projectId, authDomain: FIREBASE_CONFIGURED ? resolveAuthDomain(env.VITE_FIREBASE_AUTH_DOMAIN) : 'demo-manatobi-listening.firebaseapp.com',
+  projectId, authDomain,
   appId: FIREBASE_CONFIGURED ? env.VITE_FIREBASE_APP_ID : '1:123:web:listening',
   storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET, messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
 }, 'manatobi-listening');
 
+/**
+ * ★Auth の初期化（2026-10-23）★
+ *   1.0.2（b7a25cb）でアプリ版のために getAuth → initializeAuth に変えたとき、
+ *   Web 用の popupRedirectResolver を入れ忘れ、2026-10-21 から Web ログインが壊れた（auth/argument-error）。
+ *   ・Web：resolver を入れる（= getAuth と同じ部品）。リダイレクトから戻った結果も、どの画面にいても自動で受け取られる
+ *   ・アプリ版：今までどおり入れない（WebView で Google の画面を読み込ませない。ログインは nativeSignIn）
+ */
+export function authDependencies(native: boolean): Dependencies {
+  const persistence = [indexedDBLocalPersistence, browserLocalPersistence];
+  return native ? { persistence } : { persistence, popupRedirectResolver: browserPopupRedirectResolver };
+}
+
 function initAuth() {
   try {
-    return initializeAuth(app, {
-      persistence: [indexedDBLocalPersistence, browserLocalPersistence],
-    });
+    return initializeAuth(app, authDependencies(isCapacitorNative()));
   } catch {
+    // 2回目の初期化（HMR など）は既存のものを使う
     return getAuth(app);
   }
 }

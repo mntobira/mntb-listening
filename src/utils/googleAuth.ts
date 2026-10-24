@@ -18,12 +18,14 @@
  *   どの入口から連携しても同じ品質で成功／同じ案内で失敗するよう、
  *   ここに一本化する。
  *
- * ■ popup → redirect のフォールバック
- *   iOS Safari のプライベートブラウズや、サードパーティ Cookie を
- *   制限している環境では signInWithPopup が
- *   `auth/popup-blocked` 等で失敗する。その場合は同じタブで遷移する
- *   signInWithRedirect に切り替えると成功することが多いため、
- *   自動で切り替える（ユーザーに何度も押させない）。
+ * ■ popup → redirect のフォールバック（2026-10-23 見直し）
+ *   ・ポップアップそのものが使えない環境（popup-blocked など）だけが redirect の候補。
+ *     しかも「同じドメインでログインしているとき（firebase.ts の AUTH_SAME_ORIGIN_ACTIVE）」だけ。
+ *     別ドメイン（firebaseapp.com）の redirect は、最近のブラウザでは結果が戻らないことがある。
+ *   ・利用者が閉じた／別の操作で中断された（popup-closed-by-user / cancelled-popup-request）は
+ *     キャンセルとして返す。以前はここで redirect に切り替えており、
+ *     redirect の「終わらない Promise」を待って「連携中…」のまま固まる入口になっていた。
+ *   ・Promise の全経路は utils/webSignInCore.ts と tests/webSignInCore.test.ts。
  */
 
 import {
@@ -36,9 +38,9 @@ import {
   signOut,
   type AuthProvider,
   type User,
-  type UserCredential,
 } from 'firebase/auth';
-import { auth, provider, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase';
+import { auth, provider, FIREBASE_CONFIGURED, USE_EMULATORS, AUTH_SAME_ORIGIN_ACTIVE } from '../firebase';
+import { runWebSignIn, isPopupUnsupported, isUserCancel, shortCode } from './webSignInCore';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey } from './userStorageKeys';
 import { isNativeApp } from '../native/platform';
@@ -66,15 +68,9 @@ export function isInAppBrowser(): boolean {
   }
 }
 
-/** 「popup が使えない環境」に該当するエラーコードか */
+/** 「popup が使えない環境」または利用者が閉じた（どちらも「ログイン画面が出なかった／閉じた」の案内） */
 function isPopupUnavailable(code: string): boolean {
-  return (
-    code.includes('popup-blocked') ||
-    code.includes('popup-closed-by-user') ||
-    code.includes('cancelled-popup-request') ||
-    code.includes('operation-not-supported-in-this-environment') ||
-    code.includes('web-storage-unsupported')
-  );
+  return isPopupUnsupported(code) || isUserCancel(code);
 }
 
 /** Firebase のエラーを、原因と次の行動が分かる日本語にする */
@@ -86,6 +82,9 @@ export function describeAuthError(rawError: unknown): string {
   }
   if (code.includes('unauthorized-domain')) {
     return 'このドメインは連携が許可されていません（運営側の設定不備です）。';
+  }
+  if (isUserCancel(code)) {
+    return 'ログインをキャンセルしました。もう一度ボタンを押すとやり直せます。';
   }
   if (isPopupUnavailable(code)) {
     return 'ブラウザがログイン画面の表示をブロックしました。ポップアップを許可するか、標準ブラウザ（Safari / Chrome）で開き直してください。';
@@ -120,13 +119,24 @@ function providerFor(method: SignInMethod): AuthProvider {
 
 /**
  * 指定した方法で連携する。
- * popup が使えない環境では自動で redirect に切り替える。
+ * Web は webSignInCore.runWebSignIn（必ず終わる：成功／失敗／キャンセル／時間切れ／redirect 開始）。
+ * アプリ版は nativeSignIn。
  */
 export async function signInWith(method: SignInMethod): Promise<GoogleSignInOutcome> {
-  const outcome = await signInWithInner(method);
-  // 使われ方の記録：ログインの成否と失敗の種類（キャンセルは数えない）
-  if (outcome.ok) trackEvent(`login_ok_${method}`);
-  else if (!outcome.redirecting && !/キャンセル/.test(outcome.message || '')) trackError(outcome.errorCode || `login_${method}_failed`);
+  let outcome: GoogleSignInOutcome;
+  try {
+    outcome = await signInWithInner(method);
+  } catch (unexpected) {
+    // 想定外の例外でも、呼び出し側のボタンが「連携中…」のまま残らないよう必ず結果として返す
+    outcome = { ok: false, message: describeAuthError(unexpected), errorCode: 'login_unexpected' };
+  }
+  try {
+    // 使われ方の記録：ログインの成否と失敗の種類（キャンセル・処理中は数えない）
+    if (outcome.ok) trackEvent(`login_ok_${method}`);
+    else if (!outcome.redirecting && !outcome.cancelled && outcome.errorCode !== 'login_busy') trackError(outcome.errorCode || `login_${method}_failed`);
+  } catch {
+    // 記録の失敗でログイン結果を失わない（意図して捨てている）
+  }
   return outcome;
 }
 
@@ -145,53 +155,20 @@ async function signInWithInner(method: SignInMethod): Promise<GoogleSignInOutcom
         `LINE や Instagram などのアプリ内ブラウザでは ${label} ログインが利用できません。右上のメニューから「ブラウザで開く」を選び、Safari や Chrome で開き直してください。`,
     };
   }
-  const p = providerFor(method);
-  try {
-    // ★resolver を必ず渡す（2026-10-21）★ firebase.ts はアプリ版のために initializeAuth を使っており、
-    // そこでは popup/redirect の部品（resolver）を入れていない。渡さないと Web で auth/argument-error になる。
-    // アプリ版はこの関数の先頭で nativeSignIn に分かれるので、ここは通らない（アプリへの影響なし）。
-    const credential = await popupWithWatchdog(p);
-    if (credential === 'timeout') {
-      return { ok: false, errorCode: 'login_popup_timeout', message: 'ログインの結果を受け取れませんでした。ページを再読み込みしてから、もう一度お試しください（Safari の場合は「サイト越えトラッキングを防ぐ」をオフにすると通ることがあります）。' };
-    }
-    return { ok: true, user: credential.user };
-  } catch (error) {
-    const code = String(asErrorLike(error)?.code || '');
-    if (isPopupUnavailable(code)) {
-      // 同じタブでログイン画面へ遷移する。戻ってきたときは
-      // consumeGoogleRedirectResult() が結果を受け取る。
-      try {
-        await signInWithRedirect(auth, p, browserPopupRedirectResolver);
-        return { ok: false, redirecting: true };
-      } catch (redirectError) {
-        return { ok: false, message: describeAuthError(redirectError) };
-      }
-    }
-    if (code.includes('operation-not-allowed')) {
-      return { ok: false, message: method === 'apple' ? 'Apple でのログインは現在準備中です。Google でログインしてください。' : `${label} でのログインは現在準備中です。時間をおいてお試しください。` };
-    }
-    return { ok: false, message: describeAuthError(error) };
-  }
-}
-
-/**
- * ★ポップアップのログインが「連携中…」のまま止まらないようにする（2026-10-22）★
- *   ブラウザの保護機能でポップアップの結果が画面に届かないことがある。
- *   ・裏でログインが済んでいたら（onAuthStateChanged）、その時点で成功として返す
- *   ・90秒たっても何も起きなければ（パスワード入力や2段階認証の時間を見て長めに）、待つのをやめて案内を出す（ボタンをもう一度押せる）
- */
-const POPUP_WATCHDOG_MS = 90_000;
-async function popupWithWatchdog(p: AuthProvider): Promise<UserCredential | { user: User } | 'timeout'> {
-  const before = auth.currentUser?.uid ?? null;
-  let stop = () => {};
-  const watcher = new Promise<{ user: User } | 'timeout'>((resolve) => {
-    const unsub = onAuthStateChanged(auth, (u) => { if (u && u.uid !== before) resolve({ user: u }); });
-    const t = setTimeout(() => resolve('timeout'), POPUP_WATCHDOG_MS);
-    stop = () => { unsub(); clearTimeout(t); };
+  // ★resolver は firebase.ts の initializeAuth（Web のみ）でも入れているが、念のため毎回も渡す（2026-10-21 の auth/argument-error 対策）★
+  // アプリ版はこの関数の先頭で nativeSignIn に分かれるので、ここは通らない（アプリへの影響なし）。
+  const result = await runWebSignIn<AuthProvider, User>({
+    method,
+    provider: providerFor(method),
+    signInWithPopup: (p) => signInWithPopup(auth, p, browserPopupRedirectResolver),
+    signInWithRedirect: (p) => signInWithRedirect(auth, p, browserPopupRedirectResolver),
+    authStateReady: () => auth.authStateReady(),
+    currentUid: () => auth.currentUser?.uid ?? null,
+    onAuthStateChanged: (cb) => onAuthStateChanged(auth, cb),
+    allowRedirectFallback: AUTH_SAME_ORIGIN_ACTIVE,
+    describeError: describeAuthError,
   });
-  try {
-    return await Promise.race([signInWithPopup(auth, p, browserPopupRedirectResolver), watcher]);
-  } finally { stop(); }
+  return result.ok ? { ok: true, user: result.user } : result;
 }
 
 /** Google アカウントで連携する（既存の呼び出し口） */
@@ -215,8 +192,10 @@ export async function consumeGoogleRedirectResult(): Promise<User | null> {
   try {
     const result = await getRedirectResult(auth, browserPopupRedirectResolver);
     return result?.user ?? null;
-  } catch {
-    // リダイレクト結果が無い／期限切れは正常系として扱う
+  } catch (error) {
+    // 結果が無い／期限切れは正常系として null。ただし原因が追えるよう、エラーの種類だけは記録する（値・個人情報は残さない）
+    const code = String(asErrorLike(error)?.code || '');
+    try { trackError(shortCode(code, 'login_redirect_result')); } catch { /* 記録できなくても続ける */ }
     return null;
   }
 }
@@ -239,7 +218,12 @@ export async function signOutGoogle(): Promise<void> {
 
 /** アカウントを切り替える（ログアウト → 連携し直す） */
 export async function switchGoogleAccount(): Promise<GoogleSignInOutcome> {
-  await signOutGoogle();
+  try {
+    await signOutGoogle();
+  } catch (error) {
+    // ログアウトに失敗しても、ボタンが「切り替え中…」で残らないよう結果として返す
+    return { ok: false, message: describeAuthError(error), errorCode: 'logout_failed' };
+  }
   return signInWithGoogle();
 }
 

@@ -3,9 +3,9 @@
  * Apple のヒューマンインターフェースガイドラインに合わせ、黒地・白文字・Apple ロゴ・
  * Google ボタンと同じ大きさで並べる。
  */
-import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { signInWithApple, type GoogleSignInOutcome } from '../../utils/googleAuth';
+import { useSignInGuard } from '../../hooks/useSignInGuard';
 
 export function AppleMark({ size = 18 }: { size?: number }) {
   return (
@@ -24,16 +24,15 @@ export function AppleSignInButton({
   className?: string;
   label?: string;
 }) {
-  const [busy, setBusy] = useState(false);
-  const run = async () => {
-    setBusy(true);
-    const outcome = await signInWithApple();
+  // busy は必ず元に戻る（try/finally）。Google のログイン中は押せない（同時に2つ開くと片方が中断され固まるため）
+  const { busy, anyBusy, run } = useSignInGuard();
+  const onClick = async () => {
+    const outcome = await run(signInWithApple);
     if (outcome.redirecting) return;
-    setBusy(false);
     onResult?.(outcome);
   };
   return (
-    <button type="button" onClick={run} disabled={busy} className={`apple-signin-btn ${className}`}>
+    <button type="button" onClick={onClick} disabled={anyBusy} className={`apple-signin-btn ${className}`}>
       {busy ? <Loader2 size={17} className="animate-spin" aria-hidden="true" /> : <AppleMark size={17} />}
       {busy ? '連携中…' : label}
     </button>

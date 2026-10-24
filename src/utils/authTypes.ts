@@ -20,4 +20,6 @@ export interface GoogleSignInOutcome {
   message?: string;
   /** 失敗の種類（解析用の短いコード。例：NA-SHA1） */
   errorCode?: string;
+  /** 利用者が閉じた／中断した（失敗に数えない。逃げ道も出さない） */
+  cancelled?: boolean;
 }

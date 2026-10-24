@@ -345,7 +345,7 @@ export default function App() {
   };
 
   // ログイン状態が変わったときの画面の振り分け（hooks/useAuthRouting.ts）
-  useAuthRouting({ isGuest, setIsGuest, setAppState });
+  useAuthRouting({ isGuest, setIsGuest, setAppState, appState });
   
   // BGM（タイトル曲）の制御は hooks/useTitleBgmController.tsx にまとめた
   const {

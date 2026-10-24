@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-10-23 Web ログインの「連携中…」と Apple の失敗（PR: fix/web-login-stuck）
+
+見た目の変更はほぼ無し。
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| ポップアップを閉じたとき | 画面全体の遷移に切り替えず「ログインをキャンセルしました。もう一度ボタンを押すとやり直せます。」 | `src/utils/webSignInCore.ts` |
+| Google と Apple のボタン | 片方の処理中はもう片方も押せない | `src/hooks/useSignInGuard.ts` ほか4画面 |
+| ログイン済みなのにログイン画面のまま | 自動でプロフィール確認・ホームへ | `Onboarding.tsx`、`useAuthRouting.ts` |
+| Apple が Invalid web redirect url | 同じドメイン化を二重スイッチに（`VITE_AUTH_SAME_ORIGIN_APPLE_READY`） | `src/authDomainPolicy.ts` |
+
+詳細は `docs/WEB_LOGIN_SAME_ORIGIN.md` の冒頭。
+
+**戻し方**：このPRを `git revert`。
+
+---
+
 ## 2026-10-22 Web ログインが「連携中…」で止まる件（PR: fix/web-login-same-origin）
 
 見た目の変更はほぼ無し。

@@ -40,6 +40,8 @@ import { AppleSignInButton } from '../features/auth/AppleSignInButton';
 import { logRejection } from '../utils/reportError';
 import { asErrorLike } from '../utils/errorLike';
 import type { User } from 'firebase/auth';
+import type { GoogleSignInOutcome } from '../utils/authTypes';
+import { useSignInGuard } from '../hooks/useSignInGuard';
 import { requireLocalStorage, setItemOrThrow } from '../utils/safeLocalStorage';
 
 interface OnboardingProps {
@@ -57,7 +59,11 @@ export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
   const [grade, setGrade] = useState('');
   const [stream, setStream] = useState('science');
   const [loading, setLoading] = useState(false);
-  const [signing, setSigning] = useState(false);
+  /** Google ログインの処理中（必ず元に戻る）／どちらかのログインが処理中 */
+  const { busy: googleBusy, anyBusy: signInBusy, run: runSignIn } = useSignInGuard();
+  /** ログイン後、クラウドのプロフィールを待っている間（最大4秒） */
+  const [syncing, setSyncing] = useState(false);
+  const signing = googleBusy || syncing;
   const [error, setError] = useState<string | null>(null);
   /** ログインに一度でも失敗したか（失敗したときだけ逃げ道を出す） */
   const [loginFailed, setLoginFailed] = useState(false);
@@ -66,22 +72,32 @@ export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
   const inAppBrowser = isInAppBrowser();
 
   // リダイレクト方式で戻ってきた場合の結果を受け取る
+  // ＋ すでにログイン済みのまま（ポップアップの結果だけ届かなかった・前回のログインが復元された）
+  //   ログイン画面に居る場合も、プロフィール確認へ進める（2026-10-23：同じ uid だと見張りが救済できないため）
   useEffect(() => {
     let cancelled = false;
-    consumeGoogleRedirectResult().then((user) => {
-      if (!cancelled && user) void checkProfile(user);
-    });
+    void (async () => {
+      const user = await consumeGoogleRedirectResult();
+      if (cancelled) return;
+      if (user) { void checkProfile(user); return; }
+      try { await auth.authStateReady(); } catch { /* 待てなくても currentUser を見るだけ */ }
+      if (!cancelled && auth.currentUser) void checkProfile(auth.currentUser);
+    })().catch(logRejection('onboarding.resumeLogin'));
     return () => { cancelled = true; };
+    // checkProfile は描画ごとに作り直すが、起動時の1回だけでよい（中身は state の setter と localStorage だけ）
   }, []);
 
   const checkProfile = async (user: Pick<User, 'uid' | 'displayName'>) => {
     try {
       let localProfile = requireLocalStorage().getItem(profileKey(user.uid));
       if (!localProfile) {
-        // 機種変更・別の端末：アカウントに保存したプロフィールを先に取り込む
-        setSigning(true);
-        await Promise.race([syncUserData('onboarding'), new Promise((r) => setTimeout(r, PROFILE_WAIT_MS))]);
-        setSigning(false);
+        // 機種変更・別の端末：アカウントに保存したプロフィールを先に取り込む（最大4秒。失敗しても必ず表示を戻す）
+        setSyncing(true);
+        try {
+          await Promise.race([syncUserData('onboarding'), new Promise((r) => setTimeout(r, PROFILE_WAIT_MS))]);
+        } finally {
+          setSyncing(false);
+        }
         localProfile = requireLocalStorage().getItem(profileKey(user.uid));
       }
       if (localProfile) {
@@ -97,19 +113,22 @@ export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
     }
   };
 
-  const handleLogin = async () => {
-    setSigning(true);
-    setError(null);
-    const outcome = await signInWithGoogle();
+  /** Google / Apple 共通：ログイン結果を受け取って次へ進む */
+  const handleOutcome = (outcome: GoogleSignInOutcome) => {
     if (outcome.redirecting) return; // ページ遷移するのでそのまま待つ
-    setSigning(false);
     if (outcome.ok && outcome.user) {
       void checkProfile(outcome.user);
       return;
     }
     setError(outcome.message || 'ログインに失敗しました。');
-    // キャンセルは失敗に数えない（逃げ道は、本当に通らなかったときだけ）
-    if (!/キャンセル/.test(outcome.message || '')) setLoginFailed(true);
+    // キャンセル・処理中は失敗に数えない（逃げ道は、本当に通らなかったときだけ）
+    if (!outcome.cancelled && outcome.errorCode !== 'login_busy') setLoginFailed(true);
+  };
+
+  const handleLogin = async () => {
+    setError(null);
+    // 「連携中…」は useSignInGuard が必ず元に戻す（想定外の例外・ブラウザの「戻る」でも）
+    handleOutcome(await runSignIn(signInWithGoogle));
   };
 
   const handleSaveProfile = async () => {
@@ -203,7 +222,7 @@ export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
             {/* ===== 主ボタン：Google 連携 ===== */}
             <button
               onClick={handleLogin}
-              disabled={signing}
+              disabled={signInBusy || syncing}
               className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-2xl border border-[#DADCE0] bg-white px-4 py-3.5 text-[14px] font-bold text-[#3C4043] shadow-[0_10px_24px_-14px_rgba(60,64,67,0.45)] transition-all hover:bg-[#F8F9FA] hover:shadow-[0_12px_28px_-14px_rgba(60,64,67,0.5)] disabled:opacity-50"
             >
               {signing
@@ -213,11 +232,7 @@ export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
             <AppleSignInButton
               className="mt-2.5 !rounded-2xl !min-h-[50px] !text-[14px]"
               label="Appleで続ける"
-              onResult={(o) => {
-                if (o.ok && o.user) { void checkProfile(o.user); return; }
-                setError(o.message || 'ログインに失敗しました。');
-                if (!/キャンセル/.test(o.message || '')) setLoginFailed(true);
-              }}
+              onResult={handleOutcome}
             />
             <p className="mt-2 text-center text-[12px] font-modern leading-snug text-[#8895A0]">
               メールアドレスとお名前のみを利用します。パスワードは受け取りません。
