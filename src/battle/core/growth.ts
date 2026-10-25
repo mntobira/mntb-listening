@@ -17,7 +17,7 @@ export { localDateKey, rolloverDaily, MISSION_POOL, missionDestination, MISSION_
 export type { MatchSummaryForGrowth, MissionKind, MissionDef, MissionDestination } from './growthMissions';
 export { BADGES, badgeById, evaluateBadges, badgeTierColor } from './growthBadges';
 export type { BadgeDef } from './growthBadges';
-export { DEFAULT_POSE, DEFAULT_FRAME, REMOVABLE_KINDS, LEVEL_PRINTS, LEVEL_REWARD_ITEMS, ITEMS, printOf, gachaRarityOf, itemById, evaluateUnlocks, purchaseItem, equipItem, unequipKind, canUnequip, equippedAccessory, equippedWallpaper, equipTitle, equippedPoseSrc, equippedFramePattern, equippedFrameColor, equippedTitleLabel } from './growthItems';
+export { DEFAULT_POSE, DEFAULT_FRAME, REMOVABLE_KINDS, LEVEL_PRINTS, LEVEL_REWARD_ITEMS, ITEMS, printOf, printRarity, gachaRarityOf, itemById, evaluateUnlocks, purchaseItem, equipItem, unequipKind, canUnequip, equippedAccessory, equippedWallpaper, equipTitle, equippedPoseSrc, equippedFramePattern, equippedFrameColor, equippedTitleLabel } from './growthItems';
 export type { ItemKind, EquipKind, GachaRarity, ItemDef } from './growthItems';
 
 // ============================================================

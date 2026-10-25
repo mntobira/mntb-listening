@@ -6,17 +6,20 @@ export const GACHA_MULTI_COST = 1000;
 export const GACHA_MULTI_COUNT = 11;
 export const VIDEO_GACHA_DAILY_LIMIT = 5;
 export const GACHA_DUPLICATE_REFUND = 20;
-/** SR の重複はうれしさが減らないよう多めに返す。UR（学習プリント）の重複は全額返す */
+/** SR の重複はうれしさが減らないよう多めに返す。UR（完全版の本）の重複は全額返す */
 export const GACHA_DUPLICATE_REFUND_BY_RARITY: Record<GachaRarity, number> = { N: 20, R: 25, SR: 40, UR: 100 };
 export const gachaItems = () => ITEMS.filter(item => 'coins' in item.unlock || item.gacha);
 
 /**
  * レア枠の提供割合（合計 1）。枠を決めてから、その枠の中で等確率に1つ選ぶ。
- * UR（大当たり）＝学習プリント PDF。枠全体で 5%、プリントが多いので1種あたりは 0.1% 台。
+ * ★2026-10-24 ご要望「はずれを多く・そのぶん大当たりをとびきり豪華に」★
+ *   N 65→75%、R 25→16%、SR 5→6%、UR 5→3%。
+ *   UR（大当たり）＝「その一冊で完成する本」だけ（英単語帳・英熟語帳の完全版、共通テスト大問別演習、全科目の出題分析）。
+ *   これまでの学習プリント（単元プリント・100語テストなど）は SR の「学習プリント」として出る。
  */
-export const GACHA_RARITY_RATES: Record<GachaRarity, number> = { UR: 0.05, SR: 0.05, R: 0.25, N: 0.65 };
+export const GACHA_RARITY_RATES: Record<GachaRarity, number> = { UR: 0.03, SR: 0.06, R: 0.16, N: 0.75 };
 export const GACHA_RARITY_ORDER: readonly GachaRarity[] = ['UR', 'SR', 'R', 'N'];
-export const GACHA_RARITY_LABELS: Record<GachaRarity, string> = { UR: '大当たり（学習プリント）', SR: 'スーパーレア', R: 'レア', N: 'ノーマル' };
+export const GACHA_RARITY_LABELS: Record<GachaRarity, string> = { UR: '大当たり（完全版の本）', SR: 'スーパーレア', R: 'レア', N: 'ノーマル' };
 
 export function gachaItemsByRarity(): Record<GachaRarity, ItemDef[]> {
   const out: Record<GachaRarity, ItemDef[]> = { UR: [], SR: [], R: [], N: [] };

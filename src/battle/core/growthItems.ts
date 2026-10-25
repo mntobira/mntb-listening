@@ -21,7 +21,7 @@ export type ItemKind = 'pose' | 'frame' | AccessorySlot | 'wallpaper' | 'print';
 export type EquipKind = Exclude<ItemKind, 'print'>;
 /** 外せる種類（アクセサリと壁紙。ポーズと枠は常に何か1つ） */
 export const REMOVABLE_KINDS: readonly EquipKind[] = [...ACCESSORY_SLOTS, 'wallpaper'];
-/** ガチャのレア度：N（ノーマル）/ R（レア）/ SR（スーパーレア）/ UR（大当たり＝学習プリント） */
+/** ガチャのレア度：N（ノーマル）/ R（レア）/ SR（スーパーレア・学習プリント）/ UR（大当たり＝完全版の本） */
 export type GachaRarity = 'N' | 'R' | 'SR' | 'UR';
 
 export interface ItemDef {
@@ -57,6 +57,11 @@ export interface ItemDef {
 export const LEVEL_PRINTS: readonly GachaPrintDef[] = [
   { id: 'print_level_listening_howto', label: '共通テスト リスニングの聞き方（大問別の聞き方と毎日の練習法）', subject: 'english_listening', category: '出題傾向', file: '/prints/print_level_listening_howto.pdf', thumb: '/prints/thumbs/print_level_listening_howto.webp', pages: 2, kb: 82 },
 ];
+
+/** 学習プリントのレア度：完全版の本は UR（大当たり）、それ以外の学習プリントは SR */
+export function printRarity(p: GachaPrintDef): GachaRarity {
+  return p.category === '完全版' ? 'UR' : 'SR';
+}
 
 /** レベルでだけ解放される装備（ガチャ・ショップには出さない） */
 export const LEVEL_REWARD_ITEMS: readonly ItemDef[] = [
@@ -199,8 +204,9 @@ export const ITEMS: readonly ItemDef[] = [
   { id: 'frame_set_winter', kind: 'frame', rarity: 'SR', label: '雪の結晶フレーム（セット報酬）', value: '#74C0FC', pattern: 'sparkle', unlock: { badge: 'b_set_winter' } },
   { id: 'frame_set_hero', kind: 'frame', rarity: 'SR', label: 'ヒーローフレーム（セット報酬）', value: '#FAB005', pattern: 'rays', unlock: { badge: 'b_set_hero' } },
   { id: 'frame_set_collector', kind: 'frame', rarity: 'UR', label: 'コレクターの虹フレーム（3セット完成）', value: '#E76F51', pattern: 'rainbow', unlock: { badge: 'b_set_collector' } },
-  // ── UR（大当たり）：学習プリント PDF。ガチャからだけ出る（一覧は gachaPrints.generated.ts）──
-  ...GACHA_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'UR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  // ── 学習プリント PDF。ガチャからだけ出る（一覧は gachaPrints.generated.ts）──
+  //   ★2026-10-24★ UR（大当たり）は「完全版」（その一冊で完成する本）だけ。単元プリント・100語テストは SR。
+  ...GACHA_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: printRarity(p), label: p.label, value: p.file, unlock: { gacha: true } })),
   // ── レベル報酬（2026-10-04 ご要望「レベルを上げる意味」）：このレベルでしか手に入らないもの ──
   ...LEVEL_REWARD_ITEMS,
 ];
@@ -212,8 +218,8 @@ export function printOf(id: string): GachaPrintDef | undefined {
 
 /**
  * ガチャのレア度。
- *   UR … 大当たりの学習プリント（rarity:'UR' 指定のみ）
- *   SR … ガチャ限定のもの（rarity:'SR' 指定・または unlock:{gacha:true}）
+ *   UR … 大当たり＝完全版の本（printRarity）・rarity:'UR' 指定
+ *   SR … ガチャ限定のもの（学習プリント・rarity:'SR' 指定・または unlock:{gacha:true}）
  *   R  … 模様つきフレーム・200枚以上の交換品・称号で解放されるポーズ
  *   N  … それ以外
  */

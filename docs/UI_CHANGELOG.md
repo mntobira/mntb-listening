@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-10-24 ガチャ：はずれ多め・UR は「完全版の本」だけ／Firefly 動画キット（PR: feat/firefly-kit-ur-deluxe）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 抽選の割合 | N 65→**75%**・R 25→16%・SR 5→6%・UR 5→**3%** | `src/battle/core/arenaEconomy.ts` |
+| UR（大当たり） | 「その一冊で完成する本」（完全版）7冊だけに：英単語 Lv1／Lv2／Lv3・4、英熟語 全1885、共通テスト英語リーディング大問別演習 第1回・第2回、共通テスト全科目 出題分析 | `src/data/gachaPrints.generated.ts`（category: '完全版'）、`growthItems.ts`（`printRarity`） |
+| これまでの学習プリント（単元・100語テスト等 50種） | UR → **SR** に移動（中身は同じ） | `growthItems.ts` |
+| 提供割合の説明・空のときの文言 | 「URは完全版の本」「SRで学習プリント」に | `GachaCollectionModal.tsx`、`MyCollection.tsx` |
+| 動画 | Adobe Firefly 用キット（40本：撮り直し4＋新規36）の元データと PDF・画像の作り方 | `scripts/firefly-kit/*`、`docs/FIREFLY_KIT.md` |
+
+本の作り方：`python3 scripts/gacha-prints/build-vocab-book.py`／`build-reading-mock.py`／`build-analysis-book.py`（共通部品 `book_common.py`）。
+
+**戻し方**：割合だけ戻すなら `GACHA_RARITY_RATES` を `{ UR: 0.05, SR: 0.05, R: 0.25, N: 0.65 }` に、旧プリントを UR に戻すなら `printRarity` を常に 'UR' に。
+
+---
+
 ## 2026-10-23 とびら君の背景なしモーション（準備）＋ガチャのやり込み強化（PR: feat/tobira-motion-gacha-depth）
 
 | 何を | どう変えた | ファイル |

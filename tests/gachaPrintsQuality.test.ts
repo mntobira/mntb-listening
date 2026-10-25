@@ -6,10 +6,11 @@ import { GACHA_PRINTS } from '../src/data/gachaPrints.generated';
 /** ★UR 学習プリント（英語）の品質の下限（2026-10-01）★ pdftotext が無い環境では飛ばす */
 const hasPdf = (() => { try { execFileSync('pdftotext', ['-v'], { stdio: 'ignore' }); return true; } catch { return false; } })();
 const text = (file: string) => execFileSync('pdftotext', ['-layout', `public${file}`, '-'], { encoding: 'utf8', maxBuffer: 64 << 20 });
-const english = GACHA_PRINTS.filter(p => p.subject === 'english_grammar' || p.subject === 'english_vocab');
+// 完全版（UR）は tests/gachaDeluxe.test.ts で検査する。ここは SR の100語テスト・英文法100題
+const english = GACHA_PRINTS.filter(p => (p.subject === 'english_grammar' || p.subject === 'english_vocab') && p.category !== '完全版');
 const REBUILT = ['print_c_inorganic', 'print_math_basic_all', 'print_rika_1', 'print_rika_2', 'print_rika_3'];
 
-describe('UR 学習プリント（英語）', () => {
+describe('学習プリント（英語・SR）', () => {
   it('台帳のページ数・ファイルが実物と合う', () => {
     for (const p of english) {
       expect(existsSync(`public${p.file}`), p.id).toBe(true);
