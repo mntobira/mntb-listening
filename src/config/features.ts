@@ -133,5 +133,7 @@ export function fallbackSubjectId(candidates: readonly string[]): string | null 
  *   classroom … 設定 › クラス（先生が作ったクラスに参加）
  *   manaClan  … 対戦 › マナクラン／ランキングのマナクランタブ
  * 理由：サーバー側（Cloud Functions・ルール）の公開準備がまだのため。公開するときは true にするだけ。
+ *   classroom を true にする前に docs/JUKU_PLAN.md の「公開前のチェック」を必ず済ませる
+ *   （クラス機能は Cloud Functions を使わない。本番にルールが反映されているかだけが条件）。
  */
 export const SOCIAL_FEATURES = { classroom: false, manaClan: false } as const;

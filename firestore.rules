@@ -787,8 +787,14 @@ service cloud.firestore {
     // クラス（classrooms）
     //   classrooms/{classId} = {
     //     id, teacherUid, schoolName, className, joinCode,
-    //     subject, joinOpen, memberCount, createdAt, updatedAt
+    //     subject, joinOpen, memberCount, plan?, createdAt, updatedAt
     //   }
+    //
+    // ■ plan（'free' | 'juku'）2026-10-26
+    //   塾向けの機能（課題配信・選んだ理由の一覧）を使えるかどうか。
+    //   ★先生は 'free' 以外にできず、作成後は変えられない★
+    //   'juku' にするのは運営だけ（Firebase コンソールで手で書き換える。
+    //   コンソールはルールを通らない）。アプリ内のコードで解放する仕組みは作らない。
     // ============================================================
     //
     // ■ read を認証済み全員に許すのはなぜか
@@ -802,21 +808,25 @@ service cloud.firestore {
       function isValidClassroom(data) {
         return data.keys().hasOnly([
                  'id', 'teacherUid', 'schoolName', 'className', 'joinCode',
-                 'subject', 'joinOpen', 'memberCount', 'createdAt', 'updatedAt'
+                 'subject', 'joinOpen', 'memberCount', 'plan', 'createdAt', 'updatedAt'
                ])
           && data.teacherUid is string
           && data.teacherUid == request.auth.uid
           && data.schoolName is string && data.schoolName.size() > 0 && data.schoolName.size() <= 40
           && data.className is string && data.className.size() > 0 && data.className.size() <= 40
           && data.joinCode is string && data.joinCode.matches('^[ACDEFGHJKMNPQRSTWXYZ2345679]{6}$')
-          && data.subject in ['chemistry_basic', 'chemistry', 'english_listening']
+          && data.subject in ['chemistry_basic', 'chemistry', 'english_listening', 'english_grammar']
           && data.joinOpen is bool;
       }
 
       allow get: if isAuthenticated();
-      allow list: if false;
+      // 先生が「自分のクラス一覧」を取る where('teacherUid','==',自分) だけは許す
+      // （fetchMyClassrooms）。他人の teacherUid では静的に否定されるので列挙はできない。
+      allow list: if isAuthenticated() && resource.data.teacherUid == request.auth.uid;
 
-      allow create: if isAuthenticated() && isValidClassroom(request.resource.data);
+      // plan は付けないか 'free' だけ（先生が自分で 'juku' にできない）
+      allow create: if isAuthenticated() && isValidClassroom(request.resource.data)
+        && request.resource.data.get('plan', 'free') == 'free';
 
       // 担任のみ更新可。teacherUid と joinCode は変更不可
       // （コードを差し替えて他クラスの生徒を奪えないようにする）
@@ -824,7 +834,9 @@ service cloud.firestore {
         && resource.data.teacherUid == request.auth.uid
         && isValidClassroom(request.resource.data)
         && request.resource.data.teacherUid == resource.data.teacherUid
-        && request.resource.data.joinCode == resource.data.joinCode;
+        && request.resource.data.joinCode == resource.data.joinCode
+        // plan は先生からは変えられない（運営がコンソールで変える）
+        && request.resource.data.get('plan', 'free') == resource.data.get('plan', 'free');
 
       allow delete: if isAuthenticated() && resource.data.teacherUid == request.auth.uid;
     }
@@ -915,6 +927,111 @@ service cloud.firestore {
       // 退出は本人、除籍は担任
       allow delete: if isAuthenticated()
         && (resource.data.uid == request.auth.uid || isClassTeacher(resource.data.classId));
+    }
+
+    // ============================================================
+    // 課題（class_assignments）2026-10-26  src/utils/classAssignments.ts
+    //   class_assignments/{自動ID} = {
+    //     classId, teacherUid, title, chapterIds[1..10], dueAt(ms), createdAt
+    //   }
+    // ■ 作れるのは担任だけ・クラスが plan == 'juku' のときだけ
+    // ■ 読めるのは担任と在籍生徒（where('classId','==',x) のクエリ）
+    // ■ 生徒の「やったか」はここに書かない。study_progress の solved
+    //   （本人が書き、study_access がある先生だけ読める）から先生側で数える。
+    //   → 生徒の書き込みは増えず、同意の仕組みもそのまま。
+    // ============================================================
+    match /class_assignments/{assignmentId} {
+      function caRoom(classId) {
+        return get(/databases/$(database)/documents/classrooms/$(classId)).data;
+      }
+      function caIsTeacher(classId) {
+        return isAuthenticated()
+          && exists(/databases/$(database)/documents/classrooms/$(classId))
+          && caRoom(classId).teacherUid == request.auth.uid;
+      }
+      function caIsMember(classId) {
+        return isAuthenticated()
+          && exists(/databases/$(database)/documents/class_members/$(classId + '_' + request.auth.uid));
+      }
+      function caIsJuku(classId) {
+        return caRoom(classId).get('plan', 'free') == 'juku';
+      }
+      function isValidAssignment(data) {
+        return data.keys().hasOnly(['classId', 'teacherUid', 'title', 'chapterIds', 'dueAt', 'createdAt'])
+          && data.classId is string
+          && data.teacherUid == request.auth.uid
+          && data.title is string && data.title.size() > 0 && data.title.size() <= 40
+          && data.chapterIds is list && data.chapterIds.size() > 0 && data.chapterIds.size() <= 10
+          && data.dueAt is int && data.dueAt > 0
+          && data.createdAt == request.time;
+      }
+
+      allow get, list: if isAuthenticated()
+        && (caIsTeacher(resource.data.classId) || caIsMember(resource.data.classId));
+
+      allow create: if isValidAssignment(request.resource.data)
+        && caIsTeacher(request.resource.data.classId)
+        && caIsJuku(request.resource.data.classId);
+
+      // 書き換えは無し（締切を変えたいときは消して作り直す＝記録が食い違わない）
+      allow update: if false;
+      allow delete: if caIsTeacher(resource.data.classId);
+    }
+
+    // ============================================================
+    // 選んだ理由（answer_reasons）2026-10-26  src/utils/answerReasons.ts
+    //   answer_reasons/{classId}_{uid}_{問題キー} = {
+    //     classId, uid, teacherUid, chapterId, questionId, qNo?(章の中の Q番号),
+    //     reason(1..200), correct?, updatedAt
+    //   }
+    // ■ 書けるのは生徒本人・在籍しているクラスだけ・クラスが plan == 'juku' のときだけ
+    //   （本人が「先生に送る」を押したときだけ作られる＝自分で選んで見せる）
+    // ■ 読めるのは本人と担任（担任は plan == 'juku' のときだけ一覧できる）
+    // ■ 消せるのは本人（送った理由を取り消せる）
+    // ============================================================
+    match /answer_reasons/{reasonId} {
+      function arRoom(classId) {
+        return get(/databases/$(database)/documents/classrooms/$(classId)).data;
+      }
+      function arIsJuku(classId) {
+        return exists(/databases/$(database)/documents/classrooms/$(classId))
+          && arRoom(classId).get('plan', 'free') == 'juku';
+      }
+      function arIsTeacher(classId) {
+        return isAuthenticated()
+          && exists(/databases/$(database)/documents/classrooms/$(classId))
+          && arRoom(classId).teacherUid == request.auth.uid;
+      }
+      function isValidReason(data) {
+        return data.keys().hasOnly(['classId', 'uid', 'teacherUid', 'chapterId', 'questionId', 'qNo', 'reason', 'correct', 'updatedAt'])
+          && data.classId is string
+          && data.uid == request.auth.uid
+          && data.teacherUid is string
+          && data.chapterId is string && data.chapterId.size() > 0 && data.chapterId.size() <= 80
+          && data.questionId is string && data.questionId.size() > 0 && data.questionId.size() <= 80
+          && data.reason is string && data.reason.size() > 0 && data.reason.size() <= 200
+          && (!('correct' in data) || data.correct is bool)
+          && (!('qNo' in data) || (data.qNo is int && data.qNo >= 1 && data.qNo <= 999))
+          && data.updatedAt == request.time
+          // ID は classId_uid_ で始まる（別人・別クラスの理由として書けない）
+          && reasonId.matches('^' + data.classId + '_' + data.uid + '_[A-Za-z0-9_-]{1,160}$');
+      }
+
+      allow get: if isAuthenticated()
+        && (resource.data.uid == request.auth.uid
+            || (arIsTeacher(resource.data.classId) && arIsJuku(resource.data.classId)));
+      allow list: if isAuthenticated()
+        && (resource.data.uid == request.auth.uid
+            || (arIsTeacher(resource.data.classId) && arIsJuku(resource.data.classId)));
+
+      allow create, update: if isAuthenticated()
+        && isValidReason(request.resource.data)
+        && exists(/databases/$(database)/documents/class_members/$(request.resource.data.classId + '_' + request.auth.uid))
+        && arIsJuku(request.resource.data.classId)
+        && arRoom(request.resource.data.classId).teacherUid == request.resource.data.teacherUid
+        && (resource == null || resource.data.uid == request.auth.uid);
+
+      allow delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
     }
 
 // ###################################################################

@@ -6,6 +6,7 @@ import { auth } from '../firebase';
 
 import type { ReviewNav } from './explanation/types';
 import { ExtrasSection } from './explanation/ExtrasSection';
+import { ReasonBox } from './explanation/ReasonBox';
 import { MobileAnswerNav, ReviewBottomBar } from './explanation/BottomBars';
 
 
@@ -709,6 +710,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                         openExplanationBySq, openThinkingBySq, setOpenExplanationBySq, setOpenThinkingBySq,
                         selectedSqId, setSelectedSqId,
                       })}
+                      {/* 塾クラスの生徒だけ：選んだ理由を先生に送る（それ以外は何も描かない） */}
+                      {!isGuest && <ReasonBox chapterId={chapter.id} questionId={question.id} correct={calculateScore(question) === 100} qNo={(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1} />}
                     </div>
 
                   </div>

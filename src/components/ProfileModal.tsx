@@ -8,6 +8,7 @@ import { FriendPanel } from './FriendPanel';
 import { ClassPanel } from './ClassPanel';
 import { ComingSoon } from './ComingSoon';
 import { SOCIAL_FEATURES } from '../config/features';
+import type { SubjectKey } from '../data/allChapters';
 import { DoorMascot } from './DoorMascot';
 import { GoogleMark } from './GoogleLinkBanner';
 import { AppleSignInButton } from '../features/auth/AppleSignInButton';
@@ -53,11 +54,13 @@ interface ProfileModalProps {
   onOpenFeedbackAdmin?: () => void;
   /** アバター（とびら君）を着せかえる画面を開く */
   onOpenOutfit?: () => void;
+  /** 塾クラスの課題の「解く」から演習を始める */
+  onStartClassChapter?: (chapterId: string, subject: SubjectKey) => void;
 }
 
 type SettingsTab = 'general' | 'friends' | 'class';
 
-export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenTeacherDashboard, onOpenFeedbackAdmin, onOpenOutfit }: ProfileModalProps) {
+export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenTeacherDashboard, onOpenFeedbackAdmin, onOpenOutfit, onStartClassChapter }: ProfileModalProps) {
   const { progress: growth } = useGrowthProgress();
   const [rating, setRating] = useState(1500);
   useEffect(() => { let alive = true; if (auth.currentUser) void fetchMyRankingRow().then(r => { if (alive && r) setRating(r.rating); }).catch(logRejection('profile.fetchRanking')); return () => { alive = false; }; }, []);
@@ -149,7 +152,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
             <ComingSoon title="クラス">先生が作ったクラスに参加して、課題や進み具合を共有できるようになります。もうすぐ公開します。</ComingSoon>
           ) : tab === 'class' && auth.currentUser ? (
             <div className="h-full overflow-y-auto no-scrollbar pb-4">
-              <ClassPanel defaultDisplayName={name} />
+              <ClassPanel defaultDisplayName={name} onStartChapter={onStartClassChapter} />
 
               {/* 先生用の入口。生徒が誤って開いてもクラス0件の案内が出るだけ。 */}
               {onOpenTeacherDashboard && (

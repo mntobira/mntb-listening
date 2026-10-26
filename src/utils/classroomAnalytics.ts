@@ -132,6 +132,8 @@ export interface MembershipDetail {
   subject: ClassroomDoc['subject'];
   /** 先生の画面に出ている自分の名前（名簿名が設定済みならそれ） */
   rosterName: string;
+  /** クラスの契約（'juku' なら課題・選んだ理由が使える） */
+  plan: 'free' | 'juku';
 }
 
 /**
@@ -157,6 +159,7 @@ export async function fetchMyMembershipDetails(): Promise<MembershipDetail[]> {
           className: String(room.className || ''),
           subject: room.subject,
           rosterName: resolveRosterName(member),
+          plan: room.plan === 'juku' ? 'juku' : 'free',
         };
       } catch {
         return null;

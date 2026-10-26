@@ -137,6 +137,11 @@ export interface ClassroomDoc {
   joinOpen: boolean;
   /** 在籍数（表示用のキャッシュ。厳密な数は members を数える） */
   memberCount?: number;
+  /**
+   * 'juku' のときだけ塾向けの機能（課題配信・選んだ理由）が使える。
+   * 先生は変えられない（ルールで禁止）。運営が Firebase コンソールで書き換える。無ければ 'free'。
+   */
+  plan?: 'free' | 'juku';
   createdAt?: unknown;
   updatedAt?: unknown;
 }

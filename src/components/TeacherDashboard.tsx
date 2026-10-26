@@ -22,6 +22,7 @@ import { StudentsTab } from './teacher/StudentsTab';
 import { KantenTab } from './teacher/KantenTab';
 import { ClassesTab } from './teacher/ClassesTab';
 import { CreateClassModal } from './teacher/CreateClassModal';
+import { JukuTab } from './teacher/JukuTab';
 
 /**
  * ===================================================================
@@ -66,7 +67,7 @@ interface TeacherDashboardProps {
   onBack: () => void;
 }
 
-type Tab = 'students' | 'kanten' | 'classes';
+type Tab = 'students' | 'kanten' | 'juku' | 'classes';
 
 
 export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
@@ -332,7 +333,7 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
       <div className="max-w-5xl mx-auto">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-[#4B5563] hover:text-[#1B2631] transition-colors mb-5"
+          className="flex min-h-[44px] items-center gap-2 text-[#4B5563] hover:text-[#1B2631] transition-colors mb-3"
         >
           <ArrowLeft className="w-5 h-5" />
           <span className="text-sm">戻る</span>
@@ -351,7 +352,7 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
           </div>
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white transition-transform active:scale-95"
+            className="flex min-h-[44px] items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white transition-transform active:scale-95"
             style={{ backgroundColor: theme.accent }}
           >
             <Plus className="w-4 h-4" />
@@ -366,7 +367,7 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
               <button
                 key={room.id}
                 onClick={() => setActiveClassId(room.id)}
-                className={`shrink-0 px-3.5 py-2 rounded-xl text-sm border transition-colors ${
+                className={`shrink-0 min-h-[44px] px-3.5 py-2 rounded-xl text-sm border transition-colors ${
                   room.id === activeClassId
                     ? 'bg-white border-transparent font-bold text-[#1B2631]'
                     : 'bg-transparent border-[#E0E1DD] text-[#4B5563] hover:bg-white/60'
@@ -381,16 +382,17 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
 
         {/* タブ */}
         {classrooms.length > 0 && (
-          <div className="flex gap-1 p-1 bg-[#F1EFE9] rounded-xl mb-5 w-fit">
+          <div className="grid grid-cols-4 sm:flex gap-1 p-1 bg-[#F1EFE9] rounded-xl mb-5 sm:w-fit">
             {([
               { id: 'students' as Tab, label: '生徒の様子' },
               { id: 'kanten' as Tab, label: '観点別評価' },
+              { id: 'juku' as Tab, label: '課題・理由' },
               { id: 'classes' as Tab, label: 'クラス設定' },
             ]).map((item) => (
               <button
                 key={item.id}
                 onClick={() => setTab(item.id)}
-                className={`px-4 py-1.5 rounded-lg text-sm transition-colors ${
+                className={`min-h-[44px] px-1 sm:px-4 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-colors ${
                   tab === item.id ? 'bg-white font-bold text-[#1B2631] shadow-sm' : 'text-[#4B5563]'
                 }`}
               >
@@ -442,6 +444,8 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
               if (activeClass) void loadKanten(activeClass.id, activeClass.subject);
             }}
           />
+        ) : tab === 'juku' ? (
+          <JukuTab activeClass={activeClass} theme={theme} />
         ) : (
           <ClassesTab
             classrooms={classrooms}

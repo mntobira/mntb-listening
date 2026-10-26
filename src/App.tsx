@@ -565,7 +565,7 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} />}
+            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
             {/* 先生ダッシュボード。戻る先を設定にしているのは、入ってきた経路と揃えるため。 */}
             {appState === 'teacher_dashboard' && <TeacherDashboard onBack={() => setAppState('settings')} />}
             {/* フィードバック管理（運営専用）。入口は設定内の運営専用ボタン。 */}

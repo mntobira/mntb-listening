@@ -9,6 +9,7 @@ import {
   Eye,
   Trash2,
   Info,
+  ShieldCheck,
 } from 'lucide-react';
 import { auth } from '../firebase';
 import {
@@ -20,6 +21,8 @@ import {
 import { normalizeJoinCode, JOIN_CODE_LENGTH } from '../utils/classroomCore';
 import { subjectTheme } from '../data/subjectTheme';
 import { confirmAction } from '../utils/dialog';
+import { saveJukuMemberships } from '../utils/classAssignments';
+import { StudentAssignments } from './classroom/StudentAssignments';
 
 /**
  * ===================================================================
@@ -53,9 +56,11 @@ import { confirmAction } from '../utils/dialog';
 interface ClassPanelProps {
   /** 先生の画面に出す既定の名前（プロフィールのニックネーム） */
   defaultDisplayName?: string;
+  /** 課題の「解く」から演習を始める（塾クラスだけ。無ければボタンを出さない） */
+  onStartChapter?: (chapterId: string, subject: MembershipDetail['subject']) => void;
 }
 
-export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
+export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPanelProps) {
   const [memberships, setMemberships] = useState<MembershipDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const [code, setCode] = useState('');
@@ -75,6 +80,14 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
     try {
       const rows = await fetchMyMembershipDetails();
       setMemberships(rows);
+      // 塾クラス（plan == 'juku'）を端末に覚えておく。解説画面の「選んだ理由」欄と
+      // 広告の出し分けが Firestore を読まずに判断できるようにする（送れるかはルールが決める）。
+      saveJukuMemberships(
+        uid,
+        rows
+          .filter((row) => row.plan === 'juku')
+          .map((row) => ({ classId: row.classId, teacherUid: row.teacherUid, className: row.className, subject: row.subject })),
+      );
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : '参加クラスの取得に失敗しました。');
     } finally {
@@ -129,7 +142,7 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
 
   if (!uid) {
     return (
-      <div className="bg-white border border-gray-150 rounded-2xl p-4 text-center">
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 text-center">
         <School className="w-8 h-8 mx-auto mb-2 text-gray-300" />
         <p className="text-xs text-gray-500 leading-relaxed">
           クラスへの参加には Google ログインが必要です。
@@ -146,7 +159,7 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
   return (
     <div className="space-y-2.5">
       {/* 参加中のクラス（＝いま見られている相手） */}
-      <section className="bg-white border border-gray-150 rounded-2xl p-3 shadow-sm">
+      <section className="bg-white border border-gray-200 rounded-2xl p-3 shadow-sm">
         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
           参加中のクラス
         </h3>
@@ -166,7 +179,7 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
               return (
                 <li
                   key={membership.classId}
-                  className="rounded-xl border border-gray-150 bg-gray-50/60 p-2.5"
+                  className="rounded-xl border border-gray-200 bg-gray-50/60 p-2.5"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
@@ -188,7 +201,7 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
                     <button
                       onClick={() => handleLeave(membership)}
                       disabled={leavingClassId === membership.classId}
-                      className="shrink-0 flex items-center gap-1 px-2 py-1.5 rounded-lg border border-red-100 bg-red-50 text-xs font-bold text-red-600 disabled:opacity-50"
+                      className="shrink-0 flex min-h-[44px] items-center gap-1 px-2.5 rounded-lg border border-red-100 bg-red-50 text-xs font-bold text-red-600 disabled:opacity-50"
                     >
                       {leavingClassId === membership.classId ? (
                         <Loader2 size={12} className="animate-spin" />
@@ -198,6 +211,9 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
                       抜ける
                     </button>
                   </div>
+                  {membership.plan === 'juku' && (
+                    <StudentAssignments membership={membership} onStartChapter={onStartChapter} />
+                  )}
                 </li>
               );
             })}
@@ -216,6 +232,9 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
             <li>・解いた大問の数と、学習した日</li>
             <li>・復習リストの件数と、期限が来ているのに残っている数</li>
             <li>・間違えた回数と、解き直した回数</li>
+            {memberships.some((m) => m.plan === 'juku') && (
+              <li>・解説画面で「先生に送る」を押した「選んだ理由」（送ったものだけ）</li>
+            )}
           </ul>
           <p className="flex items-center gap-1.5 text-xs font-bold text-[#3C5A6E] mt-2 mb-1.5">
             <Info size={13} />
@@ -233,7 +252,7 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
       )}
 
       {/* 参加コードの入力 */}
-      <section className="bg-white border border-gray-150 rounded-2xl p-3 shadow-sm space-y-2">
+      <section className="bg-white border border-gray-200 rounded-2xl p-3 shadow-sm space-y-2">
         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
           クラスに参加する
         </h3>
@@ -255,12 +274,12 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
             spellCheck={false}
             placeholder="ABC234"
             aria-label="参加コード"
-            className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm font-bold tracking-[0.2em] text-[#1B2631] uppercase focus:outline-none focus:border-[#6FA8C5]"
+            className="flex-1 min-w-0 min-h-[44px] px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm font-bold tracking-[0.2em] text-[#1B2631] uppercase focus:outline-none focus:border-[#6FA8C5]"
           />
           <button
             onClick={handleJoin}
             disabled={!canJoin}
-            className="shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#2C3E50] text-white text-xs font-bold disabled:opacity-40"
+            className="shrink-0 flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#2C3E50] text-white text-xs font-bold disabled:opacity-40"
           >
             {joining ? <Loader2 size={14} className="animate-spin" /> : <LogIn size={14} />}
             {joining ? '参加中…' : '参加'}
@@ -270,6 +289,18 @@ export function ClassPanel({ defaultDisplayName = '' }: ClassPanelProps) {
         <p className="text-xs text-gray-400 leading-snug">
           コードには <strong>O・0</strong>、<strong>I・1</strong> のような
           見間違えやすい文字は使われていません。打ち間違えても自動で直します。
+        </p>
+
+        {/* 16歳未満は保護者の同意が必要（学習記録を先生＝第三者に見せることになるため） */}
+        <p
+          data-testid="class-consent-notice"
+          className="flex items-start gap-1.5 rounded-xl bg-[#FFF8E6] border border-[#F2D58A] px-2.5 py-2 text-xs leading-snug text-[#7A5A12]"
+        >
+          <ShieldCheck size={13} className="shrink-0 mt-[1px]" />
+          <span>
+            <strong>16歳未満の人は、参加する前に保護者の方の同意をもらってください。</strong>
+            参加すると、解いた問題の数や学習した日などの記録が先生に見えるようになります。
+          </span>
         </p>
       </section>
 
