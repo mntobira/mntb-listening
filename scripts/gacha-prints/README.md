@@ -126,3 +126,16 @@ python3 scripts/gacha-prints/build-previews.py print_lr_niji_shizuoka_en_1 print
 
 - 大問の型（物語文・誤り訂正・評論文・会話文・自由英作文／配点は%）だけを参考にし、英文・設問・解答・表紙の文言はすべて書き下ろし。過去問4年分のOCR文と照合して英5語・日12字の一致0件を確認。
 - 注意書きは大学ごとに出し分ける（`nijiDisclaimerFor(大学名)`）。ほかの大学を足すときは `NIJI_UNIVERSITIES` に1行足す。
+
+### 大阪公立大学 前期対策（2026-10-30 追加・A／Bグループ）
+
+```bash
+# 中身は webapp/pdf/osaka/r{1,2,3}.py（第1・2問は共通、第3問は W['A'] / W['B']）、紙面は build.py
+python3 build.py            # → 予想問題_大阪公立大学_英語_第N回_{A,B}_{問題,解答解説}.pdf
+pdfunite 予想問題_大阪公立大学_英語_第N回_A_問題.pdf 予想問題_大阪公立大学_英語_第N回_A_解答解説.pdf public/prints/print_lr_niji_omua_en_N.pdf   # B は omub
+python3 scripts/gacha-prints/build-previews.py print_lr_niji_omua_en_1 …   # previews
+# thumbs は 1ページ目を 360×510 の webp に（静岡と同じ規格）
+```
+
+- 第3問（和文英訳）だけ学部・学域で2系統（A：文・法・経済・商・獣医・医学科・生活科学／B：現代システム科学域・理・工・農・リハビリ・看護）。`NIJI_UNIVERSITIES` の `track` にグループ名を書くとラベルに出る。
+- 解答速報5年分（2022〜2026）の文と照合して英5語・日12字の一致0件を確認。

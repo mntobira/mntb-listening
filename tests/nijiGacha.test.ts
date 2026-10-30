@@ -95,7 +95,7 @@ describe('2次試験ガチャ：抽選', () => {
 
 describe('2次試験の予想問題 PDF', () => {
   it('台帳のページ数・ファイル・サムネイルが実物と合う', () => {
-    expect(NIJI_MOCK_PRINTS.length).toBe(6); // 名古屋大学 3回・静岡大学 3回
+    expect(NIJI_MOCK_PRINTS.length).toBe(12); // 名古屋大学 3回・静岡大学 3回・大阪公立大学 A 3回・B 3回
     for (const u of NIJI_UNIVERSITIES) expect(NIJI_MOCK_PRINTS.filter((p) => nijiUniversityOf(p.id)?.id === u.id).length, u.id).toBe(3);
     for (const p of NIJI_MOCK_PRINTS) {
       expect(existsSync(`public${p.file}`), p.id).toBe(true);
@@ -123,6 +123,11 @@ describe('2次試験の予想問題 PDF', () => {
     for (const u of NIJI_UNIVERSITIES) expect(NIJI_DISCLAIMER).toContain(u.name);
     expect(nijiUniversityOf('print_lr_niji_shizuoka_en_2')?.name).toBe('静岡大学');
     expect(nijiUniversityOf('print_lr_kyotsu_r_1')).toBeUndefined();
+    // 大阪公立大学は A・B どちらも大学名は同じ。ラベルで系統がわかり、全体の注意書きに大学名は1回だけ
+    expect(nijiUniversityOf('print_lr_niji_omub_en_1')?.name).toBe('大阪公立大学');
+    expect(NIJI_MOCK_PRINTS.find((p) => p.id === 'print_lr_niji_omua_en_1')!.label).toContain('Aグループ');
+    expect(NIJI_MOCK_PRINTS.find((p) => p.id === 'print_lr_niji_omub_en_3')!.label).toContain('Bグループ');
+    expect(NIJI_DISCLAIMER.split('大阪公立大学').length - 1).toBe(1);
     expect(readFileSync('src/components/gacha/GachaPickupModal.tsx', 'utf8')).toContain('NIJI_DISCLAIMER');
   });
 });

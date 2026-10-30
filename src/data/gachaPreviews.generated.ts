@@ -65,6 +65,30 @@ export const GACHA_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
     "/prints/previews/print_lr_niji_shizuoka_en_3_p2.webp",
     "/prints/previews/print_lr_niji_shizuoka_en_3_p14.webp"
   ],
+  "print_lr_niji_omua_en_1": [
+    "/prints/previews/print_lr_niji_omua_en_1_p2.webp",
+    "/prints/previews/print_lr_niji_omua_en_1_p13.webp"
+  ],
+  "print_lr_niji_omua_en_2": [
+    "/prints/previews/print_lr_niji_omua_en_2_p2.webp",
+    "/prints/previews/print_lr_niji_omua_en_2_p12.webp"
+  ],
+  "print_lr_niji_omua_en_3": [
+    "/prints/previews/print_lr_niji_omua_en_3_p2.webp",
+    "/prints/previews/print_lr_niji_omua_en_3_p13.webp"
+  ],
+  "print_lr_niji_omub_en_1": [
+    "/prints/previews/print_lr_niji_omub_en_1_p2.webp",
+    "/prints/previews/print_lr_niji_omub_en_1_p13.webp"
+  ],
+  "print_lr_niji_omub_en_2": [
+    "/prints/previews/print_lr_niji_omub_en_2_p2.webp",
+    "/prints/previews/print_lr_niji_omub_en_2_p12.webp"
+  ],
+  "print_lr_niji_omub_en_3": [
+    "/prints/previews/print_lr_niji_omub_en_3_p2.webp",
+    "/prints/previews/print_lr_niji_omub_en_3_p13.webp"
+  ],
   "print_book_listening_all": [
     "/prints/previews/print_book_listening_all_p2.webp",
     "/prints/previews/print_book_listening_all_p40.webp"
