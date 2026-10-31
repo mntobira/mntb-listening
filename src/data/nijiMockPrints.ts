@@ -5,6 +5,8 @@
  *   - 静岡大学 前期対策（2026-10-30 追加）：大問1〜5（物語文・誤り訂正・評論文・会話文・自由英作文）・80分・配点は%。3回分。
  *   - 東京学芸大学 前期対策（英語コース・2026-10-31 追加）：大問Ⅰ〜Ⅴ（長文読解・英文要約・和文英訳・200語の意見英作文・ディクテーション）
  *     ・筆記90分＋ディクテーション約10分・配点は%。3回分。ディクテーションは音声なし（解答編の「読み上げ原稿」を人に読んでもらう）。
+ *   - 琉球大学 前期対策（2026-10-31 追加）：大問1〜4（論説の長文・物語文・会話文の空所10・グラフを読んで150語の英作文）
+ *     ・100分・100点（30・30・10・30）。3回分。グラフの数値は架空。
  *   ★過去問ではない★ 英文・設問・図表・解答はすべて書き下ろし。過去問・解答速報・講評の文章は引用していない
  *   （英語5語以上・日本語12字以上の連続一致がないことを機械で確認済み）。表紙と奥付に「大学とは関係がない」旨を明記。
  *
@@ -17,6 +19,7 @@ export const NIJI_UNIVERSITIES = [
   { id: 'nagoya', name: '名古屋大学' },
   { id: 'shizuoka', name: '静岡大学' },
   { id: 'gakugei', name: '東京学芸大学' },
+  { id: 'ryukyu', name: '琉球大学' },
 ] as const;
 export type NijiUniversityId = (typeof NIJI_UNIVERSITIES)[number]['id'];
 
@@ -36,6 +39,7 @@ const mock = (univ: NijiUniversityId, n: number, pages: number, kb: number): Gac
 const nagoya = (n: number, pages: number, kb: number) => mock('nagoya', n, pages, kb);
 const shizuoka = (n: number, pages: number, kb: number) => mock('shizuoka', n, pages, kb);
 const gakugei = (n: number, pages: number, kb: number) => mock('gakugei', n, pages, kb);
+const ryukyu = (n: number, pages: number, kb: number) => mock('ryukyu', n, pages, kb);
 
 export const NIJI_MOCK_PRINTS: readonly GachaPrintDef[] = [
   nagoya(1, 28, 2026),
@@ -47,6 +51,9 @@ export const NIJI_MOCK_PRINTS: readonly GachaPrintDef[] = [
   gakugei(1, 22, 1824),
   gakugei(2, 22, 1796),
   gakugei(3, 22, 1810),
+  ryukyu(1, 25, 1702),
+  ryukyu(2, 27, 1709),
+  ryukyu(3, 25, 1715),
 ];
 
 /** その大学の予想問題に必ず添える注意書き（PDF の表紙・奥付と同じ文） */
