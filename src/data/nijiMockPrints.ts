@@ -3,6 +3,11 @@
  *   1冊＝問題編＋解答・解説編。
  *   - 名古屋大学 前期対策：大問Ⅰ〜Ⅳ・105分・100点。3回分。
  *   - 静岡大学 前期対策（2026-10-30 追加）：大問1〜5（物語文・誤り訂正・評論文・会話文・自由英作文）・80分・配点は%。3回分。
+ *   - 大阪公立大学 前期対策（2026-10-30 追加）：長文2題＋和文英訳・100分・100点。第1・2問は全学部共通、
+ *     第3問（和文英訳）だけ学部・学域で2系統に分かれるため、Aグループ用・Bグループ用を各3回分（計6冊）。
+ *   - 和歌山大学 前期対策（2026-10-31 追加）：大問Ⅰ〜Ⅲ（長文2題＋グラフ英作文）・90分・100点。全学部共通。3回分。
+ *   - 岡山大学 前期対策（2026-10-31 追加）：問1〜問4（長文2題・会話文/和文英訳・自由英作文）・120分・200点。全学部共通。3回分。
+ *   - 広島大学 前期対策（2026-10-31 追加）：大問Ⅰ〜Ⅳ（段落要約・関連2文の長文・意見英作文・グラフ英作文）・120分・200点。全学部共通。3回分。
  *   - 東京学芸大学 前期対策（英語コース・2026-10-31 追加）：大問Ⅰ〜Ⅴ（長文読解・英文要約・和文英訳・200語の意見英作文・ディクテーション）
  *     ・筆記90分＋ディクテーション約10分・配点は%。3回分。ディクテーションは音声なし（解答編の「読み上げ原稿」を人に読んでもらう）。
  *   - 琉球大学 前期対策（2026-10-31 追加）：大問1〜4（論説の長文・物語文・会話文の空所10・グラフを読んで150語の英作文）
@@ -14,20 +19,28 @@
  */
 import type { GachaPrintDef } from './gachaPrints.generated';
 
-/** 予想問題を作った大学（id は PDF のファイル名に使う） */
+/**
+ * 予想問題を作った大学（id は PDF のファイル名に使う）。
+ * track：学部・学域で問題が分かれる大学だけ、どの系統向けかを書く（ラベルにも出す）。
+ */
 export const NIJI_UNIVERSITIES = [
-  { id: 'nagoya', name: '名古屋大学' },
-  { id: 'shizuoka', name: '静岡大学' },
-  { id: 'gakugei', name: '東京学芸大学' },
-  { id: 'ryukyu', name: '琉球大学' },
+  { id: 'nagoya', name: '名古屋大学', track: '' },
+  { id: 'shizuoka', name: '静岡大学', track: '' },
+  { id: 'omua', name: '大阪公立大学', track: 'Aグループ（文・法・経済・商・獣医・医学科・生活科学）' },
+  { id: 'omub', name: '大阪公立大学', track: 'Bグループ（現代システム科学域・理・工・農・リハビリ・看護）' },
+  { id: 'wakayama', name: '和歌山大学', track: '' },
+  { id: 'okayama', name: '岡山大学', track: '' },
+  { id: 'hiroshima', name: '広島大学', track: '' },
+  { id: 'gakugei', name: '東京学芸大学', track: '' },
+  { id: 'ryukyu', name: '琉球大学', track: '' },
 ] as const;
 export type NijiUniversityId = (typeof NIJI_UNIVERSITIES)[number]['id'];
 
 const mock = (univ: NijiUniversityId, n: number, pages: number, kb: number): GachaPrintDef => {
-  const name = NIJI_UNIVERSITIES.find((u) => u.id === univ)!.name;
+  const { name, track } = NIJI_UNIVERSITIES.find((u) => u.id === univ)!;
   return {
     id: `print_lr_niji_${univ}_en_${n}`,
-    label: `国公立2次 英語 予想問題 ${name} 前期対策 第${n}回（問題＋解答・解説）`,
+    label: `国公立2次 英語 予想問題 ${name} 前期対策${track ? ` ${track}` : ''} 第${n}回（問題＋解答・解説）`,
     subject: 'english_reading',
     category: '演習プリント',
     file: `/prints/print_lr_niji_${univ}_en_${n}.pdf`,
@@ -38,6 +51,11 @@ const mock = (univ: NijiUniversityId, n: number, pages: number, kb: number): Gac
 };
 const nagoya = (n: number, pages: number, kb: number) => mock('nagoya', n, pages, kb);
 const shizuoka = (n: number, pages: number, kb: number) => mock('shizuoka', n, pages, kb);
+const omua = (n: number, pages: number, kb: number) => mock('omua', n, pages, kb);
+const omub = (n: number, pages: number, kb: number) => mock('omub', n, pages, kb);
+const wakayama = (n: number, pages: number, kb: number) => mock('wakayama', n, pages, kb);
+const okayama = (n: number, pages: number, kb: number) => mock('okayama', n, pages, kb);
+const hiroshima = (n: number, pages: number, kb: number) => mock('hiroshima', n, pages, kb);
 const gakugei = (n: number, pages: number, kb: number) => mock('gakugei', n, pages, kb);
 const ryukyu = (n: number, pages: number, kb: number) => mock('ryukyu', n, pages, kb);
 
@@ -48,6 +66,21 @@ export const NIJI_MOCK_PRINTS: readonly GachaPrintDef[] = [
   shizuoka(1, 28, 1849),
   shizuoka(2, 28, 1847),
   shizuoka(3, 28, 1855),
+  omua(1, 26, 1971),
+  omua(2, 24, 1965),
+  omua(3, 25, 1986),
+  omub(1, 26, 1971),
+  omub(2, 24, 1968),
+  omub(3, 25, 1992),
+  wakayama(1, 22, 1949),
+  wakayama(2, 22, 1930),
+  wakayama(3, 22, 1939),
+  okayama(1, 25, 1954),
+  okayama(2, 24, 1881),
+  okayama(3, 24, 1937),
+  hiroshima(1, 23, 1898),
+  hiroshima(2, 23, 1928),
+  hiroshima(3, 23, 1909),
   gakugei(1, 22, 1824),
   gakugei(2, 22, 1796),
   gakugei(3, 22, 1810),
@@ -68,4 +101,4 @@ export function nijiUniversityOf(id: string): (typeof NIJI_UNIVERSITIES)[number]
 }
 
 /** ピックアップなど、ガチャ全体に添える注意書き（収録している大学をすべて挙げる） */
-export const NIJI_DISCLAIMER = `${NIJI_UNIVERSITIES.map((u) => u.name).join('・')}の過去問・公式問題ではありません。予想問題であり、各大学とは関係がありません。`;
+export const NIJI_DISCLAIMER = `${[...new Set(NIJI_UNIVERSITIES.map((u) => u.name))].join('・')}の過去問・公式問題ではありません。予想問題であり、各大学とは関係がありません。`;

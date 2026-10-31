@@ -349,8 +349,9 @@
 .mana-hub-missions { display: flex; flex-direction: column; height: 100%; }
 .mana-hub-missions > .mypage-extra-scroll { flex: 1; min-height: 0; overflow-y: auto; }
 /* 2026-10-29 B3：プロフィールを編集＝1画面。項目名を枠の中に出し、枠を大きく（56px）。
-   名前・志・自己紹介は横いっぱい、学年/文理・志望校/目標は2列。公開の行と保存は下にそろえ、下の余白をなくす */
-.mypage-profile-edit[data-mypage-profile-edit] { display: flex !important; flex-direction: column; min-height: 100%; padding-bottom: 12px; }
+   名前・志・自己紹介は横いっぱい、学年/文理・志望校/目標は2列。公開の行と保存は下にそろえ、下の余白をなくす。
+   高さの低いPCでもフォーム下部の公開設定・保存ボタンまで到達できるよう、このページ自身をスクロール領域にする。 */
+.mypage-profile-edit[data-mypage-profile-edit] { display: flex !important; flex: 1 1 0; flex-direction: column; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 12px; }
 .mypage-profile-edit .mypage-profile { flex: 1; display: flex; flex-direction: column; gap: clamp(8px, 1.6vh, 14px); padding: clamp(12px, 2vh, 18px) 14px; }
 .mypage-profile-edit .mypage-profile-top { display: grid; grid-template-columns: 1fr; }
 .mypage-profile-edit .ps-fields { gap: clamp(8px, 1.6vh, 14px) 10px; }

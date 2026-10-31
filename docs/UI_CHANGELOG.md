@@ -525,6 +525,28 @@
 
 ---
 
+## 2026-10-31 2次試験ガチャの大当たりに和歌山大学・岡山大学・広島大学を追加（PR: feat/niji-wakayama-okayama-hiroshima）
+
+| # | どこ | 変更 | ファイル |
+|---|---|---|---|
+| 1 | 2次試験ガチャの LR | 国公立2次 英語 予想問題 和歌山大学・岡山大学・広島大学 前期対策を各3回、計9冊追加（3大学とも全学部共通の問題なので学部別の出し分けなし） | `src/data/nijiMockPrints.ts`・`public/prints/print_lr_niji_{wakayama,okayama,hiroshima}_en_{1,2,3}.pdf`・thumbs・previews・`src/data/gachaPreviews.generated.ts` |
+| 2 | ピックアップの説明文 | 収録大学に3大学を追加 | `src/battle/core/gachaPools.ts`・`nijiMockPrints.ts`（`NIJI_DISCLAIMER` は自動で3大学を含む） |
+
+**戻し方**：`nijiMockPrints.ts` の `wakayama`/`okayama`/`hiroshima` の行（`NIJI_UNIVERSITIES` の3行・ヘルパー3行・台帳9行）を消し、`gachaPools.ts` の lrNote と `build-previews.py` の正規表現を元に戻す。PDF・画像は消してよい。
+
+---
+
+## 2026-10-30 2次試験ガチャの大当たりに大阪公立大学（A・Bグループ）を追加（PR: feat/niji-osaka）
+
+| # | どこ | 変更 | ファイル |
+|---|---|---|---|
+| 1 | 2次試験ガチャの LR | 国公立2次 英語 予想問題 大阪公立大学 前期対策を追加。第3問（和文英訳）が学部・学域で2系統に分かれるため、Aグループ用（文・法・経済・商・獣医・医学科・生活科学）・Bグループ用（現代システム科学域・理・工・農・リハビリ・看護）を各3回、計6冊。ラベルにグループ名を出す | `src/data/nijiMockPrints.ts`・`public/prints/print_lr_niji_omu{a,b}_en_{1,2,3}.pdf`・thumbs・previews |
+| 2 | ピックアップの説明文 | 収録大学に大阪公立大学を追加（同じ大学名は1回だけ表示） | `src/battle/core/gachaPools.ts`・`nijiMockPrints.ts`（`NIJI_DISCLAIMER`） |
+
+**戻し方**：`nijiMockPrints.ts` の `omua`/`omub` の行と `NIJI_UNIVERSITIES` の2行を消し、`gachaPools.ts` の lrNote を元に戻す。PDF・画像は消してよい。
+
+---
+
 ## 2026-10-30 ご指摘D1〜D11：結果画面の作り直し・英文法の回の選び方・カレンダー・公開マイページ・ホーム背景ガチャ・季節・コイン演出（PR: fix/revision-d）
 
 | # | 何を | どう変えた | ファイル |
