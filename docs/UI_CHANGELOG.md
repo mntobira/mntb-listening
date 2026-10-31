@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-10-31 2次試験ガチャの大当たりに東京学芸大学 前期対策（英語コース）英語 予想問題 第1〜3回（PR: feat/gakugei-yoso）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 2次試験ガチャの LR | 東京学芸大学の予想問題3冊（各22ページ：問題11＋解答・解説11）を追加。名古屋大学・静岡大学と同じ紙面（白黒の試験冊子・解答用紙つき） | `public/prints/print_lr_niji_gakugei_en_{1,2,3}.pdf`・`thumbs/`・`previews/`・`src/data/nijiMockPrints.ts`・`src/data/gachaPreviews.generated.ts` |
+| 注意書き | 大学ごとの注意書き・ピックアップの注意書きに「東京学芸大学」が自動で加わる（`NIJI_UNIVERSITIES` に1行） | `src/data/nijiMockPrints.ts` |
+
+- 戻すとき：`nijiMockPrints.ts` の `gakugei` の行（大学1行・`gakugei(…)` 3行）を消し、`build-previews.py` の正規表現から `gakugei` を外して作り直す。PDF などのファイルは消さなくても出なくなる。
+
+---
+
 ## 2026-10-30 ご指摘D1〜D11：結果画面の作り直し・英文法の回の選び方・カレンダー・公開マイページ・ホーム背景ガチャ・季節・コイン演出（PR: fix/revision-d）
 
 | # | 何を | どう変えた | ファイル |

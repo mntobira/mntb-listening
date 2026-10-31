@@ -126,3 +126,18 @@ python3 scripts/gacha-prints/build-previews.py print_lr_niji_shizuoka_en_1 print
 
 - 大問の型（物語文・誤り訂正・評論文・会話文・自由英作文／配点は%）だけを参考にし、英文・設問・解答・表紙の文言はすべて書き下ろし。過去問4年分のOCR文と照合して英5語・日12字の一致0件を確認。
 - 注意書きは大学ごとに出し分ける（`nijiDisclaimerFor(大学名)`）。ほかの大学を足すときは `NIJI_UNIVERSITIES` に1行足す。
+
+### 東京学芸大学 前期対策（英語コース・2026-10-31 追加）
+
+```bash
+# 中身は scripts/gacha-prints/gakugei_mock/r{1,2,3}*.py（データ）、紙面は render.py（HTML → Chromium で PDF。試験冊子・白黒・解答用紙3枚つき）
+python3 scripts/gacha-prints/gakugei_mock/render.py all   # → .tmpwork/gakugei/ に問題・解答解説、public/prints/print_lr_niji_gakugei_en_N.pdf に1冊
+# サムネ（表紙・360×510）は render のあとに作り直す（作り方は PR の手順どおり）。中身を少し見る画像：
+python3 scripts/gacha-prints/build-previews.py print_lr_niji_gakugei_en_1 print_lr_niji_gakugei_en_2 print_lr_niji_gakugei_en_3
+# src/data/nijiMockPrints.ts の gakugei(n, pages, kb) を実物に合わせる
+```
+
+- 大問の型（Ⅰ長文読解・Ⅱ英文の250字要約・Ⅲ和文英訳・Ⅳ200語程度の意見英作文・Ⅴディクテーション／筆記90分＋約10分）だけを公開情報から参考にし、**過去問・解答例・講評は読んでいない**。英文・設問・解答・表紙の文言はすべて書き下ろし。
+- 配点は全体を100とした割合（Ⅰ30・Ⅱ25・Ⅲ20・Ⅳ15・Ⅴ10）。render.py が大問ごと・全体の合計を検査する（合わなければ止まる）。
+- Ⅴの音声はつけていない。解答・解説編の最後に「読み上げ原稿」（区切り／つき・読み方の指示）を載せ、人に読んでもらう形にした。
+- Playwright は `docs/code_guide/.work/pw`（update.sh が入れる）を使う。無い環境では `npm i playwright` してから。
