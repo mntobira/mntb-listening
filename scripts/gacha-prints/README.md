@@ -156,3 +156,31 @@ python3 scripts/gacha-prints/build-previews.py print_lr_niji_okayama_en_1 …   
   - 広島：Ⅰ〜Ⅳ（段落要約・関連2文の長文・意見英作文・グラフ英作文）・120分・200点
 - 照合：`python3 work/plag/niji_check.py wakayama okayama hiroshima`（各大学の過去問・公式解答のOCR文と照合）で英5語・日12字の一致0件を確認。
 - 大学名の入った問題指示の決まり文句も過去問と重なりやすいので、言い回しは独自のもの（例「以下の英文を読み、あとの問いに答えよ」）にしている。
+### 東京学芸大学 前期対策（英語コース・2026-10-31 追加）
+
+```bash
+# 中身は scripts/gacha-prints/gakugei_mock/r{1,2,3}*.py（データ）、紙面は render.py（HTML → Chromium で PDF。試験冊子・白黒・解答用紙3枚つき）
+python3 scripts/gacha-prints/gakugei_mock/render.py all   # → .tmpwork/gakugei/ に問題・解答解説、public/prints/print_lr_niji_gakugei_en_N.pdf に1冊
+# サムネ（表紙・360×510）は render のあとに作り直す（作り方は PR の手順どおり）。中身を少し見る画像：
+python3 scripts/gacha-prints/build-previews.py print_lr_niji_gakugei_en_1 print_lr_niji_gakugei_en_2 print_lr_niji_gakugei_en_3
+# src/data/nijiMockPrints.ts の gakugei(n, pages, kb) を実物に合わせる
+```
+
+- 大問の型（Ⅰ長文読解・Ⅱ英文の250字要約・Ⅲ和文英訳・Ⅳ200語程度の意見英作文・Ⅴディクテーション／筆記90分＋約10分）だけを公開情報から参考にし、**過去問・解答例・講評は読んでいない**。英文・設問・解答・表紙の文言はすべて書き下ろし。
+- 配点は全体を100とした割合（Ⅰ30・Ⅱ25・Ⅲ20・Ⅳ15・Ⅴ10）。render.py が大問ごと・全体の合計を検査する（合わなければ止まる）。
+- Ⅴの音声はつけていない。解答・解説編の最後に「読み上げ原稿」（区切り／つき・読み方の指示）を載せ、人に読んでもらう形にした。
+- Playwright は `docs/code_guide/.work/pw`（update.sh が入れる）を使う。無い環境では `npm i playwright` してから。
+
+### 琉球大学 前期対策（2026-10-31 追加）
+
+```bash
+# 中身は scripts/gacha-prints/ryukyu_mock/r{1,2,3}*.py（r{n}_p1/p1q/p2/p2q/p3/p4 に大問ごと・r{n}.py でまとめる）。紙面は render.py
+python3 scripts/gacha-prints/ryukyu_mock/render.py all   # → .tmpwork/ryukyu/ に問題・解答解説、public/prints/print_lr_niji_ryukyu_en_N.pdf に1冊
+python3 scripts/gacha-prints/build-previews.py print_lr_niji_ryukyu_en_1 print_lr_niji_ryukyu_en_2 print_lr_niji_ryukyu_en_3
+# サムネ（表紙・360×510）は東京学芸大学と同じ作り方。src/data/nijiMockPrints.ts の ryukyu(n, pages, kb) を実物に合わせる
+```
+
+- 大問の型（1 論説の長文・記号選択30点／2 物語文・記号選択と出来事の並べ替え30点／3 会話文の空所10か所10点／4 グラフを読んで150語程度の英作文30点・100分）だけを公開情報から参考にし、英文・設問・グラフ・解答はすべて書き下ろし。人物・町・調査・グラフの数値は架空。
+- 過去問（令和8）の問題文を OCR したものと照合し、英5語・日12字の連続一致が0件であることを確認（指示文の定型句も言い換えた）。
+- render.py が検査すること：大問ごと・全体の配点（合計100）、記号の答えが選択肢にあるか、大問1 問1・大問3 は選択肢を1回ずつ使うか、並べ替えの答えが全部の出来事を1回ずつ含むか、英作文の解答例が135〜175語か。合わなければ止まる。
+- グラフは render.py の `chart_svg()` が白黒の棒グラフ（濃さ・白・灰で系列を見分ける）を描く。

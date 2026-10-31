@@ -1,7 +1,7 @@
 {
- "commit": "a8a8ffb",
- "date": "2026-10-29",
- "branch": "refactor/phase8-scripts",
+ "commit": "e633354",
+ "date": "2026-10-31",
+ "branch": "feat/gakugei-yoso",
  "new": [
   ".gitattributes",
   "docs/APP_CAPACITOR_README.md",
@@ -11,6 +11,7 @@
   "docs/TOBIRA_MOTION.md",
   "docs/TOBIRA_MOTION_PROMPTS.md",
   "docs/TOEIC_DESIGN.md",
+  "docs/TOEIC_P5_GLOSSARY.md",
   "docs/UI_CHANGELOG.md",
   "docs/WEB_LOGIN_SAME_ORIGIN.md",
   "docs/archive/DEPLOY_FIRESTORE_RULES.md",
@@ -227,6 +228,7 @@
   "public/sfx/launch/title_bloom.mp3",
   "public/sfx/launch/title_swell.mp3",
   "scripts/README.md",
+  "scripts/check-toeic-notes.mts",
   "scripts/firefly-kit/build_kit.py",
   "scripts/firefly-kit/build_reading_media.py",
   "scripts/firefly-kit/import-cinematic.sh",
@@ -244,6 +246,22 @@
   "scripts/gacha-prints/build-reading-mock.py",
   "scripts/gacha-prints/build-vocab-book.py",
   "scripts/gacha-prints/dump-listening.ts",
+  "scripts/gacha-prints/gakugei_mock/logo_gray.png",
+  "scripts/gacha-prints/gakugei_mock/pdf.mjs",
+  "scripts/gacha-prints/gakugei_mock/r1.py",
+  "scripts/gacha-prints/gakugei_mock/r1_I.py",
+  "scripts/gacha-prints/gakugei_mock/r1_II.py",
+  "scripts/gacha-prints/gakugei_mock/r1_rest.py",
+  "scripts/gacha-prints/gakugei_mock/r2.py",
+  "scripts/gacha-prints/gakugei_mock/r2_I.py",
+  "scripts/gacha-prints/gakugei_mock/r2_II.py",
+  "scripts/gacha-prints/gakugei_mock/r2_rest.py",
+  "scripts/gacha-prints/gakugei_mock/r3.py",
+  "scripts/gacha-prints/gakugei_mock/r3_I.py",
+  "scripts/gacha-prints/gakugei_mock/r3_II.py",
+  "scripts/gacha-prints/gakugei_mock/r3_rest.py",
+  "scripts/gacha-prints/gakugei_mock/render.py",
+  "scripts/gacha-prints/gakugei_mock/style.css",
   "scripts/gacha-prints/grammar_b4/build.py",
   "scripts/gacha-prints/idiom_reading/build.py",
   "scripts/gacha-prints/idiom_reading/dump.ts",
@@ -388,6 +406,8 @@
   "src/battle/audio/launchSfx.ts",
   "src/battle/core/battleQuestionOrder.ts",
   "src/battle/core/battleRating.ts",
+  "src/battle/core/chapterTitles.ts",
+  "src/battle/core/gachaPools.ts",
   "src/battle/core/gachaSets.ts",
   "src/battle/data/ghostRating.ts",
   "src/battle/data/pendingRating.ts",
@@ -402,6 +422,8 @@
   "src/battle/ui/GrowthShopParts.tsx",
   "src/components/AppToast.tsx",
   "src/components/BattleRankSwitch.tsx",
+  "src/components/ChapterTitleCelebration.tsx",
+  "src/components/CoinCelebration.tsx",
   "src/components/MyProfileCard.tsx",
   "src/components/PdfViewer.tsx",
   "src/components/QuizEmptyState.tsx",
@@ -409,15 +431,20 @@
   "src/components/ReminderSettings.tsx",
   "src/components/TobiraMotion.tsx",
   "src/components/battle-rank-switch.css",
+  "src/components/chapter-title-celebration.css",
   "src/components/cinematic-celebration.css",
   "src/components/classroom/StudentAssignments.tsx",
+  "src/components/coin-celebration.css",
   "src/components/explanation/CompactWeakAreas.tsx",
   "src/components/explanation/ExplanationAnswerItem.tsx",
   "src/components/explanation/ReasonBox.tsx",
+  "src/components/explanation/ResultInsight.tsx",
+  "src/components/explanation/result-insight.css",
   "src/components/explanationBlocks.ts",
   "src/components/gacha/GachaCollectionModal.tsx",
   "src/components/gacha/GachaItemDetail.tsx",
   "src/components/gacha/GachaPickupModal.tsx",
+  "src/components/gacha/GachaPoolCarousel.tsx",
   "src/components/gacha/GachaResultStage.tsx",
   "src/components/gacha/GachaSetsPanel.tsx",
   "src/components/gacha/KyotsuAudioPlayer.tsx",
@@ -431,14 +458,19 @@
   "src/components/screen-loading.css",
   "src/components/teacher/JukuTab.tsx",
   "src/components/tobira-motion.css",
+  "src/components/toeic/ToeicExplanationPanel.tsx",
   "src/components/toeic/ToeicPageQuiz.tsx",
+  "src/components/toeic/ToeicTimer.tsx",
   "src/components/toeic/toeic-page.css",
+  "src/components/toeic/toeicNote.ts",
   "src/components/toeic/toeicPageModel.ts",
   "src/components/ui/DoorTransition.tsx",
   "src/components/ui/door-transition.css",
   "src/components/useListeningPlayback.ts",
+  "src/data/grammarMemorizeSets.ts",
   "src/data/kyotsuMockAudio.ts",
   "src/data/kyotsuMockPrints.ts",
+  "src/data/nijiMockPrints.ts",
   "src/data/reading/index.ts",
   "src/data/reading/ja/index.ts",
   "src/data/reading/ja/level1.ts",
@@ -455,6 +487,23 @@
   "src/data/reading/types.ts",
   "src/data/toeic/toeicPart5Data.ts",
   "src/data/toeic/toeicPart5Kit.ts",
+  "src/data/toeic/toeicPart5NoteTypes.ts",
+  "src/data/toeic/toeicPart5Notes.ts",
+  "src/data/toeic/toeicPart5NotesRound01.ts",
+  "src/data/toeic/toeicPart5NotesRound02.ts",
+  "src/data/toeic/toeicPart5NotesRound03.ts",
+  "src/data/toeic/toeicPart5NotesRound04.ts",
+  "src/data/toeic/toeicPart5NotesRound05.ts",
+  "src/data/toeic/toeicPart5NotesRound06.ts",
+  "src/data/toeic/toeicPart5NotesRound07.ts",
+  "src/data/toeic/toeicPart5NotesRound08.ts",
+  "src/data/toeic/toeicPart5NotesRound09.ts",
+  "src/data/toeic/toeicPart5NotesRound10.ts",
+  "src/data/toeic/toeicPart5NotesRound11.ts",
+  "src/data/toeic/toeicPart5NotesRound12.ts",
+  "src/data/toeic/toeicPart5NotesRound13.ts",
+  "src/data/toeic/toeicPart5NotesRound14.ts",
+  "src/data/toeic/toeicPart5NotesRound15.ts",
   "src/data/toeic/toeicPart5Round01.ts",
   "src/data/toeic/toeicPart5Round02.ts",
   "src/data/toeic/toeicPart5Round03.ts",
@@ -471,7 +520,11 @@
   "src/data/toeic/toeicPart5Round14.ts",
   "src/data/toeic/toeicPart5Round15.ts",
   "src/data/toeic/toeicPart5Rounds.ts",
+  "src/data/toeic/toeicPart6Data.ts",
+  "src/data/toeic/toeicPart6Kit.ts",
+  "src/data/toeic/toeicPart6Rounds.ts",
   "src/features/listeningTranslation/segments.ts",
+  "src/features/profile/PublicProfileTabs.tsx",
   "src/features/profile/PublicProfileView.tsx",
   "src/features/profile/UserProfileDialog.tsx",
   "src/features/profile/profileStats.ts",
@@ -508,15 +561,18 @@
   "src/styles/game-extras.css",
   "src/styles/growth-effects.css",
   "src/styles/home-lobby.css",
+  "src/styles/home-stage.css",
   "src/styles/math-typeset.css",
   "src/styles/navigation-screens.css",
   "src/styles/perf-lite.css",
   "src/styles/ranking-screens.css",
   "src/styles/surfaces.css",
   "src/styles/theme-base.css",
+  "src/utils/adSuppress.ts",
   "src/utils/analytics.ts",
   "src/utils/battlePracticeBridge.ts",
   "src/utils/chapterGroups.ts",
+  "src/utils/chapterTitleAward.ts",
   "src/utils/classAssignments.ts",
   "src/utils/classAssignmentsCore.ts",
   "src/utils/classroomAnalytics.ts",
@@ -660,22 +716,28 @@
   "tests/appToastSkeleton.test.ts",
   "tests/architectureFitness.test.ts",
   "tests/calendarCompare.test.ts",
+  "tests/chapterTitles.test.ts",
   "tests/classAssignmentsCore.test.ts",
   "tests/classroom.rules.test.ts",
   "tests/classroomPreview.test.ts",
   "tests/coin-display.test.ts",
+  "tests/coinCelebration.test.ts",
   "tests/collectionTiles.test.ts",
+  "tests/cssBraces.test.ts",
+  "tests/cssTokens.test.ts",
   "tests/fireflyKit.test.ts",
   "tests/friendCodeShare.test.ts",
   "tests/gachaBanner.test.ts",
   "tests/gachaDeluxe.test.ts",
   "tests/gachaPickup.test.ts",
   "tests/gachaSets.test.ts",
+  "tests/grammarMemorizeSets.test.ts",
   "tests/home-battle-shop-switch.test.ts",
   "tests/home-layout-adjust.test.ts",
   "tests/home-pillar-layout.test.ts",
   "tests/homeBattleRankingPolish.test.ts",
   "tests/homeMascotIdle.test.ts",
+  "tests/homeStage.test.ts",
   "tests/kyotsuMockAudio.test.ts",
   "tests/kyotsuMockPrints.test.ts",
   "tests/listeningTranslation.test.ts",
@@ -684,6 +746,7 @@
   "tests/motionExtras.test.ts",
   "tests/myStudyWeek.test.ts",
   "tests/nativeAuthError.test.ts",
+  "tests/nijiGacha.test.ts",
   "tests/pdfViewer.test.ts",
   "tests/prTool.test.ts",
   "tests/publicProfile.rules.test.ts",
@@ -697,13 +760,17 @@
   "tests/remindersAnalytics.test.ts",
   "tests/reviewLaunch.test.ts",
   "tests/reviewRecordRedesign.test.ts",
+  "tests/seasonFall.test.ts",
   "tests/shuffle.test.ts",
   "tests/startupImportGraph.test.ts",
+  "tests/studyCatalog.test.ts",
   "tests/studyFeed.rules.test.ts",
   "tests/studyFeed.test.ts",
   "tests/tobiraMotion.test.ts",
   "tests/toeicPageModel.test.ts",
   "tests/toeicPart5Data.test.ts",
+  "tests/toeicPart5Notes.test.ts",
+  "tests/toeicPart6Kit.test.ts",
   "tests/toeicTypes.test.ts",
   "tests/uiLegibilityGuard.test.ts",
   "tests/userDataSync.test.ts",
@@ -741,6 +808,7 @@
   "scripts/strip_genspark_logo.py",
   "scripts/verify_q2_single_gender.py",
   "scripts/verify_q2_tts_speakers.py",
+  "src/components/explanation/SharedExplanation.tsx",
   "リスニングの部屋へ_これ1つで全部.md"
  ],
  "changed": [
@@ -766,12 +834,12 @@
   },
   {
    "path": "scripts/gacha-prints/README.md",
-   "why": "行数 21→101",
+   "why": "行数 21→157",
    "one": "ガチャで当たる学習プリントの作り直し方を説明する係"
   },
   {
    "path": "src/App.tsx",
-   "why": "冒頭の説明・export が変わった／行数 1,329→794",
+   "why": "冒頭の説明・export が変わった／行数 1,329→802",
    "one": "18種類の画面を切り替え、アプリ全体の流れを決める係"
   },
   {
@@ -786,13 +854,18 @@
   },
   {
    "path": "src/battle/core/arenaEconomy.ts",
-   "why": "冒頭の説明・export が変わった",
+   "why": "冒頭の説明・export が変わった／行数 79→110",
    "one": "ガチャの値段や重複時に返すコインなどの決まりを持つ係"
   },
   {
    "path": "src/battle/core/battleCore.ts",
    "why": "冒頭の説明・export が変わった",
    "one": "対戦の正誤・得点・勝ち負けを判定する計算の係"
+  },
+  {
+   "path": "src/battle/core/tobiraParts.ts",
+   "why": "冒頭の説明・export が変わった",
+   "one": "とびら君の帽子やメガネなど着せかえの部位を決める係"
   },
   {
    "path": "src/battle/data/growthStore.ts",
@@ -851,7 +924,7 @@
   },
   {
    "path": "src/components/GachaRoom.tsx",
-   "why": "行数 657→387",
+   "why": "行数 657→356",
    "one": "ガチャを引き、当たったアイテムを部位ごとに見せる画面の係"
   },
   {
@@ -871,7 +944,7 @@
   },
   {
    "path": "src/components/MyCollection.tsx",
-   "why": "行数 79→112",
+   "why": "行数 79→147",
    "one": "持ちものの一覧から着せかえと学習プリントを使わせる係"
   },
   {
@@ -881,8 +954,13 @@
   },
   {
    "path": "src/components/ProfileModal.tsx",
-   "why": "行数 444→271",
+   "why": "行数 444→269",
    "one": "設定画面で、プロフィール・フレンド・アカウントを扱う係"
+  },
+  {
+   "path": "src/components/SakuraPetals.tsx",
+   "why": "冒頭の説明・export が変わった",
+   "one": "ホーム画面に桜の花びらが舞う演出を重ねる係"
   },
   {
    "path": "src/components/ScreenStatus.tsx",
@@ -905,6 +983,11 @@
    "one": "リスニングの答え合わせを1画面に収めて見せる係"
   },
   {
+   "path": "src/components/explanation/ResultSummary.tsx",
+   "why": "冒頭の説明・export が変わった",
+   "one": "全問を解き終えたあとの点数と結果のまとめを見せる係"
+  },
+  {
    "path": "src/components/foundation.css",
    "why": "行数 411→577",
    "one": "「英文法・英単語を固める」ページの見た目を決める係"
@@ -916,7 +999,7 @@
   },
   {
    "path": "src/components/gacha.css",
-   "why": "行数 278→418",
+   "why": "行数 278→453",
    "one": "ガチャ画面と、引いたときの演出の見た目を決める係"
   },
   {
@@ -926,12 +1009,12 @@
   },
   {
    "path": "src/components/growth-hub.css",
-   "why": "行数 245→457",
+   "why": "行数 245→480",
    "one": "ミッションや持ちものの画面の見た目と並びを決める係"
   },
   {
    "path": "src/components/profile-settings.css",
-   "why": "行数 157→246",
+   "why": "行数 157→285",
    "one": "設定のプロフィール画面を、ホームと同じ見た目にそろえる係"
   },
   {
@@ -948,6 +1031,11 @@
    "path": "src/components/ui/index.tsx",
    "why": "冒頭の説明・export が変わった",
    "one": "見出し・戻る・主ボタンなどアプリ共通の部品をまとめる係"
+  },
+  {
+   "path": "src/components/unit-select.css",
+   "why": "行数 86→122",
+   "one": "単元一覧の見出し・タブ・一覧の見た目を決める係"
   },
   {
    "path": "src/components/ListeningEvidenceScript.tsx",
@@ -1026,7 +1114,7 @@
   },
   {
    "path": "src/utils/listeningExplanation.ts",
-   "why": "行数 927→492",
+   "why": "冒頭の説明・export が変わった／行数 927→509",
    "one": "英語リスニング専用の解説を、スクリプトから組み立てる係"
   },
   {
@@ -1041,7 +1129,7 @@
   },
   {
    "path": "src/utils/publicStudyProfile.ts",
-   "why": "冒頭の説明・export が変わった／行数 122→221",
+   "why": "冒頭の説明・export が変わった／行数 122→255",
    "one": "本人が公開を選んだ学習プロフィールだけを保存・表示する係"
   },
   {
