@@ -2326,7 +2326,7 @@
 "path": "README.md"
 }
 ],
-"lines": 143,
+"lines": 157,
 "tag": "文書",
 "conf": "高",
 "kind": "file",
@@ -19431,7 +19431,7 @@
 "name": "UI_CHANGELOG.md",
 "folder": "docs",
 "one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
-"detail": "主な見出し：UI 変更記録（元に戻すとき用）／2026-10-31 2次試験ガチャの大当たりに東京学芸大学 前期対策（英語コース）英語 予想問題 第1〜3回（PR: feat/gakugei-yoso）／2026-10-30 ご指摘D1〜D11：結果画面の作り直し・英文法の回の選び方・カレンダー・公開マイページ・ホーム背景ガチャ・季節・コイン演出（PR: fix/revision-d）。",
+"detail": "主な見出し：UI 変更記録（元に戻すとき用）／UI 変更記録（元に戻すとき用）／2026-10-31 2次試験ガチャの大当たりに琉球大学 前期対策 英語 予想問題 第1〜3回（PR: feat/gakugei-yoso）。",
 "links": [
 {
 "dir": "ref",
@@ -19446,7 +19446,7 @@
 "path": "scripts/pr/prCore.mts"
 }
 ],
-"lines": 502,
+"lines": 1011,
 "tag": "文書",
 "conf": "低",
 "kind": "file",
@@ -30052,7 +30052,7 @@
 "path": "src/data/gachaPrints.generated.ts"
 }
 ],
-"lines": 64,
+"lines": 71,
 "tag": "データ",
 "conf": "低",
 "kind": "file",
@@ -39152,12 +39152,12 @@
 "one": "単元の索引・英文法の問題・単語数などを生成して持つ係",
 "detail": "chapterIndex（gen-chapter-index.mts）、egV3Items（grammar_v3/build_ts.py）、listeningVocabularyMeta（gen-listening-vocabulary.mts）、gachaPrints の各生成物。手で編集しない。",
 "links": [],
-"lines": 1161,
+"lines": 1173,
 "tag": "データ",
 "conf": "高",
 "kind": "bundle",
 "count": 5,
-"bytes": 1630295,
+"bytes": 1630757,
 "exts": {
 ".ts": 5
 },

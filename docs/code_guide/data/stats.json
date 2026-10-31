@@ -5,10 +5,10 @@
  "branch": "feat/gakugei-yoso",
  "tracked": 3525,
  "srcFiles": 607,
- "srcLines": 117934,
+ "srcLines": 117953,
  "screens": 18,
- "testCases": 957,
- "testFiles": 88,
+ "testCases": 1321,
+ "testFiles": 138,
  "listening": {
   "label": "英語リスニング",
   "chapters": 9,
