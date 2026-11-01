@@ -128,6 +128,8 @@ export class BattleAudioEngine {
     if (track && !this.ensure()) { this.track = null; return; }
     if (track === this.track) {
       if (track && this.ctx && this.ctx.state !== 'running' && this.ctx.state !== 'closed') void this.ctx.resume().catch(() => {});
+      const currentFileKey = track ? bgmFileKeyOf(track, this.battleVariant) : null;
+      if (currentFileKey && BGM_FILES[currentFileKey] && !this.fileSource && !this.fileLoading) this.playFile(currentFileKey, opts.startInMs);
       return;
     }
     const prev = this.track;
@@ -181,6 +183,7 @@ export class BattleAudioEngine {
   currentBattleVariant(): BattleBgmVariant { return this.battleVariant; }
   private fileSource: AudioBufferSourceNode | null = null;
   private fileEnv: GainNode | null = null;
+  private fileLoading = false;
   private fileBuffers = new Map<BgmFileKey, Promise<AudioBuffer | null>>();
   private fileRequest = 0;
 
@@ -263,12 +266,15 @@ export class BattleAudioEngine {
     const spec = BGM_FILES[key]!;
     const req = ++this.fileRequest;
     this.fileKey = key;
+    this.fileLoading = true;
     // ★経過は壁時計で測る★ iPhone では AudioContext が止まっている間 currentTime が進まず、
     //   読み込み待ちの時間を数えられないため、サビが START! より遅れていた（2026-10-05）
     const requestedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
     void this.loadFile(key).then((buffer) => {
+      if (req !== this.fileRequest) return;
+      this.fileLoading = false;
       const ctx = this.ctx;
-      if (req !== this.fileRequest || !ctx || !this.bgmGain || !this.track) return;
+      if (!ctx || !this.bgmGain || !this.track) return;
       if (!buffer) {
         // ロード失敗時は無音にする。ピコピコ音へのフォールバックは完全削除。
         console.error(`[battleAudio] ❌ BGM "${key}" (${spec.url}) のバッファ取得失敗。フォールバックは無効化されているため再生しません。`);
@@ -293,9 +299,15 @@ export class BattleAudioEngine {
       env.gain.exponentialRampToValueAtTime(Math.max(0.0002, spec.gain), at + 0.6);
       src.connect(env);
       env.connect(this.bgmGain);
-      src.start(at, Math.min(offset, Math.max(0, buffer.duration - 0.05)));
+      src.onended = () => {
+        if (this.fileSource !== src) return;
+        this.fileSource = null;
+        this.fileEnv = null;
+        this.fileKey = null;
+      };
       this.fileSource = src;
       this.fileEnv = env;
+      src.start(at, Math.min(offset, Math.max(0, buffer.duration - 0.05)));
     });
   }
 
@@ -307,6 +319,7 @@ export class BattleAudioEngine {
     const env = this.fileEnv;
     this.fileSource = null;
     this.fileEnv = null;
+    this.fileLoading = false;
     if (!ctx || !src || !env) return;
     try {
       // ぷつっと切れないよう 0.4 秒で絞ってから止める
