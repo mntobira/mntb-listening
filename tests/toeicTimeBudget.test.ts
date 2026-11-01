@@ -25,6 +25,25 @@ describe('TOEIC Part 5 page time budgets', () => {
     expect(budgets.reduce((sum, page) => sum + page.counts.文法, 0)).toBe(14);
   });
 
+  it('recalculates total slack when page one contains six part-of-speech questions', () => {
+    const pageKinds = [
+      Array(6).fill('品詞'),
+      ['語彙', '品詞', '文法', '文法', '文法', '文法'],
+      ['語彙', '語彙', '語彙', '品詞', '文法', '文法'],
+      ['語彙', '語彙', '語彙', '品詞', '文法', '文法'],
+      ['語彙', '語彙', '品詞', '文法', '文法', '文法'],
+    ];
+    const budgets = buildToeicPageBudgets(pageKinds.map((page) => page.map((skill) => ({ skill }))));
+    const totalTarget = budgets.reduce((sum, page) => sum + page.targetSec, 0);
+    const overallSlack = budgets[budgets.length - 1]?.targetRemainingSec;
+
+    expect(budgets[0]?.counts).toEqual({ 品詞: 6, 文法: 0, 語彙: 0 });
+    expect(budgets[0]?.targetSec).toBe(48);
+    expect(totalTarget).toBe(482);
+    expect(overallSlack).toBe(118);
+    expect(formatToeicBudgetTime(overallSlack ?? 0)).toBe('1:58');
+  });
+
   it('treats missing and other existing labels as grammar', () => {
     expect(classifyToeicSkill(undefined)).toBe('文法');
     expect(classifyToeicSkill('未登録の分類')).toBe('文法');

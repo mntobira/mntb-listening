@@ -14,7 +14,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useMountEffect } from '../../hooks/useMountEffect';
-import { ArrowLeft, Bookmark, BookmarkCheck, Check, CheckCircle2, ChevronLeft, ChevronRight, FileText, ListChecks, MinusCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Bookmark, BookmarkCheck, Check, CheckCircle2, ChevronLeft, ChevronRight, FileText, ListChecks, MinusCircle, Settings, XCircle } from 'lucide-react';
 import type { Chapter, Problem, SubQuestion } from '../../types/curriculum';
 import type { ScoreBreakdown } from '../../utils/scoring';
 import { ToeicTimer } from './ToeicTimer';
@@ -35,7 +35,7 @@ import { isAnswerCorrect } from '../../utils/answerJudge';
 import { formatText } from '../../utils/textFormatter';
 import {
   buildToeicPageBudgets, formatToeicBudgetDelta, formatToeicBudgetTime,
-  TOEIC_TIME_PRESETS, type ToeicTimeKind, type ToeicTimePresetId,
+  TOEIC_TIME_PRESETS, type ToeicTimePresetId,
 } from './toeicTimeBudget';
 import {
   QUESTIONS_PER_PAGE, countUnanswered, pageFromStoredStep, pageScoreKey, prefersSingleColumn, splitPages, toeicExplanationFor,
@@ -74,13 +74,6 @@ function readTimeGuideSettings(): { enabled: boolean; preset: ToeicTimePresetId 
 
 function budgetPositionStyle(seconds: number, totalSec: number): React.CSSProperties {
   return { left: `${Math.min(100, seconds / totalSec * 100)}%` };
-}
-
-function budgetBandStyle(leftSec: number, widthSec: number, totalSec: number): React.CSSProperties {
-  return {
-    left: `${Math.min(100, leftSec / totalSec * 100)}%`,
-    width: `${Math.min(100, widthSec / totalSec * 100)}%`,
-  };
 }
 
 /** 問の英文（空所 ______ のまま）。元データから引けないときは問題文の「問N　…」の行から取る */
@@ -178,18 +171,10 @@ export function ToeicPageQuiz({
     const budget = pageBudgets[index];
     if (!budget) return '';
     const used = Math.max(0, Math.round(elapsed));
-    if (used > guidePageLimitSec) {
-      const nextBudget = pageBudgets[index + 1];
-      if (!nextBudget) return '少し遅れ。残り時間も見ながら進めましょう';
-      const presetSeconds = TOEIC_TIME_PRESETS[timeGuide.preset].seconds;
-      const kinds = (Object.keys(nextBudget.counts) as ToeicTimeKind[])
-        .filter((kind) => nextBudget.counts[kind] > 0)
-        .sort((a, b) => nextBudget.counts[b] * presetSeconds[b] - nextBudget.counts[a] * presetSeconds[a]);
-      const kind = kinds[0] || '文法';
-      return `少し遅れ。次のページは${kind}1問を${presetSeconds[kind]}秒目安で`;
-    }
+    if (used > guidePageLimitSec) return '少し遅れ';
     if (used < budget.targetSec) return `予定より ${formatToeicBudgetDelta(budget.targetSec - used)} 早い`;
-    return '余白の範囲内';
+    if (used === budget.targetSec) return '予定どおり';
+    return '余白を使用中';
   };
 
   // 点数の演出（従来の1問ごとの演出を、ページを採点するたびに1回出す）
@@ -326,6 +311,24 @@ export function ToeicPageQuiz({
   }
 
   const forwardLabel = !pageScored ? 'このページを採点する' : !isLastPage ? '次のページ' : hasNextRound ? '次の回へ' : '結果を見る';
+  const pageElapsedSec = Math.max(0, elapsedSec - Math.floor(pageStartRef.current));
+  const pagePaceStatus = pageElapsedSec > guidePageLimitSec
+    ? '少し遅れ'
+    : pageElapsedSec < pageBudget.targetSec
+      ? `予定より ${formatToeicBudgetDelta(pageBudget.targetSec - pageElapsedSec)} 早い`
+      : pageElapsedSec === pageBudget.targetSec
+        ? '予定どおり'
+        : '余白を使用中';
+  const totalSlackSec = pageBudgets[pageBudgets.length - 1]?.targetRemainingSec ?? 0;
+  const totalSlackLabel = totalSlackSec >= 0
+    ? `全体の余白 ${formatToeicBudgetTime(totalSlackSec)}`
+    : `全体の余白 不足 ${formatToeicBudgetTime(-totalSlackSec)}`;
+  const targetPosition = pageBudget.targetSec / guidePageLimitSec * 100;
+  const targetBarStyle = budgetPositionStyle(pageBudget.targetSec, guidePageLimitSec);
+  const slackBandStyle = {
+    left: `${Math.min(100, targetPosition)}%`,
+    width: `${Math.max(0, Math.min(100, 100 - targetPosition))}%`,
+  };
 
   return (
     <div className="tp-root" data-toeic-page-quiz>
@@ -347,18 +350,11 @@ export function ToeicPageQuiz({
           </div>
         </dl>
       </header>
-      <ToeicTimer timeLimit={roundLimit} running={!allScored} finished={allScored} onTick={(e) => { elapsedRef.current = e; setElapsedSec(Math.floor(e)); }}
-        guideStatus={timeGuide.enabled
-          ? elapsedSec > pageBudget.limitElapsedSec
-            ? '少し遅れ'
-            : elapsedSec >= pageBudget.targetElapsedSec
-              ? '余白を使用中'
-              : `余白 ${formatToeicBudgetTime(pageBudget.targetElapsedSec - elapsedSec)}`
-          : undefined}
-        resetKey={`${chapter.id}_${currentQuestionIndex}`} />
-      <section className="tp-budget" data-toeic-time-budget data-enabled={timeGuide.enabled || undefined}>
+      <div className="tp-time-row">
+        <ToeicTimer timeLimit={roundLimit} running={!allScored} finished={allScored} onTick={(e) => { elapsedRef.current = e; setElapsedSec(Math.floor(e)); }}
+          guideStatus={timeGuide.enabled ? totalSlackLabel : undefined} resetKey={`${chapter.id}_${currentQuestionIndex}`} />
         <details className="tp-budget-settings">
-          <summary>時間ガイド設定</summary>
+          <summary aria-label="時間ガイド設定" title="時間ガイド設定"><Settings size={18} aria-hidden="true" /><span className="tp-sr">時間ガイド設定</span></summary>
           <div className="tp-budget-settings-body">
             <label><input type="checkbox" checked={timeGuide.enabled} onChange={(event) => setTimeGuide((prev) => ({ ...prev, enabled: event.currentTarget.checked }))} />時間ガイドを表示</label>
             <label htmlFor="tp-budget-preset">目安</label>
@@ -367,31 +363,22 @@ export function ToeicPageQuiz({
             </select>
           </div>
         </details>
-        {timeGuide.enabled && <>
-          <div className="tp-budget-top">
-            <p className="tp-budget-target">このページの目安 <b data-toeic-page-target>{formatToeicBudgetTime(pageBudget.targetSec)}</b></p>
-          </div>
-          <div className="tp-budget-track" role="img" aria-label={`10分の時間配分。目標ラインと限界ライン。現在 ${formatToeicBudgetTime(elapsedSec)}。${pageBudgets.length}ページ中${safePage + 1}ページ目`} data-toeic-budget-track>
-            {pageBudgets.map((budget, index) => {
-              const left = Math.min(budget.targetElapsedSec, budget.limitElapsedSec);
-              const width = Math.abs(budget.limitElapsedSec - budget.targetElapsedSec);
-              return <span key={`band-${index}`} className="tp-budget-band" style={budgetBandStyle(left, width, roundLimit)} aria-hidden="true" />;
-            })}
-            <span className="tp-budget-progress" style={{ width: `${Math.min(100, elapsedSec / roundLimit * 100)}%` }} aria-hidden="true" />
-            {pageBudgets.map((budget, index) => <React.Fragment key={`ticks-${index}`}>
-              <span className="tp-budget-tick tp-budget-tick-target" data-current={index === safePage || undefined} style={budgetPositionStyle(budget.targetElapsedSec, roundLimit)} aria-hidden="true" />
-              <span className="tp-budget-tick tp-budget-tick-limit" data-current={index === safePage || undefined} style={budgetPositionStyle(budget.limitElapsedSec, roundLimit)} aria-hidden="true" />
-            </React.Fragment>)}
-            <span className="tp-budget-now" style={budgetPositionStyle(elapsedSec, roundLimit)} aria-hidden="true" />
-          </div>
-          <div className="tp-budget-legend" aria-label="時間ラインの凡例">
-            <span><i className="tp-budget-symbol-target" aria-hidden="true">◆</i>目標ライン</span>
-            <span><i className="tp-budget-symbol-limit" aria-hidden="true">│</i>限界ライン</span>
-            <span><i className="tp-budget-symbol-band" aria-hidden="true">━</i>余白の帯</span>
-          </div>
-          {pageFeedback && <p className="tp-budget-feedback" role="status" data-toeic-page-feedback>{pageFeedback}</p>}
-        </>}
-      </section>
+      </div>
+      {timeGuide.enabled && <section className="tp-budget" data-toeic-time-budget data-enabled>
+        <div className="tp-budget-headline">
+          <p className="tp-budget-feedback" role="status" data-toeic-page-feedback>{pageFeedback || pagePaceStatus}</p>
+          <ol className="tp-budget-pages" aria-label={`${pages.length}ページ中${safePage + 1}ページ目`} data-toeic-page-progress>
+            {Array.from({ length: 5 }, (_, index) => <li key={`page-${index}`} data-progress={index < safePage ? 'done' : index === safePage ? 'current' : 'future'} aria-current={index === safePage ? 'step' : undefined} aria-label={`ページ${index + 1}${index < safePage ? '完了' : index === safePage ? '現在' : '未着手'}`}>
+              <span aria-hidden="true">{index < safePage ? '✓' : index + 1}</span>
+            </li>)}
+          </ol>
+        </div>
+        <div className="tp-budget-track" role="group" aria-label={`このページの限界時間 ${formatToeicBudgetTime(guidePageLimitSec)}、目標 ${formatToeicBudgetTime(pageBudget.targetSec)}。${pages.length}ページ中${safePage + 1}ページ目`} data-toeic-budget-track>
+          <span className="tp-budget-band" style={slackBandStyle} aria-hidden="true" />
+          <span className="tp-budget-target-label" data-toeic-page-target style={targetBarStyle} data-near-start={targetPosition < 18 || undefined} data-near-end={targetPosition > 82 || undefined} aria-hidden="true">目標 {formatToeicBudgetTime(pageBudget.targetSec)}</span>
+          <span className="tp-budget-tick tp-budget-tick-target" style={targetBarStyle} aria-hidden="true" />
+        </div>
+      </section>}
 
       <div className="tp-scroll" ref={listRef}>
         {pageScored && (
