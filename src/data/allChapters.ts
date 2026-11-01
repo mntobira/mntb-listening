@@ -16,7 +16,7 @@
 
 import { englishListeningData } from './englishListeningData';
 import { englishGrammarData } from './englishGrammarData';
-import { toeicPart5Data } from './toeic/toeicPart5Data';
+import { toeicData } from './toeic/toeicData';
 import type { Chapter, Part, Problem } from '../types/curriculum';
 
 /** 教科データの外側の形（parts の中身は types/curriculum.ts の Part） */
@@ -48,7 +48,7 @@ interface SubjectEntry {
 const SUBJECT_DATA: Record<SubjectKey, PartsLike> = {
   english_listening: englishListeningData,
   english_grammar: englishGrammarData,
-  toeic_part5: toeicPart5Data,
+  toeic_part5: toeicData,
 };
 
 /**

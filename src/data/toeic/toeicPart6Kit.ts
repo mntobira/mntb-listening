@@ -27,6 +27,7 @@
  */
 import type { SubQuestion } from '../../types/curriculum';
 import { answerPositions, TOEIC_MARKS, type ToeicLevel, type ToeicScene } from './toeicPart5Kit';
+import type { ToeicCue } from './toeicPart5NoteTypes';
 
 /** 空所の分野（結果画面の分野別正答率の単位）。Part 5 と同じ名前は同じ意味 */
 export type ToeicP6Skill =
@@ -67,6 +68,16 @@ export interface ToeicP6Blank {
   why: string;
   /** 重要語句（英語, 意味）。無ければ空でよい */
   kw: [string, string][];
+  /** 着眼点（どこを見るか）。Part 5 の h と同じ役割 */
+  h?: string;
+  /** ポイント（文法・語法の決まり） */
+  r?: string;
+  /** TOEICでのコツ（本番の文書での見分け方） */
+  tip?: string;
+  /** 手がかり（文脈の中の語句と、正解の理由の中で対応する語句）。書き方は Part 5 と同じ */
+  cues?: ToeicCue[];
+  /** 解説で見せる文脈に、1つ前の段落も入れる（手がかりが前の段落にあるとき） */
+  pp?: boolean;
 }
 
 /** 文書1つ（＝1セット・空所4つ）の手書きデータ */
@@ -92,9 +103,9 @@ export const TOEIC_P6_QUESTIONS_PER_ROUND = TOEIC_P6_SETS_PER_ROUND * TOEIC_P6_B
 /** 1回16問の目安時間（1問30秒＝format.ts の targetSecPerQuestion）。超えても止めない */
 export const TOEIC_P6_TIME_LIMIT_SEC = TOEIC_P6_QUESTIONS_PER_ROUND * 30;
 
-/** 本文の語数の目安（教材の分析で直す。いまは本番の文書に近い幅をゆるめに取っている） */
-export const TOEIC_P6_WORDS_MIN = 60;
-export const TOEIC_P6_WORDS_MAX = 200;
+/** 本文の語数の目安（2026-10-31 教材の分析で直した：写真の文書は約80〜150語。少し幅を持たせる） */
+export const TOEIC_P6_WORDS_MIN = 70;
+export const TOEIC_P6_WORDS_MAX = 180;
 
 const MARKER = /\[\[(\d+)\]\]/g;
 
@@ -113,6 +124,37 @@ export function renderParagraph(paragraph: string, offset: number): string {
 /** 段落の [[n]] に正解を入れた完成文（文挿入も同じ位置に入る） */
 export function fillParagraph(paragraph: string, blanks: readonly Pick<ToeicP6Blank, 'c'>[]): string {
   return paragraph.replace(MARKER, (_, n: string) => blanks[Number(n) - 1]?.c ?? '______');
+}
+
+/**
+ * 解説で見せる文脈：空所のある段落（pp なら1つ前の段落から）。
+ * この空所は ______ のまま、ほかの空所には正解を入れる。和訳も同じ段落ぶん。
+ */
+export function p6BlankContext(set: Pick<ToeicP6Set, 'p' | 'tr' | 'b'>, blankIndex: number): { text: string; translation: string; paragraphs: number[] } {
+  const target = blankIndex + 1;
+  const at = set.p.findIndex((x) => x.includes(`[[${target}]]`));
+  if (at < 0) return { text: '', translation: '', paragraphs: [] };
+  const from = set.b[blankIndex]?.pp && at > 0 ? at - 1 : at;
+  const paragraphs = Array.from({ length: at - from + 1 }, (_, k) => from + k);
+  const text = paragraphs
+    .map((i) => set.p[i].replace(MARKER, (_, n: string) => (Number(n) === target ? '______' : set.b[Number(n) - 1]?.c ?? '______')))
+    .join(' ');
+  const translation = paragraphs.map((i) => set.tr[i] ?? '').join('');
+  return { text, translation, paragraphs };
+}
+
+/** 本文を「ふつうの文字」と「空所（文書の中の番号 1〜4）」に分ける（画面の文書表示用） */
+export function splitParagraph(paragraph: string): { text?: string; blank?: number }[] {
+  const out: { text?: string; blank?: number }[] = [];
+  let pos = 0;
+  for (const m of paragraph.matchAll(MARKER)) {
+    const at = m.index ?? 0;
+    if (at > pos) out.push({ text: paragraph.slice(pos, at) });
+    out.push({ blank: Number(m[1]) });
+    pos = at + m[0].length;
+  }
+  if (pos < paragraph.length) out.push({ text: paragraph.slice(pos) });
+  return out;
 }
 
 /** 本文の語数（空所の印は数えない） */

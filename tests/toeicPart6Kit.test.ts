@@ -131,15 +131,16 @@ describe('TOEIC Part 6：1回の組み立て', () => {
   });
 });
 
-describe('TOEIC Part 6：いまの状態（準備だけ）', () => {
-  it('問題はまだ0回で、教科の登録簿にはまだ出していない', () => {
-    expect(TOEIC_P6_ROUNDS).toHaveLength(0);
-    expect(getToeicPart6Stats()).toEqual({ chapters: 1, questions: 0, marks: 0 });
+describe('TOEIC Part 6：いまの状態（2026-10-31 問題を入れて TOEIC の教科につないだ）', () => {
+  it('問題が1回以上あり、TOEIC の教科（toeic_part5）の中の単元 tp6_1 として出る', () => {
+    expect(TOEIC_P6_ROUNDS.length).toBeGreaterThan(0);
+    expect(getToeicPart6Stats()).toEqual({ chapters: 1, questions: TOEIC_P6_ROUNDS.length, marks: TOEIC_P6_ROUNDS.length * 16 });
     expect(toeicPart6Data.parts[0].chapters[0].id).toBe('tp6_1');
+    // 教科は Part 5 と同じ TOEIC（教科を分けると進み具合・復習の記録が別になるため）
     expect(SUBJECT_REGISTRY.map((s) => s.id as string)).not.toContain('toeic_part6');
   });
 
-  it('問題が入ったら、全回が形の検査を通る', () => {
+  it('全回が形の検査を通る', () => {
     TOEIC_P6_ROUNDS.forEach((sets, r) => expect(validateP6Round(sets), `第${r + 1}回`).toEqual([]));
   });
 });

@@ -64,6 +64,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
   // 2026-10-28 TOEIC Part 5 も「第N回」のカードで並べる（英語リスニングと同じ回一覧）
   const isToeic = subject === 'toeic_part5';
   const isRounds = isListening || isToeic;
+  // 2026-10-31 TOEIC に Part 6 を足したので、TOEIC は Part が2つ以上あるときだけタブ（Part 5／Part 6）を出す
+  //   （英語リスニング・英文法の見た目は変えない）
   const isGrammar = subject === 'english_grammar';
   /**
    * 科目ごとの配色。
@@ -136,6 +138,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
   }, [activeGroupTitle]);
 
   const activeGroup = groups.find(group => group.title === activeGroupTitle) || groups[0];
+  const toeicTabs = isToeic && groups.length > 1;
+  const toeicSub = activeGroup?.title === 'Part 6' ? 'Part 6 長文穴埋め・1回16問・4択' : 'Part 5 短文穴埋め・1回30問・4択';
   /** 科目全体での通し番号（①〜⑳ → 01.〜20.）。タブを切り替えても番号が振り直されないようにする。 */
   const chapterNumberById = useMemo(() => {
     const m = new Map<string, number>();
@@ -171,7 +175,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
         </button>
         <div className="unit-head-title">
           <h2 style={{ color: theme.accent }}>{isListening ? '英語リスニング' : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
-          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '共通テスト大問別・1回ずつ完結' : isToeic ? '1回30問・4択（短文穴埋め）' : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
+          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '共通テスト大問別・1回ずつ完結' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
         </div>
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />
       </header>
@@ -192,7 +196,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
               長い章名は途中で省略せず、タブ内で折り返して全文を表示する。
         */}
         {/* TOEIC は「1章 Part 5」のタブ（1枚だけ）を出さない（ご要望：単元選択には TOEIC とだけ書く） */}
-        {!isToeic && <div className="chapter-index mb-3 shrink-0 border-b border-slate-200/80" data-few-tabs={groups.length <= 3 || undefined}>
+        {(!isToeic || toeicTabs) && <div className="chapter-index mb-3 shrink-0 border-b border-slate-200/80" data-few-tabs={groups.length <= 3 || undefined}>
           <div
             role="tablist"
             aria-label="章を選択"
@@ -200,7 +204,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           >
             {groups.map((group, index) => {
               const isActive = group.title === activeGroup?.title;
-              const { kicker: chapterNumber, label: shortTitle } = group.kicker
+              const { kicker: chapterNumber, label: shortTitle } = isToeic
+                ? { kicker: String(group.chapters[0]?.abstractTitle || '').replace(/^Part \d+\s*/, ''), label: group.title }
+                : group.kicker
                 ? { kicker: `${group.kicker}・${group.chapters.length}単元`, label: group.label as string }
                 : splitTabTitle(group.title, index);
 
@@ -260,8 +266,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           <section
             id="chapter-tab-panel"
             role="tabpanel"
-            aria-labelledby={isToeic ? undefined : `chapter-tab-${groups.indexOf(activeGroup)}`}
-            aria-label={isToeic ? 'TOEIC の回一覧' : undefined}
+            aria-labelledby={isToeic && !toeicTabs ? undefined : `chapter-tab-${groups.indexOf(activeGroup)}`}
+            aria-label={isToeic && !toeicTabs ? 'TOEIC の回一覧' : undefined}
             tabIndex={0}
             className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain rounded-2xl border border-slate-200/80 bg-white/35 p-3 pb-6 sm:p-4 sm:pb-6 [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable]"
           >
