@@ -39,8 +39,10 @@ for o in outs:
     t = open(p, encoding='utf-8', errors='ignore').read()
     for v in secret:
         if v in t: found.append((o, v[:6] + '…'))
+    # 埋め込み画像（data:…;base64,…）の中で偶然キーの形になる並びは秘密ではないので、形の検査からは外す
+    t_rx = re.sub(r'data:[\w/+.-]+;base64,[A-Za-z0-9+/=]+', 'data:;base64,', t)
     for rx in [r'[\w.+-]+@(?!example)[\w-]+\.(com|jp|net|org)\b', r'ca-app-pub-\d', r'AIza[0-9A-Za-z_-]{20,}']:
-        for m in re.finditer(rx, t):
+        for m in re.finditer(rx, t_rx):
             found.append((o, m.group(0)[:6] + '…'))
 R['secretsChecked'] = len(secret); R['secretsFound'] = found
 if found: R['errors'].append(f'秘密の値が成果物に含まれる: {found[:5]}')
