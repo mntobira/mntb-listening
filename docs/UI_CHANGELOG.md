@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-11-01 TOEIC に Part 6（長文穴埋め）を追加・単元選択に Part 5／Part 6 のタブ（PR: feat/toeic-part6）
+
+| # | 何を | どう変えた | ファイル |
+|---|---|---|---|
+| 1 | TOEIC の名前 | 教科の表示名「TOEIC Part 5」→「TOEIC」（学習カタログの入口は「Part 5・Part 6」、件数は「Part 5 全15回・Part 6 全15回」） | `src/data/subjects.ts`・`src/data/studyCatalog.ts` |
+| 2 | TOEIC の単元選択 | Part が2つになったので、上に **Part 5（短文穴埋め）／Part 6（長文穴埋め）のタブ**。見出しの下の説明はタブに合わせて切り替え。英文法・英語リスニングの単元選択は変えていない（ピクセル比較で同じ） | `src/components/ChapterSelection.tsx` |
+| 3 | Part 6 の演習画面 | **1ページ＝文書1つ＋その4問**（1回4ページ）。文書は上（PC は左に追従・右に問題の2列）、空所 (1)〜(4) に選んだ答えが入り、採点後は正誤の色。問題カードは空所のある文だけを出す。採点後の結果の印は4問なので4列 | `src/components/toeic/ToeicP6Passage.tsx`（新）・`ToeicPageQuiz.tsx`・`toeicPageModel.ts`・`toeic-page.css`（末尾に Part 6 の段） |
+| 4 | Part 6 の解説 | Part 5 と同じ解説（着眼点・正解の理由・ポイント・選択肢・TOEICでのコツ・和訳・重要語句・手がかりのマーカー）。文脈は空所のある段落 | `toeicPageModel.ts`（`toeicP6ExplanationFor`）・`src/data/toeic/toeicPart6Kit.ts` |
+
+- Part 5 の演習画面・英文法・英語リスニングの画面は変えていない（凍結した撮影でピクセル比較：文法/リスニング 16/16、Part 5 演習 8/8、英文法・英語リスニングの単元選択 10/10 が同じ）。
+
+**戻し方**：
+- Part 6 を丸ごと戻す：このPRを revert。
+- 名前とタブだけ戻す：`subjects.ts` の `label`／`theme.label` を `'TOEIC Part 5'` に、`ChapterSelection.tsx` の `toeicTabs` を `false` に（タブが消え、Part 5 だけの見た目に戻る。Part 6 の回は選べなくなる）。
+- Part 6 の画面だけ外す：`toeicPageModel.ts` の `isToeicPageChapter` から `tp6_1` を外し、`toeicData.ts` で `toeicPart6Data.parts` を足さない。
+
+---
+
 ## 2026-10-30 ご指摘D1〜D11：結果画面の作り直し・英文法の回の選び方・カレンダー・公開マイページ・ホーム背景ガチャ・季節・コイン演出（PR: fix/revision-d）
 
 | # | 何を | どう変えた | ファイル |
