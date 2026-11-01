@@ -7,8 +7,10 @@
 import type { ToeicP6Set } from './toeicPart6Kit';
 import { P6_ROUND_01 } from './toeicPart6Round01';
 import { P6_ROUND_02 } from './toeicPart6Round02';
+import { P6_ROUND_03 } from './toeicPart6Round03';
 
 export const TOEIC_P6_ROUNDS: readonly ToeicP6Set[][] = [
   P6_ROUND_01,
   P6_ROUND_02,
+  P6_ROUND_03,
 ];
