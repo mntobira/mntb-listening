@@ -1,7 +1,7 @@
 {
- "commit": "ec2ad55",
- "date": "2026-10-31",
- "branch": "feat/gakugei-yoso",
+ "commit": "e698488",
+ "date": "2026-11-01",
+ "branch": "feat/niji-kumamoto",
  "new": [
   ".gitattributes",
   "docs/APP_CAPACITOR_README.md",
@@ -266,6 +266,28 @@
   "scripts/gacha-prints/idiom_reading/build.py",
   "scripts/gacha-prints/idiom_reading/dump.ts",
   "scripts/gacha-prints/idiom_reading/publish.py",
+  "scripts/gacha-prints/kumamoto_mock/logo_gray.png",
+  "scripts/gacha-prints/kumamoto_mock/pdf.mjs",
+  "scripts/gacha-prints/kumamoto_mock/r1.py",
+  "scripts/gacha-prints/kumamoto_mock/r1_p1.py",
+  "scripts/gacha-prints/kumamoto_mock/r1_p1q.py",
+  "scripts/gacha-prints/kumamoto_mock/r1_p2.py",
+  "scripts/gacha-prints/kumamoto_mock/r1_p3.py",
+  "scripts/gacha-prints/kumamoto_mock/r1_p4.py",
+  "scripts/gacha-prints/kumamoto_mock/r2.py",
+  "scripts/gacha-prints/kumamoto_mock/r2_p1.py",
+  "scripts/gacha-prints/kumamoto_mock/r2_p1q.py",
+  "scripts/gacha-prints/kumamoto_mock/r2_p2.py",
+  "scripts/gacha-prints/kumamoto_mock/r2_p3.py",
+  "scripts/gacha-prints/kumamoto_mock/r2_p4.py",
+  "scripts/gacha-prints/kumamoto_mock/r3.py",
+  "scripts/gacha-prints/kumamoto_mock/r3_p1.py",
+  "scripts/gacha-prints/kumamoto_mock/r3_p1q.py",
+  "scripts/gacha-prints/kumamoto_mock/r3_p2.py",
+  "scripts/gacha-prints/kumamoto_mock/r3_p3.py",
+  "scripts/gacha-prints/kumamoto_mock/r3_p4.py",
+  "scripts/gacha-prints/kumamoto_mock/render.py",
+  "scripts/gacha-prints/kumamoto_mock/style.css",
   "scripts/gacha-prints/kyotsu_mock/assets/img/kyotsu_l1_q05_pics.jpg",
   "scripts/gacha-prints/kyotsu_mock/assets/img/kyotsu_l1_q06_pics.jpg",
   "scripts/gacha-prints/kyotsu_mock/assets/img/kyotsu_l1_q07_pics.jpg",
@@ -395,6 +417,8 @@
   "scripts/gacha-prints/ryukyu_mock/r3_p4.py",
   "scripts/gacha-prints/ryukyu_mock/render.py",
   "scripts/gacha-prints/ryukyu_mock/style.css",
+  "scripts/grammar-readaloud/dump.mts",
+  "scripts/grammar-readaloud/make_pdf.py",
   "scripts/icons/apply-android-assets.py",
   "scripts/icons/apply-new-icon.py",
   "scripts/icons/make-icons.py",
@@ -420,6 +444,8 @@
   "scripts/listening-translation/make.mjs",
   "scripts/pr/pr.mts",
   "scripts/pr/prCore.mts",
+  "scripts/reading/dump_phrases.mts",
+  "scripts/reading/match_vocab.py",
   "scripts/release-guard.sh",
   "scripts/tobira-motion/import.sh",
   "scripts/vocab-audio/cut.py",
@@ -449,6 +475,7 @@
   "src/components/BattleRankSwitch.tsx",
   "src/components/ChapterTitleCelebration.tsx",
   "src/components/CoinCelebration.tsx",
+  "src/components/ListeningTechniqueCard.tsx",
   "src/components/MyProfileCard.tsx",
   "src/components/PdfViewer.tsx",
   "src/components/QuizEmptyState.tsx",
@@ -489,12 +516,15 @@
   "src/components/toeic/toeic-page.css",
   "src/components/toeic/toeicNote.ts",
   "src/components/toeic/toeicPageModel.ts",
+  "src/components/toeic/toeicTimeBudget.ts",
   "src/components/ui/DoorTransition.tsx",
   "src/components/ui/door-transition.css",
   "src/components/useListeningPlayback.ts",
+  "src/data/grammarAudioManifest.ts",
   "src/data/grammarMemorizeSets.ts",
   "src/data/kyotsuMockAudio.ts",
   "src/data/kyotsuMockPrints.ts",
+  "src/data/listeningTechniques.ts",
   "src/data/nijiMockPrints.ts",
   "src/data/reading/index.ts",
   "src/data/reading/ja/index.ts",
@@ -510,6 +540,7 @@
   "src/data/reading/level5.ts",
   "src/data/reading/meta.ts",
   "src/data/reading/types.ts",
+  "src/data/reading/vocabLink.ts",
   "src/data/toeic/toeicPart5Data.ts",
   "src/data/toeic/toeicPart5Kit.ts",
   "src/data/toeic/toeicPart5NoteTypes.ts",
@@ -627,6 +658,7 @@
   "src/utils/quizNavigationActions.ts",
   "src/utils/quizRange.ts",
   "src/utils/quizStepState.ts",
+  "src/utils/readingAlign.ts",
   "src/utils/reviewProgress.ts",
   "src/utils/shuffle.ts",
   "src/utils/storageKeysCatalog.ts",
@@ -756,6 +788,7 @@
   "tests/gachaDeluxe.test.ts",
   "tests/gachaPickup.test.ts",
   "tests/gachaSets.test.ts",
+  "tests/grammarAudioManifest.test.ts",
   "tests/grammarMemorizeSets.test.ts",
   "tests/home-battle-shop-switch.test.ts",
   "tests/home-layout-adjust.test.ts",
@@ -765,11 +798,13 @@
   "tests/homeStage.test.ts",
   "tests/kyotsuMockAudio.test.ts",
   "tests/kyotsuMockPrints.test.ts",
+  "tests/listeningTechniques.test.ts",
   "tests/listeningTranslation.test.ts",
   "tests/lowSpecMotion.test.ts",
   "tests/manualLogCore.test.ts",
   "tests/motionExtras.test.ts",
   "tests/myStudyWeek.test.ts",
+  "tests/mypageDesktopWidth.test.ts",
   "tests/nativeAuthError.test.ts",
   "tests/nijiGacha.test.ts",
   "tests/pdfViewer.test.ts",
@@ -781,6 +816,7 @@
   "tests/quizRange.test.ts",
   "tests/quizStepState.test.ts",
   "tests/reading.test.ts",
+  "tests/readingAlign.test.ts",
   "tests/readingTranslation.test.ts",
   "tests/recordNaming.test.ts",
   "tests/remindersAnalytics.test.ts",
@@ -797,6 +833,7 @@
   "tests/toeicPart5Data.test.ts",
   "tests/toeicPart5Notes.test.ts",
   "tests/toeicPart6Kit.test.ts",
+  "tests/toeicTimeBudget.test.ts",
   "tests/toeicTypes.test.ts",
   "tests/uiLegibilityGuard.test.ts",
   "tests/userDataSync.test.ts",
@@ -860,7 +897,7 @@
   },
   {
    "path": "scripts/gacha-prints/README.md",
-   "why": "行数 21→200",
+   "why": "行数 21→213",
    "one": "ガチャで当たる学習プリントの作り直し方を説明する係"
   },
   {
@@ -1015,7 +1052,7 @@
   },
   {
    "path": "src/components/foundation.css",
-   "why": "行数 411→577",
+   "why": "行数 411→594",
    "one": "「英文法・英単語を固める」ページの見た目を決める係"
   },
   {
@@ -1025,7 +1062,7 @@
   },
   {
    "path": "src/components/gacha.css",
-   "why": "行数 278→453",
+   "why": "行数 278→477",
    "one": "ガチャ画面と、引いたときの演出の見た目を決める係"
   },
   {
@@ -1035,7 +1072,7 @@
   },
   {
    "path": "src/components/growth-hub.css",
-   "why": "行数 245→481",
+   "why": "行数 245→483",
    "one": "ミッションや持ちものの画面の見た目と並びを決める係"
   },
   {
@@ -1060,7 +1097,7 @@
   },
   {
    "path": "src/components/unit-select.css",
-   "why": "行数 86→122",
+   "why": "行数 86→139",
    "one": "単元一覧の見出し・タブ・一覧の見た目を決める係"
   },
   {
@@ -1134,6 +1171,11 @@
    "one": "利用者からのご意見・ご要望を集めて送り届ける係"
   },
   {
+   "path": "src/utils/friendPresence.ts",
+   "why": "冒頭の説明・export が変わった",
+   "one": "画面を開いている間だけ、フレンドにオンラインを知らせる係"
+  },
+  {
    "path": "src/utils/googleAuth.ts",
    "why": "冒頭の説明・export が変わった",
    "one": "Googleアカウントでのログインと、その失敗理由を扱う係"
@@ -1155,7 +1197,7 @@
   },
   {
    "path": "src/utils/publicStudyProfile.ts",
-   "why": "冒頭の説明・export が変わった／行数 122→255",
+   "why": "冒頭の説明・export が変わった／行数 122→260",
    "one": "本人が公開を選んだ学習プロフィールだけを保存・表示する係"
   },
   {
@@ -1165,7 +1207,7 @@
   },
   {
    "path": "src/utils/reviewTarget.ts",
-   "why": "冒頭の説明・export が変わった",
+   "why": "冒頭の説明・export が変わった／行数 52→112",
    "one": "小問のIDから、解き直す問題の場所を探し出す係"
   },
   {
