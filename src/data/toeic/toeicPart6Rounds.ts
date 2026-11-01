@@ -12,6 +12,7 @@ import { P6_ROUND_04 } from './toeicPart6Round04';
 import { P6_ROUND_05 } from './toeicPart6Round05';
 import { P6_ROUND_06 } from './toeicPart6Round06';
 import { P6_ROUND_07 } from './toeicPart6Round07';
+import { P6_ROUND_08 } from './toeicPart6Round08';
 
 export const TOEIC_P6_ROUNDS: readonly ToeicP6Set[][] = [
   P6_ROUND_01,
@@ -21,4 +22,5 @@ export const TOEIC_P6_ROUNDS: readonly ToeicP6Set[][] = [
   P6_ROUND_05,
   P6_ROUND_06,
   P6_ROUND_07,
+  P6_ROUND_08,
 ];
