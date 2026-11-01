@@ -83,7 +83,7 @@ export const P6_ROUND_06: ToeicP6Set[] = [
         why: '後ろは節。「時間内に返す限り追加料金はかからない」と条件を表すので As long as。',
         kw: [['charge', '料金をとる']],
         h: '空所の後ろの you return the bike … within that time と、you will not be charged を見る。',
-        r: '「〜する限り・〜しさえすれば」と条件を表すときは as long as を使う。',
+        r: '「〜しさえすれば」の意味なら as long as。後ろには主語と動詞のある節が続く。',
         tip: '利用の決まりでは、As long as 〜, … の形で、料金がかからない条件を伝える。',
         cues: [{ p: 'within that time', w: '時間内に返す' }, { p: 'you will not be charged extra', w: '追加料金はかからない' }] },
       { k: '語彙', t: '形容詞（be＋形容詞＋for）', d: 2, c: 'responsible',

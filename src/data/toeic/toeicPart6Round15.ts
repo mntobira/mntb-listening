@@ -91,7 +91,7 @@ export const P6_ROUND_15: ToeicP6Set[] = [
         why: 'look forward to の to は前置詞なので、後ろは動名詞。「一緒に働くのを楽しみにする」で working。',
         kw: [['look forward to', '〜を楽しみにする']],
         h: '空所の前の We look forward to を見る。この to の後ろに来る形。',
-        r: 'look forward to の to は前置詞。後ろは -ing 形（動名詞）にする。',
+        r: 'look forward to 〜ing の形で覚える。to の次に原形を置かないよう注意する。',
         tip: '入社の歓迎のメールでは、We look forward to working with you で結ぶことが多い。',
         cues: [{ p: 'We look forward to', w: 'look forward to' }] },
     ],

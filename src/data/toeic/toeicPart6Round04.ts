@@ -114,7 +114,7 @@ export const P6_ROUND_04: ToeicP6Set[] = [
         why: '印刷の指示はプリンターで待機され、IDカードをかざした時点で印刷される。待機が続く終わりの時点を表すので until。',
         kw: [['print job', '印刷の指示']],
         h: '前の will be held at the printer と、後ろの employees scan their ID cards を見る。',
-        r: '「〜するまでずっと…」と状態が続く終わりを表すのは until。by は期限を表す前置詞。',
+        r: 'until は「その時まで続く」、by は「その時までに1回」。待機のように続く動作なら until。',
         tip: '手順の文で held／kept until 〜 とあれば、ある動作までの待機を表している。',
         cues: [{ p: 'will be held at the printer', w: '待機され' }, { p: 'employees scan their ID cards', w: 'IDカードをかざした時点' }] },
       { k: '文挿入', t: '前の文の結果', d: 2, c: 'These pages were eventually thrown away.',

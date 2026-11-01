@@ -114,7 +114,7 @@ export const P6_ROUND_02: ToeicP6Set[] = [
         why: 'found your presentation ＿ は「発表を〜だと思った」の形で、空所は補語。extremely に説明される形容詞の informative。',
         kw: [['on behalf of', '〜を代表して']],
         h: '空所の前の found your presentation と extremely を見る。発表がどうだったかを言う語。',
-        r: 'find O C は「OをCだと思う」。C には形容詞が入り、very などの副詞はその形容詞を説明する。',
+        r: '「〜を…だと感じる」は find＋目的語＋補語。補語には形容詞を置き、副詞はそれを強める。',
         tip: 'found 〜 helpful／informative の形は、お礼の手紙で相手の話をほめる文に使われる。',
         cues: [{ p: 'found your presentation extremely', w: 'found your presentation' }] },
       { k: '文挿入', t: '前の文の具体例', d: 2, c: 'Handling the actual equipment helped them remember the correct procedures.',
