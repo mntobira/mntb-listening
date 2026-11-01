@@ -198,3 +198,16 @@ python3 scripts/gacha-prints/build-previews.py print_lr_niji_kumamoto_en_1 print
 - 配点は大学が公表していないため、編集部の想定（Ⅰ32・Ⅱ32・Ⅲ16・Ⅳ20）とした。表紙・奥付にもそう書いた。
 - 過去問（R6〜R8）の問題文を文字に起こしたものと照合し、英5語・日12字の連続一致が0件であることを確認（指示文も言い換えた）。
 - render.py が検査すること：配点の合計、日本語の解答例が字数制限に収まるか、並べ替えの答えが与えた語をちょうど使うか、記号の答えが選択肢にあるか、Ⅳの答えが語群の語を1回ずつ使い空所が本文にそろっているか、英作文の解答例が80〜100語か。
+
+### 佐賀大学 前期対策（2026-11-01 追加）
+
+```bash
+# 中身は scripts/gacha-prints/saga_mock/r{1,2,3}*.py（r{n}_p1〜p4 に大問ごと・r{n}.py でまとめる）。紙面は render.py
+python3 scripts/gacha-prints/saga_mock/render.py all   # → .tmpwork/saga/ に問題・解答解説、public/prints/print_lr_niji_saga_en_N.pdf に1冊
+python3 scripts/gacha-prints/build-previews.py print_lr_niji_saga_en_1 print_lr_niji_saga_en_2 print_lr_niji_saga_en_3
+# サムネ（表紙・360×510）は琉球大学と同じ作り方。src/data/nijiMockPrints.ts の saga(n, pages, kb) を実物に合わせる
+```
+
+- 前期の英語は教育・経済・医・農学部の共通問題（全員が同じ4題を解く）。大問の型（1 英文の要旨を100字程度の日本語でまとめる／2 短い会話文の空所に入る英文を4択／3 図つきの長文の4択2問と約60語の英語での記述／4 英文を読んで100語程度の意見英作文・100分・20・20・30・30点）だけを公開情報から参考にし、英文・設問・図・解答はすべて書き下ろし。
+- 過去問（R6〜R8・大学公開のスキャン画像）を OCR で文字に起こしたものと照合し、英5語・日12字の連続一致が0件であることを確認（設問の決まり文句も言い換えた）。
+- render.py が検査すること：配点の合計、日本語の解答例が80〜120字か、記号の答えが選択肢にあるか、3(3) の解答例が45〜75語か、4 の解答例が85〜115語か、採点の目安の合計が配点と合うか。

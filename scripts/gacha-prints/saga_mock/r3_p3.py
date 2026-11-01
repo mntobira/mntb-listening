@@ -1,0 +1,60 @@
+# -*- coding: utf-8 -*-
+# 第3回 大問3 図つきの長文読解。地域・調査・数値は架空
+PART = {
+ 'points': 30,
+ 'lead': '以下の英文と図を読み，(1)〜(3) の問いに答えなさい。(1) と (2) は，最も適切なものを (a)〜(d) から 1 つずつ選ぶこと。',
+ 'title': 'Where Does Our Food Waste Come From?',
+ 'passage': [
+  "When people think about wasted food, they often picture farms leaving crops in the field or supermarkets throwing away products that have passed their sell-by date. These losses are real, but a study in the fictional country of Calder suggests that the largest share of waste happens somewhere much closer to home. Figure 1 compares where food was wasted in Calder in 2016 and in 2024.",
+  "In both years, households were responsible for more food waste than any other stage. In 2024, families threw away food that made up 44 percent of the total, mainly fruit, vegetables and leftovers that were cooked but never eaten. Restaurants and other food services came second. By contrast, the share from farms and from shops was relatively small and {ki} slightly over the eight years.",
+  "Researchers point to several reasons why households waste so much. People often buy more than they need, especially when large packs are cheaper per item. Many also misunderstand date labels, throwing away food marked “best before” even though it is still safe to eat. And busy schedules mean that plans to cook at home are sometimes abandoned in favor of eating out.",
+  "Because the problem is spread across millions of homes, it is harder to solve than waste at a single factory. Calder’s government has tried simple steps, such as printing clearer labels and sharing recipes for leftovers. Early results are modest but encouraging: the household share fell from 47 to 44 percent between the two surveys.",
+ ],
+ 'notes': [('sell-by date', '販売期限'), ('leftovers', '残り物'), ('best before', '賞味期限（おいしく食べられる期限）')],
+ 'chart': {
+  'title': 'Figure 1.  Share of total food waste by stage in Calder (%)',
+  'categories': ['Farms', 'Factories', 'Shops', 'Food services', 'Households'],
+  'series': [('2016', [12, 13, 9, 19, 47]), ('2024', [11, 14, 8, 23, 44])],
+  'max': 60, 'step': 10,
+  'source': 'Source: Calder National Food Survey（架空の調査・数値はすべて架空）',
+ },
+ 'lines': 9,
+ 'questions': [
+  {'label': '(1)', 'type': 'mc', 'points': 5, 'kind': '主題',
+   'stem': 'Which title best describes the overall content of the passage?',
+   'choices': [('(a)', 'The stage at which most food is wasted in Calder and the reasons for it'), ('(b)', 'How supermarkets in Calder decide sell-by dates'), ('(c)', 'Why farms in Calder grow too many vegetables'), ('(d)', 'How restaurants in Calder became more popular than home cooking')],
+   'answer': '(a)', 'expl': '第1・2段落で家庭が最も大きな割合を占めることを示し，第3段落でその理由，第4段落で対策を述べている。(b)(c) は第1段落の一般的なイメージにすぎず，(d) は本文にない。'},
+  {'label': '(2)', 'type': 'mc', 'points': 5, 'kind': '空所補充（語彙）',
+   'stem': 'Choose the word that should go in blank (i).',
+   'choices': [('(a)', 'decreased'), ('(b)', 'exploded'), ('(c)', 'tripled'), ('(d)', 'appeared')], 'cols': 4,
+   'answer': '(a)', 'expl': '図では農場は 12→11%，店は 9→8% で，8年間でわずかに減っている。slightly（わずかに）と合うのは decreased。(b) 爆発的に増えた，(c) 3倍になった，(d) 現れた，はいずれも図と合わない。'},
+  {'label': '(3)', 'type': 'write', 'points': 20, 'kind': '英語での記述（約60語）',
+   'stem': 'Based on the passage and Figure 1, what is one practical thing that families could do to reduce food waste at home? Explain why it would be effective in English. (About 60 words)',
+   'criteria': [
+    ('家庭でできる具体的な行動を1つはっきり示している（必要な分だけ買う・期限表示を正しく理解する・残り物を使う など）', 4),
+    ('本文または図の根拠（家庭が44%で最大／大袋の買いすぎ／best before の誤解 など）と結びつけている', 8),
+    ('その行動がなぜ効果的かを論理的に説明している', 4),
+    ('語彙・文法が正確で，約60語（目安 45〜75語）で書けている', 4),
+   ],
+   'models': [
+    ('期限表示を正しく理解する',
+     "Families should learn what date labels really mean. According to the passage, many people throw away food marked “best before” even though it is still safe to eat. Since households produce 44 percent of all food waste in Calder, even a small change in this habit at home could greatly reduce the total amount that is thrown away."),
+    ('買い物の前に計画を立てる',
+     "One practical step is to plan meals for the week and make a shopping list before going to the store. The passage says people often buy large packs because they are cheaper, and then they cannot eat everything. If families buy only what they need, less fruit and fewer vegetables will go bad, and they will save money too."),
+   ],
+   'expl': '本文第3段落の3つの理由（買いすぎ・期限表示の誤解・外食で料理の予定が流れる）のどれか1つを裏返すと，行動と根拠がそろいやすい。図の「家庭44%」を入れると，なぜ家庭の行動が大事なのかが伝わる。'},
+ ],
+ 'facts': [
+  '2016年・2024年とも，家庭が食品ロス全体で最も大きな割合を占める（47% → 44%）。',
+  '2番目は外食などの食品サービスで，19% → 23% と増えている。',
+  '農場（12 → 11%）と店（9 → 8%）は割合が小さく，わずかに減っている。',
+  '工場は 13 → 14% とほぼ変わらない。',
+ ],
+ 'translation': [
+  '捨てられる食べ物というと，人々はよく，農場が作物を畑に残したり，スーパーマーケットが販売期限を過ぎた商品を捨てたりする様子を思い浮かべる。こうした損失は実際にあるが，架空の国カルダーでの調査は，最も大きな割合の廃棄がもっと身近なところで起きていることを示している。図1は，2016年と2024年にカルダーで食べ物がどこで捨てられたかを比べたものである。',
+  'どちらの年も，家庭はほかのどの段階よりも多くの食品ロスを出していた。2024年には，家庭が捨てた食べ物は全体の44%を占め，主に果物や野菜，そして調理したのに食べられなかった残り物だった。2番目はレストランなどの食品サービスだった。対照的に，農場と店からの割合は比較的小さく，8年の間にわずかに減った。',
+  '研究者たちは，家庭がこれほど多くを捨てる理由をいくつか挙げている。人々は必要以上に買いがちで，大きな袋のほうが1個あたり安いときは特にそうだ。また多くの人が日付の表示を誤解し，まだ安全に食べられるのに「賞味期限」の表示がある食品を捨ててしまう。さらに忙しい予定のせいで，家で料理する計画が外食に取って代わられることもある。',
+  'この問題は何百万もの家庭に広がっているため，1つの工場での廃棄よりも解決が難しい。カルダー政府は，よりわかりやすい表示を印刷したり，残り物を使ったレシピを紹介したりといった簡単な手段を試してきた。初期の結果はささやかだが心強いもので，2回の調査の間に家庭の割合は47%から44%に下がった。',
+ ],
+ 'vocab': [('picture', '思い浮かべる'), ('responsible for', '〜の原因となる'), ('make up', '占める'), ('by contrast', '対照的に'), ('relatively', '比較的'), ('per item', '1個あたり'), ('misunderstand', '誤解する'), ('abandon', '断念する'), ('in favor of', '〜を選んで'), ('modest', 'ささやかな'), ('encouraging', '心強い')],
+}
