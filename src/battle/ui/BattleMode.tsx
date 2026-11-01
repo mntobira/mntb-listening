@@ -151,10 +151,18 @@ export function BattleMode({
   }, []);
   useEffect(() => {
     // ブラウザが音を止めている（自動再生制限）ときは、最初のタップで再開する
-    const resume = () => battleAudio().unlock();
+    const resume = () => { if (document.visibilityState !== 'hidden') battleAudio().unlock(); };
     resume();
-    window.addEventListener('pointerdown', resume, { once: true });
-    return () => window.removeEventListener('pointerdown', resume);
+    window.addEventListener('pointerdown', resume, { passive: true });
+    window.addEventListener('focus', resume);
+    window.addEventListener('pageshow', resume);
+    document.addEventListener('visibilitychange', resume);
+    return () => {
+      window.removeEventListener('pointerdown', resume);
+      window.removeEventListener('focus', resume);
+      window.removeEventListener('pageshow', resume);
+      document.removeEventListener('visibilitychange', resume);
+    };
   }, []);
   const [roomId, setRoomId] = useState<string | null>(null);
   const [subject, setSubject] = useState<string>(initialSubject);
