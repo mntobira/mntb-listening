@@ -77,16 +77,20 @@ export interface ListeningStep {
 export function isPerSubQuestionListening(problem: StepSource): boolean {
   // 英文法：答えを読み上げる音源は外したが「問1→解説→問2…」の1問ずつ進行は残す（2026-10-02）。
   //   音源の有無と進め方を切り離すため、明示フラグ stepwise でも1問ずつにする。
-  if (problem?.stepwise === true && Array.isArray(problem?.subQuestions) && problem.subQuestions.length > 1) return true;
-  const tracks = problem?.audioTracks;
-  if (!Array.isArray(tracks) || tracks.length === 0) return false;
+  //
+  // ★2026-10-30 E5・E6：小問が1つでも1問ずつの画面にする★
+  //   以前は「小問が2つ以上」のときだけ true にしていた。ところが音源か stepwise を持つ問題は
+  //   画面側がリスニング扱い（listeningUnified）になり、本文をまるごと描かない。
+  //   1問ずつでもない → 見出し・英文・図・音源のどれも描かれず、問題文が空になっていた。
+  //     E5：英文法 第1章 第9回（41問目だけの1問の回）で問題文が出ない
+  //     E6：「間違えた問題だけ解き直す」で小問が1つに絞られると、リスニングの図が出ない・
+  //         解説に4問ぶんの再生ボタンが並ぶ
+  //   小問が1つでも1問ずつの画面（見出し・英文・その問の音源・図を左に出す）を使えば全部そろう。
   const subs = problem?.subQuestions;
   if (!Array.isArray(subs) || subs.length === 0) return false;
-  // 小問が2つ以上あれば従来どおり。
-  // 小問が1つでも「音源1本に複数の解答欄」型（subIds を持つ）は
-  // 1問ずつモードの描画（設問文・音源・図を左に置く）を使う。
-  if (subs.length > 1) return true;
-  return tracks.some((t) => Array.isArray(t?.subIds));
+  if (problem?.stepwise === true) return true;
+  const tracks = problem?.audioTracks;
+  return Array.isArray(tracks) && tracks.length > 0;
 }
 
 /**

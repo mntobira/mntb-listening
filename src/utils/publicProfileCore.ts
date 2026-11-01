@@ -158,3 +158,18 @@ export function parseIds(v: unknown, max: number): string[] {
   if (typeof v !== 'string' || v.length > max || !/^[A-Za-z0-9_,-]*$/.test(v)) return [];
   return v.split(',').filter((id) => /^[A-Za-z0-9_-]{1,40}$/.test(id));
 }
+
+/**
+ * ★2026-10-30 E4★ 公開された28日の記録（calEnd が最後の日）を「今日が最後」にそろえる。
+ *   本人がしばらく開いていないと calEnd が古いので、そのぶん後ろを 0 で埋めて前を捨てる。
+ *   28日以上前なら全部 0。時計のずれで calEnd が未来なら、そのまま使う。
+ */
+export function alignCal(cal: readonly number[] | null, calEnd: string, now: number = Date.now()): number[] | null {
+  if (!cal || cal.length !== CAL_DAYS || !/^\d{4}-\d{2}-\d{2}$/.test(calEnd)) return null;
+  const end = new Date(`${calEnd}T12:00:00`).getTime();
+  const today = new Date(`${dayKey(now)}T12:00:00`).getTime();
+  const lag = Math.round((today - end) / 86_400_000);
+  if (lag <= 0) return [...cal];
+  if (lag >= CAL_DAYS) return Array(CAL_DAYS).fill(0);
+  return [...cal.slice(lag), ...Array(lag).fill(0)];
+}

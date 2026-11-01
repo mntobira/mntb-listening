@@ -65,8 +65,8 @@ import { setItemOrThrow } from './safeLocalStorage';
 /** Firestore のコレクション名 */
 export const STUDY_PROGRESS_COLLECTION = 'study_progress';
 
-/** まとめ書きの待ち時間 */
-const FLUSH_DEBOUNCE_MS = 15000;
+/** まとめ書きの待ち時間（2026-10-30 E8：15秒→60秒。1回5問を続けて解くと毎回書いていた。閉じる・裏に回すときはすぐ送る） */
+const FLUSH_DEBOUNCE_MS = 60_000;
 
 /** 同期が済んでいるかを覚えておく（起動時の二重取得を防ぐ） */
 let pullDoneForUid: string | null = null;

@@ -575,3 +575,20 @@
 .rq-result-e { margin: 0; font-size: 12px; line-height: 1.6; color: var(--fd-ink-2); }
 .rq-result-x { margin: 0; font-size: 12px; font-weight: 700; color: #7a3f58; }
 @media (prefers-reduced-motion: reduce) { .rq-passage, .rq-prompt { animation: none; } }
+
+/* ★E10（2026-10-30）英文解釈：英文→和訳を1文ずつ交互に＋構文の札★ */
+.rq-pairs { list-style: none; margin: 0; padding: 0 10px 10px; display: grid; gap: 8px; }
+.rq-pairs > li { padding: 8px 10px; border-radius: 10px; background: #fff; border: 1px solid #e3e9f2; }
+.rq-pairs > li[data-evidence] { border-color: #f2c14e; box-shadow: inset 3px 0 0 #f2c14e; }
+/* .rq-ex-ja p・.rq-ja-all p[lang=en] より強くするため .rq-pairs li p.〜 で書く（強制指定を使わない） */
+.rq-pairs li p.rq-pair-en { display: flex; gap: 6px; margin: 0; padding: 0; font: 500 14px/1.65 'Inter', var(--mt-font-body); color: var(--fd-ink); }
+.rq-pair-en i { flex-shrink: 0; width: 20px; height: 20px; margin-top: 2px; display: grid; place-items: center; border-radius: 50%; background: #14315f; color: #fff; font: 800 12px/1 var(--mt-font-body); font-style: normal; }
+.rq-pairs li p.rq-pair-ja { margin: 4px 0 0 26px; padding: 0; font-size: 13px; line-height: 1.7; color: var(--fd-ink-2); }
+.rq-pair-hints { list-style: none; margin: 6px 0 0 26px; padding: 0; display: grid; gap: 4px; }
+.rq-pair-hints li { padding: 4px 8px; border-radius: 8px; background: #f3eefc; font: 600 12px/1.55 var(--mt-font-body); color: #4b3a6b; }
+.rq-pair-hints b { display: inline-block; margin-right: 6px; padding: 0 6px; border-radius: 99px; background: #7a5bbf; color: #fff; font: 800 12px/1.6 'Inter', var(--mt-font-body); }
+.rq-pair-para { display: block; margin: 0 0 4px; font: 800 12px/1.4 var(--mt-font-body); color: #14315f; }
+.rq-ja-all ol.rq-pairs { padding: 0; }
+
+/* 2026-10-31 英文解釈の重要表現に、単語帳の番号（熟語6割 No.693 など）を添える */
+.rq-ex-phrases .rq-vocab-no { margin-left: 6px; padding: 0 7px; border-radius: 99px; background: var(--mt-done-soft); color: var(--mt-done); font: 800 12px/18px var(--mt-font-body); white-space: nowrap; }

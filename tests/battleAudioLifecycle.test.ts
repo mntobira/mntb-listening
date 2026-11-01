@@ -8,7 +8,7 @@ vi.mock('../src/battle/audio/sfxSamples', () => ({ preloadSamples: vi.fn(), play
 const contexts: MockContext[] = [];
 class MockContext {
   state = 'running'; currentTime = 0; destination = {};
-  sources: Array<{ loop: boolean; loopStart: number; loopEnd: number; buffer: unknown; connect: unknown; start: unknown; stop: unknown }> = [];
+  sources: Array<{ loop: boolean; loopStart: number; loopEnd: number; buffer: unknown; connect: unknown; start: unknown; stop: unknown; onended: (() => void) | null }> = [];
   resume = vi.fn(async () => { this.state = 'running'; });
   decodeAudioData = vi.fn(async () => ({ duration: 90 }));
   constructor() { contexts.push(this); }
@@ -16,7 +16,7 @@ class MockContext {
     return { gain: { value: 1, setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn(), cancelScheduledValues: vi.fn() }, connect: vi.fn() };
   }
   createBufferSource() {
-    const src = { loop: false, loopStart: 0, loopEnd: 0, buffer: null, connect: vi.fn(), start: vi.fn(), stop: vi.fn() };
+    const src = { loop: false, loopStart: 0, loopEnd: 0, buffer: null, connect: vi.fn(), start: vi.fn(), stop: vi.fn(), onended: null as (() => void) | null };
     this.sources.push(src); return src;
   }
 }
@@ -89,6 +89,15 @@ describe('screen-owned battle BGM lifecycle', () => {
     const e = new BattleAudioEngine(), owner = Symbol();
     e.setBgmOwner(owner, 'normal'); await flush(); contexts[0].state = state;
     e.unlock(); await flush(); expect(contexts[0].resume).toHaveBeenCalled(); expect(contexts[0].sources).toHaveLength(1);
+  });
+  it.each(['matching', 'normal'] as const)('restarts %s BGM after the browser drops its source while the tab is inactive', async track => {
+    const e = new BattleAudioEngine(), owner = Symbol();
+    e.setBgmOwner(owner, track); await flush();
+    const interrupted = contexts[0].sources[0];
+    interrupted.onended?.();
+    e.unlock(); await flush();
+    expect(contexts[0].sources).toHaveLength(2);
+    expect(contexts[0].sources[1].start).toHaveBeenCalledOnce();
   });
   it('recreates a closed context for an unchanged track, including direct replay', async () => {
     const e = new BattleAudioEngine(), owner = Symbol();

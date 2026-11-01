@@ -92,3 +92,21 @@ describe('D6：公開したらマイページ全体（2026-10-30）', () => {
     expect(old).toMatchObject({ cal: null, subjects: [], owned: [], badgeIds: [] });
   });
 });
+
+import { alignCal } from '../src/utils/publicProfileCore';
+describe('E4：公開された28日を今日にそろえる（2026-10-30）', () => {
+  const cal = Array.from({ length: 28 }, (_, i) => i + 1);
+  const now = new Date(2026, 9, 30, 12).getTime();
+  it('今日書かれていればそのまま', () => { expect(alignCal(cal, '2026-10-30', now)).toEqual(cal); });
+  it('3日前に書かれていれば、前を3日捨てて後ろを0で埋める', () => {
+    const a = alignCal(cal, '2026-10-27', now)!;
+    expect(a).toHaveLength(28);
+    expect(a.slice(0, 2)).toEqual([4, 5]);
+    expect(a.slice(-4)).toEqual([28, 0, 0, 0]);
+  });
+  it('28日以上前なら全部0／形が違えば null', () => {
+    expect(alignCal(cal, '2026-09-01', now)).toEqual(Array(28).fill(0));
+    expect(alignCal(null, '2026-10-30', now)).toBeNull();
+    expect(alignCal(cal, '', now)).toBeNull();
+  });
+});

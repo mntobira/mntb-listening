@@ -534,6 +534,26 @@
 
 ---
 
+## 2026-10-31 ご指摘E1〜E12：ガチャ演出・ピックアップ切替・フレンド申請・公開マイページ・英文法/リスニング復習・書き込み削減・音読PDF・英文解釈・解き方テクニック（PR: fix/revision-e）
+
+| # | 何を | どう変えた | ファイル |
+|---|---|---|---|
+| E1 | ガチャの演出 | 2本のゲージでSRが分かってしまう → 5段のメーター＋「じらし」の間（全体2秒以上）。上のレア度ほど長く光る | `gachaRevealSteps.ts`・`GachaReveal.tsx`・`gacha.css` |
+| E2 | ガチャのピックアップ枠 | LRなどの目玉を、フェードアウト → 次の目玉をフェードインで順に切り替え。下に点（どれを表示中か） | `gacha/GachaPoolCarousel.tsx`・`gacha.css` |
+| E3 | 設定のフレンド申請 | ランキングと同じ詳しい行（アバター・レベル・称号など）＋「プロフィール」ボタン | `FriendPanel.tsx` |
+| E4 | ランキングから開くプロフィール | 簡略版をやめ、マイページと同じ部品（レベル・目標・今日/今週/4週間/累計・7日の棒）。カレンダーは今日で終わるように | `features/profile/PublicProfileView.tsx`・`PublicProfileTabs.tsx`・`public-profile.css`・`utils/publicProfileCore.ts` |
+| E5/E6 | 英文法の1問だけの回／リスニング「間違えた問題だけ解き直す」 | 問題文・図・音源ボタンが出なかった（小問1つの回が1問ずつ表示の扱いにならず、何も描かれなかった）→ 小問1つでも1問ずつ表示。解き直しで音源も残す小問に絞る | `utils/listeningSteps.ts`・`utils/reviewFocus.ts` |
+| E7 | ふくしゅうノート | 「対応する問題が見つけられませんでした」→ ID → 同じ章の小問 → 問題文で探す。それでも無い（作り直しで消えた問題）なら、ノートから外すか確認 | `utils/reviewTarget.ts`・`hooks/useQuizLaunch.ts`・`StudyHub.tsx` |
+| E8 | 書き込み回数 | 見た目は変えず、誰も読んでいないオンライン表示の定期書き込みを停止・同期の間隔を広げた | `utils/friendPresence.ts`・`userDataSync.ts`・`studySync.ts`・`publicStudyProfile.ts` |
+| E9 | 英文法の音声 | 画面は変更なし。音源が届いた問題だけ音声に合わせた表示になる下準備（名簿 `grammarAudioManifest.ts`。いまは空＝今までどおり音声合成） | `data/grammarAudioManifest.ts`（新規）・`data/englishGrammarKit.ts`・`scripts/readalong/dump_tracks.ts` |
+| E10 | 英文解釈の和訳 | 段落まるごとの全訳 → 英文→和訳→英文→和訳 の1文ずつ。入試頻出の構文（not A but B・so ~ that・非制限用法など）に札と読み方。根拠の文は黄色 | `utils/readingAlign.ts`（新規）・`ReadingQuiz.tsx`・`foundation.css` |
+| E11 | リスニングの回の一覧 | 第1回の上に、青系の「読み方・解き方のテクニック」（開閉式。どこを見る／先読み／できる人がやっていること／よくある悩み） | `data/listeningTechniques.ts`（新規）・`ListeningTechniqueCard.tsx`（新規）・`ChapterSelection.tsx`・`unit-select.css` |
+| E12 | 英文解釈の重要表現 | 単語帳にある表現（84件）に、単語帳と同じ番号の札（例「熟語6割 No.693」）を添える。語の並びが完全に同じものだけ | `data/reading/vocabLink.ts`（新規）・`data/reading/vocabLinks.generated.ts`（新規）・`scripts/reading/match_vocab.py`（新規）・`ReadingQuiz.tsx`・`foundation.css` |
+
+**戻し方**：E1〜E12 はそれぞれ別コミット（E5/E6 は1コミット）なので、その1コミットを revert すれば戻る。firestore.rules の変更はなし（再デプロイ不要）。
+
+---
+
 ## 2026-10-31 2次試験ガチャの大当たりに和歌山大学・岡山大学・広島大学を追加（PR: feat/niji-wakayama-okayama-hiroshima）
 
 | # | どこ | 変更 | ファイル |
@@ -553,7 +573,6 @@
 | 2 | ピックアップの説明文 | 収録大学に大阪公立大学を追加（同じ大学名は1回だけ表示） | `src/battle/core/gachaPools.ts`・`nijiMockPrints.ts`（`NIJI_DISCLAIMER`） |
 
 **戻し方**：`nijiMockPrints.ts` の `omua`/`omub` の行と `NIJI_UNIVERSITIES` の2行を消し、`gachaPools.ts` の lrNote を元に戻す。PDF・画像は消してよい。
-
 ---
 
 ## 2026-10-30 ご指摘D1〜D11：結果画面の作り直し・英文法の回の選び方・カレンダー・公開マイページ・ホーム背景ガチャ・季節・コイン演出（PR: fix/revision-d）

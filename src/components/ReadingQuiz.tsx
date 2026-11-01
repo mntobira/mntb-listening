@@ -12,6 +12,8 @@ import {
   type ReadingLevel, type ReadingPassage, type ReadingQuestion, type ReadingRecord, type ReadingStep,
 } from '../data/reading';
 import { paragraphJa } from '../data/reading/ja';
+import { pairParagraph, structureHints } from '../utils/readingAlign';
+import { vocabLinkLabel, vocabLinkOf } from '../data/reading/vocabLink';
 
 /**
  * 英文解釈（段落ごとに読む・内容一致の4択）2026-10-21
@@ -192,13 +194,13 @@ export function ReadingQuiz({ uid }: { uid: string }) {
             <p className="rq-ex-judge" data-ok={ok || undefined}>{ok ? '正解！' : <>正解は {'①②③④'[view.answerIndex]}</>}<small>{TYPE_LABEL[q.type]}・第{evPara}段落</small></p>
             <div className="rq-ex-ev"><p lang="en">{q.evidence}</p><p>{q.evidenceJa}</p></div>
             {evJa && <details className="rq-ex-ja" key={`${q.id}-ja`} data-reading-translation>
-              <summary>第{evPara}段落の全訳</summary>
-              <p>{markJa(evJa, q.evidenceJa)}</p>
+              <summary>第{evPara}段落を1文ずつ（英文→和訳・構文）</summary>
+              <PairedParagraph en={passage.paragraphs[evPara - 1]!} ja={evJa} evidence={q.evidence} evidenceJa={q.evidenceJa} />
             </details>}
             <p className="rq-ex-text">{q.explanation}</p>
             {q.point && <p className="rq-ex-point"><b>構文</b>{q.point}</p>}
             <p className="rq-ex-exam" data-reading-exam><GraduationCap size={15} aria-hidden="true" /><span><b>{note.where}</b>{note.tip}</span></p>
-            {phrases.length > 0 && <ul className="rq-ex-phrases" aria-label="この段落の重要表現">{phrases.map(([en, ja]) => <li key={en}><b lang="en">{en}</b>{ja}</li>)}</ul>}
+            {phrases.length > 0 && <ul className="rq-ex-phrases" aria-label="この段落の重要表現">{phrases.map(([en, ja]) => { const link = vocabLinkOf(en); return <li key={en}><b lang="en">{en}</b>{ja}{link && <span className="rq-vocab-no" data-vocab-link={link.id} title={`単語帳の ${link.word}`}>{vocabLinkLabel(link)}</span>}</li>; })}</ul>}
           </div>}
         </div>
       </div>
@@ -243,10 +245,10 @@ export function ReadingQuiz({ uid }: { uid: string }) {
         </li>;
       })}</ul>
       <details className="rq-ja-all" data-reading-translation-all>
-        <summary>本文と全訳を見る</summary>
+        <summary>本文を1文ずつ読み直す（英文→和訳・構文）</summary>
         <ol>{passage.paragraphs.map((en, k) => <li key={k}>
-          <p lang="en">{en}</p>
-          {paragraphJa(passage.id, k + 1) && <p>{paragraphJa(passage.id, k + 1)}</p>}
+          <span className="rq-pair-para">第{k + 1}段落</span>
+          <PairedParagraph en={en} ja={paragraphJa(passage.id, k + 1)} />
         </li>)}</ol>
       </details>
       <div className="vq-done-actions">
@@ -298,4 +300,24 @@ function streakAt(steps: readonly ReadingStep[], picks: readonly (number | null)
   let n = 0;
   for (let j = i; j >= 0; j--) { if (picks[j] !== null && picks[j] === answerOf(steps[j]!)) n++; else break; }
   return n;
+}
+
+/**
+ * ★E10（2026-10-30）英文→和訳→英文→和訳★ 段落を1文ずつ、英文の下にその和訳を置く。
+ *   形ではっきり分かる入試頻出の構文（not A but B・so ~ that・非制限用法など）には「構文」の札と読み方を添える。
+ *   設問の根拠の一文を含む組は、黄色いマーカーで示す。
+ */
+function PairedParagraph({ en, ja, evidence, evidenceJa }: { en: string; ja: string | null; evidence?: string; evidenceJa?: string }) {
+  const pairs = pairParagraph(en, ja);
+  const norm = (t: string) => t.replace(/[\s"“”]/g, '');
+  const ev = evidence ? norm(evidence).slice(0, 30) : '';
+  return <ol className="rq-pairs" data-reading-pairs>{pairs.map((pr, k) => {
+    const hints = structureHints(pr.en);
+    const isEv = !!ev && norm(pr.en).includes(ev);
+    return <li key={k} data-evidence={isEv || undefined}>
+      <p lang="en" className="rq-pair-en"><i aria-hidden="true">{k + 1}</i>{pr.en}</p>
+      {pr.ja && <p className="rq-pair-ja">{isEv && evidenceJa ? markJa(pr.ja, evidenceJa) : pr.ja}</p>}
+      {hints.length > 0 && <ul className="rq-pair-hints" aria-label="構文のポイント">{hints.map(h => <li key={h.label}><b lang="en">{h.label}</b>{h.note}</li>)}</ul>}
+    </li>;
+  })}</ol>;
 }

@@ -134,13 +134,15 @@
    ・右側は「着がえ」→「そのほか」を縦に並べ、余白を意図して取る */
 @media (min-width: 1024px) {
   .mypage-hub { padding: 0 32px calc(var(--app-nav-h, 0px) + 24px); }
-  .mypage-hub .mana-hub-header { position: relative; display: flex; align-items: center; justify-content: center; max-width: 1040px; width: 100%; margin: 0 auto; padding: 20px 0 12px; min-height: 72px; }
+  .mypage-hub .mana-hub-header { position: relative; display: flex; align-items: center; justify-content: center; max-width: none; width: 100%; margin: 0 auto; padding: 20px 0 12px; min-height: 72px; }
   .mypage-hub .mana-hub-header > button { position: absolute; left: 0; top: 50%; transform: translateY(-50%); min-height: 44px; }
   .mypage-hub h1 { font-size: 28px; letter-spacing: .04em; }
-  .mypage-tabs { max-width: 1040px; width: 100%; margin: 0 auto; padding: 0 0 16px; gap: 8px; }
+  .mypage-tabs { max-width: none; width: 100%; margin: 0 auto; padding: 0 0 16px; gap: 8px; }
   .mypage-tabs button { min-height: 48px; font-size: 14px; border-radius: 14px; transition: background .15s, border-color .15s, transform .15s; }
   .mypage-tabs button:hover:not([aria-current=page]) { background: #fff6dc; border-color: #c9a85a; }
-  .mypage-body { max-width: 1040px; margin: 0 auto; }
+  /* 2026-11-01：概要にカードが1枚だけのとき、2列目の空列でカードが左半分に縮まないようPC幅を使う */
+  .mypage-body { max-width: none; width: 100%; margin: 0 auto; }
+  .mypage-overview[data-mypage-overview] > [data-my-study] { grid-column: 1 / -1; width: 100%; }
   .mypage-overview { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) !important; grid-template-rows: auto auto; gap: 20px 24px !important; padding: 0 !important; align-content: start; overflow: visible; }
   .mypage-stage { grid-row: 1 / span 2 !important; gap: 14px; padding: 28px 24px 24px; border-radius: 28px; min-height: 0; height: 100%; box-shadow: 0 10px 30px rgba(120, 86, 20, .12), inset 0 0 0 6px #fff8e655; }
   .mypage-stage-title { font-size: 15px; padding: 5px 16px; }

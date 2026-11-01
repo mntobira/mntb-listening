@@ -21,6 +21,7 @@ import {
 import { auth } from '../firebase';
 import { buildUnitSections } from '../data/unitSections';
 import { UnitCard } from './UnitCard';
+import { ListeningTechniqueCard } from './ListeningTechniqueCard';
 import './unit-select.css';
 import { accuracyOf, readUnitStats } from '../utils/unitStats';
 import { STAGE_CLEAR_PERFECTS, isStageCleared, readStageRecords, stageKey } from '../utils/stageRecords';
@@ -300,6 +301,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
 
                   return (
                     <div key={chapter.id}>
+                      {/* E11（2026-10-31）：第1回の前に、色を変えて「読み方・解き方のテクニック」（開閉式） */}
+                      {isListening && <ListeningTechniqueCard chapterId={chapter.id} />}
                       {/* 単元の説明（何を練習する回なのか）。
                           回のボタンだけだと「第1問Aって何をするんだっけ」が分からない。 */}
                       <div className="mb-2.5">

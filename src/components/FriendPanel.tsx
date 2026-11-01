@@ -40,7 +40,8 @@ export function FriendPanel() {
   /** フレンドの公開プロフィール（本人が公開にしている人だけ。志望校・志・達成ステージ・Lv） */
   const [publicProfiles, setPublicProfiles] = useState<Record<string, PublicStudyProfile>>({});
   const [openProfile, setOpenProfile] = useState<ProfileTarget | null>(null);
-  const friendIds = friends.map(f => f.uid).sort().join(',');
+  // E3（2026-10-30）：届いている申請の人も、ランキングと同じく公開プロフィール（志望校・学習時間・Lv）を出す
+  const friendIds = [...new Set([...friends.map(f => f.uid), ...visibleRequests.map(r => r.fromUid)])].sort().join(',');
   useEffect(() => {
     if (!friendIds) { setPublicProfiles({}); return; }
     return watchPublicStudyProfiles(friendIds.split(','), setPublicProfiles);
@@ -206,18 +207,34 @@ export function FriendPanel() {
         </p>
       )}
 
-      {requests.length > 0 && (
-        <div className="shrink-0 space-y-2 max-h-32 overflow-y-auto pr-1">
-          <p className="text-xs text-gray-400 font-bold sticky top-0 bg-white">届いている申請</p>
-          {visibleRequests.map((req) => (
-            <div key={req.id} className="flex items-center gap-3 bg-[#F9E79F]/15 border border-[#F9E79F]/50 rounded-2xl p-3">
-              <Avatar name={req.fromNickname} url={req.fromPhotoURL} />
-              <span className="flex-1 text-sm font-bold text-[#1B2631] truncate">{displaySafeNickname(req.fromNickname)}</span>
-              <UserSafetyMenu target={{ uid: req.fromUid, nickname: req.fromNickname, where: 'friend' }} />
-              <button disabled={loading} aria-label={`${req.fromNickname}さんを承認`} onClick={() => runAction(() => acceptFriendRequest(req), `${req.fromNickname} さんとフレンドになりました。`)} className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 disabled:opacity-40"><Check size={15} /></button>
-              <button disabled={loading} aria-label={`${req.fromNickname}さんを拒否`} onClick={() => runAction(() => rejectFriendRequest(req), '申請を拒否しました。')} className="p-2 rounded-xl bg-red-50 text-red-600 border border-red-100 disabled:opacity-40"><X size={15} /></button>
-            </div>
-          ))}
+      {visibleRequests.length > 0 && (
+        <div className="shrink-0 space-y-2 max-h-48 overflow-y-auto pr-1" data-friend-requests>
+          <p className="text-xs text-gray-600 font-bold sticky top-0 bg-white">届いている申請（{visibleRequests.length}件）</p>
+          {visibleRequests.map((req) => {
+            // E3（2026-10-30）：ランキングと同じ詳しさ（志望校・学習時間・達成・Lv・志）＋「プロフィール」ボタン
+            const pp = publicProfiles[req.fromUid];
+            const name = displaySafeNickname(req.fromNickname);
+            return (
+              <div key={req.id} className="flex items-center gap-2.5 bg-[#F9E79F]/15 border border-[#F9E79F]/50 rounded-2xl px-2.5 py-2" data-friend-request>
+                <Avatar name={req.fromNickname} url={req.fromPhotoURL} />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-[#1B2631] truncate">{name}</span>
+                  {pp ? <>
+                    <span className="block truncate text-xs font-bold text-[#425c6d]" data-friend-request-public>
+                      {displaySafePublicText(pp.targetSchool) || '志望校未設定'} · 学習 {formatStudyTime(pp.studySeconds)}{pp.stagesCleared != null ? ` · 達成 ${pp.stagesCleared}` : ''}{pp.level != null ? ` · Lv.${pp.level}` : ''}
+                    </span>
+                    {pp.motto && <span className="block truncate text-xs font-bold text-[#6b5a3a]">「{displaySafePublicText(pp.motto)}」</span>}
+                  </> : <span className="block text-xs font-bold text-gray-500">プロフィールは非公開です</span>}
+                </span>
+                <button type="button" className="min-h-11 shrink-0 rounded-xl border border-[#cfd8e3] bg-white px-2.5 text-xs font-bold text-[#2C3E50]"
+                  onClick={() => setOpenProfile({ uid: req.fromUid, nickname: req.fromNickname, where: 'friend' })}
+                  aria-label={`${name} さんのプロフィールを表示`} data-friend-request-profile>プロフィール</button>
+                <UserSafetyMenu target={{ uid: req.fromUid, nickname: req.fromNickname, where: 'friend' }} />
+                <button disabled={loading} aria-label={`${req.fromNickname}さんを承認`} onClick={() => runAction(() => acceptFriendRequest(req), `${req.fromNickname} さんとフレンドになりました。`)} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 disabled:opacity-40"><Check size={16} /></button>
+                <button disabled={loading} aria-label={`${req.fromNickname}さんを拒否`} onClick={() => runAction(() => rejectFriendRequest(req), '申請を拒否しました。')} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-red-50 text-red-600 border border-red-100 disabled:opacity-40"><X size={16} /></button>
+              </div>
+            );
+          })}
         </div>
       )}
 

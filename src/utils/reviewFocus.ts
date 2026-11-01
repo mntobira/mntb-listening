@@ -44,6 +44,22 @@ export function focusedSubIds(focus: ReviewFocus | null, chapterId: string, ques
  * 対象の大問だけを、小問を「間違えたもの」に絞った写しで返す（元データは書き換えない）。
  * 対象外の大問は出さない。教材の差し替えで1つも見つからなければ、元の並びをそのまま返す。
  */
+type TrackLike = { subId?: unknown; subIds?: readonly unknown[] };
+
+/**
+ * ★2026-10-30 E6★ 小問を絞るとき、音源（audioTracks）も残した小問のぶんだけにする。
+ *   以前は音源を全部写していたので、問4だけの解き直しでも解説に「再生・2回・0.75倍・標準」が
+ *   4問ぶん並んでいた。どの小問にも結びつかない音源（subId も subIds も無い）は残す。
+ */
+function narrowTracks(tracks: unknown, keep: string[]): unknown {
+  if (!Array.isArray(tracks)) return tracks;
+  const out = (tracks as TrackLike[]).filter((t) => {
+    const ids = Array.isArray(t?.subIds) && t.subIds.length > 0 ? t.subIds.map(String) : t?.subId != null ? [String(t.subId)] : [];
+    return ids.length === 0 || ids.some((id) => keep.includes(id));
+  });
+  return out.length > 0 ? out : tracks;
+}
+
 export function applyReviewFocus<T extends { id: string; subQuestions?: readonly { id?: unknown }[] }>(problems: T[], chapterId: string, focus: ReviewFocus | null): T[] {
   if (!focus || focus.chapterId !== chapterId) return problems;
   const out: T[] = [];
@@ -51,7 +67,10 @@ export function applyReviewFocus<T extends { id: string; subQuestions?: readonly
     const ids = focusedSubIds(focus, chapterId, p.id);
     if (!ids || !Array.isArray(p.subQuestions)) continue;
     const subs = p.subQuestions.filter(sq => ids.includes(String(sq?.id)));
-    if (subs.length > 0) out.push({ ...p, subQuestions: subs, reviewFocus: true });
+    if (subs.length === 0) continue;
+    const keep = subs.map((sq) => String(sq?.id));
+    const tracks = (p as { audioTracks?: unknown }).audioTracks;
+    out.push({ ...p, subQuestions: subs, ...(tracks !== undefined ? { audioTracks: narrowTracks(tracks, keep) } : {}), reviewFocus: true });
   }
   return out.length > 0 ? out : problems;
 }

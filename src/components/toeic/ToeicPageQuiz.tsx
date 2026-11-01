@@ -14,7 +14,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useMountEffect } from '../../hooks/useMountEffect';
-import { ArrowLeft, Bookmark, BookmarkCheck, Check, CheckCircle2, ChevronLeft, ChevronRight, FileText, ListChecks, MinusCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Bookmark, BookmarkCheck, Check, CheckCircle2, ChevronLeft, ChevronRight, FileText, ListChecks, MinusCircle, Settings, XCircle } from 'lucide-react';
 import type { Chapter, Problem, SubQuestion } from '../../types/curriculum';
 import type { ScoreBreakdown } from '../../utils/scoring';
 import { ToeicTimer } from './ToeicTimer';
@@ -33,6 +33,10 @@ import { safeGetItem, safeRemoveItem } from '../../utils/safeLocalStorage';
 import { safeSetItem } from '../../utils/storageGuard';
 import { isAnswerCorrect } from '../../utils/answerJudge';
 import { formatText } from '../../utils/textFormatter';
+import {
+  buildToeicPageBudgets, formatToeicBudgetDelta, formatToeicBudgetTime,
+  TOEIC_TIME_PRESETS, type ToeicTimePresetId,
+} from './toeicTimeBudget';
 import {
   QUESTIONS_PER_PAGE, countUnanswered, pageFromStoredStep, pageScoreKey, prefersSingleColumn, splitPages, toeicExplanationFor,
 } from './toeicPageModel';
@@ -54,6 +58,23 @@ export interface ToeicPageQuizProps {
 const MARK_KEYS: Record<string, number> = { a: 0, b: 1, c: 2, d: 3, '1': 0, '2': 1, '3': 2, '4': 3 };
 const markLetter = (mark: string) => mark.replace(/[()]/g, '');
 const noop = () => undefined;
+const TIME_GUIDE_STORAGE_KEY = 'toeic_part5_time_guide_v1';
+
+function readTimeGuideSettings(): { enabled: boolean; preset: ToeicTimePresetId } {
+  try {
+    const value = JSON.parse(safeGetItem(TIME_GUIDE_STORAGE_KEY) || 'null') as { enabled?: unknown; preset?: unknown } | null;
+    return {
+      enabled: typeof value?.enabled === 'boolean' ? value.enabled : true,
+      preset: value?.preset === 'slow' || value?.preset === 'advanced' ? value.preset : 'standard',
+    };
+  } catch {
+    return { enabled: true, preset: 'standard' };
+  }
+}
+
+function budgetPositionStyle(seconds: number, totalSec: number): React.CSSProperties {
+  return { left: `${Math.min(100, seconds / totalSec * 100)}%` };
+}
 
 /** 問の英文（空所 ______ のまま）。元データから引けないときは問題文の「問N　…」の行から取る */
 function stemOf(problem: Problem, sq: SubQuestion): string {
@@ -89,11 +110,21 @@ export function ToeicPageQuiz({
   ));
   const safePage = Math.min(Math.max(0, pageIndex), Math.max(0, pages.length - 1));
   const page = useMemo(() => pages[safePage] || [], [pages, safePage]);
+  const [timeGuide, setTimeGuide] = useState(readTimeGuideSettings);
+  const pageBudgets = useMemo(() => buildToeicPageBudgets(
+    pages.map((items) => items.map((sq) => ({ skill: sq.skill || toeicExplanationFor(sq)?.skill }))),
+    timeGuide.preset,
+    Number(currentQuestion?.timeLimitSec) > 0 ? Math.round(Number(currentQuestion?.timeLimitSec)) : 600,
+  ), [pages, timeGuide.preset, currentQuestion?.timeLimitSec]);
+  const pageBudget = pageBudgets[safePage] || buildToeicPageBudgets([page], timeGuide.preset)[0];
   const isScored = (i: number) => !!(currentQuestion && pages[i] && run.perStep?.[pageScoreKey(currentQuestion, pages[i])]);
   const pageScored = isScored(safePage);
   const allScored = pages.length > 0 && pages.every((_, i) => isScored(i));
   const isLastPage = safePage >= pages.length - 1;
   const hasNextRound = currentQuestionIndex < rangeEnd;
+  const pageScoreRecord = currentQuestion && page.length > 0
+    ? run.perStep?.[pageScoreKey(currentQuestion, page)]
+    : undefined;
   const answeredCount = subs.filter((sq) => !!answers[sq.id]).length;
   const unanswered = countUnanswered(page, answers);
   const pageCorrect = page.filter((sq) => isAnswerCorrect(sq, answers[sq.id] || '')).length;
@@ -114,17 +145,37 @@ export function ToeicPageQuiz({
   useEffect(() => { safeSetItem(quizAnswersKey(chapter.id, mode), JSON.stringify(answers)); }, [answers, chapter.id, mode]);
   useEffect(() => { safeSetItem(quizStepKey(chapter.id, mode), String(safePage * QUESTIONS_PER_PAGE)); }, [safePage, chapter.id, mode]);
   useEffect(() => { safeSetItem(quizIndexKey(chapter.id, mode), String(currentQuestionIndex)); }, [currentQuestionIndex, chapter.id, mode]);
+  useEffect(() => { safeSetItem(TIME_GUIDE_STORAGE_KEY, JSON.stringify(timeGuide)); }, [timeGuide]);
   // App 側の「解説表示中」は使わない（この画面の中で解説を開く）。開いた時に1回だけ伝える
   //   親の関数は描画ごとに作り直されるので、マウント時の1回だけでよい（useMountEffect＝useEffect(fn, []) と同じ動き・R-23）
   useMountEffect(() => { onExplanationChange?.(false); });
 
   // 時間：上には回の通し（現行の10分）を出す。ページの採点には「前の採点からの経過」を渡す
   const elapsedRef = useRef(0);
+  const [elapsedSec, setElapsedSec] = useState(0);
   const pageStartRef = useRef(0);
   const timeUsedRef = useRef(0);
   const lastScoredQuestionRef = useRef<string | null>(null);
   const roundLimit = Number(currentQuestion?.timeLimitSec) > 0 ? Math.round(Number(currentQuestion?.timeLimitSec)) : 600;
   const pageLimit = Math.max(30, Math.round(roundLimit * (page.length / Math.max(1, subs.length))));
+  const guidePageLimitSec = pageBudgets.length > 0 ? roundLimit / pageBudgets.length : roundLimit;
+  const [pageFeedback, setPageFeedback] = useState('');
+  const pageFeedbackRef = useRef<Record<number, string>>({});
+  useEffect(() => {
+    if (!pageFeedback) return undefined;
+    const timer = window.setTimeout(() => setPageFeedback(''), 3600);
+    return () => window.clearTimeout(timer);
+  }, [pageFeedback]);
+
+  const feedbackForPage = (index: number, elapsed: number): string => {
+    const budget = pageBudgets[index];
+    if (!budget) return '';
+    const used = Math.max(0, Math.round(elapsed));
+    if (used > guidePageLimitSec) return '少し遅れ';
+    if (used < budget.targetSec) return `予定より ${formatToeicBudgetDelta(budget.targetSec - used)} 早い`;
+    if (used === budget.targetSec) return '予定どおり';
+    return '余白を使用中';
+  };
 
   // 点数の演出（従来の1問ごとの演出を、ページを採点するたびに1回出す）
   const [scoreFx, setScoreFx] = useState<{ breakdown: ScoreBreakdown; totalScore: number } | null>(null);
@@ -201,6 +252,9 @@ export function ToeicPageQuiz({
     setAttempted((prev) => ({ ...prev, [safePage]: true }));
     // 未回答があっても確認せずに採点する（ご要望で確認の注意書きを外した。未回答は不正解として数える）
     timeUsedRef.current = Math.max(0, elapsedRef.current - pageStartRef.current);
+    const feedback = feedbackForPage(safePage, timeUsedRef.current);
+    pageFeedbackRef.current[safePage] = feedback;
+    setPageFeedback(feedback);
     const scored = scorePage();
     pageStartRef.current = elapsedRef.current;
     if (scored) {
@@ -217,9 +271,14 @@ export function ToeicPageQuiz({
 
   const handleForward = () => {
     if (!pageScored) { handleScore(); return; }
-    if (!isLastPage) { goPage(safePage + 1); return; }
+    if (!isLastPage) {
+      setPageFeedback(pageFeedbackRef.current[safePage] || '');
+      goPage(safePage + 1);
+      return;
+    }
     if (hasNextRound) {
       // 範囲が複数の回にまたがるとき（復習ノートからの解き直しなど）は次の回の1ページ目へ
+      pageStartRef.current = 0;
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setPageIndex(0);
       lastScoredQuestionRef.current = null;
@@ -252,6 +311,24 @@ export function ToeicPageQuiz({
   }
 
   const forwardLabel = !pageScored ? 'このページを採点する' : !isLastPage ? '次のページ' : hasNextRound ? '次の回へ' : '結果を見る';
+  const pageElapsedSec = Math.max(0, elapsedSec - Math.floor(pageStartRef.current));
+  const pagePaceStatus = pageElapsedSec > guidePageLimitSec
+    ? '少し遅れ'
+    : pageElapsedSec < pageBudget.targetSec
+      ? `予定より ${formatToeicBudgetDelta(pageBudget.targetSec - pageElapsedSec)} 早い`
+      : pageElapsedSec === pageBudget.targetSec
+        ? '予定どおり'
+        : '余白を使用中';
+  const totalSlackSec = pageBudgets[pageBudgets.length - 1]?.targetRemainingSec ?? 0;
+  const totalSlackLabel = totalSlackSec >= 0
+    ? `全体の余白 ${formatToeicBudgetTime(totalSlackSec)}`
+    : `全体の余白 不足 ${formatToeicBudgetTime(-totalSlackSec)}`;
+  const targetPosition = pageBudget.targetSec / guidePageLimitSec * 100;
+  const targetBarStyle = budgetPositionStyle(pageBudget.targetSec, guidePageLimitSec);
+  const slackBandStyle = {
+    left: `${Math.min(100, targetPosition)}%`,
+    width: `${Math.max(0, Math.min(100, 100 - targetPosition))}%`,
+  };
 
   return (
     <div className="tp-root" data-toeic-page-quiz>
@@ -273,8 +350,35 @@ export function ToeicPageQuiz({
           </div>
         </dl>
       </header>
-      <ToeicTimer timeLimit={roundLimit} running={!allScored} finished={allScored} onTick={(e) => { elapsedRef.current = e; }}
-        resetKey={`${chapter.id}_${currentQuestionIndex}`} />
+      <div className="tp-time-row">
+        <ToeicTimer timeLimit={roundLimit} running={!allScored} finished={allScored} onTick={(e) => { elapsedRef.current = e; setElapsedSec(Math.floor(e)); }}
+          guideStatus={timeGuide.enabled ? totalSlackLabel : undefined} resetKey={`${chapter.id}_${currentQuestionIndex}`} />
+        <details className="tp-budget-settings">
+          <summary aria-label="時間ガイド設定" title="時間ガイド設定"><Settings size={18} aria-hidden="true" /><span className="tp-sr">時間ガイド設定</span></summary>
+          <div className="tp-budget-settings-body">
+            <label><input type="checkbox" checked={timeGuide.enabled} onChange={(event) => setTimeGuide((prev) => ({ ...prev, enabled: event.currentTarget.checked }))} />時間ガイドを表示</label>
+            <label htmlFor="tp-budget-preset">目安</label>
+            <select id="tp-budget-preset" value={timeGuide.preset} onChange={(event) => setTimeGuide((prev) => ({ ...prev, preset: event.currentTarget.value as ToeicTimePresetId }))}>
+              {(Object.keys(TOEIC_TIME_PRESETS) as ToeicTimePresetId[]).map((key) => <option key={key} value={key}>{TOEIC_TIME_PRESETS[key].label}</option>)}
+            </select>
+          </div>
+        </details>
+      </div>
+      {timeGuide.enabled && <section className="tp-budget" data-toeic-time-budget data-enabled>
+        <div className="tp-budget-headline">
+          <p className="tp-budget-feedback" role="status" data-toeic-page-feedback>{pageFeedback || pagePaceStatus}</p>
+          <ol className="tp-budget-pages" aria-label={`${pages.length}ページ中${safePage + 1}ページ目`} data-toeic-page-progress>
+            {Array.from({ length: 5 }, (_, index) => <li key={`page-${index}`} data-progress={index < safePage ? 'done' : index === safePage ? 'current' : 'future'} aria-current={index === safePage ? 'step' : undefined} aria-label={`ページ${index + 1}${index < safePage ? '完了' : index === safePage ? '現在' : '未着手'}`}>
+              <span aria-hidden="true">{index < safePage ? '✓' : index + 1}</span>
+            </li>)}
+          </ol>
+        </div>
+        <div className="tp-budget-track" role="group" aria-label={`このページの限界時間 ${formatToeicBudgetTime(guidePageLimitSec)}、目標 ${formatToeicBudgetTime(pageBudget.targetSec)}。${pages.length}ページ中${safePage + 1}ページ目`} data-toeic-budget-track>
+          <span className="tp-budget-band" style={slackBandStyle} aria-hidden="true" />
+          <span className="tp-budget-target-label" data-toeic-page-target style={targetBarStyle} data-near-start={targetPosition < 18 || undefined} data-near-end={targetPosition > 82 || undefined} aria-hidden="true">目標 {formatToeicBudgetTime(pageBudget.targetSec)}</span>
+          <span className="tp-budget-tick tp-budget-tick-target" style={targetBarStyle} aria-hidden="true" />
+        </div>
+      </section>}
 
       <div className="tp-scroll" ref={listRef}>
         {pageScored && (
@@ -283,6 +387,9 @@ export function ToeicPageQuiz({
               <CheckCircle2 size={20} aria-hidden="true" />
               <span>このページ</span><b>{pageCorrect}</b><span>/{page.length}問正解</span>
             </p>
+            {timeGuide.enabled && <p className="tp-result-time" data-toeic-page-time-result>
+              時間：かかった {formatToeicBudgetTime(pageScoreRecord?.timeUsed ?? 0)} / 目標 {formatToeicBudgetTime(pageBudget.targetSec)} / 限界 {formatToeicBudgetTime(guidePageLimitSec)}
+            </p>}
             <ol className="tp-result-marks" aria-label="問題ごとの正誤（押すとその問題へ移動）">
               {page.map((sq) => {
                 const no = questionNumber(sq, subs.indexOf(sq) + 1);

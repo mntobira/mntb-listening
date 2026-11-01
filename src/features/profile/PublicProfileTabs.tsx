@@ -12,6 +12,7 @@ import { BADGES } from '../../battle/core/growthBadges';
 import { formatStudyTime } from '../../utils/studyTime';
 import { subjectLabel } from '../studylog/manualLogCore';
 import type { PublicStudyProfile } from '../../utils/publicStudyProfile';
+import { alignCal } from '../../utils/publicProfileCore';
 
 const NOT_YET = '本人がアプリを開くと、ここに表示されます。';
 const level = (sec: number) => (sec <= 0 ? 0 : sec < 1800 ? 1 : sec < 3600 ? 2 : sec < 7200 ? 3 : 4);
@@ -20,11 +21,9 @@ const WD = '日月火水木金土';
 /** カレンダー：直近28日の色の濃さ（勉強した時間）と、教科ごとの合計の棒 */
 export function PublicCalendar({ profile }: { profile: PublicStudyProfile }) {
   const [pick, setPick] = useState<number | null>(null);
-  const cal = profile.cal;
-  const days = useMemo(() => {
-    const end = profile.calEnd ? new Date(`${profile.calEnd}T12:00:00`).getTime() : Date.now();
-    return Array.from({ length: 28 }, (_, i) => new Date(end - (27 - i) * 86_400_000));
-  }, [profile.calEnd]);
+  // E4（2026-10-30）：本人がしばらく開いていなくても、最後の日＝今日にそろえる（マイページのタブと同じ数字）
+  const cal = useMemo(() => alignCal(profile.cal, profile.calEnd), [profile.cal, profile.calEnd]);
+  const days = useMemo(() => Array.from({ length: 28 }, (_, i) => new Date(Date.now() - (27 - i) * 86_400_000)), []);
   if (!cal) return <p className="pp-empty" data-pp-empty="calendar">カレンダーはまだ公開されていません。{NOT_YET}</p>;
   const total = cal.reduce((a, b) => a + b, 0);
   const active = cal.filter((s) => s >= 60).length;

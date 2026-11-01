@@ -12,7 +12,7 @@
  *
  * ■ いつ通信するか（Firestore は回数で課金）
  *   ・ログイン直後に1回（読み1・書き0〜1）
- *   ・その後は 20 秒ごとに「端末の記録が変わったか」を見て、変わっていたら 読み1・書き1
+ *   ・その後は 20 秒ごとに「端末の記録が変わったか」を見て、変わっていて前回から3分以上たっていたら 読み1・書き1（E8）
  *   ・アプリを閉じる／裏に回すときに1回
  *   学習しているあいだだけ動くので、1日あたり数十回に収まる。
  *
@@ -32,6 +32,14 @@ export const USER_DATA_COLLECTION = 'user_data';
 /** 前回そろえた値（3-way マージの base）。uid ごと */
 const BASE_KEY = (uid: string) => 'user_data_sync_base_v1_' + encodeURIComponent(uid);
 const CHECK_MS = 20_000;
+/**
+ * ★2026-10-30 E8★ 定期チェックで送るのは、前回そろえてから3分以上たったときだけ。
+ *   学習中は学習時間が15秒ごとに端末へ足されるので、20秒ごとのチェックがほぼ毎回「変わった」になり、
+ *   1時間に最大180回（読み＋書き）通信していた。アプリを閉じる・裏に回す・ログインのときは
+ *   今までどおりすぐ送るので、記録が失われることはない（最大3分ぶん、クラウドへの反映が遅れるだけ）。
+ */
+const INTERVAL_MIN_GAP_MS = 180_000;
+let lastSyncAt = 0;
 
 let lastFingerprint: string | null = null;
 let syncing: Promise<void> | null = null;
@@ -86,6 +94,7 @@ export function syncUserData(reason = 'auto'): Promise<void> {
       try { store.setItem(BASE_KEY(uid), serializeSyncState({ base: r.base, pending: null })); } catch { /* 次回の②が決め直す */ }
     }
     lastFingerprint = localFingerprint(store, uid);
+    lastSyncAt = Date.now();
     if (r.tooLarge.length) console.warn('[userDataSync] 大きすぎてクラウドに置けないデータ:', r.tooLarge.join(', '));
     if (r.changedLocal.length && typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent(USER_DATA_SYNCED_EVENT, { detail: { changed: r.changedLocal, reason } }));
@@ -109,6 +118,7 @@ function syncIfChanged(reason: string) {
   const uid = auth.currentUser?.uid;
   const store = kv();
   if (!uid || !store) return;
+  if (reason === 'interval' && Date.now() - lastSyncAt < INTERVAL_MIN_GAP_MS) return;
   if (localFingerprint(store, uid) === lastFingerprint) return;
   void syncUserData(reason);
 }
@@ -142,6 +152,7 @@ export function stopUserDataSync(): void {
   if (timer) { clearInterval(timer); timer = null; }
   activeUid = null;
   lastFingerprint = null;
+  lastSyncAt = 0;
 }
 
 /** アプリを閉じる・裏に回すときに送る */

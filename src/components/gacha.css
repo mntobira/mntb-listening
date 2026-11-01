@@ -451,3 +451,27 @@
 /* 2026-10-29 カルーセル内の文字を12px以上に（既存の .gacha-odds-toggle 11px / サムネ帯 8px を上書き） */
 .gacha-carousel-wrap .gacha-chip.gacha-odds-toggle, .gacha-slide .gacha-chip.gacha-odds-toggle { font-size: 12px; }
 .gacha-slide .gacha-print-thumb em { display: none; } /* 題名は横に全文あるので帯ラベルは省く */
+
+/* ★E1（2026-10-30）確定演出の溜め★
+   ・ゲージは毎回5本。まだ光っていない段は暗いまま（最初から結果が分からないように）
+   ・最後の段のあと、次の1本だけ白く点滅して「さらに上…？」と溜める。色は付けない（実際より上のレア度は見せない）
+   ・溜めの間はとびらが小刻みに震え、光の筋が速く回る */
+.gacha-reveal-meter li[data-tease] { background: #ffffff55; animation: gacha-meter-tease .18s steps(2, jump-none) infinite; }
+.gacha-reveal-caption[data-tease] { letter-spacing: .12em; }
+.gacha-reveal[data-tease] .gacha-reveal-orb { animation: gacha-orb-pulse .25s ease-in-out infinite, gacha-orb-shake .09s linear infinite; }
+.gacha-reveal[data-tease] .gacha-reveal-rays { animation-duration: 1s; }
+@keyframes gacha-meter-tease { 0% { background: #ffffff33; box-shadow: none; } 100% { background: #ffffffcc; box-shadow: 0 0 10px #fff; } }
+@media (prefers-reduced-motion: reduce) { .gacha-reveal-meter li[data-tease] { animation: none; } }
+
+/* ★E2（2026-10-30）目玉の枠を順に回す★ 今週の目玉 → ピックアップの LR → UR。
+   見せる → .45秒でフェードアウト（少し沈む）→ 次の物が下からフェードイン。下に小さな点で今どれか */
+.gacha-banner-swap { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; transition: opacity .45s ease, translate .45s ease, filter .45s ease; }
+.gacha-banner-hero[data-hero-fading] .gacha-banner-swap { opacity: 0; translate: 0 6px; filter: blur(2px); }
+.gacha-banner-dots { position: absolute; right: 10px; bottom: 6px; z-index: 3; display: flex; gap: 4px; pointer-events: none; }
+.gacha-banner-dots i { width: 6px; height: 6px; border-radius: 50%; background: #0000002b; transition: width .3s ease, background .3s ease; }
+.gacha-banner-dots i[data-on] { width: 14px; border-radius: 99px; background: var(--glow, #f2c14e); }
+@media (prefers-reduced-motion: no-preference) {
+  .gacha-banner-swap { animation: gacha-hero-in .55s var(--mo-ease-out, ease-out) both; }
+  @keyframes gacha-hero-in { from { opacity: 0; translate: 0 -8px; filter: blur(3px); } }
+}
+@media (prefers-reduced-motion: reduce) { .gacha-banner-swap { transition: none; } }
