@@ -13,6 +13,10 @@ import { TOEIC_P5_ROUNDS } from '../../data/toeic/toeicPart5Rounds';
 import { toeicNoteAt } from '../../data/toeic/toeicPart5Notes';
 import type { ToeicCue } from '../../data/toeic/toeicPart5NoteTypes';
 import { stepScoreKey } from '../../utils/listeningSteps';
+import {
+  p6AnswerPositions, p6BlankContext, placeP6Choices, TOEIC_P6_BLANKS_PER_SET, TOEIC_P6_CHAPTER_ID, type ToeicP6Set,
+} from '../../data/toeic/toeicPart6Kit';
+import { TOEIC_P6_ROUNDS } from '../../data/toeic/toeicPart6Rounds';
 
 /** 1ページに並べる問題の数。変えるとページ数も自動で変わる（30問 ÷ 6 = 5ページ） */
 export const QUESTIONS_PER_PAGE = 6;
@@ -20,9 +24,59 @@ export const QUESTIONS_PER_PAGE = 6;
 /** 選択肢がこの文字数を超えたら、その問題だけ1列にする（2×2だと折り返して読みにくい） */
 export const LONG_CHOICE_CHARS = 18;
 
-/** TOEIC Part 5 の単元か（演習画面をこのページ式に切り替える条件） */
+/** TOEIC Part 5・Part 6 の単元か（演習画面をこのページ式に切り替える条件） */
 export function isToeicPageChapter(chapterId: string | undefined | null): boolean {
-  return chapterId === TOEIC_P5_CHAPTER_ID;
+  return chapterId === TOEIC_P5_CHAPTER_ID || chapterId === TOEIC_P6_CHAPTER_ID;
+}
+
+/** TOEIC Part 6（長文穴埋め）の単元か。1ページ＝文書1つ＋その4問 */
+export function isToeicPart6Chapter(chapterId: string | undefined | null): boolean {
+  return chapterId === TOEIC_P6_CHAPTER_ID;
+}
+
+const P6_SUB_ID = /^q_tp6_1_r(\d+)_(\d+)$/;
+
+/** Part 6 の小問ID → 回・回の中の番号（0から）・文書（0から）・文書の中の空所（0から）。Part 6 でなければ null */
+export function locateP6(subId: string | undefined | null): { round: number; index: number; set: number; blank: number } | null {
+  const m = String(subId || '').match(P6_SUB_ID);
+  if (!m) return null;
+  const round = Number(m[1]);
+  const index = Number(m[2]) - 1;
+  return { round, index, set: Math.floor(index / TOEIC_P6_BLANKS_PER_SET), blank: index % TOEIC_P6_BLANKS_PER_SET };
+}
+
+/** Part 6 の小問が属する文書（手書きデータ）と、その文書より前の空所の数 */
+export function p6SetOf(sq: Pick<SubQuestion, 'id'>): { set: ToeicP6Set; setIndex: number; offset: number; round: number } | null {
+  const at = locateP6(sq.id);
+  const set = at ? TOEIC_P6_ROUNDS[at.round - 1]?.[at.set] : undefined;
+  if (!at || !set) return null;
+  return { set, setIndex: at.set, offset: at.set * TOEIC_P6_BLANKS_PER_SET, round: at.round };
+}
+
+/**
+ * Part 6 のページ分け：同じ文書の問題を1ページにまとめる。
+ * 復習で間違えた問題だけに絞られても、文書ごとに分かれる（文書の分からない小問は1問ずつ）。
+ */
+export function splitP6Pages<T extends Pick<SubQuestion, 'id'>>(items: readonly T[]): T[][] {
+  const pages: T[][] = [];
+  let key = '';
+  for (const sq of items) {
+    const at = locateP6(sq.id);
+    const k = at ? `${at.round}_${at.set}` : `x_${sq.id}`;
+    if (k !== key || pages.length === 0) { pages.push([]); key = k; }
+    pages[pages.length - 1].push(sq);
+  }
+  return pages;
+}
+
+/** 単元に合わせたページ分け（Part 5 は6問ずつ、Part 6 は文書ごと） */
+export function splitToeicPages<T extends Pick<SubQuestion, 'id'>>(chapterId: string | undefined | null, items: readonly T[]): T[][] {
+  return isToeicPart6Chapter(chapterId) ? splitP6Pages(items) : splitPages(items, QUESTIONS_PER_PAGE);
+}
+
+/** 保存したページ位置の1単位（Part 5 は6問、Part 6 は4問） */
+export function perPageOf(chapterId: string | undefined | null): number {
+  return isToeicPart6Chapter(chapterId) ? TOEIC_P6_BLANKS_PER_SET : QUESTIONS_PER_PAGE;
 }
 
 /** 小問をページに分ける。最後のページは端数でもよい */
@@ -174,6 +228,7 @@ const SUB_ID = /_r(\d+)_(\d+)$/;
  * 引けないとき（想定外のID）は null。画面は解説を出さずに続ける。
  */
 export function toeicExplanationFor(sq: SubQuestion): ToeicExplanation | null {
+  if (locateP6(sq.id)) return toeicP6ExplanationFor(sq);
   const m = String(sq.id).match(SUB_ID);
   if (!m) return null;
   const round = Number(m[1]);
@@ -205,4 +260,68 @@ export function toeicExplanationFor(sq: SubQuestion): ToeicExplanation | null {
     tip: (note.tip || '').trim(),
     cues: resolveCues(item.s, item.why, note.cues),
   };
+}
+
+/**
+ * Part 6 の1問の解説。文脈は空所のある段落（pp なら1つ前の段落から）で、
+ * この空所は ______ のまま、ほかの空所には正解を入れて見せる。和訳も同じ段落ぶん。
+ * 選択肢の並びは組み立てと同じ決まり（p6AnswerPositions / placeP6Choices）で再現する。
+ */
+export function toeicP6ExplanationFor(sq: SubQuestion): ToeicExplanation | null {
+  const at = locateP6(sq.id);
+  const sets = at ? TOEIC_P6_ROUNDS[at.round - 1] : undefined;
+  const set = at && sets ? sets[at.set] : undefined;
+  const blank = at && set ? set.b[at.blank] : undefined;
+  if (!at || !sets || !set || !blank) return null;
+  const total = sets.reduce((n, x) => n + x.b.length, 0);
+  const pos = p6AnswerPositions(at.round, total)[at.index];
+  const placed = placeP6Choices(blank, pos);
+  const marks = sq.options || [];
+  const texts = sq.optionTexts && sq.optionTexts.length === marks.length ? sq.optionTexts : placed.texts;
+  const ctx = p6BlankContext(set, at.blank);
+  return {
+    sentence: ctx.text,
+    completed: ctx.text.replace(BLANK, blank.c),
+    why: blank.why,
+    choices: marks.map((mark, i) => ({
+      mark,
+      text: texts[i] ?? '',
+      correct: mark === sq.correctAnswer,
+      reason: mark === sq.correctAnswer ? '' : (placed.reasons[i] || ''),
+    })),
+    translation: ctx.translation,
+    keywords: blank.kw.map(([en, ja]) => ({ en, ja })),
+    skill: blank.k,
+    subType: blank.t,
+    hint: (blank.h || '').trim(),
+    rule: (blank.r || '').trim(),
+    tip: (blank.tip || '').trim(),
+    cues: resolveCues(ctx.text, blank.why, blank.cues),
+  };
+}
+
+/**
+ * Part 6 の問題カードに出す「空所のある文」（採点前にも出す）。
+ *   ・ふつうの空所：空所を含む1文
+ *   ・文挿入：空所の前の1文＋空所＋後ろの1文（どこに入る文かが分かるように）
+ * この空所は ______、同じ文に入るほかの空所は (番号)____ にする（ほかの空所の答えは見せない）。
+ */
+export function p6Snippet(sq: Pick<SubQuestion, 'id'>): string {
+  const found = p6SetOf(sq);
+  const at = locateP6(sq.id);
+  if (!found || !at) return '';
+  const tag = `[[${at.blank + 1}]]`;
+  const para = found.set.p.find((x) => x.includes(tag)) || '';
+  const pos = para.indexOf(tag);
+  if (pos < 0) return '';
+  const before = para.slice(0, pos);
+  const after = para.slice(pos + tag.length);
+  const starts = [...before.matchAll(/[.!?]["')]?\s+/g)].map((m) => (m.index ?? 0) + m[0].length);
+  const insert = found.set.b[at.blank]?.k === '文挿入';
+  const last = starts.length ? starts[starts.length - 1] : 0;
+  const start = insert && last === before.length ? (starts.length >= 2 ? starts[starts.length - 2] : 0) : last;
+  const endMatch = after.match(/[.!?]["')]?(?=\s|$)/);
+  const end = endMatch ? (endMatch.index ?? 0) + endMatch[0].length : after.length;
+  const text = `${before.slice(start)}${tag}${after.slice(0, end)}`.trim();
+  return text.replace(/\[\[(\d+)\]\]/g, (_, n: string) => (Number(n) === at.blank + 1 ? BLANK : `(${found.offset + Number(n)})____`));
 }

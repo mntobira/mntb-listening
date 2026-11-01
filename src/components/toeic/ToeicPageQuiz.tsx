@@ -38,8 +38,10 @@ import {
   TOEIC_TIME_PRESETS, type ToeicTimePresetId,
 } from './toeicTimeBudget';
 import {
-  QUESTIONS_PER_PAGE, countUnanswered, pageFromStoredStep, pageScoreKey, prefersSingleColumn, splitPages, toeicExplanationFor,
+  countUnanswered, isToeicPart6Chapter, p6SetOf, p6Snippet, pageFromStoredStep, pageScoreKey, perPageOf, prefersSingleColumn,
+  splitToeicPages, toeicExplanationFor,
 } from './toeicPageModel';
+import { ToeicP6Passage } from './ToeicP6Passage';
 import './toeic-page.css';
 
 export interface ToeicPageQuizProps {
@@ -78,6 +80,9 @@ function budgetPositionStyle(seconds: number, totalSec: number): React.CSSProper
 
 /** 問の英文（空所 ______ のまま）。元データから引けないときは問題文の「問N　…」の行から取る */
 function stemOf(problem: Problem, sq: SubQuestion): string {
+  // Part 6：空所を含む1文（文挿入は前後の文も）。文書そのものはページの上に出す
+  const p6 = p6Snippet(sq);
+  if (p6) return p6;
   const ex = toeicExplanationFor(sq);
   if (ex) return ex.sentence;
   const label = String(sq.label || '');
@@ -103,10 +108,14 @@ export function ToeicPageQuiz({
   const { rangeStart, rangeEnd } = resolveQuizRange(questions.length, questionRange, currentQuestionIndex);
   const currentQuestion = questions[currentQuestionIndex];
   const subs: SubQuestion[] = useMemo(() => currentQuestion?.subQuestions || [], [currentQuestion]);
-  const pages = useMemo(() => splitPages(subs, QUESTIONS_PER_PAGE), [subs]);
+  // Part 5 は6問ずつ、Part 6 は文書1つ（4問）ずつのページ
+  const isP6 = isToeicPart6Chapter(chapter.id);
+  const perPage = perPageOf(chapter.id);
+  const pages = useMemo(() => splitToeicPages(chapter.id, subs), [chapter.id, subs]);
   const [pageIndex, setPageIndex] = useState(() => pageFromStoredStep(
     parseStoredNonNegativeInteger(safeGetItem(quizStepKey(chapter.id, mode))),
-    Math.ceil(Math.max(1, subs.length) / QUESTIONS_PER_PAGE),
+    Math.ceil(Math.max(1, subs.length) / perPage),
+    perPage,
   ));
   const safePage = Math.min(Math.max(0, pageIndex), Math.max(0, pages.length - 1));
   const page = useMemo(() => pages[safePage] || [], [pages, safePage]);
@@ -143,7 +152,7 @@ export function ToeicPageQuiz({
 
   // 保存（Quiz と同じキー）
   useEffect(() => { safeSetItem(quizAnswersKey(chapter.id, mode), JSON.stringify(answers)); }, [answers, chapter.id, mode]);
-  useEffect(() => { safeSetItem(quizStepKey(chapter.id, mode), String(safePage * QUESTIONS_PER_PAGE)); }, [safePage, chapter.id, mode]);
+  useEffect(() => { safeSetItem(quizStepKey(chapter.id, mode), String(safePage * perPage)); }, [safePage, perPage, chapter.id, mode]);
   useEffect(() => { safeSetItem(quizIndexKey(chapter.id, mode), String(currentQuestionIndex)); }, [currentQuestionIndex, chapter.id, mode]);
   useEffect(() => { safeSetItem(TIME_GUIDE_STORAGE_KEY, JSON.stringify(timeGuide)); }, [timeGuide]);
   // App 側の「解説表示中」は使わない（この画面の中で解説を開く）。開いた時に1回だけ伝える
@@ -310,6 +319,99 @@ export function ToeicPageQuiz({
     );
   }
 
+  // Part 6 のときだけ、ページの上（PCでは左）に文書を出す。Part 5 の画面の作りは変えない
+  const p6Doc = isP6 && page[0] ? p6SetOf(page[0]) : null;
+  const listEl = (
+  <div className={`tp-list${pageScored ? ' is-scored' : ''}`} data-toeic-page={safePage + 1}>
+    {page.map((sq, idx) => {
+      const no = questionNumber(sq, subs.indexOf(sq) + 1);
+      const chosen = answers[sq.id] || '';
+      const texts = sq.optionTexts || [];
+      const ok = pageScored && isAnswerCorrect(sq, chosen);
+      const status = !pageScored
+        ? (chosen ? 'answered' : attempted[safePage] ? 'unanswered' : 'todo')
+        : !chosen ? 'blank' : ok ? 'correct' : 'wrong';
+      const filled = chosen ? (texts[sq.options.indexOf(chosen)] ?? '') : '';
+      const ex = pageScored ? toeicExplanationFor(sq) : null;
+      const labelId = `tp-q-${sq.id}`;
+      return (
+        <article key={sq.id} id={`tp-item-${sq.id}`} className="tp-item" data-status={status} data-toeic-question={no}>
+          <p className="tp-sentence" id={labelId}>
+            <span className="tp-no" aria-hidden="true">{no}</span>
+            <span className="tp-sr">問{no}　</span>
+            <StemWithBlank stem={stemOf(currentQuestion, sq)} filled={filled}
+              result={pageScored && chosen ? (ok ? 'right' : 'wrong') : undefined} cues={isP6 ? undefined : ex?.cues} />
+            {(status === 'unanswered' || status === 'blank') && <span className="tp-tag" data-toeic-unanswered>未回答</span>}
+          </p>
+          <div
+            role="radiogroup"
+            aria-labelledby={labelId}
+            aria-disabled={pageScored || undefined}
+            tabIndex={0}
+            ref={(el) => { groupRefs.current[sq.id] = el; }}
+            onKeyDown={(e) => onGroupKeyDown(e, sq, idx)}
+            className={`tp-choices${prefersSingleColumn(texts) ? ' is-single' : ''}${pageScored ? ' is-scored' : ''}`}
+          >
+            {sq.options.map((mark, i) => {
+              const checked = chosen === mark;
+              const isRight = pageScored && mark === sq.correctAnswer;
+              const isWrongPick = pageScored && checked && !isRight;
+              return (
+                <div
+                  key={mark}
+                  role="radio"
+                  aria-checked={checked}
+                  aria-disabled={pageScored || undefined}
+                  aria-label={`${mark} ${texts[i] ?? ''}${isRight && checked ? '（あなたの答え・正解）' : isRight ? '（正解）' : isWrongPick ? '（あなたの答え）' : ''}`}
+                  tabIndex={-1}
+                  className="tp-choice"
+                  data-checked={checked || undefined}
+                  data-result={isRight ? 'right' : isWrongPick ? 'wrong' : undefined}
+                  onClick={() => select(sq, mark)}
+                >
+                  <span className="tp-bubble" aria-hidden="true">{markLetter(mark)}</span>
+                  <span className="tp-choice-body" aria-hidden="true">
+                    <span className="tp-choice-text">{formatText(texts[i] ?? mark, [], { prose: true })}</span>
+                  </span>
+                  {/* 「あなた・正解」のバッジ（英文法の答え合わせと同じ形）。選択肢の幅を食わないよう枠の右上に重ねる */}
+                  {(isRight || isWrongPick) && (
+                    <span className="tp-choice-badge" data-tone={isRight ? 'right' : 'wrong'} data-toeic-badge aria-hidden="true">
+                      {isRight && checked ? 'あなた・正解' : isRight ? '正解' : 'あなた'}
+                    </span>
+                  )}
+                  {checked && !pageScored && <Check size={18} strokeWidth={3} className="tp-choice-check" aria-hidden="true" />}
+                </div>
+              );
+            })}
+          </div>
+          {pageScored && (
+            <div className="tp-meta" data-toeic-meta>
+              <p className="tp-judge" data-result={status}>
+                {status === 'correct' ? <CheckCircle2 size={18} aria-hidden="true" /> : status === 'wrong' ? <XCircle size={18} aria-hidden="true" /> : <MinusCircle size={18} aria-hidden="true" />}
+                <span>{status === 'correct' ? '正解' : status === 'wrong' ? `不正解（正解は ${sq.correctAnswer}）` : `未回答（正解は ${sq.correctAnswer}）`}</span>
+              </p>
+              {ex && <span className="tp-skill" data-toeic-skill>{ex.skill}<small>{ex.subType}</small></span>}
+              {ex && (
+                <button type="button" className="tp-save" data-toeic-save data-saved={isSaved(sq.id) || undefined}
+                  onClick={() => saveNote(sq, no)} disabled={isSaved(sq.id)}
+                  aria-label={isSaved(sq.id) ? `問${no}はノートに保存済み` : `問${no}をノートに保存`}>
+                  {isSaved(sq.id) ? <BookmarkCheck size={16} aria-hidden="true" /> : <Bookmark size={16} aria-hidden="true" />}
+                  <span>{isSaved(sq.id) ? '保存済み' : 'ノートに保存'}</span>
+                </button>
+              )}
+            </div>
+          )}
+          {ex && (
+            <ToeicExplanationPanel ex={ex} correctText={ex.choices.find((c) => c.correct)?.text ?? ''}
+              open={openEx[sq.id] ?? status !== 'correct'}
+              onToggle={(next) => setOpenEx((prev) => ({ ...prev, [sq.id]: next }))} />
+          )}
+        </article>
+      );
+    })}
+  </div>
+  );
+
   const forwardLabel = !pageScored ? 'このページを採点する' : !isLastPage ? '次のページ' : hasNextRound ? '次の回へ' : '結果を見る';
   const pageElapsedSec = Math.max(0, elapsedSec - Math.floor(pageStartRef.current));
   const pagePaceStatus = pageElapsedSec > guidePageLimitSec
@@ -390,7 +492,7 @@ export function ToeicPageQuiz({
             {timeGuide.enabled && <p className="tp-result-time" data-toeic-page-time-result>
               時間：かかった {formatToeicBudgetTime(pageScoreRecord?.timeUsed ?? 0)} / 目標 {formatToeicBudgetTime(pageBudget.targetSec)} / 限界 {formatToeicBudgetTime(guidePageLimitSec)}
             </p>}
-            <ol className="tp-result-marks" aria-label="問題ごとの正誤（押すとその問題へ移動）">
+            <ol className="tp-result-marks" aria-label="問題ごとの正誤（押すとその問題へ移動）" data-count={isP6 ? page.length : undefined}>
               {page.map((sq) => {
                 const no = questionNumber(sq, subs.indexOf(sq) + 1);
                 const chosen = answers[sq.id] || '';
@@ -412,94 +514,12 @@ export function ToeicPageQuiz({
             </p>
           </section>
         )}
-        <div className={`tp-list${pageScored ? ' is-scored' : ''}`} data-toeic-page={safePage + 1}>
-          {page.map((sq, idx) => {
-            const no = questionNumber(sq, subs.indexOf(sq) + 1);
-            const chosen = answers[sq.id] || '';
-            const texts = sq.optionTexts || [];
-            const ok = pageScored && isAnswerCorrect(sq, chosen);
-            const status = !pageScored
-              ? (chosen ? 'answered' : attempted[safePage] ? 'unanswered' : 'todo')
-              : !chosen ? 'blank' : ok ? 'correct' : 'wrong';
-            const filled = chosen ? (texts[sq.options.indexOf(chosen)] ?? '') : '';
-            const ex = pageScored ? toeicExplanationFor(sq) : null;
-            const labelId = `tp-q-${sq.id}`;
-            return (
-              <article key={sq.id} id={`tp-item-${sq.id}`} className="tp-item" data-status={status} data-toeic-question={no}>
-                <p className="tp-sentence" id={labelId}>
-                  <span className="tp-no" aria-hidden="true">{no}</span>
-                  <span className="tp-sr">問{no}　</span>
-                  <StemWithBlank stem={stemOf(currentQuestion, sq)} filled={filled}
-                    result={pageScored && chosen ? (ok ? 'right' : 'wrong') : undefined} cues={ex?.cues} />
-                  {(status === 'unanswered' || status === 'blank') && <span className="tp-tag" data-toeic-unanswered>未回答</span>}
-                </p>
-                <div
-                  role="radiogroup"
-                  aria-labelledby={labelId}
-                  aria-disabled={pageScored || undefined}
-                  tabIndex={0}
-                  ref={(el) => { groupRefs.current[sq.id] = el; }}
-                  onKeyDown={(e) => onGroupKeyDown(e, sq, idx)}
-                  className={`tp-choices${prefersSingleColumn(texts) ? ' is-single' : ''}${pageScored ? ' is-scored' : ''}`}
-                >
-                  {sq.options.map((mark, i) => {
-                    const checked = chosen === mark;
-                    const isRight = pageScored && mark === sq.correctAnswer;
-                    const isWrongPick = pageScored && checked && !isRight;
-                    return (
-                      <div
-                        key={mark}
-                        role="radio"
-                        aria-checked={checked}
-                        aria-disabled={pageScored || undefined}
-                        aria-label={`${mark} ${texts[i] ?? ''}${isRight && checked ? '（あなたの答え・正解）' : isRight ? '（正解）' : isWrongPick ? '（あなたの答え）' : ''}`}
-                        tabIndex={-1}
-                        className="tp-choice"
-                        data-checked={checked || undefined}
-                        data-result={isRight ? 'right' : isWrongPick ? 'wrong' : undefined}
-                        onClick={() => select(sq, mark)}
-                      >
-                        <span className="tp-bubble" aria-hidden="true">{markLetter(mark)}</span>
-                        <span className="tp-choice-body" aria-hidden="true">
-                          <span className="tp-choice-text">{formatText(texts[i] ?? mark, [], { prose: true })}</span>
-                        </span>
-                        {/* 「あなた・正解」のバッジ（英文法の答え合わせと同じ形）。選択肢の幅を食わないよう枠の右上に重ねる */}
-                        {(isRight || isWrongPick) && (
-                          <span className="tp-choice-badge" data-tone={isRight ? 'right' : 'wrong'} data-toeic-badge aria-hidden="true">
-                            {isRight && checked ? 'あなた・正解' : isRight ? '正解' : 'あなた'}
-                          </span>
-                        )}
-                        {checked && !pageScored && <Check size={18} strokeWidth={3} className="tp-choice-check" aria-hidden="true" />}
-                      </div>
-                    );
-                  })}
-                </div>
-                {pageScored && (
-                  <div className="tp-meta" data-toeic-meta>
-                    <p className="tp-judge" data-result={status}>
-                      {status === 'correct' ? <CheckCircle2 size={18} aria-hidden="true" /> : status === 'wrong' ? <XCircle size={18} aria-hidden="true" /> : <MinusCircle size={18} aria-hidden="true" />}
-                      <span>{status === 'correct' ? '正解' : status === 'wrong' ? `不正解（正解は ${sq.correctAnswer}）` : `未回答（正解は ${sq.correctAnswer}）`}</span>
-                    </p>
-                    {ex && <span className="tp-skill" data-toeic-skill>{ex.skill}<small>{ex.subType}</small></span>}
-                    {ex && (
-                      <button type="button" className="tp-save" data-toeic-save data-saved={isSaved(sq.id) || undefined}
-                        onClick={() => saveNote(sq, no)} disabled={isSaved(sq.id)}
-                        aria-label={isSaved(sq.id) ? `問${no}はノートに保存済み` : `問${no}をノートに保存`}>
-                        {isSaved(sq.id) ? <BookmarkCheck size={16} aria-hidden="true" /> : <Bookmark size={16} aria-hidden="true" />}
-                        <span>{isSaved(sq.id) ? '保存済み' : 'ノートに保存'}</span>
-                      </button>
-                    )}
-                  </div>
-                )}
-                {ex && (
-                  <ToeicExplanationPanel ex={ex} correctText={ex.choices.find((c) => c.correct)?.text ?? ''}
-                    open={openEx[sq.id] ?? status !== 'correct'}
-                    onToggle={(next) => setOpenEx((prev) => ({ ...prev, [sq.id]: next }))} />
-                )}
-              </article>
-            );
-          })}
-        </div>
+        {p6Doc ? (
+          <div className="tp-p6" data-toeic-p6>
+            <ToeicP6Passage set={p6Doc.set} setIndex={p6Doc.setIndex} offset={p6Doc.offset} page={page} answers={answers} scored={pageScored} />
+            {listEl}
+          </div>
+        ) : listEl}
       </div>
 
       <footer className="tp-foot">

@@ -138,18 +138,19 @@ export const SUBJECT_REGISTRY = [
   },
   {
     // 2026-10-28 TOEIC L&R Part 5（短文穴埋め）。1回30問×15回。章IDは tp5_1
+    // 2026-10-31 Part 6（長文穴埋め・1回16問×15回・章ID tp6_1）を同じ教科に足した。教科IDは記録を付け替えないため toeic_part5 のまま
     id: 'toeic_part5',
-    label: 'TOEIC Part 5',
+    label: 'TOEIC',
     shortLabel: 'TOEIC',
     enabled: true,
-    chapterIdPattern: /^tp5_\d+$/,
+    chapterIdPattern: /^tp[56]_\d+$/,
     entry: 'chapters',
     // Firestore ルール（classrooms.subject）に無いので、クラス作成の一覧には出さない
     classroom: false,
-    practiceDescription: 'TOEIC L&R Part 5（短文穴埋め）を1回30問ずつ解きます。全問に和訳と選択肢ごとの理由がつきます。',
+    practiceDescription: 'TOEIC L&R Part 5（短文穴埋め・1回30問）と Part 6（長文穴埋め・1回16問）を解きます。全問に和訳と選択肢ごとの理由がつきます。',
     // リスニング（ミント）・英文法（琥珀）と見違えないよう、藍色
     theme: {
-      label: 'TOEIC Part 5',
+      label: 'TOEIC',
       accent: '#3D5A99',
       accentSoft: '#C3CFEA',
       surface: '#F5F7FC',

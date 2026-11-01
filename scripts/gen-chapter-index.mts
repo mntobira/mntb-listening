@@ -87,7 +87,7 @@ import { SUBJECTS, getChaptersOfSubject } from '../src/data/allChapters';
  */
 import { getListeningStats } from '../src/data/englishListeningData';
 import { getGrammarStats } from '../src/data/englishGrammarData';
-import { getToeicPart5Stats } from '../src/data/toeic/toeicPart5Data';
+import { getToeicStats } from '../src/data/toeic/toeicData';
 import type { SubjectKey } from '../src/data/subjects';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -160,7 +160,7 @@ function buildSubjectStats(): Record<SubjectKey, SubjectStats> {
   return {
     english_listening: getListeningStats(),
     english_grammar: getGrammarStats(),
-    toeic_part5: getToeicPart5Stats(),
+    toeic_part5: getToeicStats(),
   };
 }
 
