@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+# 第2回 大問1 設問（問1 空所5・問2 下線部4・問3 内容2・問4 文の完成・問5 表題）
+QUESTIONS = [
+ {'label': '問1', 'kind': '空所補充', 'points': 10, 'distinct': True,
+  'stem': '空所（ 1 ）〜（ 5 ）に入れるのに最も適切なものを，次の a〜e から1つずつ選び，記号で答えなさい。ただし，同じ記号を2度以上使ってはならない。文頭に来る語も小文字で示してある。',
+  'choices': [('a', 'worried'), ('b', 'all'), ('c', 'ignore'), ('d', 'as a result'), ('e', 'more')],
+  'subs': [{'label': '(1)'}, {'label': '(2)'}, {'label': '(3)'}, {'label': '(4)'}, {'label': '(5)'}],
+  'answers': ['c', 'e', 'a', 'd', 'b'],
+  'subexpl': [
+   'a warning the city could not ___「市が〜できない警告」。助動詞 could not の後なので動詞の原形。病院に200人以上が運ばれた状況から ignore「無視する」。',
+   'on streets with ___ trees「木が〜の通り」。直前の「成長した木の下は最大15度低い」を受け，木の「多い」通りほど涼しい，という比較。more。',
+   'Older residents … ___ that falling leaves would make sidewalks slippery。過去の文の動詞が必要。worried that ~「〜を心配した」。前の「心配する店主」「不満を言う運転者」とも並ぶ。',
+   '市が反対意見に耳を傾けて工夫した結果，反対していた店主が木の費用を払うようになった。因果関係を表す As a result「その結果」。',
+   'that is ___ they need「それが彼らの必要とする〜だ」。all (that) they need「必要なのはそれだけ／それこそ必要なもの」。',
+  ]},
+ {'label': '問2', 'kind': '下線部の意味', 'points': 8,
+  'stem': '下線部（ア）〜（エ）の意味に最も近いものを，それぞれ a〜d から1つずつ選び，記号で答えなさい。',
+  'subs': [
+   {'label': '(ア)', 'text': 'grows on its own', 'choices': [('a', 'needs a lot of money every year'), ('b', 'gets bigger naturally without machines'), ('c', 'can only be bought in other countries'), ('d', 'must be repaired by experts')], 'cols': 2},
+   {'label': '(イ)', 'text': 'Through a free phone app, people can now “adopt” a tree near their home, receive a message when it needs water, and report any damage.', 'choices': [('a', 'People can buy young trees cheaply by using an app.'), ('b', 'People can take responsibility for caring for a nearby tree with the help of an app.'), ('c', 'People must pay the city if a tree near their home dies.'), ('d', 'People can ask the city to cut down trees that block their view.')], 'cols': 0},
+   {'label': '(ウ)', 'text': 'a long game', 'choices': [('a', 'a plan whose results take many years to appear'), ('b', 'a sport played in city parks'), ('c', 'a plan that has already failed'), ('d', 'a competition between two cities')], 'cols': 2},
+   {'label': '(エ)', 'text': 'previously', 'choices': [('a', 'luckily'), ('b', 'finally'), ('c', 'before'), ('d', 'secretly')]},
+  ],
+  'answers': ['b', 'b', 'a', 'c'],
+  'subexpl': [
+   'on its own「ひとりでに・自力で」。高価な技術（機械）と対比して，木は自然に育つ「いちばん安いエアコン」だ，という比喩。',
+   'adopt は「養子にする」から「（世話を）引き受ける」。水やりの知らせを受け，傷みを報告する＝アプリの助けで近くの木の世話の責任を持つ。',
+   '直前の「大きくなるのに10〜20年かかる」から，結果が出るまでに長い年月がかかる計画のこと。',
+   'previously「以前は」。木を植える前なら室内にとどめていたような暑い日にも，という意味。',
+  ]},
+ {'label': '問3', 'kind': '内容一致', 'points': 4,
+  'stem': '本文の内容に合うように，次の (1)・(2) の問いの答えとして最も適切なものを，それぞれ a〜d から1つずつ選び，記号で答えなさい。',
+  'subs': [
+   {'label': '(1)', 'text': 'Why did many young trees die in the first year of the project?', 'choices': [('a', 'They were planted in the wrong season.'), ('b', 'Shop owners cut them down to show their signs.'), ('c', 'Nobody gave them water when the weather was dry.'), ('d', 'The city chose species that grow too slowly.')], 'cols': 0},
+   {'label': '(2)', 'text': 'How did the city respond to people who did not want the trees?', 'choices': [('a', 'It stopped planting trees on shopping streets.'), ('b', 'It changed how and where it planted trees to answer their worries.'), ('c', 'It asked them to pay for the trees.'), ('d', 'It removed all the parking spaces in the city center.')], 'cols': 0},
+  ],
+  'answers': ['c', 'b'],
+  'subexpl': [
+   '第4段落：mostly because no one watered them during dry weeks。a・b・d は本文にない。',
+   '第5段落：枝の高く細い種類を選ぶ，駐車スペースのすき間に植える，落ち葉掃きの団体を作る，と心配に合わせて工夫した。a・d は逆。c は「反対していた店主が自分から払っている」のであって，市が求めたのではない。',
+  ]},
+ {'label': '問4', 'kind': '文の完成', 'points': 4,
+  'stem': '本文の内容に合うように次の英文を完成させるとき，空所に入れるのに最も適切なものを a〜d から1つ選び，記号で答えなさい。{br}//Dr. Achebe believes that, in addition to planting trees, cities should (　　　　).//',
+  'choices': [('a', 'stop people from walking outside in summer'), ('b', 'build more parking lots near shopping streets'), ('c', 'use other methods, such as lighter roofs and cooler buildings'), ('d', 'buy expensive air conditioners for every school')], 'cols': 0,
+  'answers': ['c'],
+  'expl': '第6段落：Cities also need lighter-colored roofs, more water in public spaces and buildings designed to stay cool. a・b・d は本文にない。'},
+ {'label': '問5', 'kind': '表題', 'points': 4,
+  'stem': '本文全体の表題にいちばんふさわしいものを a〜d から1つ選び，記号で答えなさい。（本文の上の表題は伏せて考えること）',
+  'choices': [('a', 'Cooling a Hot City with Trees and Its Residents’ Help'), ('b', 'Why Trees Cause Problems for Shop Owners'), ('c', 'New Air Conditioners for Hospitals'), ('d', 'The History of a Famous Shopping Street')], 'cols': 0,
+  'answers': ['a'],
+  'expl': '記事全体は，暑さに苦しむ市が住民の協力を得ながら木を植えて街を冷やそうとしている話。b は第5段落の一部だけ，c・d は話題ではない。'},
+]

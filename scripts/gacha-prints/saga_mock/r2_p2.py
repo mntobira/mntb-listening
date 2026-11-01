@@ -1,0 +1,77 @@
+# -*- coding: utf-8 -*-
+# 第2回 大問2 会話文の空所補充（4か所・各5点）
+PART = {
+ 'points': 20,
+ 'lead': '次の（1）〜（3）の会話を読み，空所に入れるのに最もふさわしいものを (a)〜(d) から 1 つずつ選びなさい。',
+ 'dialogues': [
+  {'n': 1,
+   'lines': [
+    ('A', 'Excuse me, I bought this jacket here last week, but the zipper broke the second time I used it.'),
+    ('B', 'I’m sorry to hear that. {ki}'),
+    ('A', 'Yes, here it is.'),
+    ('B', 'Thank you. Would you like to exchange it for a new one, or would you prefer a refund?'),
+    ('A', 'An exchange, please. I really like the color.'),
+    ('B', 'Let me check our stock. ... I’m afraid we’re out of your size in blue right now, but we can order one for you. It should arrive in three days.'),
+    ('A', 'That’s fine. I’m not {kii}.'),
+   ],
+   'qs': [
+    {'label': '(i)', 'points': 5,
+     'choices': [('(a)', 'Do you have the receipt with you?'), ('(b)', 'Have you tried it on yet?'), ('(c)', 'Could you tell me your size?'), ('(d)', 'Would you like a bag for it?')],
+     'answer': '(a)', 'expl': 'A が here it is（はい，これです）と何かを差し出している。返品・交換の場面で求められるのはレシート。(b) はすでに使ったと言っているので不自然，(c) なら数字で答えるはず，(d) は交換の前には合わない。'},
+    {'label': '(ii)', 'points': 5,
+     'choices': [('(a)', 'in a hurry'), ('(b)', 'on duty'), ('(c)', 'out of order'), ('(d)', 'at a loss')], 'cols': 4,
+     'answer': '(a)', 'expl': '3日かかると言われて That’s fine. と受け入れているので，「急いでいない」の not in a hurry。(b)「勤務中」，(c)「故障中」，(d)「途方にくれて」は意味がつながらない。'},
+   ],
+   'translation': [
+    ('A', 'すみません，先週ここでこのジャケットを買ったのですが，2回目に着たときにファスナーが壊れてしまって。'),
+    ('B', 'それは申し訳ございません。レシートはお持ちですか。'),
+    ('A', 'はい，これです。'),
+    ('B', 'ありがとうございます。新しいものと交換なさいますか，それとも返金をご希望ですか。'),
+    ('A', '交換でお願いします。色がとても気に入っているので。'),
+    ('B', '在庫を確認します。……申し訳ありませんが，青のそのサイズは今切らしておりまして，お取り寄せになります。3日ほどで届く予定です。'),
+    ('A', 'それで大丈夫です。急いではいませんから。'),
+   ]},
+  {'n': 2,
+   'lines': [
+    ('A', 'You look tired. Did you stay up late again?'),
+    ('B', 'Yes, I was helping my sister move into her new apartment. We carried boxes until midnight.'),
+    ('A', 'That’s kind of you. Is she all settled in now?'),
+    ('B', '{k}'),
+    ('A', 'Well, let me know if you need another pair of hands this weekend.'),
+   ],
+   'qs': [
+    {'label': '', 'points': 5,
+     'choices': [('(a)', 'Not yet. There are still boxes everywhere.'), ('(b)', 'Yes, she moved out years ago.'), ('(c)', 'No, she doesn’t have a sister.'), ('(d)', 'I’ll ask her to stay up late.')],
+     'answer': '(a)', 'expl': 'A が続けて「今週末も人手が要るなら言ってね」と申し出ているので，引っ越しはまだ終わっていない。(a)「まだ。あちこちに箱がある」。another pair of hands は「もう一人の手伝い」。'},
+   ],
+   'translation': [
+    ('A', '疲れているみたいだね。また夜ふかししたの？'),
+    ('B', 'うん，姉の新しいアパートへの引っ越しを手伝っていたんだ。真夜中まで箱を運んだよ。'),
+    ('A', '優しいね。お姉さんはもう落ち着いたの？'),
+    ('B', 'まだだよ。あちこちに箱が残ってる。'),
+    ('A', 'じゃあ，今週末も手伝いが必要なら言ってね。'),
+   ]},
+  {'n': 3,
+   'lines': [
+    ('A', 'I can’t believe Professor Lin moved the exam to tomorrow!'),
+    ('B', 'I know. I was planning to study tonight, but I promised to cover a shift at the café.'),
+    ('A', 'Can’t you ask someone else to take it?'),
+    ('B', 'I already tried. Everyone’s busy.'),
+    ('A', '{k}'),
+    ('B', 'Good idea. I’ll bring my notes and review between customers.'),
+   ],
+   'qs': [
+    {'label': '', 'points': 5,
+     'choices': [('(a)', 'Then why not study during the quiet times at work?'), ('(b)', 'Then you should quit studying altogether.'), ('(c)', 'So the exam was easier than you thought?'), ('(d)', 'So you can stay at home tonight.')],
+     'answer': '(a)', 'expl': 'B が「ノートを持って行って，客の合間に復習する」と答えているので，「仕事中の手のすいた時間に勉強したら？」と提案する (a)。Why not ~? は「〜したらどう？」という提案。(d) はシフトに入る状況と矛盾する。'},
+   ],
+   'translation': [
+    ('A', 'リン先生が試験を明日に変えたなんて信じられない！'),
+    ('B', 'ほんとに。今夜勉強するつもりだったのに，カフェのシフトの代わりを引き受ける約束をしちゃったんだ。'),
+    ('A', '誰かほかの人に代わってもらえないの？'),
+    ('B', 'もう頼んでみたよ。みんな忙しいんだ。'),
+    ('A', 'じゃあ，仕事中の手のすいた時間に勉強したら？'),
+    ('B', 'いい考えだね。ノートを持って行って，お客さんの合間に復習するよ。'),
+   ]},
+ ],
+}
