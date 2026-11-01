@@ -15,13 +15,28 @@ export type RevealStep = { stage: RevealStage; ms: number; caption: string; sfx:
 const ORDER: RevealStage[] = ['blue', 'gold', 'rainbow', 'ur', 'lr'];
 const TOP: Record<GachaRarity, RevealStage> = { N: 'blue', R: 'gold', SR: 'rainbow', UR: 'ur', LR: 'lr' };
 
+/**
+ * ★2026-10-30 E1：もう少し楽しめるように各段を長く★（以前は 0.8〜1.5秒）
+ *   いちばん下（青）は「力が集まる」溜めを含めて長め。上の段ほど長い。
+ */
 const STEP: Record<RevealStage, Omit<RevealStep, 'stage'>> = {
-  blue: { ms: 800, caption: 'とびらが光りはじめた…', sfx: 'chest', vibrate: false },
-  gold: { ms: 850, caption: '金色に変わった！ R以上確定！', sfx: 'coin', vibrate: false },
-  rainbow: { ms: 950, caption: '虹色…！？ SR以上確定！！', sfx: 'levelup', vibrate: true },
-  ur: { ms: 1300, caption: '確定演出！！ 大当たり UR！！', sfx: 'rankup', vibrate: true },
-  lr: { ms: 1500, caption: 'まさかの…伝説降臨！！ LR！！！', sfx: 'jackpot', vibrate: true },
+  blue: { ms: 1300, caption: 'とびらに光が集まっていく…', sfx: 'chest', vibrate: false },
+  gold: { ms: 1200, caption: '金色に変わった！ R以上確定！', sfx: 'coin', vibrate: false },
+  rainbow: { ms: 1300, caption: '虹色…！？ SR以上確定！！', sfx: 'levelup', vibrate: true },
+  ur: { ms: 1600, caption: '確定演出！！ 大当たり UR！！', sfx: 'rankup', vibrate: true },
+  lr: { ms: 1800, caption: 'まさかの…伝説降臨！！ LR！！！', sfx: 'jackpot', vibrate: true },
 };
+
+/**
+ * ★E1★ 最後の段のあとの「溜め」。次の段のゲージがチカチカ光りかけて…止まる。
+ *   次の段の「色」は出さない（ゲージが点滅するだけ）ので、実際より上のレア度を見せる嘘にはならない。
+ *   LR はいちばん上なので溜めはない。
+ */
+export const REVEAL_TEASE_MS = 900;
+export const REVEAL_TEASE_CAPTION = 'さらに光る…！？';
+/** ゲージは毎回5本（引いたレア度の段数だけ並べると、最初から結果が分かってしまうため） */
+export const REVEAL_ORDER: readonly RevealStage[] = ORDER;
+export function hasTease(rarity: GachaRarity): boolean { return rarity !== 'LR'; }
 
 /** 光が弾けてから結果が出るまで */
 export const REVEAL_BURST_MS = 450;
@@ -34,7 +49,7 @@ export function revealSteps(rarity: GachaRarity): RevealStep[] {
 
 /** 演出全体の長さ（ms）。CinematicClip の安全装置（8秒）より短い。 */
 export function revealTotalMs(rarity: GachaRarity): number {
-  return revealSteps(rarity).reduce((n, s) => n + s.ms, 0) + REVEAL_BURST_MS;
+  return revealSteps(rarity).reduce((n, s) => n + s.ms, 0) + (hasTease(rarity) ? REVEAL_TEASE_MS : 0) + REVEAL_BURST_MS;
 }
 
 /** 結果に出す星の数 */

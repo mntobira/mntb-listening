@@ -39,7 +39,7 @@ export const GACHA_POOLS: readonly GachaPoolDef[] = [
     title: '2次試験ガチャ',
     short: '2次試験',
     lrName: '国公立2次 英語 予想問題',
-    lrNote: '名古屋大学・静岡大学 前期の出題形式に沿った書き下ろしの予想問題（解答解説つき）各3回分。大学の過去問・公式問題ではありません。',
+    lrNote: '名古屋大学・静岡大学・大阪公立大学・和歌山大学・岡山大学・広島大学 前期の出題形式に沿った書き下ろしの予想問題（解答解説つき）各3回分（大阪公立大学は第3問の系統別にA・B各3回）。大学の過去問・公式問題ではありません。',
     preferSubjects: ['english_vocab', 'english_grammar', 'english_reading'],
   },
 ];

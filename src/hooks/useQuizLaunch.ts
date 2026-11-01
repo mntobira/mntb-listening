@@ -19,7 +19,7 @@ import { resolveReviewTarget, reviewLaunchOf, type ReviewRequest } from '../util
 import type { ChapterRunState } from '../utils/quizRunState';
 import { readJsonArray, safeRemoveItem } from '../utils/safeLocalStorage';
 import { safeSetItem } from '../utils/storageGuard';
-import { notify } from '../utils/dialog';
+import { confirmAction, notify } from '../utils/dialog';
 import { completedKey } from '../utils/userStorageKeys';
 import { quizAnswersKey, quizRunKey, quizExplKey, quizIndexKey, quizStepKey } from '../utils/quizStorageKeys';
 import { resolveBattlePractice } from '../utils/battlePracticeBridge';
@@ -176,13 +176,29 @@ export function useQuizLaunch({
       // 問題本体は押されたときだけ読む。全科目を起動時には読み込まない。
       const { SUBJECTS, getPartsOfSubject } = await import('../data/allChapters');
       if (request !== reviewRequest.current) return;
-      const target = resolveReviewTarget(note, SUBJECTS
+      // ノート（StudyNote）は問題文を question に持っているので、それも手がかりに渡す（E7）
+      const noteText = (note as { question?: unknown }).question;
+      const locator = { ...note, questionText: note.questionText ?? (typeof noteText === 'string' ? noteText : undefined) };
+      const target = resolveReviewTarget(locator, SUBJECTS
         .filter(entry => isSubjectEnabled(entry.id))
         .map(entry => ({ id: entry.id, parts: getPartsOfSubject(entry.id) })));
       if (!target) {
+        // ★2026-10-30 E7★ ID・小問ID・問題文のどれでも見つからないのは、教材の入れ替え（例：10/3 の英文法 v3 化で
+        //   旧 eg1_1〜eg5_2 の問題はなくなった）で元の問題が今の教材に無いとき。黙って残すと何度押しても同じなので、
+        //   復習アイテムならその場で外せるようにする（ノートは本文が残っているので外さない）。
+        const key = (note as { key?: unknown }).key;
+        if (typeof key === 'string' && key) {
+          if (confirmAction('この問題は教材の入れ替えで今の教材から無くなりました（同じ内容の問題も見つかりません）。復習ノートから外しますか？')) {
+            const uid = auth.currentUser?.uid || 'guest';
+            const { removeReviewItem } = await import('../utils/reviewList');
+            removeReviewItem(uid, key);
+            window.dispatchEvent(new Event('review-list-changed'));
+          }
+          return;
+        }
         notify(note.subQuestionId && !note.chapterId && !note.questionId
           ? 'この確認問題は現在の教材に見つかりませんでした。問題が差し替えられた可能性があります。'
-          : '対応する問題を見つけられませんでした。教材が更新された可能性があります。ノートはそのまま残しています。');
+          : 'この問題は教材の入れ替えで今の教材から無くなりました（同じ内容の問題も見つかりません）。ノートの本文はそのまま読めます。');
         return;
       }
       setSelectedSubject(target.subject);

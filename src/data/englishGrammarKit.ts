@@ -46,6 +46,7 @@
 
 import type { SubQuestion } from '../types/curriculum';
 import { memorizeSetLine } from './grammarMemorizeSets';
+import { grammarAudioUrl } from './grammarAudioManifest';
 
 /** 音源トラック（リスニングの ListeningAudioTrack と同形にする） */
 export type GrammarAudioTrack = {
@@ -165,6 +166,8 @@ export function buildEgSet(meta: EgSetMeta, items: EgItem[]): GrammarProblem {
     subId: subIdOf(index),
     label: `問${index + 1}`,
     hint: item.focus,
+    // E9（2026-10-31）：音源が届いた問題だけ audioUrl を付ける（名簿は grammarAudioManifest.ts。今は空＝音声合成）
+    ...(grammarAudioUrl(subIdOf(index)) ? { audioUrl: grammarAudioUrl(subIdOf(index)) } : {}),
     // ★script は完成文★（空所つきの文を読み上げても意味が取れないため）
     script: item.full,
     translation: item.translation,

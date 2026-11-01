@@ -126,3 +126,33 @@ python3 scripts/gacha-prints/build-previews.py print_lr_niji_shizuoka_en_1 print
 
 - 大問の型（物語文・誤り訂正・評論文・会話文・自由英作文／配点は%）だけを参考にし、英文・設問・解答・表紙の文言はすべて書き下ろし。過去問4年分のOCR文と照合して英5語・日12字の一致0件を確認。
 - 注意書きは大学ごとに出し分ける（`nijiDisclaimerFor(大学名)`）。ほかの大学を足すときは `NIJI_UNIVERSITIES` に1行足す。
+
+### 大阪公立大学 前期対策（2026-10-30 追加・A／Bグループ）
+
+```bash
+# 中身は webapp/pdf/osaka/r{1,2,3}.py（第1・2問は共通、第3問は W['A'] / W['B']）、紙面は build.py
+python3 build.py            # → 予想問題_大阪公立大学_英語_第N回_{A,B}_{問題,解答解説}.pdf
+pdfunite 予想問題_大阪公立大学_英語_第N回_A_問題.pdf 予想問題_大阪公立大学_英語_第N回_A_解答解説.pdf public/prints/print_lr_niji_omua_en_N.pdf   # B は omub
+python3 scripts/gacha-prints/build-previews.py print_lr_niji_omua_en_1 …   # previews
+# thumbs は 1ページ目を 360×510 の webp に（静岡と同じ規格）
+```
+
+- 第3問（和文英訳）だけ学部・学域で2系統（A：文・法・経済・商・獣医・医学科・生活科学／B：現代システム科学域・理・工・農・リハビリ・看護）。`NIJI_UNIVERSITIES` の `track` にグループ名を書くとラベルに出る。
+- 解答速報5年分（2022〜2026）の文と照合して英5語・日12字の一致0件を確認。
+
+### 和歌山大学・岡山大学・広島大学 前期対策（2026-10-31 追加）
+
+```bash
+# 中身は webapp/pdf/{wakayama,okayama,hiroshima}/r{1,2,3}.py、紙面は共通の webapp/pdf/niji_common.py（各 build.py は設定だけ）
+cd webapp/pdf/okayama && python3 build.py 1      # → 予想問題_岡山大学_英語_第1回_{問題,解答解説}.pdf
+pdfunite 予想問題_岡山大学_英語_第1回_問題.pdf 予想問題_岡山大学_英語_第1回_解答解説.pdf public/prints/print_lr_niji_okayama_en_1.pdf
+python3 scripts/gacha-prints/build-previews.py print_lr_niji_okayama_en_1 …   # previews
+# thumbs は 1ページ目を 360×510 の webp に（静岡と同じ規格）
+```
+
+- 3大学とも英語は全学部共通の1種類なので、各3回分（学部別の出し分けなし）。
+  - 和歌山：Ⅰ〜Ⅲ（長文2題＋グラフ英作文）・90分・100点
+  - 岡山：問1〜問4（長文2題・会話文＋グラフ／和文英訳・自由英作文）・120分・200点
+  - 広島：Ⅰ〜Ⅳ（段落要約・関連2文の長文・意見英作文・グラフ英作文）・120分・200点
+- 照合：`python3 work/plag/niji_check.py wakayama okayama hiroshima`（各大学の過去問・公式解答のOCR文と照合）で英5語・日12字の一致0件を確認。
+- 大学名の入った問題指示の決まり文句も過去問と重なりやすいので、言い回しは独自のもの（例「以下の英文を読み、あとの問いに答えよ」）にしている。

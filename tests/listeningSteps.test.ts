@@ -130,13 +130,20 @@ describe('D1: 1画面＝1問（問1で1つの進捗、問2で1つの進捗）', 
     for (const p of grammar) expect(isPerSubQuestionListening(p)).toBe(true);
   });
 
-  it('音源はあっても小問が1つだけなら分割しない（分ける意味がない）', () => {
-    expect(
-      isPerSubQuestionListening(fixture<Problem>({
-        audioTracks: [{ subId: 'a' }],
-        subQuestions: [{ id: 'a' }],
-      })),
-    ).toBe(false);
+  // 2026-10-30 E5・E6：以前は false（分割しない）だったが、それだと問題文・図・音源が1つも描かれなかった。
+  //   小問が1つでも1問ずつの画面で出す（英文法の1問だけの回・「間違えた問題だけ解き直す」で絞った大問）。
+  it('音源か stepwise があれば、小問が1つでも1問ずつの画面にする（問題文・図が消えない）', () => {
+    expect(isPerSubQuestionListening(fixture<Problem>({ audioTracks: [{ subId: 'a' }], subQuestions: [{ id: 'a' }] }))).toBe(true);
+    expect(isPerSubQuestionListening(fixture<Problem>({ stepwise: true, subQuestions: [{ id: 'a' }] }))).toBe(true);
+    expect(isPerSubQuestionListening(fixture<Problem>({ stepwise: true, subQuestions: [] }))).toBe(false);
+  });
+
+  it('英文法の1問だけの回（第1章 第9回）も英文が出せる', () => {
+    const p = getAllGrammarChapters().flatMap((c) => [...(c.miniTest || []), ...(c.practiceProblems || [])])
+      .find((x) => x.id === 'q_eg6_1_set9');
+    expect(p).toBeTruthy();
+    expect(isPerSubQuestionListening(p!)).toBe(true);
+    expect(buildListeningSteps(p!)).toHaveLength(1);
   });
 
   it('第1問A の1回ぶんが 問1〜問4 の4ステップに分かれる', () => {

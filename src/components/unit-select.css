@@ -120,3 +120,20 @@
   @keyframes gr-in { from { opacity: 0; translate: 0 6px; } }
   @keyframes gr-pulse { 0%, 100% { scale: 1; } 50% { scale: 1.12; } }
 }
+
+/* ★E11（2026-10-31）リスニング「読み方・解き方のテクニック」★
+   回のカード（黄・緑）と見分けがつくよう青系。開閉式で、閉じていれば1行（44px）だけ */
+.lt-card { margin: 0 0 10px; border: 1.5px solid var(--mt-brand); border-radius: 14px; background: var(--mt-brand-soft); color: var(--mt-ink); }
+.lt-card > summary { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; font-size: 14px; font-weight: 800; color: var(--mt-brand-strong); cursor: pointer; list-style: none; }
+.lt-card > summary::-webkit-details-marker { display: none; }
+.lt-card > summary::after { content: '▼'; margin-left: auto; font-size: 12px; transition: transform .2s; }
+.lt-card[open] > summary::after { transform: rotate(180deg); }
+.lt-body { display: grid; gap: 10px; padding: 0 12px 12px; }
+.lt-body h4 { margin: 0 0 4px; font-size: 13px; font-weight: 800; color: var(--mt-brand-strong); }
+.lt-body ul { margin: 0; padding-left: 1.2em; font-size: 13px; line-height: 1.65; }
+.lt-body dl { margin: 0; display: grid; gap: 6px; font-size: 13px; line-height: 1.65; }
+.lt-body dl > div { padding: 6px 10px; border-radius: 10px; background: var(--mt-surface); }
+.lt-body dt { font-weight: 800; }
+.lt-body dt::before { content: 'Q. '; color: var(--mt-brand); }
+.lt-body dd { margin: 2px 0 0; }
+.lt-body dd::before { content: 'A. '; font-weight: 800; color: var(--mt-done); }

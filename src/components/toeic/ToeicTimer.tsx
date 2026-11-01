@@ -18,13 +18,15 @@ function fmt(sec: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
-export function ToeicTimer({ timeLimit, running, finished, onTick, resetKey }: {
+export function ToeicTimer({ timeLimit, running, finished, onTick, resetKey, guideStatus }: {
   timeLimit: number;
   running: boolean;
   /** 全ページの採点が済んだか（済んだら、かかった時間を出す） */
   finished: boolean;
   onTick?: (elapsedSec: number) => void;
   resetKey: string | number;
+  /** Part 5の時間予算ガイド。未指定なら従来どおりの表示 */
+  guideStatus?: string;
 }) {
   const [elapsed, setElapsed] = useState(0);
   const startedAtRef = useRef<number | null>(null);
@@ -73,11 +75,12 @@ export function ToeicTimer({ timeLimit, running, finished, onTick, resetKey }: {
   useLayoutEffect(() => { if (fillRef.current) fillRef.current.style.width = `${pct}%`; }, [pct]);
 
   return (
-    <div className="tp-timer" role="timer" aria-label={label} data-state={state} data-toeic-timer>
+    <div className="tp-timer" role="timer" aria-label={guideStatus ? `${label}。${guideStatus}` : label} data-state={state} data-toeic-timer>
       <p className="tp-timer-text">
         <Clock size={13} aria-hidden="true" />
         <span>{label}</span>
         {state !== 'done' && state !== 'over' && <span className="tp-timer-limit">／ {fmt(limit)}</span>}
+        {guideStatus && <span className="tp-timer-guide-status" data-toeic-timer-guide-status>{guideStatus}</span>}
       </p>
       <div className="tp-timer-track" aria-hidden="true">
         <div className="tp-timer-fill" ref={fillRef} />

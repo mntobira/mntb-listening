@@ -165,3 +165,14 @@
   @keyframes pp-pop { from { opacity: 0; scale: .8; } }
   @keyframes pp-grow { from { scale: 0 1; } }
 }
+
+/* ★E4（2026-10-30）ランキング・フレンドから開くプロフィールの「マイページ」タブ＝本人のマイページと同じ部品★
+   .mystudy-* / .slog-sum は studylog.css のもの。窓の中なので高さは中身なり（マイページの flex:1 を外す） */
+.pp-page-about.mystudy { flex: none; padding: 0; border: 0; background: none; box-shadow: none; }
+.pp-page-about .mystudy-week { flex: none; }
+.pp-page-about .mystudy-bars .bar > i[data-public-bar] { flex: 1; background: var(--mt-brand); }
+.pp-page-about .mystudy-bars li[data-best] .bar > i[data-public-bar] { background: var(--mt-accent-strong); }
+.pp-page-about .mystudy-who .pp-name { font-size: 17px; }
+.pp-stats-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pp-stats-4 dt { font-size: 12px; }
+@media (max-width: 360px) { .pp-stats-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

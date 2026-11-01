@@ -172,6 +172,7 @@ export async function savePublicStudyProfile(published: boolean, targetSchool: s
 }
 /** Recheck consent on the server before refreshing: another device may have
  * withdrawn it. Never recreate a deleted projection from a stale local flag. */
+let lastRefresh: { sig: string; at: number } | null = null;
 export async function refreshPublicStudyTime(): Promise<void> {
   const uid = auth.currentUser?.uid;
   if (!uid) return;
@@ -182,9 +183,13 @@ export async function refreshPublicStudyTime(): Promise<void> {
   const { updateDoc } = await import('./firestoreMetered');
   const ref = doc(db, PUBLIC_STUDY_PROFILES, uid);
   const fields = statsFields(uid, currentStats());
+  // ★2026-10-30 E8★ ランキングを開くたびに（1回に2か所から）書いていた。中身が前回と同じで10分以内なら書かない
+  const sig = `${uid}:${JSON.stringify(fields)}`;
+  if (lastRefresh && lastRefresh.sig === sig && Date.now() - lastRefresh.at < 10 * 60_000) return;
   const denied = (e: unknown) => (e as { code?: string })?.code === 'permission-denied';
   try {
     await updateDoc(ref, { ...fields, updatedAt: serverTimestamp() });
+    lastRefresh = { sig, at: Date.now() };
   } catch (e) {
     // ルールが古いと D6 の項目・週の記録などは拒否される。減らしてもう一度、最後は学習時間だけ
     if (!denied(e)) throw e;

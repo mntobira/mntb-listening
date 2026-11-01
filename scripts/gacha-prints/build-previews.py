@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ガチャの「ピックアップ」で見せる『中身を少しだけ』の画像を作る。
 
-対象：LR（共通テスト予想問題 10種・2次試験予想問題 3種）＋ 厳選UR（GachaParts.tsx の FEATURED_UR_IDS 10種）。
+対象：LR（共通テスト予想問題 10種・2次試験予想問題）＋ 厳選UR（GachaParts.tsx の FEATURED_UR_IDS 10種）。
 各PDFの 2ページ目と真ん中のページを、上半分だけ・幅 360px の webp にする（下はぼかして白く消す）。
 → 全部は読めない「ちら見せ」。出力：public/prints/previews/<id>_p<n>.webp
 一覧は src/data/gachaPreviews.generated.ts に書き出す（tests/gachaPickup.test.ts が実物と照合）。
@@ -32,7 +32,7 @@ def lr_ids() -> list[str]:
         out.append(f'print_lr_kyotsu_{kind}_{n}')
     # 2026-10-29：2次試験ガチャの LR（国公立2次 英語 予想問題）
     niji = (ROOT / 'src/data/nijiMockPrints.ts').read_text()
-    for univ, n in re.findall(r'\b(nagoya|shizuoka)\((\d+), \d+, \d+\)', niji):
+    for univ, n in re.findall(r'\b(nagoya|shizuoka|omua|omub|wakayama|okayama|hiroshima)\((\d+), \d+, \d+\)', niji):
         out.append(f'print_lr_niji_{univ}_en_{n}')
     return out
 

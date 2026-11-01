@@ -6,7 +6,7 @@
  *   ・各スライドの中身（今週の目玉・ピックアップ・ひとこと・案内）は、これまでの1枚のバナーと同じ作り。
  *     目玉・ピックアップはそのガチャの中身（gachaItems(pool)）から毎週自動で選ぶ。アイテム名は書かない。
  */
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, type KeyboardEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { Info, Sparkles, Target } from 'lucide-react';
 import { gachaItems, gachaItemRate } from '../../battle/core/arenaEconomy';
 import { gachaFeatured } from '../../battle/core/gachaFeatured';
@@ -15,6 +15,10 @@ import { gachaRarityOf, type GrowthProgress, type ItemDef } from '../../battle/c
 import { ItemArt, RarityTag, pct } from '../GachaParts';
 import { TobiraBuddy } from '../TobiraBuddy';
 import { weekEndLabel, weeklyHero, weeklyPickup } from './GachaItemDetail';
+
+/** E2：目玉の枠で1つを見せる時間と、フェードアウトの時間 */
+export const HERO_SHOW_MS = 4200;
+export const HERO_FADE_MS = 450;
 
 const reducedMotion = () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
@@ -134,7 +138,29 @@ function PoolSlide({ poolId, active, progress, onDetail, onPickup, onOdds, coins
   // 目玉は週ごとに LR と UR を交互に（いつも UR にならない）。割合はそのガチャの本物の抽選表の値
   const hero = useMemo(() => weeklyHero(items, featured.week, featured.hero?.item ?? null), [items, featured]);
   const pickup = useMemo(() => weeklyPickup(items, featured.week, hero?.id), [items, featured, hero]);
-  if (!hero) return null;
+  // ★E2（2026-10-30）目玉の枠を順に回す★ 今週の目玉 → ピックアップの LR → UR の順に、
+  //   しばらく見せたらフェードアウト → 次の物がフェードイン。押すと、いま出ている物の詳細が開く。
+  //   見ていないスライド・裏に回したとき・動きを減らす設定のときは止める（今週の目玉のまま）。
+  const heroes = useMemo(() => {
+    const list = [hero, ...pickup.filter((i) => gachaRarityOf(i) === 'LR'), ...pickup.filter((i) => gachaRarityOf(i) !== 'LR')];
+    return list.filter((i, k): i is ItemDef => !!i && list.findIndex((x) => x?.id === i.id) === k);
+  }, [hero, pickup]);
+  const [heroAt, setHeroAt] = useState(0);
+  const [fading, setFading] = useState(false);
+  useEffect(() => {
+    setHeroAt(0); setFading(false);
+    const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!active || reduce || heroes.length < 2) return;
+    let swap: ReturnType<typeof setTimeout> | undefined;
+    const tick = setInterval(() => {
+      if (document.hidden) return;
+      setFading(true);
+      swap = setTimeout(() => { setHeroAt((n) => (n + 1) % heroes.length); setFading(false); }, HERO_FADE_MS);
+    }, HERO_SHOW_MS);
+    return () => { clearInterval(tick); if (swap) clearTimeout(swap); };
+  }, [active, heroes]);
+  const shown = heroes[heroAt] ?? hero;
+  if (!hero || !shown) return null;
   return (
     <div
       className="gacha-slide"
@@ -148,21 +174,26 @@ function PoolSlide({ poolId, active, progress, onDetail, onPickup, onOdds, coins
       <button
         type="button"
         className="gacha-banner-hero"
-        data-rarity={gachaRarityOf(hero)}
+        data-rarity={gachaRarityOf(shown)}
         data-gacha-hero={active ? '' : undefined}
-        onClick={() => onDetail(hero, poolId)}
-        aria-label={`${def.title} 今週の目玉 ${hero.label} の詳細を見る`}
+        data-hero-fading={fading || undefined}
+        data-hero-index={heroAt}
+        onClick={() => onDetail(shown, poolId)}
+        aria-label={`${def.title} ${heroAt === 0 ? '今週の目玉' : 'ピックアップ'} ${shown.label} の詳細を見る`}
       >
         {/* B5（2026-10-29）：光が走る・キラキラが舞う（目玉を派手に）。動きを減らす設定では止める */}
         <span className="gacha-banner-shine" aria-hidden="true" />
         <span className="gacha-banner-sparks" aria-hidden="true"><i /><i /><i /><i /><i /></span>
-        <span className="gacha-banner-art"><ItemArt item={hero} progress={progress} size={76} /></span>
-        <span className="gacha-banner-body">
-          <span className="gacha-banner-top"><RarityTag rarity={gachaRarityOf(hero)} /><em>{def.title}の目玉</em></span>
-          <strong>{hero.label}</strong>
-          <small>1種あたり {pct(gachaItemRate(hero, 'N', poolId))}%{progress?.owned.includes(hero.id) ? ' · 所持済み' : ''}</small>
-          <span className="gacha-banner-tap"><Info size={13} aria-hidden="true" />タップで詳細</span>
+        <span className="gacha-banner-swap" key={shown.id}>
+          <span className="gacha-banner-art"><ItemArt item={shown} progress={progress} size={76} /></span>
+          <span className="gacha-banner-body">
+            <span className="gacha-banner-top"><RarityTag rarity={gachaRarityOf(shown)} /><em>{heroAt === 0 ? `${def.title}の目玉` : 'ピックアップ'}</em></span>
+            <strong>{shown.label}</strong>
+            <small>1種あたり {pct(gachaItemRate(shown, 'N', poolId))}%{progress?.owned.includes(shown.id) ? ' · 所持済み' : ''}</small>
+            <span className="gacha-banner-tap"><Info size={13} aria-hidden="true" />タップで詳細</span>
+          </span>
         </span>
+        {heroes.length > 1 && <span className="gacha-banner-dots" aria-hidden="true">{heroes.map((h, k) => <i key={h.id} data-on={k === heroAt || undefined} />)}</span>}
       </button>
       <ul className="gacha-banner-picks" aria-label={`${def.title} 今週のピックアップ（押すと詳細）`}>
         {pickup.map((item) => (

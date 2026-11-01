@@ -65,3 +65,16 @@ describe('「間違えた問題だけ解き直す」は間違えた大問・小�
     expect(focusedSubIds(focus, 'c', 'q2')).toBeNull();
   });
 });
+
+describe('E6（2026-10-30）解き直しは音源も間違えた小問のぶんだけ', () => {
+  it('問4だけなら音源も問4だけ。まとめ音源（subIds）は含む小問があれば残す', () => {
+    const problems = [{
+      id: 'q1',
+      subQuestions: [1, 2, 3, 4].map(n => ({ id: `q1_${n}` })),
+      audioTracks: [{ subId: 'q1_1' }, { subId: 'q1_2' }, { subId: 'q1_3' }, { subId: 'q1_4' }, { subIds: ['q1_3', 'q1_4'] }],
+    }];
+    const out = applyReviewFocus(problems, 'c', { chapterId: 'c', targets: [{ questionId: 'q1', subQuestionIds: ['q1_4'] }] });
+    expect((out[0] as typeof problems[0]).audioTracks).toEqual([{ subId: 'q1_4' }, { subIds: ['q1_3', 'q1_4'] }]);
+    expect(problems[0].audioTracks).toHaveLength(5);
+  });
+});

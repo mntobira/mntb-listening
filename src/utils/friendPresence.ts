@@ -1,35 +1,15 @@
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, serverTimestamp, updateDoc } from './firestoreMetered';
-import { auth, db } from '../firebase';
-import { logRejection } from './reportError';
-
 /**
- * Visible-tab heartbeat; stale sessions expire after 90 seconds. No public user listing.
+ * フレンドの在室（オンライン表示）の心拍。
  *
- * ★書き込みを抑える（利用者が増えたときの負荷対策）★
- *   1回書くたびに、その人をフレンドに持つ全員の画面へ通知が飛ぶ。
- *   以前は30秒ごと＋画面の切り替え・オンライン復帰のたびに書いていたので、
- *   タブを行き来するだけで連続して書き込んでいた。
- *   ・定期の書き込みは45秒ごと（1回遅れても「90秒以内ならオンライン」に収まる）
- *   ・どのきっかけでも、直前の書き込みから20秒以内なら書かない
+ * ★2026-10-30 E8：書き込みをやめた★
+ *   以前は画面を開いている間 45 秒ごとに friend_profiles/{uid} へ presenceAt を書いていた
+ *   （1人が1時間使うと約80回の書き込み）。ところが、それを読んで「オンライン中」を出していた
+ *   FriendOnlineStrip は 2026-10-16 のリファクタリングで削除されていて、いまは誰も読んでいない。
+ *   読まれない書き込みが Firestore の書き込み上限（1日2万）を押し上げていたので止める。
+ *   オンライン表示を復活させるときは、書き込みではなく Realtime Database の onDisconnect か、
+ *   「フレンド画面を開いている間だけ」書く形で入れ直す。
+ *   呼び出し側（App.tsx）を変えなくて済むよう、関数の形は残す。
  */
-const PULSE_MS = 45_000;
-const MIN_GAP_MS = 20_000;
-
-export function installFriendPresence() {
-  let lastAt = 0;
-  let lastUid: string | null = null;
-  const pulse = () => {
-    const uid=auth.currentUser?.uid;
-    // Let timestamps expire: a hidden tab must not mark another visible tab offline.
-    if(!uid || !navigator.onLine || document.visibilityState !== 'visible')return;
-    const now = Date.now();
-    if (uid === lastUid && now - lastAt < MIN_GAP_MS) return;
-    lastAt = now; lastUid = uid;
-    void updateDoc(doc(db,'friend_profiles',uid),{presenceActive:true,presenceAt:serverTimestamp()}).catch(logRejection('friends.presence'));
-  };
-  const off=onAuthStateChanged(auth,()=>{pulse();});
-  const timer=setInterval(()=>{if(document.visibilityState==='visible')pulse();},PULSE_MS);
-  document.addEventListener('visibilitychange',pulse);window.addEventListener('online',pulse);
-  return()=>{off();clearInterval(timer);document.removeEventListener('visibilitychange',pulse);window.removeEventListener('online',pulse);};
+export function installFriendPresence(): () => void {
+  return () => {};
 }

@@ -405,6 +405,14 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onRetry, vie
   };
 
   useMountEffect(() => { refresh(); });
+  // E7：解き直しで「無くなった問題」を外したとき、一覧をすぐ更新する
+  const refreshRef = useRef(refresh);
+  refreshRef.current = refresh;
+  useEffect(() => {
+    const on = () => refreshRef.current();
+    window.addEventListener('review-list-changed', on);
+    return () => window.removeEventListener('review-list-changed', on);
+  }, []);
 
   const subjectSummaries = useMemo(() => summarizeBySubject(reviewItems, now), [reviewItems, now]);
   const [subjectTab, setSubjectTab] = useState<SubjectTabId>(view?.subjectTab ?? ALL_SUBJECTS);

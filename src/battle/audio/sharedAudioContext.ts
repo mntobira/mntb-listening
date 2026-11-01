@@ -63,6 +63,7 @@ function installResumeGuards(): void {
       document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') resumeSharedAudio(); });
     }
     if (typeof window.addEventListener === 'function') {
+      window.addEventListener('focus', resumeSharedAudio);
       window.addEventListener('pageshow', resumeSharedAudio);
       window.addEventListener('pointerdown', resumeSharedAudio, { passive: true, capture: true });
       window.addEventListener('keydown', resumeSharedAudio, { capture: true });

@@ -42,14 +42,15 @@ describe('全訳のデータ', () => {
 
 describe('画面の配線', () => {
   const src = readFileSync('src/components/ReadingQuiz.tsx', 'utf8');
-  it('解説に「第N段落の全訳」（開閉式・根拠は太字）', () => {
+  // E10（2026-10-31）：全訳まるごと → 英文→和訳を1文ずつ交互に（構文の札つき）に変更
+  it('解説に「第N段落を1文ずつ」（開閉式・根拠は太字）', () => {
     expect(src).toContain('data-reading-translation');
-    expect(src).toContain('<summary>第{evPara}段落の全訳</summary>');
-    expect(src).toContain('markJa(evJa, q.evidenceJa)');
+    expect(src).toContain('<summary>第{evPara}段落を1文ずつ（英文→和訳・構文）</summary>');
+    expect(src).toContain('markJa(pr.ja, evidenceJa)');
   });
-  it('結果画面に「本文と全訳を見る」', () => {
+  it('結果画面に「本文を1文ずつ読み直す」', () => {
     expect(src).toContain('data-reading-translation-all');
-    expect(src).toContain('本文と全訳を見る');
+    expect(src).toContain('本文を1文ずつ読み直す');
   });
   it('文字は 12px 以上・押せる高さは 44px 以上（UI の決まり）', () => {
     const css = readFileSync('src/components/foundation.css', 'utf8');

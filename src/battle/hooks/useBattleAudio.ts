@@ -79,11 +79,13 @@ export function useBattleAudio(track: BattleBgmTrack, startInMs?: number, priori
     const token = owner.current;
     const resume = () => { if (document.visibilityState !== 'hidden') engine.unlock(); };
     window.addEventListener('pointerdown', resume);
+    window.addEventListener('focus', resume);
     window.addEventListener('pageshow', resume);
     document.addEventListener('visibilitychange', resume);
     return () => {
       engine.releaseBgmOwner(token);
       window.removeEventListener('pointerdown', resume);
+      window.removeEventListener('focus', resume);
       window.removeEventListener('pageshow', resume);
       document.removeEventListener('visibilitychange', resume);
     };
