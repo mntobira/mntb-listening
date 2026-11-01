@@ -1,0 +1,156 @@
+/* 熊本大学 予想問題の紙面（ryukyu_mock/style.css と同じ。白黒の試験冊子） */
+@page { size: A4; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; font-family: 'Noto Serif', 'Noto Serif CJK JP', serif; font-size: 10pt; line-height: 1.75; color: #111; }
+.page { break-before: page; }
+.page:first-child { break-before: auto; }
+h2.part, .cv-notes-h, .disc, .crit-h, .ah, .ah2, .sh-t, .sp, .sno, .qno, h3.aq, .pno, .cv-univ, .col th, .outline td:first-child, .akey th { font-family: 'Noto Sans CJK JP', sans-serif; }
+
+/* 表紙 */
+.cover { height: 263mm; position: relative; }
+.cv-head { display: flex; justify-content: space-between; align-items: center; border-bottom: 0.8px solid #888; padding-bottom: 2mm; font-size: 7.5pt; color: #444; }
+.logo { height: 8.5mm; }
+.cv-main { text-align: center; margin-top: 20mm; }
+.cv-round { font-size: 11pt; margin: 0; }
+.cv-subject { font-size: 30pt; font-weight: 900; letter-spacing: 0.08em; margin: 6mm 0 2mm; font-family: 'Noto Serif CJK JP', serif; }
+.cv-sub { font-size: 14pt; margin: 0 0 6mm; }
+.cv-kind { display: inline-block; border: 1.4px solid #111; padding: 1mm 12mm; font-size: 12pt; letter-spacing: 0.2em; margin: 0 0 3mm; }
+.cv-range { font-size: 9pt; margin: 0 0 3mm; }
+.cv-univ { font-size: 10pt; font-weight: bold; margin: 0; }
+.cv-notes { border: 1px solid #333; padding: 4mm 7mm 3mm; margin: 14mm 6mm 0; font-size: 8.8pt; line-height: 1.7; }
+.cv-notes-h { font-weight: bold; letter-spacing: 0.25em; margin: 0 0 1.5mm; font-size: 9pt; }
+.cv-notes ol { margin: 0; padding-left: 1.4em; }
+.disc { background: #eee; border-left: 4px solid #111; padding: 3mm 4mm; margin: 8mm 6mm 0; font-size: 9pt; line-height: 1.6; }
+.disc span { font-size: 8pt; color: #333; }
+.cv-foot { position: absolute; left: 0; right: 0; bottom: 0; border-top: 0.8px solid #888; padding-top: 1.5mm; display: flex; justify-content: space-between; font-size: 7.5pt; color: #444; }
+
+/* 大問 */
+h2.part { font-size: 12pt; border-bottom: 1.5px solid #111; padding-bottom: 1.5mm; margin: 0 0 3mm; break-after: avoid; }
+.pnum { display: inline-block; background: #111; color: #fff; padding: 0 2.2mm; margin-right: 2.5mm; font-size: 11pt; line-height: 1.5; }
+.lead { font-size: 9.6pt; margin: 0 0 3mm; }
+.ptitle { text-align: center; font-weight: bold; font-size: 11pt; margin: 2mm 0 2.5mm; }
+.en { text-align: justify; margin: 0 0 1.8mm; font-size: 10pt; line-height: 1.72; }
+.pno { display: inline-block; font-size: 7pt; color: #333; border: 0.6px solid #555; padding: 0 1mm; line-height: 1.4; margin-right: 1.8mm; vertical-align: 1px; }
+.ul { text-decoration: underline; text-decoration-thickness: 0.7px; text-underline-offset: 2.5px; }
+.ulab { display: inline-block; text-decoration: none; font-weight: bold; font-size: 8pt; margin-right: 0.8mm; }
+.blank { white-space: nowrap; }
+table.notes { font-size: 8.4pt; margin: 2mm 0 3mm; border-top: 0.6px solid #999; width: 100%; line-height: 1.6; }
+table.notes th { width: 7mm; vertical-align: top; text-align: left; font-weight: bold; padding-top: 1mm; }
+table.notes td { padding-top: 1mm; }
+.note { display: inline-block; margin-right: 5mm; }
+.q { display: flex; gap: 2.5mm; margin: 2.6mm 0; break-inside: avoid; font-size: 9.8pt; }
+.qno { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 5.6mm; height: 5.6mm; border: 1px solid #111; font-size: 8.5pt; font-weight: bold; margin-top: 0.7mm; }
+.qbody { flex: 1; }
+.choices { list-style: none; padding: 0; margin: 1mm 0 0; }
+.choices li { margin: 0.6mm 0; padding-left: 11mm; text-indent: -11mm; }
+.cl { display: inline-block; width: 11mm; text-indent: 0; }
+.jabox { border: 1px solid #555; padding: 4mm 5mm; font-family: 'Noto Serif CJK JP', serif; line-height: 1.95; }
+.ja { text-indent: 1em; margin: 0 0 1.5mm; }
+.topic { border: 1px solid #111; padding: 4mm 5mm; margin: 3mm 0; line-height: 1.9; }
+/* 解答用紙 */
+.sheet { height: 263mm; overflow: hidden; }
+.sh-head { display: flex; align-items: baseline; gap: 4mm; border-bottom: 1.5px solid #111; padding-bottom: 1.5mm; margin-bottom: 1mm; }
+.sh-t { font-size: 14pt; font-weight: bold; letter-spacing: 0.3em; }
+.sh-s { font-size: 8pt; color: #333; }
+.sh-name { margin-left: auto; font-size: 8.5pt; border-bottom: 1px solid #111; min-width: 64mm; }
+.sp { margin: 3mm 0 0.5mm; font-size: 8.5pt; border-bottom: 1px solid #111; padding-bottom: 1mm; }
+.sp .pnum { font-size: 9pt; }
+.wc { float: right; }
+.srow { display: flex; border-bottom: 0.6px solid #888; padding: 0.6mm 0; }
+.sno { width: 10mm; flex: none; font-weight: bold; font-size: 8.5pt; padding-top: 1.2mm; }
+.sbody { flex: 1; }
+.ln { height: 8mm; border-bottom: 0.6px solid #aaa; }
+.ln4 { height: 8.4mm; }
+.sbox { width: 16mm; height: 8mm; border: 1px solid #111; margin: 1mm 0; }
+.sboxes { display: flex; flex-wrap: wrap; gap: 2mm 6mm; padding: 1mm 0; }
+.sb { display: inline-flex; align-items: center; gap: 1.5mm; font-size: 8.5pt; }
+.sbb { display: inline-block; width: 22mm; height: 8mm; border: 1px solid #111; }
+.genko { margin: 2mm 0 1mm; }
+.gkrow { display: flex; position: relative; }
+.gk { width: 8.2mm; height: 8.2mm; border: 0.5px solid #777; margin: 0 -0.5px -0.5px 0; }
+.gkn { position: absolute; left: 166mm; bottom: 0.5mm; font-size: 6.5pt; color: #444; }
+
+/* 奥付 */
+.colophon { padding-top: 150mm; }
+.colh { font-size: 13pt; letter-spacing: 0.4em; margin: 0 0 3mm; font-family: 'Noto Sans CJK JP', sans-serif; }
+.col { width: 100%; border-collapse: collapse; font-size: 8.8pt; border-top: 1px solid #111; }
+.col th { width: 24mm; text-align: left; padding: 1.5mm 2mm; border-bottom: 0.6px solid #999; vertical-align: top; }
+.col td { padding: 1.5mm 2mm; border-bottom: 0.6px solid #999; }
+.colophon .disc { margin: 6mm 0 3mm; }
+.small { font-size: 8pt; color: #333; line-height: 1.6; }
+
+/* 解答・解説 */
+.ah { font-weight: bold; font-size: 9.6pt; margin: 4.5mm 0 1.5mm; border-left: 3px solid #111; padding-left: 2mm; break-after: avoid; }
+.ah2 { font-weight: bold; font-size: 9pt; margin: 2mm 0 0.5mm; }
+table.akey { width: 100%; border-collapse: collapse; font-size: 9pt; }
+.akey th { background: #222; color: #fff; padding: 1mm 2mm; text-align: left; font-weight: bold; }
+.akey td { border-bottom: 0.6px solid #aaa; padding: 1.1mm 2mm; vertical-align: top; }
+.akey td:first-child { width: 14mm; }
+.pt { text-align: right; width: 14mm; }
+.akey .sum td { font-weight: bold; border-top: 1px solid #111; }
+h3.aq { font-size: 10pt; margin: 5mm 0 1.5mm; display: flex; align-items: center; gap: 2mm; border-bottom: 0.8px solid #111; padding-bottom: 1mm; break-after: avoid; }
+.ans { font-weight: bold; margin: 1mm 0; }
+.en-ans { font-weight: normal; }
+.expl { margin: 1mm 0 2mm; font-size: 9.6pt; }
+.crit { border: 1px solid #333; padding: 2.5mm 4mm; margin: 2mm 0 3mm; break-inside: avoid; font-size: 9pt; line-height: 1.6; }
+.crit-h { font-weight: bold; margin: 0 0 1mm; }
+.crit ul { margin: 0; padding-left: 1.2em; }
+.trp { margin: 0 0 1.6mm; font-size: 9.3pt; line-height: 1.8; }
+.vocab { font-size: 8.6pt; columns: 2; column-gap: 8mm; line-height: 1.6; }
+.vw { display: block; break-inside: avoid; }
+.model-ja { border: 1px solid #555; padding: 3mm 4mm; font-size: 9.6pt; line-height: 1.9; font-family: 'Noto Serif CJK JP', serif; }
+table.outline { width: 100%; border-collapse: collapse; font-size: 9pt; }
+.outline td { border-bottom: 0.6px solid #aaa; padding: 1mm 2mm; vertical-align: top; }
+.outline td:first-child { width: 18mm; white-space: nowrap; }
+.tips { font-size: 9pt; margin: 1mm 0 2mm; padding-left: 1.2em; line-height: 1.65; }
+.ja-src { font-size: 9.3pt; color: #222; border-left: 2px solid #999; padding-left: 3mm; margin: 1mm 0; }
+.alt { font-size: 9.3pt; margin: 0.5mm 0; }
+.model-en { border: 1px solid #555; padding: 3mm 4mm; font-size: 9.6pt; line-height: 1.72; text-align: justify; }
+.model-en p { margin: 0 0 1.5mm; }
+.outl { font-size: 9pt; margin: 0.5mm 0 1.5mm; }
+.reader { border: 1.4px dashed #333; padding: 3mm 4mm; margin-top: 5mm; break-inside: avoid; }
+.script { line-height: 2; margin: 2mm 0 0; }
+
+/* ── 琉球大学用の追加 ── */
+.qk { flex: none; font-family: 'Noto Sans CJK JP', sans-serif; font-weight: bold; font-size: 9.6pt; border: 1px solid #111; padding: 0 1.6mm; height: 5.8mm; line-height: 5.6mm; margin-top: 0.4mm; }
+.sub { margin: 1.4mm 0 0; break-inside: avoid; }
+.sl { font-family: 'Noto Sans CJK JP', sans-serif; font-weight: bold; font-size: 8.8pt; margin-right: 1.5mm; }
+.cgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4mm 3mm; margin: 0.8mm 0 0 4mm; }
+.cgrid.c2 { grid-template-columns: repeat(2, 1fr); }
+.cgrid.c5 { grid-template-columns: repeat(5, 1fr); }
+.choices.ind { margin-left: 4mm; }
+.events { list-style: none; padding: 0; margin: 1mm 0 0 4mm; }
+.events li { margin: 0.5mm 0; padding-left: 7mm; text-indent: -7mm; }
+.dlg { margin: 0; border-collapse: collapse; width: 100%; }
+.dlg td { vertical-align: top; padding: 0.7mm 0; font-size: 10pt; line-height: 1.7; }
+.dlg td.who { width: 15mm; font-weight: bold; white-space: nowrap; }
+.chart { display: block; margin: 3mm auto 1mm; }
+.chart-cap { text-align: center; font-size: 8.4pt; margin: 0 0 1mm; }
+.chart-src { text-align: right; font-size: 7.6pt; color: #333; margin: 0; }
+/* 記号の解答欄（表） */
+table.ast { border-collapse: collapse; margin: 1mm 0 2mm 6mm; }
+.ast th { border: 1px solid #111; font-weight: normal; font-size: 8.4pt; padding: 0.3mm 2mm; min-width: 18mm; font-family: 'Noto Sans CJK JP', sans-serif; }
+.ast td { border: 1px solid #111; height: 10mm; }
+.sq { font-family: 'Noto Sans CJK JP', sans-serif; font-weight: bold; font-size: 9pt; margin: 2.5mm 0 0; }
+.sqrow { display: flex; gap: 8mm; flex-wrap: wrap; align-items: flex-start; }
+.ord { display: flex; align-items: center; gap: 2mm; margin: 1.5mm 0 2mm 6mm; font-size: 10pt; }
+.ord .ob { display: inline-block; width: 15mm; height: 10mm; border: 1px solid #111; }
+.score { position: absolute; right: 0; bottom: 0; border: 1px solid #111; width: 34mm; text-align: center; font-size: 8pt; font-family: 'Noto Sans CJK JP', sans-serif; }
+.score div { border-top: 1px solid #111; height: 13mm; }
+.sheet { position: relative; }
+.bignum { display: inline-block; border: 1.4px solid #111; padding: 0 2.4mm; font-size: 12pt; font-weight: bold; font-family: 'Noto Sans CJK JP', sans-serif; margin: 3mm 0 1mm; }
+.shid { float: right; border: 1px solid #111; font-size: 8pt; display: flex; font-family: 'Noto Sans CJK JP', sans-serif; }
+.shid span { padding: 1.5mm 2.5mm; }
+.shid span + span { border-left: 1px solid #111; width: 30mm; }
+.subexp { margin: 1mm 0 1.6mm; font-size: 9.5pt; }
+.subexp b { font-family: 'Noto Sans CJK JP', sans-serif; }
+.facts { font-size: 9.3pt; }
+
+/* ── 熊本大学用の追加 ── */
+.words { border: 1px solid #333; padding: 2mm 4mm; margin: 2mm 0 3mm; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6mm 3mm; font-size: 9.8pt; }
+.wbox { display: inline-block; border: 1px solid #111; padding: 0.4mm 2mm; margin: 1mm 0; font-size: 9.6pt; }
+.gk.s { width: 7.4mm; height: 7.4mm; }
+.lim { font-size: 8pt; color: #333; margin-left: 2mm; }
+table.ast.wide th { min-width: 26mm; }
+.ast td.tall { height: 11mm; }

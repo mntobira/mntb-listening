@@ -10,6 +10,15 @@
 
 ---
 
+## 2026-11-01 2次試験ガチャの大当たりに熊本大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-kumamoto）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 2次試験ガチャの LR | 熊本大学の予想問題3冊（各25ページ：問題13＋解答・解説12）を追加。ほかの大学と同じ白黒の試験冊子・解答用紙3枚つき | `public/prints/print_lr_niji_kumamoto_en_{1,2,3}.pdf`・`thumbs/`・`previews/`・`src/data/nijiMockPrints.ts`・`src/data/gachaPreviews.generated.ts` |
+| 注意書き | 大学ごとの注意書き・ピックアップの注意書きに「熊本大学」が自動で加わる（`NIJI_UNIVERSITIES` に1行） | `src/data/nijiMockPrints.ts` |
+
+- 戻すとき：`nijiMockPrints.ts` の `kumamoto` の行（大学1行・`kumamoto(…)` 3行）を消し、`build-previews.py` の正規表現から `kumamoto` を外して作り直す。テストの冊数（30）も 27 に戻す。
+
 ## 2026-10-31 2次試験ガチャの大当たりに琉球大学 前期対策 英語 予想問題 第1〜3回（PR: feat/gakugei-yoso）
 
 | 何を | どう変えた | ファイル |

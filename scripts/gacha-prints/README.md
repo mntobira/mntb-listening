@@ -184,3 +184,17 @@ python3 scripts/gacha-prints/build-previews.py print_lr_niji_ryukyu_en_1 print_l
 - 過去問（令和8）の問題文を OCR したものと照合し、英5語・日12字の連続一致が0件であることを確認（指示文の定型句も言い換えた）。
 - render.py が検査すること：大問ごと・全体の配点（合計100）、記号の答えが選択肢にあるか、大問1 問1・大問3 は選択肢を1回ずつ使うか、並べ替えの答えが全部の出来事を1回ずつ含むか、英作文の解答例が135〜175語か。合わなければ止まる。
 - グラフは render.py の `chart_svg()` が白黒の棒グラフ（濃さ・白・灰で系列を見分ける）を描く。
+
+### 熊本大学 前期対策（2026-11-01 追加）
+
+```bash
+# 中身は scripts/gacha-prints/kumamoto_mock/r{1,2,3}*.py（r{n}_p1/p1q/p2/p3/p4 に大問ごと・r{n}.py でまとめる）。紙面は render.py
+python3 scripts/gacha-prints/kumamoto_mock/render.py all   # → .tmpwork/kumamoto/ に問題・解答解説、public/prints/print_lr_niji_kumamoto_en_N.pdf に1冊
+python3 scripts/gacha-prints/build-previews.py print_lr_niji_kumamoto_en_1 print_lr_niji_kumamoto_en_2 print_lr_niji_kumamoto_en_3
+# サムネ（表紙・360×510）は琉球大学と同じ作り方。src/data/nijiMockPrints.ts の kumamoto(n, pages, kb) を実物に合わせる
+```
+
+- 前期の英語は全学部共通（文・教育・法・理・医・薬・工・情報融合・共創）。大問の型（Ⅰ 長文・字数制限つきの日本語記述と記号・並べ替え・四角の空所／Ⅱ 英語の設問に英語で答える長文／Ⅲ 80〜100語の意見英作文／Ⅳ 会話文の空所20か所に語群25語から入れる・120分）だけを公開情報から参考にし、英文・設問・解答はすべて書き下ろし。
+- 配点は大学が公表していないため、編集部の想定（Ⅰ32・Ⅱ32・Ⅲ16・Ⅳ20）とした。表紙・奥付にもそう書いた。
+- 過去問（R6〜R8）の問題文を文字に起こしたものと照合し、英5語・日12字の連続一致が0件であることを確認（指示文も言い換えた）。
+- render.py が検査すること：配点の合計、日本語の解答例が字数制限に収まるか、並べ替えの答えが与えた語をちょうど使うか、記号の答えが選択肢にあるか、Ⅳの答えが語群の語を1回ずつ使い空所が本文にそろっているか、英作文の解答例が80〜100語か。
