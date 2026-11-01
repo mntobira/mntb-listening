@@ -2326,7 +2326,7 @@
 "path": "README.md"
 }
 ],
-"lines": 157,
+"lines": 200,
 "tag": "文書",
 "conf": "高",
 "kind": "file",
@@ -10578,7 +10578,7 @@
 "path": "src/components/GrowthHub.tsx"
 }
 ],
-"lines": 480,
+"lines": 481,
 "tag": "部品",
 "conf": "高",
 "kind": "file",
@@ -19431,7 +19431,7 @@
 "name": "UI_CHANGELOG.md",
 "folder": "docs",
 "one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
-"detail": "主な見出し：UI 変更記録（元に戻すとき用）／UI 変更記録（元に戻すとき用）／2026-10-31 2次試験ガチャの大当たりに琉球大学 前期対策 英語 予想問題 第1〜3回（PR: feat/gakugei-yoso）。",
+"detail": "主な見出し：UI 変更記録（元に戻すとき用）／UI 変更記録（元に戻すとき用）／2026-11-01 2次試験ガチャの大当たりに熊本大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-kumamoto）。",
 "links": [
 {
 "dir": "ref",
@@ -19446,7 +19446,7 @@
 "path": "scripts/pr/prCore.mts"
 }
 ],
-"lines": 1011,
+"lines": 1042,
 "tag": "文書",
 "conf": "低",
 "kind": "file",
@@ -24232,6 +24232,10 @@
 {
 "dir": "ref",
 "path": "scripts/gacha-prints/gakugei_mock/render.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/render.py"
 }
 ],
 "lines": 118,
@@ -24256,6 +24260,14 @@
 {
 "dir": "ref",
 "path": "scripts/gacha-prints/gakugei_mock/render.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/pdf.mjs"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/render.py"
 }
 ],
 "lines": 30,
@@ -24584,7 +24596,7 @@
 },
 {
 "dir": "ref",
-"path": "tests/cinematics.browser.mjs"
+"path": "scripts/gacha-prints/ryukyu_mock/render.py"
 }
 ],
 "lines": 113,
@@ -26914,6 +26926,605 @@
 ],
 "lines": 72,
 "tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/logo_gray.png",
+"path": "scripts/gacha-prints/ryukyu_mock/logo_gray.png",
+"name": "logo_gray.png",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "中身の説明が書かれていないため、ファイル名と内容から役割を判断した。",
+"links": [
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/gakugei_mock/render.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/render.py"
+}
+],
+"lines": 118,
+"tag": "音声・画像",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/pdf.mjs",
+"path": "scripts/gacha-prints/ryukyu_mock/pdf.mjs",
+"name": "pdf.mjs",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「HTML → A4 PDF（Chromium）。render.py から呼ぶ：node pdf.mjs <in.html> <out.pdf> <ヘッダーの文字> Playwrig…」読み込むもの：。",
+"links": [
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/gakugei_mock/pdf.mjs"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/gakugei_mock/render.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/render.py"
+}
+],
+"lines": 30,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r1.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r1.py",
+"name": "r1.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 琉球大学 予想問題 第1回（観光客の人数制限の島／修理テーブルの物語／学園祭の会話／本の形と年代のグラフ）」",
+"links": [
+{
+"dir": "ref",
+"path": "docs/UI_CHANGELOG.md"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/README.md"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/gakugei_mock/render.py"
+}
+],
+"lines": 10,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r1_p1.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r1_p1.py",
+"name": "r1_p1.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第1回 大問1 論説（ニュース記事ふう・書き下ろし）本文と全訳。島・人物・数値は架空。設問は r1_p1q.py」",
+"links": [],
+"lines": 27,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r1_p1q.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r1_p1q.py",
+"name": "r1_p1q.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第1回 大問1 設問（問1 空所5・問2 下線部4・問3 内容2・問4 文の完成・問5 表題）」",
+"links": [
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r1.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r1_p1.py"
+}
+],
+"lines": 52,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r1_p2.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r1_p2.py",
+"name": "r1_p2.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第1回 大問2 物語文（書き下ろし）本文と全訳。町・人物は架空。設問は r1_p2q.py」",
+"links": [],
+"lines": 31,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r1_p2q.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r1_p2q.py",
+"name": "r1_p2q.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第1回 大問2 設問（問1 下線部3・問2 空所4・問3 同じ意味・問4 指示内容・問5 理由・問6 気持ち・問7 並べ替え）」",
+"links": [
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r1.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r1_p2.py"
+}
+],
+"lines": 64,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r1_p3.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r1_p3.py",
+"name": "r1_p3.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第1回 大問3 会話文（書き下ろし）。空所10か所・選択肢 a〜j を1回ずつ使う。人物は架空」",
+"links": [],
+"lines": 75,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r1_p4.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r1_p4.py",
+"name": "r1_p4.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第1回 大問4 グラフ読解・英作文（150語程度）。グラフの調査・数値は架空」",
+"links": [],
+"lines": 51,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r2.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r2.py",
+"name": "r2.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 琉球大学 予想問題 第2回（木を植えて街を冷やす市／夜市の地図を描いた少年／海岸清掃の誘い／健康の心がけと年代のグラフ）」",
+"links": [
+{
+"dir": "ref",
+"path": "docs/UI_CHANGELOG.md"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/README.md"
+}
+],
+"lines": 10,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r2_p1.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r2_p1.py",
+"name": "r2_p1.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第2回 大問1 論説（ニュース記事ふう・書き下ろし）本文と全訳。市・人物・数値は架空。設問は r2_p1q.py」",
+"links": [],
+"lines": 27,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r2_p1q.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r2_p1q.py",
+"name": "r2_p1q.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第2回 大問1 設問（問1 空所5・問2 下線部4・問3 内容2・問4 文の完成・問5 表題）」",
+"links": [
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r2.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r2_p1.py"
+}
+],
+"lines": 52,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r2_p2.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r2_p2.py",
+"name": "r2_p2.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第2回 大問2 物語文（書き下ろし）本文と全訳。町・人物は架空。設問は r2_p2q.py」",
+"links": [],
+"lines": 31,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r2_p2q.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r2_p2q.py",
+"name": "r2_p2q.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第2回 大問2 設問（問1 下線部3・問2 空所4・問3 同じ意味・問4 指示内容・問5 理由・問6 気持ち・問7 並べ替え）」",
+"links": [
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r2.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r2_p2.py"
+}
+],
+"lines": 64,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r2_p3.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r2_p3.py",
+"name": "r2_p3.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第2回 大問3 会話文（書き下ろし）。空所10か所・選択肢 a〜j を1回ずつ使う。人物は架空」",
+"links": [],
+"lines": 75,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r2_p4.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r2_p4.py",
+"name": "r2_p4.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第2回 大問4 グラフ読解・英作文（150語程度）。グラフの調査・数値は架空」",
+"links": [],
+"lines": 51,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r3.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r3.py",
+"name": "r3.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 琉球大学 予想問題 第3回（光害と闘う山の町／祖父の船／発表の時間が減った会話／旅行先を決める情報源と年代のグラフ）」",
+"links": [],
+"lines": 10,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r3_p1.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r3_p1.py",
+"name": "r3_p1.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第3回 大問1 論説（ニュース記事ふう・書き下ろし）本文と全訳。町・人物・数値は架空。設問は r3_p1q.py」",
+"links": [],
+"lines": 27,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r3_p1q.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r3_p1q.py",
+"name": "r3_p1q.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第3回 大問1 設問（問1 空所5・問2 下線部4・問3 内容2・問4 文の完成・問5 表題）」",
+"links": [
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r3.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r3_p1.py"
+}
+],
+"lines": 52,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r3_p2.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r3_p2.py",
+"name": "r3_p2.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第3回 大問2 物語文（書き下ろし）本文と全訳。島・人物は架空。設問は r3_p2q.py」",
+"links": [],
+"lines": 31,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r3_p2q.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r3_p2q.py",
+"name": "r3_p2q.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第3回 大問2 設問（問1 下線部3・問2 空所4・問3 同じ意味・問4 指示内容・問5 理由・問6 気持ち・問7 並べ替え）」",
+"links": [
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r3.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/r3_p2.py"
+}
+],
+"lines": 64,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r3_p3.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r3_p3.py",
+"name": "r3_p3.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第3回 大問3 会話文（書き下ろし）。空所10か所・選択肢 a〜j を1回ずつ使う。人物は架空」",
+"links": [],
+"lines": 75,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/r3_p4.py",
+"path": "scripts/gacha-prints/ryukyu_mock/r3_p4.py",
+"name": "r3_p4.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「*- coding: utf-8 -*- 第3回 大問4 グラフ読解・英作文（150語程度）。グラフの調査・数値は架空」",
+"links": [],
+"lines": 51,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/render.py",
+"path": "scripts/gacha-prints/ryukyu_mock/render.py",
+"name": "render.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「琉球大学 一般選抜（前期日程）対策 英語 予想問題 — 紙面づくり（2026-10-31） python3 scripts/gacha-prints/ryukyu_mock/ren…」",
+"links": [
+{
+"dir": "ref",
+"path": "docs/UI_CHANGELOG.md"
+},
+{
+"dir": "ref",
+"path": "docs/elevenlabs_vocab/ALL_PROMPTS.md"
+},
+{
+"dir": "ref",
+"path": "docs/elevenlabs_vocab/batches/ilv2_0140-0166.txt"
+}
+],
+"lines": 410,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/gacha-prints/ryukyu_mock/style.css",
+"path": "scripts/gacha-prints/ryukyu_mock/style.css",
+"name": "style.css",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「琉球大学 予想問題の紙面（白黒の試験冊子。gakugei_mock/style.css をもとに、記号式の解答欄・グラフを足した）」",
+"links": [
+{
+"dir": "ref",
+"path": "docs/business_overview/index.html"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/gakugei_mock/render.py"
+},
+{
+"dir": "ref",
+"path": "scripts/gacha-prints/ryukyu_mock/render.py"
+}
+],
+"lines": 148,
+"tag": "部品",
 "conf": "低",
 "kind": "file",
 "exports": [],
@@ -30052,7 +30663,7 @@
 "path": "src/data/gachaPrints.generated.ts"
 }
 ],
-"lines": 71,
+"lines": 111,
 "tag": "データ",
 "conf": "低",
 "kind": "file",
@@ -38214,7 +38825,7 @@
 "path": "src/battle/core/tobiraParts.ts"
 }
 ],
-"lines": 150,
+"lines": 158,
 "tag": "テスト",
 "conf": "低",
 "kind": "file",
@@ -38274,6 +38885,25 @@
 "a"
 ],
 "nImports": 1,
+"nBy": 0,
+"draft": true,
+"sys": "test",
+"flow": []
+},
+{
+"id": "tests/profileEditScroll.test.ts",
+"path": "tests/profileEditScroll.test.ts",
+"name": "profileEditScroll.test.ts",
+"folder": "tests",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "1件の確認（it）を持つ。主な確認：「profile edit page scrolling」「keeps the edit page scrollable within the available viewport」。ソースコードを文字として読み込んで検査する。",
+"links": [],
+"lines": 13,
+"tag": "テスト",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
 "nBy": 0,
 "draft": true,
 "sys": "test",
@@ -39152,12 +39782,12 @@
 "one": "単元の索引・英文法の問題・単語数などを生成して持つ係",
 "detail": "chapterIndex（gen-chapter-index.mts）、egV3Items（grammar_v3/build_ts.py）、listeningVocabularyMeta（gen-listening-vocabulary.mts）、gachaPrints の各生成物。手で編集しない。",
 "links": [],
-"lines": 1173,
+"lines": 1245,
 "tag": "データ",
 "conf": "高",
 "kind": "bundle",
 "count": 5,
-"bytes": 1630757,
+"bytes": 1633565,
 "exts": {
 ".ts": 5
 },
@@ -39386,11 +40016,11 @@
 "tag": "文書",
 "conf": "高",
 "kind": "bundle",
-"count": 252,
-"bytes": 73217696,
+"count": 324,
+"bytes": 108702804,
 "exts": {
-".webp": 143,
-".pdf": 85,
+".webp": 197,
+".pdf": 103,
 ".mp3": 24
 },
 "members": [

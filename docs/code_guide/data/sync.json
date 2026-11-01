@@ -1,5 +1,5 @@
 {
- "commit": "e633354",
+ "commit": "ec2ad55",
  "date": "2026-10-31",
  "branch": "feat/gakugei-yoso",
  "new": [
@@ -370,6 +370,31 @@
   "scripts/gacha-prints/reading_mock_c1.py",
   "scripts/gacha-prints/reading_mock_c2.py",
   "scripts/gacha-prints/reading_mock_c3.py",
+  "scripts/gacha-prints/ryukyu_mock/logo_gray.png",
+  "scripts/gacha-prints/ryukyu_mock/pdf.mjs",
+  "scripts/gacha-prints/ryukyu_mock/r1.py",
+  "scripts/gacha-prints/ryukyu_mock/r1_p1.py",
+  "scripts/gacha-prints/ryukyu_mock/r1_p1q.py",
+  "scripts/gacha-prints/ryukyu_mock/r1_p2.py",
+  "scripts/gacha-prints/ryukyu_mock/r1_p2q.py",
+  "scripts/gacha-prints/ryukyu_mock/r1_p3.py",
+  "scripts/gacha-prints/ryukyu_mock/r1_p4.py",
+  "scripts/gacha-prints/ryukyu_mock/r2.py",
+  "scripts/gacha-prints/ryukyu_mock/r2_p1.py",
+  "scripts/gacha-prints/ryukyu_mock/r2_p1q.py",
+  "scripts/gacha-prints/ryukyu_mock/r2_p2.py",
+  "scripts/gacha-prints/ryukyu_mock/r2_p2q.py",
+  "scripts/gacha-prints/ryukyu_mock/r2_p3.py",
+  "scripts/gacha-prints/ryukyu_mock/r2_p4.py",
+  "scripts/gacha-prints/ryukyu_mock/r3.py",
+  "scripts/gacha-prints/ryukyu_mock/r3_p1.py",
+  "scripts/gacha-prints/ryukyu_mock/r3_p1q.py",
+  "scripts/gacha-prints/ryukyu_mock/r3_p2.py",
+  "scripts/gacha-prints/ryukyu_mock/r3_p2q.py",
+  "scripts/gacha-prints/ryukyu_mock/r3_p3.py",
+  "scripts/gacha-prints/ryukyu_mock/r3_p4.py",
+  "scripts/gacha-prints/ryukyu_mock/render.py",
+  "scripts/gacha-prints/ryukyu_mock/style.css",
   "scripts/icons/apply-android-assets.py",
   "scripts/icons/apply-new-icon.py",
   "scripts/icons/make-icons.py",
@@ -749,6 +774,7 @@
   "tests/nijiGacha.test.ts",
   "tests/pdfViewer.test.ts",
   "tests/prTool.test.ts",
+  "tests/profileEditScroll.test.ts",
   "tests/publicProfile.rules.test.ts",
   "tests/publicProfileCore.test.ts",
   "tests/questionNote.test.ts",
@@ -834,7 +860,7 @@
   },
   {
    "path": "scripts/gacha-prints/README.md",
-   "why": "行数 21→157",
+   "why": "行数 21→200",
    "one": "ガチャで当たる学習プリントの作り直し方を説明する係"
   },
   {
@@ -1009,7 +1035,7 @@
   },
   {
    "path": "src/components/growth-hub.css",
-   "why": "行数 245→480",
+   "why": "行数 245→481",
    "one": "ミッションや持ちものの画面の見た目と並びを決める係"
   },
   {
