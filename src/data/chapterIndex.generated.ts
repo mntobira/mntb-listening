@@ -272,7 +272,7 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
       },
       {
         "id": "tp6_1",
-        "problemCount": 0,
+        "problemCount": 15,
         "abstractTitle": "Part 6 長文穴埋め",
         "realTitle": "Part 6"
       }
@@ -349,8 +349,8 @@ export const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = {
   },
   "toeic_part5": {
     "chapters": 2,
-    "questions": 15,
-    "marks": 450
+    "questions": 30,
+    "marks": 690
   }
 };
 
