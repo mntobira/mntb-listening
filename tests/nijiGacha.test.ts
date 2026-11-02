@@ -144,6 +144,12 @@ describe('ガチャ画面：左右スワイプで切り替え', () => {
     expect(css).toMatch(/\.gacha-carousel \{[^}]*overflow-x: auto[^}]*scroll-snap-type: x mandatory/);
     expect(css).toMatch(/\.gacha-slide \{[^}]*flex: 0 0 100%[^}]*scroll-snap-align: start/);
   });
+  it('長い目玉セリフを省略せず、スマホ高画面で広告分の余白を保つ', () => {
+    expect(carousel).toContain('line={`${def.title}の目玉は「${hero.label}」！${gachaRarityOf(hero)}はめったに出ないよ`}');
+    expect(css).toMatch(/@media \(min-width: 361px\) and \(max-width: 699px\) and \(min-height: 761px\) and \(max-height: 900px\)/);
+    expect(css).toContain('.gacha-banner-buddy .tb-bubble { padding: 4px 8px; font-size: 12px; line-height: 1.25; }');
+    expect(css).toContain('.gacha-banner-hero { min-height: 78px; padding: 5px 8px; gap: 8px; }');
+  });
   it('切替タブ（共通テスト｜2次試験）でも切り替えられ、引くときはそのガチャで抽選する', () => {
     expect(carousel).toContain('role="tablist"');
     expect(carousel).toContain('data-gacha-pool-tab');
