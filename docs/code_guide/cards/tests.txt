@@ -76,3 +76,4 @@ tests/noExplicitAny.test.ts|テスト|高|手書きのコードに any 型が増
 tests/sharedHash.test.ts|テスト|高|共通化したハッシュ関数の結果が、以前と同じか確かめる係
 tests/helpers/fixture.ts|テスト|高|テスト用の一部だけ書いた教材データを、正しい型で渡す係
 tests/hookDepsReasons.test.ts|テスト|高|フックの依存の抑制が増えておらず、理由つきか確かめる係
+tests/vocabPron.test.ts|テスト|高|単語帳の読み方データと、4択の解説の発音ボタンを確かめる係|全語の読み方が発音記号に直せて、音節をつなぐと見出し語に戻り、強勢が範囲内かを調べる。4択の解説に向きに関係なく発音ボタンがあることも確かめる。

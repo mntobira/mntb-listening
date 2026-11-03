@@ -1031,14 +1031,6 @@
    "カードがまだ書かれていない新しいファイル。役割は要確認の係"
   ],
   [
-   "scripts/gacha-prints/build-previews.py",
-   "カードがまだ書かれていない新しいファイル。役割は要確認の係"
-  ],
-  [
-   "scripts/gacha-prints/build-previews.py",
-   "カードがまだ書かれていない新しいファイル。役割は要確認の係"
-  ],
-  [
    "scripts/gacha-prints/build-reading-mock.py",
    "カードがまだ書かれていない新しいファイル。役割は要確認の係"
   ],
@@ -1816,6 +1808,10 @@
   ],
   [
    "scripts/gacha-prints/listening_guide.py",
+   "カードがまだ書かれていない新しいファイル。役割は要確認の係"
+  ],
+  [
+   "scripts/gacha-prints/niji-made.mjs",
    "カードがまだ書かれていない新しいファイル。役割は要確認の係"
   ],
   [
@@ -2700,14 +2696,6 @@
   ],
   [
    "src/data/listeningTechniques.ts",
-   "カードがまだ書かれていない新しいファイル。役割は要確認の係"
-  ],
-  [
-   "src/data/nijiMockPrints.ts",
-   "カードがまだ書かれていない新しいファイル。役割は要確認の係"
-  ],
-  [
-   "src/data/nijiMockPrints.ts",
    "カードがまだ書かれていない新しいファイル。役割は要確認の係"
   ],
   [
@@ -3903,11 +3891,7 @@
    "カードがまだ書かれていない新しいファイル。役割は要確認の係"
   ],
   [
-   "tests/nijiGacha.test.ts",
-   "カードがまだ書かれていない新しいファイル。役割は要確認の係"
-  ],
-  [
-   "tests/nijiGacha.test.ts",
+   "tests/nijiMade.test.ts",
    "カードがまだ書かれていない新しいファイル。役割は要確認の係"
   ],
   [
@@ -4081,6 +4065,6 @@
    "英単語の出題範囲を表す名前を作り、範囲内か調べる係"
   ]
  ],
- "cards": 1604,
- "files": 3988
+ "cards": 1608,
+ "files": 10836
 }

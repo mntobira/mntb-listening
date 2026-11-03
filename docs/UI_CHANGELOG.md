@@ -10,6 +10,22 @@
 
 ---
 
+## 2026-11-03 英単語・英文法に ElevenLabs の音源、単語帳に読み方の表示（PR: feat/elevenlabs-audio）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 英単語の音声 | ElevenLabs Studio の1本（全5713語）を1語ずつに切って配置（5684語。録音が前後の語とずれていた19語と、録音に無かった10語は配置せず、今までどおり端末の読み上げ） | `public/audio/vocab/<レベル>/<番号>.mp3`・`index.json` |
+| 英文法の音声 | ElevenLabs Studio の1本（全1163文）を1文ずつに切って配置。英文法の解説の読み上げが端末の音声合成から録音に変わる | `public/grammar_audio/<問題ID>.mp3`・`src/data/grammarAudioIds.ts`（自動生成） |
+| 英単語4択の解説 | 答えたあと、判定の右に「🔊 見出し語」ボタン（英→日・日→英どちらも）。幅 374px 以下はアイコンだけ（44×44px） | `VocabQuiz.tsx`・`foundation.css`（`.vq-say`） |
+| 単語帳の一覧 | 見出し語の強く読む音節にオレンジの下線（音読モードの「アクセント」と同じ印） | `FoundationWords.tsx`（`HeadWord`）・`foundation.css`（`.fd-acc`） |
+| 単語帳の詳細 | 語を開くと、意味の上に小さく「音節の区切り（強い所をオレンジ）・発音記号・◯音節・◯つ目を強く」 | `FoundationWords.tsx`（`PronLine`）・`foundation.css`（`.fd-pron*`）・`public/data/vocabPron.json` |
+
+**戻し方**
+- 下線と読み方の表示だけ消す：`FoundationWords.tsx` の `<HeadWord …/>` を `{w.word}` に、`{pron && <PronLine pron={pron} />}` を削除。
+- 解説の 🔊 だけ消す：`VocabQuiz.tsx` の `className="vq-say"` のボタンを削除。
+- 英文法を音声合成に戻す：`src/data/grammarAudioManifest.ts` の `GRAMMAR_AUDIO_IDS` を `new Set<string>([])` に。
+- 英単語を端末の読み上げに戻す：`public/audio/vocab/index.json` を削除（または `ids` を空に）。
+
 ## 2026-11-03 2次試験ガチャの大当たりに東京外国語大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-tufs）
 
 - LR（2次試験ガチャ）の予想問題に東京外国語大学を追加（3冊・34〜35ページ：問題15〜16＋解答・解説19）。3学部共通の前期「英語」の型（長文2題・リスニング3題、120分・250点）に沿った書き下ろし。

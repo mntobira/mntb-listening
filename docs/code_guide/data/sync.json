@@ -1,7 +1,7 @@
 {
- "commit": "8bba46f",
+ "commit": "89a690d2",
  "date": "2026-11-03",
- "branch": "feat/niji-tufs",
+ "branch": "feat/elevenlabs-audio",
  "new": [
   ".gitattributes",
   "docs/APP_CAPACITOR_README.md",
@@ -243,8 +243,6 @@
   "scripts/gacha-prints/build-analysis-book.py",
   "scripts/gacha-prints/build-listening-book.py",
   "scripts/gacha-prints/build-previews.py",
-  "scripts/gacha-prints/build-previews.py",
-  "scripts/gacha-prints/build-previews.py",
   "scripts/gacha-prints/build-reading-mock.py",
   "scripts/gacha-prints/build-vocab-book.py",
   "scripts/gacha-prints/dump-listening.ts",
@@ -440,6 +438,7 @@
   "scripts/gacha-prints/kyushu_mock/render.py",
   "scripts/gacha-prints/kyushu_mock/style.css",
   "scripts/gacha-prints/listening_guide.py",
+  "scripts/gacha-prints/niji-made.mjs",
   "scripts/gacha-prints/niji_shikoku/cfg.py",
   "scripts/gacha-prints/niji_shikoku/common.py",
   "scripts/gacha-prints/niji_shikoku/ehimee/r1.py",
@@ -661,8 +660,6 @@
   "src/data/kyotsuMockAudio.ts",
   "src/data/kyotsuMockPrints.ts",
   "src/data/listeningTechniques.ts",
-  "src/data/nijiMockPrints.ts",
-  "src/data/nijiMockPrints.ts",
   "src/data/nijiMockPrints.ts",
   "src/data/reading/index.ts",
   "src/data/reading/ja/index.ts",
@@ -961,8 +958,7 @@
   "tests/mypageDesktopWidth.test.ts",
   "tests/nativeAuthError.test.ts",
   "tests/nijiGacha.test.ts",
-  "tests/nijiGacha.test.ts",
-  "tests/nijiGacha.test.ts",
+  "tests/nijiMade.test.ts",
   "tests/pdfViewer.test.ts",
   "tests/prTool.test.ts",
   "tests/profileEditScroll.test.ts",
@@ -1054,8 +1050,13 @@
   },
   {
    "path": "scripts/gacha-prints/README.md",
-   "why": "行数 21→272",
+   "why": "行数 21→283",
    "one": "ガチャで当たる学習プリントの作り直し方を説明する係"
+  },
+  {
+   "path": "store-assets/youtube/youtube_16x9.mp4",
+   "why": "行数 236,072→3",
+   "one": "YouTube に載せる横長（16:9）の宣伝動画の係"
   },
   {
    "path": "src/App.tsx",
@@ -1189,7 +1190,7 @@
   },
   {
    "path": "src/components/VocabQuiz.tsx",
-   "why": "冒頭の説明・export が変わった／行数 162→262",
+   "why": "冒頭の説明・export が変わった／行数 162→266",
    "one": "英単語の範囲を選び、4択で意味を答えさせる画面の係"
   },
   {
@@ -1209,7 +1210,7 @@
   },
   {
    "path": "src/components/foundation.css",
-   "why": "行数 411→594",
+   "why": "行数 411→609",
    "one": "「英文法・英単語を固める」ページの見た目を決める係"
   },
   {

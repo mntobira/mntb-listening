@@ -137,3 +137,6 @@ store-assets/_tools/promo_sfx.py|音声・画像|高|宣伝動画の冒頭で鳴
 store-assets/_tools/record_duo.py|音声・画像|高|スマホとパソコンの2台で対戦しているところを録画する係|本番の Firebase にはつながず、demo- プロジェクトとローカルのエミュレータで本物のアプリを2つ動かし、全国対戦で実際にマッチングさせて録画する。2本の録画を同じ時刻にそろえる。
 store-assets/youtube/CHAPTERS.txt|文書|高|YouTube 動画の見出し（チャプター）の時刻を並べた係|0:00 オープニングから 1:53 エンディングまで、7つの見出しと時刻。
 store-assets/youtube/youtube_16x9.mp4|音声・画像|高|YouTube に載せる横長（16:9）の宣伝動画の係|promo_cut.py の youtube 版として書き出した完成動画（約30MB）。
+public/data/vocabPron.json|データ|高|単語帳の読み方（発音辞書の発音・音節・強勢）を語ごとに持つ係|scripts/vocab-audio/make_pron.py が CMUdict と音読モードの音節分けで作る1行のJSON（{v, words:{語ID:[ARPAbet, 音節, 強勢]}}）。vocabPron.ts が読む。
+scripts/vocab-audio/make_pron.py|データ|高|単語帳の読み方データ vocabPron.json を作る係|見出し語を spoken.py で読める形にし、CMUdict の発音と add_prosody.py の音節分けで、音節・強勢・発音を語ごとに書き出す。辞書に無い語・記号つきの語は入れない。
+scripts/grammar-audio/make_ids.py|データ|高|英文法の録音の一覧から、問題IDの名簿を自動で作る係|public/grammar_audio/*.mp3 のファイル名を集め、src/data/grammarAudioIds.ts に書き出す。音源を足した・差し替えたら実行する。

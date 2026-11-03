@@ -151,3 +151,5 @@ src/utils/firestoreErrors.ts|通信|高|保存先（Firestore）のエラーを�
 src/utils/mathChemTypeset.ts|データ|高|化学式を見つけ出し、数式組版の形に直して渡す係
 src/hooks/useLatest.ts|部品|高|毎回作り直される関数も、いつでも最新の値で読ませる係
 src/hooks/useMountEffect.ts|部品|高|画面に出たときに1回だけ動かす処理を、名前で示す係
+src/utils/vocabPron.ts|データ|高|単語帳の「読み方」（音節・強く読む所・発音記号）を読み込んで渡す係|public/data/vocabPron.json を1回だけ読み、語IDと見出し語から、音節の区切り・強勢の番号・発音記号（音読モードと同じ toIpa で ARPAbet から作る）を返す。読めない・辞書に無い語は null で、画面は何も出さない。
+src/data/grammarAudioIds.ts|データ|高|英文法で録音がある問題IDの一覧を、自動生成で持つ係|scripts/grammar-audio/make_ids.py が public/grammar_audio/ の一覧から書き出す。手で直さない。grammarAudioManifest.ts が読んで GRAMMAR_AUDIO_IDS にする。
