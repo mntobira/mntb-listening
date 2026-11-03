@@ -3,7 +3,7 @@
 P1 = {
     'points': 65,
     'lead': 'The passage below explores why people who know a great deal sometimes find it hard to explain what they know. '
-            'Read it closely, then respond to Questions 1–6. Write your answers in English or with letters, as each question directs.',
+            'Read it closely, then respond to Questions 1–7. Write your answers in English or with letters, as each question directs.',
     'title': 'The Door That Opens One Way',
     'passage': [
         "Think back to the last time a stranger gave you directions in a town you did not know. “Go past the old bakery, "
