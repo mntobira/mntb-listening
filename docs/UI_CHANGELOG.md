@@ -618,6 +618,23 @@
 
 ---
 
+## 2026-11-03 お供（カギノスケ）を追加・ガチャのはずれ（N）を増やした（PR: feat/companion-gacha）
+
+| # | 何を | どう変えた | ファイル |
+|---|---|---|---|
+| 1 | 新キャラ「カギノスケ」 | 金のカギのお供。画像は1枚（`public/mascots/companion_key.webp`）、色違い6色は CSS の filter | `src/battle/core/tobiraParts.ts`（`COMPANIONS`）・`src/battle/ui/CompanionArt.tsx`（新）・`src/battle/ui/companion.css`（新） |
+| 2 | お供の枠 | 装備に「お供」を追加。全員がはじめから金のカギノスケを持っていて連れている（古い記録も同じ）。きせかえで外せる | `growthTypes.ts`・`growthItems.ts`（`DEFAULT_COMPANION`・`equippedCompanion`）・`growth.ts` |
+| 3 | ホーム | ステージの右下、とびら君のとなりにお供が立つ（ゆっくり上下。動きを減らす設定では止まる）。押すときせかえへ。ボタンには重ならず、スクロールも出ない（320/375/390/1280 で確認） | `src/components/Home.tsx`・`src/components/home-companion.css`（新） |
+| 4 | きせかえ・持ちもの・ガチャの図鑑 | 「お供」の種類を追加（きせかえは先頭） | `BattleProfileTabs.tsx`・`MyCollection.tsx`・`GachaParts.tsx`・`PublicProfileTabs.tsx` |
+| 5 | ガチャのはずれ（N） | 共通テストガチャの N を 40 → 68 種（色違いのアクセ・フレーム25種＋カギノスケ3色）。R に2色、SR に1色。**レア度ごとの確率（LR1%・UR3%・SR6%・R16%・N74%）は変えていない**。2次試験ガチャは変えていない | `growthItems.ts` |
+
+**戻し方**：
+- 丸ごと戻す：このPRを revert。
+- ホームの表示だけ消す：`Home.tsx` の `.home-companion` のボタンと `home-companion.css` の import を消す。
+- はずれだけ戻す：`growthItems.ts` の「2026-11-03 はずれ（N）追加」の25行を消す。
+
+---
+
 ## 2026-11-01 TOEIC に Part 6（長文穴埋め）を追加・単元選択に Part 5／Part 6 のタブ（PR: feat/toeic-part6）
 
 | # | 何を | どう変えた | ファイル |

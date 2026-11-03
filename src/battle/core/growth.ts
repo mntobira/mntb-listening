@@ -3,7 +3,7 @@
  * Durable replay protection lives in growthStore, alongside the progress in one atomic record.
  */
 import { BADGES, evaluateBadges } from './growthBadges';
-import { DEFAULT_FRAME, DEFAULT_POSE, ITEMS, evaluateUnlocks } from './growthItems';
+import { DEFAULT_COMPANION, DEFAULT_FRAME, DEFAULT_POSE, ITEMS, evaluateUnlocks } from './growthItems';
 import type { ItemDef } from './growthItems';
 import { COINS_PER_WRITE_MAX, levelOf, xpForMatch } from './growthLevel';
 import type { XpBreakdown } from './growthLevel';
@@ -17,7 +17,7 @@ export { localDateKey, rolloverDaily, MISSION_POOL, missionDestination, MISSION_
 export type { MatchSummaryForGrowth, MissionKind, MissionDef, MissionDestination } from './growthMissions';
 export { BADGES, badgeById, evaluateBadges, badgeTierColor } from './growthBadges';
 export type { BadgeDef } from './growthBadges';
-export { DEFAULT_POSE, DEFAULT_FRAME, REMOVABLE_KINDS, LEVEL_PRINTS, LEVEL_REWARD_ITEMS, ITEMS, printOf, printRarity, gachaRarityOf, itemById, evaluateUnlocks, purchaseItem, equipItem, unequipKind, canUnequip, equippedAccessory, equippedWallpaper, equippedStage, equipTitle, equippedPoseSrc, equippedFramePattern, equippedFrameColor, equippedTitleLabel } from './growthItems';
+export { DEFAULT_POSE, DEFAULT_FRAME, DEFAULT_COMPANION, REMOVABLE_KINDS, LEVEL_PRINTS, LEVEL_REWARD_ITEMS, ITEMS, printOf, printRarity, gachaRarityOf, itemById, evaluateUnlocks, purchaseItem, equipItem, unequipKind, canUnequip, equippedAccessory, equippedWallpaper, equippedStage, equippedCompanion, equipTitle, equippedPoseSrc, equippedFramePattern, equippedFrameColor, equippedTitleLabel } from './growthItems';
 export type { ItemKind, EquipKind, GachaRarity, ItemDef } from './growthItems';
 
 // ============================================================
@@ -53,8 +53,8 @@ export function emptyProgress(uid: string): GrowthProgress {
     lastCompleteDate: '',
     subjects: {},
     badges: {},
-    owned: [DEFAULT_POSE, DEFAULT_FRAME],
-    equipped: { title: '', pose: DEFAULT_POSE, frame: DEFAULT_FRAME, hat: '', glasses: '', cheek: '', aura: '', wallpaper: '', stage: '' },
+    owned: [DEFAULT_POSE, DEFAULT_FRAME, DEFAULT_COMPANION],
+    equipped: { title: '', pose: DEFAULT_POSE, frame: DEFAULT_FRAME, hat: '', glasses: '', cheek: '', aura: '', wallpaper: '', stage: '', companion: DEFAULT_COMPANION },
     daily: { date: '', progress: {}, claimed: [] },
     lastRoomId: '',
     studySolved: 0,
@@ -130,7 +130,7 @@ export function normalizeProgress(uid: string, raw: unknown): GrowthProgress {
     lastCompleteDate: str(r.lastCompleteDate, ''),
     subjects,
     badges,
-    owned: [...new Set([DEFAULT_POSE, DEFAULT_FRAME, ...strList(r.owned)])],
+    owned: [...new Set([DEFAULT_POSE, DEFAULT_FRAME, DEFAULT_COMPANION, ...strList(r.owned)])],
     equipped: {
       title: str(eq.title, ''),
       pose: str(eq.pose, DEFAULT_POSE),
@@ -141,6 +141,8 @@ export function normalizeProgress(uid: string, raw: unknown): GrowthProgress {
       aura: str(eq.aura, ''),
       wallpaper: str(eq.wallpaper, ''),
       stage: str(eq.stage, ''),
+      // 古い記録（companion が無い）は最初のお供を連れている。自分で外した '' はそのまま
+      companion: str(eq.companion, DEFAULT_COMPANION),
     },
     daily: {
       date: str(daily.date, ''),

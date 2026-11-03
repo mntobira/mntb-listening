@@ -9,8 +9,8 @@
  */
 export type AccessorySlot = 'hat' | 'glasses' | 'cheek' | 'aura';
 export const ACCESSORY_SLOTS: readonly AccessorySlot[] = ['hat', 'glasses', 'cheek', 'aura'];
-export const SLOT_LABELS: Record<AccessorySlot | 'wallpaper' | 'stage', string> = {
-  hat: '頭（帽子）', glasses: '顔（メガネ）', cheek: 'ほっぺ', aura: 'オーラ', wallpaper: '壁紙', stage: 'ホームの背景',
+export const SLOT_LABELS: Record<AccessorySlot | 'wallpaper' | 'stage' | 'companion', string> = {
+  hat: '頭（帽子）', glasses: '顔（メガネ）', cheek: 'ほっぺ', aura: 'オーラ', wallpaper: '壁紙', stage: 'ホームの背景', companion: 'お供',
 };
 
 export interface PoseAnchor { w: number; h: number; head: readonly [number, number, number, number]; eyes: readonly [number, number, number, number] }
@@ -101,3 +101,20 @@ export const STAGES: Record<string, { label: string; light?: boolean }> = {
   neon: { label: 'ネオンの街' },
 };
 export function stageOf(value: string) { return STAGES[value] ?? null; }
+
+/**
+ * 2026-11-03 お供（ホームでとびら君のとなりにいる子）。
+ *   絵は public/mascots/companion_key.webp の1枚（とびら君と同じ立体の絵柄で作った金のカギ「カギノスケ」）。
+ *   色違いは画像を増やさず CSS の filter で作る（通信量を増やさない）。
+ */
+export const COMPANION_SRC = '/mascots/companion_key.webp';
+export const COMPANIONS: Record<string, { label: string }> = {
+  key_gold: { label: 'カギノスケ' },
+  key_silver: { label: 'カギノスケ（ぎん）' },
+  key_rose: { label: 'カギノスケ（さくら）' },
+  key_mint: { label: 'カギノスケ（ミント）' },
+  key_sky: { label: 'カギノスケ（そら）' },
+  key_night: { label: 'カギノスケ（よぞら）' },
+  key_aurora: { label: 'カギノスケ（オーロラ）' },
+};
+export function companionOf(value: string) { return COMPANIONS[value] ?? null; }
