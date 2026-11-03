@@ -475,7 +475,8 @@ export default defineConfig(({mode}) => {
     hmr: process.env.DISABLE_HMR !== 'true',
     // Local npm caches and generated output can contain tens of thousands of files.
     // Watching them exhausts Linux inotify limits and crashes the dev preview.
-    watch: { ignored: ['**/.npm-cache/**', '**/dist/**', '**/.delivery/**', '**/.tmpwork/**', '**/.tmp_ui/**', '**/functions/node_modules/**', '**/shots/**'] },
+    // 2026-11-03：1語・1文ずつの録音（約6,800ファイル）も監視しない（入れると inotify の上限 8192 を超えて開発サーバーが落ちる）
+    watch: { ignored: ['**/.npm-cache/**', '**/dist/**', '**/.delivery/**', '**/.tmpwork/**', '**/.tmp_ui/**', '**/functions/node_modules/**', '**/shots/**', '**/public/audio/vocab/**', '**/public/grammar_audio/**'] },
   },
 };
 });
