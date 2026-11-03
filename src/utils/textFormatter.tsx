@@ -236,6 +236,12 @@ export type FormatTextOptions = {
    * 対戦（BattleText）と同じ判定にそろえる。
    */
   math?: boolean;
+  /**
+   * true のとき $…$ などを数式として組まない（2026-11-03）。
+   * TOEIC の英文は「$100 … $15」のように金額の $ が2つ並ぶことがあり、
+   * その間が数式として KaTeX で組まれて文字が崩れていた。TOEIC の部品だけが渡す。
+   */
+  noMath?: boolean;
 };
 
 /**
@@ -286,7 +292,9 @@ export function formatText(
   // ★次に数式を KaTeX で組んで退避する★
   //   ここで抜いておくことで、以降の化学式変換・添字処理・分数処理は
   //   「数式ではない部分」だけを相手にすればよくなる。
-  const { text: maskedMath, slots: mathSlots } = extractMath(maskedForMath, mathContext);
+  const { text: maskedMath, slots: mathSlots } = options.noMath
+    ? { text: maskedForMath, slots: [] as string[] }
+    : extractMath(maskedForMath, mathContext);
 
   // タグを戻してから従来の処理に渡す。以降の tagRegex での分割や
   // <u>/<hl> の読み替えは、これまでとまったく同じ入力を受け取る。

@@ -9,7 +9,7 @@ import { gachaItemRate } from '../../battle/core/arenaEconomy';
 import { gachaRarityOf, printOf, type GrowthProgress, type ItemDef } from '../../battle/core/growth';
 import { GACHA_PREVIEWS } from '../../data/gachaPreviews.generated';
 import { kyotsuAudioOf } from '../../data/kyotsuMockAudio';
-import { nijiDisclaimerFor, nijiUniversityOf } from '../../data/nijiMockPrints';
+import { mockUniversityOf, nijiDisclaimerFor } from '../../data/nijiMockPrints';
 import { DEFAULT_GACHA_POOL, type GachaPoolId } from '../../battle/core/gachaPools';
 import { ItemArt, RarityTag, pct } from '../GachaParts';
 
@@ -49,7 +49,7 @@ export function GachaItemDetail({ dialog, item, progress, pool = DEFAULT_GACHA_P
   progress: GrowthProgress | null;
   pool?: GachaPoolId;
 }) {
-  const nijiUniv = item ? nijiUniversityOf(item.id) : undefined;
+  const nijiUniv = item ? mockUniversityOf(item.id) : undefined;
   const print = item ? printOf(item.id) : undefined;
   const pages = item ? GACHA_PREVIEWS[item.id] ?? [] : [];
   const sample = item ? kyotsuAudioOf(item.id)[0] : undefined;

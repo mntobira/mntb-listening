@@ -1,0 +1,39 @@
+{
+ "1": {
+  "words": 694,
+  "avg": 16.1,
+  "zipf_lt4": 6.0,
+  "paras": 10,
+  "questions": 10,
+  "range": {
+   "words": "550–900:OK",
+   "avg": "14–24:OK",
+   "zipf_lt4": "3–14:OK",
+   "paras": "9–16:OK",
+   "questions": "9–10:OK"
+  }
+ },
+ "2": {
+  "words": 813,
+  "avg": 19.8,
+  "zipf_lt4": 4.5,
+  "paras": 10,
+  "questions": 10,
+  "range": {
+   "words": "550–900:OK",
+   "avg": "14–24:OK",
+   "zipf_lt4": "3–14:OK",
+   "paras": "9–16:OK",
+   "questions": "9–10:OK"
+  }
+ },
+ "3": {
+  "models": [
+   123,
+   126
+  ],
+  "range": "108–140語",
+  "task_words": 72
+ },
+ "ng": []
+}

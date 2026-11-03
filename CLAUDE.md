@@ -19,3 +19,6 @@ When asked to make an advertising / announcement video, **read `store-assets/VID
 - Conflicts in append-only files (`docs/UI_CHANGELOG.md`) are resolved automatically by keeping both entries. Any other conflict stops the tool: if this PR depends on that PR, rerun with `--include <PR number>` (merges that PR into this branch); only use `--allow-conflict` when the user agreed to ship them separately.
 - When another PR merges first, run `npm run pr:sync` on this branch (or `--pr <number>` to pull in a specific open PR) before merging.
 - Code: `scripts/pr/pr.mts` (CLI) and `scripts/pr/prCore.mts` (logic), tests in `tests/prTool.test.ts`.
+
+## 2次試験ガチャの予想問題（decided with the user, 2026-11-03）
+**Before starting any new university, run `npm run niji:made -- <大学名> <id>` first.** It lists every university already made on `main` and in every open PR (other rooms work in this repo too). If it prints 「✗ 作成済み」 (exit code 1), do not make that university — pick the next one. Code: `scripts/gacha-prints/niji-made.mjs` (reads `NIJI_UNIVERSITIES` in `src/data/nijiMockPrints.ts` on each branch).

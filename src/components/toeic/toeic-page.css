@@ -264,3 +264,71 @@
 @media (prefers-reduced-motion: reduce) {
   .tp-budget-pages li { transition: none; }
 }
+
+/* ───────── Part 7（読解）：1ページ＝1セット（文書1〜3つ＋設問2〜5問）（2026-11-02）。Part 5・6 のクラスは変えない ───────── */
+.tp-p7 { display: grid; gap: 0; }
+.tp7-docs { margin: 12px 12px 0; }
+.tp7-set-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 8px; font-size: 12px; font-weight: 700; color: #334155; }
+.tp7-set-kind { border-radius: 999px; background: #1f3566; padding: 0 10px; line-height: 22px; color: #fff; }
+.tp7-docs .tp-doc { margin: 0 0 12px; }
+.tp7-tabs { position: sticky; top: 0; z-index: 2; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; margin: 0 0 8px; padding: 4px 0; background: #f8fafc; }
+.tp7-tab { display: grid; min-height: 44px; place-items: center; gap: 0; border: 1px solid #94a3b8; border-radius: 10px; background: #fff; padding: 4px 6px; color: #1f3566; font: inherit; cursor: pointer; }
+.tp7-tab b { font-size: 13px; line-height: 1.2; }
+.tp7-tab small { font-size: 12px; line-height: 1.2; color: #475569; }
+.tp7-tab[aria-selected="true"] { border-color: #1f3566; background: #1f3566; color: #fff; }
+.tp7-tab[aria-selected="true"] small { color: #dbe4f5; }
+.tp7-tab:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+.tp7-panel:not([data-active]) { display: none; }
+.tp7-head { display: grid; gap: 2px; margin: 0 0 8px; padding: 6px 8px; border-radius: 8px; background: #f1f5f9; font-size: 13px; line-height: 1.5; color: #1f2937; }
+.tp7-head > div { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px; }
+.tp7-head dt { font-weight: 700; color: #334155; }
+.tp7-head dd { margin: 0; overflow-wrap: anywhere; }
+.tp7-insert { display: inline-block; margin: 0 4px; border: 1px solid #1f3566; border-radius: 6px; padding: 0 6px; font-size: 13px; font-weight: 800; line-height: 1.5; color: #1f3566; background: #eef2fb; }
+.tp7-chat { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.tp7-bubble { max-width: 88%; justify-self: start; border-radius: 14px 14px 14px 4px; background: #eef2fb; padding: 6px 10px; }
+.tp7-bubble[data-side="right"] { justify-self: end; border-radius: 14px 14px 4px 14px; background: #ecfdf5; }
+.tp7-bubble-who { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 2px; font-size: 12px; color: #475569; }
+.tp7-bubble-who b { color: #1f2937; }
+.tp-doc .tp7-bubble p[lang=en] { margin: 0; font-size: 15px; line-height: 1.6; }
+.tp7-table-wrap { margin: 8px 0 0; overflow-x: auto; }
+.tp7-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.5; color: #1f2937; }
+.tp7-table th, .tp7-table td { border: 1px solid #cbd5e1; padding: 4px 6px; text-align: left; vertical-align: top; }
+.tp7-table th { background: #f1f5f9; font-weight: 700; }
+.tp-result-marks[data-count="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.tp-p7 .tp-sentence { font-size: 15px; }
+@media (min-width: 1024px) {
+  .tp-p7 { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; gap: 16px; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+  .tp-p7 .tp7-docs { position: sticky; top: 16px; max-height: calc(100vh - 220px); overflow-y: auto; margin: 16px 0 24px; padding-right: 4px; }
+  .tp-p7 .tp7-tabs { display: none; }
+  .tp-p7 .tp7-panel:not([data-active]) { display: block; }
+  .tp-p7 .tp-list,
+  .tp-p7 .tp-list.is-scored { grid-template-columns: minmax(0, 1fr); grid-auto-flow: row; grid-template-rows: none; max-width: none; margin: 0; padding: 16px 0 24px; }
+}
+
+/* ───────── Part 6・7 のスマホ：「文書」と「設問・選択肢」を切り替えて1つずつ見せる（2026-11-03） ─────────
+   1024px 未満だけ。上に切り替えのボタン（高さ48px）、文書の最後に「設問・選択肢へ進む」。
+   PC（1024px 以上）は今までどおり左に文書・右に設問の2列で、切り替えのボタンは出さない。
+   戻し方：この段を消し、ToeicPageQuiz.tsx の tp-pane-switch / tp-pane-next / data-pane を外す。 */
+.tp-pane-switch { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px 12px; border-bottom: 1px solid #e5e7eb; background: #fff; }
+.tp-pane-tab { display: grid; min-height: 48px; place-items: center; align-content: center; gap: 0; border: 1px solid #94a3b8; border-radius: 12px; background: #fff; padding: 4px 6px; color: #1f3566; font: inherit; cursor: pointer; }
+.tp-pane-label { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 800; line-height: 1.3; }
+.tp-pane-tab small { font-size: 12px; font-weight: 700; line-height: 1.3; color: #475569; }
+.tp-pane-tab small[data-tone="todo"] { color: #92400e; }
+.tp-pane-tab[aria-pressed="true"] { border-color: #1f3566; background: #1f3566; color: #fff; }
+.tp-pane-tab[aria-pressed="true"] small { color: #dbe4f5; }
+.tp-pane-tab:focus-visible, .tp-pane-next:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+.tp-pane-next { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; margin: 12px 12px 16px; border: 2px solid #1f3566; border-radius: 999px; background: #eef2fb; padding: 0 16px; font: inherit; font-size: 15px; font-weight: 800; color: #1f3566; cursor: pointer; }
+@media (max-width: 1023.98px) {
+  .tp-scroll[data-pane="doc"] .tp-list,
+  .tp-scroll[data-pane="doc"] .tp-result { display: none; }
+  .tp-scroll[data-pane="q"] .tp-p6 > .tp-doc,
+  .tp-scroll[data-pane="q"] .tp7-docs,
+  .tp-scroll[data-pane="q"] .tp-pane-next { display: none; }
+}
+@media (max-width: 380px) {
+  .tp-pane-switch { padding: 6px 8px; }
+  .tp-pane-label { font-size: 13px; }
+}
+@media (min-width: 1024px) {
+  .tp-pane-switch, .tp-pane-next { display: none; }
+}

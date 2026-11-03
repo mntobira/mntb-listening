@@ -1,0 +1,120 @@
+# -*- coding: utf-8 -*-
+# 第2回 Ⅰ 長文読解（論説・書き下ろし「座る場所のある街」）
+from mk import pos_for, mc1
+pos = pos_for(2)
+
+PASSAGE = [
+ "Anyone who has walked through a large city carrying a heavy bag, pushing a stroller or nursing a sore knee knows how much a place to sit can matter. A bench in the shade, a low wall beside a fountain, or a few broad steps outside a library {gア|can turn an exhausting errand into} a manageable one. Yet public seating is rarely discussed as seriously as roads, railways or housing. Seating is usually treated as a minor decoration, something added once a project is nearly finished if money happens to remain. In recent decades, moreover, many cities have quietly reduced the number of places where people can sit without paying, removing benches from stations, squares and shopping streets.",
+ "The reasons usually given are practical. Benches need cleaning and repair, and some officials argue that they {gイ|attract people who stay} for hours, which shop owners fear may discourage customers. In some places, seats have been replaced by narrow ledges that slope forward, or by benches divided by metal armrests {gウ|so that no one can lie down}. In others, the number of benches {gエ|have simply fallen} year by year, often without any public announcement. Designs of this kind are sometimes described as “defensive,” because their purpose is {gオ|less to welcome some users than} to keep others away. {u1|This has led critics to ask whom public space is really meant to serve, and whether a city that makes resting difficult is quietly telling some of its residents that they do not belong.}",
+ "The question matters because the people who depend most on public seating are often those with the least choice. An older person {gカ|who cannot walk far without resting} may simply stay at home if there is nowhere to pause on the way to the shops. A parent with a tired child, a worker on a short break, a student waiting for a late bus — all of them benefit from a free place to sit, and few of them can afford {gキ|buying a drink} in a café every time they need a rest. For people who are ill or recovering from an injury, a single bench at the right spot can decide whether a short trip is possible at all. Removing seating, then, does not affect everyone equally; it shifts the burden onto those least able to carry it.",
+ "Shop owners’ fears are understandable, since no one wants a doorway blocked or customers made uncomfortable. [[I]], there is reason to doubt that taking seats away is good for business. People who can rest are able to stay in a shopping street longer, and it seems reasonable to expect that visitors who stay longer will look into more shops. Someone who must leave because their feet hurt, by contrast, spends nothing more at all. A street {gク|that offers nowhere to sit} may look tidy, but it also gives visitors one more reason to shop online or drive to a large mall where seating is provided as standard. In this sense, a few benches may rank among the cheapest investments a shopping street can make.",
+ "Seating has a social value as well. A bench is among the few places in a city where strangers sit side by side {gケ|without having arranged to meet}. Conversations start there about the weather, a passing dog or a delayed train, and regular users come to recognize one another over time. {u2|For people who live alone, these brief exchanges may be the only contact with others they have in a whole day, and their importance is easy to overlook precisely because they look so ordinary.} A city that removes such places saves a little money on maintenance but may pay for it in loneliness that never appears in any budget.",
+ "None of this means that the concerns behind defensive design are imaginary. Benches can be misused, and the people who manage public spaces have to respond to complaints. The difference lies in the response. One approach tries to solve problems by making seats uncomfortable for everyone. Another tries to make seating more welcoming while dealing with specific problems directly — by cleaning more often, by improving lighting, or by working with social services to support people who have nowhere else to go. Clear rules about use, explained politely on signs, can address many complaints without punishing everyone else. Planners who follow this second approach tend to provide seats with backs, place them in the shade and at regular intervals along busy routes, and add arms at each end that {gコ|help older people stand up again}.",
+ "Such choices may seem small, but they reflect a view of the city as a shared home rather than merely a space for passing through and buying things. When seats are plentiful, a square becomes somewhere to spend time, not just somewhere to cross. Children play nearby while adults watch, older residents rest before continuing their walk, and the public life of the street becomes visible. Benches also allow people to enjoy a view, read in the open air or simply watch the world go by, activities that cost nothing and yet make a neighbourhood feel more alive. It is no accident that the places people describe most warmly in their own towns are often those where it is easy to stop.",
+ "The simplest test of a public space may therefore be {o3} without buying anything. A city that passes this test is not necessarily richer or more beautiful than one that fails it, but it is likely to be kinder, and its streets will be used by a wider range of people. Bringing back the humble bench will not solve every urban problem. It is, however, a cheap and visible way of telling everyone that they are welcome to stay.",
+]
+
+NOTES = [('stroller', 'ベビーカー'), ('ledge', '（壁から張り出した）細い台'), ('armrest', 'ひじ掛け')]
+
+GRAM = [
+ ('ア', 'can turn an exhausting errand into', '正しい。turn A into B「AをBに変える」。主語は A bench …, a low wall …, or a few broad steps … で，助動詞 can の後なので原形 turn。'),
+ ('イ', 'attract people who stay', '正しい。主語 they（＝benches）に attract が一致し，who stay は people を修飾する。'),
+ ('ウ', 'so that no one can lie down', '正しい。so that S can V「SがVできるように」の目的を表す節。'),
+ ('エ', 'have simply fallen', '誤り。the number of 〜「〜の数」が主語なので単数扱いで has simply fallen が正しい。a number of 〜「多くの〜」なら複数扱いになる点と区別する。'),
+ ('オ', 'less to welcome some users than', '正しい。less A than B「AというよりむしろB」。A・B とも to 不定詞（to welcome / to keep）でそろっている。'),
+ ('カ', 'who cannot walk far without resting', '正しい。前置詞 without の後は動名詞 resting。'),
+ ('キ', 'buying a drink', '誤り。afford は to 不定詞を目的語にとり，can afford to buy「買う余裕がある」が正しい。'),
+ ('ク', 'that offers nowhere to sit', '正しい。主格の関係代名詞 that。先行詞 A street（単数）に offers が一致する。'),
+ ('ケ', 'without having arranged to meet', '正しい。完了形の動名詞 having arranged で，座る時点より前に約束していないことを表す。'),
+ ('コ', 'help older people stand up again', '正しい。help + O + 原形不定詞「Oが〜するのを助ける」。'),
+]
+
+QUESTIONS = [
+ {'no': 1, 'points': 12, 'kind': 'trans', 'stem': '文頭の This が指す内容を明らかにしながら，下線部(1)を和訳せよ。',
+  'answer': '一部の利用者を遠ざけるためにベンチを撤去したり，横になれないような座りにくい設計にしたりしていることから，批評家たちは，公共空間は本当は誰のためにあるのか，そして休むことを難しくしている都市は，住民の一部に対して，ここにいるべきではないと暗に告げているのではないかと問うようになった。',
+  'alts': ['休めないように座る場所を減らしたり，わざと座りにくい形にしたりする「防御的な」設計が広がったせいで，批判する人々は，公共の空間は本来誰に役立つためのものなのか，また休憩しにくい都市は，一部の住民に「あなたたちの居場所はない」とひそかに伝えているのではないかと疑問を投げかけるようになった。'],
+  'criteria': [('This の内容：一部の人を遠ざける目的で，ベンチを減らしたり座りにくい設計にしたりしていること', 3),
+               ('has led critics to ask …「批評家に…を問わせるようになった（問うようになった）」', 2),
+               ('whom public space is really meant to serve「公共空間は本当は誰に役立つためのものか」', 3),
+               ('whether a city that makes resting difficult is quietly telling … の構造（whether 節・関係代名詞 that）', 2),
+               ('that they do not belong「（ここに）いるべきではない・居場所がない」の適切な訳', 2)],
+  'explain': ['This は前の文までの内容，特に “Designs of this kind … to keep others away” を受ける。「このこと」とだけ訳すと要素が欠けて減点。',
+              'lead O to do「Oに〜させる（結果としてOが〜するようになる）」。無生物主語なので「〜から，批評家は…を問うようになった」と訳すと自然。',
+              'be meant to do「〜することになっている・〜するためのものだ」。whom は serve の目的語。',
+              'belong は「（ある場所に）ふさわしい・居場所がある」。do not belong を「属していない」と直訳すると意味が伝わりにくい。']},
+ {'no': 2, 'points': 10, 'kind': 'ja_free', 'stem': '下線部(2)の意味するところを，本文の内容に沿って日本語で説明せよ。',
+  'answer': 'ベンチで見知らぬ人と交わす天気や犬の話などの短い会話は，一人暮らしの人にとっては一日のうちで唯一の他者との接点になることもあるほど大切だが，あまりにありふれて見えるために，その大切さが見過ごされやすいということ。',
+  'alts': ['一人で暮らす人にとって，ベンチでたまたま隣り合った人との短いやりとりは，その日に他人とかかわる唯一の機会かもしれない。ところが，そうしたやりとりはごく当たり前のことに見えるので，重要性に気づかれにくいということ。'],
+  'criteria': [('these brief exchanges の内容：ベンチで見知らぬ人と交わす短い会話', 3),
+               ('一人暮らしの人には一日で唯一の他者との接点になりうる', 4),
+               ('ありふれて見えるからこそ，その重要性が見過ごされやすい（precisely because）', 3)],
+  'explain': ['these brief exchanges は直前の “Conversations start there about the weather, a passing dog or a delayed train” を受ける。',
+              'precisely because 〜「まさに〜だからこそ」。「ありふれているので重要ではない」と逆に読むと誤り。',
+              '次の文の “loneliness that never appears in any budget” まで読むと，筆者が孤独の問題と結びつけていることがわかる。']},
+ mc1(3, 4, '空所[ I ]を補うのに最適な語句を(A)〜(D)のうちから一つ選び，その記号を書け。',
+     ['Nonetheless', 'Consequently', 'Similarly', 'In other words'],
+     ['○ 前文は「店主の心配は理解できる」と相手の立場を認め，空所の後は「座席を取り除くことが商売のためになるかは疑わしい」と反対の内容が続く。譲歩の後の逆接なので Nonetheless が合う。',
+      '× Consequently は「その結果」。店主の心配が理解できることの結果として，商売への効果を疑うわけではない。',
+      '× Similarly は「同様に」。前後は同じ方向の内容ではない（本文と逆）。',
+      '× In other words は言い換え。後の文は前文の言い換えではなく，反論である。'], pos(), blank='I'),
+ {'no': 4, 'points': 9, 'kind': 'table',
+  'stem': '次の表は，第6段落で述べられている二つの考え方をまとめたものである。空所（あ）〜（う）を補うのに最適なものを(A)〜(F)のうちからそれぞれ一つ選び，その記号を書け。',
+  'header': ['', 'Defensive design', 'Welcoming design'],
+  'rows': [['Main aim', '[[あ]]', 'to let anyone rest for a while'],
+           ['Typical features', 'narrow sloping ledges; benches divided by metal armrests', '[[い]]'],
+           ['How problems are handled', '[[う]]', 'by cleaning, better lighting and help from social services']],
+  'options': ['to keep certain users away', 'to collect fees from visitors', 'seats with backs, placed in the shade, with arms at each end',
+              'by making seats uncomfortable for everyone', 'by building more cafés nearby', 'metal fences around every square'],
+  'answer': {'あ': 0, 'い': 2, 'う': 3},
+  'explain': ['（あ）第2段落 “their purpose is less to welcome some users than to keep others away” から (A)。(B) の料金徴収は本文にない。',
+              '（い）第6段落の最終文 “seats with backs, place them in the shade … add arms at each end” から (C)。(F) の柵は本文にない。',
+              '（う）第6段落 “One approach tries to solve problems by making seats uncomfortable for everyone.” から (D)。(E) のカフェを増やす話は本文にない。',
+              '「ひじ掛け」は両方の欄に出てくる。防御的な設計は座面を区切る metal armrests，迎え入れる設計は立ち上がりを助ける arms at each end で，役割が違う点に注意。']},
+ {'no': 5, 'points': 6, 'kind': 'gram2',
+  'stem': '下線部(ア)〜(オ)と(カ)〜(コ)には，文法的に正しくない箇所がそれぞれ一つずつ含まれている。該当する記号を書け。',
+  'answer': ['エ', 'キ'], 'reasons': GRAM},
+ {'no': 6, 'points': 9, 'kind': 'order', 'under': '3',
+  'stem': '下線部(3)の［　］内の語を正しく並べて意味の通る英文にするとき，3番目・5番目・8番目にくる語の記号を書け。各語は一度ずつ用いること。',
+  'words': ['tired', 'can', 'whether', 'there', 'person', 'who', 'rest', 'a', 'is'],
+  'correct': ['C', 'H', 'E', 'F', 'I', 'A', 'B', 'G', 'D'], 'ask': [3, 5, 8],
+  'sentence_part': 'whether a person who is tired can rest there',
+  'sentence': 'The simplest test of a public space may therefore be whether a person who is tired can rest there without buying anything.',
+  'explain': ['be 動詞 may be の補語として，whether S V「SがVするかどうか」の名詞節を置く。',
+              '主語は a person who is tired「疲れている人」。関係代名詞 who の節を person の直後に置く。',
+              '動詞は can rest，場所を表す副詞 there を最後に置き，without buying anything につなげる。',
+              '3番目 person (E)・5番目 is (I)・8番目 rest (G)。']},
+ {'no': 7, 'points': 10, 'kind': 'tf2',
+  'stem': '本文の内容と合うものを(A)〜(E)のうちから二つ選び，その記号を書け。',
+  'choices': ['Defensive designs are intended mainly to make public seating more comfortable for all users.',
+              'The writer suggests that removing benches places the heaviest burden on people who already have few options.',
+              'The passage claims that visitors who cannot sit down are likely to spend more money in nearby shops.',
+              'The writer argues that short conversations on benches can matter a great deal to people living alone.',
+              'The writer believes that bringing back benches would solve most of the problems that cities face.'],
+  'answer': [1, 3],
+  'reasons': ['× 防御的な設計の目的は一部の利用者を遠ざけることで，皆を快適にすることではない（本文と逆）。',
+              '○ 第3段落 “it shifts the burden onto those least able to carry it” と一致する。',
+              '× 第4段落は，足が痛くて帰る人は “spends nothing more at all” と述べている（本文と逆）。',
+              '○ 第5段落の下線部(2)の内容と一致する。',
+              '× 最終段落 “Bringing back the humble bench will not solve every urban problem.” に反する（言い過ぎ）。']},
+]
+
+TRANSLATION = [
+ '重い荷物を持ったり，ベビーカーを押したり，痛むひざをかばったりしながら大都市を歩いたことのある人なら誰でも，座る場所がどれほど大切かを知っている。日陰のベンチ，噴水のそばの低い塀，図書館の前の幅の広い数段の階段は，くたくたになる用事をこなせる程度のものに変えてくれる。しかし，公共の座る場所が，道路や鉄道，住宅ほど真剣に論じられることはめったにない。座る場所はたいていちょっとした飾りのように扱われ，事業がほぼ終わる頃にたまたまお金が残っていれば付け加えられるものにすぎない。さらに近年，多くの都市が，駅や広場，商店街からベンチを撤去し，お金を払わずに座れる場所の数をひそかに減らしてきた。',
+ 'ふつう挙げられる理由は実際的なものである。ベンチは掃除や修理が必要であり，何時間も居座る人々を引き寄せると主張する役人もいて，店主たちはそれが客を遠ざけるのではないかと心配する。場所によっては，座席が前に傾いた細い台に置き換えられたり，誰も横になれないように金属のひじ掛けで区切られたベンチに置き換えられたりしてきた。また別の場所では，ベンチの数が，多くの場合何の告知もないまま，年々ただ減ってきた。この種の設計は「防御的」と呼ばれることがある。その目的が，一部の利用者を迎え入れることよりも，他の利用者を遠ざけることにあるからだ。このことから，批評家たちは，公共空間は本当は誰のためにあるのか，そして休むことを難しくしている都市は，住民の一部に対して，ここにいるべきではないと暗に告げているのではないかと問うようになった。',
+ 'この問いが重要なのは，公共の座る場所に最も頼っている人々が，しばしば最も選択肢の少ない人々だからである。休まずには遠くまで歩けない高齢者は，店へ行く途中にひと休みする場所がなければ，家にこもってしまうかもしれない。疲れた子どもを連れた親，短い休憩中の働き手，遅れているバスを待つ学生——皆が無料で座れる場所の恩恵を受けており，休みたくなるたびにカフェで飲み物を買う余裕のある人はほとんどいない。病気の人やけがから回復しつつある人にとっては，ちょうどよい場所にあるベンチが一つあるかどうかで，短い外出がそもそも可能かどうかが決まることもある。つまり，座る場所をなくすことは皆に等しく影響するのではなく，その負担を最も担う力のない人々に押しつけるのである。',
+ '戸口をふさがれたり客が居心地悪くなったりすることは誰も望まないので，店主たちの心配は理解できる。それでもなお，座席を取り除くことが商売のためになるのかどうかは疑わしい。休める人は商店街に長くとどまることができ，長くとどまる客ほど多くの店をのぞくと考えるのは理にかなっているように思われる。それに対して，足が痛くて帰らなければならない人は，それ以上一銭も使わない。座る場所のない通りは整って見えるかもしれないが，客にとっては，ネットで買い物をしたり，当然のように座席が用意されている大型ショッピングモールへ車で出かけたりする理由をもう一つ与えることにもなる。この意味で，数台のベンチは，商店街にできる最も安上がりな投資の一つなのかもしれない。',
+ '座る場所には社会的な価値もある。ベンチは，見知らぬ人どうしが会う約束もしていないのに隣り合って座る，都市の中でも数少ない場所の一つである。そこでは天気や通りがかりの犬，遅れている電車について会話が始まり，常連どうしはやがて互いの顔を覚えるようになる。一人暮らしの人にとって，こうした短いやりとりは，その日一日で他人と接する唯一の機会かもしれない。そして，それがあまりにありふれて見えるからこそ，その大切さは見過ごされやすいのである。そうした場所をなくす都市は，維持費をわずかに節約できるが，その代償をどんな予算にも表れない孤独という形で払うことになるかもしれない。',
+ 'こうしたことは，防御的な設計の背景にある懸念が架空のものだという意味ではない。ベンチは不適切に使われることもあり，公共空間を管理する人々は苦情に対応しなければならない。違いは対応の仕方にある。一つの方法は，座席を誰にとっても座り心地の悪いものにすることで問題を解決しようとする。もう一つの方法は，座る場所をより迎え入れるものにしつつ，個々の問題には直接対処しようとする——掃除の回数を増やしたり，照明を改善したり，ほかに行き場のない人々を支えるために福祉の担当部署と協力したりするのである。利用についての明確なルールを掲示で丁寧に説明すれば，ほかの人々を罰することなく多くの苦情に対応できる。この二つ目の方法をとる都市計画者は，背もたれのある座席を用意し，それを日陰や人通りの多い道沿いに一定の間隔で置き，高齢者が再び立ち上がるのを助けるひじ掛けを両端に付ける傾向がある。',
+ 'そうした選択は小さく思えるかもしれないが，そこには都市を，単に通り過ぎて物を買うための空間ではなく，共有の家とみなす考え方が表れている。座席がたくさんあると，広場は単に横切る場所ではなく，時間を過ごす場所になる。子どもたちが近くで遊ぶのを大人が見守り，高齢の住民は散歩を続ける前にひと休みし，通りの公共の営みが目に見えるようになる。ベンチがあれば，人々は景色を楽しんだり，屋外で読書をしたり，ただ行き交う世の中を眺めたりすることもできる。それらはお金がかからないのに，地域をより生き生きと感じさせる活動である。人々が自分の町で最も温かく語る場所が，しばしば立ち止まりやすい場所であるのは偶然ではない。',
+ 'したがって，公共空間を測る最も簡単な基準は，疲れた人が何も買わずにそこで休めるかどうかなのかもしれない。この基準を満たす都市が，満たさない都市より豊かだったり美しかったりするとは限らないが，より思いやりのある都市である可能性は高く，その通りはより幅広い人々に使われるだろう。質素なベンチを取り戻しても，都市のあらゆる問題が解決するわけではない。しかしそれは，誰に対しても，ここにいてよいのだと伝える，安上がりで目に見える方法なのである。',
+]
+
+VOCAB = [
+ ('errand', '用事・使い'), ('manageable', '扱える・何とかこなせる'), ('discourage', '〜を遠ざける・やる気をそぐ'),
+ ('slope', '傾く'), ('defensive', '防御的な'), ('belong', '（ある場所に）居場所がある'),
+ ('burden', '負担'), ('as standard', '標準で・当然のように'), ('maintenance', '維持・管理'),
+ ('misuse', '〜を誤用する・不正に使う'), ('social services', '福祉の担当部署・社会福祉事業'), ('interval', '間隔'),
+ ('plentiful', 'たくさんの'), ('humble', '質素な・控えめな'), ('visible', '目に見える'),
+]
+
+P = {'passage': PASSAGE, 'notes': NOTES, 'questions': QUESTIONS, 'translation': TRANSLATION, 'vocab': VOCAB}

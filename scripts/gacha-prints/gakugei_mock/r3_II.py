@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+# 第3回 Ⅱ 英文要約（論説・書き下ろし）。250字程度の日本語要約
+PART = {
+ 'points': 25,
+ 'lead': '次の英文を読み，その内容を 250 字程度の日本語で要約しなさい。ただし，句読点も 1 字に数える。',
+ 'title': 'Why Teachers Leave, and Why Some Stay',
+ 'cells': 300,
+ 'passage': [
+  "In many countries, schools are struggling to find enough teachers. Fewer young people are choosing teaching as a career, and a large share of those who do leave the profession within their first five years. The shortage is often explained by long working hours and low pay compared with other jobs that require a university degree. These factors are real, but recent surveys of teachers who have left, and of those who have stayed, suggest that they are only part of the story.",
+  "When former teachers are asked why they left, many mention hours and salary. But just as many point to something harder to measure: a feeling that they had lost control over their own work. They describe being told exactly what to teach and how, spending evenings filling in reports that no one seemed to read, and having little say in decisions that affected their classes. One former teacher put it simply: “I became a teacher to teach, and in the end I was doing everything except that.”",
+  "Teachers who stay offer a mirror image of these complaints. Asked what keeps them in the job, they rarely mention pay first. Instead, they speak of colleagues they can turn to for advice, a principal who trusts them to make decisions, and the satisfaction of seeing a student finally understand something difficult. Several surveys have found that teachers who feel supported by a strong team are far less likely to leave, even when their workload is heavy.",
+  "The first year appears to be especially important. New teachers are often given the most difficult classes and the least guidance, a combination that one researcher has called “sink or swim.” In schools that pair every new teacher with an experienced mentor, give them some reduced teaching hours, and hold regular meetings where beginners can discuss problems openly, far more new teachers are still working there three years later.",
+  "Some education authorities have begun to act on these findings. In one fictional but typical district, an audit found that teachers spent an average of six hours a week on paperwork. By removing duplicate reports and moving others online, the district cut this to two hours. Teachers were also invited to join the committees that chose textbooks and planned training. Within two years, the number of teachers leaving the district fell by about a third, although salaries had barely changed.",
+  "None of this suggests that pay does not matter. In regions where teachers earn much less than other professionals, raising salaries may be the only way to attract enough candidates. But money alone is unlikely to keep good teachers if the job itself feels impossible to do well.",
+  "The lesson for policymakers is that keeping teachers is as much about the daily experience of teaching as about the conditions written in a contract. A profession that offers trust, time and teamwork may find it easier to hold on to the people it needs.",
+ ],
+ 'notes': [('profession', '（専門的な）職業'), ('mentor', '指導役の先輩'), ('audit', '（業務の）点検・監査'), ('duplicate', '重複した')],
+ 'model': '多くの国で教員が不足し若手の離職も多いが，原因は労働時間や給与だけではない。辞めた教員の多くは，細かい指示や読まれない報告書，決定に関われないことなど，仕事を自分で決められない感覚を挙げる。逆に続ける教員は，頼れる同僚，信頼してくれる管理職，生徒の成長に立ち会う喜びを挙げる。特に1年目の支援が重要で，指導役の先輩や授業時間の軽減がある学校では若手が定着する。事務を減らし教員を意思決定に加えた地域では，給与がほぼ同じでも離職が減った。給与も大切だが，信頼と時間とチームワークのある働き方こそが教員を引き留める。',
+ 'outline': [
+  '背景：教員不足・若手の早期離職。原因は労働時間と給与とされるが，それだけではない',
+  '辞めた教員：給与・時間のほか「自分の仕事を自分で決められない感覚」（細かい指示・報告書・決定に関われない）',
+  '続ける教員：相談できる同僚・信頼してくれる管理職・生徒の成長の喜び。支えるチームがあれば辞めにくい',
+  '1年目が特に重要：指導役の先輩・授業時間の軽減・相談の場があると定着する',
+  '例：事務を減らし教員を意思決定に加えた地域で，給与がほぼ同じでも離職が約3分の1減った',
+  '給与は大切だが，それだけでは引き留められない',
+  '結論：信頼・時間・チームワークのある日々の働き方が教員を引き留める',
+ ],
+ 'criteria': [
+  ('背景：教員不足・離職が多く，原因は時間と給与だけではない', 3),
+  ('辞めた理由：仕事を自分で決められない感覚（具体的な内容を1つ以上）', 5),
+  ('続ける理由：同僚・管理職の信頼・生徒の成長 のうち2つ以上', 4),
+  ('1年目の支援（指導役・授業の軽減など）が定着につながる', 4),
+  ('事務を減らし意思決定に加えた地域で，給与が同じでも離職が減った', 4),
+  ('結論：給与だけでなく，信頼・時間・チームワークのある働き方が大切', 5),
+ ],
+ 'tips': [
+  '辞めた教員の声（引用）や「6時間→2時間」「約3分の1」などの数字は，「事務を減らした」「離職が減った」とまとめれば十分。',
+  '第2段落（辞めた理由）と第3段落（続ける理由）は鏡のように対応している（mirror image）。「逆に」「一方」でつなぐと構造が伝わる。',
+  '第6段落の「給与が大切でないわけではない」を落とすと，筆者の主張が「給与は関係ない」と誤って伝わる。一言入れておく。',
+  '最終段落の trust, time and teamwork（信頼・時間・チームワーク）が結論のキーワード。',
+ ],
+ 'translation': [
+  '多くの国で，学校は十分な数の教員を見つけるのに苦労している。教職を職業に選ぶ若者は減り，選んだ人たちのかなりの割合が最初の5年以内にこの職業を去る。この不足は，大学の学位を必要とする他の仕事と比べた労働時間の長さと給与の低さで説明されることが多い。こうした要因は実際にあるが，辞めた教員と続けている教員の両方を対象とした最近の調査は，それらが話の一部にすぎないことを示している。',
+  'かつて教員だった人たちに辞めた理由を尋ねると，多くが労働時間と給与を挙げる。しかし，同じくらい多くの人が，もっと測りにくいものを指摘する。自分の仕事を自分で決められなくなったという感覚である。彼らは，何をどう教えるかを細かく指示されたこと，誰も読んでいないように思える報告書の記入に夜を費やしたこと，自分のクラスに影響する決定にほとんど口を出せなかったことを語る。ある元教員は簡潔にこう言った。「私は教えるために教師になったのに，最後には教えること以外のすべてをしていました。」',
+  '続けている教員は，こうした不満と鏡に映したような答えを返す。何がこの仕事にとどまらせているのかと尋ねられて，最初に給与を挙げることはめったにない。その代わりに，助言を求めて頼れる同僚，自分を信頼して判断を任せてくれる校長，そして生徒が難しいことをやっと理解するのを見る満足感について語る。いくつもの調査で，強いチームに支えられていると感じている教員は，仕事量が多い場合でも，辞める可能性がはるかに低いことが分かっている。',
+  '1年目は特に重要であるようだ。新任の教員はしばしば最も難しいクラスと最も少ない指導を与えられ，ある研究者はこの組み合わせを「沈むか泳ぐか」と呼んだ。すべての新任教員に経験豊かな指導役を組ませ，担当する授業時間をいくらか減らし，初任者が問題を率直に話し合える定期的な会合を開く学校では，3年後もそこで働き続けている新任教員がはるかに多い。',
+  'いくつかの教育行政機関は，こうした発見に基づいて動き始めている。架空だが典型的なある地域では，点検の結果，教員が書類仕事に週平均6時間を費やしていることが分かった。重複する報告書をなくし，ほかの報告書をオンラインに移すことで，その地域はこれを2時間に減らした。教員はまた，教科書を選んだり研修を計画したりする委員会に加わるよう招かれた。2年のうちに，その地域を辞める教員の数は約3分の1減った。給与はほとんど変わっていなかったにもかかわらず，である。',
+  'このどれも，給与が重要でないことを意味するわけではない。教員の収入が他の専門職よりはるかに低い地域では，給与を上げることが十分な志願者を集める唯一の方法かもしれない。しかし，仕事そのものをうまくこなすことが不可能に感じられるなら，お金だけでよい教員を引き留められる見込みは低い。',
+  '政策を立てる人たちにとっての教訓は，教員を引き留めることは，契約書に書かれた条件と同じくらい，教えることの日々の経験にかかわっている，ということである。信頼と時間とチームワークを提供する職業は，必要とする人々を引き留めやすくなるかもしれない。',
+ ],
+ 'vocab': [('struggle to do', '〜するのに苦労する'), ('shortage', '不足'), ('factor', '要因'), ('point to ~', '〜を指摘する'), ('have little say in ~', '〜にほとんど口を出せない'), ('mirror image', '鏡に映したような像（正反対の対応）'), ('turn to ~ for advice', '〜に助言を求める'), ('workload', '仕事量'), ('guidance', '指導'), ('pair A with B', 'AをBと組ませる'), ('education authority', '教育行政機関'), ('barely', 'ほとんど〜ない'), ('candidate', '志願者・候補者'), ('hold on to ~', '〜を手放さない・引き留める')],
+}

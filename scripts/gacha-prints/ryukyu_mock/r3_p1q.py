@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+# 第3回 大問1 設問（問1 空所5・問2 下線部4・問3 内容2・問4 文の完成・問5 表題）
+QUESTIONS = [
+ {'label': '問1', 'kind': '空所補充', 'points': 10, 'distinct': True,
+  'stem': '空所（ 1 ）〜（ 5 ）に入れるのに最も適切なものを，次の a〜e から1つずつ選び，記号で答えなさい。ただし，同じ記号を2度以上使ってはならない。文頭に来る語も小文字で示してある。',
+  'choices': [('a', 'until'), ('b', 'worth'), ('c', 'either way'), ('d', 'visible'), ('e', 'spent nothing')],
+  'subs': [{'label': '(1)'}, {'label': '(2)'}, {'label': '(3)'}, {'label': '(4)'}, {'label': '(5)'}],
+  'answers': ['d', 'e', 'a', 'c', 'b'],
+  'subexpl': [
+   'only a few dozen stars remain ___「数十個の星しか〜のままでない」。remain の後には形容詞が来る。visible「見える」。',
+   'even though Hollin has ___ on advertising「広告に〜にもかかわらず」。現在完了 has の後なので過去分詞を含む spent nothing「何もお金を使っていない」。観光収入が増えた「のに」という逆接の流れにも合う。',
+   'insects gather around lamps ___ they die of exhaustion「疲れ果てて死ぬ〜電灯のまわりに群がる」。接続詞 until「〜するまで」。',
+   '直前で「よく眠れるという報告は測りにくい」と認めたうえで，「いずれにせよ，お金は節約できている」と確かな利点を続ける。Either way「どちらにしても」。',
+   'the night is ___ protecting。be worth doing「〜する価値がある」。',
+  ]},
+ {'label': '問2', 'kind': '下線部の意味', 'points': 8,
+  'stem': '下線部（ア）〜（エ）の意味に最も近いものを，それぞれ a〜d から1つずつ選び，記号で答えなさい。',
+  'subs': [
+   {'label': '(ア)', 'text': 'It took three years of work, but the town finally got there.', 'choices': [('a', 'The town moved to a new place after three years.'), ('b', 'After three years of effort, the town achieved its goal.'), ('c', 'The town gave up its plan after three years.'), ('d', 'It took three years to build a road to the town.')], 'cols': 0},
+   {'label': '(イ)', 'text': 'disturb', 'choices': [('a', 'protect'), ('b', 'repeat'), ('c', 'upset'), ('d', 'measure')]},
+   {'label': '(ウ)', 'text': '“We didn’t want to turn off the town. We wanted to turn on the sky.”', 'choices': [('a', 'The town wanted to stop all activity at night.'), ('b', 'The town wanted to add more lights so that people could see the sky.'), ('c', 'The town wanted people to stay at home at night.'), ('d', 'The town did not want to make life dark; it wanted the stars to be seen again.')], 'cols': 0},
+   {'label': '(エ)', 'text': 'the moment a light is switched off or pointed downward, the effect disappears', 'choices': [('a', 'as soon as a light is turned off or turned down, the problem goes away'), ('b', 'it takes many years before turning off lights makes a difference'), ('c', 'lights should be switched off only for a moment'), ('d', 'the problem gets worse when lights point downward')], 'cols': 0},
+  ],
+  'answers': ['b', 'c', 'd', 'a'],
+  'subexpl': [
+   'get there「（目標に）到達する」。there は直前の「星空保護地域として公式に認められる」という目標を指す。',
+   'disturb「乱す・妨げる」。upset には「（計画・状態などを）狂わせる」の意味がある。',
+   'turn off the town（町の明かりを消す＝町を暗くさびれさせる）と turn on the sky（空の明かりをつける＝星が見えるようにする）の対比。不安に答える町長の言葉。',
+   'the moment ~「〜したとたんに」（＝as soon as ~）。the effect は光害の影響。直前の「ほぼすぐに減らせる」の説明。',
+  ]},
+ {'label': '問3', 'kind': '内容一致', 'points': 4,
+  'stem': '本文の内容に合うように，次の (1)・(2) の問いの答えとして最も適切なものを，それぞれ a〜d から1つずつ選び，記号で答えなさい。',
+  'subs': [
+   {'label': '(1)', 'text': 'How has the change affected tourism in Hollin?', 'choices': [('a', 'Fewer people visit the town because it is too dark.'), ('b', 'The town now attracts visitors who come to see the stars.'), ('c', 'The ski season has become much longer.'), ('d', 'Most guesthouses have closed down.')], 'cols': 0},
+   {'label': '(2)', 'text': 'Why does light pollution harm young sea turtles?', 'choices': [('a', 'Bright lights on land can make them head away from the sea.'), ('b', 'The lights make the water too warm for them.'), ('c', 'They are eaten by birds attracted by the lights.'), ('d', 'They cannot sleep because of strong light.')], 'cols': 0},
+  ],
+  'answers': ['b', 'a'],
+  'subexpl': [
+   '第3段落：望遠鏡やカメラを持った人が毎月何百人も来るようになり，観光収入は約20%増えた。a・d は逆，c は本文にない。',
+   '第4段落：ウミガメの子は最も明るい地平線に向かって進むが，岸の明るい照明が間違った方向へ導いてしまう。b・c・d は本文にない。',
+  ]},
+ {'label': '問4', 'kind': '文の完成', 'points': 4,
+  'stem': '本文の内容に合うように次の英文を完成させるとき，空所に入れるのに最も適切なものを a〜d から1つ選び，記号で答えなさい。{br}//The council dealt with residents’ worries about crime by (　　　　).//',
+  'choices': [('a', 'hiring more police officers'), ('b', 'showing records that crime had not increased'), ('c', 'putting brighter lights on every street'), ('d', 'asking shops to stay open all night')], 'cols': 0,
+  'answers': ['b'],
+  'expl': '第6段落：The council answered these concerns with data. Police records showed no rise in crime after the change. a・d は本文にない。c は規則の趣旨と逆。'},
+ {'label': '問5', 'kind': '表題', 'points': 4,
+  'stem': '本文全体の表題にいちばんふさわしいものを a〜d から1つ選び，記号で答えなさい。（本文の上の表題は伏せて考えること）',
+  'choices': [('a', 'How to Take Better Photos of the Moon'), ('b', 'A Town That Brought Back Its Night Sky'), ('c', 'Why Sea Turtles Are Disappearing'), ('d', 'The Rising Cost of Electricity in Cities')], 'cols': 0,
+  'answers': ['b'],
+  'expl': '記事全体は，山あいの町が照明の規則を変えて光害を減らし，星空を取り戻した経緯と効果・課題を伝えている。c・d は一部の話題にすぎず，a は本文にない。'},
+]

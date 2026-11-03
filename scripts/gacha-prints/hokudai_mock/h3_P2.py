@@ -1,0 +1,93 @@
+# -*- coding: utf-8 -*-
+# 第3回 大問2 長文読解（体験エッセイ・書き下ろし）。人物・町はすべて架空。
+from mk import pos_for, mc1
+pos = pos_for(3)
+
+PASSAGE = [
+ "I was thirty-two years old when I finally admitted that I could not swim. It was not a secret, exactly, but it was something I had avoided mentioning for most of my life. As a child, I had been terrified by a towering wave on a family holiday, and after that I refused to go into any water deeper than my knees. At school, I always found an excuse to miss swimming lessons. As an adult, I simply arranged my life so that the subject never came up. I chose holidays in cities rather than at the beach, and when friends suggested a day by the lake, I volunteered to guard the bags.",
+ "What changed my mind was my niece. When she turned six, my sister asked if I would take her to the local pool on Saturday mornings while she worked. {u1|I could hardly explain to a six-year-old that her aunt, who had promised to keep her safe, would be of no use at all if she got into difficulty in the water.} That evening, I searched online and found an adult beginners’ class at the Merriwick community pool. It met on Tuesday nights, it was taught by a former competitive swimmer named Rosalind Achterberg, and, according to the website, no previous experience was required.",
+ "There were six of us in the class: a retired bus driver, two university students, a nurse who had grown up far from the sea, a man who had recently moved to the country, and me. I had expected to feel embarrassed, but there was an unexpected solace in being surrounded by people who were equally ( ア ). Rosalind began not by teaching us any strokes but by asking each of us to describe what frightened us. For me, it was the moment my face went under the surface and I could no longer breathe. For the bus driver, it was the feeling of not touching the bottom. She listened carefully and said that fear was nothing to be ashamed of; it was simply information about what we needed to practise.",
+ "For the first three weeks, we did not swim at all. We stood in the shallow end, put our faces in the water, and blew bubbles. We practised floating on our backs while Rosalind held a hand under our shoulders. {u2|It felt ridiculous at first, but I gradually noticed that the panic I had always felt was becoming quieter, as if my body were slowly learning what my mind had refused to believe for years: that the water would hold me up if I let it.} One evening, Rosalind quietly took her hand away, and I floated on my own for several seconds before realizing she was no longer supporting me.",
+ "Progress after that was uneven. Some weeks I seemed to move forward; other weeks I swallowed water, lost my rhythm, and went home discouraged. The students, who were younger and stronger, soon left the rest of us behind. Rosalind, however, refused to let us compare ourselves with one another. {u3|She told us that the only useful comparison was with the person we had been the week before.} When I lamented that I would never be a proper swimmer, she asked what I meant by ‘proper’. I realized I had none. Winning races had never been my aim. My wish was simply to stay calm in deep water, and that, I slowly understood, was already within reach.",
+ "When the course finished, I could swim a full length of the pool, slowly and not very gracefully, but without stopping. It was twenty-five meters, a distance my niece would later cover in half the time. Still, I remember climbing out at the deep end that night and sitting on the edge with my feet in the water, feeling a kind of pride I had not felt since childhood. The retired bus driver, who had reached the same point a week earlier, shook my hand as if I had crossed an ocean.",
+ "I now take my niece to the pool every Saturday, and I am usually the one who suggests staying longer. Looking back, I am struck by how much of my fear had been kept alive by avoidance. {u4|Each time I had turned away from the water, I had made it a little more frightening, so that what began as a single bad experience became, over many years, a fixed part of how I saw myself.} The lesson I took from Rosalind’s class was not really about swimming. It was that some fears do not diminish until we approach them, slowly, alongside others who are willing to wait.",
+]
+
+QUESTIONS = [
+ {'no': 1, 'points': 8, 'kind': 'trans', 'stem': '下線部(1)を和訳せよ。',
+  'answer': '6歳の子どもに向かって，あなたを守ると約束したおばは，もしあなたが水の中で困ったことになってもまったく役に立たない，とはとても説明できなかった。',
+  'alts': ['安全を守ると約束したおばが，水の中で危ない目にあったら何の役にも立たないなどということを，6歳の子に説明できるはずがなかった。'],
+  'criteria': [('could hardly explain「とても説明できなかった」（hardly の否定）', 2), ('her aunt, who had promised to keep her safe（非制限用法の関係詞）', 2),
+               ('would be of no use at all「まったく役に立たないだろう」', 2), ('if she got into difficulty in the water「水の中で困ったことになったら」', 2)],
+  'explain': ['hardly は「ほとんど〜ない」。could hardly explain で「とても説明できなかった」。',
+              'her aunt は筆者自身のこと。6歳の姪から見た言い方なので「おば」と訳す。who 以下は非制限用法で補足説明。',
+              'of no use は useless と同じ「役に立たない」。at all は否定の強調。get into difficulty は「困った状況に陥る」。']},
+ mc1(2, 5, '( ア )を補うのにふさわしい語を，(A)〜(D)のうちから一つ選べ。',
+     ['inexperienced', 'competitive', 'impatient', 'skilled'],
+     ['○ 第2段落 “no previous experience was required” の講座で，筆者は恥ずかしい思いを予想していたが，同じように「不慣れな」人に囲まれて安心した，という流れ。',
+      '× competitive（競争心の強い）は，元競泳選手のコーチについての語。受講生の説明ではない。',
+      '× 受講生がせっかちだという記述はない（本文に記述なし）。',
+      '× 初心者向けの講座なので，皆が上手だったという意味になると逆（本文と逆）。'], pos()),
+ {'no': 3, 'points': 7, 'kind': 'ja_limit', 'limit': 60,
+  'stem': '下線部(2)で筆者に起きていた変化を，本文に即して説明せよ。句読点も1字に数え，60字以内とする。',
+  'answer': 'いつも感じていたパニックが次第に静まり，力を抜けば水が体を浮かせてくれることを，体がゆっくり学び始めていたということ。',
+  'alts': ['ずっと抱いていた恐怖が少しずつ和らぎ，水に身を任せれば浮いていられることを，頭より先に体が理解し始めたということ。'],
+  'criteria': [('いつも感じていたパニック（恐怖）が次第に静まった', 3), ('身を任せれば水が体を支えてくれる（浮かせてくれる）こと', 2), ('それを体がゆっくり学んでいた', 2)],
+  'explain': ['the panic I had always felt was becoming quieter が変化の中心。「いつも感じていたパニックが静まりつつあった」。',
+              'as if 以下は「まるで体が〜を学んでいるかのように」。コロン（:）の後が「学んでいた内容」で，the water would hold me up if I let it「身を任せれば水が支えてくれる」。',
+              'my mind had refused to believe for years と my body の対比（頭では信じられなかったことを体が覚えた）に触れると，なおよい。']},
+ mc1(4, 5, '下線部(3)の言わんとすることに最も近いものを，(A)〜(D)のうちから一つ選べ。',
+     ['Each swimmer should judge progress against his or her own earlier performance.', 'Each swimmer should try to match the pace of the fastest person in the class.',
+      'Comparing oneself with anyone at all is always harmful to learning.', 'Each swimmer would be tested once a week to measure progress.'],
+     ['○ 「唯一役に立つ比較は1週間前の自分との比較」。直前の “refused to let us compare ourselves with one another” とも合う。',
+      '× 他人との比較をさせなかったのだから逆（本文と逆）。',
+      '× 1週間前の自分との比較は役に立つと言っているので，「どんな比較も有害」は言い過ぎ（言い過ぎ）。',
+      '× 毎週の試験の話は本文にない（本文に記述なし）。'], pos()),
+ {'no': 5, 'points': 4, 'kind': 'extract', 'n': 1,
+  'stem': '第2段落から，Rosalind Achterberg がどのような経歴の人物かを表す語句を4語で抜き出して英語で記せ。',
+  'answer': ['a former competitive swimmer'],
+  'criteria': [('a former competitive swimmer を正しく書き抜く（冠詞を含め4語）', 4)],
+  'explain': ['第2段落 “it was taught by a former competitive swimmer named Rosalind Achterberg” の名詞句。',
+              'former は「元の・以前の」，competitive swimmer は「競泳選手」。冠詞 a を含めて4語になる。',
+              '第5段落で彼女が受講生どうしを比べさせなかったことは，競争の世界にいた人の言葉として読むと印象が強まる。']},
+ {'no': 6, 'points': 7, 'kind': 'trans', 'stem': 'it が何を指すかを明らかにして，下線部(4)を和訳せよ。',
+  'answer': '水から目をそむけるたびに，私は水をほんの少しずつ恐ろしいものにしていき，その結果，たった一度の嫌な経験として始まったものが，長い年月の間に，自分自身をどう見るかの動かしがたい一部になってしまったのである。',
+  'alts': ['水を避けるたびに，私は水への恐怖を少しずつ強めてしまい，一度きりのつらい体験にすぎなかったものが，何年もかけて自分の自己像の変えられない一部になったのだ。'],
+  'criteria': [('Each time …「〜するたびに」と turn away from「〜から目をそむける・避ける」', 2), ('it＝the water（水）を明示し，had made it a little more frightening', 2),
+               ('so that what began as A became B「その結果，Aとして始まったものがBになった」', 2), ('a fixed part of how I saw myself「自分をどう見るかの動かしがたい一部」', 1)],
+  'explain': ['it は直前の the water を指す。「水を少しずつ恐ろしいものにした」。',
+              'so that は結果「その結果〜」。what began as a single bad experience は「一度の嫌な経験として始まったもの」で，became の主語。',
+              'over many years は挿入句。how I saw myself は「自分自身の見方・自己像」。']},
+ {'no': 7, 'points': 6, 'kind': 'tf2', 'stem': '本文の趣旨に合致する英文を，(A)〜(F)のうちから二つ選べ。',
+  'choices': ['The author used to avoid swimming lessons when she was at school.',
+              'The author joined the class mainly because a doctor had advised her to exercise.',
+              'Rosalind taught the class basic swimming strokes in the very first lesson.',
+              'The two university students made faster progress than the others in the class.',
+              'The author eventually swam twenty-five meters faster than her niece.',
+              'The author now prefers not to stay long at the pool with her niece.'],
+  'answer': [0, 3],
+  'reasons': ['○ 第1段落 “At school, I always found an excuse to miss swimming lessons.” と一致。',
+              '× 講座に入ったきっかけは姪をプールに連れて行くことで，医者の助言ではない（本文に記述なし）。',
+              '× 第4段落 “For the first three weeks, we did not swim at all.” と逆（本文と逆）。',
+              '○ 第5段落 “The students, who were younger and stronger, soon left the rest of us behind.” と一致。',
+              '× 第6段落によれば，姪のほうが後に半分の時間で泳いでいる（本文と逆）。',
+              '× 最終段落 “I am usually the one who suggests staying longer” と逆（本文と逆）。']},
+]
+
+TRANSLATION = [
+ '泳げないことをようやく認めたのは，私が32歳のときだった。それは正確には秘密ではなかったが，人生のほとんどの間，口にするのを避けてきたことだった。子どものころ，家族旅行でそびえるような大波にひどく怯え，それ以来ひざより深い水には入ろうとしなかった。学校では，いつも何か言い訳を見つけて水泳の授業を休んだ。大人になってからは，その話題が決して出ないように生活を整えただけだった。休暇は海辺ではなく都市で過ごすことにし，友人が湖で1日過ごそうと言うと，荷物の見張りを買って出た。',
+ '私の考えを変えたのは姪だった。姪が6歳になったとき，姉が，自分が仕事をしている間，土曜日の朝に娘を近所のプールに連れて行ってくれないかと頼んできた。(1)6歳の子どもに向かって，あなたを守ると約束したおばは，もしあなたが水の中で困ったことになってもまったく役に立たない，とはとても説明できなかった。その晩，私はインターネットで調べ，メリウィック市民プールの大人の初心者講座を見つけた。講座は火曜日の夜に開かれ，ロザリンド・アクターバーグという元競泳選手が教えており，ウェブサイトによれば経験は一切不要とのことだった。',
+ '講座には6人がいた。引退したバスの運転手，大学生2人，海から遠く離れた土地で育った看護師，最近この国に移ってきた男性，そして私である。恥ずかしい思いをするだろうと予想していたが，同じように不慣れな人たちに囲まれていることには，思いがけない慰めがあった。ロザリンドは，泳ぎ方を教えることからではなく，一人一人に何が怖いのかを話してもらうことから始めた。私の場合，それは顔が水面の下に沈み，息ができなくなる瞬間だった。バスの運転手の場合は，足が底につかない感覚だった。彼女は注意深く耳を傾け，恐怖は恥ずかしいものではなく，何を練習する必要があるかを教えてくれる情報にすぎないと言った。',
+ '最初の3週間，私たちはまったく泳がなかった。浅いほうに立って顔を水につけ，泡を吹いた。ロザリンドが肩の下に手を添えている間，あおむけに浮く練習をした。(2)最初はばかばかしく感じたが，いつも感じていたパニックが少しずつ静まっていくことに，私は次第に気づいた。まるで，頭が何年も信じようとしなかったこと，つまり身を任せれば水が体を浮かせてくれるということを，体がゆっくり学んでいるかのようだった。ある晩，ロザリンドがそっと手を離し，私は彼女がもう支えていないことに気づくまで，数秒間一人で浮いていた。',
+ 'その後の進歩はむらがあった。前に進めたように思える週もあれば，水を飲み，リズムを崩し，がっかりして帰る週もあった。若くて体力のある大学生たちは，すぐにほかの私たちを置き去りにした。しかしロザリンドは，私たちに互いを比べさせなかった。(3)唯一役に立つ比較は，1週間前の自分との比較だと彼女は言った。私がちゃんとした泳ぎ手にはとてもなれないと嘆くと，彼女は「ちゃんとした」とはどういう意味かと尋ねた。私は答えを持っていないことに気づいた。競泳で勝つことなど，一度も目標ではなかった。私の願いはただ深い水の中で落ち着いていることであり，それはもう手の届くところにあるのだと，私は徐々に理解した。',
+ '講座が終わったとき，私はプールの端から端まで，ゆっくりと，あまり優雅にではないが，止まらずに泳げるようになっていた。それは25メートルで，姪が後に半分の時間で泳ぐことになる距離だった。それでも，その晩，深いほうの端から上がり，足を水につけたままプールの縁に座って，子どものころ以来感じたことのない誇らしさを味わったのを覚えている。1週間前に同じところまで達していた引退したバスの運転手は，まるで私が大洋を渡ったかのように握手してくれた。',
+ '今では毎週土曜日に姪をプールに連れて行き，もっと長くいようと言い出すのはたいてい私のほうだ。振り返ってみると，私の恐怖のどれほど多くが，避けることによって生き長らえていたかに驚かされる。(4)水から目をそむけるたびに，私は水をほんの少しずつ恐ろしいものにしていき，その結果，たった一度の嫌な経験として始まったものが，長い年月の間に，自分自身をどう見るかの動かしがたい一部になってしまったのである。ロザリンドの講座から私が学んだ教訓は，実は泳ぐことについてのものではなかった。それは，恐怖の中には，ゆっくりと，待ってくれる人たちと一緒に近づいていかない限り弱まらないものがある，ということだった。',
+]
+
+VOCAB = [('admit', '認める'), ('come up', '（話題が）出る'), ('niece', '姪'), ('of no use', '役に立たない'),
+         ('get into difficulty', '困った状況に陥る'), ('former', '元の'), ('competitive swimmer', '競泳選手'), ('stroke', '（水泳の）泳法・ひとかき'),
+         ('be ashamed of ～', '〜を恥じる'), ('shallow', '浅い'), ('float', '浮く'), ('ridiculous', 'ばかばかしい'),
+         ('uneven', 'むらのある'), ('discouraged', 'がっかりした'), ('within reach', '手の届くところに'), ('gracefully', '優雅に'),
+         ('avoidance', '回避・避けること'), ('diminish', '弱まる・小さくなる'), ('towering', 'そびえるような'), ('solace', '慰め'), ('lament', '嘆く'), ('alongside ～', '〜と一緒に・並んで')]
+
+PART = {'passage': PASSAGE, 'questions': QUESTIONS, 'translation': TRANSLATION, 'vocab': VOCAB, 'notes': []}

@@ -1,0 +1,27 @@
+# -*- coding: utf-8 -*-
+# 第3回 Ⅰ 長文（日本語で答える）本文と全訳。研究・人物は架空。設問は r3_p1q.py
+PART = {
+ 'points': 32,
+ 'lead': '次の英文を読み，後の問1〜問6に答えよ。',
+ 'title': 'Songs of the City',
+ 'passage': [
+  "Anyone who has walked through a city park early in the morning knows that cities are full of birdsong. What most people do not realize is that many of these birds are not singing in the same way as their relatives in the countryside. Over the past twenty years, researchers have recorded the songs of the same species in cities and in forests, and the differences are often striking. {u1|City birds tend to sing at a higher pitch, and some of them begin singing much earlier in the morning.}",
+  "The main reason appears to be noise. Traffic, construction and air conditioners produce a constant low rumble that can cover the lower notes of a bird’s song. A male bird that sings low notes in a noisy street may simply not be heard by the females he is trying to attract or by the rivals he is trying to warn away. Singing higher allows the message to rise above the noise, in the same way that people raise their voices in a crowded restaurant. Starting earlier has a similar ({bア}): in the hour before the morning traffic begins, the city is quiet enough for a song to travel.",
+  "How do young birds come to sing in this new way? To answer this question, it helps to understand how songbirds learn in the first place. Many of them are not born knowing their song. Instead, a young bird goes through a learning process that resembles the way a child learns to speak. First, it {s1}. Next, it {s2}. Then it {s3}. Finally, it {s4}. Because the young bird copies what it hears, a city bird that grows up surrounded by high-pitched songs will learn to sing high as well.",
+  "This learning process means that city songs can change surprisingly quickly. In one long-term study, researchers who had recorded a population of sparrows in the same park for fifteen years found that the lowest note of their song had risen noticeably over that period. The change was too fast to be explained by changes in the birds’ bodies. It was ({bイ}) a change in culture, passed from older birds to younger ones.",
+  "The new songs may come at a cost, however. In some species, females appear to prefer males who can sing low notes, perhaps because only large and healthy males are able to produce them. A male who sings high to be heard may therefore be heard more easily but found less attractive. {u3|Birds in noisy cities may be caught between two pressures}: one pushing their songs up, the other pulling them down. Researchers are still trying to learn which pressure is stronger, and whether the answer is the same for every species.",
+  "There is also evidence that noise affects more than song. Birds that live near busy roads have been found to be more stressed and to raise fewer young. Some scientists warn that if noise continues to grow, only the species that can {g2} will remain in our cities, while others quietly disappear.",
+  "The good news is that noise, unlike many other environmental problems, stops the moment its source is switched off. During periods when traffic in some cities fell sharply, researchers noticed that birds began singing more softly and at lower pitches within a few weeks. It seems that, given the ({bウ}), city birds are quick to return to the songs of their ancestors. Quieter roads, better road surfaces and more green spaces could help give them that chance.",
+ ],
+ 'notes': [('pitch', '音の高さ'), ('rumble', 'ゴーという低い音'), ('sparrow', 'スズメ'), ('ancestor', '祖先')],
+ 'translation': [
+  '早朝に都会の公園を歩いたことのある人なら誰でも，都会が鳥のさえずりにあふれていることを知っている。ほとんどの人が気づいていないのは，こうした鳥の多くが，田舎に住む仲間と同じようには鳴いていないということだ。この20年間，研究者たちは同じ種の鳥のさえずりを都会と森で録音してきたが，その違いはしばしば際立っている。（1）都会の鳥は高い音で鳴く傾向があり，中には朝ずっと早くから鳴き始めるものもいる。',
+  'おもな理由は騒音であるようだ。交通，工事，エアコンは絶え間なく低いゴーという音を出し，それが鳥のさえずりの低い音をかき消してしまうことがある。騒がしい通りで低い音で鳴く雄は，引きつけようとしている雌にも，追い払おうとしている競争相手にも，まったく聞こえないかもしれない。高く鳴けば，混んだレストランで人が声を張り上げるのと同じように，伝えたいことが騒音の上に浮かび上がる。早く鳴き始めることにも似た（ア 効果）がある。朝の交通が始まる前の1時間は，さえずりが遠くまで届くほど街が静かなのだ。',
+  '若い鳥はどのようにしてこの新しい鳴き方をするようになるのだろうか。この問いに答えるには，そもそも鳴き鳥がどのように学ぶのかを知っておくとよい。その多くは，生まれつき自分の歌を知っているわけではない。かわりに，若い鳥は，子どもが話すことを覚えるのに似た学習の過程を経る。まず［1 大人の鳥の歌を聞いて記憶する］。次に［2 小さな声で，不完全な歌を練習する］。それから［3 自分の歌を覚えた歌と比べて直していく］。最後に［4 生涯使う決まった歌に落ち着く］。若い鳥は聞いたものをまねるので，高い歌に囲まれて育った都会の鳥は，自分も高く鳴くことを覚えるのである。',
+  'この学習の過程があるために，都会の歌は驚くほど速く変わりうる。ある長期の研究で，同じ公園のスズメの群れを15年間録音してきた研究者たちは，その歌の最も低い音がその間に目立って高くなっていたことを発見した。その変化は，鳥の体の変化で説明するには速すぎた。それは（イ むしろ）文化の変化であり，年上の鳥から若い鳥へと受け継がれたものだった。',
+  'しかし，新しい歌には代償がともなうかもしれない。種によっては，雌は低い音を出せる雄を好むようである。それはおそらく，大きくて健康な雄しか低い音を出せないからだろう。そのため，聞いてもらうために高く鳴く雄は，聞こえやすくはなっても，魅力が劣ると見なされるかもしれない。（3）騒がしい都会の鳥は，2つの圧力の間で板ばさみになっているのかもしれない。1つは歌を高くする方向へ押し，もう1つは低くする方向へ引っぱる。どちらの圧力が強いのか，その答えがすべての種で同じなのかを，研究者たちは今も調べている。',
+  '騒音が影響を与えるのは歌だけではないという証拠もある。交通量の多い道路の近くに住む鳥は，ストレスが大きく，育てるひなの数も少ないことがわかっている。騒音が増え続ければ，（2）騒音に合わせて鳴き方を変えられる種だけが街に残り，ほかの種は静かに姿を消すだろうと警告する科学者もいる。',
+  'よい知らせは，騒音はほかの多くの環境問題と違い，音のもとを止めたとたんになくなるということだ。いくつかの都市で交通量が大きく減った時期に，研究者たちは，数週間のうちに鳥が前より小さな声で，低い音で鳴き始めたことに気づいた。（ウ 機会）さえ与えられれば，都会の鳥はすぐに祖先の歌に戻るようだ。より静かな道路，よりよい路面，より多くの緑地が，鳥にその機会を与える助けになるかもしれない。',
+ ],
+ 'vocab': [('striking', '際立った'), ('pitch', '音の高さ'), ('rumble', 'ゴーという低い音'), ('rival', '競争相手'), ('effect', '効果'), ('resemble', '似ている'), ('population', '（動物の）群れ・個体群'), ('noticeably', '目立って'), ('rather', 'むしろ'), ('at a cost', '代償をともなって'), ('attractive', '魅力的な'), ('pressure', '圧力'), ('stressed', 'ストレスを受けた'), ('ancestor', '祖先'), ('opportunity', '機会')],
+}

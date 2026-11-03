@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+# 第1回 大問1 設問（問1 空所5・問2 下線部4・問3 内容2・問4 文の完成・問5 表題）
+QUESTIONS = [
+ {'label': '問1', 'kind': '空所補充', 'points': 10, 'distinct': True,
+  'stem': '空所（ 1 ）〜（ 5 ）に入れるのに最も適切なものを，次の a〜e から1つずつ選び，記号で答えなさい。ただし，同じ記号を2度以上使ってはならない。文頭に来る語も小文字で示してある。',
+  'choices': [('a', 'for example'), ('b', 'limit'), ('c', 'partly why'), ('d', 'continue'), ('e', 'surprised')],
+  'subs': [{'label': '(1)'}, {'label': '(2)'}, {'label': '(3)'}, {'label': '(4)'}, {'label': '(5)'}],
+  'answers': ['d', 'b', 'e', 'a', 'c'],
+  'subexpl': [
+   'could not ___ as they were「元のままで〜することはできない」。助動詞の後なので動詞の原形。「そのまま続けるわけにはいかない」となる continue が入る。',
+   'were asked to ___ their showers to three minutes。limit A to B「A を B に制限する」。水不足の話の流れにも合う。',
+   'have ___ many of those who opposed the plan。現在完了なので過去分詞。直後に「来訪者は3分の1減ったのに，消費額はわずかしか減っていない」という意外な結果が続くので surprised「驚かせた」。',
+   '直前の「事業を変えたい店への支援」の具体例として，スクーター店が電動自転車の貸し出しを始めた話が続く。文頭なので For example。',
+   'That is ___ the plan has survived …。直前の「1年近く住民集会を開いた」が，計画が続いている理由の1つだという流れ。partly why「〜の理由の1つ（一部）」。',
+  ]},
+ {'label': '問2', 'kind': '下線部の意味', 'points': 8,
+  'stem': '下線部（ア）〜（エ）の意味に最も近いものを，それぞれ a〜d から1つずつ選び，記号で答えなさい。',
+  'subs': [
+   {'label': '(ア)', 'text': 'cap', 'choices': [('a', 'a small fee for using the beach'), ('b', 'a new kind of ferry ticket'), ('c', 'a hat worn by tour guides'), ('d', 'an upper limit on the number of people')], 'cols': 2},
+   {'label': '(イ)', 'text': 'Many said they would gladly pay more if it meant a quieter beach.', 'choices': [('a', 'Many visitors thought the fee was already too high.'), ('b', 'Many visitors wanted more shops and events on the beach.'), ('c', 'Many visitors were happy to pay a higher fee in return for fewer people on the beach.'), ('d', 'Many visitors said they would come back only if the fee was removed.')], 'cols': 0},
+   {'label': '(ウ)', 'text': 'ask about', 'choices': [('a', 'show an interest in'), ('b', 'complain about'), ('c', 'take pictures of'), ('d', 'pay money for')]},
+   {'label': '(エ)', 'text': 'imposed from outside', 'choices': [('a', 'suggested by visitors as a friendly idea'), ('b', 'announced on the internet before a meeting'), ('c', 'paid for by companies from other countries'), ('d', 'forced on local people by others without their agreement')], 'cols': 0},
+  ],
+  'answers': ['d', 'c', 'a', 'd'],
+  'subexpl': [
+   '直後の「来訪者をほかの島に追いやってしまう」から，人数の「上限」の意味。cap は「（数量の）上限」。',
+   'if it meant a quieter beach「それがより静かな浜辺を意味するなら（＝静かになるのなら）」。gladly pay more「喜んでもっと払う」。',
+   'Now they sit down. の後なので，急いで写真を撮って帰るのではなく，島のことに興味を持って尋ねるようになった，という対比。',
+   'impose は「（規則などを）押しつける」。from outside「外部から」。直後の「1年近く住民集会を開いた」と対比されている。',
+  ]},
+ {'label': '問3', 'kind': '内容一致', 'points': 4,
+  'stem': '本文の内容に合うように，次の (1)・(2) の問いの答えとして最も適切なものを，それぞれ a〜d から1つずつ選び，記号で答えなさい。',
+  'subs': [
+   {'label': '(1)', 'text': 'What was one problem on the island before the limit was introduced?', 'choices': [('a', 'The ferry company stopped running during the summer.'), ('b', 'The island came close to running short of fresh water.'), ('c', 'Visitors refused to eat in local restaurants because of the prices.'), ('d', 'Travel agencies asked the council to raise the number of visitors.')], 'cols': 0},
+   {'label': '(2)', 'text': 'What has happened since the limit started?', 'choices': [('a', 'The number of visitors has fallen by about half.'), ('b', 'All of the scooter rental shops on the island have closed.'), ('c', 'Visitors spend almost as much money in total as before.'), ('d', 'Residents’ relatives are no longer allowed to visit the island.')], 'cols': 0},
+  ],
+  'answers': ['b', 'c'],
+  'subexpl': [
+   '第2段落：繁忙期に地下水の水位が下がり，住民はシャワーを3分にするよう求められた。a・d は本文にない。c は第4段落（制限後は地元の食堂で食べる）と食い違う。',
+   '第4段落：来訪者は約3分の1減ったが，島での消費総額はわずかに減っただけ。a は「半分」が誤り。b は「すべて閉店」とは書かれていない。d は第5段落で年10人まで登録できるとある。',
+  ]},
+ {'label': '問4', 'kind': '文の完成', 'points': 4,
+  'stem': '本文の内容に合うように次の英文を完成させるとき，空所に入れるのに最も適切なものを a〜d から1つ選び，記号で答えなさい。{br}//According to Dr. Okafor, limits on tourism are most likely to work when (　　　　).//',
+  'choices': [('a', 'they are introduced quickly, before anyone has time to object'), ('b', 'the fees are kept as low as possible'), ('c', 'they apply only to visitors from foreign countries'), ('d', 'they are explained well and local people help to shape them')], 'cols': 0,
+  'answers': ['d'],
+  'expl': '第6段落：these rules work only when they are explained clearly and when local people feel they have a voice in shaping them。a は「外から押しつけられた上限は怒りを生む」という発言と逆。b・c は本文にない。'},
+ {'label': '問5', 'kind': '表題', 'points': 4,
+  'stem': '本文全体の表題にいちばんふさわしいものを a〜d から1つ選び，記号で答えなさい。（本文の上の表題は伏せて考えること）',
+  'choices': [('a', 'Islands at War over Fresh Water'), ('b', 'How a Small Island Chose Fewer Visitors'), ('c', 'The Best Beaches to Visit This Summer'), ('d', 'Why Ferries Are Becoming More Expensive')], 'cols': 0,
+  'answers': ['b'],
+  'expl': '記事全体は，小さな島が来訪者の人数制限と入島料を導入した経緯・効果・課題を伝えている。a は水の話だけ，c・d は本文の話題ではない。'},
+]

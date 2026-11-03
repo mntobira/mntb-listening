@@ -1,0 +1,115 @@
+{
+ "I": {
+  "words": 688,
+  "paras": 7,
+  "sents": 34,
+  "avg": 20.2,
+  "maxs": 39,
+  "zipf_lt4": 6.2,
+  "zipf_lt3": 0.9,
+  "dialog": 0,
+  "notes": 3,
+  "range": {
+   "words": "508–700:OK",
+   "avg": "18.4–29.2:OK",
+   "zipf_lt4": "5.0–13.6:OK",
+   "zipf_lt3": "0.5–4.4:OK"
+  }
+ },
+ "II": {
+  "words": 691,
+  "paras": 7,
+  "sents": 34,
+  "avg": 20.3,
+  "maxs": 40,
+  "zipf_lt4": 13.6,
+  "zipf_lt3": 1.6,
+  "dialog": 0,
+  "notes": 4,
+  "range": {
+   "words": "508–700:OK",
+   "avg": "18.4–29.2:OK",
+   "zipf_lt4": "5.0–13.6:OK",
+   "zipf_lt3": "0.5–4.4:OK"
+  }
+ },
+ "III": {
+  "words": 583,
+  "paras": 28,
+  "sents": 69,
+  "avg": 8.4,
+  "maxs": 36,
+  "zipf_lt4": 5.9,
+  "zipf_lt3": 2.4,
+  "dialog": 40,
+  "notes": 3,
+  "range": {
+   "words": "572–677:OK",
+   "avg": "7.0–13.6:OK",
+   "zipf_lt4": "4.2–9.5:OK",
+   "zipf_lt3": "1.1–2.8:OK"
+  }
+ },
+ "ja_limits": [
+  [
+   "I",
+   1,
+   40,
+   38,
+   "OK"
+  ],
+  [
+   "I",
+   1,
+   40,
+   36,
+   "OK"
+  ],
+  [
+   "II",
+   3,
+   70,
+   68,
+   "OK"
+  ],
+  [
+   "II",
+   3,
+   70,
+   67,
+   "OK"
+  ]
+ ],
+ "en_models": [
+  [
+   "(1)",
+   "学費と大学の評判",
+   40,
+   39,
+   "OK"
+  ],
+  [
+   "(1)",
+   "学べる分野と立地",
+   40,
+   37,
+   "OK"
+  ],
+  [
+   "(2)",
+   "賛成",
+   60,
+   61,
+   "OK"
+  ],
+  [
+   "(2)",
+   "反対",
+   60,
+   56,
+   "OK"
+  ]
+ ],
+ "plagiarism_5gram_hits": [],
+ "underlined_overlap_with_past": []
+}

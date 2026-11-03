@@ -1,0 +1,77 @@
+# -*- coding: utf-8 -*-
+# 第1回 大問2 会話文の空所補充（4か所・各5点）
+PART = {
+ 'points': 20,
+ 'lead': '次の（1）〜（3）の会話を読み，空所に入れるのに最もふさわしいものを (a)〜(d) から 1 つずつ選びなさい。',
+ 'dialogues': [
+  {'n': 1,
+   'lines': [
+    ('A', 'Hi, Ken. I heard you joined the drama club this spring. {ki}'),
+    ('B', 'Rehearsals, mostly. We’re putting on a short play at the end of next month.'),
+    ('A', 'That sounds exciting. Are you nervous?'),
+    ('B', 'A little. I only have a small part, but I’ve never acted in front of a crowd before.'),
+    ('A', 'You’ll be fine. Almost everyone feels that way at first.'),
+    ('B', 'Thanks. Our director keeps telling us that if we forget a line, we should just {kii} and keep going.'),
+    ('A', 'Good advice. I’ll come and watch, then.'),
+   ],
+   'qs': [
+    {'label': '(i)', 'points': 5,
+     'choices': [('(a)', 'What have you been working on?'), ('(b)', 'When did you leave it?'), ('(c)', 'Why don’t you join it?'), ('(d)', 'How did you find out about me?')],
+     'answer': '(a)', 'expl': 'B が Rehearsals, mostly.（ほとんどリハーサルだよ）と「していること」を答えているので，「何に取り組んでいるの？」と尋ねる (a)。(b) はやめた時期，(c) は入部を勧める言い方で，すでに入部した Ken には合わない。'},
+    {'label': '(ii)', 'points': 5,
+     'choices': [('(a)', 'play it by ear'), ('(b)', 'cut corners'), ('(c)', 'break the ice'), ('(d)', 'call it a day')],
+     'answer': '(a)', 'expl': 'セリフを忘れたら「その場の流れで何とかして」続ければよい，という流れ。play it by ear は「臨機応変にやる」。(b)「手を抜く」，(c)「場をなごませる」，(d)「（その日の仕事を）切り上げる」は and keep going（そのまま続ける）とつながらない。'},
+   ],
+   'translation': [
+    ('A', 'こんにちは，ケン。この春，演劇部に入ったんだってね。何に取り組んでいるの？'),
+    ('B', 'ほとんどリハーサルだよ。来月の終わりに短い劇をやるんだ。'),
+    ('A', 'わくわくするね。緊張してる？'),
+    ('B', '少しね。ちょっとした役だけど，大勢の前で演じたことがないから。'),
+    ('A', '大丈夫だよ。最初はほとんどみんなそう感じるもの。'),
+    ('B', 'ありがとう。監督はいつも，セリフを忘れたらその場で臨機応変にやって，そのまま続ければいいって言ってるんだ。'),
+    ('A', 'いいアドバイスだね。じゃあ，見に行くよ。'),
+   ]},
+  {'n': 2,
+   'lines': [
+    ('A', 'How was your job interview yesterday?'),
+    ('B', 'I’m not sure. I think I answered most of the questions well, but they didn’t give me any hints.'),
+    ('A', 'When will they let you know?'),
+    ('B', 'Sometime next week, they said.'),
+    ('A', '{k}'),
+    ('B', 'I know. Worrying won’t change anything now.'),
+   ],
+   'qs': [
+    {'label': '', 'points': 5,
+     'choices': [('(a)', 'Well, try not to lose sleep over it.'), ('(b)', 'Then you’d better take the interview again.'), ('(c)', 'So you already got the job?'), ('(d)', 'That’s why I never apply for jobs.')],
+     'answer': '(a)', 'expl': 'B の I know. Worrying won’t change anything now.（今さら心配しても何も変わらない）に自然につながるのは，「そのことでくよくよしないで」と励ます (a)。lose sleep over ~ は「〜を心配して眠れない」。(c) は結果がまだ出ていないので矛盾する。'},
+   ],
+   'translation': [
+    ('A', '昨日の就職の面接，どうだった？'),
+    ('B', 'よくわからない。ほとんどの質問にはうまく答えられたと思うけど，何の手がかりもくれなかったんだ。'),
+    ('A', 'いつ知らせてくれるの？'),
+    ('B', '来週のどこかだって。'),
+    ('A', 'まあ，そのことでくよくよしないようにね。'),
+    ('B', 'わかってる。今さら心配しても何も変わらないからね。'),
+   ]},
+  {'n': 3,
+   'lines': [
+    ('A', 'Are you coming to the barbecue on Saturday?'),
+    ('B', 'I’d love to, but I have to hand in my report by Monday.'),
+    ('A', 'Can’t you just do it on Sunday?'),
+    ('B', '{k}'),
+    ('A', 'Fair enough. Maybe next time, then.'),
+   ],
+   'qs': [
+    {'label': '', 'points': 5,
+     'choices': [('(a)', 'I’d rather not leave it until the last minute.'), ('(b)', 'Sure, the barbecue was great.'), ('(c)', 'I’ve already finished it.'), ('(d)', 'Saturday works fine for me.')],
+     'answer': '(a)', 'expl': 'A の Fair enough.（もっともだね）とあきらめているので，B は日曜に回すのを断っている。「ぎりぎりまで残しておきたくない」の (a)。(b) は過去形でまだ先の予定と合わず，(c)(d) なら参加できるので Maybe next time と矛盾する。'},
+   ],
+   'translation': [
+    ('A', '土曜日のバーベキュー，来る？'),
+    ('B', '行きたいんだけど，月曜までにレポートを出さなきゃいけないんだ。'),
+    ('A', '日曜日にやればいいんじゃない？'),
+    ('B', 'ぎりぎりまで残しておきたくないんだ。'),
+    ('A', 'もっともだね。じゃあ，また今度。'),
+   ]},
+ ],
+}

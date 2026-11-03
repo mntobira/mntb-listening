@@ -108,8 +108,8 @@ describe('TOEIC Part 6：画面の計算', () => {
     expect(splitToeicPages('tp5_1', Array.from({ length: 30 }, (_, i) => ({ id: `q_tp5_1_r01_${i + 1}` }))).map((p) => p.length)).toEqual([6, 6, 6, 6, 6]);
   });
 
-  it('TOEIC の教科に Part 5・Part 6 の2つの単元が並ぶ', () => {
-    expect(getPartsOfSubject('toeic_part5').map((p) => p.id)).toEqual(['tp5', 'tp6']);
-    expect(getChaptersOfSubject('toeic_part5').map((c) => c.id)).toEqual(['tp5_1', 'tp6_1']);
+  it('TOEIC の教科に Part 5・Part 6・Part 7 の3つの単元が並ぶ', () => {
+    expect(getPartsOfSubject('toeic_part5').map((p) => p.id)).toEqual(['tp5', 'tp6', 'tp7']);
+    expect(getChaptersOfSubject('toeic_part5').map((c) => c.id)).toEqual(['tp5_1', 'tp6_1', 'tp7_1']);
   });
 });

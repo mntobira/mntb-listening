@@ -1,0 +1,227 @@
+{
+ "r1": {
+  "I": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  },
+  "II": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  },
+  "III": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  },
+  "IV": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  }
+ },
+ "r2": {
+  "I": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  },
+  "II": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  },
+  "III": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  },
+  "IV": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  }
+ },
+ "r3": {
+  "I": {
+   "en4_hits": {
+    "a b c a": [
+     "a2023-1"
+    ]
+   },
+   "en_longest_run": [
+    4,
+    "a b c a"
+   ],
+   "ja13_hits": {}
+  },
+  "II": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  },
+  "III": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  },
+  "IV": {
+   "en4_hits": {},
+   "en_longest_run": [
+    0,
+    ""
+   ],
+   "ja13_hits": {}
+  }
+ },
+ "topic_similarity": {
+  "mine_vs_past": {
+   "r1-I": {
+    "max_sim": 0.082,
+    "nearest": "2026-I"
+   },
+   "r1-II": {
+    "max_sim": 0.118,
+    "nearest": "2023-II"
+   },
+   "r1-III": {
+    "max_sim": 0.14,
+    "nearest": "2024-III"
+   },
+   "r2-I": {
+    "max_sim": 0.101,
+    "nearest": "2024-II"
+   },
+   "r2-II": {
+    "max_sim": 0.082,
+    "nearest": "2024-III"
+   },
+   "r2-III": {
+    "max_sim": 0.103,
+    "nearest": "2025-III"
+   },
+   "r3-I": {
+    "max_sim": 0.067,
+    "nearest": "2026-I"
+   },
+   "r3-II": {
+    "max_sim": 0.084,
+    "nearest": "2023-II"
+   },
+   "r3-III": {
+    "max_sim": 0.127,
+    "nearest": "2023-III"
+   }
+  },
+  "past_vs_past_reference": {
+   "median": 0.037,
+   "max": 0.179
+  }
+ },
+ "marked_phrases_found_in_past": [],
+ "summary": {
+  "r1-I": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r1-II": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r1-III": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r1-IV": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r2-I": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r2-II": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r2-III": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r2-IV": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r3-I": {
+   "en4": 1,
+   "en4_nongeneric": [],
+   "longest": 4,
+   "ja13": 0
+  },
+  "r3-II": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r3-III": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  },
+  "r3-IV": {
+   "en4": 0,
+   "en4_nongeneric": [],
+   "longest": 0,
+   "ja13": 0
+  }
+ }
+}

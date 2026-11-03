@@ -25,7 +25,7 @@ export function ToeicP6Passage({ set, setIndex, offset, page, answers, scored }:
       {set.p.map((para, i) => (
         <p key={i} lang="en">
           {splitParagraph(para).map((piece, j) => {
-            if (piece.blank == null) return <span key={j}>{formatText(piece.text || '', [], { prose: true })}</span>;
+            if (piece.blank == null) return <span key={j}>{formatText(piece.text || '', [], { prose: true, noMath: true })}</span>;
             const no = offset + piece.blank;
             const sq = subOf(piece.blank);
             const chosen = sq ? answers[sq.id] || '' : '';
@@ -34,7 +34,7 @@ export function ToeicP6Passage({ set, setIndex, offset, page, answers, scored }:
             return (
               <span key={j} className="tp-blank tp-doc-blank" data-filled={filled ? true : undefined} data-result={result} data-toeic-doc-blank={no}>
                 <span className="tp-doc-no">({no})</span>
-                {filled ? <span>{formatText(filled, [], { prose: true })}</span> : <span className="tp-sr">空所</span>}
+                {filled ? <span>{formatText(filled, [], { prose: true, noMath: true })}</span> : <span className="tp-sr">空所</span>}
               </span>
             );
           })}

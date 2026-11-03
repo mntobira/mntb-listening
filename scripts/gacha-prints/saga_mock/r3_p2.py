@@ -1,0 +1,77 @@
+# -*- coding: utf-8 -*-
+# 第3回 大問2 会話文の空所補充（4か所・各5点）
+PART = {
+ 'points': 20,
+ 'lead': '次の（1）〜（3）の会話を読み，空所に入れるのに最もふさわしいものを (a)〜(d) から 1 つずつ選びなさい。',
+ 'dialogues': [
+  {'n': 1,
+   'lines': [
+    ('A', 'Hello, this is Riverside Clinic. How can I help you?'),
+    ('B', 'Hi, I’d like to make an appointment with Dr. Park. I’ve had a sore throat for about a week.'),
+    ('A', 'I see. {ki}'),
+    ('B', 'Yes, I came in last spring for a check-up.'),
+    ('A', 'Thank you. Dr. Park is fully booked today, but she has an opening tomorrow at ten.'),
+    ('B', 'Ten works for me. Should I bring anything?'),
+    ('A', 'Just your insurance card. And please {kii} if you can’t make it, so we can give the slot to someone else.'),
+   ],
+   'qs': [
+    {'label': '(i)', 'points': 5,
+     'choices': [('(a)', 'Have you visited us before?'), ('(b)', 'How long will you stay?'), ('(c)', 'Where did you buy it?'), ('(d)', 'Would you like to leave a message?')],
+     'answer': '(a)', 'expl': 'B が「去年の春に健康診断で来ました」と答えているので，以前に来院したことがあるかを尋ねる (a)。(b) は滞在期間，(d) は伝言を残すかの質問で，予約の流れに合わない。'},
+    {'label': '(ii)', 'points': 5,
+     'choices': [('(a)', 'let us know in advance'), ('(b)', 'keep it to yourself'), ('(c)', 'take your time'), ('(d)', 'go ahead without us')],
+     'answer': '(a)', 'expl': '来られない場合に，その枠をほかの人に回せるように「前もって知らせて」と頼んでいる。(b)「黙っておく」では枠を回せない，(c)「ゆっくりどうぞ」，(d)「先に始めて」は意味がつながらない。'},
+   ],
+   'translation': [
+    ('A', 'はい，リバーサイド診療所です。ご用件をどうぞ。'),
+    ('B', 'こんにちは，パーク先生の予約を取りたいのですが。1週間ほどのどが痛くて。'),
+    ('A', 'わかりました。以前に当院にいらしたことはありますか。'),
+    ('B', 'はい，去年の春に健康診断で伺いました。'),
+    ('A', 'ありがとうございます。パーク先生は今日は予約がいっぱいですが，明日の10時なら空いています。'),
+    ('B', '10時で大丈夫です。何か持って行くものはありますか。'),
+    ('A', '保険証だけで結構です。それから，来られない場合は，その枠をほかの方にお回しできるよう，前もってお知らせください。'),
+   ]},
+  {'n': 2,
+   'lines': [
+    ('A', 'Did you finish the group presentation slides?'),
+    ('B', 'Almost. But Taro hasn’t sent me his part yet, and it’s due tomorrow morning.'),
+    ('A', 'Have you tried calling him?'),
+    ('B', 'Three times. He isn’t answering.'),
+    ('A', '{k}'),
+    ('B', 'Good point. I’d better write a short version of his part just in case.'),
+   ],
+   'qs': [
+    {'label': '', 'points': 5,
+     'choices': [('(a)', 'Maybe you should prepare a backup plan.'), ('(b)', 'Then the presentation must be over.'), ('(c)', 'Taro always sends things early.'), ('(d)', 'Why did you finish his part already?')],
+     'answer': '(a)', 'expl': 'B は「念のため彼の部分の短い版を書いておく」と答えているので，「予備の案を用意しておいたら」と勧める (a)。(c) は連絡がつかない状況と矛盾し，(d) はまだ終わっていないので合わない。'},
+   ],
+   'translation': [
+    ('A', 'グループ発表のスライド，終わった？'),
+    ('B', 'もう少し。でもタロウがまだ自分の担当分を送ってくれなくて，明日の朝が締め切りなんだ。'),
+    ('A', '電話してみた？'),
+    ('B', '3回ね。出ないんだ。'),
+    ('A', '予備の案を用意しておいたほうがいいかもね。'),
+    ('B', 'たしかに。念のため，彼の部分の短い版を書いておいたほうがよさそうだ。'),
+   ]},
+  {'n': 3,
+   'lines': [
+    ('A', 'This restaurant is always crowded. Is it really that good?'),
+    ('B', 'The food is great, but honestly, I think people come for the view.'),
+    ('A', 'The view?'),
+    ('B', '{k}'),
+    ('A', 'Then let’s ask for a table by the window.'),
+   ],
+   'qs': [
+    {'label': '', 'points': 5,
+     'choices': [('(a)', 'Yes, you can see the whole harbor from the windows.'), ('(b)', 'No, the kitchen is closed today.'), ('(c)', 'I prefer eating at home.'), ('(d)', 'The prices went up last month.')],
+     'answer': '(a)', 'expl': 'A が「じゃあ窓際の席を頼もう」と言っているので，B は窓からの眺めのよさを説明したはず。(a)「窓から港全体が見えるんだ」。(b)(c)(d) はいずれも窓際の席を頼む理由にならない。'},
+   ],
+   'translation': [
+    ('A', 'このレストラン，いつも混んでるね。本当にそんなにおいしいの？'),
+    ('B', '料理はすごくおいしいけど，正直，みんな眺めを目当てに来るんだと思う。'),
+    ('A', '眺め？'),
+    ('B', 'そう，窓から港全体が見えるんだ。'),
+    ('A', 'じゃあ，窓際の席を頼もう。'),
+   ]},
+ ],
+}

@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+# 第2回 Ⅱ 英文要約（論説・書き下ろし）。250字程度の日本語要約
+PART = {
+ 'points': 25,
+ 'lead': '次の英文を読み，その内容を 250 字程度の日本語で要約しなさい。ただし，句読点も 1 字に数える。',
+ 'title': 'Should Homework Be Graded?',
+ 'cells': 300,
+ 'passage': [
+  "In many secondary schools, homework counts toward a student’s final grade. A worksheet completed at home may be worth as much as a quiz taken in class, and students who often forget their homework can see their grades fall even if they do well on tests. Recently, however, a number of schools have stopped grading homework altogether. Their decision has started a lively debate among teachers and parents.",
+  "Supporters of grading homework make a simple argument: students do what is rewarded. If homework does not affect their grades, they say, many students will stop doing it, especially those who are already struggling. Grading also teaches habits that matter beyond school, such as meeting deadlines and taking responsibility for one’s work. In the adult world, after all, unfinished tasks have consequences.",
+  "Critics reply that grading homework measures the wrong thing. Homework is meant to be practice, and practice naturally involves mistakes. When every exercise is graded, students may copy answers from friends or the internet to avoid losing points, which defeats the purpose of practicing at all. Moreover, homework grades often reflect a student’s home situation as much as his or her effort. A student who must care for younger siblings or who has nowhere quiet to work at home is at a disadvantage that has nothing to do with learning.",
+  "Schools that have stopped grading homework report mixed but interesting results. At one fictional but representative school, the share of students who turned in their homework dropped in the first month, from about 85 percent to 70 percent. By the end of the year, however, it had recovered to nearly 80 percent, and teachers noticed that the work they received was more honest: students left questions blank or wrote “I don’t understand this part” instead of copying. Test scores did not fall, and in mathematics they rose slightly.",
+  "One reason for these results may be the way teachers changed their use of homework. Instead of collecting it for points, they began each lesson by asking students which problems had been difficult, and used the answers to decide what to teach that day. Homework became a source of information for the teacher rather than a test for the student.",
+  "Even supporters of the change admit that it does not suit every student. Some, especially younger teenagers, may need the pressure of a grade to get started. Several schools have therefore chosen a middle path: homework is checked for completion but not marked for accuracy, so that students are rewarded for trying rather than for being right.",
+  "The debate, in the end, is about what grades are for. If a grade is meant to show what a student has learned, it should be based on tests and projects that measure learning directly. If it is also meant to encourage good habits, homework may deserve a place in it, but perhaps a smaller one than it now has.",
+ ],
+ 'notes': [('count toward ~', '〜に算入される'), ('defeat the purpose of ~', '〜の目的を台無しにする'), ('sibling', 'きょうだい')],
+ 'model': '宿題を成績に入れるかが議論となっている。賛成派は，評価しなければ生徒は宿題をせず，締め切りや責任の習慣も身につかないと主張する。反対派は，宿題は間違いを含む練習であり，採点すると答えを写す生徒が増えて目的が損なわれ，家庭環境の差も成績に表れると反論する。成績に入れるのをやめた学校では，提出率は一時下がったが回復し，取り組みが正直になり，テストの点も下がらなかった。教師が宿題を指導の手がかりに使い始めたことが一因らしい。全員に合うわけではないため，取り組んだかだけを評価する折衷案もある。結局は成績が何を示すべきかが問題である。',
+ 'outline': [
+  '背景：宿題を成績に入れる学校が多いが，やめる学校が出て議論になっている',
+  '賛成派：評価しないと宿題をしない／締め切り・責任などの習慣が身につく',
+  '反対派：宿題は間違いを含む練習／採点すると写す→目的が損なわれる／家庭環境の差が出る',
+  '結果（例）：提出率は一時下がったが回復・正直な取り組み・テストの点は下がらず',
+  '理由：教師が宿題を「何を教えるか」を決める情報として使うようになった',
+  '限界と折衷案：全員には合わない／取り組んだかだけを評価する方法',
+  '結論：成績が何を示すためのものかによって答えが変わる',
+ ],
+ 'criteria': [
+  ('背景：宿題を成績に入れるかどうかの議論', 3),
+  ('賛成派の主張（宿題をしなくなる・習慣のうち1つ以上）', 4),
+  ('反対派の主張（練習・写し・家庭環境のうち2つ以上）', 5),
+  ('やめた学校の結果（提出率の回復・正直さ・成績が下がらない のうち2つ以上）と，その理由（宿題を指導の情報にした）', 6),
+  ('限界・折衷案（取り組みだけを評価）', 3),
+  ('結論：成績の目的によって判断が変わる', 4),
+ ],
+ 'tips': [
+  '85% → 70% → 80% などの数字は，「一時下がったが回復した」とまとめれば十分。数字を並べると字数が足りなくなる。',
+  '賛成派と反対派を「〜と主張する」「〜と反論する」で書き分けると，対立の構図がはっきりする。',
+  '第5段落の「宿題が生徒へのテストではなく教師への情報になった」は結果の理由にあたる。落としやすいが要点の1つ。',
+  '最終段落の what grades are for（成績は何のためにあるか）を結論として必ず入れる。',
+ ],
+ 'translation': [
+  '多くの中学校・高校では，宿題が生徒の最終的な成績に算入される。家でやったプリントが授業中の小テストと同じくらいの価値を持つこともあり，宿題をよく忘れる生徒は，テストでよい点を取っても成績が下がることがある。しかし最近，宿題を一切成績に入れないことにした学校がいくつか出てきた。その決定は，教師や保護者の間で活発な議論を引き起こしている。',
+  '宿題を成績に入れることを支持する人たちの主張は単純である。生徒は評価されることをする，というものだ。宿題が成績に影響しなければ，多くの生徒，特にすでに苦労している生徒は宿題をしなくなるだろうと彼らは言う。また，成績をつけることは，締め切りを守ることや自分の仕事に責任を持つことなど，学校の外でも大切な習慣を教える。結局のところ，大人の世界では，仕上げなかった仕事には結果がつきまとうのだ。',
+  '批判する人たちは，宿題を成績に入れることは間違ったものを測っていると反論する。宿題は練習のためのものであり，練習には当然間違いがつきものだ。すべての課題が採点されると，生徒は点を失わないように友達やインターネットから答えを写すかもしれず，それでは練習することの目的そのものが損なわれる。さらに，宿題の成績は，生徒の努力と同じくらい家庭の事情を反映することが多い。幼いきょうだいの世話をしなければならない生徒や，静かに勉強できる場所がない生徒は，学習とは何の関係もない不利を背負っている。',
+  '宿題を成績に入れるのをやめた学校は，入り混じってはいるが興味深い結果を報告している。架空だが代表的なある学校では，宿題を提出する生徒の割合が最初の1か月で約85パーセントから70パーセントに下がった。しかし年度末までには80パーセント近くまで回復し，教師たちは受け取る宿題がより正直になったことに気づいた。生徒たちは答えを写す代わりに，問題を空欄のまま残したり「ここがわかりません」と書いたりしたのである。テストの点数は下がらず，数学ではわずかに上がった。',
+  'こうした結果の理由の1つは，教師が宿題の使い方を変えたことかもしれない。点数のために集める代わりに，教師たちはどの問題が難しかったかを生徒に尋ねることから毎回の授業を始め，その答えを使ってその日に何を教えるかを決めるようになった。宿題は，生徒へのテストではなく，教師にとっての情報源になったのである。',
+  'この変更を支持する人たちでさえ，それがすべての生徒に合うわけではないことを認めている。一部の生徒，特に10代前半の生徒は，取りかかるために成績という圧力を必要とするかもしれない。そのため，いくつかの学校は中間の道を選んだ。宿題はやり終えたかどうかは確認されるが，正しさで採点はされない。こうして生徒は，正解したことではなく，取り組んだことで評価されるのである。',
+  '結局のところ，この議論は成績が何のためにあるのかをめぐるものである。成績が生徒の学んだことを示すためのものなら，学習を直接測るテストや課題に基づくべきだ。よい習慣を促すためのものでもあるなら，宿題もそこに含まれてよいかもしれないが，おそらく今よりも小さな割合で，ということになるだろう。',
+ ],
+ 'vocab': [('altogether', '完全に・一切'), ('lively debate', '活発な議論'), ('struggle', '苦労する'), ('consequence', '結果・報い'), ('involve', '伴う・含む'), ('be at a disadvantage', '不利な立場にある'), ('representative', '代表的な'), ('share', '割合'), ('turn in ~', '〜を提出する'), ('recover', '回復する'), ('source of information', '情報源'), ('admit', '認める'), ('middle path', '中間の道・折衷案'), ('deserve', '〜に値する')],
+}

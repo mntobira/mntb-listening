@@ -1,0 +1,31 @@
+{
+ "I": {
+  "words": 892,
+  "avg": 17.2,
+  "zipf_lt4": 16.2,
+  "zipf_lt3": 2.8,
+  "range": {
+   "words": "807–912:OK",
+   "avg": "17.0–24.1:OK",
+   "zipf_lt4": "11.3–21.2:OK",
+   "zipf_lt3": "2.1–7.0:OK"
+  }
+ },
+ "II": {
+  "words": 853,
+  "avg": 21.3,
+  "zipf_lt4": 13.8,
+  "zipf_lt3": 2.9,
+  "range": {
+   "words": "732–906:OK",
+   "avg": "21.0–27.8:OK",
+   "zipf_lt4": "11.2–19.1:OK",
+   "zipf_lt3": "0.9–3.2:OK"
+  }
+ },
+ "III-1": 116,
+ "III-2": 112,
+ "V1_choice_zipf": 3.61,
+ "V2_target_zipf": 3.88,
+ "ng": []
+}

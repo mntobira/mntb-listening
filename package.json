@@ -33,7 +33,8 @@
     "release:guard": "bash scripts/release-guard.sh",
     "pr:check": "tsx scripts/pr/pr.mts check",
     "pr:sync": "tsx scripts/pr/pr.mts sync",
-    "pr:create": "tsx scripts/pr/pr.mts create"
+    "pr:create": "tsx scripts/pr/pr.mts create",
+    "niji:made": "node scripts/gacha-prints/niji-made.mjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.2.0",

@@ -1,0 +1,115 @@
+{
+ "I": {
+  "words": 644,
+  "paras": 7,
+  "sents": 30,
+  "avg": 21.5,
+  "maxs": 41,
+  "zipf_lt4": 6.2,
+  "zipf_lt3": 1.1,
+  "dialog": 0,
+  "notes": 2,
+  "range": {
+   "words": "508–700:OK",
+   "avg": "18.4–29.2:OK",
+   "zipf_lt4": "5.0–13.6:OK",
+   "zipf_lt3": "0.5–4.4:OK"
+  }
+ },
+ "II": {
+  "words": 681,
+  "paras": 7,
+  "sents": 35,
+  "avg": 19.5,
+  "maxs": 44,
+  "zipf_lt4": 6.4,
+  "zipf_lt3": 1.1,
+  "dialog": 0,
+  "notes": 2,
+  "range": {
+   "words": "508–700:OK",
+   "avg": "18.4–29.2:OK",
+   "zipf_lt4": "5.0–13.6:OK",
+   "zipf_lt3": "0.5–4.4:OK"
+  }
+ },
+ "III": {
+  "words": 581,
+  "paras": 24,
+  "sents": 58,
+  "avg": 10.0,
+  "maxs": 32,
+  "zipf_lt4": 9.2,
+  "zipf_lt3": 1.2,
+  "dialog": 31,
+  "notes": 3,
+  "range": {
+   "words": "572–677:OK",
+   "avg": "7.0–13.6:OK",
+   "zipf_lt4": "4.2–9.5:OK",
+   "zipf_lt3": "1.1–2.8:OK"
+  }
+ },
+ "ja_limits": [
+  [
+   "I",
+   1,
+   40,
+   38,
+   "OK"
+  ],
+  [
+   "I",
+   1,
+   40,
+   39,
+   "OK"
+  ],
+  [
+   "II",
+   3,
+   70,
+   70,
+   "OK"
+  ],
+  [
+   "II",
+   3,
+   70,
+   69,
+   "OK"
+  ]
+ ],
+ "en_models": [
+  [
+   "(1)",
+   "18〜29歳と70歳以上",
+   40,
+   42,
+   "OK"
+  ],
+  [
+   "(1)",
+   "30〜49歳と50〜69歳",
+   40,
+   44,
+   "OK"
+  ],
+  [
+   "(2)",
+   "賛成",
+   60,
+   58,
+   "OK"
+  ],
+  [
+   "(2)",
+   "反対",
+   60,
+   57,
+   "OK"
+  ]
+ ],
+ "plagiarism_5gram_hits": [],
+ "underlined_overlap_with_past": []
+}

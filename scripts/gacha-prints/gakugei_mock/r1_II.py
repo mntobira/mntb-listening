@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+# 第1回 Ⅱ 英文要約（論説・書き下ろし）。250字程度の日本語要約
+PART = {
+ 'points': 25,
+ 'lead': '次の英文を読み，その内容を 250 字程度の日本語で要約しなさい。ただし，句読点も 1 字に数える。',
+ 'title': 'When the Village School Becomes Everyone’s School',
+ 'cells': 300,
+ 'passage': [
+  "For more than a century, the school in many small towns has been much more than a place for children to study. It has been the site of sports days, concerts and elections, and often the only public building where people of every generation meet. Today, however, as rural populations shrink, schools in such towns are closing at a rapid pace. The most common response has been to merge several small schools into one larger school in a central town.",
+  "Merging has clear advantages. The cost of educating each student falls, because buildings, heating and administration are shared. A larger staff makes it possible to hire specialist teachers in subjects such as music, science and foreign languages. Students also gain more classmates, which allows team sports, clubs and group projects that a school of twenty children cannot offer.",
+  "There are costs, however, that do not appear in any budget. Some children must now travel an hour or more each way by bus, leaving less time for sleep, play and homework. Parents who work long hours find it harder to attend school events far from home. Most seriously, when the local school closes, a town loses its last shared space. Young families become less likely to move there, and the decline of the town speeds up.",
+  "A small number of towns have begun to try a different approach. Instead of closing the school, they keep it open and share the building with the whole community. In the fictional but typical town of Harlow Creek, a school of only forty students now contains the town library and a small health clinic. In the evenings, its classrooms are used for adult courses, and once a week the gym becomes a market where local farmers sell their vegetables. Retired residents visit during the day to read with the younger pupils.",
+  "The early results are encouraging. Because several services share the same building, the cost of keeping it open is spread among them. Older residents who take part say that they feel less isolated, and teachers report that children who regularly talk with adults of many ages become more confident speakers.",
+  "This model is not without problems. Allowing many adults into a school raises concerns about safety, which can be solved only with careful planning, such as separate entrances and fixed schedules. The approach also depends heavily on volunteers, and not every town has enough people with the time and energy to help.",
+  "In the end, the question is not simply whether a school is too small. It is what a school is for. If a school is only a place to deliver lessons efficiently, merging makes sense. If it is also the heart of a community, keeping it open, and opening it to everyone, may be the wiser investment.",
+ ],
+ 'notes': [('merge', '統合する'), ('administration', '事務・運営'), ('isolated', '孤立した')],
+ 'model': '人口減少で小規模校の閉校が進み，近隣校の統合が一般的な対応となっている。統合には費用の削減，専門教員の確保，同級生の増加という利点がある。一方，長時間の通学や保護者の行事参加の難しさに加え，地域唯一の交流の場が失われて若い家族が来なくなり，町の衰退が早まるという，予算に表れない代償もある。そこで学校を残し，図書館や診療所，夜間講座などと建物を共有する町もある。費用の分担や高齢者の孤立の軽減，子どもの成長に効果がある一方，安全対策やボランティア確保の課題もある。結局，学校を授業の場と見るか地域の中心と見るかで判断は変わる。',
+ 'outline': [
+  '人口減少で小規模校の閉校が進み，統合が一般的な対応になっている（背景）',
+  '統合の利点：一人あたりの費用が下がる・専門教員・同級生が増える',
+  '予算に表れない代償：長い通学・保護者の参加・地域の共有空間の喪失→若い家族が来ず衰退が加速',
+  '別の方法：学校を残し，図書館・診療所・夜間講座・市場など地域と建物を共有する（例）',
+  '効果：費用の分担・高齢者の孤立の軽減・子どもが自信を持って話せるようになる',
+  '課題：安全への配慮（入口・時間割）・ボランティアに頼る',
+  '結論：学校を何のための場と考えるか（授業の場か，地域の中心か）で答えが変わる',
+ ],
+ 'criteria': [
+  ('背景：人口減少で小規模校の閉校・統合が進んでいる', 3),
+  ('統合の利点（費用・専門教員・同級生の数のうち2つ以上）', 4),
+  ('統合の見えにくい代償（通学・保護者・地域の拠点の喪失と衰退のうち2つ以上。「地域の拠点の喪失」は必須）', 6),
+  ('別の方法：学校を残して地域と建物を共有する（具体的な使い方を1つ以上）', 5),
+  ('その効果と課題をそれぞれ1つ以上', 4),
+  ('結論：学校を何のための場と考えるかで判断が変わる', 3),
+ ],
+ 'tips': [
+  '例の町の名前（Harlow Creek）や「生徒40人」などの細かい数字は要約に入れなくてよい。「学校を地域と共有する」という方法そのものを書く。',
+  '利点→代償→別の方法→効果と課題→結論，という本文の流れの順に並べると，読み手に筋道が伝わる。',
+  '最終段落の It is what a school is for.（問題は学校が何のためにあるかだ）が筆者の主張。要約の最後に必ず入れる。',
+  '250字程度：おおむね 225〜275 字。大きく足りない・超える答案は減点の対象になりうる。',
+ ],
+ 'translation': [
+  '1世紀以上にわたって，多くの小さな町の学校は，子どもたちが勉強する場所をはるかに超えるものであった。そこは運動会や演奏会や選挙の会場であり，あらゆる世代の人々が顔を合わせる唯一の公共の建物であることも多かった。しかし今日，地方の人口が減るにつれ，そうした町の学校は急速に閉校している。最もよく見られる対応は，いくつかの小さな学校を，中心となる町の1つの大きな学校に統合することである。',
+  '統合には明らかな利点がある。建物や暖房や事務が共有されるので，生徒一人を教育する費用は下がる。教職員が増えれば，音楽や理科や外国語などの教科で専門の教員を雇うことができる。生徒にとっても同級生が増え，児童20人の学校では提供できない団体競技や部活動やグループでの課題ができるようになる。',
+  'しかし，どの予算にも表れない代償もある。片道1時間以上バスで通わなければならない子どもも出てきて，睡眠や遊びや宿題のための時間が減る。長時間働く保護者は，家から遠い学校の行事に参加しにくくなる。最も深刻なのは，地元の学校が閉校すると，町が最後の共有の場を失うことだ。若い家族はそこへ移り住みにくくなり，町の衰退は加速する。',
+  'ごく一部の町は，違う方法を試し始めている。学校を閉じる代わりに，学校を残して建物を地域全体と共有するのだ。架空だが典型的な町であるハーロウ・クリークでは，生徒がわずか40人の学校の中に，今では町の図書館と小さな診療所がある。夕方には教室が大人向けの講座に使われ，週に1度は体育館が，地元の農家が野菜を売る市場になる。退職した住民は日中に訪れて，低学年の子どもたちと一緒に本を読む。',
+  '初期の結果は心強いものだ。いくつかのサービスが同じ建物を共有するので，建物を維持する費用はそれらの間で分担される。参加している高齢の住民は孤立感が減ったと言い，教師は，さまざまな年代の大人と日常的に話す子どもたちが，自信を持って話せるようになると報告している。',
+  'この方式に問題がないわけではない。多くの大人を学校に入れることは安全への懸念を生み，それは別々の入口や決まった時間割など，入念な計画によってしか解決できない。また，この方法はボランティアに大きく頼っており，手伝う時間と気力のある人が十分にいる町ばかりではない。',
+  '結局のところ，問題は単に学校が小さすぎるかどうかではない。学校が何のためにあるのか，である。学校が授業を効率よく行うための場所にすぎないのなら，統合は理にかなっている。学校が地域の中心でもあるのなら，学校を残し，そしてそれを皆に開くことの方が，賢明な投資なのかもしれない。',
+ ],
+ 'vocab': [('shrink', '縮小する・減る'), ('at a rapid pace', '急速に'), ('specialist', '専門の'), ('appear in a budget', '予算に表れる'), ('speed up', '加速する'), ('typical', '典型的な'), ('resident', '住民'), ('encouraging', '心強い・期待できる'), ('spread A among B', 'AをBの間で分担する'), ('not without problems', '問題がないわけではない'), ('depend heavily on ~', '〜に大きく頼る'), ('investment', '投資')],
+}

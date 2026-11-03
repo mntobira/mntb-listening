@@ -1,0 +1,35 @@
+# -*- coding: utf-8 -*-
+# 第1回 大問3 表を読んで英語で書く（架空の高校の通学手段の調査）。表の数値はすべて架空
+P = {
+ 'title': '英作文（表の読み取り）',
+ 'intro': '下の指示を読み，英語で答えなさい。',
+ 'passages': [{'paras': []}],
+ 'questions': [
+  {'no': 1, 'points': 60, 'kind': 'write', 'limit': '120〜150語程度', 'lines': 16,
+   'stem': '表と英文の指示を読んで書きなさい。',
+   'task': ["The table below shows the results of a survey of 400 students at a fictional high school about how they travel to school.",
+            "First, describe the main points of the table. Then, give your opinion on what the school could do to encourage more students to walk or cycle.",
+            "Write about 120 to 150 English words."],
+   'table': {'caption': 'How students travel to Fernbrook High School (fictional data, 400 students)',
+             'head': ['Way of travelling', 'Students living within 3 km', 'Students living more than 3 km away', 'Total'],
+             'rows': [['Walk', '96', '4', '100'], ['Bicycle', '58', '30', '88'], ['Bus or train', '22', '118', '140'], ['Driven by family', '34', '38', '72']],
+             'note': '（Fernbrook High School は架空の学校であり，数値も架空である）'},
+   'criteria': [('表の主な特徴（最も多い手段・距離による違いなど）を数値を使って正確に述べている', 18),
+                ('学校が取りうる具体的な対策と，その理由を述べている', 18),
+                ('「表の説明→意見」の順に構成され，つなぎの語が適切', 8),
+                ('文法・語彙・つづりの正確さ', 12), ('120〜150語程度でまとまっている', 4)],
+   'models': [
+    ('対策＝自転車置き場と安全教室', "The table shows how 400 students at Fernbrook High School travel to school. Travelling by bus or train is the most popular choice, used by 140 students, and almost all of them live more than 3 km away. Walking is second, with 100 students, but nearly all walkers live close to the school. What is surprising is that 34 students who live within 3 km are driven by their families, even though they could walk or cycle. In my opinion, the school should make cycling easier and safer. It could build a larger covered bicycle parking area and hold a safety class with the local police every spring. If parents feel that the roads are safe, they will not need to drive their children. This would also reduce traffic jams in front of the school in the morning. (139 words)"),
+    ('対策＝「歩く日」と更衣室', "According to the table, buses and trains are the most popular way to get to school, with 140 of the 400 students using them. However, the way students travel depends greatly on distance. Among students living within 3 km, 154 walk or cycle, but 34 are still driven by family members. Among those living farther away, only 34 walk or cycle. I believe the school could encourage the students who live nearby to change their habits. For example, it could start a monthly “walk to school day” and give small prizes to the classes with the most walkers. It could also provide changing rooms and lockers, because some students may not want to cycle in their uniforms on hot days. Small changes like these could make students healthier and help the environment. (135 words)"),
+   ],
+   'tips': ['前半は表の説明。「最も多いのは何か」「距離（3km以内／3km超）でどう違うか」を，数値を一つか二つ使って書く。数値を全部並べるだけの答案は評価が低い。',
+            '後半は意見。指示は「学校ができること」なので，生徒や親に対する呼びかけだけで終わらず，学校が取る具体的な行動（自転車置き場・安全教室・イベントなど）を書く。',
+            'The table shows … / According to the table, … / In my opinion, … / For example, … などで構成をはっきりさせる。',
+            '数値を書くときは文頭に数字を置かない（✕ 140 students use …. → ○ Buses and trains are used by 140 students.）。percent と number の使い分けにも注意。'],
+  },
+ ],
+ 'task_translation': ['下の表は，架空の高校の生徒400人を対象にした，通学方法に関する調査の結果を示している。',
+                      'まず，表の要点を説明しなさい。次に，より多くの生徒が歩いたり自転車に乗ったりして通学するよう促すために，学校に何ができるかについて，あなたの意見を述べなさい。',
+                      '120〜150語程度の英語で書きなさい。',
+                      '表：ファーンブルック高校の生徒の通学方法（架空のデータ・400人）　徒歩：3km以内 96・3km超 4・計100／自転車：58・30・88／バス・電車：22・118・140／家族の車：34・38・72'],
+}

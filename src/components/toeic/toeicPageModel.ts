@@ -17,6 +17,10 @@ import {
   p6AnswerPositions, p6BlankContext, placeP6Choices, TOEIC_P6_BLANKS_PER_SET, TOEIC_P6_CHAPTER_ID, type ToeicP6Set,
 } from '../../data/toeic/toeicPart6Kit';
 import { TOEIC_P6_ROUNDS } from '../../data/toeic/toeicPart6Rounds';
+import {
+  p7AnswerPositions, p7Offsets, placeP7Choices, plainP7, TOEIC_P7_CHAPTER_ID, type ToeicP7Q, type ToeicP7Set,
+} from '../../data/toeic/toeicPart7Kit';
+import { TOEIC_P7_ROUNDS } from '../../data/toeic/toeicPart7Rounds';
 
 /** 1ページに並べる問題の数。変えるとページ数も自動で変わる（30問 ÷ 6 = 5ページ） */
 export const QUESTIONS_PER_PAGE = 6;
@@ -24,9 +28,14 @@ export const QUESTIONS_PER_PAGE = 6;
 /** 選択肢がこの文字数を超えたら、その問題だけ1列にする（2×2だと折り返して読みにくい） */
 export const LONG_CHOICE_CHARS = 18;
 
-/** TOEIC Part 5・Part 6 の単元か（演習画面をこのページ式に切り替える条件） */
+/** TOEIC Part 5・Part 6・Part 7 の単元か（演習画面をこのページ式に切り替える条件） */
 export function isToeicPageChapter(chapterId: string | undefined | null): boolean {
-  return chapterId === TOEIC_P5_CHAPTER_ID || chapterId === TOEIC_P6_CHAPTER_ID;
+  return chapterId === TOEIC_P5_CHAPTER_ID || chapterId === TOEIC_P6_CHAPTER_ID || chapterId === TOEIC_P7_CHAPTER_ID;
+}
+
+/** TOEIC Part 7（読解）の単元か。1ページ＝1セット（文書1〜3つ＋その設問2〜5問） */
+export function isToeicPart7Chapter(chapterId: string | undefined | null): boolean {
+  return chapterId === TOEIC_P7_CHAPTER_ID;
 }
 
 /** TOEIC Part 6（長文穴埋め）の単元か。1ページ＝文書1つ＋その4問 */
@@ -69,13 +78,57 @@ export function splitP6Pages<T extends Pick<SubQuestion, 'id'>>(items: readonly 
   return pages;
 }
 
-/** 単元に合わせたページ分け（Part 5 は6問ずつ、Part 6 は文書ごと） */
+/* ───────── Part 7（読解）：セットごとに設問の数が違う（2〜5問） ───────── */
+
+const P7_SUB_ID = /^q_tp7_1_r(\d+)_(\d+)$/;
+
+/** Part 7 の小問ID → 回・回の中の番号（0から）・セット（0から）・セットの中の設問（0から）。引けなければ null */
+export function locateP7(subId: string | undefined | null): { round: number; index: number; set: number; q: number } | null {
+  const m = String(subId || '').match(P7_SUB_ID);
+  if (!m) return null;
+  const round = Number(m[1]);
+  const index = Number(m[2]) - 1;
+  const sets = TOEIC_P7_ROUNDS[round - 1];
+  if (!sets) return null;
+  const offsets = p7Offsets(sets);
+  const set = offsets.findIndex((o, i) => index >= o && index < o + sets[i].q.length);
+  if (set < 0) return null;
+  return { round, index, set, q: index - offsets[set] };
+}
+
+/** Part 7 の小問が属するセット（手書きデータ）と、そのセットより前の設問の数 */
+export function p7SetOf(sq: Pick<SubQuestion, 'id'>): { set: ToeicP7Set; setIndex: number; offset: number; round: number; question: ToeicP7Q } | null {
+  const at = locateP7(sq.id);
+  const set = at ? TOEIC_P7_ROUNDS[at.round - 1]?.[at.set] : undefined;
+  if (!at || !set) return null;
+  return { set, setIndex: at.set, offset: at.index - at.q, round: at.round, question: set.q[at.q] };
+}
+
+/** Part 7 のページ分け：同じセットの設問を1ページにまとめる（復習で絞られてもセットごと） */
+export function splitP7Pages<T extends Pick<SubQuestion, 'id'>>(items: readonly T[]): T[][] {
+  const pages: T[][] = [];
+  let key = '';
+  for (const sq of items) {
+    const at = locateP7(sq.id);
+    const k = at ? `${at.round}_${at.set}` : `x_${sq.id}`;
+    if (k !== key || pages.length === 0) { pages.push([]); key = k; }
+    pages[pages.length - 1].push(sq);
+  }
+  return pages;
+}
+
+/** 単元に合わせたページ分け（Part 5 は6問ずつ、Part 6 は文書ごと、Part 7 はセットごと） */
 export function splitToeicPages<T extends Pick<SubQuestion, 'id'>>(chapterId: string | undefined | null, items: readonly T[]): T[][] {
+  if (isToeicPart7Chapter(chapterId)) return splitP7Pages(items);
   return isToeicPart6Chapter(chapterId) ? splitP6Pages(items) : splitPages(items, QUESTIONS_PER_PAGE);
 }
 
-/** 保存したページ位置の1単位（Part 5 は6問、Part 6 は4問） */
+/**
+ * 保存したページ位置の1単位（Part 5 は6問、Part 6 は4問）。
+ * Part 7 はセットごとに設問の数が違うので 1（＝ページ番号をそのまま保存する）。
+ */
 export function perPageOf(chapterId: string | undefined | null): number {
+  if (isToeicPart7Chapter(chapterId)) return 1;
   return isToeicPart6Chapter(chapterId) ? TOEIC_P6_BLANKS_PER_SET : QUESTIONS_PER_PAGE;
 }
 
@@ -138,6 +191,8 @@ export interface ToeicExplanation {
   tip: string;
   /** 手がかり（問題文と正解の理由の両方で位置が分かったものだけ。番号は1から） */
   cues: ResolvedCue[];
+  /** Part 7 だけ：設問文（英語）。sentence には根拠の英文が入る */
+  prompt?: string;
 }
 
 export interface ResolvedCue {
@@ -229,6 +284,7 @@ const SUB_ID = /_r(\d+)_(\d+)$/;
  */
 export function toeicExplanationFor(sq: SubQuestion): ToeicExplanation | null {
   if (locateP6(sq.id)) return toeicP6ExplanationFor(sq);
+  if (P7_SUB_ID.test(String(sq.id))) return toeicP7ExplanationFor(sq);
   const m = String(sq.id).match(SUB_ID);
   if (!m) return null;
   const round = Number(m[1]);
@@ -324,4 +380,63 @@ export function p6Snippet(sq: Pick<SubQuestion, 'id'>): string {
   const end = endMatch ? (endMatch.index ?? 0) + endMatch[0].length : after.length;
   const text = `${before.slice(start)}${tag}${after.slice(0, end)}`.trim();
   return text.replace(/\[\[(\d+)\]\]/g, (_, n: string) => (Number(n) === at.blank + 1 ? BLANK : `(${found.offset + Number(n)})____`));
+}
+
+/** Part 7：根拠の英文がどの文書にあるか（1から。見つからなければ 0） */
+export function p7EvidenceDoc(set: Pick<ToeicP7Set, 'docs'>, evidence: string): number {
+  const e = plainP7(evidence);
+  const i = set.docs.findIndex((d) => plainP7([d.title || '', ...(d.head || []).map(([a, b]) => `${a}: ${b}`), ...d.p, ...(d.table || []).map((r) => r.join(' '))].join(' \n ')).includes(e));
+  return i + 1;
+}
+
+/** Part 7 の解説で再掲する「根拠」。2つ以上の文書のセットでは、根拠ごとに（文書n）を付ける */
+export function p7EvidenceText(set: Pick<ToeicP7Set, 'docs'>, q: Pick<ToeicP7Q, 'e'>): string {
+  const multi = set.docs.length > 1;
+  return q.e.map((e) => {
+    const n = p7EvidenceDoc(set, e);
+    return `${multi && n ? `（文書${n}）` : ''}${plainP7(e)}`;
+  }).join('　');
+}
+
+/**
+ * Part 7 の1問の解説。sentence＝根拠の英文（複数文書は文書の番号つき）、prompt＝設問文。
+ * 和訳は「設問」と「根拠」の2つ。手がかりは根拠の中で引く。
+ * 選択肢の並びは組み立てと同じ決まり（p7AnswerPositions / placeP7Choices）で再現する。
+ */
+export function toeicP7ExplanationFor(sq: SubQuestion): ToeicExplanation | null {
+  const found = p7SetOf(sq);
+  const at = locateP7(sq.id);
+  const sets = at ? TOEIC_P7_ROUNDS[at.round - 1] : undefined;
+  if (!found || !at || !sets) return null;
+  const q = found.question;
+  const pos = p7AnswerPositions(at.round, sets.flatMap((s) => s.q))[at.index];
+  const placed = placeP7Choices(q, pos);
+  const marks = sq.options || [];
+  const texts = sq.optionTexts && sq.optionTexts.length === marks.length ? sq.optionTexts : placed.texts;
+  const evidence = p7EvidenceText(found.set, q);
+  return {
+    sentence: evidence,
+    completed: evidence,
+    prompt: q.q,
+    why: q.why,
+    choices: marks.map((mark, i) => ({
+      mark,
+      text: texts[i] ?? '',
+      correct: mark === sq.correctAnswer,
+      reason: mark === sq.correctAnswer ? '' : (placed.reasons[i] || ''),
+    })),
+    translation: `設問：${q.qtr}\n根拠：${q.etr}`,
+    keywords: q.kw.map(([en, ja]) => ({ en, ja })),
+    skill: q.k,
+    subType: q.t,
+    hint: (q.h || '').trim(),
+    rule: (q.r || '').trim(),
+    tip: (q.tip || '').trim(),
+    cues: resolveCues(evidence, q.why, q.cues),
+  };
+}
+
+/** Part 7 の問題カードに出す設問文（文挿入は入れる文も設問文の中にある） */
+export function p7Stem(sq: Pick<SubQuestion, 'id'>): string {
+  return p7SetOf(sq)?.question.q ?? '';
 }
