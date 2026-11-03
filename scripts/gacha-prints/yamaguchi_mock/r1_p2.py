@@ -17,7 +17,8 @@ P2 = {
 
         "Then, one Monday morning in early summer, I came in to find the plant leaning sadly to one side. Several of its leaves had turned "
         "yellow, and the soil in the pot was as dry as sand. I mentioned it at our weekly meeting, half as a joke. “Who’s in charge of the "
-        "plant?” I asked. There was a long silence. Then everyone in the room looked at everyone else.",
+        "plant?” I asked. There was a long silence. Then everyone in the room looked at everyone else. "
+        "Nobody wanted to speak first, because speaking first might mean admitting that the plant had been their job all along.",
 
         "It turned out that there were nine of us in the office, and each of the nine had believed that one of the other eight was watering "
         "it. Mr. Okabe, our manager, thought that the cleaning company did it. The cleaning company, we later learned, had been told never "
@@ -49,7 +50,8 @@ P2 = {
 
         "The plant, by the way, is still alive. It has grown so tall that it now touches the ceiling, and we have had to move it to the space "
         "beside the front door, where visitors often comment on it. When they ask who looks after it, we all answer at the same time, each of "
-        "us naming a different day of the week. Visitors find this charming. They do not know the full story.",
+        "us naming a different day of the week. Visitors find this charming. They do not know the full story. "
+        "One delivery driver who comes every week has even started bringing it a small bottle of plant food every few months.",
 
         "Last spring a new designer joined us. On her first morning she stopped in front of the plant, read the old paper label, which we "
         "have kept as a kind of warning, and asked, “Who waters this?” Nine people turned to the chart on the wall at once. She was given "
@@ -59,13 +61,13 @@ P2 = {
     'translation': [
         '5年前，港町の小さなデザイン事務所に入ったとき，最初に目にとまったのは，船の見える景色でもトラクターのような音を立てるコーヒーマシンでもなかった。窓際の隅に立っている背の高い植物だった。広くてつやのある葉をしていて，建物の中でいちばん元気な生き物のように見えた。誰かが鉢に小さな紙の札を結びつけていた。そこにはきちんとした字で「お世話をお願いします」と書かれていた。',
         '最初の数週間，私は自分の机からそれを眺めて感心するだけで，何もしなかった。誰かが世話の担当なのだろうと思い込んでいたのだ。私たちのような事務所には，ほかの誰も気づかないことをこっそりやってくれる人が必ず一人いる。プリンターの紙を入れ替えたり，傷んだ牛乳を捨てたり，皆の誕生日を覚えていたりする人だ。きっとその人が植物にも水をやっているのだろうと私は考えた。その人が誰なのかを尋ねようなどとは，思いつきもしなかった。',
-        'ところが，初夏のある月曜日の朝，出社すると植物が悲しげに片側に傾いていた。何枚かの葉は黄色くなり，鉢の土は砂のように乾いていた。私は週1回の会議で，半分冗談のつもりでそのことを口にした。「植物の担当は誰ですか」と聞いたのだ。長い沈黙があった。それから，部屋にいる全員がほかの全員の顔を見た。',
+        'ところが，初夏のある月曜日の朝，出社すると植物が悲しげに片側に傾いていた。何枚かの葉は黄色くなり，鉢の土は砂のように乾いていた。私は週1回の会議で，半分冗談のつもりでそのことを口にした。「植物の担当は誰ですか」と聞いたのだ。長い沈黙があった。それから，部屋にいる全員がほかの全員の顔を見た。誰も最初に口を開きたがらなかった。先に話せば，植物の世話はずっと自分の仕事だったと認めることになるかもしれないからだ。',
         '事務所には9人いて，その9人がそれぞれ，残りの8人のうちの誰かが水をやっていると思い込んでいたことが分かった。上司の岡部さんは清掃会社がやっていると思っていた。あとで分かったことだが，清掃会社は机や窓台の上のものには一切触れないように言われていた。植物にいちばん近い席のリベラさんは，最初の月に2回水をやったが，ある日土がすでに湿っているのに気づいて，誰かが引き継いだに違いないと考え，やめてしまった。その「誰か」とは，結局のところ雨だったのである。植物の上の窓には小さな雨漏りがあったのだ。',
         'すぐに教訓を学んだと言いたいところだ。だが，そうはならなかった。私たちは大いに張り切って，これからは「全員」で植物の世話をしようと決めた。1週間ほど，かわいそうな植物は水びたしになった。同じ朝に3人が別々に水をやり，鉢の底から水が流れ出して床に広がった。その後，私たちの熱意は冷めていった。皆が再び，ほかの人がきちんと続けてくれているだろうと思い込み，月末には土がまた乾いていた。',
         'あとで知ったのだが，心理学者はこの種の状況を何十年も研究している。仕事が全員のものになると，結局は誰のものでもなくなることが多い。何かをすることのできる人が多いほど，そのうちの一人ひとりが自分がやらなければと感じる可能性は低くなる。これを読んで，ある意味ほっとした。私たちが特別にいい加減な人間だったわけではない。私たちは単に9人だった。どうやらそれが8人ほど多すぎたのだ。',
         '解決策は，ようやく見つかってみると，恥ずかしいほど単純だった。リベラさんが，上に曜日，横に私たちの名前を並べた表を作り，植物の横の壁に貼ったのだ。一人ひとりに1日ずつ割り当てられた。自分の日なら，土の具合を確かめ，必要なら水をやり，自分の欄に小さなチェックを書く。表によって誰かがより親切に，あるいはより責任感が強くなったわけではない。表がしたのは，誰の番かという疑問をなくすことだった。もう「誰か」は存在しなかった。あるのは火曜日だけで，火曜日は私だった。',
         'それ以来，私はあの表のことを何度も考えてきた。たいていは，グループ宛てのメールの返事を待っているときだ。どんなメールのことか，おそらくお分かりだろう。何かを手伝える人はいないかと30人に送られるメッセージである。30人がそれを読み，30人が，残りの29人のうちの誰かがきっと返事をするだろうと考える。名前を挙げて一人に送ったメッセージなら，たいてい1時間以内に返事が来る。私は今では「皆さん」宛てのメッセージを減らし，同僚一人ひとりに宛てたメッセージを増やしている。仕事は目に見えて効率的になった。少しばかり人気は落ちたかもしれないが。',
-        'ところで，植物はまだ元気だ。天井に届くほど背が伸びたので，玄関の横の場所に移さなければならなかった。そこでは来客がよく植物のことを話題にする。誰が世話をしているのかと聞かれると，私たちは全員が同時に，それぞれ違う曜日を答える。来客はそれをほほえましいと思う。彼らは事の一部始終を知らないのだ。',
+        'ところで，植物はまだ元気だ。天井に届くほど背が伸びたので，玄関の横の場所に移さなければならなかった。そこでは来客がよく植物のことを話題にする。誰が世話をしているのかと聞かれると，私たちは全員が同時に，それぞれ違う曜日を答える。来客はそれをほほえましいと思う。彼らは事の一部始終を知らないのだ。毎週来る配達の運転手の一人は，数か月ごとに植物用の肥料の小びんを持ってきてくれるようにまでなった。',
         '去年の春，新しいデザイナーが入ってきた。最初の朝，彼女は植物の前で立ち止まり，私たちが一種の戒めとして残しておいた古い紙の札を読んで，「これには誰が水をやっているんですか」と尋ねた。9人が一斉に壁の表のほうを向いた。彼女は金曜日を割り当てられ，それ以来一度も欠かしたことがない。植物はほっとしたのだろうと私は思いたい。',
     ],
     'vocab': [
