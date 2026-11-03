@@ -29,7 +29,7 @@ P31 = {
         ('Mia', "I guess I am. I was actually thinking of {c4} up. The article says you don’t need any professional training."),
         ('Kenta', "You should do it. {c5} do you sign up?"),
         ('Mia', "We can write an email to the library. I’ll send one tonight."),
-        ('Kenta', "Let me know what they say. If they {c6} you, I’ll bring my bicycle light on your first day."),
+        ('Kenta', "Tell me how it goes. If they {c6} you, I’ll bring my bicycle light on your first day."),
     ],
     'answers': [['talking about', 'doing', 'starting'],
                 ['first'],
@@ -57,7 +57,7 @@ P31 = {
         'Mia：そうかもね。実は申し込もうかと思っていたの。専門的な訓練は要らないって記事に書いてあるし。',
         'Kenta：やるべきだよ。どうやって申し込むの？',
         'Mia：図書館にメールを書けばいいの。今夜送るわ。',
-        'Kenta：返事がどうだったか教えて。採用されたら，君の初日に自転車のライトを持っていくよ。',
+        'Kenta：どうなったか教えてね。採用されたら，君の初日に自転車のライトを持っていくよ。',
     ],
     'article_ja': [
         'ウェストブルック公共図書館は，来月から毎月1回の「修理カフェ」を始める。毎月第1土曜日の午前10時から午後2時まで，住民は壊れた家庭用品――ランプ，トースター，衣類，自転車，おもちゃまで――を図書館のホールに持ち込むことができる。修理の技術を持つボランティアが無料で修理を試み，持ち主はそれを見て学ぶことができる。',
@@ -68,7 +68,7 @@ P31 = {
 P32 = {
     'points': 40,
     'lead': 'Mia は図書館にメール（A）を送り，修理カフェのボランティアに申し込んだ。これに対し，企画担当の Tobias Hale さんからメール（B）が届いた。'
-            '次の①〜④の内容を表す英語を解答用紙の所定の欄に書き，メール（B）を完成させよ。',
+            '①〜④に示した内容を英語で表し，それぞれ解答用紙の決められた場所に記入して，メール（B）を仕上げよ。',
     'instructions': [
         '縫い物ができるボランティアを，まさに探していたところだということ。',
         '最初の回の前に，短い説明会に出てもらえないかということ。',
