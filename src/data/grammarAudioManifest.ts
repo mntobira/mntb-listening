@@ -20,7 +20,7 @@
  * 名簿に無い問題は今までどおり音声合成（音源ファイルを探しに行かない＝404 を出さない）。
  */
 
-import { GRAMMAR_AUDIO_ID_LIST } from './grammarAudioIds';
+import { GRAMMAR_AUDIO_ID_LIST } from './grammarAudioIds.generated';
 
 /** 音源ファイルの置き場所（public/ 直下のフォルダ名） */
 export const GRAMMAR_AUDIO_DIR = 'grammar_audio';
