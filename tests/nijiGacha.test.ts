@@ -96,9 +96,9 @@ describe('2次試験ガチャ：抽選', () => {
 
 describe('2次試験の予想問題 PDF', () => {
   it('台帳のページ数・ファイル・サムネイルが実物と合う', () => {
-    expect(NIJI_MOCK_PRINTS.length).toBe(72); // 名古屋 3・静岡 3・大阪公立 A 3・B 3・和歌山 3・岡山 3・広島 3・東京学芸 3・琉球 3・熊本 3・佐賀 3・九州 3
+    expect(NIJI_MOCK_PRINTS.length).toBe(75); // 名古屋 3・静岡 3・大阪公立 A 3・B 3・和歌山 3・岡山 3・広島 3・東京学芸 3・琉球 3・熊本 3・佐賀 3・九州 3
     // ＋四国 27（香川 3・徳島 3・愛媛 法文工/教育/医 各3・高知 人文/国際/教育/医 各3）
-    // ＋福岡女子 3・東京外大 3・鳥取 3
+    // ＋福岡女子 3・東京外大 3・鳥取 3・山口 3
     for (const u of NIJI_UNIVERSITIES) expect(NIJI_MOCK_PRINTS.filter((p) => nijiUniversityOf(p.id)?.id === u.id).length, u.id).toBe(3);
     for (const p of NIJI_MOCK_PRINTS) {
       expect(existsSync(`public${p.file}`), p.id).toBe(true);
@@ -119,7 +119,7 @@ describe('2次試験の予想問題 PDF', () => {
       expect(t, p.id).toContain(nijiDisclaimerFor(u.name).replace(/\s+/g, ''));
       expect(t, p.id).not.toMatch(/的中|必ず出る|合格できる/);
     }
-  }, 90_000); // 72冊を pdftotext で開くので既定の20秒では足りない
+  }, 90_000); // 75冊を pdftotext で開くので既定の20秒では足りない
   it('ガチャの詳細・ピックアップに注意書きを出す', () => {
     expect(NIJI_DISCLAIMER).toContain('過去問・公式問題ではありません');
     expect(readFileSync('src/components/gacha/GachaItemDetail.tsx', 'utf8')).toContain('nijiDisclaimerFor(nijiUniv.name)');
