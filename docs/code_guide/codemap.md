@@ -1,4 +1,4 @@
-# コード地図（文字版）— 2026年11月時点・feat/elevenlabs-audio @89a690d2（2026-11-03）
+# コード地図（文字版）— 2026年11月時点・feat/elevenlabs-audio @1f749872（2026-11-03）
 
 tools/update.sh が cards.json から作る。1ファイル1行：`パス` — ひとことで（タグ・行数・使われる数）。
 【新】はカード未記入の新しいファイル、【変】は書いたあとに冒頭の説明か export が変わったファイル、【要確認】は役割を確かめきれていないファイル。
@@ -523,7 +523,7 @@ tools/update.sh が cards.json から作る。1ファイル1行：`パス` — �
 - `src/data/englishListeningQ3Problems.ts` — 【変】リスニング第3問（短い対話・1回読み）の類題集を持つ係（データ・5,694行・使われる3）
 - `src/data/englishListeningQ4to6Problems.ts` — リスニング第4問〜第6問の類題集をまとめて持つ係（データ・1,029行・使われる4）
 - `src/data/externalSubjects.ts` — 本体に問題データを持たない外部の教科を登録しておく係（データ・142行・使われる8）
-- `src/data/grammarAudioIds.ts` — 英文法で録音がある問題IDの一覧を、自動生成で持つ係（データ・1,167行・使われる1）
+- `src/data/grammarAudioIds.generated.ts` — 英文法で録音がある問題IDの一覧を、自動生成で持つ係（データ・1,167行・使われる1）
 - `src/data/grammarAudioManifest.ts` — 【新】カードがまだ書かれていない新しいファイル。役割は要確認の係（データ・37行・使われる2）
 - `src/data/grammarMemorizeSets.ts` — 【新】カードがまだ書かれていない新しいファイル。役割は要確認の係（データ・179行・使われる2）
 - `src/data/kyotsuMockAudio.ts` — 【新】カードがまだ書かれていない新しいファイル。役割は要確認の係（データ・55行・使われる4）
@@ -1615,7 +1615,7 @@ tools/update.sh が cards.json から作る。1ファイル1行：`パス` — �
 - `tsconfig.scripts.json` — 作業用スクリプトのTypeScriptの型チェックのやり方を決める係（設定・25行・使われる0）
 - `tsconfig.tests.json` — テストのコードも型の検査にかけるための、型検査の設定係（設定・9行・使われる0）
 - `vercel.json` — Vercelで公開するときのビルド・行き先・ヘッダーを決める係（設定・114行・使われる0）
-- `vite.config.ts` — アプリを組み立てる道具の設定と、安全の決まりの埋め込みを持つ係（設定・481行・使われる0）
+- `vite.config.ts` — アプリを組み立てる道具の設定と、安全の決まりの埋め込みを持つ係（設定・482行・使われる0）
 - `vitest.config.ts` — 自動テストの対象ファイルと待ち時間の上限を決める係（設定・2行・使われる0）
 
 ## 束ねたファイル（30群）

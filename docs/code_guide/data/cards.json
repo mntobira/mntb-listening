@@ -3112,7 +3112,7 @@
 "path": "docs/APP_CAPACITOR_README.md"
 }
 ],
-"lines": 481,
+"lines": 482,
 "tag": "設定",
 "conf": "高",
 "kind": "file",
@@ -3463,7 +3463,7 @@
 "links": [
 {
 "dir": "ref",
-"path": "src/data/grammarAudioIds.ts"
+"path": "src/data/grammarAudioIds.generated.ts"
 },
 {
 "dir": "ref",
@@ -17236,9 +17236,9 @@
 "flow": []
 },
 {
-"id": "src/data/grammarAudioIds.ts",
-"path": "src/data/grammarAudioIds.ts",
-"name": "grammarAudioIds.ts",
+"id": "src/data/grammarAudioIds.generated.ts",
+"path": "src/data/grammarAudioIds.generated.ts",
+"name": "grammarAudioIds.generated.ts",
 "folder": "src",
 "one": "英文法で録音がある問題IDの一覧を、自動生成で持つ係",
 "detail": "scripts/grammar-audio/make_ids.py が public/grammar_audio/ の一覧から書き出す。手で直さない。grammarAudioManifest.ts が読んで GRAMMAR_AUDIO_IDS にする。",
@@ -17259,7 +17259,9 @@
 "nBy": 1,
 "draft": false,
 "sys": "content",
-"flow": []
+"flow": [
+"solve"
+]
 },
 {
 "id": "tests/ai-no-rating.test.ts",
@@ -34831,7 +34833,7 @@
 "name": "grammarAudioManifest.ts",
 "folder": "src",
 "one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
-"detail": "冒頭の説明：「英文法：音源のある問題の名簿（2026-10-31 E9 の下準備） ご要望：英文法の解説も、リスニングのように「音声に合わせて表示」できるように準備する。」GRAMMAR_AUDIO_DIR・GRAMMAR_AUDIO_IDS・grammarAudioUrlを公開する。読み込むもの：grammarAudioIds.ts。englishGrammarKit.ts・grammarAudioManifest.test.tsから読み込まれる。",
+"detail": "冒頭の説明：「英文法：音源のある問題の名簿（2026-10-31 E9 の下準備） ご要望：英文法の解説も、リスニングのように「音声に合わせて表示」できるように準備する。」GRAMMAR_AUDIO_DIR・GRAMMAR_AUDIO_IDS・grammarAudioUrlを公開する。読み込むもの：grammarAudioIds.generated.ts。englishGrammarKit.ts・grammarAudioManifest.test.tsから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -34843,7 +34845,7 @@
 },
 {
 "dir": "to",
-"path": "src/data/grammarAudioIds.ts"
+"path": "src/data/grammarAudioIds.generated.ts"
 }
 ],
 "lines": 37,
@@ -45683,7 +45685,7 @@
 "name": "英文法の録音（1文1ファイル）",
 "folder": "public",
 "one": "英文法の解説で鳴らす完成文の録音を、1問1ファイルで持つ係",
-"detail": "ElevenLabs Studio の1本を1文ずつに切った MP3（<問題ID>.mp3）。名簿は scripts/grammar-audio/make_ids.py が grammarAudioIds.ts に書き出し、grammarAudioManifest.ts が読む。",
+"detail": "ElevenLabs Studio の1本を1文ずつに切った MP3（<問題ID>.mp3）。名簿は scripts/grammar-audio/make_ids.py が grammarAudioIds.generated.ts に書き出し、grammarAudioManifest.ts が読む。",
 "links": [],
 "lines": 0,
 "tag": "音声・画像",

@@ -1,6 +1,6 @@
 {
  "asOf": "2026年11月時点",
- "commit": "89a690d2",
+ "commit": "1f749872",
  "commitDate": "2026-11-03",
  "branch": "feat/elevenlabs-audio",
  "tracked": 10836,
@@ -79,7 +79,7 @@
   "net": 18
  },
  "flow": {
-  "solve": 82,
+  "solve": 83,
   "learn": 40,
   "review": 20,
   "compete": 139
