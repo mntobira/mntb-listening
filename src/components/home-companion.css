@@ -1,0 +1,15 @@
+/* お供（2026-11-03）：ホームのステージで、とびら君の右下に並ぶ。
+ * 戻すとき：このファイルと Home.tsx の .home-companion を消す。 */
+.game-home .game-mascot-stage .home-companion {
+  position: absolute; z-index: 3; right: 3%; bottom: 26px;
+  display: flex; align-items: flex-end; justify-content: center;
+  height: clamp(56px, 30%, 96px); min-width: 44px; min-height: 44px;
+  padding: 0; border: 0; background: transparent;
+  filter: drop-shadow(0 3px 0 #d2c7af88);
+  animation: home-companion-bob 3.2s ease-in-out infinite;
+}
+.game-home .game-mascot-stage .home-companion .home-companion-art { height: 100%; width: auto; pointer-events: none; }
+.game-home .game-mascot-stage .home-companion:active { transform: scale(.96); }
+@keyframes home-companion-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -4px; } }
+@media (prefers-reduced-motion: reduce) { .game-home .game-mascot-stage .home-companion { animation: none; } }
+@media (max-height: 600px) { .game-home .game-mascot-stage .home-companion { bottom: 14px; height: clamp(48px, 30%, 72px); } }

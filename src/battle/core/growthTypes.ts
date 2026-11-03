@@ -89,6 +89,8 @@ export interface GrowthProgress {
     wallpaper: string;
     /** D7（2026-10-30）ホームのステージの背景（'' = いつもの宇宙）。古い記録には無い */
     stage?: string;
+    /** 2026-11-03 お供（ホームでとびら君のとなりにいる子。'' = 連れていない）。古い記録には無い */
+    companion?: string;
   };
   /** 今日のミッション進捗 */
   daily: DailyRecord;

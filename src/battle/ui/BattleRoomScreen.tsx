@@ -217,6 +217,27 @@ export function BattleRoomScreen({
     void guestFollow();
   }, [room, onSwitchRoom, isHostHere, roomId, guestFollow]);
 
+  /**
+   * ★E1（2026-11-03）フレンド対戦の結果 →「部屋に戻って科目などを選ぶ」★
+   * 行き先はいつも「合言葉の待機ロビー（対戦の設定：科目・モード・問題数）」。
+   * 以前は onSwitchRoom が無い・部屋作りに失敗した等のときに教科選び（subject-friend）へ落ち、
+   * 合言葉を入れ直さないと同じ相手と遊べなかった。フレンド部屋では教科選びへは戻さない。
+   *   部屋主：同じ設定で次の部屋を作り、そのロビーへ（科目などはロビーの「かえる」で選ぶ）
+   *   相手　：部屋主の次の部屋を探して自動で入る
+   * 失敗したときは結果画面に理由を出し、もう一度押せばやり直せる。
+   */
+  const isFriendRoom = !!room && (!!room.joinCode || (room as { mode?: unknown }).mode === 'friend');
+  const backToRoom = !room ? undefined
+    : isFriendRoom && onSwitchRoom
+      ? (isHostHere
+        ? () => { if (!moving) void hostMove({ subject: room.subject, questionCount: room.questionIds.length as FriendRoomSettings['questionCount'], mode: friendModeOfRules(room.rules).id }); }
+        : () => void guestFollow())
+      : onChangeSubject ? () => onChangeSubject(isFriendRoom) : undefined;
+  const backToRoomLabel = !room ? '' : isFriendRoom
+    ? moving === 'host' ? '部屋を用意しています…' : moving === 'guest' ? '相手の部屋を待っています…'
+      : isHostHere ? '部屋に戻って科目などを選ぶ（同じ相手と再戦）' : '相手の部屋に戻って再戦を待つ'
+    : '部屋に戻って次の教科を選ぶ（相手は自動で決まります）';
+
   const backButton = (
     <BattleButton variant="ghost" onClick={() => onExit()} icon={<LogOut size={18} />}>
       対戦メニューにもどる
@@ -283,14 +304,9 @@ export function BattleRoomScreen({
         rating={rating}
         byForfeit={byForfeit}
         maskOpponent={!room.joinCode}
-        onBackToRoom={room.joinCode && onSwitchRoom && isHostHere
-          ? () => void hostMove({ subject: room.subject, questionCount: room.questionIds.length as FriendRoomSettings['questionCount'], mode: friendModeOfRules(room.rules).id })
-          : room.joinCode && onSwitchRoom ? () => void guestFollow()
-          : onChangeSubject ? () => onChangeSubject(!!room.joinCode) : undefined}
-        backToRoomLabel={room.joinCode && onSwitchRoom
-          ? moving === 'host' ? '部屋を用意しています…' : moving === 'guest' ? '相手の部屋を待っています…'
-            : isHostHere ? '部屋に戻って次の問題を選ぶ（同じ相手と再戦）' : '相手の部屋に戻って再戦を待つ'
-          : '部屋に戻って次の教科を選ぶ（相手は自動で決まります）'}
+        onBackToRoom={backToRoom}
+        backToRoomLabel={backToRoomLabel}
+        backToRoomNote={moveError}
         onHome={onHome}
         onExit={() => onExit()}
         onPractice={onPractice}

@@ -9,7 +9,7 @@
 """
 import re, sys, glob, html, json, collections
 
-SRC = sorted(set(glob.glob('/home/user/work/shikoku/*/*.txt')) - set(glob.glob('/home/user/work/shikoku/*/senbatsu.txt'))
+SRC = sorted(set(glob.glob('/home/user/work/shikoku/*/*.txt')) | set(glob.glob('/home/user/work/sanin/*/*.txt')) - set(glob.glob('/home/user/work/shikoku/*/senbatsu.txt'))
      - set(glob.glob('/home/user/work/shikoku/toku/list.txt')) - set(glob.glob('/home/user/work/shikoku/kaga/youkou.txt')))
 STOP = set("""a an the and or but if of to in on at by for with from as is are was were be been being am do does did have has had
 i you he she it we they me him her us them my your his its our their this that these those there here what which who whom whose

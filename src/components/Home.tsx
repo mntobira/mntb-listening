@@ -1,13 +1,15 @@
 import './home-legibility.css';
 import './home-pillars.css';
 import './my-tobira-tag.css';
+import './home-companion.css';
+import { CompanionArt } from '../battle/ui/CompanionArt';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ChevronRight, Edit3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Target, Zap, BookHeart } from 'lucide-react';
 import { createPortal } from 'react-dom';
 const PhilosophyPage = React.lazy(() => import('./PhilosophyPage').then(m => ({ default: m.PhilosophyPage })));
 import { auth } from '../firebase';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
-import { equippedPoseSrc, equippedFrameColor, equippedFramePattern, equippedStage, levelOf } from '../battle/core/growth';
+import { equippedCompanion, equippedPoseSrc, equippedFrameColor, equippedFramePattern, equippedStage, levelOf } from '../battle/core/growth';
 import '../styles/home-stage.css';
 import { TobiraAccessories } from '../battle/ui/TobiraAccessories';
 import type { GrowthPage } from './GrowthHub';
@@ -398,6 +400,10 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
             {/* 「マイとびら」の札（2026-10-20）：名前とレベルを別の色にし、レベルは金のメダル風に */}
             <span className="my-tobira-tag"><i className="my-tobira-name">マイとびら</i><b className="my-tobira-lv">Lv.{levelOf(growth.xp).level}</b></span>
           </div>}
+          {/* お供（2026-11-03）：とびら君のとなりに、きせかえで選んだお供が並ぶ。押すときせかえへ */}
+          {growth && equippedCompanion(growth) && <button type="button" className="home-companion" data-home-companion aria-label="お供（押すと着せ替え）" onClick={onGrowth ? () => onGrowth('outfit') : undefined}>
+            <CompanionArt value={equippedCompanion(growth)} size={88} className="home-companion-art" />
+          </button>}
         </section>
         {/* ★ホームの3本柱（2026-10-01）★
             演習する（ひとりで学ぶ）／対戦する（ひとりで・みんなで）を同じ大きさで左右に、

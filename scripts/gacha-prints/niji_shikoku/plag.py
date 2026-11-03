@@ -3,7 +3,7 @@
 """
 import re, sys, glob, html
 
-SRC = glob.glob('/home/user/work/shikoku/*/*.txt')
+SRC = glob.glob('/home/user/work/shikoku/*/*.txt') + glob.glob('/home/user/work/sanin/*/*.txt')
 # 試験の決まり文句（大学をまたいで誰でも書く定型）は一致しても数えない
 STOCK_JA = ('解答用紙', '問題冊子', '受験番号', '試験開始', '日本語に訳しなさい', '英語に訳しなさい', '選びなさい')
 

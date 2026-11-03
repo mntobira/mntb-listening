@@ -4,6 +4,7 @@ import { GACHA_RARITY_LABELS, GACHA_RARITY_ORDER } from '../battle/core/arenaEco
 import { GrowthAvatar } from '../battle/ui/GrowthParts';
 import { printOf, type ItemDef, type GachaRarity, type GrowthProgress } from '../battle/core/growth';
 import { stageOf, wallpaperOf } from '../battle/core/tobiraParts';
+import { CompanionArt } from '../battle/ui/CompanionArt';
 import '../styles/home-stage.css';
 import { savePdf } from '../utils/pdfShare';
 import { notify } from '../utils/dialog';
@@ -20,6 +21,7 @@ export const COLLECTION_KINDS = [
   { id: 'body', label: 'ポーズ・わく', match: (i: ItemDef) => i.kind === 'pose' || i.kind === 'frame' },
   { id: 'parts', label: '帽子・メガネほか', match: (i: ItemDef) => ['hat', 'glasses', 'cheek', 'aura'].includes(i.kind) },
   { id: 'wallpaper', label: '壁紙・ホーム背景', match: (i: ItemDef) => i.kind === 'wallpaper' || i.kind === 'stage' },
+  { id: 'companion', label: 'お供', match: (i: ItemDef) => i.kind === 'companion' },
   { id: 'print', label: '学習プリント', match: (i: ItemDef) => i.kind === 'print' },
 ] as const;
 
@@ -72,6 +74,10 @@ export function ItemArt({
         <image href="/mascots/basic.webp" x="2.5" y="5.5" width="5" height="5" />
       </svg>
     );
+  }
+  if (item.kind === 'companion') {
+    // お供：カギノスケの色違い（2026-11-03）
+    return <span className="gacha-companion-art"><CompanionArt value={item.value} size={Math.round(size * 1.02)} /></span>;
   }
   if (item.kind === 'wallpaper') {
     return (

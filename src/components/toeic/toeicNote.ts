@@ -57,7 +57,8 @@ export function saveToeicNote({ uid, chapter, problem, sq, ex, questionNo, round
   const note = {
     id,
     uid,
-    question: `問${questionNo}　${ex.sentence}`,
+    // Part 7 は設問文と根拠の英文（2026-11-02）
+    question: ex.prompt ? `問${questionNo}　${ex.prompt}\n根拠：${ex.sentence}` : `問${questionNo}　${ex.sentence}`,
     answer: `${sq.correctAnswer} ${correct?.text ?? ''}`.trim(),
     explanation: toeicNoteText(ex),
     chapterTitle: `${chapter.abstractTitle || chapter.realTitle || ''} 第${roundNo}回`.trim(),

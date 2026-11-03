@@ -6,7 +6,7 @@ import { KYOTSU_MOCK_PRINTS } from '../src/data/kyotsuMockPrints';
 import {
   GACHA_RARITY_ORDER, GACHA_RARITY_RATES, gachaItemRate, gachaItems, gachaItemsByRarity, pickGachaItem, rollGacha, exchangeShards,
 } from '../src/battle/core/arenaEconomy';
-import { GACHA_POOLS, NIJI_NEW_ITEM_IDS, NIJI_SHARED_IDS, inGachaPool } from '../src/battle/core/gachaPools';
+import { GACHA_POOLS, NIJI_NEW_ITEM_IDS, NIJI_SHARED_IDS, UNIV_MOCK_PRINT_IDS, inGachaPool } from '../src/battle/core/gachaPools';
 import { GACHA_SETS } from '../src/battle/core/gachaSets';
 import { ITEMS, emptyProgress, gachaRarityOf, printOf } from '../src/battle/core/growth';
 import { parseAccessory, wallpaperOf } from '../src/battle/core/tobiraParts';
@@ -21,9 +21,10 @@ describe('2次試験ガチャ：景品', () => {
   it('LR は2次試験の予想問題だけ。共通テストの予想問題は出ない（その逆も）', () => {
     const niji = gachaItemsByRarity('niji');
     const kyotsu = gachaItemsByRarity('kyotsu');
-    expect(niji.LR.map((i) => i.id).sort()).toEqual(NIJI_MOCK_PRINTS.map((p) => p.id).sort());
+    expect(niji.LR.map((i) => i.id).sort()).toEqual([...UNIV_MOCK_PRINT_IDS].sort());
+    for (const p of NIJI_MOCK_PRINTS) expect(UNIV_MOCK_PRINT_IDS).toContain(p.id);
     expect(kyotsu.LR.map((i) => i.id).sort()).toEqual(KYOTSU_MOCK_PRINTS.map((p) => p.id).sort());
-    for (const p of NIJI_MOCK_PRINTS) expect(inGachaPool(p.id, 'kyotsu'), p.id).toBe(false);
+    for (const id of UNIV_MOCK_PRINT_IDS) expect(inGachaPool(id, 'kyotsu'), id).toBe(false);
   });
   it('どのレア度にも景品がある（2次試験ガチャでも LR〜N が空でない）', () => {
     const t = gachaItemsByRarity('niji');
@@ -95,9 +96,9 @@ describe('2次試験ガチャ：抽選', () => {
 
 describe('2次試験の予想問題 PDF', () => {
   it('台帳のページ数・ファイル・サムネイルが実物と合う', () => {
-    expect(NIJI_MOCK_PRINTS.length).toBe(69); // 名古屋 3・静岡 3・大阪公立 A 3・B 3・和歌山 3・岡山 3・広島 3・東京学芸 3・琉球 3・熊本 3・佐賀 3・九州 3
+    expect(NIJI_MOCK_PRINTS.length).toBe(75); // 名古屋 3・静岡 3・大阪公立 A 3・B 3・和歌山 3・岡山 3・広島 3・東京学芸 3・琉球 3・熊本 3・佐賀 3・九州 3
     // ＋四国 27（香川 3・徳島 3・愛媛 法文工/教育/医 各3・高知 人文/国際/教育/医 各3）
-    // ＋福岡女子 3・東京外大 3
+    // ＋福岡女子 3・東京外大 3・鳥取 3・山口 3
     for (const u of NIJI_UNIVERSITIES) expect(NIJI_MOCK_PRINTS.filter((p) => nijiUniversityOf(p.id)?.id === u.id).length, u.id).toBe(3);
     for (const p of NIJI_MOCK_PRINTS) {
       expect(existsSync(`public${p.file}`), p.id).toBe(true);
@@ -118,7 +119,7 @@ describe('2次試験の予想問題 PDF', () => {
       expect(t, p.id).toContain(nijiDisclaimerFor(u.name).replace(/\s+/g, ''));
       expect(t, p.id).not.toMatch(/的中|必ず出る|合格できる/);
     }
-  }, 90_000); // 69冊を pdftotext で開くので既定の20秒では足りない
+  }, 90_000); // 75冊を pdftotext で開くので既定の20秒では足りない
   it('ガチャの詳細・ピックアップに注意書きを出す', () => {
     expect(NIJI_DISCLAIMER).toContain('過去問・公式問題ではありません');
     expect(readFileSync('src/components/gacha/GachaItemDetail.tsx', 'utf8')).toContain('nijiDisclaimerFor(nijiUniv.name)');
@@ -130,7 +131,7 @@ describe('2次試験の予想問題 PDF', () => {
     expect(NIJI_MOCK_PRINTS.find((p) => p.id === 'print_lr_niji_omua_en_1')!.label).toContain('Aグループ');
     expect(NIJI_MOCK_PRINTS.find((p) => p.id === 'print_lr_niji_omub_en_3')!.label).toContain('Bグループ');
     expect(NIJI_DISCLAIMER.split('大阪公立大学').length - 1).toBe(1);
-    for (const n of ['香川大学', '徳島大学', '愛媛大学', '高知大学']) expect(NIJI_DISCLAIMER.split(n).length - 1, n).toBe(1);
+    for (const n of ['香川大学', '徳島大学', '愛媛大学', '高知大学', '鳥取大学']) expect(NIJI_DISCLAIMER.split(n).length - 1, n).toBe(1);
     for (const name of ['和歌山大学', '岡山大学', '広島大学']) expect(NIJI_DISCLAIMER, name).toContain(name);
     expect(nijiUniversityOf('print_lr_niji_hiroshima_en_2')?.name).toBe('広島大学');
     expect(NIJI_MOCK_PRINTS.find((p) => p.id === 'print_lr_niji_okayama_en_1')!.label).toBe('国公立2次 英語 予想問題 岡山大学 前期対策 第1回（問題＋解答・解説）');

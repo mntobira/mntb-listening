@@ -26,6 +26,13 @@
 - 英文法を音声合成に戻す：`src/data/grammarAudioManifest.ts` の `GRAMMAR_AUDIO_IDS` を `new Set<string>([])` に。
 - 英単語を端末の読み上げに戻す：`public/audio/vocab/index.json` を削除（または `ids` を空に）。
 
+## 2026-11-03 2次試験ガチャの大当たりに山口大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-yamaguchi）
+
+- LR（2次試験ガチャ）の予想問題に山口大学を追加（3冊・25〜26ページ：問題12〜13＋解答・解説12〜13）。全学部共通の前期英語（120分・200点）の形式に沿った書き下ろし。
+- 表紙と奥付に「山口大学の過去問・公式問題ではありません。予想問題であり、大学とは関係がありません。」を明記。
+- 画面の変更はなし（ガチャの排出リスト・サムネイル・プレビュー画像が増えるだけ）。LR の説明文の大学名に山口大学を追加。
+- 戻し方：`src/data/nijiMockPrints.ts` の `yamaguchi` の3行と大学一覧の1行を消し、`tests/nijiGacha.test.ts` の冊数を 72 に戻す。
+
 ## 2026-11-03 2次試験ガチャの大当たりに東京外国語大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-tufs）
 
 - LR（2次試験ガチャ）の予想問題に東京外国語大学を追加（3冊・34〜35ページ：問題15〜16＋解答・解説19）。3学部共通の前期「英語」の型（長文2題・リスニング3題、120分・250点）に沿った書き下ろし。
@@ -575,6 +582,17 @@
 
 ---
 
+## 2026-11-03 2次試験ガチャの大当たりに鳥取大学を追加（PR: feat/niji-tottori）
+
+| # | どこ | 変更 | ファイル |
+|---|---|---|---|
+| 1 | 2次試験ガチャの LR | 国公立2次 英語 予想問題 鳥取大学 前期対策を3回分追加（英語を課す全学部の共通問題） | `src/data/nijiMockPrints.ts`・`public/prints/print_lr_niji_tottori_en_{1,2,3}.pdf`・thumbs・previews・`src/data/gachaPreviews.generated.ts` |
+| 2 | ピックアップの説明文 | 収録大学に鳥取大学を追加 | `src/battle/core/gachaPools.ts`・`nijiMockPrints.ts`（`NIJI_DISCLAIMER` は自動で鳥取大学を含む） |
+
+**戻し方**：`nijiMockPrints.ts` の `tottori` の行（`NIJI_UNIVERSITIES` の1行・ヘルパー1行・台帳3行）を消し、`gachaPools.ts` の lrNote・`build-previews.py` の正規表現・`tests/nijiGacha.test.ts` の件数（63→60）を元に戻す。PDF・画像は消してよい。
+
+---
+
 ## 2026-11-02 2次試験ガチャの大当たりに四国の大学（香川・徳島・愛媛・高知）を追加（PR: feat/niji-shikoku）
 
 | # | どこ | 変更 | ファイル |
@@ -583,6 +601,60 @@
 | 2 | ピックアップの説明文 | 収録大学に4大学を追加 | `src/battle/core/gachaPools.ts`・`nijiMockPrints.ts`（`NIJI_DISCLAIMER` は自動で4大学を含む） |
 
 **戻し方**：`nijiMockPrints.ts` の四国9系統の行（`NIJI_UNIVERSITIES` の9行・ヘルパー9行・台帳27行）を消し、`gachaPools.ts` の lrNote と `build-previews.py` の正規表現、`tests/nijiGacha.test.ts` の件数（48→21）を元に戻す。PDF・画像は消してよい。
+
+---
+
+## 2026-11-03 TOEIC Part 6・7 のスマホ：「文書」と「設問・選択肢」を切り替えて見る（PR: feat/toeic-mobile-view-switch）
+
+| # | 何を | どう変えた | ファイル |
+|---|---|---|---|
+| 1 | Part 6・7 の演習画面（1024px 未満） | 時間ガイドの下に **「文書」／「設問・選択肢」の切り替えボタン**（2つ並び・高さ48px）。押した方だけを表示する。文書ボタンの添え書きは Part 6「空所 4つ」・Part 7「1つの文書／2つの文書／3つの文書」、設問ボタンは「未回答 n問」→採点後「n/m問正解」 | `src/components/toeic/ToeicPageQuiz.tsx`・`toeic-page.css`（末尾に段を追加） |
+| 2 | 文書の最後 | 「**設問・選択肢へ進む**」のボタン（高さ48px） | 同上 |
+| 3 | 切り替えの動き | ページを開いたときは「文書」から。文書と設問で読みかけの位置をそれぞれ覚えておき、戻ると続きから。採点すると結果と解説が見えるよう「設問」に切り替わる。結果の印（問番号）を押すと設問に切り替えてその問題へ移動。次のページでは「文書」に戻る | `ToeicPageQuiz.tsx`（`pane`・`switchPane`・`resetPane`） |
+
+- PC（1024px 以上）は今までどおり左に文書・右に設問の2列で、切り替えのボタンは出さない（Part 6 の PC 表示はピクセル比較で同じ）。Part 5 の画面は変えていない（ピクセル比較で同じ）。
+- 確認した幅：320・360・390・768・1280。文字12px未満・44px未満のボタン・横はみ出しは0件。
+
+**戻し方**：`toeic-page.css` の末尾「Part 6・7 のスマホ：『文書』と『設問・選択肢』を切り替えて…」の段を消し、`ToeicPageQuiz.tsx` の `tp-pane-switch`（切り替えボタン）・`paneNext`（設問へ進む）・`data-pane` を外す（文書の下に設問が続く元の縦並びに戻る）。
+
+---
+
+## 2026-11-02 TOEIC に Part 7（読解）を追加・単元選択のタブに Part 7（PR: feat/toeic-part7）
+
+| # | 何を | どう変えた | ファイル |
+|---|---|---|---|
+| 1 | 学習カタログの TOEIC カード | 説明「Part 5・Part 6」→「**Part 5・6・7**」（「Part 5・Part 6・Part 7」は 390px で末尾が切れたため短くした）。件数は「Part 5 全15回・Part 6 全15回・Part 7 全15回」 | `src/data/studyCatalog.ts` |
+| 2 | TOEIC の単元選択 | タブを3つに（短文穴埋め Part 5／長文穴埋め Part 6／**読解 Part 7**）。Part 7 の説明は「Part 7 読解・1回7セット24問・4択」 | `src/components/ChapterSelection.tsx` |
+| 3 | Part 7 の演習画面 | **1ページ＝1セット**（文書1〜3つ＋設問2〜5問、1回7ページ）。スマホ・タブレットは文書が2つ以上ならタブ（文書1／文書2／文書3・高さ44px）で切り替え、PC（1024px 以上）は左に文書を全部・右に設問の2列。見出し行（To / From など）は表、チャットは吹き出し（最初に話した人が左）、注文書・予定表は表、文挿入の位置は [1]〜[4] の札。上の進み具合の印はセットの数（7つ） | `src/components/toeic/ToeicP7Passage.tsx`（新）・`ToeicPageQuiz.tsx`・`toeicPageModel.ts`・`toeic-page.css`（末尾に Part 7 の段） |
+| 4 | Part 7 の解説 | Part 5・6 と同じ解説に「**根拠（文書の英文）**」の札を足した（複数文書は（文書n）つき）。手がかりのマーカーは根拠と正解の理由に引く。和訳は「設問：…／根拠：…」 | `ToeicExplanationPanel.tsx`・`toeicPageModel.ts`（`toeicP7ExplanationFor`）・`toeicNote.ts` |
+| 5 | Part 7 の時間の目安 | 1問あたり 標準50秒・ゆっくり60秒・速め40秒で、セットの設問の数に比例 | `src/components/toeic/toeicTimeBudget.ts`（`buildToeicP7PageBudgets`） |
+| 6 | TOEIC の英文の金額 | 「$100 … $15」のように $ が2つある文で、その間が数式（KaTeX）として組まれて文字が崩れていたのを直した。TOEIC の部品だけ `formatText` に `noMath: true` を渡す（Part 6 の3段落も同じ症状だったので一緒に直る。ほかの教科は変えていない） | `src/utils/textFormatter.tsx`（`noMath` を追加）・`src/components/toeic/*.tsx` |
+
+- 確認した幅：320・360・390・768・1280。文字12px未満・44px未満のボタン・横はみ出しはどの画面も0件（単元選択・チャット・2文書のタブ・3文書・採点後の解説）。
+- 変えていない画面（feat/toeic-part6 と凍結した撮影でピクセル比較・52組）：英文法・英語リスニングの問題と結果（16組）・Part 5 の演習（8組）は同じ。Part 6 の演習（8組）は 1280 の2枚で明るさ1〜2の差（文字の描き方の揺れ・目では見分けられない）。英文法・英語リスニングの単元選択は 360 で明るさ12〜18の差が数十画素（同じく描き方の揺れ・並びと文字は同じ）。差が出たのは TOEIC の単元選択（タブが3つ）と学習カタログ（TOEIC カードの説明）だけ。
+
+**戻し方**：
+- Part 7 を丸ごと戻す：このPRを revert。
+- Part 7 の画面だけ外す：`toeicData.ts` で `toeicPart7Data.parts` を足さない（単元・タブから Part 7 が消える）。`subjects.ts` の章ID の型を `/^tp[56]_\d+$/` に戻す。
+- カードの説明だけ戻す：`studyCatalog.ts` の `description` を `'Part 5・Part 6'` に。
+- 金額の直しだけ戻す：`src/components/toeic/*.tsx` の `formatText(…, { prose: true, noMath: true })` から `noMath: true` を外す（`textFormatter.tsx` の `noMath` は使われなくなるだけで害はない）。
+
+---
+
+## 2026-11-03 お供（カギノスケ）を追加・ガチャのはずれ（N）を増やした（PR: feat/companion-gacha）
+
+| # | 何を | どう変えた | ファイル |
+|---|---|---|---|
+| 1 | 新キャラ「カギノスケ」 | 金のカギのお供。画像は1枚（`public/mascots/companion_key.webp`）、色違い6色は CSS の filter | `src/battle/core/tobiraParts.ts`（`COMPANIONS`）・`src/battle/ui/CompanionArt.tsx`（新）・`src/battle/ui/companion.css`（新） |
+| 2 | お供の枠 | 装備に「お供」を追加。全員がはじめから金のカギノスケを持っていて連れている（古い記録も同じ）。きせかえで外せる | `growthTypes.ts`・`growthItems.ts`（`DEFAULT_COMPANION`・`equippedCompanion`）・`growth.ts` |
+| 3 | ホーム | ステージの右下、とびら君のとなりにお供が立つ（ゆっくり上下。動きを減らす設定では止まる）。押すときせかえへ。ボタンには重ならず、スクロールも出ない（320/375/390/1280 で確認） | `src/components/Home.tsx`・`src/components/home-companion.css`（新） |
+| 4 | きせかえ・持ちもの・ガチャの図鑑 | 「お供」の種類を追加（きせかえは先頭） | `BattleProfileTabs.tsx`・`MyCollection.tsx`・`GachaParts.tsx`・`PublicProfileTabs.tsx` |
+| 5 | ガチャのはずれ（N） | 共通テストガチャの N を 40 → 68 種（色違いのアクセ・フレーム25種＋カギノスケ3色）。R に2色、SR に1色。**レア度ごとの確率（LR1%・UR3%・SR6%・R16%・N74%）は変えていない**。2次試験ガチャは変えていない | `growthItems.ts` |
+
+**戻し方**：
+- 丸ごと戻す：このPRを revert。
+- ホームの表示だけ消す：`Home.tsx` の `.home-companion` のボタンと `home-companion.css` の import を消す。
+- はずれだけ戻す：`growthItems.ts` の「2026-11-03 はずれ（N）追加」の25行を消す。
 
 ---
 
@@ -1130,3 +1202,124 @@
 ### テスト
 - `tests/homeBattleRankingPolish.test.ts`（新規）で上の①〜⑤が崩れていないかを確認。戻すときはこのテストも消す。
 - `tests/revision.test.ts`：main で1件落ちていた（#58 でホームの「ランキングを見る」を外したのに、テストがホームにあることを求めていた）。入口が対戦画面の切替（`onRanking`）にあることを確かめる形に直した。
+
+## 2026-11-03 E1〜E5（フレンド対戦の戻り先・負け動画・マナラッシュ・タイトル動画・ショップのPDF）
+
+### E1 フレンド対戦の結果 →「部屋に戻って科目などを選ぶ」
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 戻り先 | フレンド部屋（合言葉あり）は、いつも合言葉の待機ロビー（「対戦の設定（科目・モード・問題数）かえる」がある画面）へ。部屋主は同じ設定で次の部屋を作って移り、相手は自動でついてくる。**教科選び（subject-friend）へは落とさない**（以前は落ちると合言葉を入れ直す必要があった） | `src/battle/ui/BattleRoomScreen.tsx`（`isFriendRoom`・`backToRoom`・`backToRoomLabel`） |
+| 失敗したとき | 結果画面のボタンの上に理由を赤字で出す。もう一度押せばやり直せる | `BattleRoomScreen.tsx`（`backToRoomNote={moveError}`）、`src/battle/ui/BattleResult.tsx`（`backToRoomNote`・`data-result-back-room-note`） |
+| 文言 | 部屋主：「部屋に戻って科目などを選ぶ（同じ相手と再戦）」 | `BattleRoomScreen.tsx` |
+
+**戻し方**：`BattleRoomScreen.tsx` の E1 のブロックを消し、`onBackToRoom`／`backToRoomLabel` を元の三項演算子に戻す。`BattleResult.tsx` の `backToRoomNote` を消す。
+
+### E2 負けたときの動画
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 動画 | 旧 `lose.mp4`・`lose-poster.webp` を削除。ウインク＋グッドの `gacha_r.mp4`（アプリ内の既存動画）を「はげまし」に使う | `src/components/CinematicClip.tsx`（`CINEMATIC_CLIPS.lose`）、`public/cinematics/` |
+| 再生後 | 流し終わったら動画の枠ごと外す（以前は `hold`＋背景ポスターで、ぼやけた最後のコマが止まって残っていた） | `src/battle/ui/BattleResult.tsx`（`loseClipDone`） |
+
+### E3 マナラッシュの最初の画面
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 上の「←もどる」 | 文字だけのボタンをやめ、プロフィール編集などと同じ「← 44px ボタン＋見出し＋一言」の1行に | `src/components/ManaRush.tsx`（`mana-rush-head`）、`src/components/growth-hub.css`（末尾の E3 ブロック） |
+| 英字の見出し・大きな手書きタイトル | 削除（見出しの1行にまとめた） | `ManaRush.tsx` |
+| ルール4枚 | 1枚のカードに 2×2 で短く | `ManaRush.tsx`、`growth-hub.css` |
+| 並び | 見出し → ルール → 科目 → 自己ベスト → スタート をスクロールなしで。文字12px以上・ボタン44px以上 | `growth-hub.css` |
+
+**戻し方**：`growth-hub.css` の E3 ブロックを消し、`ManaRush.tsx` の menu の上部を `arena-back`・`mana-eyebrow`・`mana-rush-title` の形に戻す。
+
+### E4 タイトル画面の動画
+- 送っていただいた2本のうち、動きの良い「…3D ani 389900 OFW.mp4」から作り直し（もう1本は 1.75〜2.3秒で目が白く崩れ、ほかはほぼ止まっているので不採用）。
+- 顔が崩れるコマ（0〜0.29秒・1.75〜2.12秒・4.65秒〜）を外し、同じ姿勢のコマどうしを2コマのクロスフェードでつないだ3.1秒。背景はほかの動画と同じクリーム色。720×720・249KB。
+- 道具：`scripts/firefly-kit/title_e4.py`。台帳：`docs/CINEMATICS.md`。
+
+### E5 ショップで PDF を交換
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 値段 | ガチャから出る PDF に、レア度ごとの値段を付けた：**LR 5,000／UR 3,000／SR 2,000 マナコイン**（ガチャからも今までどおり出る。Lv.15 の PDF はレベル報酬なので出さない） | `src/battle/core/growthItems.ts`（`PRINT_SHOP_PRICES`・`shopPriceOf`・`purchaseItem`） |
+| ショップの表示 | 種類に「PDF」を追加。値段・購入ボタン・確認文を `shopPriceOf` で出す。買ったら「マイPDFから保存できます」 | `src/components/MyCollection.tsx` |
+
+**戻し方**：`growthItems.ts` の `PRINT_SHOP_PRICES`・`shopPriceOf` を消して `purchaseItem` を `item.unlock.coins` に戻す。`MyCollection.tsx` の `shopPriceOf` を `'coins' in item.unlock` に戻し、`['print','PDF']` を消す。
+
+### テスト
+- `tests/revisionF.test.ts`（新規）で E1〜E5 を確認。`tests/cinematicClips.test.ts` など既存のテストも通る。
+
+---
+
+## 2026-10-29 ガチャ LR に「神戸大学 前期 英語 予想問題」6種を追加
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| ガチャの LR | 2次試験ガチャの LR に、神戸大学 前期 英語 予想問題（第1〜3回 × 問題／解答・解説）の6種を追加（共通テストガチャには出ない）。LR の出る割合（1%）は同じ | `src/data/kobeMockPrints.ts`（新規）、`src/battle/core/growthItems.ts` |
+| ピックアップの「中身を少し見る」 | 6種のちら見せ画像を追加 | `public/prints/previews/print_lr_kobe_*`、`src/data/gachaPreviews.generated.ts`、`scripts/gacha-prints/build-previews.py` |
+| PDF | 白黒・A4縦。解説は太字・下線・波下線で強調。表紙と奥付に「神戸大学の過去問・公式問題ではありません。予想問題であり，大学とは関係がありません」 | `public/prints/print_lr_kobe_{q,a}_{1,2,3}.pdf`、`scripts/gacha-prints/kobe_mock/` |
+
+**戻し方**：`growthItems.ts` の `KOBE_MOCK_PRINTS` の2か所（import・ITEMS・printOf）を消し、`kobeMockPrints.ts`・`public/prints/*kobe*`・`tests/kobeMockPrints.test.ts` を消して `build-previews.py` を流し直す。`tests/kyotsuMockPrints.test.ts` の LR の一覧も共通テストだけに戻す。
+- 同日追記：神戸大 予想問題 PDF の2ページ目以降の上の注記（「マナトビ 予想問題 ／ 神戸大学の過去問・公式問題ではありません（大学とは無関係）」）を削除（表紙と奥付には残す）。表紙右上の「MANATOBI MOCK EXAM SERIES」も削除。`scripts/gacha-prints/kobe_mock/render.py`
+- 同日追記（品質）：神戸大 予想問題の問題データを見直し。過去問・解答との一致（英語4語・日本語13字）を0に、設問文の言い回しも独自のものへ。過去問と同じだった登場人物名（第2回 III）を変更。正解位置を（あ）〜（え）に均等化し、正解だけが長い選択肢を減らした。難語の割合を過去問の平均に近づけ、第3回 III の語数を範囲内に。検査スクリプトは `scripts/gacha-prints/kobe_mock/check_orig.py`・`check_quality.py`・`verify.py`。
+
+## 2026-10-30 ガチャ LR に「大阪大学 前期 英語 予想問題」6種を追加
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| ガチャの LR | 2次試験ガチャの LR に、大阪大学 前期 英語 予想問題（第1〜3回 × 問題／解答・解説）の6種を追加（共通テストガチャには出ない）。LR の出る割合（1%）は同じ | `src/data/osakaMockPrints.ts`（新規）、`src/battle/core/growthItems.ts` |
+| ピックアップの「中身を少し見る」 | 6種のちら見せ画像を追加 | `public/prints/previews/print_lr_osaka_*`、`src/data/gachaPreviews.generated.ts`、`scripts/gacha-prints/build-previews.py` |
+| PDF | 白黒・A4縦・フォント埋め込み。解説は太字・下線・波下線で強調。表紙と奥付に「大阪大学の過去問・公式問題ではありません。予想問題であり，大学とは関係がありません」。過去問・解答との一致（英語4語・日本語13字）0、難易度は 2022〜2026年度の範囲内 | `public/prints/print_lr_osaka_{q,a}_{1,2,3}.pdf`、`scripts/gacha-prints/osaka_mock/` |
+
+**戻し方**：`growthItems.ts` の `OSAKA_MOCK_PRINTS`（import・ITEMS・printOf の3か所）を消し、`osakaMockPrints.ts`・`public/prints/*osaka*`・`tests/osakaMockPrints.test.ts` を消して `build-previews.py` を流し直す。`tests/kyotsuMockPrints.test.ts` の LR の一覧から `OSAKA_MOCK_PRINTS` を外す。
+
+## 2026-10-30 ガチャ LR に「立命館大学 全学統一（文系） 英語 予想問題」6種を追加
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| ガチャの LR | 2次試験ガチャの LR に、立命館大学 全学統一方式（文系）英語 予想問題（第1〜3回 × 問題／解答・解説）の6種を追加。2次試験ガチャの LR は 名古屋大6・静岡大6・神戸大6・阪大6・立命館6 の30種に等分（LR の割合 1% は同じ）。共通テストガチャの LR は共通テスト予想問題だけのまま | `src/data/ritsuMockPrints.ts`（新規）、`src/battle/core/growthItems.ts`、`src/battle/core/gachaPools.ts` |
+| 2次試験ガチャの表示 | LR の見出しを「大学別 英語 予想問題（2次・個別試験）」に、説明文とピックアップの注意書きに神戸大学・大阪大学・立命館大学を追加。神戸大・阪大・立命館の景品の詳細にも、その大学の名前入りの「過去問・公式問題ではありません」の注意書きを出す | `src/battle/core/gachaPools.ts`、`src/data/nijiMockPrints.ts`、`src/components/gacha/GachaItemDetail.tsx` |
+| ピックアップの「中身を少し見る」 | 6種のちら見せ画像を追加 | `public/prints/previews/print_lr_ritsu_*`、`src/data/gachaPreviews.generated.ts`、`scripts/gacha-prints/build-previews.py` |
+| PDF | 白黒・A4縦・フォント埋め込み・マーク式解答用紙つき。解説は太字・下線・波下線で強調。表紙と奥付に「立命館大学の過去問・公式問題ではありません。予想問題であり，大学とは関係がありません」。過去問・解答との一致（英語4語・日本語13字）0、登場人物名の重複0、難易度は 2022〜2026年度の範囲内 | `public/prints/print_lr_ritsu_{q,a}_{1,2,3}.pdf`、`scripts/gacha-prints/ritsu_mock/` |
+
+**戻し方**：`growthItems.ts` の `RITSU_MOCK_PRINTS`（import・ITEMS・printOf の3か所）を消し、`ritsuMockPrints.ts`・`public/prints/*ritsu*`・`tests/ritsuMockPrints.test.ts` を消して `build-previews.py` を流し直す。`tests/kyotsuMockPrints.test.ts` の LR の一覧から `RITSU_MOCK_PRINTS` を外す。
+
+### 2026-10-31 2次試験ガチャ LR に北海道大学 前期 英語 予想問題を追加
+
+| 場所 | 変更 | ファイル |
+|---|---|---|
+| 2次試験ガチャの LR | 北海道大学 前期日程 英語（全学部共通）予想問題（第1〜3回 × 問題／解答・解説）の6種を追加。2次試験ガチャの LR は36種に等分（LR の割合 1% は同じ）。共通テストガチャには出ない | `src/data/hokudaiMockPrints.ts`（新規）、`src/battle/core/growthItems.ts`、`src/battle/core/gachaPools.ts` |
+| 2次試験ガチャの表示 | LR の説明文とピックアップの注意書きに北海道大学を追加。北大の景品の詳細にも大学名入りの「過去問・公式問題ではありません」の注意書きを出す | `src/battle/core/gachaPools.ts`、`src/data/nijiMockPrints.ts` |
+
+### 2026-11-01 2次試験ガチャ LR に東北大学 前期 英語 予想問題を追加
+
+| 場所 | 変更 | ファイル |
+|---|---|---|
+| 2次試験ガチャの LR | 東北大学 前期日程 英語（全学部共通）予想問題（第1〜3回 × 問題／解答・解説）の6種を追加。2次試験ガチャの LR は42種に等分（LR の割合 1% は同じ）。共通テストガチャには出ない | `src/data/tohokuMockPrints.ts`（新規）、`src/battle/core/growthItems.ts`、`src/battle/core/gachaPools.ts` |
+| 2次試験ガチャの表示 | LR の説明文とピックアップの注意書きに東北大学を追加。東北大の景品の詳細にも大学名入りの「過去問・公式問題ではありません」の注意書きを出す | `src/battle/core/gachaPools.ts`、`src/data/nijiMockPrints.ts` |
+
+**戻し方**：`growthItems.ts` の `TOHOKU_MOCK_PRINTS`（import・ITEMS・printOf の3か所）と `gachaPools.ts` の import・`UNIV_MOCK_PRINT_IDS` から外し、`nijiMockPrints.ts` の `OTHER_MOCK_UNIVERSITIES` から tohoku を消す。`tohokuMockPrints.ts`・`public/prints/*tohoku*`・`tests/tohokuMockPrints.test.ts` を消して `build-previews.py` を流し直す。
+
+### 2026-11-02 2次試験ガチャ LR に弘前大学 前期 英語 予想問題を追加
+
+| 場所 | 変更 | ファイル |
+|---|---|---|
+| 2次試験ガチャの LR | 弘前大学 前期日程 英語（英語を課す学部で共通）予想問題（第1〜3回 × 問題／解答・解説）の6種を追加。main で増えた大阪公立・和歌山・岡山・広島を取り込んだ結果、2次試験ガチャの LR は57種に等分（LR の割合 1% は同じ）。共通テストガチャには出ない | `src/data/hirosakiMockPrints.ts`（新規）、`src/battle/core/growthItems.ts`、`src/battle/core/gachaPools.ts` |
+| 2次試験ガチャの表示 | LR の説明文とピックアップの注意書きに弘前大学を追加。弘前大の景品の詳細にも大学名入りの「過去問・公式問題ではありません」の注意書きを出す | `src/battle/core/gachaPools.ts`、`src/data/nijiMockPrints.ts` |
+
+**戻し方**：`growthItems.ts` の `HIROSAKI_MOCK_PRINTS`（import・ITEMS・printOf の3か所）と `gachaPools.ts` の import・`UNIV_MOCK_PRINT_IDS` から外し、`nijiMockPrints.ts` の `OTHER_MOCK_UNIVERSITIES` から hirosaki を消す。`hirosakiMockPrints.ts`・`public/prints/*hirosaki*`・`tests/hirosakiMockPrints.test.ts` を消して `build-previews.py` を流し直す。
+
+### 2026-11-03 2次試験ガチャ LR に岩手大学 前期 英語 予想問題を追加
+
+| 場所 | 変更 | ファイル |
+|---|---|---|
+| 2次試験ガチャの LR | 岩手大学 前期日程 英語（人文社会科学部・教育学部 共通問題）予想問題（第1〜3回 × 問題／解答・解説）の6種を追加。2次試験ガチャの LR は63種に等分（LR の割合 1% は同じ）。共通テストガチャには出ない | `src/data/iwateMockPrints.ts`（新規）、`src/battle/core/growthItems.ts`、`src/battle/core/gachaPools.ts` |
+| 2次試験ガチャの表示 | LR の説明文とピックアップの注意書きに岩手大学を追加。岩手大の景品の詳細にも大学名入りの「過去問・公式問題ではありません」の注意書きを出す | `src/battle/core/gachaPools.ts`、`src/data/nijiMockPrints.ts` |
+
+**戻し方**：`growthItems.ts` の `IWATE_MOCK_PRINTS`（import・ITEMS・printOf の3か所）と `gachaPools.ts` の import・`UNIV_MOCK_PRINT_IDS` から外し、`nijiMockPrints.ts` の `OTHER_MOCK_UNIVERSITIES` から iwate を消す。`iwateMockPrints.ts`・`public/prints/*iwate*`・`tests/iwateMockPrints.test.ts` を消して `build-previews.py` を流し直す。
+
+### 2026-11-03 2次試験ガチャ LR に秋田大学 前期 英語 予想問題を追加
+
+| 場所 | 変更 | ファイル |
+|---|---|---|
+| 2次試験ガチャの LR | 秋田大学 前期日程 英語（国際資源学部・教育文化学部・医学部保健学科・情報データ科学部 共通問題）予想問題（第1〜3回 × 問題／解答・解説）の6種を追加。2次試験ガチャの LR は69種に等分（LR の割合 1% は同じ）。共通テストガチャには出ない | `src/data/akitaMockPrints.ts`（新規）、`src/battle/core/growthItems.ts`、`src/battle/core/gachaPools.ts` |
+| 2次試験ガチャの表示 | LR の説明文とピックアップの注意書きに秋田大学を追加。秋田大の景品の詳細にも大学名入りの「過去問・公式問題ではありません」の注意書きを出す | `src/battle/core/gachaPools.ts`、`src/data/nijiMockPrints.ts` |
+
+**戻し方**：`growthItems.ts` の `AKITA_MOCK_PRINTS`（import・ITEMS・printOf の3か所）と `gachaPools.ts` の import・`UNIV_MOCK_PRINT_IDS` から外し、`nijiMockPrints.ts` の `OTHER_MOCK_UNIVERSITIES` から akita を消す。`akitaMockPrints.ts`・`public/prints/*akita*`・`tests/akitaMockPrints.test.ts` を消して `build-previews.py` を流し直す。

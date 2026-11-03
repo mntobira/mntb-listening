@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+# 第1回 Ⅱ 長文読解（信号や標識をなくした道路）。{u|…} 設問で問う語句。設問は a1_2q.py
+from a1_2q import QUESTIONS, VOCAB
+P = {
+ 'kind': 'reading',
+ 'title': '長文読解',
+ 'intro': 'Study the article and respond to each question by choosing one of the four options. Write the letter of the option you choose.',
+ 'headline': 'The Town That Took Down Its Traffic Lights',
+ 'paras': [
+  "Five years ago, the main crossroads in the market town of Wendleford looked much like any other. Four sets of traffic lights controlled the flow of cars, metal railings kept pedestrians on the pavement, and a forest of signs told drivers where to turn, how fast to go and where they were not allowed to stop. Today almost all of that has gone. The lights, the railings and most of the signs have been removed, and the road and the pavement have been rebuilt at the same level, paved with the same pale stone.",
+  "To many visitors, the result looks alarming. Cars, bicycles and people on foot share one open space, and there is no obvious rule about who should go first. Yet according to figures collected by the town council, the number of accidents at the crossroads has fallen since the change, and traffic now moves through the centre more smoothly than before, even though it moves more slowly.",
+  "The approach is often called shared space. Its supporters argue that traditional road design, which separates cars from everyone else, can {u|backfire}. When drivers are given a wide road, clear signals and barriers that keep people out of the way, they often come to feel that the road belongs to them. They watch the lights rather than the people around them, and they drive faster. Remove those signals, the argument goes, and drivers have to notice what is actually happening in front of them.",
+  "Helena Marsh, the transport engineer who led the Wendleford project, puts it simply. “Uncertainty makes people careful,” she says. “If you are not sure whether a child is about to step into the road, you slow down and look. If a green light tells you that you have the right to go, you stop looking.” In her view, the most effective safety device is not a sign or a signal but eye contact between a driver and a person on foot.",
+  "The change did not happen overnight. Before any work began, the council held a series of public meetings, and many residents were deeply worried. Parents feared that their children would be in danger, and shop owners worried that delivery lorries would no longer be able to stop outside their doors. The council responded by running a six-month trial in which the lights were switched off but left in place, so that they could be turned on again if things went badly.",
+  "During the trial, the council paid close attention to how people behaved. Cameras showed that drivers approached the crossroads more slowly and that most of them stopped to let pedestrians cross, even though they were not required to. Delivery drivers adapted too: instead of parking on the pavement, they began to use short loading bays that had been marked out with stone of another colour. When the trial finished, a survey found that a majority of residents wanted to make the arrangement permanent.",
+  "Not everyone has been won over, however. Groups representing blind and partially sighted people have raised serious concerns. Traditional crossings, with their raised kerbs*, ridged paving and beeping signals, give clear information to people who cannot rely on their eyes. In a space where nothing shows where the road stops and the footpath begins, they say, knowing where it is safe to walk becomes a real challenge, and a system that depends on eye contact {u|leaves them out} completely.",
+  "Wendleford has tried to respond. A strip of textured paving now runs along each side of the main route, so that people using a white cane can feel where the area mainly used by cars begins. At the busiest point, a single crossing with a sound signal has been kept. Marsh admits that these are compromises. “A design that makes some people safer but makes others afraid to leave their homes is not a success,” she says. “We are still learning.”",
+  "Other towns have taken note, but experts warn against copying Wendleford too quickly. Shared space seems to work best where traffic is moderate and where plenty of pedestrians are around to create the uncertainty that slows drivers down. On a busy road carrying heavy lorries at night, when there is nobody walking, removing the lights could simply make the road more dangerous. The details, such as the choice of materials and the shape of the space, also matter a great deal.",
+  "A further question concerns what counts as success. Accident figures at a single crossroads can rise or fall from year to year for many reasons, and a few years of data may be too little to draw firm conclusions. Some researchers point out that people may feel less safe in a shared space even if accidents fall, and that this feeling can stop older people and children from walking in the town centre at all.",
+  "For Marsh, the most important result is something no statistics* can show. Before the change, she says, the crossroads was a place people hurried through. Now, on a sunny afternoon, people stop to talk where cars once drove, and the cafés have put tables outside. “We set out to solve a traffic problem,” she says. “What we ended up with was a town square.”",
+ ],
+ 'notes': [('kerbs', '（歩道の）縁石'), ('statistics', '統計')],
+ 'translation': [
+  '5年前，市場町ウェンドルフォードの中心の交差点は，ほかのどこにでもある交差点とよく似ていた。4組の信号機が車の流れを制御し，金属の柵が歩行者を歩道にとどめ，林立する標識が，どこで曲がるか，どれくらいの速さで走るか，どこで止まってはいけないかをドライバーに伝えていた。今では，そのほとんどすべてがなくなっている。信号も柵も大部分の標識も取り外され，車道と歩道は同じ高さに造り直されて，同じ淡い色の石で舗装されている。',
+  '多くの訪問者にとって，その様子は不安に見える。車も自転車も歩く人も一つの開けた空間を共有し，誰が先に進むべきかというはっきりした決まりはない。しかし町議会が集めた数値によれば，交差点での事故の件数は変更以来減っており，車の流れは以前より遅いものの，以前より滑らかに中心部を通り抜けている。',
+  'この手法はしばしばシェアドスペースと呼ばれる。支持する人々は，車をほかのすべてから切り離す従来の道路設計は，逆効果になりうると主張する。広い道路やはっきりした信号，人を寄せつけない柵を与えられると，ドライバーは道路が自分のものだと感じやすい。周りの人ではなく信号を見て，速度を上げる。そうした信号を取り除けば，ドライバーは目の前で実際に起きていることに気づかざるをえなくなる，というのがその主張である。',
+  'ウェンドルフォードの事業を率いた交通技術者のヘレナ・マーシュは，簡潔にこう言う。「不確かさが人を慎重にするのです。子どもが道に踏み出そうとしているのかどうかわからなければ，速度を落として見ます。青信号が進む権利があると教えてくれれば，見るのをやめてしまうのです」。彼女の考えでは，最も効果的な安全装置は標識や信号ではなく，ドライバーと歩く人との間で目を合わせることである。',
+  'この変更は一夜にして起きたわけではない。工事が始まる前に議会は何度も住民集会を開き，多くの住民は強い不安を抱いていた。親たちは子どもが危険にさらされることを恐れ，店主たちは配送のトラックが店の前に止まれなくなることを心配した。議会はこれに対し，信号を消すが撤去はせずに残しておく6か月間の試行を行い，うまくいかなければ再び点けられるようにした。',
+  '試行の間，議会は人々の行動を注意深く観察した。カメラの映像から，ドライバーはより遅い速度で交差点に近づき，その義務がないにもかかわらず，ほとんどが止まって歩行者を渡らせていることがわかった。配送のドライバーも適応した。歩道に駐車するのではなく，色の違う石で区切られた短い荷さばき場所を使うようになったのである。試行が終わったとき，ある調査で，住民の過半数がこのやり方を恒久的なものにしたいと考えていることがわかった。',
+  'しかし，誰もが納得したわけではない。目の不自由な人や弱視の人を代表する団体は，深刻な懸念を示してきた。高くなった縁石や凹凸のある舗装，音の出る信号を備えた従来の横断歩道は，目に頼れない人々にはっきりした情報を与える。道路がどこで終わり歩道がどこから始まるかを示すものが何もない空間では，どこを歩けば安全かを知るのは本当に難しく，目を合わせることに頼る仕組みは自分たちを完全に置き去りにしている，と彼らは言う。',
+  'ウェンドルフォードは対応しようとしてきた。現在，主要な通りの両側には凹凸のある舗装の帯が続いていて，白杖を使う人が，主に車が使う区域がどこから始まるかを足で感じ取れるようになっている。最も混雑する地点には，音響信号つきの横断歩道が一つだけ残されている。マーシュは，これらが妥協案であることを認める。「ある人たちをより安全にしても，別の人たちが家から出るのを怖がるようになる設計は，成功ではありません」と彼女は言う。「私たちはまだ学んでいる途中なのです」',
+  'ほかの町も注目しているが，専門家はウェンドルフォードをあわてて真似しないよう警告している。シェアドスペースが最もうまくいくのは，交通量がほどほどで，ドライバーの速度を落とさせる不確かさを生み出すだけの歩行者が周りにたくさんいる場所のようである。夜間に大型トラックが行き交い，歩く人が誰もいない交通量の多い道路では，信号を取り除けば道路をより危険にするだけかもしれない。素材の選び方や空間の形といった細部も，非常に重要である。',
+  'さらに，何をもって成功とするかという問題がある。一つの交差点の事故件数は，さまざまな理由で年ごとに増えたり減ったりしうるし，数年分のデータでは確かな結論を出すには少なすぎるかもしれない。事故が減っても人々はシェアドスペースを安全でないと感じるかもしれず，その感覚のせいで高齢者や子どもが町の中心部をまったく歩かなくなる可能性がある，と指摘する研究者もいる。',
+  'マーシュにとって最も大切な成果は，どんな統計にも示せないものである。変更前，交差点は人々が足早に通り過ぎる場所だったと彼女は言う。今では，晴れた午後になると，かつて車が走っていた場所で人々が立ち止まって話をし，カフェは外にテーブルを出している。「私たちは交通の問題を解決しようとして始めました」と彼女は言う。「結果として手に入ったのは，町の広場だったのです」',
+ ],
+ 'questions': QUESTIONS,
+ 'vocab': VOCAB,
+}

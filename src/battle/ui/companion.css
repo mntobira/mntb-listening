@@ -1,0 +1,11 @@
+/* お供（2026-11-03）カギノスケの絵。画像は1枚で、色違いは filter（金＝そのまま）。
+ * 戻すとき：CompanionArt.tsx とこのファイルを消す。 */
+.companion-art { width: auto; object-fit: contain; }
+.companion-art[data-companion=key_silver] { filter: saturate(0) brightness(1.12) contrast(1.05); }
+.companion-art[data-companion=key_rose] { filter: hue-rotate(-38deg) saturate(.85) brightness(1.05); }
+.companion-art[data-companion=key_mint] { filter: hue-rotate(95deg) saturate(.75) brightness(1.05); }
+.companion-art[data-companion=key_sky] { filter: hue-rotate(165deg) saturate(.85); }
+.companion-art[data-companion=key_night] { filter: hue-rotate(205deg) saturate(.9) brightness(.82); }
+.companion-art[data-companion=key_aurora] { filter: hue-rotate(250deg) saturate(1.35) brightness(1.08); }
+/* ガチャ・コレクションのマス目では、真ん中・下にそろえる */
+.gacha-companion-art, .collection-companion-art { display: inline-flex; align-items: flex-end; justify-content: center; }

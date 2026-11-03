@@ -1,0 +1,93 @@
+# -*- coding: utf-8 -*-
+# 第2回 大問2 長文読解（体験エッセイ・書き下ろし）。人物はすべて架空。
+from mk import pos_for, mc1
+pos = pos_for(2)
+
+PASSAGE = [
+ "During my first year at university, I lived on a diet that would have worried my parents if they had known about it. I had never learned to cook, and the small kitchen in my rented room contained little more than a kettle, a microwave, and a frying pan I was slightly afraid to use. Most evenings I ate instant noodles or bread from the convenience store, telling myself that I was too busy to do anything else. In truth, I was not too busy; I simply did not know where to begin, and I was embarrassed to admit it.",
+ "My downstairs neighbor was Tomasz Wierzbicki, a retired baker in his seventies who had moved to the city from a small village decades earlier. We met on the stairs one Saturday morning when he was carrying a large paper bag of flour, and I offered to help. When we reached his door, the smell of warm bread drifted out so strongly that I must have looked hungry, because he laughed and invited me in. {u1|Within ten minutes I was sitting at his kitchen table with a thick slice of bread in my hand, listening to him explain why the loaf in front of me had taken almost two days to make.}",
+ "Before I left, he asked whether I baked. I admitted that I could barely boil an egg. He looked at me for a moment and then said, quite seriously, that anyone who could follow a set of instructions and wait patiently could learn to make bread. ( ア ), he suggested that I come back the following Saturday. I agreed mostly out of politeness, expecting that he would forget. He did not. At nine o’clock the next week, he knocked on my door with an apron folded over his arm.",
+ "Those Saturday mornings became the most reliable part of my week. Tomasz was a demanding teacher. He insisted that I weigh every ingredient rather than guess, and he made me knead the dough until my arms ached. When I asked whether a machine could do the work, he shrugged and said that a machine could, but that I would then learn nothing about how dough should feel. {u2|My first loaves were heavy, flat, and occasionally burnt, but he never threw one away; instead, he cut each one open and showed me what it could tell us about what had gone wrong.} A dense center meant the dough had not risen long enough; large holes near the crust meant the oven had been too hot. Failure, in his kitchen, was not a disappointment but a kind of evidence.",
+ "What surprised me most was how much of baking consisted of waiting. After mixing and kneading, there was nothing to do for an hour or more except let the dough rise. At first, I found this frustrating and kept lifting the cloth to check on it. Tomasz told me that dough, like people, does not improve by being watched constantly. During those pauses, he made coffee and told me about the village bakery where he had started work at fourteen, about the customers who came every morning before dawn, and about the years when flour was scarce and bread had to be made to last. Gradually I realized that the waiting was not empty time at all. It was when most of the real conversation happened.",
+ "When the academic year drew to a close, I could make a respectable loaf on my own, and I had also started cooking simple meals, since the confidence I had gained in Tomasz’s kitchen seemed to spread to everything else. More importantly, I no longer felt like a stranger in the building. When Tomasz caught a bad cold in the spring and could not leave his apartment for a week, it was my turn to knock on his door. I brought him a loaf I had made the night before. {u3|He examined it with the same critical eye he had always used, pressed the crust with his thumb, and finally announced that it would do.} Coming from him, that was the highest praise imaginable.",
+ "I often think about why those lessons mattered so much to me. Part of the answer is practical: I learned a skill that I still use almost every week. But the deeper reason is that Tomasz treated my ignorance not as something shameful but as a starting point. {u4|He seemed to understand that the hardest step for a beginner is not learning the technique but daring to try in front of someone else.} I now live in another city, and I bake for my own neighbors when I can. Whenever someone tells me they could never learn, I remember the apron folded over his arm and offer to show them.",
+]
+
+QUESTIONS = [
+ {'no': 1, 'points': 8, 'kind': 'trans', 'stem': '下線部(1)を和訳せよ。',
+  'answer': '10分もしないうちに，私は彼の台所のテーブルについて厚切りのパンを手にし，目の前のパンが焼き上がるまでになぜ2日近くかかったのかを彼が説明するのに耳を傾けていた。',
+  'alts': ['10分とたたないうちに，私は厚く切ったパンを手に彼の家の台所のテーブルに座り，目の前にあるパンを作るのになぜほぼ2日かかったのかという彼の説明を聞いていた。'],
+  'criteria': [('Within ten minutes「10分もしないうちに」', 2), ('with a thick slice of bread in my hand「厚切りのパンを手にして」（付帯状況）', 2),
+               ('listening to him explain …「彼が〜を説明するのを聞きながら」（知覚動詞＋原形）', 2), ('why the loaf … had taken almost two days to make「なぜそのパンを作るのに2日近くかかったのか」', 2)],
+  'explain': ['with＋名詞＋前置詞句は付帯状況「〜を…した状態で」。',
+              'listen to＋人＋動詞の原形「人が〜するのを聞く」。listening は分詞構文で「〜しながら」。',
+              'it takes＋時間＋to do の形が，the loaf を主語にして had taken almost two days to make となっている。「そのパンは作るのに2日近くかかった」。']},
+ mc1(2, 5, '( ア )を補うのにふさわしいものを，(A)〜(D)のうちから一つ選べ。',
+     ['To prove his point', 'Instead of helping me', 'In spite of his advice', 'Having forgotten my name'],
+     ['○ 直前で「指示に従って辛抱強く待てる人なら誰でもパンを作れるようになる」と言っている。その主張を「証明するために」翌週来るよう提案した，という流れ。',
+      '× 次の土曜日に来るよう誘うのは，まさに筆者を手助けする行為（本文と逆）。',
+      '× 彼自身の助言に「反して」誘ったことになり，意味が通らない。',
+      '× 翌週，彼は約束どおり筆者のドアをノックしており，忘れていない（本文と逆）。'], pos()),
+ mc1(3, 5, '下線部(2)の言わんとすることに最も近いものを，(A)〜(D)のうちから一つ選べ。',
+     ['Tomasz used each failed loaf as a way of teaching the author.', 'Tomasz ate the author’s bread so that it would not be wasted.',
+      'Tomasz thought the author’s bread was too heavy to sell.', 'Tomasz blamed the oven rather than the author for the failures.'],
+     ['○ 失敗したパンを捨てずに切って「何がまずかったかを教えてくれるもの」として見せた。直後の “Failure, in his kitchen, was not a disappointment but a kind of evidence.” とも合う。',
+      '× 捨てなかったのは食べるためではなく，切り開いて原因を調べるため（範囲のずれ）。',
+      '× 売ることについては本文にない（本文に記述なし）。',
+      '× オーブンが熱すぎたことは原因の一例にすぎず，責任の押しつけの話ではない（範囲のずれ）。'], pos()),
+ {'no': 4, 'points': 4, 'kind': 'extract', 'n': 1,
+  'stem': '第5段落から，筆者がパン生地を待つ時間を当初どのように感じていたかを表す1語を抜き出して英語で記せ。',
+  'answer': ['frustrating'],
+  'criteria': [('frustrating を正しく書き抜く（つづりの誤りは不可）', 4)],
+  'explain': ['第5段落 “At first, I found this frustrating and kept lifting the cloth to check on it.” の find O C「OがCだと感じる」の C にあたる語。',
+              'this は直前の「生地が膨らむのを待つだけで何もすることがない時間」を指す。',
+              '同じ段落の後半で，筆者はその時間が “not empty time at all” だと気づいていく。当初の感じ方との対比を押さえる。']},
+ {'no': 5, 'points': 5, 'kind': 'ja_limit', 'limit': 40,
+  'stem': '下線部(3)の発言が筆者にとって最高の褒め言葉であったのはなぜか。句読点も1字に数え，40字以内で説明せよ。',
+  'answer': 'いつも厳しい目で評価してきたトマシュが，筆者のパンを十分だと認めたから。',
+  'alts': ['厳しい教師のトマシュが，同じ厳しい目で調べた上で筆者のパンを合格と認めたから。'],
+  'criteria': [('トマシュがいつも厳しい（批判的な）目で評価してきた人物であること', 2), ('その彼が筆者のパンを十分（合格）と認めたこと', 2), ('理由の形で結ぶ', 1)],
+  'explain': ['it would do の do は「間に合う・十分である」の意味。「これでよし」という控えめな評価。',
+              '“the same critical eye he had always used” と第4段落 “Tomasz was a demanding teacher.” から，彼が厳しい人物であることがわかる。',
+              '直後の “Coming from him, that was the highest praise imaginable.”（彼の口から出たのだから）が理由の手がかり。']},
+ {'no': 6, 'points': 9, 'kind': 'trans', 'stem': '下線部(4)を和訳せよ。',
+  'answer': '初心者にとって最も難しい一歩は，技術を身につけることではなく，ほかの人の前で思い切ってやってみることだと，彼はわかっているようだった。',
+  'alts': ['彼は，初めて何かをする人にとっていちばん大変な段階は，技術の習得ではなく，他人の見ている前で勇気を出して挑戦することだと理解しているようだった。'],
+  'criteria': [('He seemed to understand that …「彼は〜をわかっているようだった」', 2), ('the hardest step for a beginner「初心者にとって最も難しい一歩」', 2),
+               ('not A but B「AではなくB」', 2), ('daring to try in front of someone else「人の前で思い切ってやってみること」', 3)],
+  'explain': ['seem to do「〜するようだ」。過去形 seemed なので「〜しているようだった」。',
+              'not learning the technique but daring to try … は not A but B。A と B はともに動名詞。',
+              'dare to do は「思い切って〜する・あえて〜する」。in front of someone else は「ほかの人の前で」。']},
+ {'no': 7, 'points': 6, 'kind': 'tf2', 'stem': '本文の趣旨に合致する英文を，(A)〜(F)のうちから二つ選べ。',
+  'choices': ['The author ate convenience-store food because he was genuinely too busy to cook.',
+              'Tomasz believed that patience was one of the things needed to learn baking.',
+              'Tomasz encouraged the author to use a machine to save time when kneading.',
+              'The time spent waiting for the dough gave Tomasz and the author a chance to talk.',
+              'The author stopped baking after moving to another city.',
+              'Tomasz had worked in a large factory before opening his own bakery.'],
+  'answer': [1, 3],
+  'reasons': ['× 第1段落 “In truth, I was not too busy” と逆（本文と逆）。',
+              '○ 第3段落 “anyone who could follow a set of instructions and wait patiently could learn to make bread” と一致。',
+              '× 第4段落で，機械では生地の感触が学べないと言っている（本文と逆）。',
+              '○ 第5段落 “It was when most of the real conversation happened.” と一致。',
+              '× 最終段落 “I bake for my own neighbors when I can” と逆（本文と逆）。',
+              '× 彼は14歳で村のパン屋で働き始めたとあるだけで，工場の話はない（本文に記述なし）。']},
+]
+
+TRANSLATION = [
+ '大学1年のとき，私は両親が知ったら心配したであろう食生活を送っていた。料理を習ったことがなく，借りている部屋の小さな台所には，やかんと電子レンジと，使うのが少し怖いフライパンくらいしかなかった。ほとんど毎晩，インスタントラーメンかコンビニのパンを食べ，忙しすぎてほかに何もできないのだと自分に言い聞かせていた。実際には忙しすぎたのではなかった。単に何から始めればいいのかわからず，それを認めるのが恥ずかしかったのだ。',
+ '下の階に住んでいたのはトマシュ・ヴィエジュビツキという70代の引退したパン職人で，何十年も前に小さな村からこの街に出てきた人だった。私たちが出会ったのはある土曜日の朝の階段で，彼が小麦粉の大きな紙袋を運んでいたので，私は手伝いを申し出た。彼の部屋のドアまで来ると，焼きたてのパンのにおいがあまりに強く漂ってきたので，私はきっと物欲しそうな顔をしていたのだろう，彼は笑って私を招き入れた。(1)10分もしないうちに，私は彼の台所のテーブルについて厚切りのパンを手にし，目の前のパンが焼き上がるまでになぜ2日近くかかったのかを彼が説明するのに耳を傾けていた。',
+ '帰る前に，彼は私にパンを焼くのかと尋ねた。私は卵をゆでるのもやっとだと白状した。彼は少しの間私を見て，それからいたってまじめに，指示に従うことができて辛抱強く待てる人なら誰でもパン作りを覚えられると言った。それを証明するために，彼は次の土曜日にまた来るよう提案した。私はほとんど礼儀から承諾し，彼は忘れるだろうと思っていた。彼は忘れなかった。翌週の9時に，彼はエプロンを腕にかけて私の部屋のドアをノックした。',
+ 'その土曜日の朝は，私の1週間のうちで最も確かな時間になった。トマシュは厳しい先生だった。材料はどれも目分量でなく量るよう言い張り，腕が痛くなるまで生地をこねさせた。機械にやらせられないのかと尋ねると，彼は肩をすくめて，機械にもできるが，そうすれば生地がどんな感触であるべきかを何も学べないと言った。(2)私が最初に焼いたパンは重く，平べったく，ときには焦げていたが，彼は一つも捨てなかった。そうではなく，一つ一つを切り開き，何がまずかったのかについてそのパンが何を教えてくれるかを見せてくれた。中心が詰まっていれば生地を膨らませる時間が足りなかったということで，皮の近くに大きな穴があればオーブンが熱すぎたということだった。彼の台所では，失敗は落胆ではなく，一種の証拠だった。',
+ '何より驚いたのは，パン作りの多くが待つことでできていたということだ。混ぜてこねた後は，1時間以上，生地を膨らませる以外に何もすることがない。最初はこれがもどかしく，何度も布を持ち上げては様子を見た。トマシュは，生地は人と同じで，ずっと見張られていてもよくはならないと言った。その合間に，彼はコーヒーをいれ，14歳で働き始めた村のパン屋のこと，毎朝夜明け前にやって来た客たちのこと，小麦粉が乏しく長持ちするパンを作らなければならなかった時代のことを話してくれた。次第に私は，待つ時間がまったく空っぽの時間ではないことに気づいた。本当の会話のほとんどは，その時間に交わされていたのだ。',
+ '学年の終わりには，私は一人でまずまずのパンを焼けるようになり，簡単な料理も作り始めていた。トマシュの台所で得た自信が，ほかのすべてのことに広がっていくようだったからである。もっと大事なことに，私はもはや建物の中でよそ者のようには感じなくなっていた。春にトマシュがひどい風邪をひいて1週間部屋から出られなくなったとき，今度は私が彼のドアをノックする番だった。私は前の晩に焼いたパンを持っていった。(3)彼はいつもと同じ厳しい目でそれを調べ，親指で皮を押し，最後に「これでよし」と言った。彼の口から出たのだから，それは想像しうる最高の褒め言葉だった。',
+ 'あのレッスンがなぜ自分にとってそれほど大切だったのか，よく考える。答えの一部は実用的なものだ。今もほぼ毎週使う技術を身につけたのである。しかしもっと深い理由は，トマシュが私の無知を恥ずべきものではなく出発点として扱ってくれたことにある。(4)初心者にとって最も難しい一歩は，技術を身につけることではなく，ほかの人の前で思い切ってやってみることだと，彼はわかっているようだった。私は今は別の街に住み，できるときには自分の近所の人のためにパンを焼いている。誰かが自分には決して覚えられないと言うたびに，私は彼の腕にかけられたエプロンを思い出し，やり方を見せようと申し出るのである。',
+]
+
+VOCAB = [('kettle', 'やかん'), ('admit', '認める・白状する'), ('retired', '引退した'), ('drift out', '漂い出る'),
+         ('loaf', '（パンの）一斤・ひとかたまり'), ('out of politeness', '礼儀から'), ('apron', 'エプロン'), ('reliable', '頼りになる・確かな'),
+         ('demanding', '要求の厳しい'), ('knead', 'こねる'), ('dough', 'パン生地'), ('dense', '詰まった・密な'),
+         ('crust', '（パンの）皮'), ('scarce', '乏しい'), ('respectable', 'まずまずの・立派な'), ('critical eye', '厳しい（批判的な）目'),
+         ('it will do', 'それで十分だ・これでよし'), ('ignorance', '無知'), ('dare to do', '思い切って〜する')]
+
+PART = {'passage': PASSAGE, 'questions': QUESTIONS, 'translation': TRANSLATION, 'vocab': VOCAB, 'notes': []}

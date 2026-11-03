@@ -13,6 +13,9 @@
  *   日本語の語が2つ以上入る並びだけを一致として数える。
  * 2026-11-01: Part 6 の空所（toeicPart6RoundNN.ts の h・r・tip）も同じように調べる。
  *   Part 6 の問題データ（本文・和訳・正解の理由・誤答の理由・重要語句）は、Part 5 と同じく「ほかの問題の分」だけと比べる。
+ * 2026-11-02: Part 7 の設問（toeicPart7RoundNN.ts の h・r・tip）も同じように調べる。
+ *   Part 7 の問題データ（文書・和訳・設問・根拠・正解の理由・誤答の理由・重要語句）は「ほかのセットの分」だけと比べる
+ *   （同じセットの設問は文書を共有するので、自分の問題として扱う）。
  * 使い方: npx tsx scripts/check-toeic-notes.mts   （一致があれば終了コード 1）
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -21,6 +24,7 @@ import { EG_V3_ITEMS } from '../src/data/egV3Items.generated';
 import { TOEIC_P5_NOTES } from '../src/data/toeic/toeicPart5Notes';
 import { TOEIC_P5_ROUNDS } from '../src/data/toeic/toeicPart5Rounds';
 import { TOEIC_P6_ROUNDS } from '../src/data/toeic/toeicPart6Rounds';
+import { TOEIC_P7_ROUNDS } from '../src/data/toeic/toeicPart7Rounds';
 
 const N = 5;
 const seg = new Intl.Segmenter('ja', { granularity: 'word' });
@@ -64,7 +68,7 @@ function walk(dir: string) {
     const p = join(dir, name);
     if (statSync(p).isDirectory()) { walk(p); continue; }
     if (!/\.(ts|tsx)$/.test(name)) continue;
-    if (/toeicPart5Notes|toeicPart5Round\d+|toeicPart6Round\d+|egV3Items\.generated/.test(p)) continue;
+    if (/toeicPart5Notes|toeicPart5Round\d+|toeicPart6Round\d+|toeicPart7Round\d+|egV3Items\.generated/.test(p)) continue;
     const src = readFileSync(p, 'utf8');
     for (const m of src.matchAll(/(['"`])((?:\\.|(?!\1).)*[\u3040-\u30ff\u4e00-\u9fff](?:\\.|(?!\1).)*)\1/g)) {
       for (const g of grams(m[2])) if (!other.has(g)) other.set(g, p.replace(/^.*?src\//, 'src/'));
@@ -94,6 +98,17 @@ TOEIC_P6_ROUNDS.forEach((sets, r) => sets.forEach((set, si) => {
       itemText.get(g)!.add(id);
     }
   });
+}));
+
+TOEIC_P7_ROUNDS.forEach((sets, r) => sets.forEach((set, si) => {
+  // 文書・和訳は同じセットの設問で共有するので、セット単位の持ち主にする
+  const self = `p7-${r + 1}-${si + 1}`;
+  const docTexts = set.docs.flatMap((d) => [d.title || '', ...d.p, ...d.tr, ...(d.head || []).map((x) => x.join(' ')), ...(d.table || []).map((x) => x.join(' '))]);
+  const texts = [...docTexts, ...set.q.flatMap((q) => [q.why, q.c, q.q, q.qtr, q.etr, ...q.e, ...q.w.map((x) => x[1]), ...(q.kw || []).map((x) => `${x[0]} ${x[1]}`)])];
+  for (const t of texts) for (const g of grams(t || '')) {
+    if (!itemText.has(g)) itemText.set(g, new Set());
+    itemText.get(g)!.add(self);
+  }
 }));
 
 // 3) 照合
@@ -138,6 +153,27 @@ TOEIC_P6_ROUNDS.forEach((sets, r) => sets.forEach((set, si) => set.b.forEach((b,
       if (grammar.has(g)) hits.push(`${id} ${key}: 「${g}」が ${grammar.get(g)} の解説と一致`);
       else if (other.has(g)) hits.push(`${id} ${key}: 「${g}」が ${other.get(g)} と一致`);
       else if (owners && !owners.has(self) && ![...owners].some((o) => sameDoc.has(o))) hits.push(`${id} ${key}: 「${g}」が TOEIC のほかの問題データ（${[...owners][0]}）と一致`);
+      else if (seenInNotes.has(g) && !seenInNotes.get(g)!.startsWith(id)) internal.push(`${id} ${key}: 「${g}」が ${seenInNotes.get(g)} と一致`);
+      if (!seenInNotes.has(g)) seenInNotes.set(g, `${id} ${key}`);
+    }
+  }
+})));
+
+TOEIC_P7_ROUNDS.forEach((sets, r) => sets.forEach((set, si) => set.q.forEach((q, qi) => {
+  const id = `Part 7 第${r + 1}回 セット${si + 1} 設問${qi + 1}`;
+  const self = `p7-${r + 1}-${si + 1}`;
+  for (const key of ['h', 'r', 'tip'] as const) {
+    const text = q[key];
+    if (!text) continue;
+    checked++;
+    const own = new Set<string>();
+    for (const g of grams(text)) {
+      if (own.has(g)) continue;
+      own.add(g);
+      const owners = itemText.get(g);
+      if (grammar.has(g)) hits.push(`${id} ${key}: 「${g}」が ${grammar.get(g)} の解説と一致`);
+      else if (other.has(g)) hits.push(`${id} ${key}: 「${g}」が ${other.get(g)} と一致`);
+      else if (owners && !owners.has(self)) hits.push(`${id} ${key}: 「${g}」が TOEIC のほかの問題データ（${[...owners][0]}）と一致`);
       else if (seenInNotes.has(g) && !seenInNotes.get(g)!.startsWith(id)) internal.push(`${id} ${key}: 「${g}」が ${seenInNotes.get(g)} と一致`);
       if (!seenInNotes.has(g)) seenInNotes.set(g, `${id} ${key}`);
     }

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ガチャの「ピックアップ」で見せる『中身を少しだけ』の画像を作る。
 
-対象：LR（共通テスト予想問題 10種・2次試験予想問題）＋ 厳選UR（GachaParts.tsx の FEATURED_UR_IDS 10種）。
+対象：LR（共通テスト予想問題 10種・2次試験の大学別予想問題（名古屋・静岡・大阪公立・和歌山・岡山・広島・神戸・阪大・立命館・北大・東北大・弘前・岩手・秋田））＋ 厳選UR（GachaParts.tsx の FEATURED_UR_IDS 10種）。
 各PDFの 2ページ目と真ん中のページを、上半分だけ・幅 360px の webp にする（下はぼかして白く消す）。
 → 全部は読めない「ちら見せ」。出力：public/prints/previews/<id>_p<n>.webp
 一覧は src/data/gachaPreviews.generated.ts に書き出す（tests/gachaPickup.test.ts が実物と照合）。
@@ -32,8 +32,32 @@ def lr_ids() -> list[str]:
         out.append(f'print_lr_kyotsu_{kind}_{n}')
     # 2026-10-29：2次試験ガチャの LR（国公立2次 英語 予想問題）
     niji = (ROOT / 'src/data/nijiMockPrints.ts').read_text()
-    for univ, n in re.findall(r'\b(nagoya|shizuoka|omua|omub|wakayama|okayama|hiroshima|gakugei|ryukyu|kumamoto|saga|kagawa|tokushima|ehimeh|ehimee|ehimem|kochij|kochik|kochie|kochim|kyushu|fwu|tufs)\((\d+), \d+, \d+\)', niji):
+    for univ, n in re.findall(r'\b(nagoya|shizuoka|omua|omub|wakayama|okayama|hiroshima|gakugei|ryukyu|kumamoto|saga|kagawa|tokushima|ehimeh|ehimee|ehimem|kochij|kochik|kochie|kochim|kyushu|fwu|tufs|tottori|yamaguchi)\((\d+), \d+, \d+\)', niji):
         out.append(f'print_lr_niji_{univ}_en_{n}')
+    src = (ROOT / 'src/data/kobeMockPrints.ts').read_text()
+    for kind, n in re.findall(r'\b([qa])\((\d), \d+, \d+\)', src):
+        out.append(f'print_lr_kobe_{kind}_{n}')
+    src = (ROOT / 'src/data/osakaMockPrints.ts').read_text()
+    for kind, n in re.findall(r'\b([qa])\((\d), \d+, \d+\)', src):
+        out.append(f'print_lr_osaka_{kind}_{n}')
+    src = (ROOT / 'src/data/ritsuMockPrints.ts').read_text()
+    for kind, n in re.findall(r'\b([qa])\((\d), \d+, \d+\)', src):
+        out.append(f'print_lr_ritsu_{kind}_{n}')
+    src = (ROOT / 'src/data/hokudaiMockPrints.ts').read_text()
+    for kind, n in re.findall(r'\b([qa])\((\d), \d+, \d+\)', src):
+        out.append(f'print_lr_hokudai_{kind}_{n}')
+    src = (ROOT / 'src/data/tohokuMockPrints.ts').read_text()
+    for kind, n in re.findall(r'\b([qa])\((\d), \d+, \d+\)', src):
+        out.append(f'print_lr_tohoku_{kind}_{n}')
+    src = (ROOT / 'src/data/hirosakiMockPrints.ts').read_text()
+    for kind, n in re.findall(r'\b([qa])\((\d), \d+, \d+\)', src):
+        out.append(f'print_lr_hirosaki_{kind}_{n}')
+    src = (ROOT / 'src/data/iwateMockPrints.ts').read_text()
+    for kind, n in re.findall(r'\b([qa])\((\d), \d+, \d+\)', src):
+        out.append(f'print_lr_iwate_{kind}_{n}')
+    src = (ROOT / 'src/data/akitaMockPrints.ts').read_text()
+    for kind, n in re.findall(r'\b([qa])\((\d), \d+, \d+\)', src):
+        out.append(f'print_lr_akita_{kind}_{n}')
     return out
 
 

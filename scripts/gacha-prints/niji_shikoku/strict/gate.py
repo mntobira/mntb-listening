@@ -1,7 +1,7 @@
 """厳格ゲート：英語5語以上（記号の並びを除く）・日本語10字以上（固有名詞を除く）の一致を0件にする"""
 import sys
 argv=sys.argv[1:]; sys.argv=['x']; exec(open('/home/user/work/strict/strict.py').read().split("report = {}")[0])
-LAB=set('abcdefgh'); PROPER=('高知大学医学部医学科','愛媛大学医学部医学科')
+LAB=set('abcdefgh'); PROPER=('高知大学医学部医学科','愛媛大学医学部医学科','鳥取大学')
 tot=0
 for slug in argv:
   for f in sorted(glob.glob(f'/home/user/work/niji/out/{slug}[0-9]_[qa].html')):

@@ -58,6 +58,7 @@ const listening = getSubjectStats('english_listening');
 const grammar = getSubjectStats('english_grammar');
 const toeic = getSubjectStats('toeic_part5');
 const toeicP6 = getChapterIndexOfSubject('toeic_part5').find((c) => c.id === 'tp6_1')?.problemCount ?? 0;
+const toeicP7 = getChapterIndexOfSubject('toeic_part5').find((c) => c.id === 'tp7_1')?.problemCount ?? 0;
 
 export const STUDY_CATALOG: readonly StudySubject[] = [
   {
@@ -105,8 +106,9 @@ export const STUDY_CATALOG: readonly StudySubject[] = [
       {
         // 2026-10-28：TOEIC L&RをまずはPart 5から試験導入。とびら君の吹き出しの右に置く（カードの列は動かさない）
         id: 'english_toeic', title: 'TOEIC', icon: 'briefcase', badge: 'NEW', section: 'spotlight',
-        description: 'Part 5・Part 6',
-        meta: `Part 5 全${(toeic.questions ?? 0) - toeicP6}回・Part 6 全${toeicP6}回`,
+        // 2026-11-02 Part 7 を足した
+        description: 'Part 5・6・7',
+        meta: `Part 5 全${(toeic.questions ?? 0) - toeicP6 - toeicP7}回・Part 6 全${toeicP6}回・Part 7 全${toeicP7}回`,
         progressSubject: 'toeic_part5',
         action: { kind: 'units', subject: 'toeic_part5' },
       },

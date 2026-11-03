@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+# 第1回 大問1 長文読解（図書館は町の「第三の場所」）。{u1|…} 下線部。設問は i1_1q.py
+from i1_1q import QUESTIONS, VOCAB
+P = {
+ 'title': '長文読解',
+ 'intro': '英文を読んで，後に続く設問に日本語で解答しなさい。（＊印の語には，英文の末尾に意味を示してある。）',
+ 'passages': [{
+  'paras': [
+   "For most of the twentieth century, a public library was a quiet building full of books, and its main job was to lend them. Visitors were expected to whisper, and the librarian’s best-known word was “Shh.” Today, many libraries look very different. On a weekday afternoon in a medium-sized town, you might find a group of retired people learning to make video calls, a teenager recording music in a small soundproof room, and a parent and toddler* singing songs on a colourful carpet. {u1|Some people complain that libraries have lost their way, but others argue that they are simply returning to a role they have always played in a different form.}",
+   "To understand this argument, it helps to think about what sociologists call “third places.” The first place is the home, and the second is the workplace or school. Third places are everything else: cafés, barbershops, parks and other spots where people can spend time without being family members or colleagues. What makes a good third place is not its appearance but its atmosphere. {u2|It should be easy to enter, cost little or nothing, and allow people from different backgrounds to meet as equals.} In many towns, traditional third places have been disappearing. Small cafés are replaced by chains where customers are encouraged to leave quickly, and shopping centres are designed for spending rather than staying.",
+   "The library is among the few remaining places that meet all of these conditions. Nobody has to buy anything to sit there, and nobody asks visitors to prove that they belong. A student without a quiet room at home, a worker who has lost a job and needs to look for a new one online, and a lonely elderly man who simply wants to read the newspaper among other people can all use the same space. {u3|In this sense, the change in libraries is less a betrayal of their purpose than an honest response to what communities now need.} Books are still central, but the library’s deeper purpose has always been to give everyone equal access to knowledge and to one another.",
+   "Of course, the new role brings real difficulties. Librarians who trained to organise collections now find themselves helping people fill in government forms, calming arguments and running workshops. Some readers who come for silence are annoyed by children’s laughter or the hum of a 3D printer. {u4|Many libraries have dealt with this by dividing their buildings into zones, so that noisy activities happen on one floor while another remains completely quiet, and by planning their calendars so that lively events do not clash with exam seasons.} Such solutions are not perfect, but they show that the old and new roles can exist side by side.",
+   "There is also the question of money. Libraries are usually paid for by local taxes, and when budgets are cut, they are often among the first services to suffer. Critics ask why public money should support a place for chatting when anyone can download a book onto a phone. {u5|The answer, supporters say, is that a library’s worth cannot be measured only by the number of books it lends.} A place where a teenager finds a mentor*, or where an elderly woman finally talks to someone after a silent week, produces benefits that never appear in an annual report.",
+   "Perhaps the most helpful way to see the modern library is as a kind of living room for the whole town. {u6|Like a good living room, it is somewhere people can do very different things side by side and still feel that they are together.} Whether libraries survive the next fifty years may depend less on what happens to the printed book than on whether towns continue to value having such a room.",
+  ],
+  'notes': [('toddler', 'よちよち歩きの幼児'), ('mentor', '（信頼できる）助言者')],
+  'translation': [
+   '20世紀のほとんどの間，公共図書館は本でいっぱいの静かな建物で，その主な仕事は本を貸すことだった。来館者は小声で話すものとされ，図書館員のいちばんよく知られた言葉は「シーッ」だった。今日，多くの図書館はまったく違って見える。中規模の町の平日の午後なら，ビデオ通話のやり方を習っている退職した人たちのグループや，小さな防音室で音楽を録音している十代の若者，色とりどりのじゅうたんの上で歌を歌っている親と幼児を見かけるかもしれない。図書館は道を見失ったと不満を言う人もいるが，図書館は昔から果たしてきた役割に，形を変えて戻っているだけだと主張する人もいる。',
+   'この主張を理解するには，社会学者が「第三の場所」と呼ぶものについて考えるとよい。第一の場所は家庭，第二の場所は職場や学校である。第三の場所はそれ以外のすべて，つまりカフェや理髪店，公園など，家族や同僚としてではなく時間を過ごせる場所である。よい第三の場所をつくるのは外見ではなく雰囲気である。よい第三の場所は，入りやすく，ほとんど，あるいはまったくお金がかからず，さまざまな背景をもつ人々が対等な立場で出会えるものであるべきだ。多くの町で，昔ながらの第三の場所は姿を消しつつある。小さなカフェは，客が早く出て行くように仕向けられるチェーン店に取って代わられ，ショッピングセンターは滞在するためではなくお金を使うために設計されている。',
+   '図書館は，こうした条件をすべて満たす，残り少ない場所の一つである。そこに座るために何かを買う必要はないし，来館者にそこにいる資格を証明しろと言う人もいない。家に静かな部屋がない学生，仕事を失いインターネットで新しい仕事を探す必要がある働き手，ほかの人々の中でただ新聞を読みたいだけの孤独な高齢の男性が，みな同じ空間を使える。この意味で，図書館の変化は，その目的への裏切りというよりも，地域社会が今必要としているものへの誠実な対応なのである。本は今も中心にあるが，図書館のより深い目的は，昔から，すべての人に知識へ，そして互いへの平等な接点を与えることだった。',
+   'もちろん，新しい役割には現実の難しさが伴う。蔵書を整理する訓練を受けた図書館員が，今では人々が役所の書類に記入するのを手伝ったり，口論をなだめたり，講習会を開いたりしている。静けさを求めて来る読者の中には，子どもたちの笑い声や3Dプリンターのうなる音にいら立つ人もいる。多くの図書館は，建物を区域に分けて，にぎやかな活動はある階で行い，別の階は完全に静かなままにしておくことや，にぎやかな催しが試験の時期と重ならないように予定を組むことで，この問題に対処してきた。こうした解決策は完璧ではないが，古い役割と新しい役割が並び立ちうることを示している。',
+   'お金の問題もある。図書館はふつう地方税でまかなわれており，予算が削られると，真っ先に影響を受けるサービスの一つになることが多い。誰でも携帯電話に本をダウンロードできるのに，なぜおしゃべりをする場所を公金で支えなければならないのか，と批判する人々は問う。図書館の価値は貸し出した本の数だけでは測れない，というのが支持する人々の答えである。十代の若者が助言者に出会ったり，高齢の女性が誰とも話さなかった1週間の後にようやく誰かと話したりする場所は，年次報告書には決して表れない恩恵を生み出しているのだ。',
+   '現代の図書館をとらえるいちばん役に立つ見方は，おそらく，町全体のための一種の居間として見ることだろう。よい居間と同じように，図書館は，人々がすぐそばでまったく違うことをしていても，それでも一緒にいると感じられる場所である。図書館が今後50年を生き残れるかどうかは，印刷された本がどうなるかよりも，町がそのような部屋をもつことを大切にし続けるかどうかにかかっているのかもしれない。',
+  ],
+ }],
+ 'questions': QUESTIONS,
+ 'vocab': VOCAB,
+}

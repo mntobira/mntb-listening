@@ -1,0 +1,115 @@
+{
+ "I": {
+  "words": 697,
+  "paras": 7,
+  "sents": 36,
+  "avg": 19.4,
+  "maxs": 35,
+  "zipf_lt4": 7.5,
+  "zipf_lt3": 1.1,
+  "dialog": 1,
+  "notes": 2,
+  "range": {
+   "words": "508–700:OK",
+   "avg": "18.4–29.2:OK",
+   "zipf_lt4": "5.0–13.6:OK",
+   "zipf_lt3": "0.5–4.4:OK"
+  }
+ },
+ "II": {
+  "words": 695,
+  "paras": 7,
+  "sents": 33,
+  "avg": 21.1,
+  "maxs": 39,
+  "zipf_lt4": 7.5,
+  "zipf_lt3": 0.7,
+  "dialog": 0,
+  "notes": 2,
+  "range": {
+   "words": "508–700:OK",
+   "avg": "18.4–29.2:OK",
+   "zipf_lt4": "5.0–13.6:OK",
+   "zipf_lt3": "0.5–4.4:OK"
+  }
+ },
+ "III": {
+  "words": 610,
+  "paras": 30,
+  "sents": 66,
+  "avg": 9.2,
+  "maxs": 30,
+  "zipf_lt4": 8.1,
+  "zipf_lt3": 1.1,
+  "dialog": 38,
+  "notes": 2,
+  "range": {
+   "words": "572–677:OK",
+   "avg": "7.0–13.6:OK",
+   "zipf_lt4": "4.2–9.5:OK",
+   "zipf_lt3": "1.1–2.8:OK"
+  }
+ },
+ "ja_limits": [
+  [
+   "I",
+   1,
+   40,
+   40,
+   "OK"
+  ],
+  [
+   "I",
+   1,
+   40,
+   40,
+   "OK"
+  ],
+  [
+   "II",
+   3,
+   70,
+   65,
+   "OK"
+  ],
+  [
+   "II",
+   3,
+   70,
+   66,
+   "OK"
+  ]
+ ],
+ "en_models": [
+  [
+   "(1)",
+   "スマートフォンと読書",
+   40,
+   40,
+   "OK"
+  ],
+  [
+   "(1)",
+   "家庭学習と運動",
+   40,
+   39,
+   "OK"
+  ],
+  [
+   "(2)",
+   "賛成",
+   60,
+   61,
+   "OK"
+  ],
+  [
+   "(2)",
+   "反対",
+   60,
+   60,
+   "OK"
+  ]
+ ],
+ "plagiarism_5gram_hits": [],
+ "underlined_overlap_with_past": []
+}
