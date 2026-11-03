@@ -43,6 +43,7 @@ import {
 } from './toeicPageModel';
 import { ToeicP6Passage } from './ToeicP6Passage';
 import { ToeicP7Passage } from './ToeicP7Passage';
+import { TOEIC_P7_KIND_LABEL } from '../../data/toeic/toeicPart7Kit';
 import './toeic-page.css';
 
 export interface ToeicPageQuizProps {
@@ -211,6 +212,24 @@ export function ToeicPageQuiz({
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const scrollTop = () => listRef.current?.scrollTo({ top: 0 });
 
+  // Part 6・7 のスマホ（1024px 未満）：「文書」と「設問・選択肢」を切り替えて1つずつ見せる（2026-11-03）
+  //   PC は2列で両方見えるので、切り替えのボタンは CSS で隠す。読みかけの位置は文書・設問それぞれ覚えておく
+  const [pane, setPane] = useState<'doc' | 'q'>('doc');
+  const paneScrollRef = useRef<{ doc: number; q: number }>({ doc: 0, q: 0 });
+  const switchPane = (next: 'doc' | 'q') => {
+    if (next === pane) return;
+    const el = listRef.current;
+    if (el) paneScrollRef.current[pane] = el.scrollTop;
+    setPane(next);
+    const top = paneScrollRef.current[next];
+    window.requestAnimationFrame(() => listRef.current?.scrollTo({ top }));
+  };
+  /** ページが変わったら文書から読み始める */
+  const resetPane = (next: 'doc' | 'q' = 'doc') => {
+    paneScrollRef.current = { doc: 0, q: 0 };
+    setPane(next);
+  };
+
   // 解説の開閉：誤答・未回答は最初から開く、正解は閉じる（利用者が開け閉めしたらそれを優先）
   const [openEx, setOpenEx] = useState<Record<string, boolean>>({});
   // ノートに保存（1問ずつ・同じ問題は1件だけ）
@@ -231,9 +250,18 @@ export function ToeicPageQuiz({
     }
   };
   const jumpTo = (id: string) => {
-    const el = document.getElementById(`tp-item-${id}`);
-    el?.scrollIntoView({ block: 'start', behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-    groupRefs.current[id]?.focus({ preventScroll: true });
+    const go = () => {
+      const el = document.getElementById(`tp-item-${id}`);
+      el?.scrollIntoView({ block: 'start', behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      groupRefs.current[id]?.focus({ preventScroll: true });
+    };
+    // スマホで文書を見ているときは、先に設問に切り替えてから移動する
+    if ((isP6 || isP7) && pane !== 'q') {
+      switchPane('q');
+      window.requestAnimationFrame(() => window.requestAnimationFrame(go));
+      return;
+    }
+    go();
   };
 
   const scorePage = createScoreCurrentQuestion({
@@ -280,11 +308,14 @@ export function ToeicPageQuiz({
       setScoreFx({ breakdown: scored.breakdown, totalScore: scored.addedScore });
       setShowFx(true);
     }
+    // 採点したら、結果と解説が見えるよう設問に切り替える（PC は2列なので見た目は変わらない）
+    if (isP6 || isP7) resetPane('q');
     scrollTop();
   };
 
   const goPage = (i: number) => {
     setPageIndex(Math.min(Math.max(0, i), Math.max(0, pages.length - 1)));
+    resetPane();
     scrollTop();
   };
 
@@ -300,6 +331,7 @@ export function ToeicPageQuiz({
       pageStartRef.current = 0;
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setPageIndex(0);
+      resetPane();
       lastScoredQuestionRef.current = null;
       scrollTop();
       return;
@@ -333,6 +365,14 @@ export function ToeicPageQuiz({
   const p6Doc = isP6 && page[0] ? p6SetOf(page[0]) : null;
   // Part 7 のときは、ページの上（PCでは左）にセットの文書（1〜3つ）を出す
   const p7Doc = isP7 && page[0] ? p7SetOf(page[0]) : null;
+  // スマホの切り替えボタンに出す「文書」側の添え書き
+  const docPane = p7Doc ? { note: TOEIC_P7_KIND_LABEL[p7Doc.set.kind] } : p6Doc ? { note: `空所 ${page.length}つ` } : null;
+  // 文書の最後に置く「設問へ進む」（スマホで文書を見ているときだけ出す）
+  const paneNext = (
+    <button type="button" className="tp-pane-next" data-toeic-pane-next onClick={() => { switchPane('q'); }}>
+      <span>設問・選択肢へ進む</span><ChevronRight size={18} aria-hidden="true" />
+    </button>
+  );
   const listEl = (
   <div className={`tp-list${pageScored ? ' is-scored' : ''}`} data-toeic-page={safePage + 1}>
     {page.map((sq, idx) => {
@@ -496,7 +536,21 @@ export function ToeicPageQuiz({
         </div>
       </section>}
 
-      <div className="tp-scroll" ref={listRef}>
+      {docPane && (
+        <div className="tp-pane-switch" role="group" aria-label="文書と設問の切り替え" data-toeic-pane-switch>
+          <button type="button" className="tp-pane-tab" aria-pressed={pane === 'doc'} data-toeic-pane-tab="doc" onClick={() => switchPane('doc')}>
+            <span className="tp-pane-label"><FileText size={16} aria-hidden="true" />文書</span>
+            <small>{docPane.note}</small>
+          </button>
+          <button type="button" className="tp-pane-tab" aria-pressed={pane === 'q'} data-toeic-pane-tab="q" onClick={() => switchPane('q')}>
+            <span className="tp-pane-label"><ListChecks size={16} aria-hidden="true" />設問・選択肢</span>
+            <small data-tone={pageScored ? 'done' : unanswered > 0 ? 'todo' : 'done'}>
+              {pageScored ? `${pageCorrect}/${page.length}問正解` : unanswered > 0 ? `未回答 ${unanswered}問` : 'すべて回答済み'}
+            </small>
+          </button>
+        </div>
+      )}
+      <div className="tp-scroll" ref={listRef} data-pane={docPane ? pane : undefined}>
         {pageScored && (
           <section className="tp-result" aria-label="このページの結果" data-toeic-page-result data-perfect={pageCorrect === page.length || undefined}>
             <p className="tp-result-score" role="status">
@@ -534,11 +588,13 @@ export function ToeicPageQuiz({
             <React.Fragment key={`${p7Doc.round}_${p7Doc.setIndex}`}>
               <ToeicP7Passage set={p7Doc.set} setIndex={p7Doc.setIndex} offset={p7Doc.offset} />
             </React.Fragment>
+            {paneNext}
             {listEl}
           </div>
         ) : p6Doc ? (
           <div className="tp-p6" data-toeic-p6>
             <ToeicP6Passage set={p6Doc.set} setIndex={p6Doc.setIndex} offset={p6Doc.offset} page={page} answers={answers} scored={pageScored} />
+            {paneNext}
             {listEl}
           </div>
         ) : listEl}
