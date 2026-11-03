@@ -152,6 +152,10 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
       <div className="vq-foot" aria-live="polite">
         {answered ? <>
           <p className="vq-judge" data-ok={pick === it.q.answerIndex || undefined}>{pick === it.q.answerIndex ? '正解！' : <>正解は <b>{it.q.options[it.q.answerIndex]}</b></>}</p>
+          {/* 2026-11-03 解説でも見出し語の発音を聞ける（英→日・日→英どちらも）。録音があれば録音、無ければ端末の読み上げ */}
+          <button type="button" className="vq-say" data-vocab-say={it.wordId} aria-label={`${it.word} の発音を聞く`} disabled={!isSpeechSupported() && !hasVocabAudio(it.wordId)} onClick={() => sayWord(it.wordId, it.word)}>
+            <Volume2 size={17} aria-hidden="true" /><span lang="en">{it.word}</span>
+          </button>
           <button type="button" className="vq-next" onClick={next} autoFocus>{phase.i + 1 < phase.items.length ? '次の問題' : '結果を見る'}<ChevronRight size={18} aria-hidden="true" /></button>
         </> : <p className="vq-hint">わからなければ、いちばん近いものを選ぼう</p>}
       </div>

@@ -10,6 +10,7 @@ import { hasVocabAudio, stopVocabAudio } from '../utils/vocabAudio';
 import { VOCAB_PREF_KEY } from '../utils/vocabGoal';
 import { wordNumbers } from '../data/vocabQuiz';
 import { pauseAllAudio } from '../utils/audioElements';
+import { loadVocabPron, pronOf, type VocabPron } from '../utils/vocabPron';
 
 /**
  * 単語・熟語タブ（A4・A19）。
@@ -50,9 +51,29 @@ export function readPrefs(): { preset: PresetId; custom: string[] } {
   } catch { return { preset: 'common', custom: ['lv1'] }; }
 }
 
-function WordDetail({ word, onPractice }: { word: ListeningWord; onPractice: (chapter: string, index: number) => void }) {
+/**
+ * 見出し語のつづり（2026-11-03）：強く読む音節に下線（リスニングの音読モードの「アクセント」と同じ印）。
+ * 音節が分からない語・1音節の語は、そのまま表示する。
+ */
+function HeadWord({ word, pron }: { word: string; pron: VocabPron | null }) {
+  if (!pron || pron.stress < 0) return <>{word}</>;
+  return <>{pron.syl.map((s, k) => <span key={k} className={k === pron.stress ? 'fd-acc' : undefined}>{s}</span>)}</>;
+}
+
+/** 読み方の小さな表示（2026-11-03）：音節の切れ目・強く読む所・発音記号 */
+function PronLine({ pron }: { pron: VocabPron }) {
+  const multi = pron.syl.length > 1;
+  return <p className="fd-pron" data-vocab-pron>
+    {multi && <span className="fd-pron-syl" lang="en" aria-label={`音節 ${pron.syl.join('・')}`}>{pron.syl.map((s, k) => <b key={k} data-acc={k === pron.stress || undefined}>{s}</b>)}</span>}
+    <span className="fd-pron-ipa" lang="en">/{pron.ipa}/</span>
+    {multi && pron.stress >= 0 && <small>{pron.syl.length}音節・{pron.stress + 1}つ目を強く</small>}
+  </p>;
+}
+
+function WordDetail({ word, pron, onPractice }: { word: ListeningWord; pron: VocabPron | null; onPractice: (chapter: string, index: number) => void }) {
   // 2026-10-01 D：辞書としての役割に絞る（4択の確認は「4択で解く」タブへ移した）
   return <div className="fd-word-detail">
+    {pron && <PronLine pron={pron} />}
     <p className="fd-definition">{word.fullMeaning}</p>
     {word.examples.length > 0 && <details className="fd-examples">
       <summary><Headphones size={15} aria-hidden="true" />リスニングでの使われ方（{word.examples.length}大問）<ChevronDown size={15} aria-hidden="true" /></summary>
@@ -97,9 +118,12 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
   /** ★2段階★ まず範囲を選ぶ画面 → 単語帳の画面（範囲ボタンで単語帳を圧迫しない・2026-10-02 D2） */
   const [stage, setStage] = useState<'range' | 'book'>('range');
   const listRef = useRef<HTMLOListElement>(null);
+  /** 読み方（音節・強勢・発音記号）の表。読めなければ空＝表示しない */
+  const [pronTable, setPronTable] = useState<Awaited<ReturnType<typeof loadVocabPron>> | null>(null);
 
   // 録音の一覧を先に読んでおく（🔊のタップで待たずに鳴らすため）。画面を離れたら音を止める
   useEffect(() => { prefetchVocabAudioIndex(); return () => stopVocabAudio(); }, []);
+  useEffect(() => { let alive = true; void loadVocabPron().then(t => { if (alive) setPronTable(t); }); return () => { alive = false; }; }, []);
   useEffect(() => { try { safeLocalStorage()?.setItem(PREF_KEY, JSON.stringify(prefs)); } catch { /* 保存できなくても表示は続ける */ } }, [prefs]);
   useEffect(() => { try { safeLocalStorage()?.setItem(POS_KEY, JSON.stringify(pos)); } catch { /* 同上 */ } }, [pos]);
   useEffect(() => {
@@ -238,6 +262,7 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
         }}>
         {slice.map(w => {
           const open = openWord === w.id; const isKnown = known.has(w.id);
+          const pron = pronOf(pronTable, w.id, w.word);
           return <li key={w.id} className="fd-word" data-known={isKnown || undefined} data-open={open || undefined}>
             <div className="fd-word-row">
               <button type="button" className="fd-word-main" aria-expanded={open} onClick={() => {
@@ -246,14 +271,14 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
                 setOpenWord(open ? null : w.id);
               }}>
                 <span className="fd-word-no" aria-label={`No.${numbers.get(w.id)}`}>{numbers.get(w.id)}</span>
-                <span className="fd-word-en" lang="en" data-hidden={(hide === 'en' && !open && !peek.has(w.id)) || undefined}>{w.word}</span>
+                <span className="fd-word-en" lang="en" data-hidden={(hide === 'en' && !open && !peek.has(w.id)) || undefined} aria-label={pron && pron.stress >= 0 ? w.word : undefined}><HeadWord word={w.word} pron={pron} /></span>
                 <span className="fd-word-ja" data-hidden={(hide === 'ja' && !open && !peek.has(w.id)) || undefined}>{w.meaning}</span>
                 {(searching || w.examples.length > 0) && <span className="fd-word-tags">{searching && <i>{VOCAB_LEVELS[w.level]}</i>}{w.examples.length > 0 && <i className="fd-tag-listen">リスニング</i>}</span>}
               </button>
               <button type="button" className="fd-icon" aria-label={`${w.word} を読み上げる`} disabled={!isSpeechSupported() && !hasVocabAudio(w.id)} onClick={() => sayWord(w.id, w.word)}><Volume2 size={18} aria-hidden="true" /></button>
               <button type="button" className="fd-icon fd-mark" aria-pressed={isKnown} aria-label={isKnown ? `${w.word} の覚えた印を外す` : `${w.word} を覚えた語にする`} onClick={() => onMark(w.id, !isKnown)}><Check size={18} aria-hidden="true" /></button>
             </div>
-            {open && <WordDetail word={w} onPractice={onPractice} />}
+            {open && <WordDetail word={w} pron={pron} onPractice={onPractice} />}
           </li>;
         })}
       </ol>}
