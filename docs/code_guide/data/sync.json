@@ -1,7 +1,7 @@
 {
- "commit": "6a76e84",
+ "commit": "52705a74",
  "date": "2026-11-03",
- "branch": "feat/niji-yamaguchi",
+ "branch": "feat/elevenlabs-audio",
  "new": [
   ".gitattributes",
   "docs/APP_CAPACITOR_README.md",
@@ -233,6 +233,7 @@
   "scripts/firefly-kit/build_reading_media.py",
   "scripts/firefly-kit/import-cinematic.sh",
   "scripts/firefly-kit/reading_media.py",
+  "scripts/firefly-kit/title_e4.py",
   "scripts/firefly-kit/unify_background.py",
   "scripts/firefly-kit/videos.py",
   "scripts/gacha-prints/akita_mock/a1.py",
@@ -827,7 +828,9 @@
   "src/battle/ui/BattleProfileTabs.tsx",
   "src/battle/ui/BattleQuitControl.tsx",
   "src/battle/ui/BattleResultReviewSection.tsx",
+  "src/battle/ui/CompanionArt.tsx",
   "src/battle/ui/GrowthShopParts.tsx",
+  "src/battle/ui/companion.css",
   "src/components/AppToast.tsx",
   "src/components/BattleRankSwitch.tsx",
   "src/components/ChapterTitleCelebration.tsx",
@@ -857,6 +860,7 @@
   "src/components/gacha/GachaResultStage.tsx",
   "src/components/gacha/GachaSetsPanel.tsx",
   "src/components/gacha/KyotsuAudioPlayer.tsx",
+  "src/components/home-companion.css",
   "src/components/home-mascot-idle.css",
   "src/components/home/home-v2.css",
   "src/components/my-tobira-tag.css",
@@ -1182,6 +1186,7 @@
   "tests/coin-display.test.ts",
   "tests/coinCelebration.test.ts",
   "tests/collectionTiles.test.ts",
+  "tests/companion.test.ts",
   "tests/cssBraces.test.ts",
   "tests/cssTokens.test.ts",
   "tests/fireflyKit.test.ts",
@@ -1230,6 +1235,7 @@
   "tests/remindersAnalytics.test.ts",
   "tests/reviewLaunch.test.ts",
   "tests/reviewRecordRedesign.test.ts",
+  "tests/revisionF.test.ts",
   "tests/ritsuMockPrints.test.ts",
   "tests/seasonFall.test.ts",
   "tests/shuffle.test.ts",
@@ -1314,6 +1320,11 @@
    "one": "ガチャで当たる学習プリントの作り直し方を説明する係"
   },
   {
+   "path": "store-assets/youtube/youtube_16x9.mp4",
+   "why": "行数 236,072→3",
+   "one": "YouTube に載せる横長（16:9）の宣伝動画の係"
+  },
+  {
    "path": "src/App.tsx",
    "why": "冒頭の説明・export が変わった／行数 1,329→802",
    "one": "18種類の画面を切り替え、アプリ全体の流れを決める係"
@@ -1340,7 +1351,7 @@
   },
   {
    "path": "src/battle/core/tobiraParts.ts",
-   "why": "冒頭の説明・export が変わった",
+   "why": "冒頭の説明・export が変わった／行数 76→120",
    "one": "とびら君の帽子やメガネなど着せかえの部位を決める係"
   },
   {
@@ -1365,7 +1376,7 @@
   },
   {
    "path": "src/battle/core/growthItems.ts",
-   "why": "冒頭の説明・export が変わった",
+   "why": "冒頭の説明・export が変わった／行数 316→455",
    "one": "とびら君の装備・ガチャ景品の一覧と、解放や購入を扱う係"
   },
   {
@@ -1385,7 +1396,7 @@
   },
   {
    "path": "src/components/CinematicClip.tsx",
-   "why": "冒頭の説明・export が変わった／行数 60→135",
+   "why": "冒頭の説明・export が変わった／行数 60→136",
    "one": "とびら君の演出動画を、アプリ内のファイルから再生する係"
   },
   {
@@ -1420,7 +1431,7 @@
   },
   {
    "path": "src/components/MyCollection.tsx",
-   "why": "行数 79→147",
+   "why": "行数 79→150",
    "one": "持ちものの一覧から着せかえと学習プリントを使わせる係"
   },
   {
@@ -1445,7 +1456,7 @@
   },
   {
    "path": "src/components/VocabQuiz.tsx",
-   "why": "冒頭の説明・export が変わった／行数 162→262",
+   "why": "冒頭の説明・export が変わった／行数 162→266",
    "one": "英単語の範囲を選び、4択で意味を答えさせる画面の係"
   },
   {
@@ -1465,7 +1476,7 @@
   },
   {
    "path": "src/components/foundation.css",
-   "why": "行数 411→594",
+   "why": "行数 411→609",
    "one": "「英文法・英単語を固める」ページの見た目を決める係"
   },
   {
@@ -1485,7 +1496,7 @@
   },
   {
    "path": "src/components/growth-hub.css",
-   "why": "行数 245→483",
+   "why": "行数 245→505",
    "one": "ミッションや持ちものの画面の見た目と並びを決める係"
   },
   {

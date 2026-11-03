@@ -688,7 +688,7 @@
 "name": "CINEMATICS.md",
 "folder": "docs",
 "one": "とびら君の演出動画が何本あり、どう点検したかを記録する台帳の係",
-"detail": "主な見出し：とびら君の演出動画の台帳／2026-10-26 Adobe Firefly で C01〜C16 を作り直して全部差し替え／残っている仕事（M：背景なしモーション／R：英文解釈の動画）。",
+"detail": "主な見出し：とびら君の演出動画の台帳／2026-10-26 Adobe Firefly で C01〜C16 を作り直して全部差し替え／2026-11-03 E2・E4。",
 "links": [
 {
 "dir": "ref",
@@ -703,7 +703,7 @@
 "path": "docs/TOBIRA_MOTION_PROMPTS.md"
 }
 ],
-"lines": 56,
+"lines": 60,
 "tag": "文書",
 "conf": "高",
 "kind": "file",
@@ -2776,7 +2776,12 @@
 "folder": "scripts",
 "one": "音源から各語の強弱を測り、音読用データに足す係",
 "detail": "冒頭の説明：「強弱（プロミネンス）を音源から測って public/read_along/*.json に足す（2026-10-08）。」",
-"links": [],
+"links": [
+{
+"dir": "ref",
+"path": "scripts/vocab-audio/make_pron.py"
+}
+],
 "lines": 133,
 "tag": "音声・画像",
 "conf": "高",
@@ -3107,7 +3112,7 @@
 "path": "docs/APP_CAPACITOR_README.md"
 }
 ],
-"lines": 481,
+"lines": 482,
 "tag": "設定",
 "conf": "高",
 "kind": "file",
@@ -3378,8 +3383,95 @@
 "path": "store-assets/listening/README.md"
 }
 ],
-"lines": 236072,
+"lines": 3,
 "tag": "音声・画像",
+"conf": "高",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": false,
+"changed": true,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "public/data/vocabPron.json",
+"path": "public/data/vocabPron.json",
+"name": "vocabPron.json",
+"folder": "public",
+"one": "単語帳の読み方（発音辞書の発音・音節・強勢）を語ごとに持つ係",
+"detail": "scripts/vocab-audio/make_pron.py が CMUdict と音読モードの音節分けで作る1行のJSON（{v, words:{語ID:[ARPAbet, 音節, 強勢]}}）。vocabPron.ts が読む。",
+"links": [
+{
+"dir": "ref",
+"path": "docs/UI_CHANGELOG.md"
+},
+{
+"dir": "ref",
+"path": "scripts/vocab-audio/make_pron.py"
+},
+{
+"dir": "ref",
+"path": "src/components/FoundationWords.tsx"
+}
+],
+"lines": 0,
+"tag": "データ",
+"conf": "高",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": false,
+"sys": "content",
+"flow": [
+"solve"
+]
+},
+{
+"id": "scripts/vocab-audio/make_pron.py",
+"path": "scripts/vocab-audio/make_pron.py",
+"name": "make_pron.py",
+"folder": "scripts",
+"one": "単語帳の読み方データ vocabPron.json を作る係",
+"detail": "見出し語を spoken.py で読める形にし、CMUdict の発音と add_prosody.py の音節分けで、音節・強勢・発音を語ごとに書き出す。辞書に無い語・記号つきの語は入れない。",
+"links": [
+{
+"dir": "ref",
+"path": "src/utils/vocabPron.ts"
+}
+],
+"lines": 54,
+"tag": "データ",
+"conf": "高",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": false,
+"sys": "tools",
+"flow": []
+},
+{
+"id": "scripts/grammar-audio/make_ids.py",
+"path": "scripts/grammar-audio/make_ids.py",
+"name": "make_ids.py",
+"folder": "scripts",
+"one": "英文法の録音の一覧から、問題IDの名簿を自動で作る係",
+"detail": "public/grammar_audio/*.mp3 のファイル名を集め、src/data/grammarAudioIds.ts に書き出す。音源を足した・差し替えたら実行する。",
+"links": [
+{
+"dir": "ref",
+"path": "src/data/grammarAudioIds.generated.ts"
+},
+{
+"dir": "ref",
+"path": "src/data/grammarAudioManifest.ts"
+}
+],
+"lines": 12,
+"tag": "データ",
 "conf": "高",
 "kind": "file",
 "exports": [],
@@ -4116,7 +4208,7 @@
 "name": "arenaEconomy.ts",
 "folder": "src",
 "one": "ガチャの値段や重複時に返すコインなどの決まりを持つ係",
-"detail": "GACHA_COST・GACHA_MULTI_COST・GACHA_MULTI_COUNT など17個を公開する。読み込むもの：growth.ts・gachaPools.ts・gachaSets.ts。gachaFeatured.ts・growthStore.ts など26ファイルから読み込まれる。",
+"detail": "GACHA_COST・GACHA_MULTI_COST・GACHA_MULTI_COUNT など17個を公開する。読み込むもの：growth.ts・gachaPools.ts・gachaSets.ts。gachaFeatured.ts・growthStore.ts など27ファイルから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -4146,7 +4238,7 @@
 "GACHA_RARITY_RATES"
 ],
 "nImports": 3,
-"nBy": 26,
+"nBy": 27,
 "draft": false,
 "changed": true,
 "sys": "battle",
@@ -4572,7 +4664,7 @@
 "path": "src/battle/core/growthBadges.ts"
 }
 ],
-"lines": 769,
+"lines": 771,
 "tag": "データ",
 "conf": "高",
 "kind": "file",
@@ -4587,7 +4679,7 @@
 "RUSH_COMBO_MISSION"
 ],
 "nImports": 5,
-"nBy": 59,
+"nBy": 61,
 "draft": false,
 "sys": "battle",
 "flow": [
@@ -4789,7 +4881,7 @@
 "name": "tobiraParts.ts",
 "folder": "src",
 "one": "とびら君の帽子やメガネなど着せかえの部位を決める係",
-"detail": "冒頭の説明：「とびら君の「部位ごと」のきせかえ（帽子・メガネ・ほっぺ・オーラ）と、アプリの壁紙。」AccessorySlot・ACCESSORY_SLOTS・SLOT_LABELS など15個を公開する。TobiraAccessories.tsx・growthItems.ts など10ファイルから読み込まれる。",
+"detail": "冒頭の説明：「とびら君の「部位ごと」のきせかえ（帽子・メガネ・ほっぺ・オーラ）と、アプリの壁紙。」AccessorySlot・ACCESSORY_SLOTS・SLOT_LABELS など18個を公開する。TobiraAccessories.tsx・growthItems.ts など12ファイルから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -4800,7 +4892,7 @@
 "path": "src/battle/core/growthItems.ts"
 }
 ],
-"lines": 103,
+"lines": 120,
 "tag": "データ",
 "conf": "高",
 "kind": "file",
@@ -4815,7 +4907,7 @@
 "GLASSES_STYLES"
 ],
 "nImports": 0,
-"nBy": 10,
+"nBy": 12,
 "draft": false,
 "changed": true,
 "sys": "battle",
@@ -6313,7 +6405,7 @@
 "path": "src/firebase.ts"
 }
 ],
-"lines": 535,
+"lines": 545,
 "tag": "画面",
 "conf": "高",
 "kind": "file",
@@ -6430,7 +6522,7 @@
 "path": "src/utils/reportError.ts"
 }
 ],
-"lines": 432,
+"lines": 448,
 "tag": "画面",
 "conf": "高",
 "kind": "file",
@@ -7037,7 +7129,7 @@
 "name": "growthItems.ts",
 "folder": "src",
 "one": "とびら君の装備・ガチャ景品の一覧と、解放や購入を扱う係",
-"detail": "冒頭の説明：「growth.ts から分割（growthItems）。外部からは従来どおり growth.ts 経由で import できる。」DEFAULT_POSE・DEFAULT_FRAME・ItemKind など27個を公開する。読み込むもの：tobiraParts.ts・nijiMockPrints.ts・growthBadges.ts など15ファイル。growth.tsから読み込まれる。",
+"detail": "冒頭の説明：「growth.ts から分割（growthItems）。外部からは従来どおり growth.ts 経由で import できる。」DEFAULT_POSE・DEFAULT_FRAME・DEFAULT_COMPANION など30個を公開する。読み込むもの：tobiraParts.ts・nijiMockPrints.ts・growthBadges.ts など15ファイル。growth.tsから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -7052,19 +7144,19 @@
 "path": "src/data/nijiMockPrints.ts"
 }
 ],
-"lines": 395,
+"lines": 455,
 "tag": "データ",
 "conf": "高",
 "kind": "file",
 "exports": [
 "DEFAULT_POSE",
 "DEFAULT_FRAME",
+"DEFAULT_COMPANION",
 "ItemKind",
 "EquipKind",
 "REMOVABLE_KINDS",
 "GachaRarity",
-"ItemDef",
-"LEVEL_PRINTS"
+"ItemDef"
 ],
 "nImports": 15,
 "nBy": 1,
@@ -7178,7 +7270,7 @@
 "path": "src/battle/core/growthBadges.ts"
 }
 ],
-"lines": 107,
+"lines": 109,
 "tag": "データ",
 "conf": "高",
 "kind": "file",
@@ -7536,7 +7628,7 @@
 "name": "AppWallpaper.tsx",
 "folder": "src",
 "one": "ガチャで当てた壁紙を、アプリ全体の背景に敷く係",
-"detail": "冒頭の説明：「ガチャで当てた壁紙をアプリの背景にする（画面には何も描かない）。」AppWallpaperを公開する。読み込むもの：growth.ts・useGrowthProgress.ts・tobiraParts.ts、外部部品 react。main.tsxから読み込まれる。",
+"detail": "冒頭の説明：「ガチャで当てた壁紙をアプリの背景にする（画面には何も描かない）。」AppWallpaperを公開する。読み込むもの：growth.ts・tobiraParts.ts・useGrowthProgress.ts、外部部品 react。main.tsxから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -7548,7 +7640,7 @@
 },
 {
 "dir": "to",
-"path": "src/hooks/useGrowthProgress.ts"
+"path": "src/battle/core/tobiraParts.ts"
 }
 ],
 "lines": 27,
@@ -7606,7 +7698,7 @@
 "name": "CinematicClip.tsx",
 "folder": "src",
 "one": "とびら君の演出動画を、アプリ内のファイルから再生する係",
-"detail": "冒頭の説明：「Locally hosted generated clips; no paid API or session-cookie URLs at runtime.」CINEMATIC_CLIPS・CinematicName・GACHA_REVEAL_CLIPS など6個を公開する。読み込むもの：cinematic-celebration.css、外部部品 react・react-dom。ArenaFighters.tsx・BattleResult.tsx など8ファイルから読み込まれる。",
+"detail": "冒頭の説明：「Locally hosted generated clips; no paid API or session-cookie URLs at runtime.」CINEMATIC_CLIPS・CinematicName・GACHA_REVEAL_CLIPS など6個を公開する。読み込むもの：cinematic-celebration.css、外部部品 react・react-dom。ArenaFighters.tsx・BattleResult.tsx など9ファイルから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -7621,7 +7713,7 @@
 "path": "src/components/cinematic-celebration.css"
 }
 ],
-"lines": 135,
+"lines": 136,
 "tag": "音声・画像",
 "conf": "高",
 "kind": "file",
@@ -7634,7 +7726,7 @@
 "CinematicClip"
 ],
 "nImports": 1,
-"nBy": 8,
+"nBy": 9,
 "draft": false,
 "changed": true,
 "sys": "screen",
@@ -8130,7 +8222,7 @@
 "name": "FoundationWords.tsx",
 "folder": "src",
 "one": "単語・熟語を目標ごとに絞り込み、検索して覚えさせる係",
-"detail": "冒頭の説明：「単語・熟語タブ（A4・A19）。」PRESETS・PresetId・WORDBOOK_PAGE など6個を公開する。読み込むもの：safeLocalStorage.ts・audioElements.ts・listeningSpeech.ts など10ファイル、外部部品 lucide-react・react。FoundationPage.tsxから読み込まれる。",
+"detail": "冒頭の説明：「単語・熟語タブ（A4・A19）。」PRESETS・PresetId・WORDBOOK_PAGE など6個を公開する。読み込むもの：safeLocalStorage.ts・audioElements.ts・listeningSpeech.ts など11ファイル、外部部品 lucide-react・react。FoundationPage.tsxから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -8145,7 +8237,7 @@
 "path": "src/utils/audioElements.ts"
 }
 ],
-"lines": 282,
+"lines": 307,
 "tag": "部品",
 "conf": "高",
 "kind": "file",
@@ -8157,7 +8249,7 @@
 "FoundationWordsProps",
 "FoundationWords"
 ],
-"nImports": 10,
+"nImports": 11,
 "nBy": 1,
 "draft": false,
 "sys": "screen",
@@ -8380,7 +8472,7 @@
 "name": "Home.tsx",
 "folder": "src",
 "one": "ホーム画面で、演習・対戦・復習ノートへの入口を並べる係",
-"detail": "Homeを公開する。読み込むもの：firebase.ts・safeLocalStorage.ts・growth.ts など33ファイル、外部部品 lucide-react・react・react-dom。ListeningHome.tsxから読み込まれる。",
+"detail": "Homeを公開する。読み込むもの：firebase.ts・safeLocalStorage.ts・growth.ts など35ファイル、外部部品 lucide-react・react・react-dom。ListeningHome.tsxから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -8395,14 +8487,14 @@
 "path": "src/utils/safeLocalStorage.ts"
 }
 ],
-"lines": 451,
+"lines": 457,
 "tag": "画面",
 "conf": "高",
 "kind": "file",
 "exports": [
 "Home"
 ],
-"nImports": 33,
+"nImports": 35,
 "nBy": 1,
 "draft": false,
 "sys": "screen",
@@ -8848,7 +8940,7 @@
 "path": "src/battle/core/growth.ts"
 }
 ],
-"lines": 319,
+"lines": 322,
 "tag": "画面",
 "conf": "高",
 "kind": "file",
@@ -9033,14 +9125,14 @@
 "path": "src/battle/core/growth.ts"
 }
 ],
-"lines": 147,
+"lines": 150,
 "tag": "部品",
 "conf": "高",
 "kind": "file",
 "exports": [
 "MyCollection"
 ],
-"nImports": 14,
+"nImports": 15,
 "nBy": 1,
 "draft": false,
 "changed": true,
@@ -9859,7 +9951,7 @@
 "path": "src/battle/ui/feedback.ts"
 }
 ],
-"lines": 262,
+"lines": 266,
 "tag": "画面",
 "conf": "高",
 "kind": "file",
@@ -10390,7 +10482,7 @@
 "path": "src/components/FoundationPage.tsx"
 }
 ],
-"lines": 594,
+"lines": 609,
 "tag": "部品",
 "conf": "高",
 "kind": "file",
@@ -10587,7 +10679,7 @@
 "path": "src/components/GrowthHub.tsx"
 }
 ],
-"lines": 483,
+"lines": 505,
 "tag": "部品",
 "conf": "高",
 "kind": "file",
@@ -11213,7 +11305,7 @@
 "name": "GachaParts.tsx",
 "folder": "src",
 "one": "ガチャ画面で使う小さな表示部品と整形の関数を持つ係",
-"detail": "冒頭の説明：「GachaParts ガチャ画面（GachaRoom.tsx）で使われる共通の定数・整形関数・表示用サブコンポーネント。」COLLECTION_KINDS・CollectionKind・FEATURED_UR_IDS など8個を公開する。読み込むもの：growth.ts・arenaEconomy.ts・GrowthParts.tsx など8ファイル、外部部品 lucide-react。GachaRoom.tsx・GachaCollectionModal.tsx など8ファイルから読み込まれる。",
+"detail": "冒頭の説明：「GachaParts ガチャ画面（GachaRoom.tsx）で使われる共通の定数・整形関数・表示用サブコンポーネント。」COLLECTION_KINDS・CollectionKind・FEATURED_UR_IDS など8個を公開する。読み込むもの：growth.ts・arenaEconomy.ts・GrowthParts.tsx など9ファイル、外部部品 lucide-react。GachaRoom.tsx・GachaCollectionModal.tsx など8ファイルから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -11228,7 +11320,7 @@
 "path": "src/battle/core/growth.ts"
 }
 ],
-"lines": 128,
+"lines": 134,
 "tag": "部品",
 "conf": "高",
 "kind": "file",
@@ -11242,7 +11334,7 @@
 "ItemArt",
 "PrintLinks"
 ],
-"nImports": 8,
+"nImports": 9,
 "nBy": 8,
 "draft": false,
 "sys": "screen",
@@ -13233,7 +13325,7 @@
 "name": "readAlong.ts",
 "folder": "src",
 "one": "音読用の単語ごとの時刻データを読み、計算する係",
-"detail": "冒頭の説明：「音読・ディクテーション（2026-10-08）— データと計算 音源の「単語ごとの時刻」は public/read_along/<フォルダ>/<音源名>.json に入っている （…」RawWord・ReadAlongFile・LinkKind など17個を公開する。ListeningEvidenceScript.tsx・AnnotatedScript.tsx など6ファイルから読み込まれる。",
+"detail": "冒頭の説明：「音読・ディクテーション（2026-10-08）— データと計算 音源の「単語ごとの時刻」は public/read_along/<フォルダ>/<音源名>.json に入っている （…」RawWord・ReadAlongFile・LinkKind など17個を公開する。ListeningEvidenceScript.tsx・AnnotatedScript.tsx など7ファイルから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -13259,7 +13351,7 @@
 "readAlongUrl"
 ],
 "nImports": 0,
-"nBy": 6,
+"nBy": 7,
 "draft": false,
 "sys": "logic",
 "flow": [
@@ -17105,6 +17197,73 @@
 "flow": []
 },
 {
+"id": "src/utils/vocabPron.ts",
+"path": "src/utils/vocabPron.ts",
+"name": "vocabPron.ts",
+"folder": "src",
+"one": "単語帳の「読み方」（音節・強く読む所・発音記号）を読み込んで渡す係",
+"detail": "public/data/vocabPron.json を1回だけ読み、語IDと見出し語から、音節の区切り・強勢の番号・発音記号（音読モードと同じ toIpa で ARPAbet から作る）を返す。読めない・辞書に無い語は null で、画面は何も出さない。",
+"links": [
+{
+"dir": "from",
+"path": "src/components/FoundationWords.tsx"
+},
+{
+"dir": "from",
+"path": "tests/vocabPron.test.ts"
+},
+{
+"dir": "to",
+"path": "src/features/readAlong/readAlong.ts"
+}
+],
+"lines": 63,
+"tag": "データ",
+"conf": "高",
+"kind": "file",
+"exports": [
+"VOCAB_PRON_URL",
+"VocabPron",
+"parseVocabPron",
+"loadVocabPron",
+"pronOf",
+"resetVocabPronForTest"
+],
+"nImports": 1,
+"nBy": 2,
+"draft": false,
+"sys": "logic",
+"flow": []
+},
+{
+"id": "src/data/grammarAudioIds.generated.ts",
+"path": "src/data/grammarAudioIds.generated.ts",
+"name": "grammarAudioIds.generated.ts",
+"folder": "src",
+"one": "英文法で録音がある問題IDの一覧を、自動生成で持つ係",
+"detail": "scripts/grammar-audio/make_ids.py が public/grammar_audio/ の一覧から書き出す。手で直さない。grammarAudioManifest.ts が読んで GRAMMAR_AUDIO_IDS にする。",
+"links": [
+{
+"dir": "from",
+"path": "src/data/grammarAudioManifest.ts"
+}
+],
+"lines": 1167,
+"tag": "データ",
+"conf": "高",
+"kind": "file",
+"exports": [
+"GRAMMAR_AUDIO_ID_LIST"
+],
+"nImports": 0,
+"nBy": 1,
+"draft": false,
+"sys": "content",
+"flow": [
+"solve"
+]
+},
+{
 "id": "tests/ai-no-rating.test.ts",
 "path": "tests/ai-no-rating.test.ts",
 "name": "ai-no-rating.test.ts",
@@ -19186,6 +19345,30 @@
 "flow": []
 },
 {
+"id": "tests/vocabPron.test.ts",
+"path": "tests/vocabPron.test.ts",
+"name": "vocabPron.test.ts",
+"folder": "tests",
+"one": "単語帳の読み方データと、4択の解説の発音ボタンを確かめる係",
+"detail": "全語の読み方が発音記号に直せて、音節をつなぐと見出し語に戻り、強勢が範囲内かを調べる。4択の解説に向きに関係なく発音ボタンがあることも確かめる。",
+"links": [
+{
+"dir": "to",
+"path": "src/utils/vocabPron.ts"
+}
+],
+"lines": 54,
+"tag": "テスト",
+"conf": "高",
+"kind": "file",
+"exports": [],
+"nImports": 1,
+"nBy": 0,
+"draft": false,
+"sys": "test",
+"flow": []
+},
+{
 "id": ".gitattributes",
 "path": ".gitattributes",
 "name": ".gitattributes",
@@ -19429,7 +19612,7 @@
 "name": "UI_CHANGELOG.md",
 "folder": "docs",
 "one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
-"detail": "主な見出し：UI 変更記録（元に戻すとき用）／UI 変更記録（元に戻すとき用）／2026-11-03 2次試験ガチャの大当たりに山口大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-yamaguchi）。",
+"detail": "主な見出し：UI 変更記録（元に戻すとき用）／UI 変更記録（元に戻すとき用）／2026-11-03 英単語・英文法に ElevenLabs の音源、単語帳に読み方の表示（PR: feat/elevenlabs-audio）。",
 "links": [
 {
 "dir": "ref",
@@ -19444,7 +19627,7 @@
 "path": "scripts/pr/prCore.mts"
 }
 ],
-"lines": 1247,
+"lines": 1325,
 "tag": "文書",
 "conf": "低",
 "kind": "file",
@@ -23852,6 +24035,38 @@
 "flow": []
 },
 {
+"id": "scripts/firefly-kit/title_e4.py",
+"path": "scripts/firefly-kit/title_e4.py",
+"name": "title_e4.py",
+"folder": "scripts",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「E4（2026-11-03）タイトル画面の とびら君 動画（title.mp4）を、運営者が送った動画から作り直す。」",
+"links": [
+{
+"dir": "ref",
+"path": "docs/CINEMATICS.md"
+},
+{
+"dir": "ref",
+"path": "docs/UI_CHANGELOG.md"
+},
+{
+"dir": "ref",
+"path": "src/components/CinematicClip.tsx"
+}
+],
+"lines": 34,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "tools",
+"flow": []
+},
+{
 "id": "scripts/firefly-kit/unify_background.py",
 "path": "scripts/firefly-kit/unify_background.py",
 "name": "unify_background.py",
@@ -23862,6 +24077,10 @@
 {
 "dir": "ref",
 "path": "docs/CINEMATICS.md"
+},
+{
+"dir": "ref",
+"path": "scripts/firefly-kit/title_e4.py"
 }
 ],
 "lines": 253,
@@ -38133,7 +38352,7 @@
 "name": "BattleProfileTabs.tsx",
 "folder": "src",
 "one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
-"detail": "冒頭の説明：「プロフィールのタブ（着せ替え・称号・戦績）。BattleProfile.tsx から分けた。中身は不変。」Runner・unlockLabel・OutfitTab など7個を公開する。読み込むもの：firebase.ts・growth.ts・growthStore.ts など12ファイル、外部部品 lucide-react・react・react-dom。BattleProfile.tsxから読み込まれる。",
+"detail": "冒頭の説明：「プロフィールのタブ（着せ替え・称号・戦績）。BattleProfile.tsx から分けた。中身は不変。」Runner・unlockLabel・OutfitTab など7個を公開する。読み込むもの：firebase.ts・growth.ts・growthStore.ts など13ファイル、外部部品 lucide-react・react・react-dom。BattleProfile.tsxから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -38148,7 +38367,7 @@
 "path": "src/battle/core/growth.ts"
 }
 ],
-"lines": 383,
+"lines": 388,
 "tag": "データ",
 "conf": "低",
 "kind": "file",
@@ -38161,7 +38380,7 @@
 "StageHistory",
 "StatsTab"
 ],
-"nImports": 12,
+"nImports": 13,
 "nBy": 1,
 "draft": true,
 "sys": "battle",
@@ -38240,6 +38459,42 @@
 ]
 },
 {
+"id": "src/battle/ui/CompanionArt.tsx",
+"path": "src/battle/ui/CompanionArt.tsx",
+"name": "CompanionArt.tsx",
+"folder": "src",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「お供（2026-11-03）の絵。画像は1枚（金のカギ「カギノスケ」）で、色違いは CSS の filter。」CompanionArtを公開する。読み込むもの：tobiraParts.ts・companion.css。Home.tsx・MyCollection.tsx など4ファイルから読み込まれる。",
+"links": [
+{
+"dir": "from",
+"path": "src/components/Home.tsx"
+},
+{
+"dir": "from",
+"path": "src/components/MyCollection.tsx"
+},
+{
+"dir": "to",
+"path": "src/battle/core/tobiraParts.ts"
+}
+],
+"lines": 24,
+"tag": "データ",
+"conf": "低",
+"kind": "file",
+"exports": [
+"CompanionArt"
+],
+"nImports": 2,
+"nBy": 4,
+"draft": true,
+"sys": "battle",
+"flow": [
+"compete"
+]
+},
+{
 "id": "src/battle/ui/GrowthShopParts.tsx",
 "path": "src/battle/ui/GrowthShopParts.tsx",
 "name": "GrowthShopParts.tsx",
@@ -38272,6 +38527,32 @@
 "NextBadgeHint"
 ],
 "nImports": 3,
+"nBy": 1,
+"draft": true,
+"sys": "battle",
+"flow": [
+"compete"
+]
+},
+{
+"id": "src/battle/ui/companion.css",
+"path": "src/battle/ui/companion.css",
+"name": "companion.css",
+"folder": "src",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「お供（2026-11-03）カギノスケの絵。画像は1枚で、色違いは filter（金＝そのまま）。」CompanionArt.tsxから読み込まれる。",
+"links": [
+{
+"dir": "from",
+"path": "src/battle/ui/CompanionArt.tsx"
+}
+],
+"lines": 11,
+"tag": "部品",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
 "nBy": 1,
 "draft": true,
 "sys": "battle",
@@ -39208,6 +39489,30 @@
 "flow": []
 },
 {
+"id": "src/components/home-companion.css",
+"path": "src/components/home-companion.css",
+"name": "home-companion.css",
+"folder": "src",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "冒頭の説明：「お供（2026-11-03）：ホームのステージで、とびら君の右下に並ぶ。」Home.tsxから読み込まれる。",
+"links": [
+{
+"dir": "from",
+"path": "src/components/Home.tsx"
+}
+],
+"lines": 15,
+"tag": "部品",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 0,
+"nBy": 1,
+"draft": true,
+"sys": "screen",
+"flow": []
+},
+{
 "id": "src/components/home-mascot-idle.css",
 "path": "src/components/home-mascot-idle.css",
 "name": "home-mascot-idle.css",
@@ -39928,7 +40233,7 @@
 "name": "grammarAudioManifest.ts",
 "folder": "src",
 "one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
-"detail": "冒頭の説明：「英文法：音源のある問題の名簿（2026-10-31 E9 の下準備） ご要望：英文法の解説も、リスニングのように「音声に合わせて表示」できるように準備する。」GRAMMAR_AUDIO_DIR・GRAMMAR_AUDIO_IDS・grammarAudioUrlを公開する。englishGrammarKit.ts・grammarAudioManifest.test.tsから読み込まれる。",
+"detail": "冒頭の説明：「英文法：音源のある問題の名簿（2026-10-31 E9 の下準備） ご要望：英文法の解説も、リスニングのように「音声に合わせて表示」できるように準備する。」GRAMMAR_AUDIO_DIR・GRAMMAR_AUDIO_IDS・grammarAudioUrlを公開する。読み込むもの：grammarAudioIds.generated.ts。englishGrammarKit.ts・grammarAudioManifest.test.tsから読み込まれる。",
 "links": [
 {
 "dir": "from",
@@ -39937,9 +40242,13 @@
 {
 "dir": "from",
 "path": "tests/grammarAudioManifest.test.ts"
+},
+{
+"dir": "to",
+"path": "src/data/grammarAudioIds.generated.ts"
 }
 ],
-"lines": 34,
+"lines": 37,
 "tag": "データ",
 "conf": "低",
 "kind": "file",
@@ -39948,7 +40257,7 @@
 "GRAMMAR_AUDIO_IDS",
 "grammarAudioUrl"
 ],
-"nImports": 0,
+"nImports": 1,
 "nBy": 2,
 "draft": true,
 "sys": "content",
@@ -48458,7 +48767,7 @@
 "path": "store-assets/listening/README.md"
 }
 ],
-"lines": 146230,
+"lines": 3,
 "tag": "音声・画像",
 "conf": "低",
 "kind": "file",
@@ -48486,7 +48795,7 @@
 "path": "store-assets/listening/README.md"
 }
 ],
-"lines": 43833,
+"lines": 3,
 "tag": "音声・画像",
 "conf": "低",
 "kind": "file",
@@ -48514,7 +48823,7 @@
 "path": "store-assets/listening/README.md"
 }
 ],
-"lines": 168426,
+"lines": 3,
 "tag": "音声・画像",
 "conf": "低",
 "kind": "file",
@@ -48625,7 +48934,7 @@
 "path": "store-assets/vocab/README.md"
 }
 ],
-"lines": 158058,
+"lines": 3,
 "tag": "音声・画像",
 "conf": "低",
 "kind": "file",
@@ -48653,7 +48962,7 @@
 "path": "store-assets/vocab/README.md"
 }
 ],
-"lines": 44483,
+"lines": 3,
 "tag": "音声・画像",
 "conf": "低",
 "kind": "file",
@@ -48681,7 +48990,7 @@
 "path": "store-assets/vocab/README.md"
 }
 ],
-"lines": 155743,
+"lines": 3,
 "tag": "音声・画像",
 "conf": "低",
 "kind": "file",
@@ -49053,6 +49362,38 @@
 "kind": "file",
 "exports": [],
 "nImports": 0,
+"nBy": 0,
+"draft": true,
+"sys": "test",
+"flow": []
+},
+{
+"id": "tests/companion.test.ts",
+"path": "tests/companion.test.ts",
+"name": "companion.test.ts",
+"folder": "tests",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "8件の確認（it）を持つ。主な確認：「はじめから最初のお供を持っていて、連れている」「古い記録（companion が無い）でも、最初のお供を連れている」。対象：arenaEconomy.ts・growth.ts・tobiraParts.ts。",
+"links": [
+{
+"dir": "to",
+"path": "src/battle/core/growth.ts"
+},
+{
+"dir": "to",
+"path": "src/battle/core/arenaEconomy.ts"
+},
+{
+"dir": "to",
+"path": "src/battle/core/tobiraParts.ts"
+}
+],
+"lines": 56,
+"tag": "テスト",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 3,
 "nBy": 0,
 "draft": true,
 "sys": "test",
@@ -50350,6 +50691,34 @@
 "flow": []
 },
 {
+"id": "tests/revisionF.test.ts",
+"path": "tests/revisionF.test.ts",
+"name": "revisionF.test.ts",
+"folder": "tests",
+"one": "カードがまだ書かれていない新しいファイル。役割は要確認の係",
+"detail": "10件の確認（it）を持つ。主な確認：「E1 フレンド対戦の結果 →「部屋に戻って科目などを選ぶ」」「フレンド部屋は合言葉のロビー（次の部屋）へ。教科選び（onChangeSubject）へは落とさない」。対象：growth.ts・CinematicClip.tsx。",
+"links": [
+{
+"dir": "to",
+"path": "src/battle/core/growth.ts"
+},
+{
+"dir": "to",
+"path": "src/components/CinematicClip.tsx"
+}
+],
+"lines": 72,
+"tag": "テスト",
+"conf": "低",
+"kind": "file",
+"exports": [],
+"nImports": 2,
+"nBy": 0,
+"draft": true,
+"sys": "test",
+"flow": []
+},
+{
 "id": "tests/ritsuMockPrints.test.ts",
 "path": "tests/ritsuMockPrints.test.ts",
 "name": "ritsuMockPrints.test.ts",
@@ -51443,11 +51812,11 @@
 "tag": "音声・画像",
 "conf": "高",
 "kind": "bundle",
-"count": 32,
-"bytes": 4024504,
+"count": 30,
+"bytes": 4002056,
 "exts": {
-".webp": 16,
-".mp4": 16
+".webp": 15,
+".mp4": 15
 },
 "members": [
 "public/cinematics/attack-poster.webp",
@@ -51473,18 +51842,18 @@
 "tag": "音声・画像",
 "conf": "高",
 "kind": "bundle",
-"count": 12,
-"bytes": 901668,
+"count": 13,
+"bytes": 919216,
 "exts": {
-".webp": 12
+".webp": 13
 },
 "members": [
 "public/mascots/basic.webp",
 "public/mascots/bowing.webp",
 "public/mascots/cheering.webp",
+"public/mascots/companion_key.webp",
 "public/mascots/good.webp",
-"public/mascots/happy.webp",
-"public/mascots/listening.webp"
+"public/mascots/happy.webp"
 ],
 "sys": "assets",
 "flow": []
@@ -51840,7 +52209,7 @@
 "conf": "高",
 "kind": "bundle",
 "count": 3,
-"bytes": 43115831,
+"bytes": 398,
 "exts": {
 ".mp4": 3
 },
@@ -51850,6 +52219,65 @@
 "store-assets/instagram/instagram_story_9x16.mp4"
 ],
 "sys": "tools",
+"flow": []
+},
+{
+"id": "b_vocab_audio",
+"path": "public/audio/vocab/ 以下 8か所",
+"tree": "public/audio/vocab",
+"name": "英単語の録音（1語1ファイル）",
+"folder": "public",
+"one": "単語帳と英単語4択で鳴らす、見出し語の録音を1語1ファイルで持つ係",
+"detail": "ElevenLabs Studio の1本を1語ずつに切った MP3（<レベル>/<番号>.mp3）と、録音のある語ID・版を書いた index.json。vocabAudio.ts が読む。無い語は端末の読み上げ。",
+"links": [],
+"lines": 0,
+"tag": "音声・画像",
+"conf": "高",
+"kind": "bundle",
+"count": 5685,
+"bytes": 37550315,
+"exts": {
+".mp3": 5684,
+".json": 1
+},
+"members": [
+"public/audio/vocab/ilv1/1.mp3",
+"public/audio/vocab/ilv1/10.mp3",
+"public/audio/vocab/ilv1/100.mp3",
+"public/audio/vocab/ilv1/1000.mp3",
+"public/audio/vocab/ilv1/1001.mp3",
+"public/audio/vocab/ilv1/1002.mp3"
+],
+"sys": "assets",
+"flow": []
+},
+{
+"id": "b_grammar_audio",
+"path": "public/grammar_audio/",
+"tree": "public/grammar_audio",
+"name": "英文法の録音（1文1ファイル）",
+"folder": "public",
+"one": "英文法の解説で鳴らす完成文の録音を、1問1ファイルで持つ係",
+"detail": "ElevenLabs Studio の1本を1文ずつに切った MP3（<問題ID>.mp3）。名簿は scripts/grammar-audio/make_ids.py が grammarAudioIds.generated.ts に書き出し、grammarAudioManifest.ts が読む。",
+"links": [],
+"lines": 0,
+"tag": "音声・画像",
+"conf": "高",
+"kind": "bundle",
+"count": 1163,
+"bytes": 26869047,
+"exts": {
+".mp3": 1163
+},
+"members": [
+"public/grammar_audio/q_eg6_10_set10_1.mp3",
+"public/grammar_audio/q_eg6_10_set10_2.mp3",
+"public/grammar_audio/q_eg6_10_set10_3.mp3",
+"public/grammar_audio/q_eg6_10_set10_4.mp3",
+"public/grammar_audio/q_eg6_10_set10_5.mp3",
+"public/grammar_audio/q_eg6_10_set11_1.mp3"
+],
+"sys": "assets",
 "flow": []
 }
 ]
