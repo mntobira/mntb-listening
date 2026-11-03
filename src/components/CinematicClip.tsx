@@ -10,6 +10,7 @@ import './cinematic-celebration.css';
  *   UR の夜空（gachaUrBuild）と金色（gachaUrFinale）は演出なので背景はそのまま。
  */
 export const CINEMATIC_CLIPS = {
+  // E4（2026-11-03）運営者が送った動画から作り直し（顔が崩れるコマを外してつないだ3.1秒。scripts/firefly-kit/title_e4.py）
   title: { src: '/cinematics/title.mp4', poster: '/cinematics/title-poster.webp' },
   // コンボ攻撃（2.8秒×1.15倍＝約2.4秒）。対戦の答え合わせ 3.5 秒に収まる
   special: { src: '/cinematics/attack.mp4', playbackRate: 1.15 },
@@ -17,8 +18,8 @@ export const CINEMATIC_CLIPS = {
   gacha: { src: '/cinematics/gacha.mp4' },
   // 勝利（3.5秒・正面のままジャンプ→紙ふぶき）
   victory: { src: '/cinematics/victory.mp4', poster: '/cinematics/victory-poster.webp' },
-  // 負け（3.0秒・しょんぼり→光がさす→笑顔）
-  lose: { src: '/cinematics/lose.mp4', poster: '/cinematics/lose-poster.webp' },
+  // 負け（E2 2026-11-03：以前の lose.mp4 は表情が崩れて見えたので削除。ウインク＋グッドの gacha_r を「はげまし」に流用・2.0秒）
+  lose: { src: '/cinematics/gacha_r.mp4', poster: '/cinematics/gacha_r-poster.webp' },
   // ガチャの確定演出の丸窓（レア度ごと）。GACHA_REVEAL_CLIPS で並べる
   gachaN: { src: '/cinematics/gacha_n.mp4' },
   gachaR: { src: '/cinematics/gacha_r.mp4' },

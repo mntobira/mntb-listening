@@ -481,3 +481,25 @@
 .mypage-profile-public[data-not-public] { background: #fff1ef; box-shadow: inset 0 0 0 2px #f2b8b0; }
 .mypage-public-dot { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; background: var(--mt-danger, #d33); box-shadow: 0 0 0 2px #fff; vertical-align: middle; }
 .mypage-profile-public[data-not-public] .ps-toggle-text small { color: var(--mt-danger, #c0392b); font-weight: 700; }
+
+/* ===== E3（2026-11-03）マナラッシュの最初の画面をほかの独立画面にそろえる =====
+   ・見出しは .profile-standalone-head（← 44px ＋ 見出し ＋ 一言）。文字だけの「←もどる」はやめた
+   ・ルールは1枚のカードに 2×2 で短く。科目 → 自己ベスト → スタート の順に、スクロールなしで収める
+   ・文字は12px以上、押すところは44px以上 */
+.mana-rush-menu { display: flex; flex-direction: column; gap: 10px; padding-top: 10px !important; }
+.mana-rush-menu > * { margin-top: 0 !important; margin-bottom: 0 !important; }
+.mana-rush-head { margin: 0 !important; }
+.mana-rush-head h2 { display: flex; align-items: center; gap: 6px; color: var(--mt-ink-warm, #6d4c0f); }
+.mana-rush-head h2 svg { color: #e0a800; flex-shrink: 0; }
+.mana-rush-head p { font-size: 12px !important; line-height: 1.5; }
+.mana-rush-menu .mana-rush-rules { gap: 4px 10px; padding: 10px 12px; border: 1px solid #ebe2cf; border-radius: 16px; background: #fffdf5; }
+.mana-rush-menu .mana-rush-rules li { padding: 2px 0; border: 0; background: none; line-height: 1.45; color: #4f5b66; }
+.mana-rush-menu .mana-rush-subtitle { font-size: 13px; }
+.mana-rush-menu .mana-rush-subjects button { min-height: 52px; }
+.mana-rush-menu .mana-rush-subjects button small { font-size: 12px; }
+.mana-rush-menu .mana-rush-best { padding: 10px 12px; }
+.mana-rush-menu .mana-rush-best strong { font-size: 24px; }
+.mana-rush-menu .mana-rush-coin { text-align: center; }
+.mana-rush-menu .mana-rush-start { min-height: 54px; margin: 0 !important; font-size: 19px; border: 0; box-shadow: 0 4px 0 #c98200; }
+.mana-rush-menu .mana-storage-info { font-size: 12px; text-align: center; color: #6b6a66; }
+@media (max-height: 680px) { .mana-rush-menu { gap: 7px; } .mana-rush-menu .mana-rush-best { padding: 7px 12px; } .mana-rush-menu .mana-rush-start { min-height: 48px; } }

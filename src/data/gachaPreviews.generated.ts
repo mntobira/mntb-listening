@@ -125,198 +125,6 @@ export const GACHA_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
     "/prints/previews/print_lr_niji_hiroshima_en_3_p2.webp",
     "/prints/previews/print_lr_niji_hiroshima_en_3_p12.webp"
   ],
-  "print_lr_kobe_q_1": [
-    "/prints/previews/print_lr_kobe_q_1_p2.webp",
-    "/prints/previews/print_lr_kobe_q_1_p7.webp"
-  ],
-  "print_lr_kobe_a_1": [
-    "/prints/previews/print_lr_kobe_a_1_p2.webp",
-    "/prints/previews/print_lr_kobe_a_1_p10.webp"
-  ],
-  "print_lr_kobe_q_2": [
-    "/prints/previews/print_lr_kobe_q_2_p2.webp",
-    "/prints/previews/print_lr_kobe_q_2_p7.webp"
-  ],
-  "print_lr_kobe_a_2": [
-    "/prints/previews/print_lr_kobe_a_2_p2.webp",
-    "/prints/previews/print_lr_kobe_a_2_p10.webp"
-  ],
-  "print_lr_kobe_q_3": [
-    "/prints/previews/print_lr_kobe_q_3_p2.webp",
-    "/prints/previews/print_lr_kobe_q_3_p8.webp"
-  ],
-  "print_lr_kobe_a_3": [
-    "/prints/previews/print_lr_kobe_a_3_p2.webp",
-    "/prints/previews/print_lr_kobe_a_3_p10.webp"
-  ],
-  "print_lr_osaka_q_1": [
-    "/prints/previews/print_lr_osaka_q_1_p2.webp",
-    "/prints/previews/print_lr_osaka_q_1_p6.webp"
-  ],
-  "print_lr_osaka_a_1": [
-    "/prints/previews/print_lr_osaka_a_1_p2.webp",
-    "/prints/previews/print_lr_osaka_a_1_p8.webp"
-  ],
-  "print_lr_osaka_q_2": [
-    "/prints/previews/print_lr_osaka_q_2_p2.webp",
-    "/prints/previews/print_lr_osaka_q_2_p6.webp"
-  ],
-  "print_lr_osaka_a_2": [
-    "/prints/previews/print_lr_osaka_a_2_p2.webp",
-    "/prints/previews/print_lr_osaka_a_2_p8.webp"
-  ],
-  "print_lr_osaka_q_3": [
-    "/prints/previews/print_lr_osaka_q_3_p2.webp",
-    "/prints/previews/print_lr_osaka_q_3_p6.webp"
-  ],
-  "print_lr_osaka_a_3": [
-    "/prints/previews/print_lr_osaka_a_3_p2.webp",
-    "/prints/previews/print_lr_osaka_a_3_p8.webp"
-  ],
-  "print_lr_ritsu_q_1": [
-    "/prints/previews/print_lr_ritsu_q_1_p2.webp",
-    "/prints/previews/print_lr_ritsu_q_1_p7.webp"
-  ],
-  "print_lr_ritsu_a_1": [
-    "/prints/previews/print_lr_ritsu_a_1_p2.webp",
-    "/prints/previews/print_lr_ritsu_a_1_p8.webp"
-  ],
-  "print_lr_ritsu_q_2": [
-    "/prints/previews/print_lr_ritsu_q_2_p2.webp",
-    "/prints/previews/print_lr_ritsu_q_2_p7.webp"
-  ],
-  "print_lr_ritsu_a_2": [
-    "/prints/previews/print_lr_ritsu_a_2_p2.webp",
-    "/prints/previews/print_lr_ritsu_a_2_p8.webp"
-  ],
-  "print_lr_ritsu_q_3": [
-    "/prints/previews/print_lr_ritsu_q_3_p2.webp",
-    "/prints/previews/print_lr_ritsu_q_3_p7.webp"
-  ],
-  "print_lr_ritsu_a_3": [
-    "/prints/previews/print_lr_ritsu_a_3_p2.webp",
-    "/prints/previews/print_lr_ritsu_a_3_p8.webp"
-  ],
-  "print_lr_hokudai_q_1": [
-    "/prints/previews/print_lr_hokudai_q_1_p2.webp",
-    "/prints/previews/print_lr_hokudai_q_1_p8.webp"
-  ],
-  "print_lr_hokudai_a_1": [
-    "/prints/previews/print_lr_hokudai_a_1_p2.webp",
-    "/prints/previews/print_lr_hokudai_a_1_p11.webp"
-  ],
-  "print_lr_hokudai_q_2": [
-    "/prints/previews/print_lr_hokudai_q_2_p2.webp",
-    "/prints/previews/print_lr_hokudai_q_2_p8.webp"
-  ],
-  "print_lr_hokudai_a_2": [
-    "/prints/previews/print_lr_hokudai_a_2_p2.webp",
-    "/prints/previews/print_lr_hokudai_a_2_p10.webp"
-  ],
-  "print_lr_hokudai_q_3": [
-    "/prints/previews/print_lr_hokudai_q_3_p2.webp",
-    "/prints/previews/print_lr_hokudai_q_3_p8.webp"
-  ],
-  "print_lr_hokudai_a_3": [
-    "/prints/previews/print_lr_hokudai_a_3_p2.webp",
-    "/prints/previews/print_lr_hokudai_a_3_p10.webp"
-  ],
-  "print_lr_tohoku_q_1": [
-    "/prints/previews/print_lr_tohoku_q_1_p2.webp",
-    "/prints/previews/print_lr_tohoku_q_1_p7.webp"
-  ],
-  "print_lr_tohoku_a_1": [
-    "/prints/previews/print_lr_tohoku_a_1_p2.webp",
-    "/prints/previews/print_lr_tohoku_a_1_p10.webp"
-  ],
-  "print_lr_tohoku_q_2": [
-    "/prints/previews/print_lr_tohoku_q_2_p2.webp",
-    "/prints/previews/print_lr_tohoku_q_2_p7.webp"
-  ],
-  "print_lr_tohoku_a_2": [
-    "/prints/previews/print_lr_tohoku_a_2_p2.webp",
-    "/prints/previews/print_lr_tohoku_a_2_p10.webp"
-  ],
-  "print_lr_tohoku_q_3": [
-    "/prints/previews/print_lr_tohoku_q_3_p2.webp",
-    "/prints/previews/print_lr_tohoku_q_3_p7.webp"
-  ],
-  "print_lr_tohoku_a_3": [
-    "/prints/previews/print_lr_tohoku_a_3_p2.webp",
-    "/prints/previews/print_lr_tohoku_a_3_p11.webp"
-  ],
-  "print_lr_hirosaki_q_1": [
-    "/prints/previews/print_lr_hirosaki_q_1_p2.webp",
-    "/prints/previews/print_lr_hirosaki_q_1_p6.webp"
-  ],
-  "print_lr_hirosaki_a_1": [
-    "/prints/previews/print_lr_hirosaki_a_1_p2.webp",
-    "/prints/previews/print_lr_hirosaki_a_1_p10.webp"
-  ],
-  "print_lr_hirosaki_q_2": [
-    "/prints/previews/print_lr_hirosaki_q_2_p2.webp",
-    "/prints/previews/print_lr_hirosaki_q_2_p6.webp"
-  ],
-  "print_lr_hirosaki_a_2": [
-    "/prints/previews/print_lr_hirosaki_a_2_p2.webp",
-    "/prints/previews/print_lr_hirosaki_a_2_p9.webp"
-  ],
-  "print_lr_hirosaki_q_3": [
-    "/prints/previews/print_lr_hirosaki_q_3_p2.webp",
-    "/prints/previews/print_lr_hirosaki_q_3_p6.webp"
-  ],
-  "print_lr_hirosaki_a_3": [
-    "/prints/previews/print_lr_hirosaki_a_3_p2.webp",
-    "/prints/previews/print_lr_hirosaki_a_3_p8.webp"
-  ],
-  "print_lr_iwate_q_1": [
-    "/prints/previews/print_lr_iwate_q_1_p2.webp",
-    "/prints/previews/print_lr_iwate_q_1_p5.webp"
-  ],
-  "print_lr_iwate_a_1": [
-    "/prints/previews/print_lr_iwate_a_1_p2.webp",
-    "/prints/previews/print_lr_iwate_a_1_p6.webp"
-  ],
-  "print_lr_iwate_q_2": [
-    "/prints/previews/print_lr_iwate_q_2_p2.webp",
-    "/prints/previews/print_lr_iwate_q_2_p5.webp"
-  ],
-  "print_lr_iwate_a_2": [
-    "/prints/previews/print_lr_iwate_a_2_p2.webp",
-    "/prints/previews/print_lr_iwate_a_2_p8.webp"
-  ],
-  "print_lr_iwate_q_3": [
-    "/prints/previews/print_lr_iwate_q_3_p2.webp",
-    "/prints/previews/print_lr_iwate_q_3_p5.webp"
-  ],
-  "print_lr_iwate_a_3": [
-    "/prints/previews/print_lr_iwate_a_3_p2.webp",
-    "/prints/previews/print_lr_iwate_a_3_p6.webp"
-  ],
-  "print_lr_akita_q_1": [
-    "/prints/previews/print_lr_akita_q_1_p2.webp",
-    "/prints/previews/print_lr_akita_q_1_p6.webp"
-  ],
-  "print_lr_akita_a_1": [
-    "/prints/previews/print_lr_akita_a_1_p2.webp",
-    "/prints/previews/print_lr_akita_a_1_p7.webp"
-  ],
-  "print_lr_akita_q_2": [
-    "/prints/previews/print_lr_akita_q_2_p2.webp",
-    "/prints/previews/print_lr_akita_q_2_p6.webp"
-  ],
-  "print_lr_akita_a_2": [
-    "/prints/previews/print_lr_akita_a_2_p2.webp",
-    "/prints/previews/print_lr_akita_a_2_p7.webp"
-  ],
-  "print_lr_akita_q_3": [
-    "/prints/previews/print_lr_akita_q_3_p2.webp",
-    "/prints/previews/print_lr_akita_q_3_p6.webp"
-  ],
-  "print_lr_akita_a_3": [
-    "/prints/previews/print_lr_akita_a_3_p2.webp",
-    "/prints/previews/print_lr_akita_a_3_p7.webp"
-  ],
   "print_lr_niji_gakugei_en_1": [
     "/prints/previews/print_lr_niji_gakugei_en_1_p2.webp",
     "/prints/previews/print_lr_niji_gakugei_en_1_p11.webp"
@@ -520,6 +328,210 @@ export const GACHA_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
   "print_lr_niji_tottori_en_3": [
     "/prints/previews/print_lr_niji_tottori_en_3_p2.webp",
     "/prints/previews/print_lr_niji_tottori_en_3_p10.webp"
+  ],
+  "print_lr_niji_yamaguchi_en_1": [
+    "/prints/previews/print_lr_niji_yamaguchi_en_1_p2.webp",
+    "/prints/previews/print_lr_niji_yamaguchi_en_1_p13.webp"
+  ],
+  "print_lr_niji_yamaguchi_en_2": [
+    "/prints/previews/print_lr_niji_yamaguchi_en_2_p2.webp",
+    "/prints/previews/print_lr_niji_yamaguchi_en_2_p13.webp"
+  ],
+  "print_lr_niji_yamaguchi_en_3": [
+    "/prints/previews/print_lr_niji_yamaguchi_en_3_p2.webp",
+    "/prints/previews/print_lr_niji_yamaguchi_en_3_p13.webp"
+  ],
+  "print_lr_kobe_q_1": [
+    "/prints/previews/print_lr_kobe_q_1_p2.webp",
+    "/prints/previews/print_lr_kobe_q_1_p7.webp"
+  ],
+  "print_lr_kobe_a_1": [
+    "/prints/previews/print_lr_kobe_a_1_p2.webp",
+    "/prints/previews/print_lr_kobe_a_1_p10.webp"
+  ],
+  "print_lr_kobe_q_2": [
+    "/prints/previews/print_lr_kobe_q_2_p2.webp",
+    "/prints/previews/print_lr_kobe_q_2_p7.webp"
+  ],
+  "print_lr_kobe_a_2": [
+    "/prints/previews/print_lr_kobe_a_2_p2.webp",
+    "/prints/previews/print_lr_kobe_a_2_p10.webp"
+  ],
+  "print_lr_kobe_q_3": [
+    "/prints/previews/print_lr_kobe_q_3_p2.webp",
+    "/prints/previews/print_lr_kobe_q_3_p8.webp"
+  ],
+  "print_lr_kobe_a_3": [
+    "/prints/previews/print_lr_kobe_a_3_p2.webp",
+    "/prints/previews/print_lr_kobe_a_3_p10.webp"
+  ],
+  "print_lr_osaka_q_1": [
+    "/prints/previews/print_lr_osaka_q_1_p2.webp",
+    "/prints/previews/print_lr_osaka_q_1_p6.webp"
+  ],
+  "print_lr_osaka_a_1": [
+    "/prints/previews/print_lr_osaka_a_1_p2.webp",
+    "/prints/previews/print_lr_osaka_a_1_p8.webp"
+  ],
+  "print_lr_osaka_q_2": [
+    "/prints/previews/print_lr_osaka_q_2_p2.webp",
+    "/prints/previews/print_lr_osaka_q_2_p6.webp"
+  ],
+  "print_lr_osaka_a_2": [
+    "/prints/previews/print_lr_osaka_a_2_p2.webp",
+    "/prints/previews/print_lr_osaka_a_2_p8.webp"
+  ],
+  "print_lr_osaka_q_3": [
+    "/prints/previews/print_lr_osaka_q_3_p2.webp",
+    "/prints/previews/print_lr_osaka_q_3_p6.webp"
+  ],
+  "print_lr_osaka_a_3": [
+    "/prints/previews/print_lr_osaka_a_3_p2.webp",
+    "/prints/previews/print_lr_osaka_a_3_p8.webp"
+  ],
+  "print_lr_ritsu_q_1": [
+    "/prints/previews/print_lr_ritsu_q_1_p2.webp",
+    "/prints/previews/print_lr_ritsu_q_1_p7.webp"
+  ],
+  "print_lr_ritsu_a_1": [
+    "/prints/previews/print_lr_ritsu_a_1_p2.webp",
+    "/prints/previews/print_lr_ritsu_a_1_p8.webp"
+  ],
+  "print_lr_ritsu_q_2": [
+    "/prints/previews/print_lr_ritsu_q_2_p2.webp",
+    "/prints/previews/print_lr_ritsu_q_2_p7.webp"
+  ],
+  "print_lr_ritsu_a_2": [
+    "/prints/previews/print_lr_ritsu_a_2_p2.webp",
+    "/prints/previews/print_lr_ritsu_a_2_p8.webp"
+  ],
+  "print_lr_ritsu_q_3": [
+    "/prints/previews/print_lr_ritsu_q_3_p2.webp",
+    "/prints/previews/print_lr_ritsu_q_3_p7.webp"
+  ],
+  "print_lr_ritsu_a_3": [
+    "/prints/previews/print_lr_ritsu_a_3_p2.webp",
+    "/prints/previews/print_lr_ritsu_a_3_p8.webp"
+  ],
+  "print_lr_hokudai_q_1": [
+    "/prints/previews/print_lr_hokudai_q_1_p2.webp",
+    "/prints/previews/print_lr_hokudai_q_1_p8.webp"
+  ],
+  "print_lr_hokudai_a_1": [
+    "/prints/previews/print_lr_hokudai_a_1_p2.webp",
+    "/prints/previews/print_lr_hokudai_a_1_p11.webp"
+  ],
+  "print_lr_hokudai_q_2": [
+    "/prints/previews/print_lr_hokudai_q_2_p2.webp",
+    "/prints/previews/print_lr_hokudai_q_2_p8.webp"
+  ],
+  "print_lr_hokudai_a_2": [
+    "/prints/previews/print_lr_hokudai_a_2_p2.webp",
+    "/prints/previews/print_lr_hokudai_a_2_p10.webp"
+  ],
+  "print_lr_hokudai_q_3": [
+    "/prints/previews/print_lr_hokudai_q_3_p2.webp",
+    "/prints/previews/print_lr_hokudai_q_3_p8.webp"
+  ],
+  "print_lr_hokudai_a_3": [
+    "/prints/previews/print_lr_hokudai_a_3_p2.webp",
+    "/prints/previews/print_lr_hokudai_a_3_p10.webp"
+  ],
+  "print_lr_tohoku_q_1": [
+    "/prints/previews/print_lr_tohoku_q_1_p2.webp",
+    "/prints/previews/print_lr_tohoku_q_1_p7.webp"
+  ],
+  "print_lr_tohoku_a_1": [
+    "/prints/previews/print_lr_tohoku_a_1_p2.webp",
+    "/prints/previews/print_lr_tohoku_a_1_p10.webp"
+  ],
+  "print_lr_tohoku_q_2": [
+    "/prints/previews/print_lr_tohoku_q_2_p2.webp",
+    "/prints/previews/print_lr_tohoku_q_2_p7.webp"
+  ],
+  "print_lr_tohoku_a_2": [
+    "/prints/previews/print_lr_tohoku_a_2_p2.webp",
+    "/prints/previews/print_lr_tohoku_a_2_p10.webp"
+  ],
+  "print_lr_tohoku_q_3": [
+    "/prints/previews/print_lr_tohoku_q_3_p2.webp",
+    "/prints/previews/print_lr_tohoku_q_3_p7.webp"
+  ],
+  "print_lr_tohoku_a_3": [
+    "/prints/previews/print_lr_tohoku_a_3_p2.webp",
+    "/prints/previews/print_lr_tohoku_a_3_p11.webp"
+  ],
+  "print_lr_hirosaki_q_1": [
+    "/prints/previews/print_lr_hirosaki_q_1_p2.webp",
+    "/prints/previews/print_lr_hirosaki_q_1_p6.webp"
+  ],
+  "print_lr_hirosaki_a_1": [
+    "/prints/previews/print_lr_hirosaki_a_1_p2.webp",
+    "/prints/previews/print_lr_hirosaki_a_1_p10.webp"
+  ],
+  "print_lr_hirosaki_q_2": [
+    "/prints/previews/print_lr_hirosaki_q_2_p2.webp",
+    "/prints/previews/print_lr_hirosaki_q_2_p6.webp"
+  ],
+  "print_lr_hirosaki_a_2": [
+    "/prints/previews/print_lr_hirosaki_a_2_p2.webp",
+    "/prints/previews/print_lr_hirosaki_a_2_p9.webp"
+  ],
+  "print_lr_hirosaki_q_3": [
+    "/prints/previews/print_lr_hirosaki_q_3_p2.webp",
+    "/prints/previews/print_lr_hirosaki_q_3_p6.webp"
+  ],
+  "print_lr_hirosaki_a_3": [
+    "/prints/previews/print_lr_hirosaki_a_3_p2.webp",
+    "/prints/previews/print_lr_hirosaki_a_3_p8.webp"
+  ],
+  "print_lr_iwate_q_1": [
+    "/prints/previews/print_lr_iwate_q_1_p2.webp",
+    "/prints/previews/print_lr_iwate_q_1_p5.webp"
+  ],
+  "print_lr_iwate_a_1": [
+    "/prints/previews/print_lr_iwate_a_1_p2.webp",
+    "/prints/previews/print_lr_iwate_a_1_p6.webp"
+  ],
+  "print_lr_iwate_q_2": [
+    "/prints/previews/print_lr_iwate_q_2_p2.webp",
+    "/prints/previews/print_lr_iwate_q_2_p5.webp"
+  ],
+  "print_lr_iwate_a_2": [
+    "/prints/previews/print_lr_iwate_a_2_p2.webp",
+    "/prints/previews/print_lr_iwate_a_2_p8.webp"
+  ],
+  "print_lr_iwate_q_3": [
+    "/prints/previews/print_lr_iwate_q_3_p2.webp",
+    "/prints/previews/print_lr_iwate_q_3_p5.webp"
+  ],
+  "print_lr_iwate_a_3": [
+    "/prints/previews/print_lr_iwate_a_3_p2.webp",
+    "/prints/previews/print_lr_iwate_a_3_p6.webp"
+  ],
+  "print_lr_akita_q_1": [
+    "/prints/previews/print_lr_akita_q_1_p2.webp",
+    "/prints/previews/print_lr_akita_q_1_p6.webp"
+  ],
+  "print_lr_akita_a_1": [
+    "/prints/previews/print_lr_akita_a_1_p2.webp",
+    "/prints/previews/print_lr_akita_a_1_p7.webp"
+  ],
+  "print_lr_akita_q_2": [
+    "/prints/previews/print_lr_akita_q_2_p2.webp",
+    "/prints/previews/print_lr_akita_q_2_p6.webp"
+  ],
+  "print_lr_akita_a_2": [
+    "/prints/previews/print_lr_akita_a_2_p2.webp",
+    "/prints/previews/print_lr_akita_a_2_p7.webp"
+  ],
+  "print_lr_akita_q_3": [
+    "/prints/previews/print_lr_akita_q_3_p2.webp",
+    "/prints/previews/print_lr_akita_q_3_p6.webp"
+  ],
+  "print_lr_akita_a_3": [
+    "/prints/previews/print_lr_akita_a_3_p2.webp",
+    "/prints/previews/print_lr_akita_a_3_p7.webp"
   ],
   "print_book_listening_all": [
     "/prints/previews/print_book_listening_all_p2.webp",

@@ -10,6 +10,13 @@
 
 ---
 
+## 2026-11-03 2次試験ガチャの大当たりに山口大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-yamaguchi）
+
+- LR（2次試験ガチャ）の予想問題に山口大学を追加（3冊・25〜26ページ：問題12〜13＋解答・解説12〜13）。全学部共通の前期英語（120分・200点）の形式に沿った書き下ろし。
+- 表紙と奥付に「山口大学の過去問・公式問題ではありません。予想問題であり、大学とは関係がありません。」を明記。
+- 画面の変更はなし（ガチャの排出リスト・サムネイル・プレビュー画像が増えるだけ）。LR の説明文の大学名に山口大学を追加。
+- 戻し方：`src/data/nijiMockPrints.ts` の `yamaguchi` の3行と大学一覧の1行を消し、`tests/nijiGacha.test.ts` の冊数を 72 に戻す。
+
 ## 2026-11-03 2次試験ガチャの大当たりに東京外国語大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-tufs）
 
 - LR（2次試験ガチャ）の予想問題に東京外国語大学を追加（3冊・34〜35ページ：問題15〜16＋解答・解説19）。3学部共通の前期「英語」の型（長文2題・リスニング3題、120分・250点）に沿った書き下ろし。
@@ -1179,6 +1186,51 @@
 ### テスト
 - `tests/homeBattleRankingPolish.test.ts`（新規）で上の①〜⑤が崩れていないかを確認。戻すときはこのテストも消す。
 - `tests/revision.test.ts`：main で1件落ちていた（#58 でホームの「ランキングを見る」を外したのに、テストがホームにあることを求めていた）。入口が対戦画面の切替（`onRanking`）にあることを確かめる形に直した。
+
+## 2026-11-03 E1〜E5（フレンド対戦の戻り先・負け動画・マナラッシュ・タイトル動画・ショップのPDF）
+
+### E1 フレンド対戦の結果 →「部屋に戻って科目などを選ぶ」
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 戻り先 | フレンド部屋（合言葉あり）は、いつも合言葉の待機ロビー（「対戦の設定（科目・モード・問題数）かえる」がある画面）へ。部屋主は同じ設定で次の部屋を作って移り、相手は自動でついてくる。**教科選び（subject-friend）へは落とさない**（以前は落ちると合言葉を入れ直す必要があった） | `src/battle/ui/BattleRoomScreen.tsx`（`isFriendRoom`・`backToRoom`・`backToRoomLabel`） |
+| 失敗したとき | 結果画面のボタンの上に理由を赤字で出す。もう一度押せばやり直せる | `BattleRoomScreen.tsx`（`backToRoomNote={moveError}`）、`src/battle/ui/BattleResult.tsx`（`backToRoomNote`・`data-result-back-room-note`） |
+| 文言 | 部屋主：「部屋に戻って科目などを選ぶ（同じ相手と再戦）」 | `BattleRoomScreen.tsx` |
+
+**戻し方**：`BattleRoomScreen.tsx` の E1 のブロックを消し、`onBackToRoom`／`backToRoomLabel` を元の三項演算子に戻す。`BattleResult.tsx` の `backToRoomNote` を消す。
+
+### E2 負けたときの動画
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 動画 | 旧 `lose.mp4`・`lose-poster.webp` を削除。ウインク＋グッドの `gacha_r.mp4`（アプリ内の既存動画）を「はげまし」に使う | `src/components/CinematicClip.tsx`（`CINEMATIC_CLIPS.lose`）、`public/cinematics/` |
+| 再生後 | 流し終わったら動画の枠ごと外す（以前は `hold`＋背景ポスターで、ぼやけた最後のコマが止まって残っていた） | `src/battle/ui/BattleResult.tsx`（`loseClipDone`） |
+
+### E3 マナラッシュの最初の画面
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 上の「←もどる」 | 文字だけのボタンをやめ、プロフィール編集などと同じ「← 44px ボタン＋見出し＋一言」の1行に | `src/components/ManaRush.tsx`（`mana-rush-head`）、`src/components/growth-hub.css`（末尾の E3 ブロック） |
+| 英字の見出し・大きな手書きタイトル | 削除（見出しの1行にまとめた） | `ManaRush.tsx` |
+| ルール4枚 | 1枚のカードに 2×2 で短く | `ManaRush.tsx`、`growth-hub.css` |
+| 並び | 見出し → ルール → 科目 → 自己ベスト → スタート をスクロールなしで。文字12px以上・ボタン44px以上 | `growth-hub.css` |
+
+**戻し方**：`growth-hub.css` の E3 ブロックを消し、`ManaRush.tsx` の menu の上部を `arena-back`・`mana-eyebrow`・`mana-rush-title` の形に戻す。
+
+### E4 タイトル画面の動画
+- 送っていただいた2本のうち、動きの良い「…3D ani 389900 OFW.mp4」から作り直し（もう1本は 1.75〜2.3秒で目が白く崩れ、ほかはほぼ止まっているので不採用）。
+- 顔が崩れるコマ（0〜0.29秒・1.75〜2.12秒・4.65秒〜）を外し、同じ姿勢のコマどうしを2コマのクロスフェードでつないだ3.1秒。背景はほかの動画と同じクリーム色。720×720・249KB。
+- 道具：`scripts/firefly-kit/title_e4.py`。台帳：`docs/CINEMATICS.md`。
+
+### E5 ショップで PDF を交換
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 値段 | ガチャから出る PDF に、レア度ごとの値段を付けた：**LR 5,000／UR 3,000／SR 2,000 マナコイン**（ガチャからも今までどおり出る。Lv.15 の PDF はレベル報酬なので出さない） | `src/battle/core/growthItems.ts`（`PRINT_SHOP_PRICES`・`shopPriceOf`・`purchaseItem`） |
+| ショップの表示 | 種類に「PDF」を追加。値段・購入ボタン・確認文を `shopPriceOf` で出す。買ったら「マイPDFから保存できます」 | `src/components/MyCollection.tsx` |
+
+**戻し方**：`growthItems.ts` の `PRINT_SHOP_PRICES`・`shopPriceOf` を消して `purchaseItem` を `item.unlock.coins` に戻す。`MyCollection.tsx` の `shopPriceOf` を `'coins' in item.unlock` に戻し、`['print','PDF']` を消す。
+
+### テスト
+- `tests/revisionF.test.ts`（新規）で E1〜E5 を確認。`tests/cinematicClips.test.ts` など既存のテストも通る。
+
+---
 
 ## 2026-10-29 ガチャ LR に「神戸大学 前期 英語 予想問題」6種を追加
 

@@ -313,6 +313,21 @@ export function gachaRarityOf(item: ItemDef): GachaRarity {
   return 'N';
 }
 
+/**
+ * ★E5（2026-11-03）PDF もショップでマナコインと交換できる★
+ *   ガチャから出る学習プリント・予想問題（kind:'print' かつ gacha:true）に、レア度ごとの値段を付ける。
+ *   高めにしてあるのは、ガチャで当てる楽しみを残すため（ガチャからも今までどおり出る）。
+ *   レベル報酬の PDF（Lv.15）はレベルでだけ手に入るので、ショップには出さない。
+ */
+export const PRINT_SHOP_PRICES: Readonly<Partial<Record<GachaRarity, number>>> = { LR: 5000, UR: 3000, SR: 2000 };
+
+/** ショップでの値段（マナコイン）。ショップで交換できなければ null */
+export function shopPriceOf(item: ItemDef): number | null {
+  if ('coins' in item.unlock) return item.unlock.coins;
+  if (item.kind === 'print' && item.gacha) return PRINT_SHOP_PRICES[gachaRarityOf(item)] ?? null;
+  return null;
+}
+
 export function itemById(id: string): ItemDef | undefined {
   return ITEMS.find((i) => i.id === id);
 }
@@ -337,16 +352,17 @@ export function purchaseItem(
   const item = itemById(id);
   if (!item) return { next: progress, ok: false, reason: 'その装備はありません。' };
   if (progress.owned.includes(id)) return { next: progress, ok: false, reason: 'すでに持っています。' };
-  if (!('coins' in item.unlock)) return { next: progress, ok: false, reason: 'コインでは交換できません。' };
-  if (progress.coins < item.unlock.coins) {
+  const price = shopPriceOf(item);
+  if (price == null) return { next: progress, ok: false, reason: 'コインでは交換できません。' };
+  if (progress.coins < price) {
     return {
       next: progress,
       ok: false,
-      reason: `コインが ${item.unlock.coins - progress.coins} 足りません。`,
+      reason: `コインが ${price - progress.coins} 足りません。`,
     };
   }
   return {
-    next: { ...progress, coins: progress.coins - item.unlock.coins, owned: [...progress.owned, id] },
+    next: { ...progress, coins: progress.coins - price, owned: [...progress.owned, id] },
     ok: true,
   };
 }

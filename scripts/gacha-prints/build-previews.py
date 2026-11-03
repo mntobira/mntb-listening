@@ -32,7 +32,7 @@ def lr_ids() -> list[str]:
         out.append(f'print_lr_kyotsu_{kind}_{n}')
     # 2026-10-29：2次試験ガチャの LR（国公立2次 英語 予想問題）
     niji = (ROOT / 'src/data/nijiMockPrints.ts').read_text()
-    for univ, n in re.findall(r'\b(nagoya|shizuoka|omua|omub|wakayama|okayama|hiroshima|gakugei|ryukyu|kumamoto|saga|kagawa|tokushima|ehimeh|ehimee|ehimem|kochij|kochik|kochie|kochim|kyushu|fwu|tufs|tottori)\((\d+), \d+, \d+\)', niji):
+    for univ, n in re.findall(r'\b(nagoya|shizuoka|omua|omub|wakayama|okayama|hiroshima|gakugei|ryukyu|kumamoto|saga|kagawa|tokushima|ehimeh|ehimee|ehimem|kochij|kochik|kochie|kochim|kyushu|fwu|tufs|tottori|yamaguchi)\((\d+), \d+, \d+\)', niji):
         out.append(f'print_lr_niji_{univ}_en_{n}')
     src = (ROOT / 'src/data/kobeMockPrints.ts').read_text()
     for kind, n in re.findall(r'\b([qa])\((\d), \d+, \d+\)', src):
