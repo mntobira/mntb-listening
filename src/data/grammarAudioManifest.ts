@@ -20,13 +20,16 @@
  * 名簿に無い問題は今までどおり音声合成（音源ファイルを探しに行かない＝404 を出さない）。
  */
 
+import { GRAMMAR_AUDIO_ID_LIST } from './grammarAudioIds';
+
 /** 音源ファイルの置き場所（public/ 直下のフォルダ名） */
 export const GRAMMAR_AUDIO_DIR = 'grammar_audio';
 
-/** 音源がある問題（小問）の ID。いまは空 */
-export const GRAMMAR_AUDIO_IDS: ReadonlySet<string> = new Set<string>([
-  // 'q_eg6_1_set1_1',
-]);
+/**
+ * 音源がある問題（小問）の ID（2026-11-03 ElevenLabs の音源 1163 文を1文ずつに切って配置）。
+ * 名簿は public/grammar_audio/ の一覧から自動生成：python3 scripts/grammar-audio/make_ids.py
+ */
+export const GRAMMAR_AUDIO_IDS: ReadonlySet<string> = new Set<string>(GRAMMAR_AUDIO_ID_LIST);
 
 /** 問題ID → 音源の URL（名簿に無ければ undefined＝音声合成） */
 export function grammarAudioUrl(subId: string): string | undefined {
