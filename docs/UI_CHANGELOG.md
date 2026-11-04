@@ -10,6 +10,16 @@
 
 ---
 
+## 2026-11-04 タイトル画面のとびら君の動画を、もう1本の動画に差し替え（PR: feat/title-video-e6）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| タイトル画面（起動時）のとびら君の動画 | E4（11/03）で作った動画から、送られた2本のうちもう1本（「…heartwarming 200121 Aoq.mp4」）に差し替え。手に鉛筆と三角定規を持って、その場で体をゆらす動き（2.7秒）。目が白く崩れるコマは使っていない。背景はほかの動画と同じクリーム色 | `public/cinematics/title.mp4`・`title-poster.webp`・`scripts/firefly-kit/title_e6.py` |
+
+- 動画の最後のコマと、そのあと残る静止画（装備したポーズ）の位置はほぼ同じなので、配置（CSS）は変えていない。
+
+**戻し方**：`git checkout <この PR の前のコミット> -- public/cinematics/title.mp4 public/cinematics/title-poster.webp`（または、元動画を置いて `scripts/firefly-kit/title_e4.py` を実行して public/cinematics/ にコピー）。
+
 ## 2026-11-03 英単語・英文法に ElevenLabs の音源、単語帳に読み方の表示（PR: feat/elevenlabs-audio）
 
 | 何を | どう変えた | ファイル |
