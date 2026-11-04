@@ -1,0 +1,38 @@
+{
+ "1-Borrow a Drill, Return I": {
+  "words": 748,
+  "avg": 18.2,
+  "zipf_lt4": 5.3,
+  "paras": 10,
+  "range": {
+   "words": "550–900:OK",
+   "avg": "14–25:OK",
+   "zipf_lt4": "3–14:OK"
+  }
+ },
+ "1-questions": 5,
+ "1-Q5-52字": "50〜60字:OK",
+ "1-Q5-55字": "50〜60字:OK",
+ "2-The Quiet Return of the ": {
+  "words": 713,
+  "avg": 17.8,
+  "zipf_lt4": 6.7,
+  "paras": 9,
+  "range": {
+   "words": "550–900:OK",
+   "avg": "14–25:OK",
+   "zipf_lt4": "3–14:OK"
+  }
+ },
+ "2-questions": 4,
+ "2-Q3-68字": "60〜70字:OK",
+ "2-Q3-67字": "60〜70字:OK",
+ "2-Q4-write": {
+  "models": [
+   42,
+   41
+  ],
+  "range": "40〜50語"
+ },
+ "ng": []
+}

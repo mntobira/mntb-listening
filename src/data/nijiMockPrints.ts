@@ -196,7 +196,7 @@ export function nijiDisclaimerFor(univName: string): string {
 }
 
 /**
- * 2次試験ガチャの LR に入っている、ほかの大学別 予想問題（問題／解答・解説が別冊。台帳は hokudai/tohoku/hirosaki/iwate/akita/kobe/osaka/ritsuMockPrints.ts）。
+ * 2次試験ガチャの LR に入っている、ほかの大学別 予想問題（問題／解答・解説が別冊。台帳は hokudai/tohoku/hirosaki/iwate/akita/yamagata/kobe/osaka/ritsuMockPrints.ts）。
  *   id は print_lr_{id}_{q|a}_{回}。
  */
 export const OTHER_MOCK_UNIVERSITIES = [
@@ -205,12 +205,13 @@ export const OTHER_MOCK_UNIVERSITIES = [
   { id: 'hirosaki', name: '弘前大学' },
   { id: 'iwate', name: '岩手大学' },
   { id: 'akita', name: '秋田大学' },
+  { id: 'yamagata', name: '山形大学' },
   { id: 'kobe', name: '神戸大学' },
   { id: 'osaka', name: '大阪大学' },
   { id: 'ritsu', name: '立命館大学' },
 ] as const;
 
-/** 2次試験ガチャの予想問題（id）がどの大学のものか（名古屋・静岡に加え、北大・東北大・弘前大・岩手大・秋田大・神戸・阪大・立命館も）。予想問題でなければ undefined */
+/** 2次試験ガチャの予想問題（id）がどの大学のものか（名古屋・静岡に加え、北大・東北大・弘前大・岩手大・秋田大・山形大・神戸・阪大・立命館も）。予想問題でなければ undefined */
 export function mockUniversityOf(id: string): { id: string; name: string } | undefined {
   const m = id.match(/^print_lr_([a-z]+)_[qa]_\d+$/);
   return m ? OTHER_MOCK_UNIVERSITIES.find((u) => u.id === m[1]) : nijiUniversityOf(id);

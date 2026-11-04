@@ -1,0 +1,66 @@
+{
+ "r1-1": {
+  "en4": {},
+  "ja13": {}
+ },
+ "r1-2": {
+  "en4": {},
+  "ja13": {}
+ },
+ "r2-1": {
+  "en4": {},
+  "ja13": {}
+ },
+ "r2-2": {
+  "en4": {},
+  "ja13": {}
+ },
+ "r3-1": {
+  "en4": {},
+  "ja13": {}
+ },
+ "topic": {
+  "r1-1-Recipes Without ": [
+   0.1,
+   "hirosaki_ref/2026-1"
+  ],
+  "r1-2-A Forest the Siz": [
+   0.059,
+   "hokudai_ref/2026-4conv"
+  ],
+  "r2-1-Borrow a Drill, ": [
+   0.086,
+   "tohoku_ref/2026-III"
+  ],
+  "r2-2-The Quiet Return": [
+   0.081,
+   "tohoku_ref/2026-III"
+  ],
+  "r3-1-When the Road Ou": [
+   0.083,
+   "hokudai_ref/2026-4conv"
+  ],
+  "r3-1-The Shrinking Ma": [
+   0.102,
+   "hokudai_ref/2025-2"
+  ]
+ },
+ "topic_past_ref": {
+  "n": 33,
+  "median": 0.049,
+  "max": 0.592
+ },
+ "render_fixed": {
+  "en4": [],
+  "ja13": []
+ },
+ "answer_positions": {
+  "A": 3,
+  "B": 4,
+  "C": 4,
+  "D": 3,
+  "E": 1
+ },
+ "far_longest_answer": "3/15",
+ "ng": []
+}

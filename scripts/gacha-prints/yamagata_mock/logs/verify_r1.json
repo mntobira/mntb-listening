@@ -1,0 +1,36 @@
+{
+ "1-Recipes Without Numbers": {
+  "words": 798,
+  "avg": 17.3,
+  "zipf_lt4": 5.4,
+  "paras": 11,
+  "range": {
+   "words": "550–900:OK",
+   "avg": "14–25:OK",
+   "zipf_lt4": "3–14:OK"
+  }
+ },
+ "1-questions": 5,
+ "1-Q4-62字": "55〜65字:OK",
+ "1-Q4-61字": "55〜65字:OK",
+ "2-A Forest the Size of a T": {
+  "words": 752,
+  "avg": 17.1,
+  "zipf_lt4": 7.5,
+  "paras": 10,
+  "range": {
+   "words": "550–900:OK",
+   "avg": "14–25:OK",
+   "zipf_lt4": "3–14:OK"
+  }
+ },
+ "2-questions": 5,
+ "2-Q5-write": {
+  "models": [
+   61,
+   59
+  ],
+  "range": "55〜65語"
+ },
+ "ng": []
+}

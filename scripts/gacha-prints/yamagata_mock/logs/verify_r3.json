@@ -1,0 +1,37 @@
+{
+ "1-When the Road Outside Sc": {
+  "words": 593,
+  "avg": 19.1,
+  "zipf_lt4": 4.1,
+  "paras": 7,
+  "range": {
+   "words": "550–900:OK",
+   "avg": "14–25:OK",
+   "zipf_lt4": "3–14:OK"
+  }
+ },
+ "1-The Shrinking Map of Chi": {
+  "words": 585,
+  "avg": 22.5,
+  "zipf_lt4": 4.3,
+  "paras": 7,
+  "range": {
+   "words": "550–900:OK",
+   "avg": "14–25:OK",
+   "zipf_lt4": "3–14:OK"
+  }
+ },
+ "1-questions": 8,
+ "1-Q4-58字": "50〜60字:OK",
+ "1-Q4-60字": "50〜60字:OK",
+ "1-Q6-83字": "80〜90字:OK",
+ "1-Q6-82字": "80〜90字:OK",
+ "1-Q8-write": {
+  "models": [
+   123,
+   123
+  ],
+  "range": "100〜150語"
+ },
+ "ng": []
+}
