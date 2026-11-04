@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { AD_CONFIG } from './adConfig';
+import { useAdFree } from './adFree';
 import { showNativeBottomBanner, hideNativeBottomBanner } from '../utils/adService';
 import './ads.css';
 
@@ -18,7 +19,9 @@ import './ads.css';
  */
 export function AdBannerSlot({ screen }: { screen: string }) {
   const { enabled, position, height, hiddenOn } = AD_CONFIG.banner;
-  const show = enabled && !hiddenOn.includes(screen);
+  // 2026-11-04：塾クラスの生徒は広告なし（場所の余白も空けない）。adFree.ts
+  const adFree = useAdFree();
+  const show = enabled && !adFree && !hiddenOn.includes(screen);
   const top = show && (position === 'top' || position === 'both');
   const bottom = show && (position === 'bottom' || position === 'both');
 

@@ -503,3 +503,7 @@
 .mana-rush-menu .mana-rush-start { min-height: 54px; margin: 0 !important; font-size: 19px; border: 0; box-shadow: 0 4px 0 #c98200; }
 .mana-rush-menu .mana-storage-info { font-size: 12px; text-align: center; color: #6b6a66; }
 @media (max-height: 680px) { .mana-rush-menu { gap: 7px; } .mana-rush-menu .mana-rush-best { padding: 7px 12px; } .mana-rush-menu .mana-rush-start { min-height: 48px; } }
+/* 2026-11-04 PDF の棚（ショップの「PDF」・マイPDF）。種類のチップと同じ見た目で、件数を小さく添える */
+.my-collection .collection-shelves button small { margin-left: 5px; font-size: 12px; font-weight: 700; opacity: .7; }
+/* 低い画面（iPhone SE など）で棚が出ている間は、下の保存の注意書きを畳んで一覧の場所を空ける */
+@media (max-height: 600px) { .my-collection:has([data-print-shelves]) .collection-storage { display: none; } }

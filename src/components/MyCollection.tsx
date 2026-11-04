@@ -16,6 +16,7 @@ import { KyotsuAudioPlayer } from './gacha/KyotsuAudioPlayer';
 import { GachaSetsPanel } from './gacha/GachaSetsPanel';
 import { stageOf } from '../battle/core/tobiraParts';
 import { CompanionArt } from '../battle/ui/CompanionArt';
+import { PRINT_SHELVES, printShelfOf, type PrintShelfId } from '../battle/core/printShelves';
 import '../styles/home-stage.css';
 /** プレゼント（隔週リーグ報酬）でしか手に入らないアイテム */
 const LEAGUE_GIFT_ITEM = 'frame_league_aurora';
@@ -42,6 +43,7 @@ const LEAGUE_LABEL: Record<string, string> = { bronze: 'ブロンズ', silver: '
 export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gachaMode = false }: { view?: 'owned' | 'prints' | 'shop'; key?: string; onGacha?: () => void; initialKind?: string; gachaMode?: boolean }) {
   const { progress, uid } = useGrowthProgress();
   const [kind, setKind] = useState(initialKind); const [search, setSearch] = useState('');
+  const [shelf, setShelf] = useState<PrintShelfId | 'all'>('all');
   const [state, setState] = useState<'owned' | 'available' | 'all'>(view === 'shop' ? 'available' : 'owned');
   const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false);
   const [rewards, setRewards] = useState<LeagueReward[]>([]);
@@ -57,8 +59,13 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gac
   // PC では、枠に入るぶんだけ並べてページでめくる（スクロールさせない）。絞り込みを変えたら1ページ目へ
   const owned = progress?.owned ?? [];
   const base = ITEMS.filter(i => view === 'prints' ? i.kind === 'print' && owned.includes(i.id) : view === 'shop' ? shopPriceOf(i) != null : i.kind !== 'print');
-  const list = base.filter(i => (kind === 'all' || i.kind === kind) && (!search || i.label.includes(search)) && (view === 'prints' || state === 'all' || (state === 'owned') === owned.includes(i.id)));
-  const pager = useFitPager(list.length, `${view}:${kind}:${search}:${state}`);
+  // 2026-11-04：PDF は棚（共通テスト・2次は地方ごと・教科）で絞る。ショップの「PDF」とマイPDF だけ
+  const showShelves = view === 'prints' || (view === 'shop' && kind === 'print');
+  const shelfCount = new Map<PrintShelfId, number>();
+  if (showShelves) for (const i of base) { const p = i.kind === 'print' ? printOf(i.id) : undefined; if (p) shelfCount.set(printShelfOf(p), (shelfCount.get(printShelfOf(p)) ?? 0) + 1); }
+  const inShelf = (i: ItemDef) => { if (!showShelves || shelf === 'all') return true; const p = printOf(i.id); return !!p && printShelfOf(p) === shelf; };
+  const list = base.filter(i => (kind === 'all' || i.kind === kind) && inShelf(i) && (!search || i.label.includes(search)) && (view === 'prints' || state === 'all' || (state === 'owned') === owned.includes(i.id)));
+  const pager = useFitPager(list.length, `${view}:${kind}:${shelf}:${search}:${state}`);
   if (!progress) return <p role="alert">所有記録を読み込めません。ブラウザの保存設定を確認してください。</p>;
   const titles = { owned: 'もっているもの', prints: 'マイPDF', shop: gachaMode ? 'ガチャショップ（選んで交換）' : 'ショップ（選んで交換）' };
   const perform = async (item: ItemDef) => {
@@ -95,7 +102,8 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gac
     {message && <p role="status" className="collection-message">{message}</p>}
     <div className="collection-controls"><label className="sr-only" htmlFor="collection-search">アイテム名で探す</label><input id="collection-search" placeholder="名前で探す" value={search} onChange={e => setSearch(e.target.value)}/>
       {view !== 'prints' && <div className="collection-state" role="group" aria-label="所有状況">{states.map(([id, label]) => <button type="button" key={id} aria-pressed={state === id} data-state={id} onClick={() => setState(id)}>{label}</button>)}</div>}</div>
-    {view !== 'prints' && <nav className="collection-kinds" aria-label="種類" data-collection-kinds>{kinds.map(([id,label]) => <button type="button" key={id} data-kind={id} aria-pressed={kind === id} onClick={() => setKind(id)}>{label}</button>)}</nav>}
+    {view !== 'prints' && <nav className="collection-kinds" aria-label="種類" data-collection-kinds>{kinds.map(([id,label]) => <button type="button" key={id} data-kind={id} aria-pressed={kind === id} onClick={() => { setKind(id); setShelf('all'); }}>{label}</button>)}</nav>}
+    {showShelves && shelfCount.size > 1 && <nav className="collection-kinds collection-shelves" aria-label="PDFの棚" data-print-shelves>{[{ id: 'all' as const, label: 'すべて' }, ...PRINT_SHELVES.filter(sh => shelfCount.has(sh.id))].map(sh => <button type="button" key={sh.id} data-shelf={sh.id} aria-pressed={shelf === sh.id} onClick={() => setShelf(sh.id)}>{sh.label}{sh.id !== 'all' && <small>{shelfCount.get(sh.id)}</small>}</button>)}</nav>}
     <div className="collection-scroll" tabIndex={0} aria-label="所有アイテム一覧" ref={pager.frameRef} data-fit-paged={pager.enabled || undefined}>
       {/* 届いたプレゼント（未受け取りだけ）。受け取ると下の一覧に「プレゼントで獲得」と出る */}
       {view === 'owned' && rewards.some(r => !progress.owned.includes(r.itemId)) && <section className="store-guide is-gift" aria-label="届いたプレゼント" data-gift-guide>

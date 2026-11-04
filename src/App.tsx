@@ -7,6 +7,7 @@ import { AdBannerSlot } from './ads/AdBannerSlot';
 import { PdfViewerHost } from './components/PdfViewer';
 import { usePdfOpen } from './hooks/usePdfOpen';
 import { useBannerAdSuppressed } from './utils/adSuppress';
+import { useJukuAdFree } from './hooks/useJukuAdFree';
 import React, { useState, useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { BottomNavigation } from './components/ui/BottomNavigation';
@@ -224,6 +225,7 @@ export default function App() {
   /** アプリ内の PDF ビューが開いているか（開いている間は広告を出さない） */
   const pdfOpen = usePdfOpen();
   const bannerAdSuppressed = useBannerAdSuppressed();
+  useJukuAdFree(); // 塾クラスの生徒には広告を出さない（2026-11-04）
   const [foundationBackTo, setFoundationBackTo] = useState<'home' | 'study'>('home');
   // 演習する（科目→コンテンツ）。選んだ科目・前回のコンテンツは端末に覚えておく
   const [studyCatalogSubject, setStudyCatalogSubject] = useState<string | null>(() => safeGetItem(STORAGE_KEYS.studyCatalogSubject));

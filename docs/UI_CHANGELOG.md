@@ -10,6 +10,23 @@
 
 ---
 
+## 2026-11-04 塾クラスの生徒は広告なし・ショップの PDF を棚（地方・教科）で整理（PR: feat/juku-noads-pdf-shelf）
+
+| # | 何を | どう変えた | ファイル |
+|---|---|---|---|
+| 1 | 塾クラスの生徒の広告 | 塾クラス（plan == 'juku'）に入っている生徒は、下のバナー（と、その場所の余白）・ガチャ「動画で1回」の広告を出さない。動画で1回は今までどおりアプリ内の応援動画で引ける。判定は端末に覚えた在籍（クラス画面・ログイン時に読み直し）。ゲスト・塾以外のクラス・クラスなしは今までどおり | `src/ads/adFree.ts`（新）・`src/hooks/useJukuAdFree.ts`（新）・`src/ads/AdBannerSlot.tsx`・`src/ads/rewardedAd.ts`・`src/App.tsx` |
+| 2 | ショップの PDF | 種類「PDF」を選ぶと、その下に **棚のチップ**（共通テスト予想／2次 北海道・東北／関東・中部／近畿／中国・四国／九州・沖縄／完全版の本／英語／化学／数学／情報／生物・理科／出題傾向。件数つき）。マイPDF でも、持っている PDF が2つ以上の棚にまたがると出る。見た目は種類のチップと同じ | `src/battle/core/printShelves.ts`（新）・`src/components/MyCollection.tsx`・`src/components/growth-hub.css`（末尾） |
+| 3 | 低い画面（高さ600px以下） | 棚が出ている間だけ、下の「所有アイテム・コインは…」の注意書きを畳んで一覧の場所を空ける | `growth-hub.css` |
+
+- 新しい大学の予想問題を足したら `printShelves.ts` の `UNIV_REGION` に1行（`tests/printShelves.test.ts` が見張る）。
+
+**戻し方**：
+- 丸ごと戻す：このPRを revert。
+- 広告だけ戻す：`App.tsx` の `useJukuAdFree();` の1行を消す（全員に今までどおり広告）。
+- 棚だけ消す：`MyCollection.tsx` の `data-print-shelves` の `<nav>` を消し、`inShelf(i) &&` を外す。
+
+---
+
 ## 2026-11-03 英単語・英文法に ElevenLabs の音源、単語帳に読み方の表示（PR: feat/elevenlabs-audio）
 
 | 何を | どう変えた | ファイル |

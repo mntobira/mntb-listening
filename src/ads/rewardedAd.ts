@@ -12,6 +12,7 @@
  * のどれかで返る。
  */
 import { AD_CONFIG } from './adConfig';
+import { isAdFree } from './adFree';
 
 export type RewardedResult =
   | { status: 'rewarded' }
@@ -48,7 +49,8 @@ let preloaded: Promise<boolean> | null = null;
 export function registerRewardedAdProvider(p: RewardedAdProvider | null): void { provider = p; preloaded = null; }
 
 /** 広告として出せるか（設定が ON で、SDK が登録済み） */
-export function rewardedAdAvailable(): boolean { return AD_CONFIG.rewarded.enabled && provider !== null; }
+/** 2026-11-04：塾クラスの生徒（isAdFree）は広告にしない＝アプリ内の応援動画で引く */
+export function rewardedAdAvailable(): boolean { return AD_CONFIG.rewarded.enabled && provider !== null && !isAdFree(); }
 
 /** ガチャ画面を開いたときに先に読み込んでおく（押してから待たせない） */
 export function preloadRewardedAd(): void {
