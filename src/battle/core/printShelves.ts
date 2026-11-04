@@ -31,6 +31,7 @@ export const PRINT_SHELVES: readonly { id: PrintShelfId; label: string }[] = [
 /** 大学（PDF の id に入っている名前）→ 地方 */
 export const UNIV_REGION: Readonly<Record<string, PrintShelfId>> = {
   hokudai: 'hokkaido_tohoku', tohoku: 'hokkaido_tohoku', hirosaki: 'hokkaido_tohoku', iwate: 'hokkaido_tohoku', akita: 'hokkaido_tohoku',
+  yamagata: 'hokkaido_tohoku',
   gakugei: 'kanto_chubu', tufs: 'kanto_chubu', nagoya: 'kanto_chubu', shizuoka: 'kanto_chubu',
   omua: 'kinki', omub: 'kinki', wakayama: 'kinki', kobe: 'kinki', osaka: 'kinki', ritsu: 'kinki',
   okayama: 'chugoku_shikoku', hiroshima: 'chugoku_shikoku', tottori: 'chugoku_shikoku', yamaguchi: 'chugoku_shikoku',
