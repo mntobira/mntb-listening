@@ -213,16 +213,19 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
   const timeRatio = Math.max(0, Math.min(1, remain / RUSH_DURATION_MS));
 
   if (phase === 'menu' || phase === 'loading') {
-    return <section className="mana-rush mana-hub-main" data-mana-rush="menu">
-      <button type="button" className="arena-back" onClick={onBack}><ArrowLeft size={18} />もどる</button>
-      <p className="mana-eyebrow">60 SECOND CHALLENGE</p>
-      <h1 className="mana-rush-title"><Zap aria-hidden="true" /> <KineticText text="マナラッシュ" step={45} variant="pop" /></h1>
-      <p className="text-sm text-slate-600">60秒で何問とける？ 正解を続けてコンボをつなごう。</p>
+    // ★E3（2026-11-03）見出しをほかの独立画面（プロフィール編集など）と同じ形にそろえる★
+    //   以前は文字だけの「←もどる」が浮いていて、英字の見出し・大きな手書きタイトル・ルール4枚が縦に積まれ、何の画面か分かりにくかった。
+    //   いまは「← ボタン（44px）＋ 見出し ＋ 一言」の1行にして、ルールは1枚のカードに短くまとめる（スクロールなしの1画面）。
+    return <section className="mana-rush mana-hub-main mana-rush-menu" data-mana-rush="menu">
+      <header className="profile-standalone-head mana-rush-head">
+        <button type="button" onClick={onBack} aria-label="もどる" data-rush-back><ArrowLeft size={20} aria-hidden="true" /></button>
+        <div><h2><Zap size={18} aria-hidden="true" />マナラッシュ</h2><p>60秒で何問とける？ 正解を続けてコンボをつなごう</p></div>
+      </header>
       <ul className="mana-rush-rules" aria-label="ルール">
-        <li><Timer size={16} />制限時間60秒（5コンボごとに＋3秒）</li>
-        <li><Heart size={16} />ライフ3。まちがえると1つ減る</li>
-        <li><Flame size={16} />5コンボ以上でフィーバー！ 得点2倍</li>
-        <li><Zap size={16} />はやく答えるほどスピードボーナス</li>
+        <li><Timer size={16} aria-hidden="true" />60秒（5コンボごとに＋3秒）</li>
+        <li><Heart size={16} aria-hidden="true" />ライフ3（まちがえると−1）</li>
+        <li><Flame size={16} aria-hidden="true" />5コンボ以上で得点2倍</li>
+        <li><Zap size={16} aria-hidden="true" />はやく答えるとボーナス</li>
       </ul>
       <h2 className="mana-rush-subtitle">科目をえらぶ</h2>
       <div className="mana-rush-subjects" role="radiogroup" aria-label="科目">
@@ -245,7 +248,7 @@ export function ManaRush({ onBack, defaultSubject }: { onBack: () => void; defau
       <button type="button" className="mana-rush-start" disabled={phase === 'loading'} onClick={() => void start()} data-rush-start>
         <Play aria-hidden="true" />{phase === 'loading' ? '問題を準備中…' : 'スタート'}
       </button>
-      <p className="mana-storage-info">成績と報酬はこの端末・アカウントに保存されます。オンライン対戦のレートには影響しません。</p>
+      <p className="mana-storage-info">オンライン対戦のレートには影響しません。</p>
     </section>;
   }
 

@@ -28,4 +28,6 @@ B = [
 ("b_docs_txt","資料の補足テキスト",r"^docs/(firestore\.rules\.copy\.txt|listening_q4-6/.*\.txt)$","文書","高","ルールの控えや、素材一式の「はじめに」などの補足の係","firestore.rules の控え（txt）と、第4〜6問の素材に添えた説明テキスト。"),
 ("b_license","有料契約の証拠画像",r"^license_evidence/(?!README\.md$)","文書","高","音声サービスの有料契約の領収画像を保管する係","画像の中身（領収番号など）は図鑑には載せない。説明は license_evidence/README.md。"),
 ("b_insta","Instagram用の完成動画",r"^store-assets/instagram/.*\.mp4$","音声・画像","高","宣伝用に書き出したInstagram動画を持つ係","edit_instagram.py で書き出した MP4（フィード・リールなど）。"),
+("b_vocab_audio","英単語の録音（1語1ファイル）",r"^public/audio/vocab/","音声・画像","高","単語帳と英単語4択で鳴らす、見出し語の録音を1語1ファイルで持つ係","ElevenLabs Studio の1本を1語ずつに切った MP3（<レベル>/<番号>.mp3）と、録音のある語ID・版を書いた index.json。vocabAudio.ts が読む。無い語は端末の読み上げ。"),
+("b_grammar_audio","英文法の録音（1文1ファイル）",r"^public/grammar_audio/","音声・画像","高","英文法の解説で鳴らす完成文の録音を、1問1ファイルで持つ係","ElevenLabs Studio の1本を1文ずつに切った MP3（<問題ID>.mp3）。名簿は scripts/grammar-audio/make_ids.py が grammarAudioIds.generated.ts に書き出し、grammarAudioManifest.ts が読む。"),
 ]

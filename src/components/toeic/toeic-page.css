@@ -332,3 +332,29 @@
 @media (min-width: 1024px) {
   .tp-pane-switch, .tp-pane-next { display: none; }
 }
+
+/* ───────── 採点後「文書で根拠を見る」（Part 7）／「文書で空所を見る」（Part 6）（2026-11-03） ─────────
+   解説の上の行にボタン（高さ44px）。押すと文書に切り替え（スマホ）、根拠の英文に黄色いマーカー・空所に枠を付けてそこまで動かす。
+   上に「問n の根拠を文書に表示中／解説に戻る／×」の帯。マーカーの色は解説の手がかり（.tp-cue）と同じ系統。
+   戻し方：この段を消し、ToeicPageQuiz.tsx の tp-evbtn・tp-ev-bar・showEvidence と、両 Passage の evidence／focusBlank を外す。 */
+.tp-evbtn { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1px solid #94a3b8; background: #fff; font-size: 13px; font-weight: 800; color: #1f3566; cursor: pointer; }
+.tp-evbtn:hover { background: #eef2fb; }
+.tp-evbtn[data-active] { border-color: #b58c26; background: #fff7d6; color: #5b4310; }
+.tp-evbtn:focus-visible, .tp-ev-back:focus-visible, .tp-ev-clear:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+.tp-ev-bar { flex: none; display: flex; align-items: center; gap: 6px; padding: 4px 8px 4px 12px; border-bottom: 1px solid #f0d77a; background: #fff8dc; }
+.tp-ev-bar p { display: flex; min-width: 0; flex: 1; align-items: center; gap: 4px; margin: 0; font-size: 13px; font-weight: 800; color: #5b4310; }
+.tp-ev-bar p span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tp-ev-back { flex-shrink: 0; min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1px solid #b58c26; background: #fff; font-size: 13px; font-weight: 800; color: #5b4310; cursor: pointer; }
+.tp-ev-clear { display: grid; flex-shrink: 0; width: 44px; height: 44px; place-items: center; border-radius: 999px; color: #5b4310; cursor: pointer; }
+.tp-ev-clear:hover { background: #fdeeb5; }
+.tp7-ev { background: #ffed9e; color: #43361b; border-bottom: 2px solid #b58c26; border-radius: 3px; padding: 1px 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.tp7-head > div[data-ev], .tp7-table tr[data-ev] td { background: #ffed9e; color: #43361b; }
+.tp7-head > div[data-ev] { margin: 0 -4px; padding: 0 4px; border-radius: 4px; box-shadow: inset 0 -2px 0 #b58c26; }
+.tp7-table tr[data-ev] td { border-bottom: 2px solid #b58c26; }
+.tp7-bubble[data-ev] { box-shadow: 0 0 0 3px #e2b93b; }
+.tp7-tab-ev { margin-left: 4px; border-radius: 999px; background: #ffed9e; padding: 0 6px; font-size: 12px; font-style: normal; font-weight: 800; line-height: 18px; color: #5b4310; vertical-align: 1px; }
+.tp-doc .tp-doc-blank[data-focus] { outline: 3px solid #e2b93b; outline-offset: 2px; border-radius: 4px; }
+@media (max-width: 380px) {
+  .tp-ev-bar { padding-left: 8px; gap: 4px; }
+  .tp-ev-back { padding: 0 10px; }
+}

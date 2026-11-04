@@ -166,6 +166,7 @@ export function BattleResult({
   matchKey,
   onBackToRoom,
   backToRoomLabel = '部屋に戻って問題を選ぶ',
+  backToRoomNote,
   onHome,
 }: {
   result: BattleResultSummary;
@@ -239,6 +240,8 @@ export function BattleResult({
    */
   onBackToRoom?: () => void;
   backToRoomLabel?: string;
+  /** 「部屋に戻る」が失敗したときの理由（E1：教科選びへは落とさず、ここに出してもう一度押せるようにする） */
+  backToRoomNote?: string | null;
   /** 「ホームに戻る」（アプリのホーム）。無ければ onExit（対戦メニュー）を使う */
   onHome?: () => void;
 }) {
@@ -278,6 +281,8 @@ export function BattleResult({
     document.scrollingElement && (document.scrollingElement.scrollTop = 0);
   }, [page]);
   const [growth, setGrowth] = useState<GrowthReward | null>(null);
+  /** 負けの動画を流し終えたか（終わったら枠ごと外して、とびら君のひとことだけにする） */
+  const [loseClipDone, setLoseClipDone] = useState(false);
   const wrongIds = result.me.perQuestion.filter((q) => !q.correct).map((q) => questions[q.index]?.id).filter((id): id is string => !!id);
   // 部屋（対戦前の画面）の「さいきんの対戦」に出すため、端末内に1件残す
   useEffect(() => {
@@ -389,6 +394,9 @@ export function BattleResult({
         className="result-detail-shell"
         footer={
           <div className="result-detail-actions" data-result-detail-actions>
+            {onBackToRoom && backToRoomNote && (
+              <p role="alert" className="text-center text-xs font-bold" style={{ color: '#B42318' }} data-result-back-room-note>{backToRoomNote}</p>
+            )}
             {onBackToRoom && (
               <BattleButton onClick={handleBackToRoom} icon={<DoorOpen size={18} />} data-result-back-room>
                 {backToRoomLabel}
@@ -447,7 +455,9 @@ export function BattleResult({
       {result.outcome === 'win'
         ? <div className="victory-cinema result-summary-stage" style={{ backgroundImage: `url(${CINEMATIC_CLIPS.victory.poster})` }}><CinematicClip src={CINEMATIC_CLIPS.victory.src} poster={CINEMATIC_CLIPS.victory.poster} label="とびら君の勝利動画" hold /></div>
         : result.outcome === 'lose'
-          ? <div className="victory-cinema result-summary-stage" style={{ backgroundImage: `url(${CINEMATIC_CLIPS.lose.poster})` }}><CinematicClip src={CINEMATIC_CLIPS.lose.src} poster={CINEMATIC_CLIPS.lose.poster} label="とびら君のはげまし動画" hold /></div>
+          // ★E2（2026-11-03）負けの動画は流し終わったら枠ごと外す★
+          //   以前は hold（最後のコマを残す）＋背景にポスター画像だったので、終わるとぼやけた絵が止まったまま残っていた。
+          ? !loseClipDone && <div className="victory-cinema result-summary-stage lose-cinema" data-lose-cinema><CinematicClip src={CINEMATIC_CLIPS.lose.src} poster={CINEMATIC_CLIPS.lose.poster} label="とびら君のはげまし動画" onComplete={() => setLoseClipDone(true)} /></div>
           : null}
       {/* ★2026-10-26★ 段位が上がった／レベルが上がったら、勝敗の動画のあとにお祝い動画を1回（両方なら段位を優先） */}
       {rating && ratingTierOf(rating.after).min > ratingTierOf(rating.before).min

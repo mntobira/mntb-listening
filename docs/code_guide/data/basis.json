@@ -251,6 +251,10 @@
 "h": "3eb416223e9e",
 "lines": 0
 },
+"public/data/vocabPron.json": {
+"h": "3eb416223e9e",
+"lines": 0
+},
 "public/flowcharts/chem-basic-acid-redox-flowchart.html": {
 "h": "3eb416223e9e",
 "lines": 0
@@ -371,6 +375,10 @@
 "h": "895d4224059f",
 "lines": 27
 },
+"scripts/grammar-audio/make_ids.py": {
+"h": "3eb416223e9e",
+"lines": 12
+},
 "scripts/kasa-diff.sh": {
 "h": "12388e48f874",
 "lines": 20
@@ -398,6 +406,10 @@
 "scripts/readalong/dump_tracks.ts": {
 "h": "3eb416223e9e",
 "lines": 7
+},
+"scripts/vocab-audio/make_pron.py": {
+"h": "3eb416223e9e",
+"lines": 54
 },
 "src/App.tsx": {
 "h": "d13b6f276e7b",
@@ -1379,6 +1391,14 @@
 "h": "c7989b510647",
 "lines": 142
 },
+"src/data/grammarAudioIds.generated.ts": {
+"h": "98e37c2fae6e",
+"lines": 1167
+},
+"src/data/grammarAudioIds.ts": {
+"h": "98e37c2fae6e",
+"lines": 1167
+},
 "src/data/listeningPictureAspect.ts": {
 "h": "26f98e125fd9",
 "lines": 19
@@ -1931,6 +1951,10 @@
 "h": "85e85203012a",
 "lines": 41
 },
+"src/utils/vocabPron.ts": {
+"h": "07f6cbfa24a3",
+"lines": 63
+},
 "store-assets/_tools/edit_instagram.py": {
 "h": "5171395db557",
 "lines": 231
@@ -2286,6 +2310,10 @@
 "tests/vocabChapters.test.ts": {
 "h": "3eb416223e9e",
 "lines": 37
+},
+"tests/vocabPron.test.ts": {
+"h": "1ac79f084658",
+"lines": 54
 },
 "tests/vocabQuizMood.test.ts": {
 "h": "3eb416223e9e",

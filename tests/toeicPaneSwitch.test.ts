@@ -41,3 +41,49 @@ describe('TOEIC Part 6・7：文書と設問の切り替え（スマホ）', () 
     expect(Math.min(...sizes)).toBeGreaterThanOrEqual(12);
   });
 });
+
+describe('TOEIC Part 7：採点後の「文書で根拠を見る」（2026-11-03）', () => {
+  it('全360問で、根拠の英文が文書の中にマーカーとして出る（段落・吹き出し・見出しの行・表）', async () => {
+    const React = (await import('react')).default;
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const { ToeicP7Passage } = await import('../src/components/toeic/ToeicP7Passage');
+    const { p7EvidenceDoc } = await import('../src/components/toeic/toeicPageModel');
+    const { TOEIC_P7_ROUNDS } = await import('../src/data/toeic/toeicPart7Rounds');
+    const bad: string[] = [];
+    let checked = 0;
+    TOEIC_P7_ROUNDS.forEach((sets, r) => sets.forEach((set, si) => set.q.forEach((q, qi) => q.e.forEach((e) => {
+      const n = p7EvidenceDoc(set, e) - 1;
+      const id = `第${r + 1}回 セット${si + 1} 設問${qi + 1}`;
+      if (n < 0) { bad.push(`${id}：根拠が文書に無い`); return; }
+      const html = renderToStaticMarkup(React.createElement(ToeicP7Passage, {
+        set, setIndex: si, offset: 0, tab: n, onTab: () => {}, evidence: { [n]: [e] },
+      }));
+      checked += 1;
+      if (!html.includes('data-toeic-ev')) bad.push(`${id}：マーカーが出ない「${e.slice(0, 40)}」`);
+      if (set.docs.length > 1 && !html.includes('data-toeic-tab-ev')) bad.push(`${id}：タブに「根拠」の印が無い`);
+    }))));
+    expect(bad).toEqual([]);
+    expect(checked).toBeGreaterThan(360);
+  });
+
+  it('根拠を出していないときは、マーカーもタブの印も出さない', async () => {
+    const React = (await import('react')).default;
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const { ToeicP7Passage } = await import('../src/components/toeic/ToeicP7Passage');
+    const { TOEIC_P7_ROUNDS } = await import('../src/data/toeic/toeicPart7Rounds');
+    const set = TOEIC_P7_ROUNDS[0][6];
+    const html = renderToStaticMarkup(React.createElement(ToeicP7Passage, { set, setIndex: 6, offset: 19, tab: 0, onTab: () => {}, evidence: null }));
+    expect(html).not.toContain('data-toeic-ev');
+    expect(html).not.toContain('data-toeic-tab-ev');
+  });
+
+  it('ボタン・帯の決まり：採点後の Part 6・7 だけ、高さ44px以上、ページが変わったらマーカーを消す', () => {
+    expect(quiz).toContain('{ex && (isP6 || isP7) && (');
+    expect(quiz).toMatch(/const resetPane = [\s\S]*?setEvFor\(null\);[\s\S]*?setDocTab\(0\);/);
+    expect(quiz).toContain('if (!p7Doc || !evFor || !pageScored) return null;');
+    const rule = (sel: string) => css.match(new RegExp(`\\${sel} \\{([^}]*)\\}`))?.[1] ?? '';
+    expect(rule('.tp-evbtn')).toContain('min-height: 44px');
+    expect(rule('.tp-ev-back')).toContain('min-height: 44px');
+    expect(rule('.tp-ev-clear')).toMatch(/width: 44px; height: 44px/);
+  });
+});

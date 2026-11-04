@@ -74,8 +74,8 @@ export function PublicCalendar({ profile }: { profile: PublicStudyProfile }) {
   );
 }
 
-const KIND_ORDER = ['pose', 'frame', 'hat', 'glasses', 'cheek', 'aura', 'wallpaper', 'stage'] as const;
-const KIND_LABEL: Record<string, string> = { pose: 'ポーズ', frame: 'フレーム', hat: '帽子', glasses: 'メガネ', cheek: 'ほっぺ', aura: 'オーラ', wallpaper: '壁紙', stage: 'ホーム背景' };
+const KIND_ORDER = ['pose', 'frame', 'hat', 'glasses', 'cheek', 'aura', 'wallpaper', 'stage', 'companion'] as const;
+const KIND_LABEL: Record<string, string> = { pose: 'ポーズ', frame: 'フレーム', hat: '帽子', glasses: 'メガネ', cheek: 'ほっぺ', aura: 'オーラ', wallpaper: '壁紙', stage: 'ホーム背景', companion: 'お供' };
 
 /** きせかえ：持っているアイテムを、その子のとびら君に着せた姿で並べる */
 export function PublicOutfit({ profile, base }: { profile: PublicStudyProfile; base: GrowthProgress }) {

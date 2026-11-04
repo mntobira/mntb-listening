@@ -14,7 +14,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useMountEffect } from '../../hooks/useMountEffect';
-import { ArrowLeft, Bookmark, BookmarkCheck, Check, CheckCircle2, ChevronLeft, ChevronRight, FileText, ListChecks, MinusCircle, Settings, XCircle } from 'lucide-react';
+import { ArrowLeft, Bookmark, BookmarkCheck, Check, CheckCircle2, ChevronLeft, ChevronRight, FileSearch, FileText, ListChecks, MinusCircle, Settings, X, XCircle } from 'lucide-react';
 import type { Chapter, Problem, SubQuestion } from '../../types/curriculum';
 import type { ScoreBreakdown } from '../../utils/scoring';
 import { ToeicTimer } from './ToeicTimer';
@@ -38,7 +38,7 @@ import {
   TOEIC_TIME_PRESETS, type ToeicTimePresetId,
 } from './toeicTimeBudget';
 import {
-  countUnanswered, isToeicPart6Chapter, isToeicPart7Chapter, p6SetOf, p6Snippet, p7SetOf, p7Stem, pageFromStoredStep, pageScoreKey,
+  countUnanswered, isToeicPart6Chapter, isToeicPart7Chapter, p6SetOf, p6Snippet, p7EvidenceDoc, p7SetOf, p7Stem, pageFromStoredStep, pageScoreKey,
   perPageOf, prefersSingleColumn, splitToeicPages, toeicExplanationFor,
 } from './toeicPageModel';
 import { ToeicP6Passage } from './ToeicP6Passage';
@@ -224,10 +224,32 @@ export function ToeicPageQuiz({
     const top = paneScrollRef.current[next];
     window.requestAnimationFrame(() => listRef.current?.scrollTo({ top }));
   };
-  /** ページが変わったら文書から読み始める */
+  // 採点後の「文書で根拠を見る」（2026-11-03）：どの問題の根拠を文書に出しているか・Part 7 の表示中の文書
+  const [evFor, setEvFor] = useState<{ id: string; no: number } | null>(null);
+  const [docTab, setDocTab] = useState(0);
+  /** ページが変わったら文書から読み始める（根拠のマーカー・文書のタブも最初に戻す） */
   const resetPane = (next: 'doc' | 'q' = 'doc') => {
     paneScrollRef.current = { doc: 0, q: 0 };
     setPane(next);
+    setEvFor(null);
+    setDocTab(0);
+  };
+  /** 根拠（Part 7）／空所（Part 6）を文書に出して、そこまで動かす。スマホは文書に切り替える */
+  const showEvidence = (sq: SubQuestion, no: number) => {
+    setEvFor({ id: sq.id, no });
+    if (isP7) {
+      const found = p7SetOf(sq);
+      const docs = found ? found.question.e.map((e) => p7EvidenceDoc(found.set, e)).filter((n) => n > 0) : [];
+      if (docs.length) setDocTab(Math.min(...docs) - 1);
+    }
+    const el = listRef.current;
+    if (el && pane === 'q') paneScrollRef.current.q = el.scrollTop;
+    setPane('doc');
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+      const mark = listRef.current?.querySelector('[data-toeic-ev], [data-toeic-doc-blank][data-focus]');
+      mark?.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+    }));
   };
 
   // 解説の開閉：誤答・未回答は最初から開く、正解は閉じる（利用者が開け閉めしたらそれを優先）
@@ -367,6 +389,18 @@ export function ToeicPageQuiz({
   const p7Doc = isP7 && page[0] ? p7SetOf(page[0]) : null;
   // スマホの切り替えボタンに出す「文書」側の添え書き
   const docPane = p7Doc ? { note: TOEIC_P7_KIND_LABEL[p7Doc.set.kind] } : p6Doc ? { note: `空所 ${page.length}つ` } : null;
+  // 「文書で根拠を見る」を押した問題の根拠を、文書ごと（0から）に分ける
+  const p7Evidence: Record<number, string[]> | null = (() => {
+    if (!p7Doc || !evFor || !pageScored) return null;
+    const q = p7SetOf({ id: evFor.id })?.question;
+    if (!q) return null;
+    const map: Record<number, string[]> = {};
+    for (const e of q.e) {
+      const n = p7EvidenceDoc(p7Doc.set, e) - 1;
+      if (n >= 0) (map[n] ||= []).push(e);
+    }
+    return map;
+  })();
   // 文書の最後に置く「設問へ進む」（スマホで文書を見ているときだけ出す）
   const paneNext = (
     <button type="button" className="tp-pane-next" data-toeic-pane-next onClick={() => { switchPane('q'); }}>
@@ -443,6 +477,12 @@ export function ToeicPageQuiz({
                 <span>{status === 'correct' ? '正解' : status === 'wrong' ? `不正解（正解は ${sq.correctAnswer}）` : `未回答（正解は ${sq.correctAnswer}）`}</span>
               </p>
               {ex && <span className="tp-skill" data-toeic-skill>{ex.skill}<small>{ex.subType}</small></span>}
+              {ex && (isP6 || isP7) && (
+                <button type="button" className="tp-evbtn" data-toeic-show-ev={no} data-active={evFor?.id === sq.id || undefined}
+                  onClick={() => showEvidence(sq, no)} aria-label={`問${no}の${isP7 ? '根拠' : '空所'}を文書で見る`}>
+                  <FileSearch size={16} aria-hidden="true" /><span>{isP7 ? '文書で根拠を見る' : '文書で空所を見る'}</span>
+                </button>
+              )}
               {ex && (
                 <button type="button" className="tp-save" data-toeic-save data-saved={isSaved(sq.id) || undefined}
                   onClick={() => saveNote(sq, no)} disabled={isSaved(sq.id)}
@@ -550,6 +590,15 @@ export function ToeicPageQuiz({
           </button>
         </div>
       )}
+      {evFor && docPane && (
+        <div className="tp-ev-bar" role="status" data-toeic-ev-bar>
+          <p><FileSearch size={16} aria-hidden="true" /><span>問{evFor.no}の{isP7 ? '根拠' : '空所'}を文書に表示中</span></p>
+          <button type="button" className="tp-ev-back" data-toeic-ev-back onClick={() => jumpTo(evFor.id)}>解説に戻る</button>
+          <button type="button" className="tp-ev-clear" data-toeic-ev-clear onClick={() => setEvFor(null)} aria-label="マーカーを消す" title="マーカーを消す">
+            <X size={18} aria-hidden="true" />
+          </button>
+        </div>
+      )}
       <div className="tp-scroll" ref={listRef} data-pane={docPane ? pane : undefined}>
         {pageScored && (
           <section className="tp-result" aria-label="このページの結果" data-toeic-page-result data-perfect={pageCorrect === page.length || undefined}>
@@ -584,16 +633,16 @@ export function ToeicPageQuiz({
         )}
         {p7Doc ? (
           <div className="tp-p7" data-toeic-p7>
-            {/* セットが変わったら文書のタブを「文書1」に戻す（key で作り直す） */}
-            <React.Fragment key={`${p7Doc.round}_${p7Doc.setIndex}`}>
-              <ToeicP7Passage set={p7Doc.set} setIndex={p7Doc.setIndex} offset={p7Doc.offset} />
-            </React.Fragment>
+            {/* 文書のタブはここで持つ（根拠のある文書へ切り替えるため）。ページが変わると resetPane で文書1に戻る */}
+            <ToeicP7Passage set={p7Doc.set} setIndex={p7Doc.setIndex} offset={p7Doc.offset}
+              tab={docTab} onTab={setDocTab} evidence={p7Evidence} />
             {paneNext}
             {listEl}
           </div>
         ) : p6Doc ? (
           <div className="tp-p6" data-toeic-p6>
-            <ToeicP6Passage set={p6Doc.set} setIndex={p6Doc.setIndex} offset={p6Doc.offset} page={page} answers={answers} scored={pageScored} />
+            <ToeicP6Passage set={p6Doc.set} setIndex={p6Doc.setIndex} offset={p6Doc.offset} page={page} answers={answers} scored={pageScored}
+              focusBlank={pageScored && evFor ? evFor.no : null} />
             {paneNext}
             {listEl}
           </div>

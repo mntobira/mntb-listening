@@ -10,6 +10,29 @@
 
 ---
 
+## 2026-11-03 英単語・英文法に ElevenLabs の音源、単語帳に読み方の表示（PR: feat/elevenlabs-audio）
+
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 英単語の音声 | ElevenLabs Studio の1本（全5713語）を1語ずつに切って配置（5684語。録音が前後の語とずれていた19語と、録音に無かった10語は配置せず、今までどおり端末の読み上げ） | `public/audio/vocab/<レベル>/<番号>.mp3`・`index.json` |
+| 英文法の音声 | ElevenLabs Studio の1本（全1163文）を1文ずつに切って配置。英文法の解説の読み上げが端末の音声合成から録音に変わる | `public/grammar_audio/<問題ID>.mp3`・`src/data/grammarAudioIds.ts`（自動生成） |
+| 英単語4択の解説 | 答えたあと、判定の右に「🔊 見出し語」ボタン（英→日・日→英どちらも）。幅 374px 以下はアイコンだけ（44×44px） | `VocabQuiz.tsx`・`foundation.css`（`.vq-say`） |
+| 単語帳の一覧 | 見出し語の強く読む音節にオレンジの下線（音読モードの「アクセント」と同じ印） | `FoundationWords.tsx`（`HeadWord`）・`foundation.css`（`.fd-acc`） |
+| 単語帳の詳細 | 語を開くと、意味の上に小さく「音節の区切り（強い所をオレンジ）・発音記号・◯音節・◯つ目を強く」 | `FoundationWords.tsx`（`PronLine`）・`foundation.css`（`.fd-pron*`）・`public/data/vocabPron.json` |
+
+**戻し方**
+- 下線と読み方の表示だけ消す：`FoundationWords.tsx` の `<HeadWord …/>` を `{w.word}` に、`{pron && <PronLine pron={pron} />}` を削除。
+- 解説の 🔊 だけ消す：`VocabQuiz.tsx` の `className="vq-say"` のボタンを削除。
+- 英文法を音声合成に戻す：`src/data/grammarAudioManifest.ts` の `GRAMMAR_AUDIO_IDS` を `new Set<string>([])` に。
+- 英単語を端末の読み上げに戻す：`public/audio/vocab/index.json` を削除（または `ids` を空に）。
+
+## 2026-11-03 2次試験ガチャの大当たりに山口大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-yamaguchi）
+
+- LR（2次試験ガチャ）の予想問題に山口大学を追加（3冊・25〜26ページ：問題12〜13＋解答・解説12〜13）。全学部共通の前期英語（120分・200点）の形式に沿った書き下ろし。
+- 表紙と奥付に「山口大学の過去問・公式問題ではありません。予想問題であり、大学とは関係がありません。」を明記。
+- 画面の変更はなし（ガチャの排出リスト・サムネイル・プレビュー画像が増えるだけ）。LR の説明文の大学名に山口大学を追加。
+- 戻し方：`src/data/nijiMockPrints.ts` の `yamaguchi` の3行と大学一覧の1行を消し、`tests/nijiGacha.test.ts` の冊数を 72 に戻す。
+
 ## 2026-11-03 2次試験ガチャの大当たりに東京外国語大学 前期対策 英語 予想問題 第1〜3回（PR: feat/niji-tufs）
 
 - LR（2次試験ガチャ）の予想問題に東京外国語大学を追加（3冊・34〜35ページ：問題15〜16＋解答・解説19）。3学部共通の前期「英語」の型（長文2題・リスニング3題、120分・250点）に沿った書き下ろし。
@@ -588,9 +611,12 @@
 | 1 | Part 6・7 の演習画面（1024px 未満） | 時間ガイドの下に **「文書」／「設問・選択肢」の切り替えボタン**（2つ並び・高さ48px）。押した方だけを表示する。文書ボタンの添え書きは Part 6「空所 4つ」・Part 7「1つの文書／2つの文書／3つの文書」、設問ボタンは「未回答 n問」→採点後「n/m問正解」 | `src/components/toeic/ToeicPageQuiz.tsx`・`toeic-page.css`（末尾に段を追加） |
 | 2 | 文書の最後 | 「**設問・選択肢へ進む**」のボタン（高さ48px） | 同上 |
 | 3 | 切り替えの動き | ページを開いたときは「文書」から。文書と設問で読みかけの位置をそれぞれ覚えておき、戻ると続きから。採点すると結果と解説が見えるよう「設問」に切り替わる。結果の印（問番号）を押すと設問に切り替えてその問題へ移動。次のページでは「文書」に戻る | `ToeicPageQuiz.tsx`（`pane`・`switchPane`・`resetPane`） |
+| 4 | 採点後の「文書で根拠を見る」（Part 7）／「文書で空所を見る」（Part 6） | 解説の上の行（正誤・分野の横）にボタン（高さ44px）。押すと文書に切り替えて（スマホ）、**根拠の英文に黄色いマーカー**（段落・吹き出しは語句、見出しの行・表は行ごと）・Part 6 は該当の空所に枠を付け、そこまで動かす。2つ以上の文書のセットは根拠のある文書のタブに自動で切り替え、タブに「根拠」の印。上に「問n の根拠を文書に表示中／解説に戻る／×（マーカーを消す）」の帯。PC でも同じ（2列のまま左の文書にマーカー） | `ToeicPageQuiz.tsx`（`showEvidence`・`evFor`・`docTab`）・`ToeicP7Passage.tsx`（`evidence`・タブの選択を親に移した）・`ToeicP6Passage.tsx`（`focusBlank`）・`toeic-page.css`（末尾に段） |
 
 - PC（1024px 以上）は今までどおり左に文書・右に設問の2列で、切り替えのボタンは出さない（Part 6 の PC 表示はピクセル比較で同じ）。Part 5 の画面は変えていない（ピクセル比較で同じ）。
 - 確認した幅：320・360・390・768・1280。文字12px未満・44px未満のボタン・横はみ出しは0件。
+
+- #4 の戻し方：`toeic-page.css` の末尾「採点後『文書で根拠を見る』…」の段を消し、`ToeicPageQuiz.tsx` の `tp-evbtn`・`tp-ev-bar`・`showEvidence` と、`ToeicP7Passage` の `evidence`／`ToeicP6Passage` の `focusBlank` を外す。
 
 **戻し方**：`toeic-page.css` の末尾「Part 6・7 のスマホ：『文書』と『設問・選択肢』を切り替えて…」の段を消し、`ToeicPageQuiz.tsx` の `tp-pane-switch`（切り替えボタン）・`paneNext`（設問へ進む）・`data-pane` を外す（文書の下に設問が続く元の縦並びに戻る）。
 
@@ -615,6 +641,23 @@
 - Part 7 の画面だけ外す：`toeicData.ts` で `toeicPart7Data.parts` を足さない（単元・タブから Part 7 が消える）。`subjects.ts` の章ID の型を `/^tp[56]_\d+$/` に戻す。
 - カードの説明だけ戻す：`studyCatalog.ts` の `description` を `'Part 5・Part 6'` に。
 - 金額の直しだけ戻す：`src/components/toeic/*.tsx` の `formatText(…, { prose: true, noMath: true })` から `noMath: true` を外す（`textFormatter.tsx` の `noMath` は使われなくなるだけで害はない）。
+
+---
+
+## 2026-11-03 お供（カギノスケ）を追加・ガチャのはずれ（N）を増やした（PR: feat/companion-gacha）
+
+| # | 何を | どう変えた | ファイル |
+|---|---|---|---|
+| 1 | 新キャラ「カギノスケ」 | 金のカギのお供。画像は1枚（`public/mascots/companion_key.webp`）、色違い6色は CSS の filter | `src/battle/core/tobiraParts.ts`（`COMPANIONS`）・`src/battle/ui/CompanionArt.tsx`（新）・`src/battle/ui/companion.css`（新） |
+| 2 | お供の枠 | 装備に「お供」を追加。全員がはじめから金のカギノスケを持っていて連れている（古い記録も同じ）。きせかえで外せる | `growthTypes.ts`・`growthItems.ts`（`DEFAULT_COMPANION`・`equippedCompanion`）・`growth.ts` |
+| 3 | ホーム | ステージの右下、とびら君のとなりにお供が立つ（ゆっくり上下。動きを減らす設定では止まる）。押すときせかえへ。ボタンには重ならず、スクロールも出ない（320/375/390/1280 で確認） | `src/components/Home.tsx`・`src/components/home-companion.css`（新） |
+| 4 | きせかえ・持ちもの・ガチャの図鑑 | 「お供」の種類を追加（きせかえは先頭） | `BattleProfileTabs.tsx`・`MyCollection.tsx`・`GachaParts.tsx`・`PublicProfileTabs.tsx` |
+| 5 | ガチャのはずれ（N） | 共通テストガチャの N を 40 → 68 種（色違いのアクセ・フレーム25種＋カギノスケ3色）。R に2色、SR に1色。**レア度ごとの確率（LR1%・UR3%・SR6%・R16%・N74%）は変えていない**。2次試験ガチャは変えていない | `growthItems.ts` |
+
+**戻し方**：
+- 丸ごと戻す：このPRを revert。
+- ホームの表示だけ消す：`Home.tsx` の `.home-companion` のボタンと `home-companion.css` の import を消す。
+- はずれだけ戻す：`growthItems.ts` の「2026-11-03 はずれ（N）追加」の25行を消す。
 
 ---
 
@@ -1162,6 +1205,51 @@
 ### テスト
 - `tests/homeBattleRankingPolish.test.ts`（新規）で上の①〜⑤が崩れていないかを確認。戻すときはこのテストも消す。
 - `tests/revision.test.ts`：main で1件落ちていた（#58 でホームの「ランキングを見る」を外したのに、テストがホームにあることを求めていた）。入口が対戦画面の切替（`onRanking`）にあることを確かめる形に直した。
+
+## 2026-11-03 E1〜E5（フレンド対戦の戻り先・負け動画・マナラッシュ・タイトル動画・ショップのPDF）
+
+### E1 フレンド対戦の結果 →「部屋に戻って科目などを選ぶ」
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 戻り先 | フレンド部屋（合言葉あり）は、いつも合言葉の待機ロビー（「対戦の設定（科目・モード・問題数）かえる」がある画面）へ。部屋主は同じ設定で次の部屋を作って移り、相手は自動でついてくる。**教科選び（subject-friend）へは落とさない**（以前は落ちると合言葉を入れ直す必要があった） | `src/battle/ui/BattleRoomScreen.tsx`（`isFriendRoom`・`backToRoom`・`backToRoomLabel`） |
+| 失敗したとき | 結果画面のボタンの上に理由を赤字で出す。もう一度押せばやり直せる | `BattleRoomScreen.tsx`（`backToRoomNote={moveError}`）、`src/battle/ui/BattleResult.tsx`（`backToRoomNote`・`data-result-back-room-note`） |
+| 文言 | 部屋主：「部屋に戻って科目などを選ぶ（同じ相手と再戦）」 | `BattleRoomScreen.tsx` |
+
+**戻し方**：`BattleRoomScreen.tsx` の E1 のブロックを消し、`onBackToRoom`／`backToRoomLabel` を元の三項演算子に戻す。`BattleResult.tsx` の `backToRoomNote` を消す。
+
+### E2 負けたときの動画
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 動画 | 旧 `lose.mp4`・`lose-poster.webp` を削除。ウインク＋グッドの `gacha_r.mp4`（アプリ内の既存動画）を「はげまし」に使う | `src/components/CinematicClip.tsx`（`CINEMATIC_CLIPS.lose`）、`public/cinematics/` |
+| 再生後 | 流し終わったら動画の枠ごと外す（以前は `hold`＋背景ポスターで、ぼやけた最後のコマが止まって残っていた） | `src/battle/ui/BattleResult.tsx`（`loseClipDone`） |
+
+### E3 マナラッシュの最初の画面
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 上の「←もどる」 | 文字だけのボタンをやめ、プロフィール編集などと同じ「← 44px ボタン＋見出し＋一言」の1行に | `src/components/ManaRush.tsx`（`mana-rush-head`）、`src/components/growth-hub.css`（末尾の E3 ブロック） |
+| 英字の見出し・大きな手書きタイトル | 削除（見出しの1行にまとめた） | `ManaRush.tsx` |
+| ルール4枚 | 1枚のカードに 2×2 で短く | `ManaRush.tsx`、`growth-hub.css` |
+| 並び | 見出し → ルール → 科目 → 自己ベスト → スタート をスクロールなしで。文字12px以上・ボタン44px以上 | `growth-hub.css` |
+
+**戻し方**：`growth-hub.css` の E3 ブロックを消し、`ManaRush.tsx` の menu の上部を `arena-back`・`mana-eyebrow`・`mana-rush-title` の形に戻す。
+
+### E4 タイトル画面の動画
+- 送っていただいた2本のうち、動きの良い「…3D ani 389900 OFW.mp4」から作り直し（もう1本は 1.75〜2.3秒で目が白く崩れ、ほかはほぼ止まっているので不採用）。
+- 顔が崩れるコマ（0〜0.29秒・1.75〜2.12秒・4.65秒〜）を外し、同じ姿勢のコマどうしを2コマのクロスフェードでつないだ3.1秒。背景はほかの動画と同じクリーム色。720×720・249KB。
+- 道具：`scripts/firefly-kit/title_e4.py`。台帳：`docs/CINEMATICS.md`。
+
+### E5 ショップで PDF を交換
+| 何を | どう変えた | ファイル |
+|---|---|---|
+| 値段 | ガチャから出る PDF に、レア度ごとの値段を付けた：**LR 5,000／UR 3,000／SR 2,000 マナコイン**（ガチャからも今までどおり出る。Lv.15 の PDF はレベル報酬なので出さない） | `src/battle/core/growthItems.ts`（`PRINT_SHOP_PRICES`・`shopPriceOf`・`purchaseItem`） |
+| ショップの表示 | 種類に「PDF」を追加。値段・購入ボタン・確認文を `shopPriceOf` で出す。買ったら「マイPDFから保存できます」 | `src/components/MyCollection.tsx` |
+
+**戻し方**：`growthItems.ts` の `PRINT_SHOP_PRICES`・`shopPriceOf` を消して `purchaseItem` を `item.unlock.coins` に戻す。`MyCollection.tsx` の `shopPriceOf` を `'coins' in item.unlock` に戻し、`['print','PDF']` を消す。
+
+### テスト
+- `tests/revisionF.test.ts`（新規）で E1〜E5 を確認。`tests/cinematicClips.test.ts` など既存のテストも通る。
+
+---
 
 ## 2026-10-29 ガチャ LR に「神戸大学 前期 英語 予想問題」6種を追加
 

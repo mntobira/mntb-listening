@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import type { ReactNode } from 'react';
 import { FileText, Download, Coins, Gift, Shirt, Check, Lock } from 'lucide-react';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
-import { ITEMS, gachaRarityOf, printOf, canUnequip, type EquipKind, type ItemDef } from '../battle/core/growth';
+import { ITEMS, gachaRarityOf, printOf, shopPriceOf, canUnequip, type EquipKind, type ItemDef } from '../battle/core/growth';
 import { buyItem, equip, unequip, importLeagueReward, leagueRewardClaimed } from '../battle/data/growthStore';
 import { GrowthAvatar } from '../battle/ui/GrowthParts';
 import { clanCall, type LeagueReward } from '../utils/manaClan';
@@ -15,11 +15,12 @@ import { savePdf } from '../utils/pdfShare';
 import { KyotsuAudioPlayer } from './gacha/KyotsuAudioPlayer';
 import { GachaSetsPanel } from './gacha/GachaSetsPanel';
 import { stageOf } from '../battle/core/tobiraParts';
+import { CompanionArt } from '../battle/ui/CompanionArt';
 import '../styles/home-stage.css';
 /** プレゼント（隔週リーグ報酬）でしか手に入らないアイテム */
 const LEAGUE_GIFT_ITEM = 'frame_league_aurora';
 /** C2：種類の名前と、詳細の窓に出す軽い説明 */
-const KIND_LABEL: Record<string, string> = { pose: 'ポーズ', frame: 'フレーム', hat: '帽子', glasses: 'メガネ', cheek: 'ほっぺ', aura: 'オーラ', wallpaper: '壁紙', stage: 'ホーム背景', print: 'PDF' };
+const KIND_LABEL: Record<string, string> = { pose: 'ポーズ', frame: 'フレーム', hat: '帽子', glasses: 'メガネ', cheek: 'ほっぺ', aura: 'オーラ', wallpaper: '壁紙', stage: 'ホーム背景', companion: 'お供', print: 'PDF' };
 const KIND_DESC: Record<string, string> = {
   pose: 'とびら君のポーズが変わります。ホームと対戦で表示されます。',
   frame: 'とびら君のまわりの枠が変わります。ランキングや対戦のカードにも出ます。',
@@ -29,11 +30,12 @@ const KIND_DESC: Record<string, string> = {
   aura: 'とびら君のまわりに出る光のアクセサリです。',
   wallpaper: 'マイページやホームでとびら君の後ろに出る壁紙です。',
   stage: 'ホームのとびら君のステージの背景が変わります（何もつけなければ宇宙）。',
+  companion: 'ホームでとびら君のとなりにいるお供です（外すと、ひとりに戻ります）。',
 };
 function describeItem(item: ItemDef): string {
   const print = printOf(item.id);
   if (print) return `${print.category}（${print.pages}ページ）。「保存する」で端末にPDFを保存して、いつでも見られます。${print.category === '完全版' ? '本1冊ぶんの完全版です。' : ''}`;
-  const how = 'coins' in item.unlock ? `ショップで${item.unlock.coins}マナコインと交換できます。` : 'level' in item.unlock ? `Lv.${item.unlock.level}で手に入ります。` : 'badge' in item.unlock ? '称号を手に入れると解放されます。' : 'ガチャで手に入ります。';
+  const how = 'coins' in item.unlock ? `ショップで${item.unlock.coins}マナコインと交換できます。` : shopPriceOf(item) != null ? `ガチャで当てるか、ショップで${shopPriceOf(item)}マナコインと交換できます。` : 'level' in item.unlock ? `Lv.${item.unlock.level}で手に入ります。` : 'badge' in item.unlock ? '称号を手に入れると解放されます。' : 'ガチャで手に入ります。';
   return `${KIND_DESC[item.kind] ?? ''}${how}`;
 }
 const LEAGUE_LABEL: Record<string, string> = { bronze: 'ブロンズ', silver: 'シルバー', gold: 'ゴールド', platinum: 'プラチナ', manatobi: 'マナトビ' };
@@ -54,7 +56,7 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gac
   }, [view, uid]);
   // PC では、枠に入るぶんだけ並べてページでめくる（スクロールさせない）。絞り込みを変えたら1ページ目へ
   const owned = progress?.owned ?? [];
-  const base = ITEMS.filter(i => view === 'prints' ? i.kind === 'print' && owned.includes(i.id) : view === 'shop' ? 'coins' in i.unlock : i.kind !== 'print');
+  const base = ITEMS.filter(i => view === 'prints' ? i.kind === 'print' && owned.includes(i.id) : view === 'shop' ? shopPriceOf(i) != null : i.kind !== 'print');
   const list = base.filter(i => (kind === 'all' || i.kind === kind) && (!search || i.label.includes(search)) && (view === 'prints' || state === 'all' || (state === 'owned') === owned.includes(i.id)));
   const pager = useFitPager(list.length, `${view}:${kind}:${search}:${state}`);
   if (!progress) return <p role="alert">所有記録を読み込めません。ブラウザの保存設定を確認してください。</p>;
@@ -62,11 +64,12 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gac
   const perform = async (item: ItemDef) => {
     if (busy) return;
     const owned = progress.owned.includes(item.id);
-    if (!owned && 'coins' in item.unlock && !confirmAction(`${item.label}を${item.unlock.coins}マナコインで購入しますか？`)) return;
+    const price = shopPriceOf(item);
+    if (!owned && price != null && !confirmAction(`${item.label}を${price}マナコインで購入しますか？`)) return;
     setBusy(true); setMessage('');
     try {
       if (owned) { const r = await equip(item.id); setMessage(r ? '装備しました。ホームと対戦に反映されます。' : '装備を保存できませんでした。'); }
-      else if ('coins' in item.unlock) { const r = await buyItem(item.id); setMessage(r?.ok ? '購入して装備しました。' : r?.reason || '購入できませんでした。'); }
+      else if (price != null) { const r = await buyItem(item.id); setMessage(r?.ok ? (item.kind === 'print' ? '購入しました。マイPDFから保存できます。' : '購入して装備しました。') : r?.reason || '購入できませんでした。'); }
     } catch { setMessage('保存に失敗しました。'); } finally { setBusy(false); }
   };
   // ★装備を外す（2026-10-06）★ ポーズ・フレームは基本に戻る、それ以外は「なし」になる
@@ -79,14 +82,14 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gac
     } catch { setMessage('保存に失敗しました。'); } finally { setBusy(false); }
   };
   /** B4（2026-10-29）：種類はアプリ風のチップ（横に並べて押すだけ）。セット・かけらはショップだけ */
-  const kinds: string[][] = [['all','すべて'],['pose','ポーズ'],['frame','フレーム'],['hat','帽子'],['glasses','メガネ'],['cheek','ほっぺ'],['aura','オーラ'],['wallpaper','壁紙'],['stage','ホーム背景'],...(view === 'shop' ? [['sets','セット収集'],['shards',`かけら交換（${progress.shards ?? 0}）`]] : [])];
+  const kinds: string[][] = [['all','すべて'],['pose','ポーズ'],['frame','フレーム'],['hat','帽子'],['glasses','メガネ'],['cheek','ほっぺ'],['aura','オーラ'],['wallpaper','壁紙'],['stage','ホーム背景'],['companion','お供'],...(view === 'shop' ? [['print','PDF'],['sets','セット収集'],['shards',`かけら交換（${progress.shards ?? 0}）`]] : [])];
   const states: [typeof state, string][] = [['owned','所持済み'],['available','未所持'],['all','すべて']];
-  /** 詳細の窓の中の操作（保存・装備・外す・購入）。タイルはコンパクトにして、操作はここに集めた */
+  /** 詳細の窓の中の操作（保存・装備・外す・購入）。タイルはコンパクトにして、操作はそこに集めた */
   const actions = (item: ItemDef) => {
-    const owned = progress.owned.includes(item.id); const print = printOf(item.id); const equipped = progress.equipped[item.kind] === item.id;
-    return print && owned ? <><p>{print.category} · {print.pages}ページ</p><a href={print.file} download onClick={e => { e.preventDefault(); void savePdf(print.file, `${print.label.replace(/[\\/:*?"<>|\s]+/g, '_')}.pdf`, print.label).catch(() => setMessage('PDFを保存できませんでした。接続を確認して、もう一度お試しください。')); }}><Download size={16}/>保存する</a><KyotsuAudioPlayer printId={item.id}/></> : owned ? (equipped ? (canUnequip(progress, item) ? <button type="button" className="collection-unequip" data-unequip={item.id} disabled={busy} onClick={() => void takeOff(item)}>外す</button> : <button type="button" disabled>装備中</button>) : <button type="button" disabled={busy} onClick={() => void perform(item)}>装備する</button>) : 'coins' in item.unlock ? <><p>{item.unlock.coins} マナコイン</p><button type="button" disabled={busy || progress.coins < item.unlock.coins} onClick={() => void perform(item)}>{progress.coins < item.unlock.coins ? `あと${item.unlock.coins-progress.coins}枚` : '購入する'}</button></> : <p>{item.id === 'frame_league_aurora' ? '隔週リーグ限定UR' : 'level' in item.unlock ? `Lv.${item.unlock.level}で解放` : 'badge' in item.unlock ? '称号で解放' : 'ガチャで獲得'}</p>;
+    const owned = progress.owned.includes(item.id); const print = printOf(item.id); const equipped = progress.equipped[item.kind] === item.id; const price = shopPriceOf(item);
+    return print && owned ? <><p>{print.category} · {print.pages}ページ</p><a href={print.file} download onClick={e => { e.preventDefault(); void savePdf(print.file, `${print.label.replace(/[\\/:*?"<>|\s]+/g, '_')}.pdf`, print.label).catch(() => setMessage('PDFを保存できませんでした。接続を確認して、もう一度お試しください。')); }}><Download size={16}/>保存する</a><KyotsuAudioPlayer printId={item.id}/></> : owned ? (equipped ? (canUnequip(progress, item) ? <button type="button" className="collection-unequip" data-unequip={item.id} disabled={busy} onClick={() => void takeOff(item)}>外す</button> : <button type="button" disabled>装備中</button>) : <button type="button" disabled={busy} onClick={() => void perform(item)}>装備する</button>) : price != null ? <><p>{price.toLocaleString()} マナコイン</p><button type="button" disabled={busy || progress.coins < price} onClick={() => void perform(item)}>{progress.coins < price ? `あと${(price-progress.coins).toLocaleString()}枚` : '購入する'}</button></> : <p>{item.id === 'frame_league_aurora' ? '隔週リーグ限定UR' : 'level' in item.unlock ? `Lv.${item.unlock.level}で解放` : 'badge' in item.unlock ? '称号で解放' : 'ガチャで獲得'}</p>;
   };
-  const art = (item: ItemDef, size: number) => { const print = printOf(item.id); if (item.kind === 'stage') return <svg className="collection-stage-swatch" data-stage-swatch={stageOf(item.value) ? item.value : 'cosmos'} width={size} height={size} viewBox="0 0 10 10" role="img" aria-label={stageOf(item.value)?.label ?? 'ホームの背景'}><rect className="stage-swatch-fill" width="10" height="10" rx="1.4" /><image href="/mascots/basic.webp" x="2.2" y="3" width="5.6" height="5.6" /></svg>; return print ? <img src={print.thumb} alt="PDFの表紙" loading="lazy"/> : <GrowthAvatar progress={{...progress,equipped:{...progress.equipped,[item.kind]:item.id}}} size={size} showLevel={false}/>; };
+  const art = (item: ItemDef, size: number) => { const print = printOf(item.id); if (item.kind === 'companion') return <span className="collection-companion-art"><CompanionArt value={item.value} size={Math.round(size * 0.96)} /></span>; if (item.kind === 'stage') return <svg className="collection-stage-swatch" data-stage-swatch={stageOf(item.value) ? item.value : 'cosmos'} width={size} height={size} viewBox="0 0 10 10" role="img" aria-label={stageOf(item.value)?.label ?? 'ホームの背景'}><rect className="stage-swatch-fill" width="10" height="10" rx="1.4" /><image href="/mascots/basic.webp" x="2.2" y="3" width="5.6" height="5.6" /></svg>; return print ? <img src={print.thumb} alt="PDFの表紙" loading="lazy"/> : <GrowthAvatar progress={{...progress,equipped:{...progress.equipped,[item.kind]:item.id}}} size={size} showLevel={false}/>; };
   return <section className="my-collection" data-my-collection={view}>
     <header><h2>{view === 'prints' ? <FileText size={22}/> : <Shirt size={22}/>} {titles[view]}</h2><b><Coins size={18}/>{progress.coins.toLocaleString()}</b></header>
     {message && <p role="status" className="collection-message">{message}</p>}
@@ -104,7 +107,7 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gac
         <button type="button" className="collection-tile" data-rarity={rarity} onClick={() => setDetail(item)} aria-label={`${item.label}（${equipped ? '装備中' : owned ? '所持済み' : '未所持'}）の詳細を見る`}>
           <span className="collection-art">{art(item, 52)}</span>
           <span className="collection-tile-name">{item.label}</span>
-          <span className="collection-tile-tag">{equipped ? <><Check size={12} aria-hidden/>装備中</> : owned ? rarity : <><Lock size={11} aria-hidden/>{'coins' in item.unlock ? `${item.unlock.coins}枚` : rarity}</>}</span>
+          <span className="collection-tile-tag">{equipped ? <><Check size={12} aria-hidden/>装備中</> : owned ? rarity : <><Lock size={11} aria-hidden/>{shopPriceOf(item) != null ? `${shopPriceOf(item)!.toLocaleString()}枚` : rarity}</>}</span>
           {owned && item.id === LEAGUE_GIFT_ITEM && <span className="collection-gift-tag" data-gift-item><Gift size={12} aria-hidden/>プレゼント</span>}
         </button>
       </li>; })}</ul>{!list.length && <p className="collection-empty">{view === 'prints' ? '獲得したPDFはここに並びます。ガチャのSRで学習プリント、URで完全版の本が出ます。' : 'この条件のアイテムはありません。絞り込みを変えてみてください。'}</p>}</>}

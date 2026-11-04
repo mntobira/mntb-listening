@@ -22,6 +22,7 @@ import { buyItem, equip, equipBadgeTitle, unequip } from '../data/growthStore';
 import { ACCESSORY_SLOTS, SLOT_LABELS, stageOf, wallpaperOf } from '../core/tobiraParts';
 import '../../styles/home-stage.css';
 import { AccessoryLayer } from './TobiraAccessories';
+import { CompanionArt } from './CompanionArt';
 import {
   AMBER,
   GOLD,
@@ -54,7 +55,7 @@ export function OutfitTab({ progress, busy, run, setNotice, shop = false }: { sh
   const poses = ITEMS.filter((i) => i.kind === 'pose' && (!shop || 'coins' in i.unlock));
   const frames = ITEMS.filter((i) => i.kind === 'frame' && (!shop || 'coins' in i.unlock));
   // 部位アクセサリ・壁紙はガチャ限定なので、きせかえでは「持っているもの」だけ並べる
-  const partKinds: EquipKind[] = [...ACCESSORY_SLOTS, 'wallpaper', 'stage'];
+  const partKinds: EquipKind[] = ['companion', ...ACCESSORY_SLOTS, 'wallpaper', 'stage'];
   const ownedParts = (kind: EquipKind) => ITEMS.filter((i) => i.kind === kind && progress.owned.includes(i.id));
 
   const renderItem = (item: ItemDef) => {
@@ -111,6 +112,10 @@ export function OutfitTab({ progress, busy, run, setNotice, shop = false }: { sh
           <span className="wallpaper-swatch stage-swatch h-14 w-14" data-stage-swatch={stageOf(item.value) ? item.value : 'cosmos'} />
         ) : item.kind === 'wallpaper' ? (
           <span className="wallpaper-swatch h-14 w-14" style={{ background: wallpaperOf(item.value)?.css }} />
+        ) : item.kind === 'companion' ? (
+          <span className="flex h-14 w-14 items-end justify-center">
+            <CompanionArt value={item.value} size={56} label={item.label} />
+          </span>
         ) : item.kind !== 'frame' ? (
           <span className="relative flex h-14 w-14 items-end justify-center">
             <img src="/mascots/basic.webp" alt="" draggable={false} className="h-full w-full object-contain object-bottom" />
