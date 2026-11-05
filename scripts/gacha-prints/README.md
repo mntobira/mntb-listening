@@ -544,6 +544,23 @@ python3 ../build-previews.py print_lr_niji_nagasakid_en_1 print_lr_niji_nagasaki
   - nagasakic（教育〈文系以外〉・情報データ科学〈理系〉）：A 70／B 70／C 下線部の同意語句10問 60
 - 100分。配点は大学非公表のため本書の想定。`common.py` に下線だけ（ラベルなし）を引く `{_:語句}` を追加。照合元に `/home/user/work/kyushu/*/*.txt` を加えた。
 
+### 三重大学 前期対策（人文・教育・医学部・2026-11-04 追加）
+
+```bash
+cd scripts/gacha-prints/niji_shikoku   # 四国・鳥取・島根・長崎と同じ道具（cfg.py に 'mie' を追加）
+python3 mie/fixwords.py mie/r*_s*.py   # 指示文の決まり文句を独自の言い回しに置き換え
+python3 run.py mie 1 2 3
+python3 plag.py mie && python3 strict/gate.py mie && python3 strict/para.py   # gate・para は 0 件（plag は解答記号の並びのみ）
+python3 ../build-previews.py print_lr_niji_mie_en_1 print_lr_niji_mie_en_2 print_lr_niji_mie_en_3
+```
+
+- 3回分。中身は `mie/r{n}_s1.py`（1）・`r{n}_s2.py`（2）・`r{n}_s3.py`（3）。形式は令和6〜8年度の問題（問題集の紙面写真をOCRして確認）に合わせた：80分・3題。
+  - 1 長文（英語の設問：前置詞の空所・同意語・整序2つ・内容一致2つ・表題）60
+  - 2 長文（日本語の設問：言い換えの選択・和訳2つ・20字前後のまとめ2つ・内容一致）70
+  - 3 長文（三者の立場を日本語で説明・約80語の英語での意見論述）70
+- 配点は大学非公表のため本書の想定。照合元に紙面写真のOCR（`/home/user/work/kyushu/mie/*.txt`）を加えた。
+- `src/data/gachaPreviews.generated.ts` の末尾に余分なカンマがあると `build-previews.py`（JSON として読む）が止まるので、手で直すときは末尾のカンマを残さないこと。
+
 ### 山口大学 前期対策（2026-11-03 追加）
 
 ```bash

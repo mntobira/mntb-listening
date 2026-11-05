@@ -32,7 +32,7 @@ export const PRINT_SHELVES: readonly { id: PrintShelfId; label: string }[] = [
 export const UNIV_REGION: Readonly<Record<string, PrintShelfId>> = {
   hokudai: 'hokkaido_tohoku', tohoku: 'hokkaido_tohoku', hirosaki: 'hokkaido_tohoku', iwate: 'hokkaido_tohoku', akita: 'hokkaido_tohoku',
   yamagata: 'hokkaido_tohoku', fukushima: 'hokkaido_tohoku',
-  utsunomiya: 'kanto_chubu', ibaraki: 'kanto_chubu', gakugei: 'kanto_chubu', tufs: 'kanto_chubu', nagoya: 'kanto_chubu', shizuoka: 'kanto_chubu',
+  utsunomiya: 'kanto_chubu', ibaraki: 'kanto_chubu', gakugei: 'kanto_chubu', tufs: 'kanto_chubu', nagoya: 'kanto_chubu', shizuoka: 'kanto_chubu', mie: 'kanto_chubu',
   omua: 'kinki', omub: 'kinki', wakayama: 'kinki', wakayamamed: 'kinki', kobe: 'kinki', osaka: 'kinki', ritsu: 'kinki',
   okayama: 'chugoku_shikoku', hiroshima: 'chugoku_shikoku', tottori: 'chugoku_shikoku', yamaguchi: 'chugoku_shikoku', onomichi: 'chugoku_shikoku', shimaneh: 'chugoku_shikoku', shimanem: 'chugoku_shikoku', kankyo: 'chugoku_shikoku',
   kagawa: 'chugoku_shikoku', tokushima: 'chugoku_shikoku', ehimeh: 'chugoku_shikoku', ehimee: 'chugoku_shikoku', ehimem: 'chugoku_shikoku',

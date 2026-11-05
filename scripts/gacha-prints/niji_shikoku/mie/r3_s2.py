@@ -1,0 +1,51 @@
+# 三重大学 前期 英語 予想問題 第3回 2 — すべてマナトビ編集部の書き下ろし
+M = ['①', '②', '③', '④']
+
+S = {
+    'no': '2', 'title': '長文読解（言い換え・和訳・内容のまとめ）', 'pts': 70, 'marks': M,
+    'lead': '以下の英文を読み、問1〜問5 に答えよ。* をつけた語句には本文の後に注がある。',
+    'passages': [{'title': 'The Night Shift at the Convenience Store', 'paras': [
+        "The summer after my first year of university, I took a job on the night shift at a convenience store near the station. I chose it for practical reasons: the pay was a little higher, and I imagined that the hours between midnight and five would be quiet enough for me to read. I was wrong about the second part. {u:(1):The store never really slept; it only changed its customers.}",
+        "Around midnight came the last office workers, tired and silent, buying rice balls and canned coffee. At two o’clock a taxi driver named Mr. Ota stopped by every night for exactly ten minutes. He bought the same sandwich, asked about my studies and told me which roads had been closed for repairs. At four, the newspaper truck arrived, and soon after that, an elderly woman who walked her dog before sunrise because, she said, “the city is kinder when it is empty.”",
+        "I had thought of a convenience store as a place where people passed through without noticing one another. {u:(2):What I discovered was a small community whose members had never met in daylight and probably never would.} They knew my name from the badge on my uniform, and I learned their habits: who would need a bag, who always paid in coins, who wanted to talk and who did not.",
+        "One night in August, Mr. Ota did not come. Nor did he come the next night, or the night after that. I was surprised by how much it bothered me. I did not know his phone number or even where he lived. On the fourth night a different taxi driver came in and, seeing my face, asked whether I was waiting for someone. When I described Mr. Ota, he smiled. “He’s in hospital — nothing serious, just his back,” he said. “He told us to tell the student at the station store that he’d be back.”",
+        "{u:(3):That small message meant more to me than I could have explained at the time.} It made me realize that the people who seem to play only a minor part in our lives can still notice us, worry about us and want us to know they are all right.",
+        "Mr. Ota returned in September, a little slower but as cheerful as ever. On my last night before the new semester, he bought his usual sandwich and, for the first time, a second one, which he left on the counter. “For the night shift,” he said. I have worked many jobs since then, but I still think of that store as the place where I learned {u:(4):two things}: that a community does not need a meeting place with a name, and that small, repeated kindnesses are how strangers become something more.",
+    ]}],
+    'notes': [('semester', '学期')],
+    'qs': [
+        {'n': '問1.', 'q': '下線部 (1) が伝えている内容として最も近いものを ①〜④ から一つ選び、番号を書け。', 'sheet': 'box',
+         'opts': ['The store closed for a few hours every night.', 'The store stayed busy all night, but the kind of people who came in changed with the hour.',
+                  'The workers at the store were so tired that they fell asleep.', 'The same customers came to the store all night long.']},
+        {'n': '問2.', 'q': '下線部 (2) の意味を、自然な日本語で表せ。', 'sheet': 4},
+        {'n': '問3.', 'q': '下線部 (3) の That small message の内容を明らかにしながら、下線部全体を日本語に直せ。', 'sheet': 4},
+        {'n': '問4.', 'q': '下線部 (4) の two things の中身を、それぞれ20字前後の日本語で書け。', 'sheet': 'grid25',
+         'sub': [('①', ''), ('②', '')]},
+        {'n': '問5.', 'q': '本文の内容に合うものを ①〜④ から一つ選べ。', 'sheet': 'box',
+         'opts': ['筆者は夜勤の時間に、思っていたとおりたくさんの本を読むことができた。', 'オオタさんは毎晩2時ごろ店に来て、通行止めの道路のことなどを教えてくれた。',
+                  '筆者はオオタさんの電話番号を知っていたので、すぐに連絡をとった。', 'オオタさんは9月に戻ってこなかった。']},
+    ],
+    'ans': [
+        {'n': '問1.', 'pts': 10, 'ans': '②',
+         'exp': '店は本当の意味で眠ることはなく、ただ客の顔ぶれが変わるだけだった＝一晩中客が来るが、時間ごとに客の種類が変わる。直後の段落で、真夜中の会社員、2時のタクシー運転手、4時の新聞のトラックと犬を散歩させる女性が描かれている。'},
+        {'n': '問2.', 'pts': 15, 'ans': '私が見つけたのは、昼間には一度も会ったことがなく、おそらくこれからも会うことのない人たちから成る、小さな共同体だった。',
+         'exp': 'What I discovered「私が見つけたもの」が主語。whose members had never met in daylight and probably never would (meet in daylight)「その成員が昼間に会ったことがなく、おそらく今後も会わないであろう」は community を修飾する関係詞節。would の後に meet in daylight が省略。主語 4点、関係詞 whose 6点、省略の補い 5点。'},
+        {'n': '問3.', 'pts': 15, 'ans': 'オオタさんが、駅の店の学生に、自分は戻ってくると伝えるよう仲間に頼んでいたというちょっとした伝言は、そのときの私にはうまく説明できないほど大きな意味をもっていた。',
+         'exp': 'That small message は直前の “He told us to tell the student at the station store that he’d be back.” の内容。mean more to me than I could have explained「私が説明できたであろうよりも多くを意味した」＝「説明できないほど意味があった」。at the time「その当時は」。伝言の内容 7点、比較の訳 8点。'},
+        {'n': '問4.', 'pts': 20, 'ans': '① 共同体には名前のある集会の場所が必要ないということ。② 小さな親切の積み重ねで他人どうしが特別な関係になること。',
+         'short': '① 共同体には名前のある集まりの場は要らないこと ② 小さな親切の繰り返しで他人がそれ以上の存在になること',
+         'exp': '直後のコロン以下 that a community does not need a meeting place with a name, and that small, repeated kindnesses are how strangers become something more をまとめる。②は「小さな」「繰り返される」親切と、「他人がそれ以上の存在になる」を入れる。各10点。'},
+        {'n': '問5.', 'pts': 10, 'ans': '②',
+         'exp': '第2段落 At two o’clock a taxi driver named Mr. Ota stopped by every night … told me which roads had been closed for repairs に一致。① 第1段落 I was wrong about the second part. ③ 電話番号も住所も知らなかった。④ 9月に戻ってきた。'},
+    ],
+    'tr': [
+        '【コンビニの夜勤】大学1年を終えた夏、私は駅の近くのコンビニで夜勤の仕事を始めた。選んだ理由は実際的なものだった。給料が少し高く、真夜中から5時までの時間は本が読めるくらい静かだろうと思ったのだ。後半については思い違いだった。店は本当の意味で眠ることはなく、ただ客の顔ぶれが変わるだけだった。',
+        '真夜中ごろには、疲れて黙りこんだ最後の会社員たちが来て、おにぎりと缶コーヒーを買っていった。2時には、オオタさんというタクシーの運転手が毎晩ちょうど10分間立ち寄った。彼は同じサンドイッチを買い、私の勉強のことを尋ね、どの道路が工事で通行止めになっているかを教えてくれた。4時には新聞のトラックが着き、その少しあとに、日の出前に犬を散歩させる年配の女性がやって来た。「街はからっぽのときのほうがやさしいから」と彼女は言っていた。',
+        '私はコンビニを、人々が互いに気づくこともなく通り過ぎていく場所だと考えていた。私が見つけたのは、昼間には一度も会ったことがなく、おそらくこれからも会うことのない人たちから成る、小さな共同体だった。彼らは制服の名札で私の名前を知っていて、私は彼らの習慣を覚えた。誰が袋を必要とするか、誰がいつも小銭で払うか、誰が話をしたがり、誰がそうでないか。',
+        '8月のある夜、オオタさんは来なかった。次の夜も、その次の夜も来なかった。そのことがこれほど気になる自分に私は驚いた。彼の電話番号も、どこに住んでいるのかさえも知らなかった。4日目の夜、別のタクシーの運転手が入ってきて、私の顔を見て、誰かを待っているのかと尋ねた。オオタさんのことを話すと、彼はほほえんだ。「入院してるよ。たいしたことはない、腰をやっただけだ。駅の店の学生さんに、戻ってくるって伝えてくれって言われてたんだ」',
+        'そのちょっとした伝言は、そのときの私にはうまく説明できないほど大きな意味をもっていた。私たちの人生でほんの小さな役割しか果たしていないように見える人たちも、私たちに気づき、心配し、自分は大丈夫だと知らせたいと思ってくれることがあるのだと、気づかされたのである。',
+        'オオタさんは9月に戻ってきた。少し動きはゆっくりになったが、相変わらず陽気だった。新学期前の最後の夜、彼はいつものサンドイッチを買い、初めてもう一つ買って、それをカウンターに置いていった。「夜勤の人に」と彼は言った。それから私はいくつもの仕事をしてきたが、今でもあの店を、二つのことを学んだ場所だと思っている。共同体には名前のついた集まりの場所はいらないということ、そして、小さな親切の繰り返しこそが、他人どうしをそれ以上の存在にしていくということである。',
+    ],
+    'vocab': [('night shift', '夜勤'), ('practical', '実際的な'), ('stop by', '立ち寄る'), ('pass through', '通り過ぎる'), ('bother', '気にさせる・悩ませる'),
+              ('minor', '小さな・重要でない'), ('as ~ as ever', '相変わらず〜'), ('kindness', '親切な行い')],
+}

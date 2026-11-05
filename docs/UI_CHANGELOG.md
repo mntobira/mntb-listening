@@ -1,3 +1,16 @@
+## 2026-11-05 2次試験ガチャの大当たりに三重大学を追加（PR: feat/niji-mie）
+
+| # | どこ | 変更 | ファイル |
+|---|---|---|---|
+| 1 | 2次試験ガチャの LR | 国公立2次 英語 予想問題 三重大学 前期対策（人文・教育・医学部共通・80分・3題）を3回分追加 | `src/data/nijiMockPrints.ts`・`public/prints/print_lr_niji_mie_en_{1,2,3}.pdf`・thumbs・previews・`src/data/gachaPreviews.generated.ts` |
+| 2 | ピックアップの説明文 | 収録大学に三重大学を追加 | `src/battle/core/gachaPools.ts`・`nijiMockPrints.ts`（`NIJI_DISCLAIMER` は自動で三重大学を含む） |
+| 3 | PDF の棚（ピックアップ・ショップ） | 三重大学を「2次 関東・中部」の棚に入れた（名古屋・静岡と同じ東海） | `src/battle/core/printShelves.ts`（`UNIV_REGION` に1行） |
+| 4 | プレビュー表 | `gachaPreviews.generated.ts` の末尾の余分なカンマを外した（`build-previews.py` が読めずに止まっていた）。中身は三重の3件が増えただけ | `src/data/gachaPreviews.generated.ts` |
+
+**戻し方**：`nijiMockPrints.ts` の `mie` の行（`NIJI_UNIVERSITIES` の1行・ヘルパー1行・台帳3行・説明コメント）を消し、`printShelves.ts` の `mie` と `gachaPools.ts` の lrNote、`tests/nijiGacha.test.ts` の注意書きの確認から三重大学を外す。台帳の件数は「大学数×3」で自動的に合う。PDF・画像は消してよい。
+
+---
+
 ## 2026-11-04 2次試験ガチャ LR に公立鳥取環境大学（前期・英語）予想問題3回分を追加（PR: feat/niji-kankyo）
 
 | 何を | どう変えた | ファイル |

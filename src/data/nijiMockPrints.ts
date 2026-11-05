@@ -45,6 +45,8 @@
  *     そのあと志望学部で分かれるため2系統×3回（計6冊）。多文化社会・経済・医・歯・薬・工・環境科学部ほか用＝A・B・D（グラフを読んで100語程度×2）／
  *     教育学部（文系以外）・情報データ科学部（理系受験）用＝A・B・C（語彙・同意表現10問）。100分・200点（70・70・60）。
  *     配点・小問の配点は編集部の想定。グラフの数値は架空。
+ *   - 三重大学 前期対策（2026-11-04 追加）：人文・教育・医学部共通。1 長文（前置詞の空所・同意語・整序・内容一致・表題）・2 長文（言い換え・和訳・
+ *     20字前後のまとめ・内容一致）・3 長文（三者の立場の説明・約80語の英語での意見論述）・80分・200点（60・70・70）。配点は編集部の想定。3回分。
  *   ★過去問ではない★ 英文・設問・図表・解答はすべて書き下ろし。過去問・解答速報・講評の文章は引用していない
  *   （英語5語以上・日本語12字以上の連続一致がないことを機械で確認済み）。表紙と奥付に「大学とは関係がない」旨を明記。
  *
@@ -92,6 +94,7 @@ export const NIJI_UNIVERSITIES = [
   { id: 'wakayamamed', name: '和歌山県立医科大学', track: '' },
 { id: 'nagasakid', name: '長崎大学', track: '多文化社会・経済・医・歯・薬・工・環境科学部ほか' },
   { id: 'nagasakic', name: '長崎大学', track: '教育学部（文系以外）・情報データ科学部（理系受験）' },
+  { id: 'mie', name: '三重大学', track: '' },
 ] as const;
 export type NijiUniversityId = (typeof NIJI_UNIVERSITIES)[number]['id'];
 
@@ -141,6 +144,7 @@ const kankyo = (n: number, pages: number, kb: number) => mock('kankyo', n, pages
 const wakayamamed = (n: number, pages: number, kb: number) => mock('wakayamamed', n, pages, kb);
 const nagasakid = (n: number, pages: number, kb: number) => mock('nagasakid', n, pages, kb);
 const nagasakic = (n: number, pages: number, kb: number) => mock('nagasakic', n, pages, kb);
+const mie = (n: number, pages: number, kb: number) => mock('mie', n, pages, kb);
 
 export const NIJI_MOCK_PRINTS: readonly GachaPrintDef[] = [
   nagoya(1, 28, 2026),
@@ -242,6 +246,9 @@ nagasakid(1, 18, 346),
   nagasakic(1, 18, 319),
   nagasakic(2, 18, 293),
   nagasakic(3, 18, 313),
+  mie(1, 19, 319),
+  mie(2, 18, 316),
+  mie(3, 19, 311),
 ];
 
 /** その大学の予想問題に必ず添える注意書き（PDF の表紙・奥付と同じ文） */

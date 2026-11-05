@@ -130,7 +130,7 @@ describe('2次試験の予想問題 PDF', () => {
     expect(NIJI_MOCK_PRINTS.find((p) => p.id === 'print_lr_niji_omua_en_1')!.label).toContain('Aグループ');
     expect(NIJI_MOCK_PRINTS.find((p) => p.id === 'print_lr_niji_omub_en_3')!.label).toContain('Bグループ');
     expect(NIJI_DISCLAIMER.split('大阪公立大学').length - 1).toBe(1);
-    for (const n of ['香川大学', '徳島大学', '愛媛大学', '高知大学', '鳥取大学', '島根大学', '長崎大学']) expect(NIJI_DISCLAIMER.split(n).length - 1, n).toBe(1);
+    for (const n of ['香川大学', '徳島大学', '愛媛大学', '高知大学', '鳥取大学', '島根大学', '長崎大学', '三重大学']) expect(NIJI_DISCLAIMER.split(n).length - 1, n).toBe(1);
     for (const name of ['和歌山大学', '岡山大学', '広島大学']) expect(NIJI_DISCLAIMER, name).toContain(name);
     expect(nijiUniversityOf('print_lr_niji_hiroshima_en_2')?.name).toBe('広島大学');
     expect(NIJI_MOCK_PRINTS.find((p) => p.id === 'print_lr_niji_okayama_en_1')!.label).toBe('国公立2次 英語 予想問題 岡山大学 前期対策 第1回（問題＋解答・解説）');

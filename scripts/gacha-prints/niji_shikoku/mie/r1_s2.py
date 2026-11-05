@@ -1,0 +1,51 @@
+# 三重大学 前期 英語 予想問題 第1回 2 — すべてマナトビ編集部の書き下ろし
+M = ['①', '②', '③', '④']
+
+S = {
+    'no': '2', 'title': '長文読解（言い換え・和訳・内容のまとめ）', 'pts': 70, 'marks': M,
+    'lead': '以下の英文を読み、問1〜問5 に答えよ。* をつけた語句には本文の後に注がある。',
+    'passages': [{'title': 'My Grandmother’s Recipes Had No Numbers', 'paras': [
+        "For most of my childhood, my grandmother cooked without measuring anything. She poured soy sauce straight from the bottle, added sugar by the handful and tasted the soup from a wooden spoon, nodding or frowning. When I asked how much salt went into her famous *pickled cucumbers, she looked at me as if I had asked how much air to breathe. “Enough,” she said.",
+        "After she moved into a care home, I decided to write her recipes down before they were lost. I brought a notebook, a set of measuring spoons and a kitchen scale, and I asked her to cook with me one Sunday every month. {u:(1):It did not go as planned.} Every time she reached for an ingredient, I stopped her to weigh it. She grew impatient, then quiet, and the food tasted strangely flat. By the third visit I had a notebook full of numbers and nothing worth eating.",
+        "The problem, I slowly realized, was that her recipes were not really lists of amounts. {u:(2):They were a series of decisions that depended on things my scale could not measure}: how ripe the tomatoes were, how *humid the day was, whether the people at the table were tired or cold. Her “enough” was not vague. It was precise in a way my numbers could never be, because it changed with the situation.",
+        "So I changed my approach. I put the scale away and simply watched. Instead of asking “How much?”, I asked “How do you know?” Her answers were wonderful. She added the vinegar when the steam stopped smelling sharp. She knew the rice was ready by the sound it made in the pot. She rolled *dumplings until the dough felt “like an *earlobe.” I wrote these down too, and my notebook began to fill with sentences instead of figures.",
+        "My first attempts at home were still poor. {u:(3):But I found that the more I cooked her way, paying attention rather than following rules, the less I needed the notebook at all.} One evening I made her pickled cucumbers for my own family. My daughter took one bite and asked how much salt I had used. I heard myself say, “Enough.”",
+        "My grandmother died last spring. People sometimes ask whether I managed to save her recipes, and I am never sure how to answer. I did not save them in the way I intended. What I learned instead were {u:(4):two things} no measuring spoon could teach me: that good cooking begins with noticing, and that some knowledge can only be passed from hand to hand, slowly, between people who have time for each other.",
+    ]}],
+    'notes': [('pickled cucumber', 'キュウリの漬物'), ('humid', '湿気の多い'), ('dumpling', '団子・餃子の類'), ('earlobe', '耳たぶ')],
+    'qs': [
+        {'n': '問1.', 'q': '下線部 (1) と意味が最も近い英文を ①〜④ から一つ選び、番号を書け。', 'sheet': 'box',
+         'opts': ['Things turned out differently from what I had expected.', 'The plan was carried out exactly as I had hoped.',
+                  'I had made no plans at all.', 'Everything went better than I had planned.']},
+        {'n': '問2.', 'q': '下線部 (2) の意味を、自然な日本語で表せ。', 'sheet': 3},
+        {'n': '問3.', 'q': '下線部 (3) を、the more … the less … の関係がわかるように日本語に直せ。', 'sheet': 4},
+        {'n': '問4.', 'q': '下線部 (4) の two things の中身を、それぞれ20字前後の日本語で書け。', 'sheet': 'grid25',
+         'sub': [('①', ''), ('②', '')]},
+        {'n': '問5.', 'q': '本文の内容に合うものを ①〜④ から一つ選べ。', 'sheet': 'box',
+         'opts': ['祖母は塩の量を聞かれると、正確な数字を教えてくれた。', '筆者がはかりを使って記録したとき、料理はかえって味気なくなった。',
+                  '筆者は祖母の言葉を書き取るのをやめ、写真だけを残すことにした。', '筆者の娘は、塩を正確に量ってから漬物を作った。']},
+    ],
+    'ans': [
+        {'n': '問1.', 'pts': 10, 'ans': '①',
+         'exp': 'It did not go as planned.「計画どおりにはいかなかった」。直後に、材料のたびに量らせて祖母が不機嫌になり、料理もおいしくなかったと続く。① turn out differently from ~「〜とは違う結果になる」。'},
+        {'n': '問2.', 'pts': 15, 'ans': 'それらは、私のはかりでは測ることのできない事柄によって変わる、一連の判断だったのだ。',
+         'exp': 'They は祖母のレシピ。a series of decisions「一連の判断（決定）」。that depended on ~ は decisions を修飾する関係詞節で「〜に左右される」。things my scale could not measure は things の後に目的格の関係代名詞が省略された形。主語・補語 5点、関係詞節 6点、depend on の訳 4点。'},
+        {'n': '問3.', 'pts': 15, 'ans': 'しかし、規則に従うのではなく注意を払いながら祖母のやり方で料理をすればするほど、ノートがまったく必要なくなっていくことに気づいた。',
+         'exp': 'the 比較級 …, the 比較級 … 「…すればするほど、ますます…」。her way「祖母のやり方で」。paying attention rather than following rules は分詞構文で「規則に従うよりむしろ注意を払いながら」。not … at all に当たる the less … at all は「まったく〜しなくなる」。構文 7点、分詞構文 5点、found that 3点。'},
+        {'n': '問4.', 'pts': 20, 'ans': '① よい料理は、よく気づくことから始まるということ。② 人から人へ時間をかけてしか伝わらない知識があること。',
+         'short': '① よい料理は気づくことから始まるということ ② 人から人へ時間をかけてしか伝わらない知識があること',
+         'exp': '直後のコロン以下 that good cooking begins with noticing, and that some knowledge can only be passed from hand to hand, slowly, between people who have time for each other をまとめる。②は「手から手へ（人から人へ）」「ゆっくり（時間をかけて）」の要素を入れる。各10点。字数が大きく外れるものは減点。'},
+        {'n': '問5.', 'pts': 10, 'ans': '②',
+         'exp': '第2段落 the food tasted strangely flat に一致。① 祖母は「ちょうどいいだけ（Enough）」と答えた。③ 写真の話はない（書き取りは続けている）。④ 娘は量を尋ねただけで、作ったのは筆者。'},
+    ],
+    'tr': [
+        '【祖母のレシピには数字がなかった】子どものころの大半、祖母は何も量らずに料理をしていた。しょうゆは瓶から直接注ぎ、砂糖はひとつかみずつ加え、木のスプーンで汁を味見しては、うなずいたり顔をしかめたりした。名物のキュウリの漬物に塩をどれくらい入れるのかと尋ねると、祖母は、息をするのにどれだけ空気がいるのかと聞かれたかのように私を見た。「ちょうどいいだけ」と祖母は言った。',
+        '祖母が介護施設に移ったあと、私は祖母のレシピが失われる前に書き留めておこうと決めた。ノートと計量スプーンひとそろい、台所用のはかりを持って行き、毎月一度、日曜日にいっしょに料理をしてほしいと頼んだ。計画どおりにはいかなかった。祖母が材料に手を伸ばすたびに、私は量るために止めた。祖母はいらいらし、やがて黙り込み、料理は妙に味気なかった。3回目の訪問のころには、ノートは数字でいっぱいなのに、食べる価値のあるものは何もなかった。',
+        '問題は、祖母のレシピが実は分量の一覧ではないということだと、私は少しずつ気づいた。それらは、私のはかりでは測ることのできない事柄によって変わる、一連の判断だったのだ。トマトがどれくらい熟しているか、その日の湿気はどうか、食卓につく人たちが疲れているか寒がっているか。祖母の「ちょうどいい」はあいまいではなかった。状況に合わせて変わるからこそ、私の数字には決してまねのできない正確さをもっていたのだ。',
+        'そこで私はやり方を変えた。はかりをしまい、ただ見ていることにした。「どれくらい？」と聞く代わりに、「どうして分かるの？」と聞いた。祖母の答えはすばらしかった。湯気のにおいがつんとしなくなったら酢を入れる。米が炊けたことは鍋の立てる音で分かる。団子は生地が「耳たぶくらい」の手ざわりになるまで丸める。私はこうしたことも書き留め、ノートは数字ではなく文で埋まり始めた。',
+        '家での最初の何回かは、まだうまくいかなかった。しかし、規則に従うのではなく注意を払いながら祖母のやり方で料理をすればするほど、ノートがまったく必要なくなっていくことに気づいた。ある晩、私は自分の家族のために祖母のキュウリの漬物を作った。娘がひと口食べて、塩をどれくらい入れたのかと尋ねた。私は自分が「ちょうどいいだけ」と答えるのを聞いた。',
+        '祖母は昨年の春に亡くなった。レシピを残せたのかと聞かれることがあるが、どう答えればよいのか、いつも迷う。私が考えていた形では残せなかった。その代わりに私が学んだのは、計量スプーンでは教えられない二つのことだった。よい料理は気づくことから始まるということ、そして、知識の中には、互いのために時間を使える人どうしのあいだで、手から手へ、ゆっくりとしか伝えられないものがあるということである。',
+    ],
+    'vocab': [('by the handful', 'ひとつかみずつ'), ('frown', '顔をしかめる'), ('impatient', 'いらいらした'), ('flat', '（味が）気の抜けた・味気ない'), ('vague', 'あいまいな'),
+              ('precise', '正確な'), ('approach', '取り組み方'), ('pass from hand to hand', '手から手へ渡す')],
+}

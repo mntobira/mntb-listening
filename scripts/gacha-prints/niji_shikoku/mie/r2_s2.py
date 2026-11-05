@@ -1,0 +1,51 @@
+# 三重大学 前期 英語 予想問題 第2回 2 — すべてマナトビ編集部の書き下ろし
+M = ['①', '②', '③', '④']
+
+S = {
+    'no': '2', 'title': '長文読解（言い換え・和訳・内容のまとめ）', 'pts': 70, 'marks': M,
+    'lead': '以下の英文を読み、問1〜問5 に答えよ。* をつけた語句には本文の後に注がある。',
+    'passages': [{'title': 'The Year I Stopped Taking Photos', 'paras': [
+        "On my sixteenth birthday my parents gave me a good camera, and for the next three years I photographed everything. School festivals, sunsets, plates of food, my friends laughing at things I had not heard because I was busy adjusting the focus. By the time I left for university, I had more than forty thousand pictures. I almost never looked at them.",
+        "The change began on a trip to Kyoto with my grandfather, who was eighty and walked slowly with a stick. At a temple garden I spent nearly half an hour trying to capture the reflection of the maple trees in the pond. When I finally lowered the camera, he was sitting on a bench, simply looking. “Did you see the *heron?” he asked. I had not. It had stood at the edge of the water the whole time, and then flown away. {u:(1):I had been looking at the garden for thirty minutes without ever really seeing it.}",
+        "That evening I could not stop thinking about the heron. I realized that my camera had become a kind of wall. Because I knew the picture would be there later, I let the moment pass without paying full attention to it. {u:(2):Psychologists have a name for something similar: when people take photos of objects in a museum, they often remember those objects less well than people who only looked.} The camera, it seems, can do our remembering for us — and our own memory relaxes.",
+        "So I tried an experiment. For one year I would leave the camera at home, and when I wanted to remember something, I would describe it in a small notebook instead. At first it felt strange and a little frightening, as if I were letting things disappear. But writing forced me to notice details I had never noticed through the lens: the smell of rain on hot stone, the sound a bicycle makes on a wooden bridge, the exact words a stranger used when she gave me directions.",
+        "I do not want to pretend that photographs are bad. My grandfather died two years later, and I am grateful for every picture I have of him. But I now take far fewer, and I take them differently. Before I press the button, I look first — properly — and only then decide whether the moment needs a picture at all. {u:(3):Often it does not, and I find that the moments I choose not to photograph are the ones I remember most clearly.}",
+        "I still have the notebook from that year. It contains no pictures, only words, many of them badly written. But when I read it, I can see the heron.",
+    ]}],
+    'notes': [('heron', 'サギ（鳥）')],
+    'qs': [
+        {'n': '問1.', 'q': '下線部 (1) が伝えている筆者の気づきとして最も近いものを ①〜④ から一つ選び、番号を書け。', 'sheet': 'box',
+         'opts': ['I had been in the garden for too short a time to enjoy it.', 'I had spent a long time in the garden but had not truly noticed what was in front of me.',
+                  'I had seen the garden many times before, so it was not interesting.', 'I had been unable to see because the garden was too dark.']},
+        {'n': '問2.', 'q': '下線部 (2) の意味を、自然な日本語で表せ。', 'sheet': 4},
+        {'n': '問3.', 'q': '下線部 (3) を、it と ones が何を指すかがわかるように日本語に直せ。', 'sheet': 4},
+        {'n': '問4.', 'q': '写真を撮らない1年間に、ノートに書くことで筆者が気づくようになったことの例を本文から二つ選び、それぞれ20字前後の日本語で書け。', 'sheet': 'grid25',
+         'sub': [('①', ''), ('②', '')]},
+        {'n': '問5.', 'q': '本文の内容に合うものを ①〜④ から一つ選べ。', 'sheet': 'box',
+         'opts': ['筆者は撮りためた4万枚以上の写真を、何度も見返していた。', '筆者は京都の庭で、祖父といっしょにサギを撮影した。',
+                  '筆者は写真が悪いものだとは考えておらず、祖父の写真に感謝している。', '筆者は今も、目に入るものすべてを撮影している。']},
+    ],
+    'ans': [
+        {'n': '問1.', 'pts': 10, 'ans': '②',
+         'exp': '30分も庭を見ていたのに、ずっとそこにいたサギに気づかなかった。looking と seeing の対比で、「眺めてはいたが本当には見ていなかった」という気づき。'},
+        {'n': '問2.', 'pts': 15, 'ans': '心理学者たちは、それに似たことに名前をつけている。人が博物館で展示物の写真を撮ると、ただ見ただけの人よりも、その展示物をよく覚えていないことが多いのである。',
+         'exp': 'have a name for ~「〜を呼ぶ名前がある」。コロン以下はその具体例。take photos of objects in a museum「博物館の展示物の写真を撮る」、remember those objects less well than people who only looked「見ただけの人よりもそれらの展示物の記憶があいまいである」。前半 4点、when 節 4点、比較の訳 7点。'},
+        {'n': '問3.', 'pts': 15, 'ans': 'その瞬間が写真を必要としないことが多く、写真に撮らないと自分で決めた瞬間こそが、最もはっきりと覚えている瞬間なのだと気づく。',
+         'exp': 'it は直前の the moment、does not の後には need a picture が省略されている。the ones は moments を指す。the moments I choose not to photograph「私が写真に撮らないことを選ぶ瞬間」が主語、are the ones I remember most clearly が補語。省略の補い 5点、ones 3点、関係詞節 2つ 7点。'},
+        {'n': '問4.', 'pts': 20, 'ans': '次から2つ。① 熱い石に雨が降ったときのにおい。② 自転車が木の橋を渡るときの音。③ 道を教えてくれた見知らぬ女性が使った正確な言葉。',
+         'short': '① 熱い石に降る雨のにおい ② 自転車が木の橋を渡る音（③ 道を教えてくれた女性の言葉 でも可）',
+         'exp': '第4段落 the smell of rain on hot stone, the sound a bicycle makes on a wooden bridge, the exact words a stranger used when she gave me directions から2つ。各10点。'},
+        {'n': '問5.', 'pts': 10, 'ans': '③',
+         'exp': '第5段落 I do not want to pretend that photographs are bad. … I am grateful for every picture I have of him. に一致。① ほとんど見なかった。② サギに気づかず撮れなかった。④ 今はずっと少なく撮る。'},
+    ],
+    'tr': [
+        '【写真を撮るのをやめた年】16歳の誕生日に両親がよいカメラをくれ、それから3年間、私は何でも撮った。学校の祭り、夕焼け、料理の皿、ピントを合わせるのに忙しくて私には聞こえなかった何かに笑っている友だち。大学に進むころには、4万枚以上の写真がたまっていた。私はそれをほとんど見返さなかった。',
+        '変化は、80歳で杖をついてゆっくり歩く祖父との京都旅行で始まった。ある寺の庭で、私は池に映るカエデの姿をとらえようと30分近くを費やした。ようやくカメラを下ろすと、祖父はベンチに座って、ただ眺めていた。「サギを見たかい」と祖父は尋ねた。見ていなかった。サギはその間ずっと水辺に立っていて、それから飛び去ったのだ。私は30分も庭を眺めていたのに、一度も本当には見ていなかったのである。',
+        'その晩、私はサギのことが頭から離れなかった。カメラが一種の壁になっていたのだと気づいた。写真があとで残ると分かっているから、私はその瞬間に十分な注意を払わずにやり過ごしていたのだ。心理学者たちは、それに似たことに名前をつけている。人が博物館で展示物の写真を撮ると、ただ見ただけの人よりも、その展示物をよく覚えていないことが多いのである。カメラは私たちの代わりに覚えてくれるようで、そのせいで私たち自身の記憶は気を抜いてしまう。',
+        'そこで私は実験をしてみた。1年間、カメラを家に置いておき、何かを覚えておきたいときには、代わりに小さなノートにそれを書きとめるのだ。はじめは奇妙で、少し怖かった。物事が消えていくのを放っておいているような気がしたからだ。しかし書くことで、レンズ越しには一度も気づかなかった細かなことに気づかざるをえなくなった。熱い石に降る雨のにおい、木の橋を渡る自転車の音、道を教えてくれた見知らぬ女性が使った言葉そのもの。',
+        '写真が悪いものだと言うつもりはない。祖父はその2年後に亡くなり、私は祖父を写した写真の一枚一枚に感謝している。しかし今は撮る枚数がずっと減り、撮り方も変わった。シャッターを押す前に、まず――きちんと――見て、それから、その瞬間にそもそも写真が必要かどうかを決める。必要ないことも多く、写真に撮らないと決めた瞬間こそが、最もはっきりと覚えている瞬間なのだと気づく。',
+        'あの年のノートは今も持っている。写真は一枚もなく、言葉だけで、その多くはへたな文章だ。でもそれを読むと、私にはサギが見えるのである。',
+    ],
+    'vocab': [('adjust the focus', 'ピントを合わせる'), ('capture', 'とらえる・写し取る'), ('reflection', '（水面などに）映った姿'), ('let ~ pass', '〜をやり過ごす'), ('relax', '気を抜く・ゆるむ'),
+              ('force O to do', 'O に〜させる'), ('pretend that', '〜のふりをする・〜と言い張る'), ('properly', 'きちんと')],
+}
