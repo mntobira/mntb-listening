@@ -54,6 +54,7 @@ describe('battle range and league revision',()=>{
     const reviewUi=readFileSync('src/components/explanation/ExplanationAnswerItem.tsx','utf8');
     expect(reviewUi).toContain('const grammarReviewPlayerBlock');
     expect(reviewUi).toContain('tracks={question.explanationTracks}');
+    expect(reviewUi).toContain('title="英文法の音声を聞く"');
     expect(reviewUi).toContain('{grammarReviewPlayerBlock}');
     const problemPane=readFileSync('src/components/explanation/ProblemStatement.tsx','utf8');
     expect(problemPane).toContain('tracks={question.audioTracks}');

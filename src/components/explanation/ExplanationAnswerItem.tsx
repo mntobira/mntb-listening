@@ -60,10 +60,12 @@ export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
     <ListeningAudioPlayer
       tracks={question.explanationTracks}
       mode="review"
-      variant="inline"
+      title="英文法の音声を聞く"
+      variant="panel"
       orientation="horizontal"
       tone="light"
       readCount={1}
+      compact={reorderMobile}
       className="mb-2"
     />
   ) : null;
