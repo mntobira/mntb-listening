@@ -8,7 +8,6 @@ import { getFigureNumber } from '../../utils/figureNumbering';
 import { buildSubQuestionList, isSubQuestionListRedundant, extractInlineQuestionRows, extractListeningQuestionRows, cleanQuestionText, findSubQuestionSentence } from '../../utils/questionDisplay';
 import type { Problem } from '../../types/curriculum';
 import type { ResultPage } from './explanationLogic';
-import { textTracksOf } from './helpers';
 
 /**
  * 解答・解説画面の左カラム（問題文ペイン）に並ぶ「1問ぶん」のブロック。
@@ -38,8 +37,6 @@ export interface ProblemStatementProps {
 }
 
 export function ProblemStatement({ question, qIndex, scorePercentage, singleQuestionIndex, rangeOffset, pagerOn, resultPages, safeResultPage, savingNote, handleSaveNote, reorderMobile, isEnglishChapter, figureNumberMap }: ProblemStatementProps) {
-  // 解答後の解説画面専用。英文法の完成文音声もここでのみ再生する。
-  const reviewAudioTracks = textTracksOf(question);
   return (
                   <div className="space-y-4 md:space-y-6">
                     {singleQuestionIndex === undefined && (
@@ -81,8 +78,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                       : 'p-4 rounded-lg border text-sm md:text-base leading-relaxed'} ${
                       (reorderMobile ? 'text-gray-800' : 'bg-white border-gray-200 text-gray-800')
                     }`}>
-                      {/* ★英語リスニング／英文法：復習用の音源をここに置く。
-                          英文法の完成文音声は正解を含むため、問題中には出さず解説画面でのみ再生する。
+                      {/* ★英語リスニング：復習用の音源を問題文欄に置く。
                           採点直後の画面なので、「聞き取れなかった箇所を
                           スクリプト・和訳つきで聞き直す」導線として最重要の位置。
                           mode='review' でスクリプト／和訳／語句を開けるようにする。 */}
@@ -113,9 +109,9 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                           無いので問題文は削らない（削ると答え合わせができない）。
                           スクリプトも消さず、下に移すだけ。
                       */}
-                      {reviewAudioTracks.length > 0 && (
+                      {Array.isArray(question.audioTracks) && question.audioTracks.length > 0 && (
                           <ListeningAudioPlayer
-                            tracks={reviewAudioTracks}
+                            tracks={question.audioTracks}
                             // スマホは「聞き直す」ボタンだけの横帯（スクリプトは下へ）
                             mode={reorderMobile ? 'practice' : 'review'}
                             variant={reorderMobile ? 'inline' : 'panel'}

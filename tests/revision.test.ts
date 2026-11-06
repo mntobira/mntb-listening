@@ -51,9 +51,13 @@ describe('battle range and league revision',()=>{
     expect(grammarTracks.length).toBeGreaterThan(0);
     expect(grammarTracks.some(track=>Boolean(track.audioUrl))).toBe(true);
     for(const track of grammarTracks)if(track.audioUrl)expect(existsSync(`public${track.audioUrl}`),track.audioUrl).toBe(true);
-    const reviewUi=readFileSync('src/components/explanation/ProblemStatement.tsx','utf8');
-    expect(reviewUi).toContain('textTracksOf(question)');
-    expect(reviewUi).toContain('tracks={reviewAudioTracks}');
+    const reviewUi=readFileSync('src/components/explanation/ExplanationAnswerItem.tsx','utf8');
+    expect(reviewUi).toContain('const grammarReviewPlayerBlock');
+    expect(reviewUi).toContain('tracks={question.explanationTracks}');
+    expect(reviewUi).toContain('{grammarReviewPlayerBlock}');
+    const problemPane=readFileSync('src/components/explanation/ProblemStatement.tsx','utf8');
+    expect(problemPane).toContain('tracks={question.audioTracks}');
+    expect(problemPane).not.toContain('textTracksOf(question)');
     expect((await loadPool('english_listening')).every(q=>!!q.audioUrl)).toBe(true);
   });
   it('server aggregation is never imported by the frontend and nav has an independent My Page',()=>{
