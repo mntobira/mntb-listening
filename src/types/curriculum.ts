@@ -128,7 +128,7 @@ export interface Problem {
   readCount?: 1 | 2;
   /** リスニングの音源 */
   audioTracks?: AudioTrack[];
-  /** 英文法の解説用英文（音を出さない） */
+  /** 英文法の解説用英文・音源（解答前は隠し、解説画面で利用） */
   explanationTracks?: AudioTrack[];
   /** 本番モードで再生を1回に制限する（第4問以降） */
   playOnce?: boolean;
