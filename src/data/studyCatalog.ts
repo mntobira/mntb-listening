@@ -104,11 +104,11 @@ export const STUDY_CATALOG: readonly StudySubject[] = [
         action: { kind: 'foundation', tab: 'words' },
       },
       {
-        // 2026-10-28：TOEIC L&RをまずはPart 5から試験導入。とびら君の吹き出しの右に置く（カードの列は動かさない）
-        id: 'english_toeic', title: 'TOEIC', icon: 'briefcase', badge: 'NEW', section: 'spotlight',
-        // 2026-11-02 Part 7 を足した
-        description: 'Part 5・6・7',
-        meta: `Part 5 全${(toeic.questions ?? 0) - toeicP6 - toeicP7}回・Part 6 全${toeicP6}回・Part 7 全${toeicP7}回`,
+        // 2026-10-28：TOEIC L&Rリーディング演習を試験導入。とびら君の吹き出しの右に置く（カードの列は動かさない）
+        id: 'english_toeic', title: 'TOEIC® L&R TEST', icon: 'briefcase', badge: 'NEW', section: 'spotlight',
+        // 2026-11-02 読解形式ごとの演習回をまとめて案内
+        description: 'リーディング（短文・長文穴埋め／読解）',
+        meta: `短文穴埋め全${(toeic.questions ?? 0) - toeicP6 - toeicP7}回・長文穴埋め全${toeicP6}回・読解全${toeicP7}回`,
         progressSubject: 'toeic_part5',
         action: { kind: 'units', subject: 'toeic_part5' },
       },
