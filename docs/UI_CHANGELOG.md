@@ -1,10 +1,3 @@
-## 2026-11-07 リスニング絵問題7図をカラー版へ差し替え
-
-- 第1問B・第1回/9回/12回/14回/15回と第2問・第1回/12回の絵問題をカラー図版へ差し替え。バッグ問題を含む対象7画像のみ変更し、その他の図版や英文法音声UIは変更しない。
-- 正方形図版に合わせて、対戦・復習用の4分割境界と第1問B第9回の表示比率を更新。
-- 対象：`public/listening_q1b/` の5画像、`public/listening_q2/` の2画像、`src/battle/data/pictureGrid.generated.ts`、`src/data/listeningPictureAspect.ts`、`tests/battlePictureListening.test.ts`。
-- 戻し方：この変更を revert。
-
 ## 2026-11-06 TOEIC®対策のApp Store掲載と起動時の免責表示
 
 - App Store掲載文にTOEIC® L&R TEST対策（Part 5〜7）のオリジナル問題を明記し、ETSの登録商標・非承認の英文注記を長文・短文の両方に追加。

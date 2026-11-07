@@ -7,6 +7,7 @@ export const LISTENING_PICTURE_ASPECT: Readonly<Record<string, number>> = {
  "/listening_q1b/el1B_set7_q4.jpg": 1.0949,
  "/listening_q1b/el1B_set9_q1.jpg": 1.0949,
  "/listening_q1b/el1B_set9_q2.jpg": 1.0949,
+ "/listening_q1b/el1B_set9_q3.jpg": 1.0949,
  "/listening_q1b/el1B_set9_q4.jpg": 1.0949,
  "/listening_q2/el2_set13_q1.jpg": 1.1016,
  "/listening_q2/el2_set15_q2.jpg": 1.25,
