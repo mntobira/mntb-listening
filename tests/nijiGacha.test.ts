@@ -174,6 +174,14 @@ describe('ガチャ画面：左右スワイプで切り替え', () => {
     expect(css).toContain('.gacha-banner-buddy .tb-bubble { padding: 4px 8px; font-size: 12px; line-height: 1.25; }');
     expect(css).toContain('.gacha-banner-hero { min-height: 78px; padding: 5px 8px; gap: 8px; }');
   });
+  it('細いスマホでもバナーを画面幅に収め、タブと日付を折り返す', () => {
+    expect(css).toContain('.mana-hub-gacha .gacha-room { box-sizing: border-box; min-width: 0;');
+    expect(css).toMatch(/\.gacha-banner \{[^}]*width: 100%; min-width: 0;/);
+    expect(css).toContain('.gacha-carousel { box-sizing: border-box; min-width: 0; max-width: 100%; }');
+    expect(css).toMatch(/\.gacha-banner-head \{[^}]*flex-wrap: wrap/);
+    expect(css).toMatch(/\.gacha-pool-tabs \{[^}]*flex-wrap: wrap; min-width: 0; max-width: 100%/);
+    expect(css).toMatch(/@media \(max-width: 420px\) \{\s*\.gacha-banner-head \{ align-items: flex-start; \}/);
+  });
   it('切替タブ（共通テスト｜2次試験）でも切り替えられ、引くときはそのガチャで抽選する', () => {
     expect(carousel).toContain('role="tablist"');
     expect(carousel).toContain('data-gacha-pool-tab');
