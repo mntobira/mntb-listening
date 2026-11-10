@@ -15,7 +15,7 @@
  *     あとからまとめて鳴らす（＝タップした瞬間に3つが重なる）ことはしない。
  *     アプリ（Capacitor）はユーザー操作なしで鳴らせる設定なので、起動と同時に鳴る。
  */
-import { sharedAudioContext } from './sharedAudioContext';
+import { sharedAudioContext, sharedAudioContextResumed } from './sharedAudioContext';
 
 export const LAUNCH_SFX = ['open_shimmer', 'title_swell', 'title_bloom'] as const;
 export type LaunchSfx = (typeof LAUNCH_SFX)[number];
@@ -39,17 +39,28 @@ export function launchCueSchedule(titleAtMs: number): { name: LaunchSfx; at: num
 
 const buffers = new Map<LaunchSfx, AudioBuffer>();
 let loading: Promise<void> | null = null;
+const LAUNCH_SFX_LOAD_TIMEOUT_MS = 1200;
 
 /** 3つの音を読み込む（何度呼んでも1回だけ）。失敗しても投げない */
 export function preloadLaunchSfx(): Promise<void> {
   if (loading) return loading;
-  const ctx = sharedAudioContext();
+  // Context を作る前に resume しても何も起きない。作成と再開を同時に行う。
+  const ctx = sharedAudioContextResumed();
   if (!ctx || typeof fetch !== 'function') return Promise.resolve();
-  loading = Promise.all(LAUNCH_SFX.map(name => fetch(`/sfx/launch/${name}.mp3`)
-    .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.arrayBuffer(); })
-    .then(b => ctx.decodeAudioData(b))
-    .then(ab => { buffers.set(name, ab); })
-    .catch(() => { /* 読めない音は鳴らさないだけ */ }))).then(() => {
+  loading = Promise.all(LAUNCH_SFX.map(async name => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), LAUNCH_SFX_LOAD_TIMEOUT_MS);
+    try {
+      const response = await fetch(`/sfx/launch/${name}.mp3`, { signal: controller.signal });
+      if (!response.ok) throw new Error(String(response.status));
+      const buffer = await response.arrayBuffer();
+      buffers.set(name, await ctx.decodeAudioData(buffer));
+    } catch {
+      /* 読めない音は鳴らさないだけ。ほかの起動音の読み込みは続ける */
+    } finally {
+      clearTimeout(timeout);
+    }
+  })).then(() => {
       // 1つでも読めなかったら、次に呼ばれたとき読み直せるようにする
       if (buffers.size < LAUNCH_SFX.length) loading = null;
     });

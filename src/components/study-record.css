@@ -30,7 +30,8 @@
 .sr-items { list-style: none; margin: 0; padding: 0 12px 12px 58px; display: grid; gap: 6px; }
 .sr-items li { display: flex; gap: 6px; font-size: 13px; line-height: 1.5; color: #c0392b; }
 .sr-items li[data-ok] { color: #2f7a52; }
-.sr-items li > span { color: #2c3e50; display: flex; flex-wrap: wrap; gap: 2px 8px; }
+.sr-items li > .sr-item-content { color: #2c3e50; display: grid; flex: 1; min-width: 0; gap: 6px; }
+.sr-item-content > span { display: flex; flex-wrap: wrap; gap: 2px 8px; }
 .sr-items .sr-prompt { color: #4b5d6a; }
 .sr-items em { font-style: normal; font-weight: 800; color: #2f7a52; }
 /* 2026-10-11：解きなおしの2択。左＝全部、右＝まちがえた問題だけ（右を目立たせる） */

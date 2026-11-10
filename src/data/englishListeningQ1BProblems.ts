@@ -46,7 +46,7 @@ const EL1_B_SET1_TRACKS: ListeningAudioTrack[] = [
     audioUrl: '/listening_audio/el1B_set1_q2.mp3',
     label: '問2',
     hint: '男性（会社員）',
-    script: '"I\'ll take this red shoulder bag with the long strap, please."',
+    script: '"I\'ll take this shoulder bag with the long strap, please."',
     translation: '',
     keyPhrases: [],
   },
@@ -132,7 +132,7 @@ const EL1_B_SET1: ListeningProblem = {
       imageUrl: '/listening_q1b/el1B_set1_q2.jpg',
       imageCaption: '問2 の選択肢イラスト（①〜④）',
       detailedExplanation: {
-        theme: '色（red）・種類（shoulder bag）・属性（long strap）の3条件の組み合わせ',
+        theme: '種類（shoulder bag）と属性（long strap）の組み合わせ',
         type: 'イラスト選択型',
         difficulty: 2,
         steps: [

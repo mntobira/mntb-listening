@@ -18,16 +18,17 @@
  * planReminders は日時の計算だけをする純粋関数（テストで直接確かめる）。
  */
 import { safeLocalStorage } from './safeLocalStorage';
+import { localDateKey } from '../battle/core/growthMissions';
 
-export interface ReminderPrefs { enabled: boolean; review: boolean; streak: boolean }
-export const DEFAULT_REMINDER_PREFS: ReminderPrefs = { enabled: false, review: true, streak: true };
+export interface ReminderPrefs { enabled: boolean; review: boolean; streak: boolean; loginBonus: boolean }
+export const DEFAULT_REMINDER_PREFS: ReminderPrefs = { enabled: false, review: true, streak: true, loginBonus: true };
 const PREFS_KEY = 'study_reminders_v1';
 
 export function readReminderPrefs(): ReminderPrefs {
   try {
     const v = JSON.parse(safeLocalStorage()?.getItem(PREFS_KEY) || 'null');
     if (v && typeof v === 'object') {
-      return { enabled: v.enabled === true, review: v.review !== false, streak: v.streak !== false };
+      return { enabled: v.enabled === true, review: v.review !== false, streak: v.streak !== false, loginBonus: v.loginBonus !== false };
     }
   } catch { /* 壊れていたら既定値 */ }
   return { ...DEFAULT_REMINDER_PREFS };
@@ -44,11 +45,13 @@ export interface ReminderInput {
   streak: number;
   /** 最後に学習した日（Date.toDateString() 形式。Home.tsx と同じ） */
   lastActive: string | null;
+  /** ログインボーナスを受け取った日（YYYY-MM-DD）。未指定時は未受取として扱う */
+  loginLastClaimed?: string | null;
 }
 export interface PlannedReminder {
   /** 端末の通知ID（同じ種類は同じIDで上書き＝重ならない） */
   id: number;
-  kind: 'review' | 'streak';
+  kind: 'review' | 'streak' | 'loginBonus';
   at: number;
   title: string;
   body: string;
@@ -56,6 +59,7 @@ export interface PlannedReminder {
 
 export const REVIEW_HOUR = 18;
 export const STREAK_HOUR = 21;
+export const LOGIN_BONUS_HOUR = 9;
 /** 何日先まで予約するか（アプリを開かない日が続いても届くように） */
 export const PLAN_DAYS = 7;
 const DAY = 24 * 60 * 60 * 1000;
@@ -74,6 +78,12 @@ export function planReminders(input: ReminderInput, prefs: ReminderPrefs): Plann
   if (!prefs.enabled) return [];
   const out: PlannedReminder[] = [];
   const today0 = startOfDay(input.now);
+  if (prefs.loginBonus && input.streak >= 0) {
+    const claimedToday = input.loginLastClaimed === localDateKey(new Date(input.now));
+    const day = claimedToday ? today0 + DAY : today0;
+    const at = atHour(day + 12 * 60 * 60 * 1000, LOGIN_BONUS_HOUR);
+    if (at > input.now) out.push({ id: 4000, kind: 'loginBonus', at, title: 'ログインボーナスを受け取ろう！✨', body: 'とびら君が待ってるよ。今日のボーナスを受け取りにきてね♪' });
+  }
   if (prefs.review && input.reviewDueAts.length) {
     for (let i = 0; i < PLAN_DAYS; i += 1) {
       const at = atHour(today0 + i * DAY + 12 * 60 * 60 * 1000, REVIEW_HOUR);
@@ -82,7 +92,7 @@ export function planReminders(input: ReminderInput, prefs: ReminderPrefs): Plann
       const dueBefore = i === 0 ? 0 : input.reviewDueAts.filter(t => t <= at - DAY).length;
       // その日に新しく期限が来た問題があるときだけ（毎日同じ通知を出さない）
       if (due > 0 && (i === 0 || due > dueBefore)) {
-        out.push({ id: 1000 + i, kind: 'review', at, title: '復習の日です', body: `間違えた問題が ${due} 問、復習の日をむかえました。忘れる前に1回だけ解き直そう。` });
+        out.push({ id: 1000 + i, kind: 'review', at, title: '復習タイムだよ〜📚', body: `忘れる前に、${due} 問だけ一緒に解いてみよっ♪` });
       }
     }
   }
@@ -91,7 +101,7 @@ export function planReminders(input: ReminderInput, prefs: ReminderPrefs): Plann
     const day = studiedToday ? today0 + DAY : today0;
     const at = atHour(day + 12 * 60 * 60 * 1000, STREAK_HOUR);
     if (at > input.now) {
-      out.push({ id: 2000, kind: 'streak', at, title: `連続 ${input.streak} 日がとぎれそう`, body: '今日はまだ学習していません。1問だけでも解くと、連続日数がつながります。' });
+      out.push({ id: 2000, kind: 'streak', at, title: `れんぞく記録をつなごう🔥`, body: '今日はまだかな？1問だけでも、とびら君と勉強しよ〜！' });
     }
   }
   return out.sort((a, b) => a.at - b.at);

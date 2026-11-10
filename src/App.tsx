@@ -360,6 +360,12 @@ export default function App() {
     setHasInteracted, isBgmFadedOut, handleAudioError, handleToggleBgm,
   } = useTitleBgmController({ appState, hasEntered });
 
+  // 起動画面ではBGMを必ずONにする（切替ボタンは表示しない）。
+  // useTitleBgmController がこの値を保存し、設定画面から次回以降の変更もできる。
+  useEffect(() => {
+    if (!hasEntered && !isBgmEnabled) setIsBgmEnabled(true);
+  }, [hasEntered, isBgmEnabled, setIsBgmEnabled]);
+
   /**
    * -----------------------------------------------------------------
    * 一定時間なにも操作されなかったらホーム画面へ戻す
@@ -470,7 +476,7 @@ export default function App() {
   if (!hasEntered) {
     const enter = () => { battleAudio().unlock(); setHasInteracted(true); setHasEntered(true); };
     // 2026-10-19 タイトルの「ゲストで試す」は廃止（ログイン必須）。未ログインならこの次にログイン画面が出る
-    return <LaunchScreen soundEnabled={isBgmEnabled} onToggleSound={() => handleToggleBgm(!isBgmEnabled)} onStart={enter} />;
+    return <LaunchScreen onStart={enter} />;
   }
 
   return (

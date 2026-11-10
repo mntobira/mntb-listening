@@ -6,11 +6,6 @@
 .launch-screen { position: relative; isolation: isolate; min-height: 100dvh; background: var(--mt-paper); color: var(--mt-ink); font-family: var(--mt-font-body); }
 .launch-content { display: flex; flex-direction: column; align-items: center; gap: var(--mt-s3); width: min(560px, 100%); height: 100dvh; min-height: 520px; margin: 0 auto; padding: max(var(--mt-s3), env(safe-area-inset-top)) var(--mt-s5) max(var(--mt-s4), env(safe-area-inset-bottom)); }
 
-.launch-top { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: var(--mt-tap); flex-shrink: 0; }
-.launch-product { display: flex; align-items: baseline; gap: 8px; font: 800 var(--mt-fs-sm)/1 var(--mt-font-display); color: var(--mt-ink-2); letter-spacing: .08em; }
-.launch-product b { font: 700 var(--mt-fs-xs)/1 var(--mt-font-body); color: var(--mt-brand); letter-spacing: .16em; }
-.launch-sound { display: inline-flex; align-items: center; gap: 6px; min-height: var(--mt-tap); padding: 0 var(--mt-s3); border-radius: var(--mt-r-pill); border: 1px solid var(--mt-line-strong); background: var(--mt-surface); color: var(--mt-ink-2); font: 700 var(--mt-fs-xs)/1 var(--mt-font-body); }
-
 .launch-brand { flex-shrink: 0; width: min(320px, 78%); margin-top: var(--mt-s2); }
 .launch-brand img { display: block; width: 100%; height: auto; }
 
@@ -76,7 +71,7 @@
   .launch-equipped-pose { opacity: 1 !important; }
 }
 
-.launch-emblem { height:100dvh; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:20px; background:var(--mt-paper); color:#344451; font-family:var(--mt-font-body); }
+.launch-emblem { position:relative; height:100dvh; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:20px; background:var(--mt-paper); color:#344451; font-family:var(--mt-font-body); }
 .launch-emblem img { width:min(260px,70vw); height:auto; }
 .launch-emblem h1 { font:400 clamp(20px,5.5vw,28px)/1.6 var(--font-handwriting); text-align:center; letter-spacing:.04em; }
 .launch-emblem p { font-size:12px; letter-spacing:.2em; color:#6b6047; }
@@ -84,6 +79,7 @@
 .launch-emblem-mark svg:first-child { width:56px; height:56px; color:#987735; }
 .launch-emblem-mark svg:last-child { position:absolute; right:8px; bottom:9px; width:34px; height:34px; background:#fff7e6; border-radius:50%; color:#3e7289; }
 .launch-emblem button { min-height:44px; padding:0 16px; font-size:12px; color:#596673; border:1px solid #d8caa9; border-radius:20px; }
+.launch-emblem-disclaimer { position:absolute; inset-inline:max(16px, env(safe-area-inset-left)); bottom:calc(env(safe-area-inset-bottom) + 10px); max-width:720px; margin:0 auto; font-size:12px; line-height:1.45; letter-spacing:0; text-align:center; color:#596673; }
 
 /* 2026-10-02 D2：起動エンブレムを市販アプリのスプラッシュの間合いに（白→フェードイン→保持→フェードアウト→タイトル） */
 .launch-emblem { background:#fff; cursor:pointer; -webkit-tap-highlight-color:transparent; outline:none; }
@@ -120,9 +116,8 @@
   .launch-content {
     display: grid; width: min(1240px, 100%); height: 100dvh; min-height: 560px;
     grid-template-columns: minmax(0, 1.05fr) minmax(420px, 1fr);
-    grid-template-rows: auto 1fr auto auto auto auto auto 1fr;
+    grid-template-rows: 1fr auto auto auto auto auto 1fr;
     grid-template-areas:
-      "top    top"
       "stage  ."
       "stage  brand"
       "stage  copy"
@@ -133,7 +128,6 @@
     column-gap: clamp(32px, 5vw, 80px); row-gap: 18px; align-items: start;
     padding: 20px clamp(32px, 5vw, 72px) 28px;
   }
-  .launch-top { grid-area: top; }
   .launch-brand { grid-area: brand; justify-self: start; width: min(340px, 100%); margin: 0; }
   .launch-stage { grid-area: stage; align-self: center; width: 100%; height: min(82dvh, 640px); max-height: none; min-height: 0; }
   .launch-copy { grid-area: copy; text-align: left; font-size: clamp(34px, 3.2vw, 46px); line-height: 1.25; }
@@ -154,7 +148,7 @@
   .launch-countdown-mini strong { font: 900 26px/1 var(--mt-font-display); color: #496d80; font-variant-numeric: tabular-nums; }
   .launch-countdown-mini small { margin-left: 6px; font-size: 12px; color: var(--mt-ink-3); }
   .launch-philosophy { grid-area: phil; margin-top: 0; }
-  .launch-philosophy:hover, .launch-sound:hover { filter: brightness(.98); box-shadow: 0 2px 0 #e8d3b2, 0 0 0 3px #f3e3c7; }
+  .launch-philosophy:hover { filter: brightness(.98); box-shadow: 0 2px 0 #e8d3b2, 0 0 0 3px #f3e3c7; }
   .launch-kbd { grid-area: kbd; display: block; margin: 0; justify-self: end; font-size: 12px; color: var(--mt-ink-3); }
   .launch-kbd kbd { display: inline-block; min-width: 44px; padding: 3px 8px; margin-right: 4px; border: 1px solid var(--mt-line-strong); border-bottom-width: 3px; border-radius: 8px; background: #fff; font: 700 12px/1.2 var(--mt-font-body); color: var(--mt-ink-2); text-align: center; }
 

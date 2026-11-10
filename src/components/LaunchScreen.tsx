@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { CinematicClip, CINEMATIC_CLIPS } from './CinematicClip';
-import { ArrowRight, BookHeart, Headphones, PenLine, Repeat2, Swords, Volume2, VolumeX } from 'lucide-react';
+import { ArrowRight, BookHeart, Headphones, PenLine, Repeat2, Swords } from 'lucide-react';
 import { PhilosophyPage } from './PhilosophyPage';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc } from '../battle/core/growth';
@@ -11,6 +11,7 @@ import { getDaysUntilExam, EXAM_DATE_LABEL } from '../utils/examCountdown';
 import { fadeOutLaunchSfx, launchCueSchedule, playLaunchSfx, preloadLaunchSfx, type LaunchSfx } from '../battle/audio/launchSfx';
 import { resumeSharedAudio } from '../battle/audio/sharedAudioContext';
 import { readAudioPreferences } from '../battle/audio/audioPreferences';
+import { TOEIC_DISCLAIMER } from '../utils/toeicDisclaimer';
 
 /**
  * タイトル画面（2026-09-30 作り直し）。保存された画面やアカウントには一切触れない（見た目だけ）。
@@ -36,10 +37,9 @@ import { readAudioPreferences } from '../battle/audio/audioPreferences';
  */
 type Phase = 'intro' | 'crossfade' | 'done';
 
-export function LaunchScreen({ onStart, soundEnabled, onToggleSound }: {
+export function LaunchScreen({ onStart }: {
   /** 2026-10-19 ゲスト入口は廃止（ログイン必須）。未ログインなら次にログイン画面が出る */
   onStart: () => void;
-  soundEnabled: boolean; onToggleSound: () => void;
 }) {
   const { progress } = useGrowthProgress();
   const [phase, setPhase] = useState<Phase>('intro');
@@ -58,55 +58,63 @@ export function LaunchScreen({ onStart, soundEnabled, onToggleSound }: {
   /*
     起動の効果音（宣伝動画の冒頭と同じ・2026-10-17）
       エンブレムが出たら「きらきら」→ タイトルの1.3秒前から「すーっ」→ タイトルが出た瞬間に「ふわっ」
-    右上の「BGM ON/OFF」が OFF のときは鳴らさない。音量は設定の音量。
-    ブラウザが自動再生を止めている時は鳴らない（あとでまとめて鳴らすこともしない）。launchSfx.ts を参照。
+    起動画面では常に鳴らす（切替ボタンは置かない）。音量は設定の音量。
+    音源を読み込んでから演出タイマーを始め、初回読み込み中にキューが消えるのを防ぐ。
   */
-  const soundRef = useRef(soundEnabled);
-  soundRef.current = soundEnabled;
   const sfxTimers = useRef<number[]>([]);
   const bloomDone = useRef(false);
-  // cue は ref 経由で最新の ON/OFF を読むので、effect の依存に入れなくてよい
-  const cue = (name: LaunchSfx) => { if (soundRef.current) playLaunchSfx(name, readAudioPreferences().volume); };
+  const skipRequested = useRef(false);
+  const cue = (name: LaunchSfx) => { playLaunchSfx(name, readAudioPreferences().volume); };
   const clearSfxTimers = () => { sfxTimers.current.forEach(t => window.clearTimeout(t)); sfxTimers.current = []; };
   useEffect(() => {
     if (gate !== 'emblem') return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const at = reduced ? { hold: 0, out: 900, title: 1100 } : { hold: 700, out: 2500, title: 3400 };
-    const timers = [
-      window.setTimeout(() => setEmblemPhase(p => (p === 'in' ? 'hold' : p)), at.hold),
-      window.setTimeout(() => setEmblemPhase('out'), at.out),
-      window.setTimeout(() => setGate(g => (g === 'emblem' ? 'title' : g)), at.title),
-    ];
-    // 効果音：読み込みが間に合った音だけ鳴らす（「ふわっ」はタイトルに切り替わった時に鳴らす）
-    const t0 = performance.now();
     let alive = true;
-    resumeSharedAudio();
+    const visualTimers: number[] = [];
     void preloadLaunchSfx().then(() => {
-      if (!alive) return; // 片付け後（StrictMode の2回目・飛ばした後）に予約しない
+      if (!alive || skipRequested.current) return; // 片付け後（StrictMode の2回目・飛ばした後）に予約しない
+      // preload 内で AudioContext を作成しているため、作成後に再開を試す。
+      resumeSharedAudio();
+      const t0 = performance.now();
+      visualTimers.push(
+        window.setTimeout(() => setEmblemPhase(p => (p === 'in' ? 'hold' : p)), at.hold),
+        window.setTimeout(() => setEmblemPhase('out'), at.out),
+        window.setTimeout(() => setGate(g => (g === 'emblem' ? 'title' : g)), at.title),
+      );
       for (const c of launchCueSchedule(at.title)) {
         if (c.name === 'title_bloom') continue;
         const wait = c.at - (performance.now() - t0);
-        if (wait < -500) continue; // 大きく遅れた音は鳴らさない
+        if (wait < -500) continue;
         sfxTimers.current.push(window.setTimeout(() => cue(c.name), Math.max(0, wait)));
       }
     });
-    return () => { alive = false; timers.forEach(t => window.clearTimeout(t)); clearSfxTimers(); };
+    return () => { alive = false; visualTimers.forEach(t => window.clearTimeout(t)); clearSfxTimers(); };
   }, [gate]);
   useEffect(() => {
     if (gate !== 'title' || bloomDone.current) return;
     bloomDone.current = true;
-    cue('title_bloom');
+    let alive = true;
+    void preloadLaunchSfx().then(() => {
+      if (!alive) return;
+      resumeSharedAudio();
+      cue('title_bloom');
+    });
+    return () => { alive = false; };
   }, [gate]);
   // タイトルから先へ進んだら起動音はすっと消す（このあと鳴る「誕生」と重ねない）
   useEffect(() => { if (gate === 'philosophy') fadeOutLaunchSfx(); }, [gate]);
   useEffect(() => () => fadeOutLaunchSfx(), []);
-  useEffect(() => { if (!soundEnabled) fadeOutLaunchSfx(150); }, [soundEnabled]);
   const skipEmblem = () => {
     if (emblemPhase === 'out') return;
+    skipRequested.current = true;
     setEmblemSkipped(true); setEmblemPhase('out');
-    // 飛ばしたら「すーっ」は鳴らさず、タイトルで「ふわっ」だけ（タップの中なので音も解禁される）
+    // 飛ばしたら「すーっ」は鳴らさず、音源の準備後にタイトルへ進む。
     clearSfxTimers(); resumeSharedAudio();
-    window.setTimeout(() => setGate(g => (g === 'emblem' ? 'title' : g)), 450);
+    void preloadLaunchSfx().then(() => {
+      resumeSharedAudio();
+      window.setTimeout(() => setGate(g => (g === 'emblem' ? 'title' : g)), 450);
+    });
   };
   const [played, setPlayed] = useState(false);
   const [walkReady, setWalkReady] = useState(false);
@@ -132,17 +140,11 @@ export function LaunchScreen({ onStart, soundEnabled, onToggleSound }: {
     return () => window.removeEventListener('keydown', onKey);
   });
   const enter = () => onStart();
-  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label="マナトビ 起動エンブレム（タップで進む）" role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><img className="launch-emblem-applogo" src="/brand/app-icon-logo.webp" alt="マナトビ" width={640} height={640}/><h1>聞いて、解いて、<br/>競って、<em>これ1本</em>で。</h1></div></main>;
+  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label={`マナトビ 起動エンブレム（タップで進む）。${TOEIC_DISCLAIMER}`} role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><img className="launch-emblem-applogo" src="/brand/app-icon-logo.webp" alt="マナトビ" width={640} height={640}/><h1>聞いて、解いて、<br/>競って、<em>これ1本</em>で。</h1></div><p className="launch-emblem-disclaimer">{TOEIC_DISCLAIMER}</p></main>;
   if (gate === 'philosophy') return <PhilosophyPage onBack={() => setGate('title')} />;
   // C13（2026-10-29）：「学ぶ入口を、もっと快適に。」のお知らせ画面は削除。共通テストまでの日数はホームにあるので、はじめる → そのままホームへ入る。
   return <main className="launch-screen" aria-label="マナトビ タイトル画面" data-launch-screen>
     <div className="launch-content">
-      <header className="launch-top">
-        <span aria-hidden="true" />
-        <button type="button" className="launch-sound" aria-label={soundEnabled ? 'BGMをオフにする' : 'BGMをオンにする'} aria-pressed={soundEnabled} onClick={onToggleSound}>
-          {soundEnabled ? <Volume2 size={18} aria-hidden="true" /> : <VolumeX size={18} aria-hidden="true" />}<span>BGM {soundEnabled ? 'ON' : 'OFF'}</span>
-        </button>
-      </header>
       <h1 className="launch-brand"><img src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" fetchPriority="high" /></h1>
       <div className="launch-stage" data-phase={phase} aria-label="とびら君の登場演出">
         <div className="launch-box">

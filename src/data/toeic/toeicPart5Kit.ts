@@ -81,9 +81,7 @@ export const TOEIC_P5_QUESTIONS_PER_ROUND = 30;
 /** 1回30問の目安時間（1問20秒）。超えても止めない（既存の演習と同じ「超過」表示） */
 export const TOEIC_P5_TIME_LIMIT_SEC = 600;
 
-/** 画面に出す免責文（文言は運営者が確認する） */
-export const TOEIC_DISCLAIMER =
-  'TOEICはETSの登録商標です。本アプリはETSの承認・推奨を受けたものではありません。問題はすべてマナトビのオリジナルです。';
+export { TOEIC_DISCLAIMER } from '../../utils/toeicDisclaimer';
 
 /* ───────── 正解位置の決め方 ───────── */
 

@@ -44,35 +44,10 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
   const audioRef = useRef<HTMLAudioElement>(null);
   const titlePauseTimer = useRef<number | null>(null);
   /*
-    ===== BGM の初期状態について =====
-    ★以前は常に ON（useState(true)）だった。これを OFF 既定に変える。★
-
-    ■ なぜ OFF にするのか
-      学習アプリで音が勝手に鳴り始めるのは、
-        ・図書館・電車・自習室では実害になる
-        ・イヤホンを繋いだ瞬間に大音量で鳴ることがある
-        ・「まず音を止める」から始まる体験になる
-      という問題がある。音楽を聴きながらやりたい人は
-      自分の好きな曲を別に流しているので、
-      ★アプリ側が鳴らす理由は元々弱い。★
-      機能自体は消さず、設定画面のトグルからONにできる。
-
-      既定値は src/config/features.ts の FEATURES.bgm で持つ。
-      「どの機能を出すか」の判断を1か所に集めておくため
-      （このファイルに true/false を直接書かない）。
-
-    ■ 選択を覚える
-      毎回OFFに戻ると、ONにしたい人には毎回操作が必要になる。
-      localStorage に覚えるので、ONにした人は次回もON。
-      ★保存値が無い人（＝新規・これまでのユーザー全員）は
-        フラグの既定値に従うので、OFF から始まる。★
-
-    ■ 保存値の読み方
-      'on' / 'off' という文字で保存する（true/false の文字列より
-      あとから3値目を足しやすく、読んで意味が分かる）。
-      壊れた値・読めない場合は既定値に倒す。
-      localStorage が使えない環境（プライベートモード等）で
-      例外が飛んでも起動を止めないよう try で囲む。
+    BGM のON/OFFは端末に保存する。アプリ起動時は App.tsx がONにし、
+    起動後は設定画面からセッション中の音をOFFにできる。
+    この hook では保存値を読み、設定画面で変更された値を保持する。
+    保存値が無い・読めない場合は audioPreferences と FEATURES.bgm の既定値を使う。
   */
   const [isBgmEnabled, setIsBgmEnabled] = useState(() => {
     try {
@@ -268,6 +243,36 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
       document.removeEventListener('keydown', handleInteraction);
     };
   }, []);
+
+  // iPhoneのロック画面にBGMをメディア再生として残さない。
+  // BGMはアプリを見ている間だけ再生し、バックグラウンドへ移ったら即停止する。
+  useEffect(() => {
+    const syncVisibility = () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      if (document.visibilityState === 'hidden') {
+        markBgmPlaying(false);
+        audio.pause();
+        return;
+      }
+      const { isBgmEnabled, isAudioValid, appState } = bgmStateRef.current;
+      if (!isBgmEnabled || !isAudioValid || !hasInteracted || !hasEntered || BGM_SILENT_STATES.includes(appState)) return;
+      unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current, bgmElapsedMs()));
+      void audio.play().catch(() => undefined);
+    };
+    const stopOnPageHide = () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      markBgmPlaying(false);
+      audio.pause();
+    };
+    document.addEventListener('visibilitychange', syncVisibility);
+    window.addEventListener('pagehide', stopOnPageHide);
+    return () => {
+      document.removeEventListener('visibilitychange', syncVisibility);
+      window.removeEventListener('pagehide', stopOnPageHide);
+    };
+  }, [hasEntered, hasInteracted]);
 
   useEffect(() => {
     // 画面を移るたびに viewport を通常の device-width・等倍へ戻す。

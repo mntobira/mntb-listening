@@ -60,9 +60,9 @@ import { SUBJECT_REGISTRY } from '../data/subjects';
  * 理由が書かれていないフラグは、後で誰も戻せなくなる。
  */
 export const FEATURES = {
-  // bgm：既定は OFF。勉強中に勝手に音が鳴ると困る人が多いため（useTitleBgmController.tsx の説明）。設定のトグルで ON にできる
+  // bgm：起動時は ON（起動画面の効果音・起動後のBGM）。勉強中は設定画面から OFF にできる
   // （2026-10-28 どこからも使われていなかった "my_words" を削除）
-  "bgm": false,
+  "bgm": true,
   "ranking": true,
   "battle": true
 } as const;

@@ -2,8 +2,8 @@
  * 設定 → 通知（2026-10-19）。最初はオフ。オンにしたときだけ許可を求める。
  */
 import { useEffect, useState, type ReactNode } from 'react';
-import { Bell, BellOff } from 'lucide-react';
-import { readReminderPrefs, writeReminderPrefs, type ReminderPrefs, REVIEW_HOUR, STREAK_HOUR } from '../utils/studyReminders';
+import { Bell, BellOff, Gift } from 'lucide-react';
+import { readReminderPrefs, writeReminderPrefs, type ReminderPrefs, REVIEW_HOUR, STREAK_HOUR, LOGIN_BONUS_HOUR } from '../utils/studyReminders';
 import { reminderPermission, requestReminderPermission, rescheduleReminders, sendTestReminder, type ReminderPermission } from '../utils/studyRemindersRuntime';
 import { analyticsEnabled, setAnalyticsEnabled, trackEvent } from '../utils/analytics';
 
@@ -27,6 +27,7 @@ export function ReminderSettings() {
     <Row label="学習のお知らせ" sub={prefs.enabled ? 'オン（この端末に届きます）' : 'オフ'} checked={prefs.enabled} onChange={() => { void toggleAll(); }}
       icon={prefs.enabled ? <Bell size={16} /> : <BellOff size={16} />} />
     {prefs.enabled && <>
+      <Row label="ログインボーナス" sub={`毎朝 ${LOGIN_BONUS_HOUR}:00「ログインボーナスを受け取ろう！✨」`} checked={prefs.loginBonus} onChange={() => save({ ...prefs, loginBonus: !prefs.loginBonus })} icon={<Gift size={16} />} />
       <Row label="復習の日" sub={`間違えた問題の復習日に ${REVIEW_HOUR}:00`} checked={prefs.review} onChange={() => save({ ...prefs, review: !prefs.review })} />
       <Row label="連続日数がとぎれそう" sub={`まだ学習していない日の ${STREAK_HOUR}:00`} checked={prefs.streak} onChange={() => save({ ...prefs, streak: !prefs.streak })} />
       {/* 2026-10-28 A5：届くか・鳴るかをその場で確かめる */}

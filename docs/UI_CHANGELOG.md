@@ -1,3 +1,32 @@
+## 2026-11-07 リスニング絵問題7図をカラー版へ差し替え
+
+- 第1問B・第1回/9回/12回/14回/15回と第2問・第1回/12回の絵問題をカラー図版へ差し替え。バッグ問題を含む対象7画像のみ変更し、その他の図版や英文法音声UIは変更しない。
+- 正方形図版に合わせて、対戦・復習用の4分割境界と第1問B第9回の表示比率を更新。
+- 対象：`public/listening_q1b/` の5画像、`public/listening_q2/` の2画像、`src/battle/data/pictureGrid.generated.ts`、`src/data/listeningPictureAspect.ts`、`tests/battlePictureListening.test.ts`。
+- 戻し方：この変更を revert。
+
+## 2026-11-06 TOEIC®対策のApp Store掲載と起動時の免責表示
+
+- App Store掲載文にTOEIC® L&R TEST対策（Part 5〜7）のオリジナル問題を明記し、ETSの登録商標・非承認の英文注記を長文・短文の両方に追加。
+- アプリ起動時のエンブレム画面に読みやすい日本語注記を表示。TOEIC学習画面の注記と同じ文言を軽量な共有ファイルから読み込む。
+- 対象：`docs/APP_STORE_WHATS_NEW_2026-11.md`、`src/components/LaunchScreen.tsx`、`src/components/launch-screen.css`、`src/utils/toeicDisclaimer.ts`。
+- 戻し方：この変更を revert。
+
+## 2026-11-06 起動画面のBGMボタン削除と起動音の安定化
+
+- 起動画面のBGM ON/OFFボタンを削除し、起動演出の効果音は常時有効にする（音量は設定値を使用）。
+- 音源の読み込み後にAudioContextの再開と起動演出を始め、初回読み込み中に効果音の再生時刻を過ぎてしまう問題を防止。音源読み込みには1.2秒のタイムアウトを設ける。
+- 対象：`src/components/LaunchScreen.tsx`、`src/components/launch-screen.css`、`src/battle/audio/launchSfx.ts`。
+- 戻し方：この変更を revert。
+
+## 2026-11-06 学習記録の対戦問題を復習・演習へつなぐ
+
+- 「解いた問題」にある対戦問題から、問題文・選択肢・正解を確認できるようにした。本文が記録に無いときは対戦プールと教材データから補う。
+- 誤答には「復習ノートに追加」を設置。追加後は復習ノートの表示も更新する。
+- 各対戦小問に「解きなおす」「まちがえた問題だけ解く」を設置。前者は大問全体、後者は該当する誤答小問だけを通常の演習画面で開始する。誤答が無い小問では後者を無効にする。演習画面の無い対戦専用教科では行き先のない操作を出さない。
+- 対象：`src/components/StudyRecord.tsx`、`src/components/StudyRecordBattleActions.tsx`、`src/components/study-record.css`。
+- 戻し方：この変更を revert。
+
 ## 2026-11-05 2次試験ガチャ LR に群馬大学 情報学部 前期 英語予想問題3回分を追加（PR: feat/niji-gunma）
 
 - LR（2次試験ガチャ）の予想問題に群馬大学（情報学部）を追加（3冊・24〜25ページ：問題12＋解答・解説12〜13を1冊に統合）。情報学部の個別試験「英語」（120分・400点）の形式に沿った書き下ろし。

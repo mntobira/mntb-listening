@@ -6,6 +6,7 @@ import { loadReviewList } from '../utils/reviewList';
 import './study-record.css';
 import { KineticText, ScoreRing } from '../motion';
 import { CountUp } from './ui/CountUp';
+import { StudyRecordBattleActions } from './StudyRecordBattleActions';
 
 /**
  * 学習記録（2026-10-04 ご要望）
@@ -94,7 +95,10 @@ function EntryCard({ entry, fixed, onlyWrong, onRetry }: { entry: StudyLogEntry;
           {shown.map(i => (
             <li key={i.id} data-ok={i.correct || isFixed(i.id) || undefined}>
               {i.correct || isFixed(i.id) ? <CheckCircle2 size={16} aria-hidden="true" /> : <XCircle size={16} aria-hidden="true" />}
-              <span><b>{i.label}</b>{!i.correct && isFixed(i.id) && <span className="sr-fixed" data-sr-fixed>正解した</span>}{i.prompt && <span className="sr-prompt">{i.prompt}</span>}{!i.correct && i.answer ? <em>正解 {i.answer}</em> : null}</span>
+              <div className="sr-item-content">
+                <span><b>{i.label}</b>{!i.correct && isFixed(i.id) && <span className="sr-fixed" data-sr-fixed>正解した</span>}{i.prompt && <span className="sr-prompt">{i.prompt}</span>}{!i.correct && i.answer ? <em>正解 {i.answer}</em> : null}</span>
+                {entry.kind === 'battle' && <StudyRecordBattleActions entry={entry} item={i} uid={auth.currentUser?.uid || 'guest'} isWrong={!i.correct && !isFixed(i.id)} onRetry={onRetry} />}
+              </div>
             </li>
           ))}
         </ul>

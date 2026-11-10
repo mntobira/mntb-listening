@@ -31,4 +31,12 @@ describe('ガチャのバナー（2026-10-28 A10・モンスト風）', () => {
     expect(shop).toContain("['sets','セット収集']");
     expect(shop).toContain('<GachaSetsPanel');
   });
+  it('iPhone・Androidとも同じ圧縮レイアウトで抽選ボタンまで一画面に収める', () => {
+    const css = readFileSync('src/components/gacha.css', 'utf8');
+    expect(css).toContain('@media (max-width: 699px)');
+    expect(css).toContain('すべてのスマホで同じ密度にする');
+    expect(css).toContain('.gacha-banner-buddy { display: none; }');
+    expect(css).toContain('@media (max-width: 699px) and (max-height: 640px)');
+    expect(css).toContain('.gacha-banner-links { display: none; }');
+  });
 });

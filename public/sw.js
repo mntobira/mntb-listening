@@ -11,7 +11,7 @@
  *   - Range リクエスト（音声のシーク）はキャッシュしない（206 を保存すると壊れる）。
  */
 // デプロイ済みアセットを確実に取り直すため、UI更新時は世代を上げる。
-const VERSION = 'v5';
+const VERSION = 'v7';
 /** 画面（HTML）の取得をこれ以上待たない（電波が弱いとき白い画面のまま待ち続けないため） */
 const NAV_TIMEOUT_MS = 8000;
 const SHELL = `manatobi-shell-${VERSION}`;

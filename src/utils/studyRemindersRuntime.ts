@@ -3,6 +3,7 @@
  * アプリ版のプラグインは使うときだけ読み込む（Web 版の起動を重くしない）。
  */
 import { auth } from '../firebase';
+import { cachedGrowth } from '../battle/data/growthStore';
 import { isNativeApp } from '../native/platform';
 import { loadReviewList } from './reviewList';
 import { lastActiveKey, streakKey } from './userStorageKeys';
@@ -19,7 +20,8 @@ function currentInput(now = Date.now()) {
     streak = parseInt(ls.getItem(streakKey(uid)) || '0', 10) || 0;
     lastActive = ls.getItem(lastActiveKey(uid));
   } catch { /* 読めなければ連続日数の通知は出さない */ }
-  return { now, reviewDueAts: loadReviewList(uid).map(i => i.dueAt).filter(Number.isFinite), streak, lastActive };
+  const growth = cachedGrowth();
+  return { now, reviewDueAts: loadReviewList(uid).map(i => i.dueAt).filter(Number.isFinite), streak: growth?.loginStreak ?? streak, lastActive, loginLastClaimed: growth?.lastLoginDate ?? null };
 }
 
 async function plugin() {
@@ -78,8 +80,8 @@ const toNative = (p: { id: number; title: string; body: string; at: number; kind
 
 /** 設定の「テスト通知」：5秒後に1回だけ鳴らして、届くか・鳴るかを本人が確かめられる */
 export async function sendTestReminder(): Promise<'sent' | 'denied' | 'unsupported'> {
-  const title = 'マナトビ（テスト通知）';
-  const body = 'この音と表示が届けば、学習のお知らせも届きます。';
+  const title = 'マナトビからのお知らせ♪';
+  const body = 'この音と表示が届けば、かわいい学習のお知らせも届くよ！';
   try {
     if (isNativeApp()) {
       const ln = await plugin();
@@ -96,7 +98,7 @@ export async function sendTestReminder(): Promise<'sent' | 'denied' | 'unsupport
 }
 
 let webTimers: ReturnType<typeof setTimeout>[] = [];
-const NATIVE_IDS = [...Array.from({ length: 7 }, (_, i) => 1000 + i), 2000];
+const NATIVE_IDS = [...Array.from({ length: 7 }, (_, i) => 1000 + i), 2000, 4000];
 
 /**
  * いまの記録から通知を予約し直す（前の予約は消す）。
