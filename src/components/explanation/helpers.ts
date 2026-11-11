@@ -21,7 +21,8 @@ export function isAttempted(answer: string | undefined | null): boolean {
 
 /**
  * 解説の1画面表示（結果 → 英文 → 解説）に使う英文トラック。
- * リスニングは音源つき（audioTracks）、英文法は音を出さない文字だけ（explanationTracks）。
+ * リスニングは audioTracks、英文法は explanationTracks を返す。
+ * 英文法の完成文トラックは解答前には伏せ、解説画面で音声URLまたは音声合成と文字に使う。
  */
 export function textTracksOf(q: Pick<Problem, 'audioTracks' | 'explanationTracks'> | null | undefined): AudioTrack[] {
   if (!q) return [];

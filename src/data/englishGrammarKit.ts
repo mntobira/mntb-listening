@@ -33,8 +33,8 @@
  *     (3) subQuestions[].label に「問N」を含む
  *     (4) explanation の各設問見出しが ★行頭★ の「問N」で始まる
  *   buildEgSet() はこの4条件を構造として強制する。
- *   その結果、Quiz.tsx / Explanation.tsx / ListeningAudioPlayer.tsx を
- *   ★1行も変えずに★ 英文法でも音源パネルと専用解説が動く。
+ *   音声URLはトラックに保持し、englishGrammarData.ts が解答前の問題データから外して解説用に移す。
+ *   ProblemStatement は解答後に explanationTracks を既存の ListeningAudioPlayer へ渡す。
  *
  * ■ 選択肢の持たせ方
  *   options は ['①','②','③','④'] のマーク式にし、英文と選択肢は
@@ -56,7 +56,7 @@ export type GrammarAudioTrack = {
   label: string;
   /** 一言メモ（何を問う問題か） */
   hint: string;
-  /** 音源ファイル（英文法は用意しないので未設定＝音声合成が読む） */
+  /** 登録済みMP3があればURLを付与。未登録の場合は音声合成で読む */
   audioUrl?: string;
   /** 読み上げる英文＝★空所を埋めた完成文★ */
   script: string;
@@ -166,7 +166,7 @@ export function buildEgSet(meta: EgSetMeta, items: EgItem[]): GrammarProblem {
     subId: subIdOf(index),
     label: `問${index + 1}`,
     hint: item.focus,
-    // E9（2026-10-31）：音源が届いた問題だけ audioUrl を付ける（名簿は grammarAudioManifest.ts。今は空＝音声合成）
+    // grammarAudioManifest に登録済みのMP3だけURLを付ける。未登録分は音声合成へフォールバックする。
     ...(grammarAudioUrl(subIdOf(index)) ? { audioUrl: grammarAudioUrl(subIdOf(index)) } : {}),
     // ★script は完成文★（空所つきの文を読み上げても意味が取れないため）
     script: item.full,

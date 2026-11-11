@@ -78,7 +78,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                       : 'p-4 rounded-lg border text-sm md:text-base leading-relaxed'} ${
                       (reorderMobile ? 'text-gray-800' : 'bg-white border-gray-200 text-gray-800')
                     }`}>
-                      {/* ★英語リスニング：復習用の音源をここに置く。
+                      {/* ★英語リスニング：復習用の音源を問題文欄に置く。
                           採点直後の画面なので、「聞き取れなかった箇所を
                           スクリプト・和訳つきで聞き直す」導線として最重要の位置。
                           mode='review' でスクリプト／和訳／語句を開けるようにする。 */}
@@ -109,8 +109,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                           無いので問題文は削らない（削ると答え合わせができない）。
                           スクリプトも消さず、下に移すだけ。
                       */}
-                      {Array.isArray(question.audioTracks) &&
-                        question.audioTracks.length > 0 && (
+                      {Array.isArray(question.audioTracks) && question.audioTracks.length > 0 && (
                           <ListeningAudioPlayer
                             tracks={question.audioTracks}
                             // スマホは「聞き直す」ボタンだけの横帯（スクリプトは下へ）

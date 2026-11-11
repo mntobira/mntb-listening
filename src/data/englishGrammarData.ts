@@ -220,17 +220,17 @@ const EG_PROBLEMS: Record<string, GrammarProblem[]> = {
  */
 (() => {
   applyListeningPostProcess(englishGrammarData, { decisive: false }); // C10：「解くカギ」の一覧は出さない（黄色いマーカーだけ残す）
-  // Keep prepared explanations/translations, but never expose answer-bearing narration.
+  // 解答前は完成文音声が正解を漏らすため audioTracks から外し、MP3 URLも含むトラック全体を解説用に保持する。
   for (const c of englishGrammarData.parts.flatMap(p => p.chapters)) {
     for (const problem of [...c.practiceProblems, ...c.miniTest]) {
-      // 音は出さない（答えが聞こえるため）。完成文・和訳・語句は解説の1画面表示用に文字だけ残す
+      // 解答前は音声を出さない（答えが聞こえるため）。解説用トラックには完成文・和訳・語句・MP3 URLを保つ。
       if (Array.isArray(problem.audioTracks)) problem.explanationTracks = problem.audioTracks;
       delete problem.audioTracks;
       // audioUrl は Problem の型には無い（古いデータの名残り）が、念のため消す処理は残す
       delete (problem as Problem & { audioUrl?: unknown }).audioUrl;
-      // 音源は外しても、進め方は以前どおり「問1→解説→問2→解説…」の1問ずつ
+      // 音声は問題画面から隠すが、進め方は以前どおり「問1→解説→問2→解説…」の1問ずつ
       problem.stepwise = true;
-      // 音が無いので、リスニング用の見出しを文法向けの言葉に置き換える
+      // 英文法の解説用に、リスニング由来の見出しを文法向けの言葉に置き換える
       if (typeof problem.explanation === 'string') {
         problem.explanation = problem.explanation
           .replace(/SCRIPT ／ 実際に流れた英文/g, 'ANSWER ／ 完成した英文')

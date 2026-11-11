@@ -1,5 +1,5 @@
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 const user = vi.hoisted(()=>({currentUser:{uid:'revision-user'} as {uid:string}|null}));
 vi.mock('../src/firebase',()=>({auth:user,db:null}));
 import { parsePublicStudyProfile } from '../src/utils/publicStudyProfile';
@@ -43,8 +43,22 @@ describe('battle range and league revision',()=>{
     expect(pool.filter(q=>questionInScope(q,'vocab:lv1:101:150')).every(q=>Number(q.subQuestionId)>=101&&Number(q.subQuestionId)<=150)).toBe(true);
     expect(pool.some(q=>questionInScope(q,'vocab:lv1:150:101'))).toBe(false);
   });
-  it('grammar answer audio is removed while explanations and listening audio remain',async()=>{
-    const qs=getAllGrammarChapters().flatMap(c=>[...c.practiceProblems,...c.miniTest]);expect(qs.length).toBeGreaterThan(0);for(const q of qs){expect((q as { audioTracks?: unknown }).audioTracks).toBeUndefined();expect((q as { audioUrl?: unknown }).audioUrl).toBeUndefined();}
+  it('grammar answer audio stays hidden before answering but remains playable in review',async()=>{
+    const qs=getAllGrammarChapters().flatMap(c=>[...c.practiceProblems,...c.miniTest]);
+    expect(qs.length).toBeGreaterThan(0);
+    for(const q of qs){expect((q as { audioTracks?: unknown }).audioTracks).toBeUndefined();expect((q as { audioUrl?: unknown }).audioUrl).toBeUndefined();}
+    const grammarTracks=qs.flatMap(q=>q.explanationTracks ?? []);
+    expect(grammarTracks.length).toBeGreaterThan(0);
+    expect(grammarTracks.some(track=>Boolean(track.audioUrl))).toBe(true);
+    for(const track of grammarTracks)if(track.audioUrl)expect(existsSync(`public${track.audioUrl}`),track.audioUrl).toBe(true);
+    const reviewUi=readFileSync('src/components/explanation/ExplanationAnswerItem.tsx','utf8');
+    expect(reviewUi).toContain('const grammarReviewPlayerBlock');
+    expect(reviewUi).toContain('tracks={question.explanationTracks}');
+    expect(reviewUi).toContain('title="英文法の音声を聞く"');
+    expect(reviewUi).toContain('{grammarReviewPlayerBlock}');
+    const problemPane=readFileSync('src/components/explanation/ProblemStatement.tsx','utf8');
+    expect(problemPane).toContain('tracks={question.audioTracks}');
+    expect(problemPane).not.toContain('textTracksOf(question)');
     expect((await loadPool('english_listening')).every(q=>!!q.audioUrl)).toBe(true);
   });
   it('server aggregation is never imported by the frontend and nav has an independent My Page',()=>{
