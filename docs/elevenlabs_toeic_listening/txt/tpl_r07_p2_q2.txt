@@ -1,0 +1,7 @@
+Number 2. Why wasn't Mr. Ortega at the safety briefing this morning?
+<break time="1.0s" />
+A. Yes, safety goggles are required.
+<break time="0.8s" />
+B. He was visiting a client site in Portland.
+<break time="0.8s" />
+C. For about forty minutes.

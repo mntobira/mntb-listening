@@ -1,0 +1,9 @@
+[Woman] Hello, this is Clara calling from Oakridge Home Furnishings. Your dining table is scheduled for delivery tomorrow between one and four P.M.
+<break time="0.6s" />
+[Man] Oh, I'm glad you called. An urgent client visit came up at my office tomorrow afternoon, so nobody will be home until six.
+<break time="0.6s" />
+[Woman] No problem at all. Our evening route is full tomorrow, but we have an opening on Saturday morning between nine and noon.
+<break time="0.6s" />
+[Man] Saturday morning works well for me. Also, will the drivers assemble the table legs, or do I need tools ready?
+<break time="0.6s" />
+[Woman] Basic assembly is included in your delivery fee. Just please clear space in your dining room before the truck arrives.

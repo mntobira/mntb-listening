@@ -40,12 +40,12 @@ function rotate<T>(list: readonly T[], seed: number, salt: number): T[] {
   return [...list.slice(step), ...list.slice(0, step)];
 }
 
-export function gachaFeatured({ now = new Date(), preferSubjects = [], srCount = 2, rCount = 1, pool = DEFAULT_GACHA_POOL }: {
-  now?: Date; preferSubjects?: readonly string[]; srCount?: number; rCount?: number; pool?: GachaPoolId;
+export function gachaFeatured({ now = new Date(), preferSubjects = [], srCount = 2, rCount = 1, pool = DEFAULT_GACHA_POOL, univId }: {
+  now?: Date; preferSubjects?: readonly string[]; srCount?: number; rCount?: number; pool?: GachaPoolId; univId?: string;
 } = {}): GachaFeatured {
-  const tiers = gachaItemsByRarity(pool);
+  const tiers = gachaItemsByRarity(pool, univId);
   const week = featuredWeek(now);
-  const entry = (item: ItemDef): FeaturedEntry => ({ item, rarity: tierOf(tiers, item), rate: gachaItemRate(item, 'N', pool) });
+  const entry = (item: ItemDef): FeaturedEntry => ({ item, rarity: tierOf(tiers, item), rate: gachaItemRate(item, 'N', pool, univId) });
 
   const ur = tiers.UR;
   const preferred = ur.filter(i => { const p = printOf(i.id); return !!p && preferSubjects.includes(p.subject); });

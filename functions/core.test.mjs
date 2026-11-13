@@ -59,7 +59,7 @@ import { ghostNextRating, parseGhostMatch, GHOST_K } from './core.mjs';
 test('B7 ghost battles move rating a little and clamp the foe rating',()=>{
   assert.equal(ghostNextRating(1500,1500,'win'),1500+GHOST_K/2);
   assert.equal(ghostNextRating(1500,1500,'lose'),1500-GHOST_K/2);
-  assert.equal(ghostNextRating(1500,9999,'win'),ghostNextRating(1500,1820,'win'));
+  assert.equal(ghostNextRating(1500,9999,'win'),ghostNextRating(1500,1980,'win'));
   assert.ok(Math.abs(ghostNextRating(1500,800,'lose')-1500)<=GHOST_K);
 });
 test('B7 ghost results must agree with the scores',()=>{

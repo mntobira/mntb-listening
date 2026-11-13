@@ -10,9 +10,9 @@ export { prefetchVocabAudioIndex };
 
 /** 「英文法・英単語を固める」ページ（FoundationPage）の共通部品。 */
 
-/** 端末の音声で読む（他の音源は止める）。 */
+/** 端末の音声で読む（他の練習音源は止めるが、BGM は止めない）。 */
 export function say(text: string, onEnd?: () => void): boolean {
-  pauseAllAudio();
+  pauseAllAudio(null, undefined, { keepBgm: true });
   stopVocabAudio();
   return speak('listening-support', text, 1, { rate: .85, onEnd });
 }
@@ -20,9 +20,10 @@ export function say(text: string, onEnd?: () => void): boolean {
 /**
  * 英単語を読む。録音（ElevenLabs）があればそれを、無ければ端末の音声で読む。
  * 録音の有無は public/audio/vocab/index.json で決まる（utils/vocabAudio.ts）。
+ * BGM は止めずに重ねて再生する（英単語の短い読み上げのたびに BGM が切れないように）。
  */
 export function sayWord(wordId: string, text: string): void {
-  pauseAllAudio();
+  pauseAllAudio(null, undefined, { keepBgm: true });
   stopSpeech();
   // 待たずに鳴らす（iPhone はタップの中で play() しないと音が出ない）。録音が無い・壊れていれば端末の読み上げ
   if (!playVocabAudio(wordId, () => say(text))) say(text);

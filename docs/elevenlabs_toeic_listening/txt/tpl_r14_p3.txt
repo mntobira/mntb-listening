@@ -1,0 +1,11 @@
+[Woman] Hello, Mr. Lindemann. This is Yuna Park from Solstice Tableware. We received the printed proof boxes for our holiday mug gift sets this morning.
+<break time="0.6s" />
+[Man] Great! How did the embossed gold lettering on the lid turn out?
+<break time="0.6s" />
+[Woman] The gold lettering looks sharp and elegant. However, the forest-green background came out noticeably darker than our brand swatch—almost charcoal in indoor lighting.
+<break time="0.6s" />
+[Man] Ah, uncoated kraft board absorbs more pigment than glossy stock, which darkens deep greens. Our press operator can lighten the ink formula by fifteen percent and courier a new sample to you tomorrow morning.
+<break time="0.6s" />
+[Woman] We'd really appreciate that. If we approve the new sample tomorrow afternoon, can you still deliver all five thousand boxes to our warehouse by October twentieth?
+<break time="0.6s" />
+[Man] Yes—I already reserved press time on Thursday and Friday specifically for your run, so your delivery date won't slip.

@@ -1,0 +1,7 @@
+Number 6. One of the espresso machines is making a strange rattling noise.
+<break time="1.0s" />
+A. With steamed oat milk, please.
+<break time="0.8s" />
+B. Every morning at six thirty.
+<break time="0.8s" />
+C. Turn it off for now and I'll call the technician.

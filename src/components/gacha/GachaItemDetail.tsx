@@ -49,11 +49,12 @@ export function weekEndLabel(week: number): string {
   return `${end.getUTCMonth() + 1}/${end.getUTCDate()}（日）まで`;
 }
 
-export function GachaItemDetail({ dialog, item, progress, pool = DEFAULT_GACHA_POOL }: {
+export function GachaItemDetail({ dialog, item, progress, pool = DEFAULT_GACHA_POOL, univId }: {
   dialog: RefObject<HTMLDialogElement | null>;
   item: ItemDef | null;
   progress: GrowthProgress | null;
   pool?: GachaPoolId;
+  univId?: string;
 }) {
   const nijiUniv = item ? mockUniversityOf(item.id) : undefined;
   const print = item ? printOf(item.id) : undefined;
@@ -81,7 +82,7 @@ export function GachaItemDetail({ dialog, item, progress, pool = DEFAULT_GACHA_P
             <RarityTag rarity={gachaRarityOf(item)} />
             <strong>{item.label}</strong>
             <small>
-              {print ? `${print.category} · ${print.pages}ページ · ` : ''}1種あたり {pct(gachaItemRate(item, 'N', pool))}%
+              {print ? `${print.category} · ${print.pages}ページ · ` : ''}1種あたり {pct(gachaItemRate(item, 'N', pool, univId))}%
               {sample ? ' · 音声つき' : ''}{owned ? ' · 所持済み' : ''}
             </small>
           </div>

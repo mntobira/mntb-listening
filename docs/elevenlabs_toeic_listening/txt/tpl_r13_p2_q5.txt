@@ -1,0 +1,7 @@
+Number 5. Whose turn is it to drive the company van to the trade fair?
+<break time="1.0s" />
+A. Turn left at the second traffic light.
+<break time="0.8s" />
+B. I think Leo volunteered to drive this time.
+<break time="0.8s" />
+C. Inside the glove compartment.

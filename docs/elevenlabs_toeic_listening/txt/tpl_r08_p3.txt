@@ -1,0 +1,11 @@
+[Woman] Hi, Kenji. Have you heard from Ms. Callahan about tomorrow's negotiation skills workshop? She mentioned yesterday that she was losing her voice.
+<break time="0.6s" />
+[Man] Yes, she e-mailed me twenty minutes ago. Her doctor advised her to rest her vocal cords for a few days, so Mr. Lindqvist from the Chicago office has agreed to lead the session instead.
+<break time="0.6s" />
+[Woman] That's a relief! Will he fly in tonight, or is he conducting it remotely?
+<break time="0.6s" />
+[Man] He's already in town for a client audit, actually. He did ask if we could rearrange Training Room B into small clusters of four desks rather than rows, since he plans to run role-playing exercises.
+<break time="0.6s" />
+[Woman] Sure, facilities can move the desks after five o'clock today. What about the printed workbooks—do they still have Ms. Callahan's name on the cover?
+<break time="0.6s" />
+[Man] The content inside is identical, so let's just print updated cover labels rather than redoing whole booklets. I'll send you the label template now.

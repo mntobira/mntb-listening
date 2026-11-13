@@ -11,7 +11,7 @@ import { applyHolesFilled, applyLoginWithBonus, applyMatchToProgress, applyRushR
   purchaseItem, withAchievements, RUSH_COIN_PLAYS_PER_DAY, unequipKind, type EquipKind, type GrowthProgress, type ItemDef, type MatchSummaryForGrowth,
   type RushResult, type GachaRarity, type MissionDef } from '../core/growth';
 
-import { GACHA_MULTI_COUNT, GACHA_MULTI_COST, VIDEO_GACHA_DAILY_LIMIT, exchangeShards, matchCoins, rollGacha } from '../core/arenaEconomy';
+import { GACHA_MULTI_COUNT, VIDEO_GACHA_DAILY_LIMIT, exchangeShards, gachaCostOf, gachaMultiCostOf, matchCoins, rollGacha } from '../core/arenaEconomy';
 import { GACHA_SETS, setProgress } from '../core/gachaSets';
 import { DEFAULT_GACHA_POOL, type GachaPoolId } from '../core/gachaPools';
 import { chapterTitleBadgeId, chapterTitleOf } from '../core/chapterTitles';
@@ -281,13 +281,14 @@ export async function buyItem(id: string) {
 }
 
 /** One receipt and one atomic write for each confirmed draw. */
-export async function drawGacha(requestId: string, expectedUid = scope(), pool: GachaPoolId = DEFAULT_GACHA_POOL) {
+export async function drawGacha(requestId: string, expectedUid = scope(), pool: GachaPoolId = DEFAULT_GACHA_POOL, univId?: string) {
   if (!requestId || requestId.length > 100) return null;
+  const cost = gachaCostOf(pool);
   const out = await mutate((p, today, seen) => {
     const receipt = `gacha:${requestId}`;
     if (seen.has(receipt)) return { next: p, extra: null };
     const values = new Uint32Array(1); crypto.getRandomValues(values);
-    const r = rollGacha(p, values[0] / 4294967296, 'N', { pool });
+    const r = rollGacha(p, values[0] / 4294967296, 'N', { cost, pool, univId });
     if (!r) return { next: p, extra: null };
     seen.add(receipt);
     const s = settle(p, r.next);
@@ -298,18 +299,19 @@ export async function drawGacha(requestId: string, expectedUid = scope(), pool: 
 
 /** 10 + 1 pulls: debit the full price once, with a single atomic persistence. */
 export { GACHA_MULTI_COUNT } from '../core/arenaEconomy';
-export async function drawGachaMulti(requestId: string, expectedUid = scope(), pool: GachaPoolId = DEFAULT_GACHA_POOL) {
+export async function drawGachaMulti(requestId: string, expectedUid = scope(), pool: GachaPoolId = DEFAULT_GACHA_POOL, univId?: string) {
   if (!requestId || requestId.length > 100) return null;
+  const multiCost = gachaMultiCostOf(pool);
   const out = await mutate((p, today, seen) => {
     const receipt = `gacha11:${requestId}`;
-    if (seen.has(receipt) || p.coins < GACHA_MULTI_COST) return { next: p, extra: null };
+    if (seen.has(receipt) || p.coins < multiCost) return { next: p, extra: null };
     const values = new Uint32Array(GACHA_MULTI_COUNT); crypto.getRandomValues(values);
-    let cur = { ...p, coins: p.coins - GACHA_MULTI_COST }; const results: { item: ItemDef; rarity: GachaRarity; duplicate: boolean; refund: number; shards: number; sets?: string[] }[] = [];
+    let cur = { ...p, coins: p.coins - multiCost }; const results: { item: ItemDef; rarity: GachaRarity; duplicate: boolean; refund: number; shards: number; sets?: string[] }[] = [];
     for (let i = 0; i < GACHA_MULTI_COUNT; i += 1) {
       // 最後の1回は、それまでに R 以上が1つも出ていなければ「R以上確定」
       const last = i === GACHA_MULTI_COUNT - 1;
       const guaranteed = last && results.every(x => x.rarity === 'N');
-      const r = rollGacha(cur, values[i] / 4294967296, guaranteed ? 'R' : 'N', { cost: 0, pool });
+      const r = rollGacha(cur, values[i] / 4294967296, guaranteed ? 'R' : 'N', { cost: 0, pool, univId });
       if (!r) break;
       cur = r.next; results.push({ item: r.item, rarity: r.rarity, duplicate: r.duplicate, refund: r.refund, shards: r.shards });
     }
@@ -340,6 +342,8 @@ export function videoGachaPlaysLeft(): number {
   } catch { return 0; }
 }
 export async function drawVideoGacha(token: object, expectedUid = scope(), pool: GachaPoolId = DEFAULT_GACHA_POOL) {
+  // 大学選択ガチャ（1回500枚）は動画無料の対象外
+  if (pool === 'univ') return null;
   if (!videoTokens.has(token)) return null;
   videoTokens.delete(token);
   const out = await mutate((p, today, seen) => {

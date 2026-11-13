@@ -1,0 +1,7 @@
+Number 4. Why don't you restart your laptop before calling the help desk?
+<break time="1.0s" />
+A. Extension four-zero-nine.
+<break time="0.8s" />
+B. On top of the wooden desk.
+<break time="0.8s" />
+C. I already tried that twice, and the screen is still frozen.

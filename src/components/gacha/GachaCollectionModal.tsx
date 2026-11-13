@@ -19,17 +19,19 @@ import {
 import { gachaRarityOf, printOf, type GachaRarity, type GrowthProgress, type ItemDef } from '../../battle/core/growth';
 import { PRINT_SHELVES, printShelfOf, type PrintShelfId } from '../../battle/core/printShelves';
 import { COLLECTION_KINDS, ItemArt, PrintLinks, RarityTag, pct, type CollectionKind } from '../GachaParts';
-import { DEFAULT_GACHA_POOL, gachaPoolOf, type GachaPoolId } from '../../battle/core/gachaPools';
+import { DEFAULT_GACHA_POOL, gachaPoolOf, selectableUniversityOf, type GachaPoolId } from '../../battle/core/gachaPools';
 import { availableCollectionRarities, filterCollectionByRarity, type CollectionRarityFilter } from './collectionFilters';
 
-export function GachaCollectionModal({ oddsDialog, items, tiers, progress, pool = DEFAULT_GACHA_POOL }: {
+export function GachaCollectionModal({ oddsDialog, items, tiers, progress, pool = DEFAULT_GACHA_POOL, univId }: {
   oddsDialog: RefObject<HTMLDialogElement | null>;
   items: ItemDef[];
   tiers: Record<GachaRarity, ItemDef[]>;
   progress: GrowthProgress | null;
   pool?: GachaPoolId;
+  univId?: string;
 }) {
   const def = gachaPoolOf(pool);
+  const selectedUniv = pool === 'univ' ? selectableUniversityOf(univId) : null;
   const [collectionFilter, setCollectionFilter] = useState<'all' | 'owned' | 'missing'>('all');
   const [collectionKind, setCollectionKind] = useState<CollectionKind>('body');
   const [tab, setTab] = useState<'odds' | 'collection'>('odds');
@@ -63,7 +65,7 @@ export function GachaCollectionModal({ oddsDialog, items, tiers, progress, pool 
         </section>
         <section className="gacha-odds-section" aria-labelledby="gacha-rates-heading">
           <h3 id="gacha-rates-heading">抽選の割合</h3>
-          <p>{def.title}は全{items.length}種類。まずレア度を抽選し、同じレア度の中から等確率で1つ出ます。割合は共通テストガチャと2次試験ガチャで同じです（中身が違います）。</p>
+          <p>{def.title}{selectedUniv ? `（${selectedUniv.label}）` : ''}は全{items.length}種類。まずレア度を抽選し、同じレア度の中から等確率で1つ出ます。割合はどのガチャでも同じです（中身が違います）。</p>
           <ul className="gacha-odds-rate-list" aria-label="レア度ごとの提供割合">
             <li><RarityTag rarity="LR" /><b>{pct(GACHA_RARITY_RATES.LR)}%</b></li>
             <li><RarityTag rarity="UR" /><b>{pct(GACHA_RARITY_RATES.UR)}%</b></li>
@@ -71,7 +73,7 @@ export function GachaCollectionModal({ oddsDialog, items, tiers, progress, pool 
             <li><RarityTag rarity="R" /><b>{pct(GACHA_RARITY_RATES.R)}%</b></li>
             <li><RarityTag rarity="N" /><b>{pct(GACHA_RARITY_RATES.N)}%</b></li>
           </ul>
-          <p>LRは{def.lrName}{tiers.LR.length}種（1種あたり約{pct(GACHA_RARITY_RATES.LR / Math.max(1, tiers.LR.length))}%）、URは「その一冊で完成する本」（完全版）{tiers.UR.length}種（1種あたり約{pct(GACHA_RARITY_RATES.UR / Math.max(1, tiers.UR.length))}%）です。単元ごとの学習プリントはSRで出ます。</p>
+          <p>LRは{selectedUniv ? `${selectedUniv.label}の予想問題` : def.lrName}{tiers.LR.length}種（1種あたり約{pct(GACHA_RARITY_RATES.LR / Math.max(1, tiers.LR.length))}%）、URは「その一冊で完成する本」（完全版）{tiers.UR.length}種（1種あたり約{pct(GACHA_RARITY_RATES.UR / Math.max(1, tiers.UR.length))}%）です。単元ごとの学習プリントはSRで出ます。</p>
         </section>
         <section className="gacha-odds-section" aria-labelledby="gacha-multi-heading">
           <h3 id="gacha-multi-heading">10＋1連</h3>
@@ -176,7 +178,7 @@ export function GachaCollectionModal({ oddsDialog, items, tiers, progress, pool 
                     <RarityTag rarity={gachaRarityOf(item)} /> {item.label}
                   </strong>
                   <span>
-                    {owned ? '所持済み' : '未所持'} · {pct(gachaItemRate(item, 'N', pool))}%
+                    {owned ? '所持済み' : '未所持'} · {pct(gachaItemRate(item, 'N', pool, univId))}%
                   </span>
                   {owned && item.kind === 'print' && <PrintLinks item={item} compact />}
                 </li>

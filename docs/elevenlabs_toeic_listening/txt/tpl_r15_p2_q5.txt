@@ -1,0 +1,7 @@
+Number 5. Why did Ms. Lindqvist postpone the software rollout until January?
+<break time="1.0s" />
+A. Yes, roll the cart into the hall.
+<break time="0.8s" />
+B. December is our busiest retail month, so training staff then would be tough.
+<break time="0.8s" />
+C. Version four point two.

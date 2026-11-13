@@ -1,0 +1,7 @@
+Number 2. Didn't you receive the updated budget spreadsheet this morning?
+<break time="1.0s" />
+A. Yes, the hotel was within budget.
+<break time="0.8s" />
+B. No, could you resend it to me?
+<break time="0.8s" />
+C. Every Tuesday at nine.

@@ -552,6 +552,7 @@ export default function App() {
               playsInline を付けて iOS のインライン再生を許可する。 */}
           <audio 
             ref={audioRef} 
+            data-bgm-audio=""
             src="/tanjou.mp3" 
             loop 
             preload="auto" 

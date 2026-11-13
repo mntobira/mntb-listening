@@ -1,0 +1,7 @@
+Number 2. How are you getting to the trade show in Brussels?
+<break time="1.0s" />
+A. I'm taking the high-speed train from Paris.
+<break time="0.8s" />
+B. Over two hundred exhibitors.
+<break time="0.8s" />
+C. It was a great show, thanks.

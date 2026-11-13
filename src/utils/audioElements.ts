@@ -13,12 +13,20 @@
  *
  * SSR／テスト環境（document が無い）では何もしない。
  */
+export interface PauseAllAudioOptions {
+  /** BGM（data-bgm-audio を付けた <audio>）を止めずに残すか（既定 false＝従来どおり BGM も止める） */
+  keepBgm?: boolean;
+}
+
 export function pauseAllAudio(
   except: HTMLMediaElement | null = null,
   root: ParentNode | null = typeof document === 'undefined' ? null : document,
+  options?: PauseAllAudioOptions,
 ): void {
   if (!root) return;
+  const keepBgm = Boolean(options?.keepBgm);
   root.querySelectorAll('audio').forEach((el) => {
+    if (keepBgm && el.hasAttribute?.('data-bgm-audio')) return;
     if (el !== except && !el.paused) el.pause();
   });
 }

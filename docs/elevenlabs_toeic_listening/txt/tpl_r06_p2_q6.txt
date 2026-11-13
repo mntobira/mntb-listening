@@ -1,0 +1,7 @@
+Number 6. I haven't received the catering quote for the awards banquet yet.
+<break time="1.0s" />
+A. Congratulations on the award!
+<break time="0.8s" />
+B. I'll call the restaurant manager right away.
+<break time="0.8s" />
+C. No, the food was delicious.

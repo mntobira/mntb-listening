@@ -1,0 +1,11 @@
+[Woman] Thanks for testing the auditorium audio-visual setup with me, Devon. Since half of our staff in Austin and Montreal will join tomorrow's town hall online, we can't afford any technical glitches.
+<break time="0.6s" />
+[Man] Glad to help. The main podium microphone sounded crystal clear on the livestream, and the slide deck switched without any lag. However, when you walked toward the whiteboard on the left side of the stage, you stepped outside the camera's framing.
+<break time="0.6s" />
+[Woman] Oh, good catch! Our CEO likes to move around while speaking, so he'd likely wander out of view too.
+<break time="0.6s" />
+[Man] We have two options: I can widen the camera zoom slightly, or we can place small strips of yellow gaffer tape on the stage carpet so speakers can see where the camera boundary is.
+<break time="0.6s" />
+[Woman] If we zoom out too far, the speaker's face looks tiny on laptop screens. Let's put down the tape markers—and I'll brief the CEO five minutes before we go live.
+<break time="0.6s" />
+[Man] Sounds like a plan. I'll grab the gaffer tape from the media closet right now and mark both sides of the stage.

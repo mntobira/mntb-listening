@@ -1,0 +1,9 @@
+[Man] Hi, Priya. Did you get a chance to look over the proof for our spring garden catalog?
+<break time="0.6s" />
+[Woman] Yes, the layout and photos look wonderful. However, I noticed a mistake on page six—the price of the solar pathway lights is listed as twenty-nine dollars instead of thirty-nine.
+<break time="0.6s" />
+[Man] Good catch! If we had printed five thousand copies with the wrong price, that would have been costly.
+<break time="0.6s" />
+[Woman] Also, the phone number on the back cover is still our old toll-free line. Should I ask Marco in graphic design to update both items?
+<break time="0.6s" />
+[Man] Marco is out at a trade show today, so I'll edit the file myself and send the revised PDF to the printer before four o'clock.

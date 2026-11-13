@@ -1,0 +1,7 @@
+Number 3. Did the board approve the Dublin expansion or the Lisbon one?
+<break time="1.0s" />
+A. At Tuesday's board meeting.
+<break time="0.8s" />
+B. They decided to postpone both until next quarter.
+<break time="0.8s" />
+C. Yes, the flight to Lisbon was smooth.

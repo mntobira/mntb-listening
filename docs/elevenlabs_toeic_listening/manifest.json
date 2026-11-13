@@ -1,0 +1,4185 @@
+{
+  "generatedAt": "2026-11-12",
+  "chapterId": "tpl_1",
+  "rounds": 15,
+  "questionsPerRound": 12,
+  "totalQuestions": 180,
+  "totalTracks": 120,
+  "audioDestination": "public/audio/toeic_listening/<trackId>.mp3",
+  "indexJsonPath": "public/audio/toeic_listening/index.json",
+  "tracks": [
+    {
+      "round": 1,
+      "part": "Part 2",
+      "trackId": "tpl_r01_p2_q1",
+      "fileName": "tpl_r01_p2_q1.mp3",
+      "titleJa": "第1回 問1（Where（場所））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. Where did you leave the signed vendor contracts?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, both vendors signed them.",
+        "<break time=\"0.8s\" />",
+        "B. In the top drawer of Ms. Patel's desk.",
+        "<break time=\"0.8s\" />",
+        "C. Before Friday afternoon."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 1. Where did you leave the signed vendor contracts?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Yes, both vendors signed them. <break time=\"0.8s\" /> B. In the top drawer of Ms. Patel's desk. <break time=\"0.8s\" /> C. Before Friday afternoon."
+        }
+      ],
+      "referenceJa": [
+        "質問：署名済みの取引先との契約書はどこに置きましたか。",
+        "(A) はい、両方の取引先が署名しました。",
+        "(B) パテルさんの机の一番上の引き出しです。 ★正解",
+        "(C) 金曜日の午後までにです。"
+      ]
+    },
+    {
+      "round": 1,
+      "part": "Part 2",
+      "trackId": "tpl_r01_p2_q2",
+      "fileName": "tpl_r01_p2_q2.mp3",
+      "titleJa": "第1回 問2（When（時期・間接応答））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. When will the replacement parts for the packaging machine arrive?",
+        "<break time=\"1.0s\" />",
+        "A. At the main loading dock.",
+        "<break time=\"0.8s\" />",
+        "B. Twenty boxes per minute.",
+        "<break time=\"0.8s\" />",
+        "C. Let me check the tracking number online."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 2. When will the replacement parts for the packaging machine arrive?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. At the main loading dock. <break time=\"0.8s\" /> B. Twenty boxes per minute. <break time=\"0.8s\" /> C. Let me check the tracking number online."
+        }
+      ],
+      "referenceJa": [
+        "質問：梱包機の交換部品はいつ届きますか。",
+        "(A) 正面の荷積み場です。",
+        "(B) 1分あたり20箱です。",
+        "(C) オンラインで追跡番号を確認してみます。 ★正解"
+      ]
+    },
+    {
+      "round": 1,
+      "part": "Part 2",
+      "trackId": "tpl_r01_p2_q3",
+      "fileName": "tpl_r01_p2_q3.mp3",
+      "titleJa": "第1回 問3（選択疑問文（A or B））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Should we take the express train or book a taxi to the convention center?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, the keynote speech was inspiring.",
+        "<break time=\"0.8s\" />",
+        "B. The train is faster during rush hour.",
+        "<break time=\"0.8s\" />",
+        "C. About three blocks from the hotel."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 3. Should we take the express train or book a taxi to the convention center?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Yes, the keynote speech was inspiring. <break time=\"0.8s\" /> B. The train is faster during rush hour. <break time=\"0.8s\" /> C. About three blocks from the hotel."
+        }
+      ],
+      "referenceJa": [
+        "質問：会議場へは急行列車に乗るべきですか、それともタクシーを予約しましょうか。",
+        "(A) ええ、基調講演は刺激的でした。",
+        "(B) ラッシュの時間帯は電車のほうが速いですよ。 ★正解",
+        "(C) ホテルから3ブロックほどです。"
+      ]
+    },
+    {
+      "round": 1,
+      "part": "Part 2",
+      "trackId": "tpl_r01_p2_q4",
+      "fileName": "tpl_r01_p2_q4.mp3",
+      "titleJa": "第1回 問4（丁寧な依頼）",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Could you print twenty copies of the orientation handout before ten o'clock?",
+        "<break time=\"1.0s\" />",
+        "A. The new hires met yesterday.",
+        "<break time=\"0.8s\" />",
+        "B. No, twenty pages long.",
+        "<break time=\"0.8s\" />",
+        "C. Sure, I'll head to the copy room right now."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 4. Could you print twenty copies of the orientation handout before ten o'clock?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. The new hires met yesterday. <break time=\"0.8s\" /> B. No, twenty pages long. <break time=\"0.8s\" /> C. Sure, I'll head to the copy room right now."
+        }
+      ],
+      "referenceJa": [
+        "質問：10時前にオリエンテーション配布資料を20部印刷していただけますか。",
+        "(A) 新入社員たちは昨日集まりました。",
+        "(B) いいえ、20ページあります。",
+        "(C) ええ、今すぐコピー室に向かいます。 ★正解"
+      ]
+    },
+    {
+      "round": 1,
+      "part": "Part 2",
+      "trackId": "tpl_r01_p2_q5",
+      "fileName": "tpl_r01_p2_q5.mp3",
+      "titleJa": "第1回 問5（Why（理由））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. Why is the north parking garage closed this morning?",
+        "<break time=\"1.0s\" />",
+        "A. Crews are repainting the lane lines.",
+        "<break time=\"0.8s\" />",
+        "B. Permit holders park on Level 2.",
+        "<break time=\"0.8s\" />",
+        "C. It closes at midnight on Sundays."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 5. Why is the north parking garage closed this morning?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Crews are repainting the lane lines. <break time=\"0.8s\" /> B. Permit holders park on Level 2. <break time=\"0.8s\" /> C. It closes at midnight on Sundays."
+        }
+      ],
+      "referenceJa": [
+        "質問：今朝、北側の立体駐車場が閉鎖されているのはなぜですか。",
+        "(A) 作業員が車線の白線を塗り直しているからです。 ★正解",
+        "(B) 許可証をお持ちの方は2階に駐車します。",
+        "(C) 日曜日は深夜0時に閉まります。"
+      ]
+    },
+    {
+      "round": 1,
+      "part": "Part 2",
+      "trackId": "tpl_r01_p2_q6",
+      "fileName": "tpl_r01_p2_q6.mp3",
+      "titleJa": "第1回 問6（平叙文（困りごとへの提案））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. The projector in Conference Room B keeps flickering.",
+        "<break time=\"1.0s\" />",
+        "A. Try replacing the display cable.",
+        "<break time=\"0.8s\" />",
+        "B. A quarter-three financial slide.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, we reserved Room B."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 6. The projector in Conference Room B keeps flickering."
+        },
+        {
+          "speaker": "W",
+          "text": "A. Try replacing the display cable. <break time=\"0.8s\" /> B. A quarter-three financial slide. <break time=\"0.8s\" /> C. Yes, we reserved Room B."
+        }
+      ],
+      "referenceJa": [
+        "質問：会議室Bのプロジェクターがちらつき続けています。",
+        "(A) ディスプレイ用ケーブルを替えてみてください。 ★正解",
+        "(B) 第3四半期の財務スライドです。",
+        "(C) はい、会議室Bを予約しました。"
+      ]
+    },
+    {
+      "round": 1,
+      "part": "Part 3",
+      "trackId": "tpl_r01_p3",
+      "fileName": "tpl_r01_p3.mp3",
+      "titleJa": "第1回 問7〜9（家具店の配送日程の変更相談）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Woman] Hello, this is Clara calling from Oakridge Home Furnishings. Your dining table is scheduled for delivery tomorrow between one and four P.M.",
+        "<break time=\"0.6s\" />",
+        "[Man] Oh, I'm glad you called. An urgent client visit came up at my office tomorrow afternoon, so nobody will be home until six.",
+        "<break time=\"0.6s\" />",
+        "[Woman] No problem at all. Our evening route is full tomorrow, but we have an opening on Saturday morning between nine and noon.",
+        "<break time=\"0.6s\" />",
+        "[Man] Saturday morning works well for me. Also, will the drivers assemble the table legs, or do I need tools ready?",
+        "<break time=\"0.6s\" />",
+        "[Woman] Basic assembly is included in your delivery fee. Just please clear space in your dining room before the truck arrives."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Hello, this is Clara calling from Oakridge Home Furnishings. Your dining table is scheduled for delivery tomorrow between one and four P.M."
+        },
+        {
+          "speaker": "M",
+          "text": "Oh, I'm glad you called. An urgent client visit came up at my office tomorrow afternoon, so nobody will be home until six."
+        },
+        {
+          "speaker": "W",
+          "text": "No problem at all. Our evening route is full tomorrow, but we have an opening on Saturday morning between nine and noon."
+        },
+        {
+          "speaker": "M",
+          "text": "Saturday morning works well for me. Also, will the drivers assemble the table legs, or do I need tools ready?"
+        },
+        {
+          "speaker": "W",
+          "text": "Basic assembly is included in your delivery fee. Just please clear space in your dining room before the truck arrives."
+        }
+      ],
+      "referenceJa": [
+        "W: もしもし、オークリッジ・ホームファニシングスのクララと申します。ご注文のダイニングテーブルは、明日午後1時から4時の間に配送予定です。",
+        "M: ああ、お電話いただいてよかったです。明日の午後、職場で急な来客が入ってしまい、6時まで誰も家にいないのです。",
+        "W: まったく問題ございません。明日の夜間便は埋まっていますが、土曜日の午前9時から正午の枠に空きがございます。",
+        "M: 土曜日の午前中で大丈夫です。それと、ドライバーの方がテーブルの脚を組み立ててくれますか、それとも工具を用意しておく必要がありますか。",
+        "W: 基本的な組み立ては配送料に含まれています。トラックが到着する前に、ダイニングルームのスペースだけ空けておいてください。"
+      ]
+    },
+    {
+      "round": 1,
+      "part": "Part 4",
+      "trackId": "tpl_r01_p4",
+      "fileName": "tpl_r01_p4.mp3",
+      "titleJa": "第1回 問10〜12（館内アナウンス）",
+      "voiceGuide": "話者:女性(W)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Good afternoon, visitors, and welcome to the Harborview Science Museum. In fifteen minutes, at two thirty, marine biologist Dr. Alan Cho will give a special presentation in the Coral Theater on the second floor.",
+        "<break time=\"0.8s\" />",
+        "Dr. Cho will share underwater footage from his team's recent expedition and explain how coastal reefs recover from warm-water seasons. Admission to the talk is free with your museum wristband, though seating is limited to eighty guests on a first-come, first-served basis.",
+        "<break time=\"0.8s\" />",
+        "Please remember that flash photography is not permitted inside the Coral Theater. After the talk, Dr. Cho will be at the museum bookshop on the ground floor to sign copies of his new guide."
+      ],
+      "referenceJa": [
+        "ご来館の皆様、こんにちは。ハーバービュー科学博物館へようこそ。15分後の2時30分より、2階のコーラル・シアターにて、海洋生物学者のアラン・チョウ博士による特別講演を行います。",
+        "チョウ博士は調査チームの最近の遠征で撮影した水中映像を公開し、沿岸のサンゴ礁が水温上昇期からどのように回復するかを解説します。入館リストバンドをお持ちの方は無料でお聞きいただけますが、座席は先着順で80名様限りとなっております。",
+        "コーラル・シアター内でのフラッシュ撮影はご遠慮ください。講演後、チョウ博士は1階のミュージアム書店にて新刊ガイドのサイン会を行います。"
+      ]
+    },
+    {
+      "round": 2,
+      "part": "Part 2",
+      "trackId": "tpl_r02_p2_q1",
+      "fileName": "tpl_r02_p2_q1.mp3",
+      "titleJa": "第2回 問1（Who（担当者））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. Who is leading the safety training session for warehouse staff?",
+        "<break time=\"1.0s\" />",
+        "A. Mr. Delgado from Operations.",
+        "<break time=\"0.8s\" />",
+        "B. In Training Room 4.",
+        "<break time=\"0.8s\" />",
+        "C. Hard hats and safety vests."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 1. Who is leading the safety training session for warehouse staff?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Mr. Delgado from Operations. <break time=\"0.8s\" /> B. In Training Room 4. <break time=\"0.8s\" /> C. Hard hats and safety vests."
+        }
+      ],
+      "referenceJa": [
+        "質問：倉庫スタッフ向けの安全研修は誰が担当しますか。",
+        "(A) 業務部のデルガドさんです。 ★正解",
+        "(B) 第4研修室です。",
+        "(C) ヘルメットと安全ベストです。"
+      ]
+    },
+    {
+      "round": 2,
+      "part": "Part 2",
+      "trackId": "tpl_r02_p2_q2",
+      "fileName": "tpl_r02_p2_q2.mp3",
+      "titleJa": "第2回 問2（否定疑問文）",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. Didn't you receive the updated budget spreadsheet this morning?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, the hotel was within budget.",
+        "<break time=\"0.8s\" />",
+        "B. No, could you resend it to me?",
+        "<break time=\"0.8s\" />",
+        "C. Every Tuesday at nine."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 2. Didn't you receive the updated budget spreadsheet this morning?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Yes, the hotel was within budget. <break time=\"0.8s\" /> B. No, could you resend it to me? <break time=\"0.8s\" /> C. Every Tuesday at nine."
+        }
+      ],
+      "referenceJa": [
+        "質問：今朝、更新された予算のスプレッドシートを受け取りませんでしたか。",
+        "(A) はい、ホテルは予算内でした。",
+        "(B) いいえ、もう一度送っていただけますか。 ★正解",
+        "(C) 毎週火曜日の9時です。"
+      ]
+    },
+    {
+      "round": 2,
+      "part": "Part 2",
+      "trackId": "tpl_r02_p2_q3",
+      "fileName": "tpl_r02_p2_q3.mp3",
+      "titleJa": "第2回 問3（How much（料金））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. How much does overnight shipping to Seattle cost?",
+        "<break time=\"1.0s\" />",
+        "A. It depends on the weight of the package.",
+        "<break time=\"0.8s\" />",
+        "B. By noon tomorrow.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, we ship internationally."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 3. How much does overnight shipping to Seattle cost?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. It depends on the weight of the package. <break time=\"0.8s\" /> B. By noon tomorrow. <break time=\"0.8s\" /> C. Yes, we ship internationally."
+        }
+      ],
+      "referenceJa": [
+        "質問：シアトルへの翌日配達はいくらかかりますか。",
+        "(A) 小包の重さによって変わります。 ★正解",
+        "(B) 明日の正午までです。",
+        "(C) はい、海外発送もしています。"
+      ]
+    },
+    {
+      "round": 2,
+      "part": "Part 2",
+      "trackId": "tpl_r02_p2_q4",
+      "fileName": "tpl_r02_p2_q4.mp3",
+      "titleJa": "第2回 問4（Why don't we（提案））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Why don't we post customer testimonials on our home page?",
+        "<break time=\"1.0s\" />",
+        "A. Because the store closed early.",
+        "<break time=\"0.8s\" />",
+        "B. At the customer service counter.",
+        "<break time=\"0.8s\" />",
+        "C. That's a great idea—let's ask the web team."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 4. Why don't we post customer testimonials on our home page?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Because the store closed early. <break time=\"0.8s\" /> B. At the customer service counter. <break time=\"0.8s\" /> C. That's a great idea—let's ask the web team."
+        }
+      ],
+      "referenceJa": [
+        "質問：ホームページにお客様の声を掲載してはどうでしょうか。",
+        "(A) 店が早く閉まったからです。",
+        "(B) カスタマーサービス窓口でです。",
+        "(C) いい考えですね。ウェブ担当チームに頼みましょう。 ★正解"
+      ]
+    },
+    {
+      "round": 2,
+      "part": "Part 2",
+      "trackId": "tpl_r02_p2_q5",
+      "fileName": "tpl_r02_p2_q5.mp3",
+      "titleJa": "第2回 問5（付加疑問文）",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. The quality inspection for Batch 14 is finished, isn't it?",
+        "<break time=\"1.0s\" />",
+        "A. A very high quality leather.",
+        "<break time=\"0.8s\" />",
+        "B. Actually, two samples still need testing.",
+        "<break time=\"0.8s\" />",
+        "C. Fourteen employees attended."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 5. The quality inspection for Batch 14 is finished, isn't it?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. A very high quality leather. <break time=\"0.8s\" /> B. Actually, two samples still need testing. <break time=\"0.8s\" /> C. Fourteen employees attended."
+        }
+      ],
+      "referenceJa": [
+        "質問：第14ロットの品質検査は終わっていますよね。",
+        "(A) とても高品質な革です。",
+        "(B) 実は、まだ2つのサンプルの検査が残っているんです。 ★正解",
+        "(C) 14名の社員が出席しました。"
+      ]
+    },
+    {
+      "round": 2,
+      "part": "Part 2",
+      "trackId": "tpl_r02_p2_q6",
+      "fileName": "tpl_r02_p2_q6.mp3",
+      "titleJa": "第2回 問6（Which（選択））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. Which catering company did we hire for Friday's reception?",
+        "<break time=\"1.0s\" />",
+        "A. Around sixty guests.",
+        "<break time=\"0.8s\" />",
+        "B. In the main lobby.",
+        "<break time=\"0.8s\" />",
+        "C. The same one we used in December."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 6. Which catering company did we hire for Friday's reception?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Around sixty guests. <break time=\"0.8s\" /> B. In the main lobby. <break time=\"0.8s\" /> C. The same one we used in December."
+        }
+      ],
+      "referenceJa": [
+        "質問：金曜日のレセプションにはどのケータリング会社を頼みましたか。",
+        "(A) 60名ほどの招待客です。",
+        "(B) 正面ロビーでです。",
+        "(C) 12月に利用したのと同じところです。 ★正解"
+      ]
+    },
+    {
+      "round": 2,
+      "part": "Part 3",
+      "trackId": "tpl_r02_p3",
+      "fileName": "tpl_r02_p3.mp3",
+      "titleJa": "第2回 問7〜9（新製品パンフレットの印刷前の修正確認）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Man] Hi, Priya. Did you get a chance to look over the proof for our spring garden catalog?",
+        "<break time=\"0.6s\" />",
+        "[Woman] Yes, the layout and photos look wonderful. However, I noticed a mistake on page six—the price of the solar pathway lights is listed as twenty-nine dollars instead of thirty-nine.",
+        "<break time=\"0.6s\" />",
+        "[Man] Good catch! If we had printed five thousand copies with the wrong price, that would have been costly.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Also, the phone number on the back cover is still our old toll-free line. Should I ask Marco in graphic design to update both items?",
+        "<break time=\"0.6s\" />",
+        "[Man] Marco is out at a trade show today, so I'll edit the file myself and send the revised PDF to the printer before four o'clock."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Hi, Priya. Did you get a chance to look over the proof for our spring garden catalog?"
+        },
+        {
+          "speaker": "W",
+          "text": "Yes, the layout and photos look wonderful. However, I noticed a mistake on page six—the price of the solar pathway lights is listed as twenty-nine dollars instead of thirty-nine."
+        },
+        {
+          "speaker": "M",
+          "text": "Good catch! If we had printed five thousand copies with the wrong price, that would have been costly."
+        },
+        {
+          "speaker": "W",
+          "text": "Also, the phone number on the back cover is still our old toll-free line. Should I ask Marco in graphic design to update both items?"
+        },
+        {
+          "speaker": "M",
+          "text": "Marco is out at a trade show today, so I'll edit the file myself and send the revised PDF to the printer before four o'clock."
+        }
+      ],
+      "referenceJa": [
+        "M: やあ、プリヤ。春の園芸カタログの校正刷りを見る時間はあったかい。",
+        "W: ええ、レイアウトも写真も素敵ね。ただ、6ページに誤りを見つけたわ。ソーラー式通路ライトの価格が、39ドルではなく29ドルになっているの。",
+        "M: よく気づいてくれたね。もし間違った価格で5,000部も刷っていたら、大きな痛手になるところだったよ。",
+        "W: それと、裏表紙の電話番号が以前のフリーダイヤルのままよ。グラフィックデザインのマルコに両方の修正を頼みましょうか。",
+        "M: マルコは今日、展示会に出て不在だから、僕が自分でファイルを直して4時前に印刷所へ改訂版PDFを送っておくよ。"
+      ]
+    },
+    {
+      "round": 2,
+      "part": "Part 4",
+      "trackId": "tpl_r02_p4",
+      "fileName": "tpl_r02_p4.mp3",
+      "titleJa": "第2回 問10〜12（社内ボイスメール）",
+      "voiceGuide": "話者:男性(M)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Hi, Elena. This is Victor in Human Resources. I'm calling about the interview schedule for the junior accountant position next Wednesday.",
+        "<break time=\"0.8s\" />",
+        "One of our three finalists, Ms. Hannah Brooks, lives in Chicago and asked if her morning slot could be moved to two P.M. because her flight arrives at eleven thirty. Since you're on the interview panel, I wanted to make sure two o'clock doesn't conflict with your team briefing.",
+        "<break time=\"0.8s\" />",
+        "If that time works, I'll update the calendar invite and reserve Conference Room D. Please call me back at extension 412 by the end of the day."
+      ],
+      "referenceJa": [
+        "こんにちは、エレナ。人事部のビクターです。来週水曜日の若手会計士職の面接スケジュールについてお電話しています。",
+        "最終候補者3名のうちの1人であるハンナ・ブルックスさんはシカゴ在住で、搭乗便の到着が11時30分になるため、午前の枠を午後2時に変更できないかと希望しています。あなたは面接官パネルの一員ですので、2時があなたのチーム打ち合わせと重ならないか確認したかったのです。",
+        "その時間で差し支えなければ、カレンダーの招待を更新して会議室Dを予約します。今日中に内線412まで折り返しお電話ください。"
+      ]
+    },
+    {
+      "round": 3,
+      "part": "Part 2",
+      "trackId": "tpl_r03_p2_q1",
+      "fileName": "tpl_r03_p2_q1.mp3",
+      "titleJa": "第3回 問1（How long（期間））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. How long has the fitness center been offering yoga classes?",
+        "<break time=\"1.0s\" />",
+        "A. Twice a week on evenings.",
+        "<break time=\"0.8s\" />",
+        "B. About forty-five meters.",
+        "<break time=\"0.8s\" />",
+        "C. Since last October."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 1. How long has the fitness center been offering yoga classes?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Twice a week on evenings. <break time=\"0.8s\" /> B. About forty-five meters. <break time=\"0.8s\" /> C. Since last October."
+        }
+      ],
+      "referenceJa": [
+        "質問：このフィットネスセンターではどのくらい前からヨガ教室を開いていますか。",
+        "(A) 週2回、夜間にです。",
+        "(B) 約45メートルです。",
+        "(C) 昨年の10月からです。 ★正解"
+      ]
+    },
+    {
+      "round": 3,
+      "part": "Part 2",
+      "trackId": "tpl_r03_p2_q2",
+      "fileName": "tpl_r03_p2_q2.mp3",
+      "titleJa": "第3回 問2（Do you know（間接疑問））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. Do you know if Mr. Sato approved the travel reimbursement?",
+        "<break time=\"1.0s\" />",
+        "A. To the Kyoto branch office.",
+        "<break time=\"0.8s\" />",
+        "B. He signed off on it an hour ago.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, I know Mr. Sato well."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 2. Do you know if Mr. Sato approved the travel reimbursement?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. To the Kyoto branch office. <break time=\"0.8s\" /> B. He signed off on it an hour ago. <break time=\"0.8s\" /> C. Yes, I know Mr. Sato well."
+        }
+      ],
+      "referenceJa": [
+        "質問：佐藤さんが旅費の精算を承認したかご存じですか。",
+        "(A) 京都支社へです。",
+        "(B) 1時間前に承認のサインをしていましたよ。 ★正解",
+        "(C) ええ、佐藤さんならよく知っています。"
+      ]
+    },
+    {
+      "round": 3,
+      "part": "Part 2",
+      "trackId": "tpl_r03_p2_q3",
+      "fileName": "tpl_r03_p2_q3.mp3",
+      "titleJa": "第3回 問3（申し出（Would you like））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Would you like a paper receipt or an e-mail copy?",
+        "<break time=\"1.0s\" />",
+        "A. A paper receipt, please.",
+        "<break time=\"0.8s\" />",
+        "B. By credit card.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, I'd love some coffee."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 3. Would you like a paper receipt or an e-mail copy?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. A paper receipt, please. <break time=\"0.8s\" /> B. By credit card. <break time=\"0.8s\" /> C. Yes, I'd love some coffee."
+        }
+      ],
+      "referenceJa": [
+        "質問：紙のレシートになさいますか、それともメール控えになさいますか。",
+        "(A) 紙のレシートをお願いします。 ★正解",
+        "(B) クレジットカードで。",
+        "(C) ええ、コーヒーをいただきます。"
+      ]
+    },
+    {
+      "round": 3,
+      "part": "Part 2",
+      "trackId": "tpl_r03_p2_q4",
+      "fileName": "tpl_r03_p2_q4.mp3",
+      "titleJa": "第3回 問4（What time（時刻））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. What time should we leave for the airport tomorrow?",
+        "<break time=\"1.0s\" />",
+        "A. No later than seven thirty.",
+        "<break time=\"0.8s\" />",
+        "B. Gate 18 in Terminal 2.",
+        "<break time=\"0.8s\" />",
+        "C. Just one carry-on bag."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 4. What time should we leave for the airport tomorrow?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. No later than seven thirty. <break time=\"0.8s\" /> B. Gate 18 in Terminal 2. <break time=\"0.8s\" /> C. Just one carry-on bag."
+        }
+      ],
+      "referenceJa": [
+        "質問：明日は何時に空港へ向けて出発すべきでしょうか。",
+        "(A) 遅くとも7時30分までには。 ★正解",
+        "(B) 第2ターミナルの18番ゲートです。",
+        "(C) 機内持ち込み手荷物が1つだけです。"
+      ]
+    },
+    {
+      "round": 3,
+      "part": "Part 2",
+      "trackId": "tpl_r03_p2_q5",
+      "fileName": "tpl_r03_p2_q5.mp3",
+      "titleJa": "第3回 問5（許可を求める（Mind））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. Do you mind if I open the window a little?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, please go ahead.",
+        "<break time=\"0.8s\" />",
+        "B. Not at all—it's quite warm in here.",
+        "<break time=\"0.8s\" />",
+        "C. The window display looks nice."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 5. Do you mind if I open the window a little?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Yes, please go ahead. <break time=\"0.8s\" /> B. Not at all—it's quite warm in here. <break time=\"0.8s\" /> C. The window display looks nice."
+        }
+      ],
+      "referenceJa": [
+        "質問：少し窓を開けてもかまいませんか。",
+        "(A) はい、どうぞ開けてください。",
+        "(B) どうぞ構いませんよ。ここはかなり暑いですから。 ★正解",
+        "(C) ショーウィンドウの展示が素敵ですね。"
+      ]
+    },
+    {
+      "round": 3,
+      "part": "Part 2",
+      "trackId": "tpl_r03_p2_q6",
+      "fileName": "tpl_r03_p2_q6.mp3",
+      "titleJa": "第3回 問6（How（手段・方法））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. How did the design team reduce packaging waste by thirty percent?",
+        "<break time=\"1.0s\" />",
+        "A. Next fiscal quarter.",
+        "<break time=\"0.8s\" />",
+        "B. Thirty designers in total.",
+        "<break time=\"0.8s\" />",
+        "C. By switching to thinner cardboard inserts."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 6. How did the design team reduce packaging waste by thirty percent?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Next fiscal quarter. <break time=\"0.8s\" /> B. Thirty designers in total. <break time=\"0.8s\" /> C. By switching to thinner cardboard inserts."
+        }
+      ],
+      "referenceJa": [
+        "質問：デザインチームはどのようにして包装ごみを30％削減したのですか。",
+        "(A) 次の会計四半期です。",
+        "(B) 合計30人のデザイナーです。",
+        "(C) より薄い段ボールの中敷きに切り替えることによってです。 ★正解"
+      ]
+    },
+    {
+      "round": 3,
+      "part": "Part 3",
+      "trackId": "tpl_r03_p3",
+      "fileName": "tpl_r03_p3.mp3",
+      "titleJa": "第3回 問7〜9（カフェチェーンの新メニュー試験販売の振り返り）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Woman] Kenji, have you reviewed last month's sales numbers from the three cafés where we tested our oat-milk smoothie line?",
+        "<break time=\"0.6s\" />",
+        "[Man] Yes, I just put the summary together. Overall sales beat our target by fifteen percent, especially during weekday mornings.",
+        "<break time=\"0.6s\" />",
+        "[Woman] That's encouraging! Were all three flavors equally popular?",
+        "<break time=\"0.6s\" />",
+        "[Man] Berry and mango sold out almost daily, but the matcha flavor lagged behind. Store managers said customers found the cup size too large for a morning drink.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Interesting. Before we roll out the line to all twenty locations in May, let's test a smaller twelve-ounce cup at our downtown shop."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Kenji, have you reviewed last month's sales numbers from the three cafés where we tested our oat-milk smoothie line?"
+        },
+        {
+          "speaker": "M",
+          "text": "Yes, I just put the summary together. Overall sales beat our target by fifteen percent, especially during weekday mornings."
+        },
+        {
+          "speaker": "W",
+          "text": "That's encouraging! Were all three flavors equally popular?"
+        },
+        {
+          "speaker": "M",
+          "text": "Berry and mango sold out almost daily, but the matcha flavor lagged behind. Store managers said customers found the cup size too large for a morning drink."
+        },
+        {
+          "speaker": "W",
+          "text": "Interesting. Before we roll out the line to all twenty locations in May, let's test a smaller twelve-ounce cup at our downtown shop."
+        }
+      ],
+      "referenceJa": [
+        "W: ケンジ、オーツミルク・スムージーのシリーズを試験販売した3店舗の先月の売上数字はもう見ましたか。",
+        "M: ええ、ちょうど集計をまとめたところです。全体の売上は目標を15％上回り、特に平日の朝が好調でした。",
+        "W: それは心強いわね。3種類のフレーバーはどれも同じくらい人気だったのかしら。",
+        "M: ベリーとマンゴーはほぼ毎日完売しましたが、抹茶味は伸び悩みました。店長たちによると、朝の飲み物としてはカップが大きすぎるとお客様が感じていたそうです。",
+        "W: 興味深いわね。5月に全20店舗へ展開する前に、中心街の店舗でひと回り小さい12オンスのカップを試してみましょう。"
+      ]
+    },
+    {
+      "round": 3,
+      "part": "Part 4",
+      "trackId": "tpl_r03_p4",
+      "fileName": "tpl_r03_p4.mp3",
+      "titleJa": "第3回 問10〜12（駅構内アナウンス）",
+      "voiceGuide": "話者:女性(W)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Attention passengers waiting for the eight fifteen northbound express to Silverton. Due to signal maintenance near Cedar Junction, this train will depart twenty minutes late and has been reassigned from Platform 3 to Platform 6.",
+        "<break time=\"0.8s\" />",
+        "Passengers holding reserved-seat tickets do not need to exchange them; your car and seat numbers remain the same. An elevator to the overhead walkway is located behind the ticket counter for travelers with heavy luggage.",
+        "<break time=\"0.8s\" />",
+        "If you have a tight connection in Silverton, please speak with a station attendant wearing a blue vest, and we will arrange transfer passes for the nine ten regional bus."
+      ],
+      "referenceJa": [
+        "8時15分発シルバートン行き北回り急行をお待ちのお客様にお知らせいたします。シダー・ジャンクション付近での信号点検のため、この列車は20分遅れで発車し、乗り場が3番線から6番線に変更となりました。",
+        "指定席券をお持ちのお客様は、切符を交換していただく必要はございません。号車番号と座席番号はそのままご利用いただけます。大きなお荷物をお持ちのお客様は、切符売り場の後ろに連絡橋行きエレベーターがございます。",
+        "シルバートンでお乗り継ぎの時間が迫っているお客様は、青いベストを着た駅係員までお声がけください。9時10分発の地域バスへの振替乗車証を手配いたします。"
+      ]
+    },
+    {
+      "round": 4,
+      "part": "Part 2",
+      "trackId": "tpl_r04_p2_q1",
+      "fileName": "tpl_r04_p2_q1.mp3",
+      "titleJa": "第4回 問1（Where（備品の場所））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. Where do we keep the extra toner cartridges?",
+        "<break time=\"1.0s\" />",
+        "A. Color and black-and-white.",
+        "<break time=\"0.8s\" />",
+        "B. On the bottom shelf in the supply closet.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, it prints double-sided."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 1. Where do we keep the extra toner cartridges?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Color and black-and-white. <break time=\"0.8s\" /> B. On the bottom shelf in the supply closet. <break time=\"0.8s\" /> C. Yes, it prints double-sided."
+        }
+      ],
+      "referenceJa": [
+        "質問：予備のトナーカートリッジはどこに保管していますか。",
+        "(A) カラーと白黒です。",
+        "(B) 備品ロッカーの一番下の棚です。 ★正解",
+        "(C) はい、両面印刷ができます。"
+      ]
+    },
+    {
+      "round": 4,
+      "part": "Part 2",
+      "trackId": "tpl_r04_p2_q2",
+      "fileName": "tpl_r04_p2_q2.mp3",
+      "titleJa": "第4回 問2（Who（決定権者））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. Who needs to review the quarterly marketing proposal before Friday?",
+        "<break time=\"1.0s\" />",
+        "A. For the autumn campaign.",
+        "<break time=\"0.8s\" />",
+        "B. Friday afternoon at three.",
+        "<break time=\"0.8s\" />",
+        "C. Ms. Alvarez in the regional office."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 2. Who needs to review the quarterly marketing proposal before Friday?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. For the autumn campaign. <break time=\"0.8s\" /> B. Friday afternoon at three. <break time=\"0.8s\" /> C. Ms. Alvarez in the regional office."
+        }
+      ],
+      "referenceJa": [
+        "質問：金曜日の前に誰が四半期マーケティング企画書を確認する必要がありますか。",
+        "(A) 秋のキャンペーン向けです。",
+        "(B) 金曜日の午後3時です。",
+        "(C) 地域統括オフィスのアルバレスさんです。 ★正解"
+      ]
+    },
+    {
+      "round": 4,
+      "part": "Part 2",
+      "trackId": "tpl_r04_p2_q3",
+      "fileName": "tpl_r04_p2_q3.mp3",
+      "titleJa": "第4回 問3（一般疑問文（間接応答））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Has the window display for the winter sale been set up yet?",
+        "<break time=\"1.0s\" />",
+        "A. Up to forty percent off.",
+        "<break time=\"0.8s\" />",
+        "B. Through the main entrance.",
+        "<break time=\"0.8s\" />",
+        "C. The visual team is finishing it right now."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 3. Has the window display for the winter sale been set up yet?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Up to forty percent off. <break time=\"0.8s\" /> B. Through the main entrance. <break time=\"0.8s\" /> C. The visual team is finishing it right now."
+        }
+      ],
+      "referenceJa": [
+        "質問：冬のセール用のショーウィンドウ展示はもう設営されましたか。",
+        "(A) 最大40％引きです。",
+        "(B) 正面入口を通ってです。",
+        "(C) ディスプレイ担当チームがちょうど今仕上げているところです。 ★正解"
+      ]
+    },
+    {
+      "round": 4,
+      "part": "Part 2",
+      "trackId": "tpl_r04_p2_q4",
+      "fileName": "tpl_r04_p2_q4.mp3",
+      "titleJa": "第4回 問4（Let's（提案への条件つき賛成））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Let's hold the team lunch on the outdoor terrace today.",
+        "<break time=\"1.0s\" />",
+        "A. Isn't it supposed to rain at noon?",
+        "<break time=\"0.8s\" />",
+        "B. A soup and salad combo.",
+        "<break time=\"0.8s\" />",
+        "C. Twelve team members."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 4. Let's hold the team lunch on the outdoor terrace today."
+        },
+        {
+          "speaker": "M",
+          "text": "A. Isn't it supposed to rain at noon? <break time=\"0.8s\" /> B. A soup and salad combo. <break time=\"0.8s\" /> C. Twelve team members."
+        }
+      ],
+      "referenceJa": [
+        "質問：今日のチームランチは屋外テラスで開きましょう。",
+        "(A) 正午に雨が降る予報ではありませんでしたか。 ★正解",
+        "(B) スープとサラダのセットです。",
+        "(C) チームメンバーは12人です。"
+      ]
+    },
+    {
+      "round": 4,
+      "part": "Part 2",
+      "trackId": "tpl_r04_p2_q5",
+      "fileName": "tpl_r04_p2_q5.mp3",
+      "titleJa": "第4回 問5（What（議題・内容））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. What was discussed at this morning's plant managers' meeting?",
+        "<break time=\"1.0s\" />",
+        "A. Ways to shorten assembly line changeovers.",
+        "<break time=\"0.8s\" />",
+        "B. In the second-floor boardroom.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, all managers attended."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 5. What was discussed at this morning's plant managers' meeting?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Ways to shorten assembly line changeovers. <break time=\"0.8s\" /> B. In the second-floor boardroom. <break time=\"0.8s\" /> C. Yes, all managers attended."
+        }
+      ],
+      "referenceJa": [
+        "質問：今朝の工場長会議では何が話し合われましたか。",
+        "(A) 組立ラインの切り替え時間を短縮する方法です。 ★正解",
+        "(B) 2階の役員会議室でです。",
+        "(C) はい、全工場長が出席しました。"
+      ]
+    },
+    {
+      "round": 4,
+      "part": "Part 2",
+      "trackId": "tpl_r04_p2_q6",
+      "fileName": "tpl_r04_p2_q6.mp3",
+      "titleJa": "第4回 問6（平叙文（感謝・労い））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. Your press release about the charity run was very well written.",
+        "<break time=\"1.0s\" />",
+        "A. Five kilometers around the park.",
+        "<break time=\"0.8s\" />",
+        "B. Thanks—Nadia helped me edit the final draft.",
+        "<break time=\"0.8s\" />",
+        "C. At the press conference tomorrow."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 6. Your press release about the charity run was very well written."
+        },
+        {
+          "speaker": "M",
+          "text": "A. Five kilometers around the park. <break time=\"0.8s\" /> B. Thanks—Nadia helped me edit the final draft. <break time=\"0.8s\" /> C. At the press conference tomorrow."
+        }
+      ],
+      "referenceJa": [
+        "質問：チャリティーランについてのあなたのプレスリリース、とてもよく書けていましたよ。",
+        "(A) 公園の周り5キロです。",
+        "(B) ありがとうございます。ナディアが最終稿の編集を手伝ってくれたんです。 ★正解",
+        "(C) 明日の記者会見でです。"
+      ]
+    },
+    {
+      "round": 4,
+      "part": "Part 3",
+      "trackId": "tpl_r04_p3",
+      "fileName": "tpl_r04_p3.mp3",
+      "titleJa": "第4回 問7〜9（オフィスビルの空調修理と一時的な部屋移動）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Man] Excuse me, Ms. Lindholm. Several people in the accounting suite mentioned that the air-conditioning stopped working about an hour ago.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Thanks for letting me know, Sam. Building maintenance is already on the roof replacing a worn fan belt, and they expect the cooling system to be back on by three o'clock.",
+        "<break time=\"0.6s\" />",
+        "[Man] That's a relief, though our team has a two-hour audit call starting at one thirty, and that room gets warm quickly because of the west windows.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Good point. Training Room C on the north side is on a separate cooling unit and isn't booked this afternoon.",
+        "<break time=\"0.6s\" />",
+        "[Man] Perfect. I'll reserve Training Room C right away and message our team to bring their laptops there."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Excuse me, Ms. Lindholm. Several people in the accounting suite mentioned that the air-conditioning stopped working about an hour ago."
+        },
+        {
+          "speaker": "W",
+          "text": "Thanks for letting me know, Sam. Building maintenance is already on the roof replacing a worn fan belt, and they expect the cooling system to be back on by three o'clock."
+        },
+        {
+          "speaker": "M",
+          "text": "That's a relief, though our team has a two-hour audit call starting at one thirty, and that room gets warm quickly because of the west windows."
+        },
+        {
+          "speaker": "W",
+          "text": "Good point. Training Room C on the north side is on a separate cooling unit and isn't booked this afternoon."
+        },
+        {
+          "speaker": "M",
+          "text": "Perfect. I'll reserve Training Room C right away and message our team to bring their laptops there."
+        }
+      ],
+      "referenceJa": [
+        "M: 失礼します、リンドホルムさん。経理フロアの数名から、1時間ほど前にエアコンが止まってしまったと報告がありました。",
+        "W: 知らせてくれてありがとう、サム。ビル管理課がすでに屋上で摩耗したファンベルトを交換していて、3時までには冷房が復旧する見込みよ。",
+        "M: それは安心しましたが、私たちのチームは1時30分から2時間の監査電話会議がありまして、あの部屋は西向きの窓があるのですぐ暑くなるんです。",
+        "W: もっともね。北側の第3研修室なら別の空調系統だし、今日の午後は予約が入っていないわ。",
+        "M: 助かります。今すぐ第3研修室を押さえて、チームのみんなにノートパソコンを持ってそこへ集まるよう連絡します。"
+      ]
+    },
+    {
+      "round": 4,
+      "part": "Part 4",
+      "trackId": "tpl_r04_p4",
+      "fileName": "tpl_r04_p4.mp3",
+      "titleJa": "第4回 問10〜12（ラジオ番組の地域イベント紹介）",
+      "voiceGuide": "話者:男性(M)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "You're listening to Morning Wave on 94.5 FM. Before the weather report, here's a community update for listeners in Brookside. This Saturday, April twelfth, the annual Riverfront Craft Market returns to Reed Park from ten A.M. to five P.M.",
+        "<break time=\"0.8s\" />",
+        "More than seventy local potters, woodworkers, and textile artists will set up booths along the main promenade. Because Bridge Street will be closed to vehicle traffic all day, organizers recommend parking free of charge at Brookside High School and riding the complimentary shuttle bus, which runs every ten minutes.",
+        "<break time=\"0.8s\" />",
+        "To see a map of vendor booths and live acoustic music times, visit brooksidecraft.org."
+      ],
+      "referenceJa": [
+        "94.5 FM「モーニング・ウェーブ」をお聞きいただいています。天気予報の前に、ブルックサイドにお住まいのリスナーの皆様へ地域のお知らせです。今週土曜日の4月12日、恒例の「リバーフロント・クラフトマーケット」が午前10時から午後5時までリード公園に帰ってきます。",
+        "地元の陶芸家、木工職人、染織作家など70組以上がメイン遊歩道沿いにブースを出店します。当日はブリッジ通りが終日車両通行止めとなるため、主催者はブルックサイド高校の無料駐車場に車を止め、10分間隔で運行する無料シャトルバスを利用するよう勧めています。",
+        "出店ブースの地図やアコースティック生演奏の時刻表をご覧になるには、brooksidecraft.org にアクセスしてください。"
+      ]
+    },
+    {
+      "round": 5,
+      "part": "Part 2",
+      "trackId": "tpl_r05_p2_q1",
+      "fileName": "tpl_r05_p2_q1.mp3",
+      "titleJa": "第5回 問1（When（締切））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. When are travel expense claims due this month?",
+        "<break time=\"1.0s\" />",
+        "A. On the twenty-fifth, by five P.M.",
+        "<break time=\"0.8s\" />",
+        "B. About three hundred dollars.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, my flight was on time."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 1. When are travel expense claims due this month?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. On the twenty-fifth, by five P.M. <break time=\"0.8s\" /> B. About three hundred dollars. <break time=\"0.8s\" /> C. Yes, my flight was on time."
+        }
+      ],
+      "referenceJa": [
+        "質問：今月の出張旅費の精算申請はいつが締切ですか。",
+        "(A) 25日の午後5時までです。 ★正解",
+        "(B) 約300ドルです。",
+        "(C) ええ、私の便は定刻どおりでした。"
+      ]
+    },
+    {
+      "round": 5,
+      "part": "Part 2",
+      "trackId": "tpl_r05_p2_q2",
+      "fileName": "tpl_r05_p2_q2.mp3",
+      "titleJa": "第5回 問2（Why（欠席理由））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. Why wasn't Lucas at the software training workshop?",
+        "<break time=\"1.0s\" />",
+        "A. In Computer Lab 3.",
+        "<break time=\"0.8s\" />",
+        "B. He already completed the course last month.",
+        "<break time=\"0.8s\" />",
+        "C. It's very user-friendly software."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 2. Why wasn't Lucas at the software training workshop?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. In Computer Lab 3. <break time=\"0.8s\" /> B. He already completed the course last month. <break time=\"0.8s\" /> C. It's very user-friendly software."
+        }
+      ],
+      "referenceJa": [
+        "質問：なぜルーカスはソフトウェア研修ワークショップにいなかったのですか。",
+        "(A) 第3コンピュータ室でです。",
+        "(B) 彼は先月すでにその講座を修了しているからです。 ★正解",
+        "(C) とても使いやすいソフトです。"
+      ]
+    },
+    {
+      "round": 5,
+      "part": "Part 2",
+      "trackId": "tpl_r05_p2_q3",
+      "fileName": "tpl_r05_p2_q3.mp3",
+      "titleJa": "第5回 問3（Can you（能力・都合の確認））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Can you cover my reception desk shift from noon to one?",
+        "<break time=\"1.0s\" />",
+        "A. A hardcover notebook.",
+        "<break time=\"0.8s\" />",
+        "B. Sorry, I have a dentist appointment at twelve thirty.",
+        "<break time=\"0.8s\" />",
+        "C. Next to the elevator bank."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 3. Can you cover my reception desk shift from noon to one?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. A hardcover notebook. <break time=\"0.8s\" /> B. Sorry, I have a dentist appointment at twelve thirty. <break time=\"0.8s\" /> C. Next to the elevator bank."
+        }
+      ],
+      "referenceJa": [
+        "質問：正午から1時まで、私の受付デスクのシフトを代わってもらえますか。",
+        "(A) ハードカバーのノートです。",
+        "(B) すみません、12時30分に歯科の予約が入っているんです。 ★正解",
+        "(C) エレベーターホールの隣です。"
+      ]
+    },
+    {
+      "round": 5,
+      "part": "Part 2",
+      "trackId": "tpl_r05_p2_q4",
+      "fileName": "tpl_r05_p2_q4.mp3",
+      "titleJa": "第5回 問4（How many（数量・間接応答））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. How many prototype units did the lab assemble yesterday?",
+        "<break time=\"1.0s\" />",
+        "A. On the third floor of the lab.",
+        "<break time=\"0.8s\" />",
+        "B. Yes, the test went smoothly.",
+        "<break time=\"0.8s\" />",
+        "C. Enough for all five testing teams."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 4. How many prototype units did the lab assemble yesterday?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. On the third floor of the lab. <break time=\"0.8s\" /> B. Yes, the test went smoothly. <break time=\"0.8s\" /> C. Enough for all five testing teams."
+        }
+      ],
+      "referenceJa": [
+        "質問：昨日、研究所では試作品を何台組み立てましたか。",
+        "(A) 研究所の3階でです。",
+        "(B) はい、テストは順調に進みました。",
+        "(C) 5つの検査チームすべてに行き渡るだけの数です。 ★正解"
+      ]
+    },
+    {
+      "round": 5,
+      "part": "Part 2",
+      "trackId": "tpl_r05_p2_q5",
+      "fileName": "tpl_r05_p2_q5.mp3",
+      "titleJa": "第5回 問5（選択疑問文（どちらでもよい））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. Would you prefer an aisle seat or a window seat on your flight?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, a round-trip ticket.",
+        "<break time=\"0.8s\" />",
+        "B. Boarding starts in twenty minutes.",
+        "<break time=\"0.8s\" />",
+        "C. Either is fine for such a short trip."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 5. Would you prefer an aisle seat or a window seat on your flight?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Yes, a round-trip ticket. <break time=\"0.8s\" /> B. Boarding starts in twenty minutes. <break time=\"0.8s\" /> C. Either is fine for such a short trip."
+        }
+      ],
+      "referenceJa": [
+        "質問：飛行機のお座席は通路側と窓側のどちらがよろしいですか。",
+        "(A) はい、往復航空券です。",
+        "(B) 搭乗は20分後に始まります。",
+        "(C) これだけ短いフライトならどちらでも構いません。 ★正解"
+      ]
+    },
+    {
+      "round": 5,
+      "part": "Part 2",
+      "trackId": "tpl_r05_p2_q6",
+      "fileName": "tpl_r05_p2_q6.mp3",
+      "titleJa": "第5回 問6（平叙文（在庫切れの報告））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. We're almost out of medium-sized shopping bags at Register 2.",
+        "<break time=\"1.0s\" />",
+        "A. I'll bring a bundle from the stockroom.",
+        "<break time=\"0.8s\" />",
+        "B. Medium roast, no sugar.",
+        "<break time=\"0.8s\" />",
+        "C. Did you register online?"
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 6. We're almost out of medium-sized shopping bags at Register 2."
+        },
+        {
+          "speaker": "W",
+          "text": "A. I'll bring a bundle from the stockroom. <break time=\"0.8s\" /> B. Medium roast, no sugar. <break time=\"0.8s\" /> C. Did you register online?"
+        }
+      ],
+      "referenceJa": [
+        "質問：2番レジの中サイズの買い物袋がもうすぐなくなりそうです。",
+        "(A) 倉庫から一束持ってきますね。 ★正解",
+        "(B) ミディアムロースト、砂糖なしで。",
+        "(C) オンライン登録はしましたか。"
+      ]
+    },
+    {
+      "round": 5,
+      "part": "Part 3",
+      "trackId": "tpl_r05_p3",
+      "fileName": "tpl_r05_p3.mp3",
+      "titleJa": "第5回 問7〜9（展示会用の試作品配送トラブルへの対応）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Woman] Daniel, I just checked with the courier, and the crate with our smart thermostat display models is stuck in Denver due to fog.",
+        "<break time=\"0.6s\" />",
+        "[Man] Oh no! The Home Tech Expo opens tomorrow morning at nine, and our booth looks empty without those units.",
+        "<break time=\"0.6s\" />",
+        "[Woman] The courier promised it'll arrive by noon tomorrow, so we'll have it for the afternoon crowd. For the morning hours, what if we loop the product demo video on our large monitor?",
+        "<break time=\"0.6s\" />",
+        "[Man] That'll help. Also, didn't I pack two working sample units in my checked suitcase? We can set those on the counter so visitors can test the touch screen.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Great thinking! Let's head to the convention hall now and test the monitor connection before the venue closes at six."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Daniel, I just checked with the courier, and the crate with our smart thermostat display models is stuck in Denver due to fog."
+        },
+        {
+          "speaker": "M",
+          "text": "Oh no! The Home Tech Expo opens tomorrow morning at nine, and our booth looks empty without those units."
+        },
+        {
+          "speaker": "W",
+          "text": "The courier promised it'll arrive by noon tomorrow, so we'll have it for the afternoon crowd. For the morning hours, what if we loop the product demo video on our large monitor?"
+        },
+        {
+          "speaker": "M",
+          "text": "That'll help. Also, didn't I pack two working sample units in my checked suitcase? We can set those on the counter so visitors can test the touch screen."
+        },
+        {
+          "speaker": "W",
+          "text": "Great thinking! Let's head to the convention hall now and test the monitor connection before the venue closes at six."
+        }
+      ],
+      "referenceJa": [
+        "W: ダニエル、今宅配業者に確認したのですが、スマートサーモスタットの展示模型が入った木箱が、霧のためデンバーで足止めされているそうです。",
+        "M: 大変だ。ホームテック博覧会は明日の朝9時に開場するのに、あの実機がないとうちのブースが寂しく見えてしまうよ。",
+        "W: 業者からは明日の正午までには届くと約束してもらえたので、午後の来場者には間に合います。午前中は、大型モニターで製品デモ動画を繰り返し流すというのはどうでしょう。",
+        "M: それは助かるね。それに、僕の預け入れスーツケースの中に動作するサンプル機を2台入れていなかったかな。来場者がタッチ画面を試せるよう、それをカウンターに並べられるよ。",
+        "W: いい考えですね。会場が6時に閉まる前に、今から展示ホールへ行ってモニターの接続をテストしておきましょう。"
+      ]
+    },
+    {
+      "round": 5,
+      "part": "Part 4",
+      "trackId": "tpl_r05_p4",
+      "fileName": "tpl_r05_p4.mp3",
+      "titleJa": "第5回 問10〜12（オフィス移転の説明トーク）",
+      "voiceGuide": "話者:女性(W)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Good morning, everyone. As we prepare for our move to the Bayside Tower next Monday, I'd like to go over a few packing steps so nothing gets misplaced over the weekend.",
+        "<break time=\"0.8s\" />",
+        "Each desk has been given three green plastic crates and a sheet of color-coded labels. Blue labels are for items going to the sixth floor, and yellow labels are for the seventh floor. Please attach a label to the side—not the lid—of every crate so movers can read it when crates are stacked.",
+        "<break time=\"0.8s\" />",
+        "Please take your company laptop and ID badge home with you on Friday evening. Everything else must be packed and sealed by four P.M. Friday."
+      ],
+      "referenceJa": [
+        "皆さん、おはようございます。来週月曜日のベイサイド・タワーへの移転準備にあたり、週末の間に紛失物が出ないよう、荷造りの手順をいくつか確認しておきたいと思います。",
+        "各自のデスクには、緑色のプラスチック製コンテナ3箱と色分けされたラベルシートが配られています。青のラベルは6階へ運ぶ荷物用、黄色のラベルは7階用です。コンテナを積み重ねたときにも作業員が読めるよう、ラベルはふたではなく側面に貼ってください。",
+        "金曜日の夕方には、会社貸与のノートパソコンと社員証を自宅へ持ち帰ってください。それ以外の荷物はすべて、金曜日の午後4時までに箱詰めして封をしてください。"
+      ]
+    },
+    {
+      "round": 6,
+      "part": "Part 2",
+      "trackId": "tpl_r06_p2_q1",
+      "fileName": "tpl_r06_p2_q1.mp3",
+      "titleJa": "第6回 問1（What（感想・意見））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. What did you think of the new corporate logo designs?",
+        "<break time=\"1.0s\" />",
+        "A. The second option looked the cleanest.",
+        "<break time=\"0.8s\" />",
+        "B. By the graphic design agency.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, on all business cards."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 1. What did you think of the new corporate logo designs?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. The second option looked the cleanest. <break time=\"0.8s\" /> B. By the graphic design agency. <break time=\"0.8s\" /> C. Yes, on all business cards."
+        }
+      ],
+      "referenceJa": [
+        "質問：新しい企業ロゴのデザイン案をどう思いましたか。",
+        "(A) 2つ目の案が一番すっきりして見えました。 ★正解",
+        "(B) グラフィックデザイン会社によってです。",
+        "(C) はい、すべての名刺に載ります。"
+      ]
+    },
+    {
+      "round": 6,
+      "part": "Part 2",
+      "trackId": "tpl_r06_p2_q2",
+      "fileName": "tpl_r06_p2_q2.mp3",
+      "titleJa": "第6回 問2（Are you（予定の確認））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. Are you attending the logistics conference in Boston next month?",
+        "<break time=\"1.0s\" />",
+        "A. In the main exhibition hall.",
+        "<break time=\"0.8s\" />",
+        "B. Last month's issue.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, I booked my hotel yesterday."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 2. Are you attending the logistics conference in Boston next month?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. In the main exhibition hall. <break time=\"0.8s\" /> B. Last month's issue. <break time=\"0.8s\" /> C. Yes, I booked my hotel yesterday."
+        }
+      ],
+      "referenceJa": [
+        "質問：来月ボストンで開かれる物流カンファレンスには出席しますか。",
+        "(A) メイン展示ホールでです。",
+        "(B) 先月号です。",
+        "(C) ええ、昨日ホテルを予約しました。 ★正解"
+      ]
+    },
+    {
+      "round": 6,
+      "part": "Part 2",
+      "trackId": "tpl_r06_p2_q3",
+      "fileName": "tpl_r06_p2_q3.mp3",
+      "titleJa": "第6回 問3（Whose（所有者））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Whose umbrella is leaning against the coatrack?",
+        "<break time=\"1.0s\" />",
+        "A. I think it belongs to Mr. Morales.",
+        "<break time=\"0.8s\" />",
+        "B. No, the rain has stopped.",
+        "<break time=\"0.8s\" />",
+        "C. Put your coat in the closet."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 3. Whose umbrella is leaning against the coatrack?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. I think it belongs to Mr. Morales. <break time=\"0.8s\" /> B. No, the rain has stopped. <break time=\"0.8s\" /> C. Put your coat in the closet."
+        }
+      ],
+      "referenceJa": [
+        "質問：コート掛けに立てかけてあるのは誰の傘ですか。",
+        "(A) モラレスさんのものだと思います。 ★正解",
+        "(B) いいえ、雨はやみました。",
+        "(C) コートはクローゼットに入れてください。"
+      ]
+    },
+    {
+      "round": 6,
+      "part": "Part 2",
+      "trackId": "tpl_r06_p2_q4",
+      "fileName": "tpl_r06_p2_q4.mp3",
+      "titleJa": "第6回 問4（Should I（指示を仰ぐ））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Should I file these supplier invoices by date or by company name?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, they were paid in full.",
+        "<break time=\"0.8s\" />",
+        "B. Alphabetically by company, please.",
+        "<break time=\"0.8s\" />",
+        "C. In the metal filing cabinet."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 4. Should I file these supplier invoices by date or by company name?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Yes, they were paid in full. <break time=\"0.8s\" /> B. Alphabetically by company, please. <break time=\"0.8s\" /> C. In the metal filing cabinet."
+        }
+      ],
+      "referenceJa": [
+        "質問：これらの仕入れ先の請求書は、日付順と社名順のどちらでファイリングしましょうか。",
+        "(A) はい、全額支払われました。",
+        "(B) 社名のアルファベット順でお願いします。 ★正解",
+        "(C) 金属製の書類棚の中にです。"
+      ]
+    },
+    {
+      "round": 6,
+      "part": "Part 2",
+      "trackId": "tpl_r06_p2_q5",
+      "fileName": "tpl_r06_p2_q5.mp3",
+      "titleJa": "第6回 問5（Why（機器の交換理由））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. Why are technicians replacing the card readers at the front gate?",
+        "<break time=\"1.0s\" />",
+        "A. Show your photo ID at the desk.",
+        "<break time=\"0.8s\" />",
+        "B. About two hours ago.",
+        "<break time=\"0.8s\" />",
+        "C. The new ones scan badges much faster."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 5. Why are technicians replacing the card readers at the front gate?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Show your photo ID at the desk. <break time=\"0.8s\" /> B. About two hours ago. <break time=\"0.8s\" /> C. The new ones scan badges much faster."
+        }
+      ],
+      "referenceJa": [
+        "質問：なぜ技術者が正門のカードリーダーを交換しているのですか。",
+        "(A) 受付で顔写真つき身分証を見せてください。",
+        "(B) 約2時間前にです。",
+        "(C) 新しい機種のほうが社員証をずっと速く読み取れるからです。 ★正解"
+      ]
+    },
+    {
+      "round": 6,
+      "part": "Part 2",
+      "trackId": "tpl_r06_p2_q6",
+      "fileName": "tpl_r06_p2_q6.mp3",
+      "titleJa": "第6回 問6（平叙文（予定の遅れ））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. I haven't received the catering quote for the awards banquet yet.",
+        "<break time=\"1.0s\" />",
+        "A. Congratulations on the award!",
+        "<break time=\"0.8s\" />",
+        "B. I'll call the restaurant manager right away.",
+        "<break time=\"0.8s\" />",
+        "C. No, the food was delicious."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 6. I haven't received the catering quote for the awards banquet yet."
+        },
+        {
+          "speaker": "W",
+          "text": "A. Congratulations on the award! <break time=\"0.8s\" /> B. I'll call the restaurant manager right away. <break time=\"0.8s\" /> C. No, the food was delicious."
+        }
+      ],
+      "referenceJa": [
+        "質問：表彰晩餐会のケータリング見積もりがまだ届いていません。",
+        "(A) 受賞おめでとうございます！",
+        "(B) 今すぐレストランの支配人に電話してみます。 ★正解",
+        "(C) いいえ、料理はおいしかったです。"
+      ]
+    },
+    {
+      "round": 6,
+      "part": "Part 3",
+      "trackId": "tpl_r06_p3",
+      "fileName": "tpl_r06_p3.mp3",
+      "titleJa": "第6回 問7〜9（書店での取り寄せ注文と店舗受け取りの手続き）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Man] Hi, I'm looking for Dr. Miriam Cole's new book on urban architecture, Cities Built for Walking. I checked the architecture shelf, but I didn't see it.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Let me check our inventory system... Ah, that title came out on Tuesday and our first ten copies already sold out this morning.",
+        "<break time=\"0.6s\" />",
+        "[Man] I see. I'm teaching a university seminar next Thursday and need a copy before then. Can you order one from another branch?",
+        "<break time=\"0.6s\" />",
+        "[Woman] Yes, our Riverside store has four copies in stock. I can have one transferred here on Monday's courier van at no extra charge.",
+        "<break time=\"0.6s\" />",
+        "[Man] That's plenty of time before Thursday. Here's my membership card so you can text me when it arrives."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Hi, I'm looking for Dr. Miriam Cole's new book on urban architecture, Cities Built for Walking. I checked the architecture shelf, but I didn't see it."
+        },
+        {
+          "speaker": "W",
+          "text": "Let me check our inventory system... Ah, that title came out on Tuesday and our first ten copies already sold out this morning."
+        },
+        {
+          "speaker": "M",
+          "text": "I see. I'm teaching a university seminar next Thursday and need a copy before then. Can you order one from another branch?"
+        },
+        {
+          "speaker": "W",
+          "text": "Yes, our Riverside store has four copies in stock. I can have one transferred here on Monday's courier van at no extra charge."
+        },
+        {
+          "speaker": "M",
+          "text": "That's plenty of time before Thursday. Here's my membership card so you can text me when it arrives."
+        }
+      ],
+      "referenceJa": [
+        "M: こんにちは、ミリアム・コール博士の都市建築に関する新刊『歩くためにつくられた都市』を探しています。建築コーナーの棚を見たのですが見当たりませんでした。",
+        "W: 在庫システムを確認しますね……ああ、その本は火曜日に発売されたばかりで、初回入荷の10冊は今朝すでに売り切れてしまいました。",
+        "M: そうですか。来週木曜日に大学のゼミを担当するので、それまでに1冊必要なんです。他店舗から取り寄せることはできますか。",
+        "W: はい、リバーサイド店に4冊在庫がございます。追加料金なしで、月曜日の店舗間配送便でこちらへ1冊回してもらうことができます。",
+        "M: それなら木曜日まで十分間に合いますね。届いたらショートメッセージをもらえるよう、私の会員カードを出しておきます。"
+      ]
+    },
+    {
+      "round": 6,
+      "part": "Part 4",
+      "trackId": "tpl_r06_p4",
+      "fileName": "tpl_r06_p4.mp3",
+      "titleJa": "第6回 問10〜12（工場見学ツアーの事前説明）",
+      "voiceGuide": "話者:男性(M)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Welcome to Crestview Chocolate Makers, and thank you for joining our ten o'clock factory tour. My name is Owen, and over the next forty minutes I'll guide you along the observation gallery above our roasting, molding, and wrapping lines.",
+        "<break time=\"0.8s\" />",
+        "Before we enter the production building, everyone must put on one of the white hairnets in the basket by the door and store all bags and loose jewelry in these numbered lockers. Your locker key is attached to a wrist strap so you can carry it hands-free.",
+        "<break time=\"0.8s\" />",
+        "Our final stop will be the tasting counter, where each guest receives a sample box and a ten-percent discount voucher valid today at our factory shop."
+      ],
+      "referenceJa": [
+        "クレストビュー・チョコレートメーカーズへようこそ。10時からの工場見学ツアーにご参加いただきありがとうございます。私はオーウェンと申します。これから40分間、焙煎・成形・包装ラインを見下ろす見学通路をご案内いたします。",
+        "製造棟に入る前に、皆様にはドア横のかごにある白いヘアネットを着けていただき、かばんや外れやすいアクセサリー類はすべてこちらの番号つきロッカーに預けていただきます。ロッカーの鍵にはリストストラップが付いていますので、手ぶらで持ち歩けます。",
+        "最後の立ち寄り先は試食カウンターです。そこではご参加の皆様お一人ずつに、試食用の小箱と、本日併設ショップで使える10％割引券をお渡しします。"
+      ]
+    },
+    {
+      "round": 7,
+      "part": "Part 2",
+      "trackId": "tpl_r07_p2_q1",
+      "fileName": "tpl_r07_p2_q1.mp3",
+      "titleJa": "第7回 問1（When（納入時期））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. When will the standing desks arrive at our branch?",
+        "<break time=\"1.0s\" />",
+        "A. Twelve ergonomic chairs.",
+        "<break time=\"0.8s\" />",
+        "B. Next Wednesday afternoon.",
+        "<break time=\"0.8s\" />",
+        "C. Near the front reception."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 1. When will the standing desks arrive at our branch?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Twelve ergonomic chairs. <break time=\"0.8s\" /> B. Next Wednesday afternoon. <break time=\"0.8s\" /> C. Near the front reception."
+        }
+      ],
+      "referenceJa": [
+        "質問：昇降デスクはいつ当支店に届きますか。",
+        "(A) 人間工学チェアが12脚です。",
+        "(B) 来週の水曜日の午後です。 ★正解",
+        "(C) 正面受付の近くです。"
+      ]
+    },
+    {
+      "round": 7,
+      "part": "Part 2",
+      "trackId": "tpl_r07_p2_q2",
+      "fileName": "tpl_r07_p2_q2.mp3",
+      "titleJa": "第7回 問2（Why（欠席の理由））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. Why wasn't Mr. Ortega at the safety briefing this morning?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, safety goggles are required.",
+        "<break time=\"0.8s\" />",
+        "B. He was visiting a client site in Portland.",
+        "<break time=\"0.8s\" />",
+        "C. For about forty minutes."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 2. Why wasn't Mr. Ortega at the safety briefing this morning?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Yes, safety goggles are required. <break time=\"0.8s\" /> B. He was visiting a client site in Portland. <break time=\"0.8s\" /> C. For about forty minutes."
+        }
+      ],
+      "referenceJa": [
+        "質問：なぜオルテガさんは今朝の安全説明会にいなかったのですか。",
+        "(A) はい、安全ゴーグルの着用が必須です。",
+        "(B) ポートランドの取引先現場を訪問していたからです。 ★正解",
+        "(C) 約40分間です。"
+      ]
+    },
+    {
+      "round": 7,
+      "part": "Part 2",
+      "trackId": "tpl_r07_p2_q3",
+      "fileName": "tpl_r07_p2_q3.mp3",
+      "titleJa": "第7回 問3（選択疑問文（A or B））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Should we book an aisle seat or a window seat for Ms. Cho?",
+        "<break time=\"1.0s\" />",
+        "A. She prefers the aisle on long flights.",
+        "<break time=\"0.8s\" />",
+        "B. Flight 408 to Seattle.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, her ticket is confirmed."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 3. Should we book an aisle seat or a window seat for Ms. Cho?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. She prefers the aisle on long flights. <break time=\"0.8s\" /> B. Flight 408 to Seattle. <break time=\"0.8s\" /> C. Yes, her ticket is confirmed."
+        }
+      ],
+      "referenceJa": [
+        "質問：チョーさんには通路側と窓側のどちらの席を予約しましょうか。",
+        "(A) 長距離便では通路側を好まれます。 ★正解",
+        "(B) シアトル行きの408便です。",
+        "(C) はい、彼女の航空券は確定しています。"
+      ]
+    },
+    {
+      "round": 7,
+      "part": "Part 2",
+      "trackId": "tpl_r07_p2_q4",
+      "fileName": "tpl_r07_p2_q4.mp3",
+      "titleJa": "第7回 問4（依頼（Could you））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Could you grant the new intern read-only access to the project folder?",
+        "<break time=\"1.0s\" />",
+        "A. Sure—just send me his employee ID.",
+        "<break time=\"0.8s\" />",
+        "B. He started last Monday.",
+        "<break time=\"0.8s\" />",
+        "C. A blue plastic folder."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 4. Could you grant the new intern read-only access to the project folder?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Sure—just send me his employee ID. <break time=\"0.8s\" /> B. He started last Monday. <break time=\"0.8s\" /> C. A blue plastic folder."
+        }
+      ],
+      "referenceJa": [
+        "質問：新しいインターンにプロジェクトフォルダの閲覧専用権限を付与してもらえますか。",
+        "(A) いいですよ、彼の社員番号だけ送ってください。 ★正解",
+        "(B) 彼は先週の月曜日に働き始めました。",
+        "(C) 青いプラスチックのファイルです。"
+      ]
+    },
+    {
+      "round": 7,
+      "part": "Part 2",
+      "trackId": "tpl_r07_p2_q5",
+      "fileName": "tpl_r07_p2_q5.mp3",
+      "titleJa": "第7回 問5（How much（料金・費用））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. How much does the community center charge to rent the banquet hall?",
+        "<break time=\"1.0s\" />",
+        "A. Up to two hundred guests.",
+        "<break time=\"0.8s\" />",
+        "B. By credit card or check.",
+        "<break time=\"0.8s\" />",
+        "C. It depends on whether you're a local resident."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 5. How much does the community center charge to rent the banquet hall?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Up to two hundred guests. <break time=\"0.8s\" /> B. By credit card or check. <break time=\"0.8s\" /> C. It depends on whether you're a local resident."
+        }
+      ],
+      "referenceJa": [
+        "質問：コミュニティセンターの宴会場を借りるにはいくらかかりますか。",
+        "(A) 最大200名の招待客までです。",
+        "(B) クレジットカードまたは小切手でです。",
+        "(C) 地元にお住まいの方かどうかによって変わります。 ★正解"
+      ]
+    },
+    {
+      "round": 7,
+      "part": "Part 2",
+      "trackId": "tpl_r07_p2_q6",
+      "fileName": "tpl_r07_p2_q6.mp3",
+      "titleJa": "第7回 問6（平叙文（問題報告への対応））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. One of the espresso machines is making a strange rattling noise.",
+        "<break time=\"1.0s\" />",
+        "A. With steamed oat milk, please.",
+        "<break time=\"0.8s\" />",
+        "B. Every morning at six thirty.",
+        "<break time=\"0.8s\" />",
+        "C. Turn it off for now and I'll call the technician."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 6. One of the espresso machines is making a strange rattling noise."
+        },
+        {
+          "speaker": "W",
+          "text": "A. With steamed oat milk, please. <break time=\"0.8s\" /> B. Every morning at six thirty. <break time=\"0.8s\" /> C. Turn it off for now and I'll call the technician."
+        }
+      ],
+      "referenceJa": [
+        "質問：エスプレッソマシンの1台から妙なガタガタという音がしています。",
+        "(A) スチームしたオーツミルク入りでお願いします。",
+        "(B) 毎朝6時30分にです。",
+        "(C) ひとまず電源を切っておいてください、修理業者に電話しますから。 ★正解"
+      ]
+    },
+    {
+      "round": 7,
+      "part": "Part 3",
+      "trackId": "tpl_r07_p3",
+      "fileName": "tpl_r07_p3.mp3",
+      "titleJa": "第7回 問7〜9（オンラインショップで購入したジャケットのサイズ交換）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Man] Hello, welcome to Crestline Outdoor Gear. How can I help you today?",
+        "<break time=\"0.6s\" />",
+        "[Woman] Hi. I ordered this waterproof trail jacket from your website last week, but the medium is a bit too tight across the shoulders. Could I exchange it for a large here in the store?",
+        "<break time=\"0.6s\" />",
+        "[Man] Certainly, as long as the tags are still attached and you have the order number. Let me check our stockroom—what color is that, slate blue?",
+        "<break time=\"0.6s\" />",
+        "[Woman] Yes, slate blue. Here's the digital receipt on my phone.",
+        "<break time=\"0.6s\" />",
+        "[Man] Hmm, my tablet shows we're sold out of the large in slate blue at this location, though we do have it in olive green. Alternatively, I can have a slate blue large shipped directly to your home at no charge.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Oh, I'm leaving for a hiking trip this Saturday, so shipping might be cutting it close. Let me try on the olive green one instead."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Hello, welcome to Crestline Outdoor Gear. How can I help you today?"
+        },
+        {
+          "speaker": "W",
+          "text": "Hi. I ordered this waterproof trail jacket from your website last week, but the medium is a bit too tight across the shoulders. Could I exchange it for a large here in the store?"
+        },
+        {
+          "speaker": "M",
+          "text": "Certainly, as long as the tags are still attached and you have the order number. Let me check our stockroom—what color is that, slate blue?"
+        },
+        {
+          "speaker": "W",
+          "text": "Yes, slate blue. Here's the digital receipt on my phone."
+        },
+        {
+          "speaker": "M",
+          "text": "Hmm, my tablet shows we're sold out of the large in slate blue at this location, though we do have it in olive green. Alternatively, I can have a slate blue large shipped directly to your home at no charge."
+        },
+        {
+          "speaker": "W",
+          "text": "Oh, I'm leaving for a hiking trip this Saturday, so shipping might be cutting it close. Let me try on the olive green one instead."
+        }
+      ],
+      "referenceJa": [
+        "M: こんにちは、クレストライン・アウトドアギアへようこそ。本日はどのようなご用件でしょうか。",
+        "W: こんにちは。先週御社のウェブサイトでこの防水トレイルジャケットを注文したのですが、Mサイズだと肩回りが少しきつくて。こちらの店舗でLサイズに交換できますか。",
+        "M: もちろんです、タグが付いたままで注文番号をお持ちでしたら承れます。在庫室を確認しますね——そのお色はスレートブルーですか。",
+        "W: はい、スレートブルーです。スマホに電子レシートがあります。",
+        "M: うーん、端末を見ると当店舗ではスレートブルーのLサイズは売り切れですが、オリーブグリーンなら在庫があります。あるいは、スレートブルーのLサイズを無料でご自宅へ直送手配することもできますよ。",
+        "W: ああ、今週の土曜日にハイキング旅行に出かけるので、配送だと間に合うかぎりぎりになりそうです。代わりにオリーブグリーンを試着させてください。"
+      ]
+    },
+    {
+      "round": 7,
+      "part": "Part 4",
+      "trackId": "tpl_r07_p4",
+      "fileName": "tpl_r07_p4.mp3",
+      "titleJa": "第7回 問10〜12（美術館の音声ガイド案内）",
+      "voiceGuide": "話者:女性(W)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Welcome to the Harborview Museum of Contemporary Design, and thank you for borrowing one of our digital audio guides. Before you begin exploring, please note that the third-floor textile gallery is closed today while curators install our summer exhibition.",
+        "<break time=\"0.8s\" />",
+        "Your admission wristband includes entry to our featured photography showcase in Wing B, which highlights urban architecture across South America. To hear commentary about any piece, simply type the three-digit number printed beside the frame into your keypad.",
+        "<break time=\"0.8s\" />",
+        "At two o'clock, architectural historian Dr. Victor Morales will lead a complimentary thirty-minute talk in the courtyard lecture room. Seating is limited to forty guests, so we recommend arriving ten minutes early. Enjoy your visit!"
+      ],
+      "referenceJa": [
+        "ハーバービュー現代デザイン美術館へようこそ。デジタル音声ガイドをお借りいただきありがとうございます。見学を始められる前に、3階のテキスタイル・ギャラリーは夏の特別展の設営作業のため本日は閉室となっておりますのでご了承ください。",
+        "入館リストバンドには、南米各地の都市建築に焦点を当てたB棟の特集写真展への入場も含まれています。各作品の解説をお聞きになるには、額縁の横に印字された3桁の番号をキーパッドに入力してください。",
+        "午後2時からは、建築史家のビクター・モラレス博士が中庭レクチャールームにて30分間の無料トークを行います。座席は40名様限りですので、10分前までにお越しいただくことをお勧めします。どうぞごゆっくりお楽しみください。"
+      ]
+    },
+    {
+      "round": 8,
+      "part": "Part 2",
+      "trackId": "tpl_r08_p2_q1",
+      "fileName": "tpl_r08_p2_q1.mp3",
+      "titleJa": "第8回 問1（Who（引率・担当者））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. Who will give the safety tour to the visiting engineers?",
+        "<break time=\"1.0s\" />",
+        "A. Around the packaging floor.",
+        "<break time=\"0.8s\" />",
+        "B. Hard hats and steel-toe boots.",
+        "<break time=\"0.8s\" />",
+        "C. Our shift supervisor, Mr. Benitez."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 1. Who will give the safety tour to the visiting engineers?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Around the packaging floor. <break time=\"0.8s\" /> B. Hard hats and steel-toe boots. <break time=\"0.8s\" /> C. Our shift supervisor, Mr. Benitez."
+        }
+      ],
+      "referenceJa": [
+        "質問：訪問エンジニアたちへの安全見学ツアーは誰が案内しますか。",
+        "(A) 包装フロア一帯です。",
+        "(B) ヘルメットと安全靴です。",
+        "(C) シフト主任のベニテスさんです。 ★正解"
+      ]
+    },
+    {
+      "round": 8,
+      "part": "Part 2",
+      "trackId": "tpl_r08_p2_q2",
+      "fileName": "tpl_r08_p2_q2.mp3",
+      "titleJa": "第8回 問2（How long（所要期間））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. How long will the main elevator be out of service?",
+        "<break time=\"1.0s\" />",
+        "A. Take the stairs on the left.",
+        "<break time=\"0.8s\" />",
+        "B. Up to the fourteenth floor.",
+        "<break time=\"0.8s\" />",
+        "C. Only until noon today."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 2. How long will the main elevator be out of service?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Take the stairs on the left. <break time=\"0.8s\" /> B. Up to the fourteenth floor. <break time=\"0.8s\" /> C. Only until noon today."
+        }
+      ],
+      "referenceJa": [
+        "質問：メインエレベーターはどのくらいの期間、停止しますか。",
+        "(A) 左側の階段を使ってください。",
+        "(B) 14階までです。",
+        "(C) 今日の正午までだけです。 ★正解"
+      ]
+    },
+    {
+      "round": 8,
+      "part": "Part 2",
+      "trackId": "tpl_r08_p2_q3",
+      "fileName": "tpl_r08_p2_q3.mp3",
+      "titleJa": "第8回 問3（否定疑問文（Didn't you））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Didn't you receive the tracking number for the sample fabrics?",
+        "<break time=\"1.0s\" />",
+        "A. Pure cotton and linen.",
+        "<break time=\"0.8s\" />",
+        "B. Oh, it went into my spam folder.",
+        "<break time=\"0.8s\" />",
+        "C. Three yards of each pattern."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 3. Didn't you receive the tracking number for the sample fabrics?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Pure cotton and linen. <break time=\"0.8s\" /> B. Oh, it went into my spam folder. <break time=\"0.8s\" /> C. Three yards of each pattern."
+        }
+      ],
+      "referenceJa": [
+        "質問：生地サンプルの追跡番号は届いていませんでしたか。",
+        "(A) 綿100％と麻です。",
+        "(B) あっ、迷惑メールフォルダに入っていました。 ★正解",
+        "(C) 各柄3ヤードずつです。"
+      ]
+    },
+    {
+      "round": 8,
+      "part": "Part 2",
+      "trackId": "tpl_r08_p2_q4",
+      "fileName": "tpl_r08_p2_q4.mp3",
+      "titleJa": "第8回 問4（Would you like me to（申し出））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Would you like me to print handouts for the client presentation?",
+        "<break time=\"1.0s\" />",
+        "A. Actually, we're sharing everything digitally on tablets.",
+        "<break time=\"0.8s\" />",
+        "B. The projector is in Room C.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, she's a new client."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 4. Would you like me to print handouts for the client presentation?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Actually, we're sharing everything digitally on tablets. <break time=\"0.8s\" /> B. The projector is in Room C. <break time=\"0.8s\" /> C. Yes, she's a new client."
+        }
+      ],
+      "referenceJa": [
+        "質問：クライアント向けプレゼン用の配布資料を印刷しましょうか。",
+        "(A) 実は、資料はすべてタブレットでデジタル共有することになっているんです。 ★正解",
+        "(B) プロジェクターは会議室Cにあります。",
+        "(C) はい、彼女は新規クライアントです。"
+      ]
+    },
+    {
+      "round": 8,
+      "part": "Part 2",
+      "trackId": "tpl_r08_p2_q5",
+      "fileName": "tpl_r08_p2_q5.mp3",
+      "titleJa": "第8回 問5（Which（候補の特定））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. Which catering company did we hire for the product launch?",
+        "<break time=\"1.0s\" />",
+        "A. Light appetizers and sparkling water.",
+        "<break time=\"0.8s\" />",
+        "B. The same one we used for the holiday banquet.",
+        "<break time=\"0.8s\" />",
+        "C. Next month on the fifteenth."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 5. Which catering company did we hire for the product launch?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Light appetizers and sparkling water. <break time=\"0.8s\" /> B. The same one we used for the holiday banquet. <break time=\"0.8s\" /> C. Next month on the fifteenth."
+        }
+      ],
+      "referenceJa": [
+        "質問：新製品発表会にはどのケータリング会社を頼みましたか。",
+        "(A) 軽食と炭酸水です。",
+        "(B) 年末の祝賀会で使ったのと同じ業者です。 ★正解",
+        "(C) 来月の15日です。"
+      ]
+    },
+    {
+      "round": 8,
+      "part": "Part 2",
+      "trackId": "tpl_r08_p2_q6",
+      "fileName": "tpl_r08_p2_q6.mp3",
+      "titleJa": "第8回 問6（付加疑問文（確認））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. The travel expense report needs to be submitted in euros, doesn't it?",
+        "<break time=\"1.0s\" />",
+        "A. No, convert all amounts into US dollars first.",
+        "<break time=\"0.8s\" />",
+        "B. My flight was delayed in Frankfurt.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, it was a productive trip."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 6. The travel expense report needs to be submitted in euros, doesn't it?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. No, convert all amounts into US dollars first. <break time=\"0.8s\" /> B. My flight was delayed in Frankfurt. <break time=\"0.8s\" /> C. Yes, it was a productive trip."
+        }
+      ],
+      "referenceJa": [
+        "質問：出張経費精算書はユーロ建てで提出する必要がありますよね。",
+        "(A) いいえ、先にすべての金額を米ドルに換算してください。 ★正解",
+        "(B) 私の便はフランクフルトで遅れました。",
+        "(C) はい、実り多い出張でした。"
+      ]
+    },
+    {
+      "round": 8,
+      "part": "Part 3",
+      "trackId": "tpl_r08_p3",
+      "fileName": "tpl_r08_p3.mp3",
+      "titleJa": "第8回 問7〜9（社内研修ワークショップの講師変更と会場レイアウトの相談）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Woman] Hi, Kenji. Have you heard from Ms. Callahan about tomorrow's negotiation skills workshop? She mentioned yesterday that she was losing her voice.",
+        "<break time=\"0.6s\" />",
+        "[Man] Yes, she e-mailed me twenty minutes ago. Her doctor advised her to rest her vocal cords for a few days, so Mr. Lindqvist from the Chicago office has agreed to lead the session instead.",
+        "<break time=\"0.6s\" />",
+        "[Woman] That's a relief! Will he fly in tonight, or is he conducting it remotely?",
+        "<break time=\"0.6s\" />",
+        "[Man] He's already in town for a client audit, actually. He did ask if we could rearrange Training Room B into small clusters of four desks rather than rows, since he plans to run role-playing exercises.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Sure, facilities can move the desks after five o'clock today. What about the printed workbooks—do they still have Ms. Callahan's name on the cover?",
+        "<break time=\"0.6s\" />",
+        "[Man] The content inside is identical, so let's just print updated cover labels rather than redoing whole booklets. I'll send you the label template now."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Hi, Kenji. Have you heard from Ms. Callahan about tomorrow's negotiation skills workshop? She mentioned yesterday that she was losing her voice."
+        },
+        {
+          "speaker": "M",
+          "text": "Yes, she e-mailed me twenty minutes ago. Her doctor advised her to rest her vocal cords for a few days, so Mr. Lindqvist from the Chicago office has agreed to lead the session instead."
+        },
+        {
+          "speaker": "W",
+          "text": "That's a relief! Will he fly in tonight, or is he conducting it remotely?"
+        },
+        {
+          "speaker": "M",
+          "text": "He's already in town for a client audit, actually. He did ask if we could rearrange Training Room B into small clusters of four desks rather than rows, since he plans to run role-playing exercises."
+        },
+        {
+          "speaker": "W",
+          "text": "Sure, facilities can move the desks after five o'clock today. What about the printed workbooks—do they still have Ms. Callahan's name on the cover?"
+        },
+        {
+          "speaker": "M",
+          "text": "The content inside is identical, so let's just print updated cover labels rather than redoing whole booklets. I'll send you the label template now."
+        }
+      ],
+      "referenceJa": [
+        "W: こんにちは、ケンジ。明日の交渉スキル研修の件でキャラハンさんから連絡はありましたか。昨日、声が出なくなりそうだと言っていたのですが。",
+        "M: ええ、20分前にメールが来ました。医師から数日間は声帯を休めるよう言われたそうで、シカゴ支社のリンドクヴィストさんが代わりに講師を引き受けてくれました。",
+        "W: それは安心しました！彼は今夜の便でこちらに来るのですか、それともリモートで実施するのでしょうか。",
+        "M: 実は取引先の監査でもうこちらの街に来ているんです。ただ、ロールプレイ演習を行う予定なので、研修室Bの机を横並びの列ではなく4人ずつの小グループに組み替えられないかと頼まれました。",
+        "W: ええ、今日の5時以降に施設管理課に机を動かしてもらえます。印刷済みのワークブックはどうしましょう——表紙にキャラハンさんの名前が入ったままですか。",
+        "M: 中身はまったく同じなので、冊子ごと刷り直すのではなく、差し替え用の表紙ラベルだけ印刷しましょう。今ラベルのテンプレートを送りますね。"
+      ]
+    },
+    {
+      "round": 8,
+      "part": "Part 4",
+      "trackId": "tpl_r08_p4",
+      "fileName": "tpl_r08_p4.mp3",
+      "titleJa": "第8回 問10〜12（配送センター責任者からの出荷手順変更アナウンス）",
+      "voiceGuide": "話者:男性(M)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Good morning, fulfillment team. Before we start the morning packing shift, I want to go over an important change for all fragile ceramic orders. Starting today, we are switching from plastic bubble wrap to molded recycled-paper inserts.",
+        "<break time=\"0.8s\" />",
+        "Boxes of these inserts have already been stacked beside Stations One through Six. Because the new inserts fit snugly around our mugs and bowls, you'll actually be able to use our medium shipping cartons instead of the oversized ones, which will cut our freight costs by nearly fifteen percent.",
+        "<break time=\"0.8s\" />",
+        "If you run into an unusually shaped platter that doesn't fit the standard insert, please set that order on the blue cart near Dock B. Supervisor Maya Patel will show you how to wrap custom items during the ten-thirty break."
+      ],
+      "referenceJa": [
+        "おはようございます、出荷チームの皆さん。午前の梱包シフトを始める前に、割れやすい陶器製品の全注文に関する重要な変更点をお伝えします。本日より、プラスチック製の気泡緩衝材から再生紙の成形インサートへ切り替えます。",
+        "このインサートの箱は、すでに第1から第6作業台の横に積んであります。新しいインサートはマグカップやボウルにぴったり収まるため、従来の特大サイズではなく中サイズの配送箱を使えるようになり、運賃をおよそ15％削減できます。",
+        "標準インサートに収まらない特殊な形状の大皿に当たった場合は、ドックB近くの青いカートにその注文品を置いてください。10時30分の休憩時間に、主任のマヤ・パテルが特注サイズの梱包方法を実演します。"
+      ]
+    },
+    {
+      "round": 9,
+      "part": "Part 2",
+      "trackId": "tpl_r09_p2_q1",
+      "fileName": "tpl_r09_p2_q1.mp3",
+      "titleJa": "第9回 問1（Where（イベント会場））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. Where is the awards ceremony being held this year?",
+        "<break time=\"1.0s\" />",
+        "A. For outstanding customer service.",
+        "<break time=\"0.8s\" />",
+        "B. Black-tie attire is optional.",
+        "<break time=\"0.8s\" />",
+        "C. At the Grand Botanical Conservatory."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 1. Where is the awards ceremony being held this year?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. For outstanding customer service. <break time=\"0.8s\" /> B. Black-tie attire is optional. <break time=\"0.8s\" /> C. At the Grand Botanical Conservatory."
+        }
+      ],
+      "referenceJa": [
+        "質問：今年の表彰式はどこで開催されますか。",
+        "(A) 優れた顧客サービスに対してです。",
+        "(B) フォーマル着用の指定は任意です。",
+        "(C) グランド植物園の温室ホールです。 ★正解"
+      ]
+    },
+    {
+      "round": 9,
+      "part": "Part 2",
+      "trackId": "tpl_r09_p2_q2",
+      "fileName": "tpl_r09_p2_q2.mp3",
+      "titleJa": "第9回 問2（How（交通手段））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. How are you getting to the trade show in Brussels?",
+        "<break time=\"1.0s\" />",
+        "A. I'm taking the high-speed train from Paris.",
+        "<break time=\"0.8s\" />",
+        "B. Over two hundred exhibitors.",
+        "<break time=\"0.8s\" />",
+        "C. It was a great show, thanks."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 2. How are you getting to the trade show in Brussels?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. I'm taking the high-speed train from Paris. <break time=\"0.8s\" /> B. Over two hundred exhibitors. <break time=\"0.8s\" /> C. It was a great show, thanks."
+        }
+      ],
+      "referenceJa": [
+        "質問：ブリュッセルの見本市にはどうやって行きますか。",
+        "(A) パリから高速鉄道に乗って行きます。 ★正解",
+        "(B) 200社以上の出展者です。",
+        "(C) おかげさまで素晴らしい展示会でした。"
+      ]
+    },
+    {
+      "round": 9,
+      "part": "Part 2",
+      "trackId": "tpl_r09_p2_q3",
+      "fileName": "tpl_r09_p2_q3.mp3",
+      "titleJa": "第9回 問3（一般疑問文（Are there））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Are there any openings left in the Thursday coding bootcamp?",
+        "<break time=\"1.0s\" />",
+        "A. Please close the window.",
+        "<break time=\"0.8s\" />",
+        "B. Two spots just opened up this morning.",
+        "<break time=\"0.8s\" />",
+        "C. In the computer lab downstairs."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 3. Are there any openings left in the Thursday coding bootcamp?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Please close the window. <break time=\"0.8s\" /> B. Two spots just opened up this morning. <break time=\"0.8s\" /> C. In the computer lab downstairs."
+        }
+      ],
+      "referenceJa": [
+        "質問：木曜日のプログラミング集中講座にまだ空き枠はありますか。",
+        "(A) 窓を閉めてください。",
+        "(B) 今朝ちょうど2枠空いたところです。 ★正解",
+        "(C) 階下のコンピュータ室でです。"
+      ]
+    },
+    {
+      "round": 9,
+      "part": "Part 2",
+      "trackId": "tpl_r09_p2_q4",
+      "fileName": "tpl_r09_p2_q4.mp3",
+      "titleJa": "第9回 問4（Why don't you（助言））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Why don't you restart your laptop before calling the help desk?",
+        "<break time=\"1.0s\" />",
+        "A. Extension four-zero-nine.",
+        "<break time=\"0.8s\" />",
+        "B. On top of the wooden desk.",
+        "<break time=\"0.8s\" />",
+        "C. I already tried that twice, and the screen is still frozen."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 4. Why don't you restart your laptop before calling the help desk?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Extension four-zero-nine. <break time=\"0.8s\" /> B. On top of the wooden desk. <break time=\"0.8s\" /> C. I already tried that twice, and the screen is still frozen."
+        }
+      ],
+      "referenceJa": [
+        "質問：ヘルプデスクに電話する前にノートパソコンを再起動してみたらどうですか。",
+        "(A) 内線409番です。",
+        "(B) 木の机の上です。",
+        "(C) それはもう2回試したのですが、まだ画面が固まったままなんです。 ★正解"
+      ]
+    },
+    {
+      "round": 9,
+      "part": "Part 2",
+      "trackId": "tpl_r09_p2_q5",
+      "fileName": "tpl_r09_p2_q5.mp3",
+      "titleJa": "第9回 問5（When（締切確認・間接応答））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. When is the final draft of the annual shareholders' report due?",
+        "<break time=\"1.0s\" />",
+        "A. Let me check the production calendar on the wall.",
+        "<break time=\"0.8s\" />",
+        "B. To all current shareholders.",
+        "<break time=\"0.8s\" />",
+        "C. A breezy draft from the hallway."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 5. When is the final draft of the annual shareholders' report due?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Let me check the production calendar on the wall. <break time=\"0.8s\" /> B. To all current shareholders. <break time=\"0.8s\" /> C. A breezy draft from the hallway."
+        }
+      ],
+      "referenceJa": [
+        "質問：年次株主報告書の最終稿はいつが締め切りですか。",
+        "(A) 壁の制作スケジュール表を確認させてください。 ★正解",
+        "(B) 現在の全株主宛てです。",
+        "(C) 廊下からの涼しい隙間風です。"
+      ]
+    },
+    {
+      "round": 9,
+      "part": "Part 2",
+      "trackId": "tpl_r09_p2_q6",
+      "fileName": "tpl_r09_p2_q6.mp3",
+      "titleJa": "第9回 問6（平叙文（在庫切れの連絡））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. We're running dangerously low on takeaway coffee lids.",
+        "<break time=\"1.0s\" />",
+        "A. No sugar for me, thank you.",
+        "<break time=\"0.8s\" />",
+        "B. There's an unopened case in the back storage room.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, the lid fits tightly."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 6. We're running dangerously low on takeaway coffee lids."
+        },
+        {
+          "speaker": "W",
+          "text": "A. No sugar for me, thank you. <break time=\"0.8s\" /> B. There's an unopened case in the back storage room. <break time=\"0.8s\" /> C. Yes, the lid fits tightly."
+        }
+      ],
+      "referenceJa": [
+        "質問：持ち帰り用コーヒーの蓋がかなり残り少なくなっています。",
+        "(A) 私は砂糖なしで結構です。",
+        "(B) 奥の倉庫に未開封の箱が1ケースありますよ。 ★正解",
+        "(C) はい、蓋はしっかり閉まります。"
+      ]
+    },
+    {
+      "round": 9,
+      "part": "Part 3",
+      "trackId": "tpl_r09_p3",
+      "fileName": "tpl_r09_p3.mp3",
+      "titleJa": "第9回 問7〜9（カフェチェーンの新店舗出店候補地の比較検討）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Woman] Good afternoon, David. Did you have a chance to tour the two retail spaces we're considering for our fourth bakery-café?",
+        "<break time=\"0.6s\" />",
+        "[Man] I visited both this morning. The corner unit on Maple Avenue gets tremendous foot traffic from the commuter rail station, though the monthly rent is fifteen percent above our initial target.",
+        "<break time=\"0.6s\" />",
+        "[Woman] And how was the second space—the one inside the Elmwood Office Plaza?",
+        "<break time=\"0.6s\" />",
+        "[Man] The rent is much more reasonable, and it already has commercial kitchen ventilation installed, which would save us thousands in remodeling costs. However, the building is almost empty on weekends.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Hmm, weekend brunch accounts for nearly forty percent of sales at our other three cafés. Paying higher rent on Maple Avenue might still pay off if weekend volume is strong.",
+        "<break time=\"0.6s\" />",
+        "[Man] True. Let's ask the Maple Avenue landlord whether they'd lower the first-year rent if we sign a five-year lease instead of three."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Good afternoon, David. Did you have a chance to tour the two retail spaces we're considering for our fourth bakery-café?"
+        },
+        {
+          "speaker": "M",
+          "text": "I visited both this morning. The corner unit on Maple Avenue gets tremendous foot traffic from the commuter rail station, though the monthly rent is fifteen percent above our initial target."
+        },
+        {
+          "speaker": "W",
+          "text": "And how was the second space—the one inside the Elmwood Office Plaza?"
+        },
+        {
+          "speaker": "M",
+          "text": "The rent is much more reasonable, and it already has commercial kitchen ventilation installed, which would save us thousands in remodeling costs. However, the building is almost empty on weekends."
+        },
+        {
+          "speaker": "W",
+          "text": "Hmm, weekend brunch accounts for nearly forty percent of sales at our other three cafés. Paying higher rent on Maple Avenue might still pay off if weekend volume is strong."
+        },
+        {
+          "speaker": "M",
+          "text": "True. Let's ask the Maple Avenue landlord whether they'd lower the first-year rent if we sign a five-year lease instead of three."
+        }
+      ],
+      "referenceJa": [
+        "W: こんにちは、デイビッド。私たちの4号店となるベーカリーカフェの候補物件2か所を見学する時間はありましたか。",
+        "M: 今朝両方見てきました。メイプル通りの角地の物件は通勤鉄道の駅からの人通りがものすごく多いのですが、月額家賃が当初目標より15％高いです。",
+        "W: では2つ目の物件——エルムウッド・オフィスプラザの中の方はどうでしたか。",
+        "M: 家賃はずっと手頃ですし、業務用キッチンの換気設備がすでに備え付けられているので、改装費を数千ドル節約できます。ただ、そのビルは週末になるとほとんど人がいないんです。",
+        "W: うーん、既存の3店舗では週末のブランチが売上の40％近くを占めていますよね。週末の客数が多ければ、メイプル通りで高めの家賃を払っても十分元が取れるかもしれません。",
+        "M: 確かに。3年契約ではなく5年契約を結ぶなら初年度の家賃を下げてもらえるか、メイプル通りのオーナーに交渉してみましょう。"
+      ]
+    },
+    {
+      "round": 9,
+      "part": "Part 4",
+      "trackId": "tpl_r09_p4",
+      "fileName": "tpl_r09_p4.mp3",
+      "titleJa": "第9回 問10〜12（法人顧客への留守番電話（クラウド移行サポート））",
+      "voiceGuide": "話者:女性(W)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Hello, Mr. Kowalski. This is Elena Vance calling from Northstar Cloud Solutions. I'm following up because our engineering team finished migrating your firm's historical billing records onto the new encrypted server early this morning.",
+        "<break time=\"0.8s\" />",
+        "All sixty-five employee accounts are active, and our test searches ran smoothly. However, before we permanently shut down your old server next Tuesday, we need one person from your finance department to verify ten sample invoices and sign the completion form.",
+        "<break time=\"0.8s\" />",
+        "I've uploaded that form to your client dashboard under the Documents tab. Please give me a call back at 555-0194 if your team notices any formatting issues with exported spreadsheets. Thank you!"
+      ],
+      "referenceJa": [
+        "もしもし、コワルスキー様。ノーススター・クラウド・ソリューションズのエレナ・ヴァンスと申します。本日早朝、弊社の技術チームが御社の過去の請求記録を新しい暗号化サーバーへ移行し終えましたので、ご連絡いたしました。",
+        "社員65名様すべてのアカウントが有効になっており、検索テストも順調に完了しております。ただ、来週火曜日に旧サーバーを完全に停止する前に、御社の財務部門の方お一人にサンプル請求書10件をご確認いただき、完了確認書にご署名いただく必要がございます。",
+        "その確認書はクライアント用ダッシュボードの「ドキュメント」タブにアップロードいたしました。書き出したスプレッドシートの書式に何か問題がございましたら、555-0194まで折り返しお電話ください。よろしくお願いいたします。"
+      ]
+    },
+    {
+      "round": 10,
+      "part": "Part 2",
+      "trackId": "tpl_r10_p2_q1",
+      "fileName": "tpl_r10_p2_q1.mp3",
+      "titleJa": "第10回 問1（What time（開始時刻））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. What time does the airport shuttle leave from the hotel lobby?",
+        "<break time=\"1.0s\" />",
+        "A. Terminal Two, Gate B.",
+        "<break time=\"0.8s\" />",
+        "B. Yes, luggage storage is free.",
+        "<break time=\"0.8s\" />",
+        "C. Every half hour starting at five A.M."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 1. What time does the airport shuttle leave from the hotel lobby?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Terminal Two, Gate B. <break time=\"0.8s\" /> B. Yes, luggage storage is free. <break time=\"0.8s\" /> C. Every half hour starting at five A.M."
+        }
+      ],
+      "referenceJa": [
+        "質問：空港シャトルバスはホテルのロビーを何時に出発しますか。",
+        "(A) 第2ターミナルのBゲートです。",
+        "(B) はい、荷物預かりは無料です。",
+        "(C) 午前5時から30分おきに出ています。 ★正解"
+      ]
+    },
+    {
+      "round": 10,
+      "part": "Part 2",
+      "trackId": "tpl_r10_p2_q2",
+      "fileName": "tpl_r10_p2_q2.mp3",
+      "titleJa": "第10回 問2（Who（承認者））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. Who signed off on the overtime hours for the warehouse crew?",
+        "<break time=\"1.0s\" />",
+        "A. About twelve extra hours.",
+        "<break time=\"0.8s\" />",
+        "B. Ms. Morales approved them yesterday.",
+        "<break time=\"0.8s\" />",
+        "C. On the loading dock."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 2. Who signed off on the overtime hours for the warehouse crew?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. About twelve extra hours. <break time=\"0.8s\" /> B. Ms. Morales approved them yesterday. <break time=\"0.8s\" /> C. On the loading dock."
+        }
+      ],
+      "referenceJa": [
+        "質問：倉庫スタッフの残業時間を承認したのは誰ですか。",
+        "(A) 約12時間の追加勤務です。",
+        "(B) 昨日モラレスさんが承認しました。 ★正解",
+        "(C) 荷積みドックの上です。"
+      ]
+    },
+    {
+      "round": 10,
+      "part": "Part 2",
+      "trackId": "tpl_r10_p2_q3",
+      "fileName": "tpl_r10_p2_q3.mp3",
+      "titleJa": "第10回 問3（一般疑問文（Do we need））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Do we need a reservation for dinner at Bistro Lune tonight?",
+        "<break time=\"1.0s\" />",
+        "A. On Tuesday nights, walk-ins are usually fine.",
+        "<break time=\"0.8s\" />",
+        "B. The roasted salmon was delicious.",
+        "<break time=\"0.8s\" />",
+        "C. For six thirty, please."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 3. Do we need a reservation for dinner at Bistro Lune tonight?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. On Tuesday nights, walk-ins are usually fine. <break time=\"0.8s\" /> B. The roasted salmon was delicious. <break time=\"0.8s\" /> C. For six thirty, please."
+        }
+      ],
+      "referenceJa": [
+        "質問：今夜のビストロ・リュヌでの夕食には予約が必要ですか。",
+        "(A) 火曜日の夜なら、たいてい予約なしでも大丈夫ですよ。 ★正解",
+        "(B) ローストサーモンがおいしかったです。",
+        "(C) 6時30分でお願いします。"
+      ]
+    },
+    {
+      "round": 10,
+      "part": "Part 2",
+      "trackId": "tpl_r10_p2_q4",
+      "fileName": "tpl_r10_p2_q4.mp3",
+      "titleJa": "第10回 問4（Should I ... or ...（役割分担の相談））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Should I send the meeting minutes to the whole department or just the team leads?",
+        "<break time=\"1.0s\" />",
+        "A. Just the team leads for now.",
+        "<break time=\"0.8s\" />",
+        "B. About forty-five minutes.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, it was a productive meeting."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 4. Should I send the meeting minutes to the whole department or just the team leads?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Just the team leads for now. <break time=\"0.8s\" /> B. About forty-five minutes. <break time=\"0.8s\" /> C. Yes, it was a productive meeting."
+        }
+      ],
+      "referenceJa": [
+        "質問：議事録は部門全体に送りましょうか、それともチームリーダーだけにしましょうか。",
+        "(A) ひとまずチームリーダーだけにしてください。 ★正解",
+        "(B) 約45分間です。",
+        "(C) はい、有意義な会議でした。"
+      ]
+    },
+    {
+      "round": 10,
+      "part": "Part 2",
+      "trackId": "tpl_r10_p2_q5",
+      "fileName": "tpl_r10_p2_q5.mp3",
+      "titleJa": "第10回 問5（Why（変更の理由））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. Why did the packaging team switch to water-based ink?",
+        "<break time=\"1.0s\" />",
+        "A. In the labeling room.",
+        "<break time=\"0.8s\" />",
+        "B. It dries faster on recycled cardboard.",
+        "<break time=\"0.8s\" />",
+        "C. No, press the green switch."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 5. Why did the packaging team switch to water-based ink?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. In the labeling room. <break time=\"0.8s\" /> B. It dries faster on recycled cardboard. <break time=\"0.8s\" /> C. No, press the green switch."
+        }
+      ],
+      "referenceJa": [
+        "質問：なぜ包装チームは水性インクに切り替えたのですか。",
+        "(A) ラベル貼り室でです。",
+        "(B) 再生段ボールの上でより速く乾くからです。 ★正解",
+        "(C) いいえ、緑のスイッチを押してください。"
+      ]
+    },
+    {
+      "round": 10,
+      "part": "Part 2",
+      "trackId": "tpl_r10_p2_q6",
+      "fileName": "tpl_r10_p2_q6.mp3",
+      "titleJa": "第10回 問6（平叙文（予定変更の相談））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. The photographer can't make it to Thursday's catalog shoot.",
+        "<break time=\"1.0s\" />",
+        "A. Spring and summer apparel.",
+        "<break time=\"0.8s\" />",
+        "B. A wide-angle camera lens.",
+        "<break time=\"0.8s\" />",
+        "C. Let's see if the studio is free on Friday instead."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 6. The photographer can't make it to Thursday's catalog shoot."
+        },
+        {
+          "speaker": "W",
+          "text": "A. Spring and summer apparel. <break time=\"0.8s\" /> B. A wide-angle camera lens. <break time=\"0.8s\" /> C. Let's see if the studio is free on Friday instead."
+        }
+      ],
+      "referenceJa": [
+        "質問：カメラマンが木曜日のカタログ撮影に来られなくなってしまいました。",
+        "(A) 春夏物の衣料品です。",
+        "(B) 広角カメラレンズです。",
+        "(C) 代わりに金曜日にスタジオが空いているか確認してみましょう。 ★正解"
+      ]
+    },
+    {
+      "round": 10,
+      "part": "Part 3",
+      "trackId": "tpl_r10_p3",
+      "fileName": "tpl_r10_p3.mp3",
+      "titleJa": "第10回 問7〜9（社内ポータルサイトの刷新に向けた社員ヒアリング結果の共有）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Woman] Hi, Marcus. Thanks for compiling the employee survey results about our internal intranet portal. What stood out to you the most?",
+        "<break time=\"0.6s\" />",
+        "[Man] Over seventy percent of respondents said the search bar returns too many outdated policy PDFs from three or four years ago. People waste ten minutes just trying to find the current travel reimbursement form.",
+        "<break time=\"0.6s\" />",
+        "[Woman] I've run into that myself! Can we archive old documents automatically so only current versions show up in search results?",
+        "<break time=\"0.6s\" />",
+        "[Man] Yes, the web developer said she can add a filter by next Wednesday, provided each department tags its active files first.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Okay, HR and Finance have the largest document libraries. Could you set up a brief fifteen-minute call with both department coordinators tomorrow to explain how the tagging works?",
+        "<break time=\"0.6s\" />",
+        "[Man] Will do. I'll also put together a one-page screenshot guide so they can share it with their teams."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Hi, Marcus. Thanks for compiling the employee survey results about our internal intranet portal. What stood out to you the most?"
+        },
+        {
+          "speaker": "M",
+          "text": "Over seventy percent of respondents said the search bar returns too many outdated policy PDFs from three or four years ago. People waste ten minutes just trying to find the current travel reimbursement form."
+        },
+        {
+          "speaker": "W",
+          "text": "I've run into that myself! Can we archive old documents automatically so only current versions show up in search results?"
+        },
+        {
+          "speaker": "M",
+          "text": "Yes, the web developer said she can add a filter by next Wednesday, provided each department tags its active files first."
+        },
+        {
+          "speaker": "W",
+          "text": "Okay, HR and Finance have the largest document libraries. Could you set up a brief fifteen-minute call with both department coordinators tomorrow to explain how the tagging works?"
+        },
+        {
+          "speaker": "M",
+          "text": "Will do. I'll also put together a one-page screenshot guide so they can share it with their teams."
+        }
+      ],
+      "referenceJa": [
+        "W: こんにちは、マーカス。社内イントラネットポータルに関する社員アンケート結果をまとめてくれてありがとう。一番目立っていた点は何でしたか。",
+        "M: 回答者の70％以上が、検索バーを使うと3〜4年前の古い規定PDFばかりたくさん出てくると答えていました。最新の旅費精算フォームを探すだけで10分も無駄にしているそうです。",
+        "W: 私自身もそれに遭遇したことがあります！検索結果に最新版だけが表示されるよう、古い文書を自動アーカイブすることはできますか。",
+        "M: はい、各部門がまず現行ファイルにタグ付けをしてくれれば、来週水曜日までにフィルター機能を追加できるとウェブ開発者が言っていました。",
+        "W: わかりました、人事部と財務部が一番多くの文書ライブラリを持っていますね。タグ付けの手順を説明するために、明日両部門の担当者との15分ほどの短い通話を設定してもらえますか。",
+        "M: 承知しました。それぞれのチームに共有できるよう、スクリーンショット付きの1枚の案内資料も作っておきます。"
+      ]
+    },
+    {
+      "round": 10,
+      "part": "Part 4",
+      "trackId": "tpl_r10_p4",
+      "fileName": "tpl_r10_p4.mp3",
+      "titleJa": "第10回 問10〜12（植物園ボランティア向けオリエンテーションの冒頭挨拶）",
+      "voiceGuide": "話者:男性(M)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Good morning, everyone, and thank you for volunteering for the Maplewood Botanical Garden's annual Spring Plant Sale! Because local news featured our heirloom tomato seedlings yesterday, we're expecting nearly two thousand visitors when the gates open at nine.",
+        "<break time=\"0.8s\" />",
+        "Please pick up a green apron and a handheld price scanner from the table behind me. Remember that garden members receive a ten percent discount when they show their membership card, so press the yellow \"Member\" button before scanning their trays.",
+        "<break time=\"0.8s\" />",
+        "Around noon, boxed lunches from Cedar Street Deli will be set out in the staff greenhouse. Make sure to coordinate with your booth partner so at least one volunteer stays at every checkout table at all times."
+      ],
+      "referenceJa": [
+        "皆さんおはようございます。メイプルウッド植物園の恒例「春の苗木セール」にボランティアとしてご参加いただきありがとうございます！昨日の地元ニュースで当園の伝統品種のトマト苗が紹介されたため、9時の開門時には2,000人近くの来場者を見込んでいます。",
+        "私の後ろのテーブルから、緑のエプロンと携帯型価格スキャナーを受け取ってください。植物園の会員証をご提示いただいた会員様は10％割引になりますので、トレイをスキャンする前に黄色い「会員」ボタンを押すのを忘れないでください。",
+        "正午ごろ、スタッフ用温室にシダー・ストリート・デリの弁当が用意されます。各会計テーブルに常時少なくとも1名のボランティアが残るよう、同じブースのペアの方と調整してください。"
+      ]
+    },
+    {
+      "round": 11,
+      "part": "Part 2",
+      "trackId": "tpl_r11_p2_q1",
+      "fileName": "tpl_r11_p2_q1.mp3",
+      "titleJa": "第11回 問1（Where（書類の提出先））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. Where should I drop off my signed confidentiality agreement?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, I completely agree.",
+        "<break time=\"0.8s\" />",
+        "B. Before your orientation ends.",
+        "<break time=\"0.8s\" />",
+        "C. In the locked tray outside Human Resources."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 1. Where should I drop off my signed confidentiality agreement?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Yes, I completely agree. <break time=\"0.8s\" /> B. Before your orientation ends. <break time=\"0.8s\" /> C. In the locked tray outside Human Resources."
+        }
+      ],
+      "referenceJa": [
+        "質問：署名済みの秘密保持契約書はどこに提出すればよいですか。",
+        "(A) はい、完全に同意します。",
+        "(B) オリエンテーションが終わる前にです。",
+        "(C) 人事部の外にある鍵付きトレイの中です。 ★正解"
+      ]
+    },
+    {
+      "round": 11,
+      "part": "Part 2",
+      "trackId": "tpl_r11_p2_q2",
+      "fileName": "tpl_r11_p2_q2.mp3",
+      "titleJa": "第11回 問2（How many（出席人数））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. How many people RSVP'd for the retirement dinner?",
+        "<break time=\"1.0s\" />",
+        "A. At Harbor Grill on Fifth Street.",
+        "<break time=\"0.8s\" />",
+        "B. After twenty-five years at the firm.",
+        "<break time=\"0.8s\" />",
+        "C. Thirty-eight so far, plus two maybes."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 2. How many people RSVP'd for the retirement dinner?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. At Harbor Grill on Fifth Street. <break time=\"0.8s\" /> B. After twenty-five years at the firm. <break time=\"0.8s\" /> C. Thirty-eight so far, plus two maybes."
+        }
+      ],
+      "referenceJa": [
+        "質問：退職祝いの夕食会には何人が出席の返事をしましたか。",
+        "(A) 5番街のハーバー・グリルでです。",
+        "(B) 在職25年を経てです。",
+        "(C) 今のところ38人で、ほかに未定が2人です。 ★正解"
+      ]
+    },
+    {
+      "round": 11,
+      "part": "Part 2",
+      "trackId": "tpl_r11_p2_q3",
+      "fileName": "tpl_r11_p2_q3.mp3",
+      "titleJa": "第11回 問3（一般疑問文（Can you））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Can the new laser cutter handle five-millimeter stainless steel?",
+        "<break time=\"1.0s\" />",
+        "A. Wear protective gloves at all times.",
+        "<break time=\"0.8s\" />",
+        "B. Easily—it's rated up to eight millimeters.",
+        "<break time=\"0.8s\" />",
+        "C. From our supplier in Osaka."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 3. Can the new laser cutter handle five-millimeter stainless steel?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Wear protective gloves at all times. <break time=\"0.8s\" /> B. Easily—it's rated up to eight millimeters. <break time=\"0.8s\" /> C. From our supplier in Osaka."
+        }
+      ],
+      "referenceJa": [
+        "質問：新しいレーザー加工機は5ミリ厚のステンレス鋼を切断できますか。",
+        "(A) 常に保護手袋を着用してください。",
+        "(B) 余裕ですよ、最大8ミリまでの仕様になっていますから。 ★正解",
+        "(C) 大阪の仕入れ先からです。"
+      ]
+    },
+    {
+      "round": 11,
+      "part": "Part 2",
+      "trackId": "tpl_r11_p2_q4",
+      "fileName": "tpl_r11_p2_q4.mp3",
+      "titleJa": "第11回 問4（Could we（日程の前倒し相談））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Could we move our podcast recording session to Wednesday morning?",
+        "<break time=\"1.0s\" />",
+        "A. Let me see if the sound studio is booked then.",
+        "<break time=\"0.8s\" />",
+        "B. Over ten thousand downloads.",
+        "<break time=\"0.8s\" />",
+        "C. Turn the volume up slightly."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 4. Could we move our podcast recording session to Wednesday morning?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Let me see if the sound studio is booked then. <break time=\"0.8s\" /> B. Over ten thousand downloads. <break time=\"0.8s\" /> C. Turn the volume up slightly."
+        }
+      ],
+      "referenceJa": [
+        "質問：ポッドキャストの収録セッションを水曜日の午前に移せませんか。",
+        "(A) その時間に録音スタジオが予約されていないか見てみますね。 ★正解",
+        "(B) 1万回以上のダウンロードです。",
+        "(C) 音量を少し上げてください。"
+      ]
+    },
+    {
+      "round": 11,
+      "part": "Part 2",
+      "trackId": "tpl_r11_p2_q5",
+      "fileName": "tpl_r11_p2_q5.mp3",
+      "titleJa": "第11回 問5（Why（遅延の原因））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. Why hasn't the courier picked up the outgoing parcels yet?",
+        "<break time=\"1.0s\" />",
+        "A. Traffic is backed up on the bridge due to roadwork.",
+        "<break time=\"0.8s\" />",
+        "B. Fragile glassware inside.",
+        "<break time=\"0.8s\" />",
+        "C. No, choose the express option."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 5. Why hasn't the courier picked up the outgoing parcels yet?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Traffic is backed up on the bridge due to roadwork. <break time=\"0.8s\" /> B. Fragile glassware inside. <break time=\"0.8s\" /> C. No, choose the express option."
+        }
+      ],
+      "referenceJa": [
+        "質問：なぜ宅配業者はまだ発送小荷物を集荷に来ていないのですか。",
+        "(A) 道路工事のせいで橋の上の交通が渋滞しているんです。 ★正解",
+        "(B) 中身は割れやすいガラス製品です。",
+        "(C) いいえ、速達オプションを選んでください。"
+      ]
+    },
+    {
+      "round": 11,
+      "part": "Part 2",
+      "trackId": "tpl_r11_p2_q6",
+      "fileName": "tpl_r11_p2_q6.mp3",
+      "titleJa": "第11回 問6（間接疑問を含む質問（Do you know where））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. Do you know where I can find an adapter for this display cable?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, the display looks very sharp.",
+        "<break time=\"0.8s\" />",
+        "B. Try asking Priya—she keeps spare connectors in her drawer.",
+        "<break time=\"0.8s\" />",
+        "C. No, I don't know him."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 6. Do you know where I can find an adapter for this display cable?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Yes, the display looks very sharp. <break time=\"0.8s\" /> B. Try asking Priya—she keeps spare connectors in her drawer. <break time=\"0.8s\" /> C. No, I don't know him."
+        }
+      ],
+      "referenceJa": [
+        "質問：このディスプレイケーブル用のアダプターがどこにあるかご存じですか。",
+        "(A) はい、とても鮮明な画面表示ですね。",
+        "(B) プリヤに聞いてみてください——引き出しに予備のコネクターを持っていますよ。 ★正解",
+        "(C) いいえ、彼のことは知りません。"
+      ]
+    },
+    {
+      "round": 11,
+      "part": "Part 3",
+      "trackId": "tpl_r11_p3",
+      "fileName": "tpl_r11_p3.mp3",
+      "titleJa": "第11回 問7〜9（自転車メーカーでの試作モデルのテスト結果と改良相談）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Man] Hi, Sora. Our test riders just finished a two-week road trial of the Volt-E folding commuter bike. Overall, they loved how light the aluminum frame feels on stairs.",
+        "<break time=\"0.6s\" />",
+        "[Woman] That's great to hear! Did they report any issues with the folding latch or the battery range?",
+        "<break time=\"0.6s\" />",
+        "[Man] The battery easily lasted fifty kilometers per charge. However, three riders noted that the rear fender rattled over cobblestone streets, and one said the handlebar grips felt slippery in the rain.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Adding a rubber washer under the fender bracket should stop the rattling right away. As for the grips, didn't we test a textured silicone material on our mountain bike line last year?",
+        "<break time=\"0.6s\" />",
+        "[Man] Good memory—that supplier is Apex Polymer. Switching to their silicone grip would add only about eighty cents per unit.",
+        "<break time=\"0.6s\" />",
+        "[Woman] That's well within our margin. Could you request twenty sample pairs from Apex Polymer so we can fit them onto the prototypes before next month's dealer showcase?"
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Hi, Sora. Our test riders just finished a two-week road trial of the Volt-E folding commuter bike. Overall, they loved how light the aluminum frame feels on stairs."
+        },
+        {
+          "speaker": "W",
+          "text": "That's great to hear! Did they report any issues with the folding latch or the battery range?"
+        },
+        {
+          "speaker": "M",
+          "text": "The battery easily lasted fifty kilometers per charge. However, three riders noted that the rear fender rattled over cobblestone streets, and one said the handlebar grips felt slippery in the rain."
+        },
+        {
+          "speaker": "W",
+          "text": "Adding a rubber washer under the fender bracket should stop the rattling right away. As for the grips, didn't we test a textured silicone material on our mountain bike line last year?"
+        },
+        {
+          "speaker": "M",
+          "text": "Good memory—that supplier is Apex Polymer. Switching to their silicone grip would add only about eighty cents per unit."
+        },
+        {
+          "speaker": "W",
+          "text": "That's well within our margin. Could you request twenty sample pairs from Apex Polymer so we can fit them onto the prototypes before next month's dealer showcase?"
+        }
+      ],
+      "referenceJa": [
+        "M: やあ、ソラ。テストライダーたちが折りたたみ通勤用自転車「ボルトE」の2週間の路上テストを終えたところだよ。全体として、階段を持ち運ぶときのアルミフレームの軽さがとても好評だった。",
+        "W: それは朗報ね！折りたたみ留め具やバッテリーの航続距離について何か問題の報告はあった？",
+        "M: バッテリーは1回の充電で楽に50キロ持ったよ。ただ、3人のライダーから石畳の道で後輪の泥よけがガタつくと指摘があり、1人からは雨の日にハンドルのグリップが滑りやすいという声があった。",
+        "W: 泥よけの金具の下にゴムワッシャーを挟めば、ガタつきはすぐ止まるはずよ。グリップについては、昨年マウンテンバイクのシリーズで凹凸加工のシリコン素材をテストしなかったかしら。",
+        "M: よく覚えているね——あの仕入れ先はエイペックス・ポリマー社だ。あそこのシリコングリップに変えても、1台あたり80セントほどのコスト増で済むよ。",
+        "W: それなら十分予算の範囲内ね。来月の販売店向け展示会の前に試作車へ取り付けられるよう、エイペックス・ポリマー社にサンプルを20組依頼してもらえる？"
+      ]
+    },
+    {
+      "round": 11,
+      "part": "Part 4",
+      "trackId": "tpl_r11_p4",
+      "fileName": "tpl_r11_p4.mp3",
+      "titleJa": "第11回 問10〜12（空港ゲートでの搭乗案内アナウンス）",
+      "voiceGuide": "話者:女性(W)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "May I have your attention, passengers at Gate B14. Boarding for Pacific Skyways Flight 620 to Vancouver will begin in approximately ten minutes. Because today's flight is completely full, overhead bin space will be very tight.",
+        "<break time=\"0.8s\" />",
+        "If you are seated in Boarding Groups Four or Five and have a wheeled carry-on bag, our gate agents would be happy to check it through to Vancouver free of charge. Anyone who checks a carry-on at the counter right now will receive priority boarding alongside Group Two.",
+        "<break time=\"0.8s\" />",
+        "Please also have your passport open to the photo page along with your boarding pass, as this is an international departure. Families traveling with young children may line up near the podium now. Thank you for your cooperation."
+      ],
+      "referenceJa": [
+        "B14番ゲートでお待ちのお客様にご案内いたします。バンクーバー行きパシフィック・スカイウェイズ620便は、およそ10分後に搭乗を開始いたします。本日の便は満席のため、頭上の手荷物棚のスペースが大変混み合います。",
+        "搭乗グループ4または5のお座席で車輪付きの機内持ち込み手荷物をお持ちのお客様は、ゲート係員にてバンクーバーまで無料でお預かりいたします。ただいまカウンターで機内持ち込み手荷物をお預けいただいたお客様は、グループ2と一緒に優先搭乗していただけます。",
+        "また、本便は国際線出発となりますので、搭乗券とあわせてパスポートの顔写真ページを開いてお手元にご用意ください。小さなお子様連れのご家族は、ただいま演台近くにお並びいただけます。ご協力ありがとうございます。"
+      ]
+    },
+    {
+      "round": 12,
+      "part": "Part 2",
+      "trackId": "tpl_r12_p2_q1",
+      "fileName": "tpl_r12_p2_q1.mp3",
+      "titleJa": "第12回 問1（Who（連絡相手））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. Who should I contact about getting a replacement parking permit?",
+        "<break time=\"1.0s\" />",
+        "A. In Visitor Lot C.",
+        "<break time=\"0.8s\" />",
+        "B. Twenty dollars a month.",
+        "<break time=\"0.8s\" />",
+        "C. Speak with the security desk on the ground floor."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 1. Who should I contact about getting a replacement parking permit?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. In Visitor Lot C. <break time=\"0.8s\" /> B. Twenty dollars a month. <break time=\"0.8s\" /> C. Speak with the security desk on the ground floor."
+        }
+      ],
+      "referenceJa": [
+        "質問：駐車許可証の再発行については誰に連絡すればよいですか。",
+        "(A) 来客用駐車場Cでです。",
+        "(B) 月額20ドルです。",
+        "(C) 1階の警備デスクに相談してください。 ★正解"
+      ]
+    },
+    {
+      "round": 12,
+      "part": "Part 2",
+      "trackId": "tpl_r12_p2_q2",
+      "fileName": "tpl_r12_p2_q2.mp3",
+      "titleJa": "第12回 問2（When（公開日））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. When will the redesigned mobile app go live in the app store?",
+        "<break time=\"1.0s\" />",
+        "A. A cleaner home screen layout.",
+        "<break time=\"0.8s\" />",
+        "B. No, I live near the station.",
+        "<break time=\"0.8s\" />",
+        "C. As soon as the final security check passes."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 2. When will the redesigned mobile app go live in the app store?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. A cleaner home screen layout. <break time=\"0.8s\" /> B. No, I live near the station. <break time=\"0.8s\" /> C. As soon as the final security check passes."
+        }
+      ],
+      "referenceJa": [
+        "質問：刷新されたモバイルアプリはいつアプリストアで公開されますか。",
+        "(A) よりすっきりしたホーム画面レイアウトです。",
+        "(B) いいえ、駅の近くに住んでいます。",
+        "(C) 最終セキュリティチェックに通り次第すぐです。 ★正解"
+      ]
+    },
+    {
+      "round": 12,
+      "part": "Part 2",
+      "trackId": "tpl_r12_p2_q3",
+      "fileName": "tpl_r12_p2_q3.mp3",
+      "titleJa": "第12回 問3（選択疑問文（両方・どちらも））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Did the board approve the Dublin expansion or the Lisbon one?",
+        "<break time=\"1.0s\" />",
+        "A. At Tuesday's board meeting.",
+        "<break time=\"0.8s\" />",
+        "B. They decided to postpone both until next quarter.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, the flight to Lisbon was smooth."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 3. Did the board approve the Dublin expansion or the Lisbon one?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. At Tuesday's board meeting. <break time=\"0.8s\" /> B. They decided to postpone both until next quarter. <break time=\"0.8s\" /> C. Yes, the flight to Lisbon was smooth."
+        }
+      ],
+      "referenceJa": [
+        "質問：取締役会はダブリンへの事業拡大とリスボンへの拡大のどちらを承認しましたか。",
+        "(A) 火曜日の取締役会でです。",
+        "(B) 両方とも来四半期まで延期することに決まりました。 ★正解",
+        "(C) はい、リスボン行きの便は快適でした。"
+      ]
+    },
+    {
+      "round": 12,
+      "part": "Part 2",
+      "trackId": "tpl_r12_p2_q4",
+      "fileName": "tpl_r12_p2_q4.mp3",
+      "titleJa": "第12回 問4（Would you mind（丁寧な依頼））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Would you mind taking notes while I share my screen with the client?",
+        "<break time=\"1.0s\" />",
+        "A. A twenty-seven-inch monitor.",
+        "<break time=\"0.8s\" />",
+        "B. Not at all—I have a blank document open already.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, please close the blinds."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 4. Would you mind taking notes while I share my screen with the client?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. A twenty-seven-inch monitor. <break time=\"0.8s\" /> B. Not at all—I have a blank document open already. <break time=\"0.8s\" /> C. Yes, please close the blinds."
+        }
+      ],
+      "referenceJa": [
+        "質問：私がクライアントに画面共有している間、メモを取っていただけますか。",
+        "(A) 27インチのモニターです。",
+        "(B) お安いご用です——もう白紙のドキュメントを開いてありますよ。 ★正解",
+        "(C) はい、ブラインドを閉めてください。"
+      ]
+    },
+    {
+      "round": 12,
+      "part": "Part 2",
+      "trackId": "tpl_r12_p2_q5",
+      "fileName": "tpl_r12_p2_q5.mp3",
+      "titleJa": "第12回 問5（How often（点検頻度））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. How often are the warehouse forklifts inspected for brake wear?",
+        "<break time=\"1.0s\" />",
+        "A. At the start of every month.",
+        "<break time=\"0.8s\" />",
+        "B. Up to two tons per pallet.",
+        "<break time=\"0.8s\" />",
+        "C. By certified mechanics."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 5. How often are the warehouse forklifts inspected for brake wear?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. At the start of every month. <break time=\"0.8s\" /> B. Up to two tons per pallet. <break time=\"0.8s\" /> C. By certified mechanics."
+        }
+      ],
+      "referenceJa": [
+        "質問：倉庫のフォークリフトはどのくらいの頻度でブレーキ摩耗の点検を受けていますか。",
+        "(A) 毎月の初めにです。 ★正解",
+        "(B) パレット1枚あたり最大2トンです。",
+        "(C) 認定整備士によってです。"
+      ]
+    },
+    {
+      "round": 12,
+      "part": "Part 2",
+      "trackId": "tpl_r12_p2_q6",
+      "fileName": "tpl_r12_p2_q6.mp3",
+      "titleJa": "第12回 問6（平叙文（お祝い・昇進））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. I heard you were appointed director of the Melbourne branch!",
+        "<break time=\"1.0s\" />",
+        "A. Thanks! I'm relocating there in early August.",
+        "<break time=\"0.8s\" />",
+        "B. Direct flights take fourteen hours.",
+        "<break time=\"0.8s\" />",
+        "C. No, in the mailroom downstairs."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 6. I heard you were appointed director of the Melbourne branch!"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Thanks! I'm relocating there in early August. <break time=\"0.8s\" /> B. Direct flights take fourteen hours. <break time=\"0.8s\" /> C. No, in the mailroom downstairs."
+        }
+      ],
+      "referenceJa": [
+        "質問：メルボルン支店長に任命されたそうですね！",
+        "(A) ありがとうございます！8月初旬に現地へ赴任する予定です。 ★正解",
+        "(B) 直行便で14時間かかります。",
+        "(C) いいえ、階下のメール室です。"
+      ]
+    },
+    {
+      "round": 12,
+      "part": "Part 3",
+      "trackId": "tpl_r12_p3",
+      "fileName": "tpl_r12_p3.mp3",
+      "titleJa": "第12回 問7〜9（ホテル宴会場とイベント主催者によるケータリング最終確認）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Woman] Good morning, Mr. Alverez. I'm calling from Bayside Grand Hotel to finalize the lunch menu for Friday's healthcare innovation forum. Are we still expecting one hundred and twenty guests?",
+        "<break time=\"0.6s\" />",
+        "[Man] Actually, late registrations pushed our headcount up to one hundred and thirty-five. Also, twelve attendees indicated on their forms that they need gluten-free meals.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Adding fifteen seats in the Harbor Ballroom is no problem at all, and our chef can prepare grilled herb chicken with quinoa for the gluten-free plates. We'll place small green cards at their table settings so servers can spot them easily.",
+        "<break time=\"0.6s\" />",
+        "[Man] That sounds very organized. One more thing—our keynote speaker's flight lands a little late, so could you push lunch service back from twelve o'clock to twelve thirty?",
+        "<break time=\"0.6s\" />",
+        "[Woman] Twelve thirty works fine. I'll send over the updated banquet order within the hour—just e-mail back your signature by five P.M. today so we can lock in the kitchen order.",
+        "<break time=\"0.6s\" />",
+        "[Man] Perfect, I'll watch for your e-mail."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Good morning, Mr. Alverez. I'm calling from Bayside Grand Hotel to finalize the lunch menu for Friday's healthcare innovation forum. Are we still expecting one hundred and twenty guests?"
+        },
+        {
+          "speaker": "M",
+          "text": "Actually, late registrations pushed our headcount up to one hundred and thirty-five. Also, twelve attendees indicated on their forms that they need gluten-free meals."
+        },
+        {
+          "speaker": "W",
+          "text": "Adding fifteen seats in the Harbor Ballroom is no problem at all, and our chef can prepare grilled herb chicken with quinoa for the gluten-free plates. We'll place small green cards at their table settings so servers can spot them easily."
+        },
+        {
+          "speaker": "M",
+          "text": "That sounds very organized. One more thing—our keynote speaker's flight lands a little late, so could you push lunch service back from twelve o'clock to twelve thirty?"
+        },
+        {
+          "speaker": "W",
+          "text": "Twelve thirty works fine. I'll send over the updated banquet order within the hour—just e-mail back your signature by five P.M. today so we can lock in the kitchen order."
+        },
+        {
+          "speaker": "M",
+          "text": "Perfect, I'll watch for your e-mail."
+        }
+      ],
+      "referenceJa": [
+        "W: おはようございます、アルベレス様。金曜日のヘルスケア革新フォーラムの昼食メニューを最終確定するため、ベイサイド・グランドホテルよりお電話いたしました。ご出席者は引き続き120名の予定でよろしいでしょうか。",
+        "M: 実は、直前の参加登録があって人数が135名に増えました。それから、12名の参加者が申込フォームでグルテンフリーの食事が必要だと回答しています。",
+        "W: ハーバー・ボールルームに15席追加するのはまったく問題ございませんし、グルテンフリーのお皿にはシェフがハーブチキンのグリル・キヌア添えをご用意できます。配膳スタッフがすぐ見分けられるよう、その方々の席には小さな緑のカードを置きますね。",
+        "M: とても手際がよくて助かります。もう1点——基調講演者の到着便が少し遅れるため、昼食の配膳開始を12時から12時30分に遅らせていただけますか。",
+        "W: 12時30分で問題ございません。1時間以内に更新した宴会発注書をお送りしますので、厨房の食材発注を確定できるよう、本日の午後5時までに署名をご返信ください。",
+        "M: 完璧です、メールをお待ちしています。"
+      ]
+    },
+    {
+      "round": 12,
+      "part": "Part 4",
+      "trackId": "tpl_r12_p4",
+      "fileName": "tpl_r12_p4.mp3",
+      "titleJa": "第12回 問10〜12（社内健康推進プログラムの案内アナウンス）",
+      "voiceGuide": "話者:男性(M)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Hi everyone! As part of Redwood Analytics' autumn wellness initiative, Human Resources is launching a four-week team walking challenge starting October first. Employees can form teams of four to six people across any department and log their daily steps through the StrideWell mobile app.",
+        "<break time=\"0.8s\" />",
+        "Every team that averages at least eight thousand steps per person each day will be entered into a drawing for gift certificates to local sporting goods stores. Don't worry if you prefer cycling or swimming—the app includes an activity converter so non-walking workouts count too.",
+        "<break time=\"0.8s\" />",
+        "If you'd like to participate but don't have a full team yet, sign up as an individual on the HR portal by this Friday, and we'll match you with colleagues looking for teammates. Let's get moving!"
+      ],
+      "referenceJa": [
+        "皆さんこんにちは！レッドウッド・アナリティクス社の秋の健康増進施策の一環として、人事部では10月1日より4週間のチーム対抗ウォーキング・チャレンジを開始します。部門を問わず4名から6名のチームを作り、モバイルアプリ「ストライドウェル」で毎日の歩数を記録できます。",
+        "1人あたり1日平均8,000歩以上を達成したすべてのチームは、地元のスポーツ用品店の商品券が当たる抽選にエントリーされます。サイクリングや水泳がお好きな方もご安心ください——アプリには運動量換算機能が付いているので、ウォーキング以外の運動もカウントされます。",
+        "参加したいもののまだチームの人数が揃っていない方は、今週金曜日までに人事ポータルから個人登録していただければ、チームメイトを探している同僚とお引き合わせします。みんなで体を動かしましょう！"
+      ]
+    },
+    {
+      "round": 13,
+      "part": "Part 2",
+      "trackId": "tpl_r13_p2_q1",
+      "fileName": "tpl_r13_p2_q1.mp3",
+      "titleJa": "第13回 問1（Where（備品・書類の所在））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. Where did you put the packing slips from this morning's delivery?",
+        "<break time=\"1.0s\" />",
+        "A. They're clipped to the clipboard on my desk.",
+        "<break time=\"0.8s\" />",
+        "B. Twelve cartons of copy paper.",
+        "<break time=\"0.8s\" />",
+        "C. Be careful not to slip."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 1. Where did you put the packing slips from this morning's delivery?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. They're clipped to the clipboard on my desk. <break time=\"0.8s\" /> B. Twelve cartons of copy paper. <break time=\"0.8s\" /> C. Be careful not to slip."
+        }
+      ],
+      "referenceJa": [
+        "質問：今朝の納品分の納品書はどこに置きましたか。",
+        "(A) 私の机の上のクリップボードに挟んであります。 ★正解",
+        "(B) コピー用紙12箱です。",
+        "(C) 滑らないように気をつけてください。"
+      ]
+    },
+    {
+      "round": 13,
+      "part": "Part 2",
+      "trackId": "tpl_r13_p2_q2",
+      "fileName": "tpl_r13_p2_q2.mp3",
+      "titleJa": "第13回 問2（Why（閉鎖・変更の理由））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. Why is the south entrance to the parking garage blocked off?",
+        "<break time=\"1.0s\" />",
+        "A. Level Three has open spaces.",
+        "<break time=\"0.8s\" />",
+        "B. Crews are repainting the lane lines today.",
+        "<break time=\"0.8s\" />",
+        "C. Just around the block."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 2. Why is the south entrance to the parking garage blocked off?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Level Three has open spaces. <break time=\"0.8s\" /> B. Crews are repainting the lane lines today. <break time=\"0.8s\" /> C. Just around the block."
+        }
+      ],
+      "referenceJa": [
+        "質問：なぜ立体駐車場の南側入口は封鎖されているのですか。",
+        "(A) 3階に空きスペースがあります。",
+        "(B) 作業員が今日、車線の白線を塗り直しているからです。 ★正解",
+        "(C) すぐ次の角を曲がったところです。"
+      ]
+    },
+    {
+      "round": 13,
+      "part": "Part 2",
+      "trackId": "tpl_r13_p2_q3",
+      "fileName": "tpl_r13_p2_q3.mp3",
+      "titleJa": "第13回 問3（一般疑問文（Have you））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Have you had a chance to read the customer feedback from the pop-up shop?",
+        "<break time=\"1.0s\" />",
+        "A. Across from the central plaza.",
+        "<break time=\"0.8s\" />",
+        "B. Yes, we accept mobile payments.",
+        "<break time=\"0.8s\" />",
+        "C. Not yet, but it's next on my to-do list."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 3. Have you had a chance to read the customer feedback from the pop-up shop?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Across from the central plaza. <break time=\"0.8s\" /> B. Yes, we accept mobile payments. <break time=\"0.8s\" /> C. Not yet, but it's next on my to-do list."
+        }
+      ],
+      "referenceJa": [
+        "質問：期間限定ショップのお客様アンケートを読む時間はありましたか。",
+        "(A) 中央広場の向かい側です。",
+        "(B) はい、モバイル決済に対応しています。",
+        "(C) まだですが、やることリストの次に入っています。 ★正解"
+      ]
+    },
+    {
+      "round": 13,
+      "part": "Part 2",
+      "trackId": "tpl_r13_p2_q4",
+      "fileName": "tpl_r13_p2_q4.mp3",
+      "titleJa": "第13回 問4（Why don't we（共同行動の提案））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Why don't we rehearse our slides together after lunch?",
+        "<break time=\"1.0s\" />",
+        "A. Sounds good—let's meet in Room 204 at one thirty.",
+        "<break time=\"0.8s\" />",
+        "B. Twenty slides in total.",
+        "<break time=\"0.8s\" />",
+        "C. Because the client asked for it."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 4. Why don't we rehearse our slides together after lunch?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Sounds good—let's meet in Room 204 at one thirty. <break time=\"0.8s\" /> B. Twenty slides in total. <break time=\"0.8s\" /> C. Because the client asked for it."
+        }
+      ],
+      "referenceJa": [
+        "質問：昼食のあとに一緒にスライドのリハーサルをしませんか。",
+        "(A) いいですね——1時30分に204号室で会いましょう。 ★正解",
+        "(B) 全部で20枚のスライドです。",
+        "(C) クライアントから要望があったからです。"
+      ]
+    },
+    {
+      "round": 13,
+      "part": "Part 2",
+      "trackId": "tpl_r13_p2_q5",
+      "fileName": "tpl_r13_p2_q5.mp3",
+      "titleJa": "第13回 問5（Whose（持ち主・担当者））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. Whose turn is it to drive the company van to the trade fair?",
+        "<break time=\"1.0s\" />",
+        "A. Turn left at the second traffic light.",
+        "<break time=\"0.8s\" />",
+        "B. I think Leo volunteered to drive this time.",
+        "<break time=\"0.8s\" />",
+        "C. Inside the glove compartment."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 5. Whose turn is it to drive the company van to the trade fair?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Turn left at the second traffic light. <break time=\"0.8s\" /> B. I think Leo volunteered to drive this time. <break time=\"0.8s\" /> C. Inside the glove compartment."
+        }
+      ],
+      "referenceJa": [
+        "質問：見本市まで社用バンを運転するのは誰の番ですか。",
+        "(A) 2つ目の信号を左に曲がってください。",
+        "(B) 今回はレオが運転を買って出てくれたと思いますよ。 ★正解",
+        "(C) ダッシュボードの小物入れの中です。"
+      ]
+    },
+    {
+      "round": 13,
+      "part": "Part 2",
+      "trackId": "tpl_r13_p2_q6",
+      "fileName": "tpl_r13_p2_q6.mp3",
+      "titleJa": "第13回 問6（平叙文（困りごとへの助け舟））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. These quarterly tax tables are much harder to interpret than last year's.",
+        "<break time=\"1.0s\" />",
+        "A. Let's reserve a corner table.",
+        "<break time=\"0.8s\" />",
+        "B. Four times a year.",
+        "<break time=\"0.8s\" />",
+        "C. The accounting office posted a step-by-step guide this morning."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 6. These quarterly tax tables are much harder to interpret than last year's."
+        },
+        {
+          "speaker": "M",
+          "text": "A. Let's reserve a corner table. <break time=\"0.8s\" /> B. Four times a year. <break time=\"0.8s\" /> C. The accounting office posted a step-by-step guide this morning."
+        }
+      ],
+      "referenceJa": [
+        "質問：この四半期税額表は昨年のものよりずっと読み解くのが難しいですね。",
+        "(A) 角のテーブルを予約しましょう。",
+        "(B) 年に4回です。",
+        "(C) 今朝、経理課が手順ごとの解説ガイドを掲載していましたよ。 ★正解"
+      ]
+    },
+    {
+      "round": 13,
+      "part": "Part 3",
+      "trackId": "tpl_r13_p3",
+      "fileName": "tpl_r13_p3.mp3",
+      "titleJa": "第13回 問7〜9（企業紹介動画のナレーション収録と字幕追加の打ち合わせ）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Man] Hi, Camilla. Have you watched the rough cut of our two-minute recruitment video that Silver Frame Studio sent over this morning?",
+        "<break time=\"0.6s\" />",
+        "[Woman] Yes, I just watched it twice! The footage of our robotics lab looks fantastic, and the background music has great energy. My only concern is the voice-over during the middle section—it feels a little rushed when the narrator lists our overseas offices.",
+        "<break time=\"0.6s\" />",
+        "[Man] I noticed that too. Instead of making the narrator read all eight city names aloud, we could display them on a world map graphic and cut two sentences from the script.",
+        "<break time=\"0.6s\" />",
+        "[Woman] That's a smart solution—it'll give the narration room to breathe. Also, since we'll play this video on a muted monitor at university career fairs, let's make sure English captions are burned into the video file.",
+        "<break time=\"0.6s\" />",
+        "[Man] Good point. Our contract with Silver Frame includes two rounds of edits at no extra cost, so adding captions and trimming the voice-over won't affect the budget.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Great. Let's type up our timestamped notes before three o'clock so they can record the revised lines tomorrow."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Hi, Camilla. Have you watched the rough cut of our two-minute recruitment video that Silver Frame Studio sent over this morning?"
+        },
+        {
+          "speaker": "W",
+          "text": "Yes, I just watched it twice! The footage of our robotics lab looks fantastic, and the background music has great energy. My only concern is the voice-over during the middle section—it feels a little rushed when the narrator lists our overseas offices."
+        },
+        {
+          "speaker": "M",
+          "text": "I noticed that too. Instead of making the narrator read all eight city names aloud, we could display them on a world map graphic and cut two sentences from the script."
+        },
+        {
+          "speaker": "W",
+          "text": "That's a smart solution—it'll give the narration room to breathe. Also, since we'll play this video on a muted monitor at university career fairs, let's make sure English captions are burned into the video file."
+        },
+        {
+          "speaker": "M",
+          "text": "Good point. Our contract with Silver Frame includes two rounds of edits at no extra cost, so adding captions and trimming the voice-over won't affect the budget."
+        },
+        {
+          "speaker": "W",
+          "text": "Great. Let's type up our timestamped notes before three o'clock so they can record the revised lines tomorrow."
+        }
+      ],
+      "referenceJa": [
+        "M: こんにちは、カミラ。今朝シルバーフレーム・スタジオから送られてきた2分間の採用広報動画の仮編集版は見ましたか。",
+        "W: ええ、ちょうど2回見ました！ロボット研究室の映像は素晴らしいですし、BGMも活気があっていいですね。唯一気になるのは中盤のナレーションです——ナレーターが海外拠点を読み上げるところが少し早口に感じます。",
+        "M: 私もそれに気づきました。8都市すべての名前をナレーターに声に出して読ませる代わりに、世界地図のグラフィック上に表示して、原稿から2文削ることもできますよ。",
+        "W: それは賢い解決策ですね——ナレーションにゆとりが生まれます。それと、大学の就職説明会では音声を消したモニターでこの動画を流すので、英語字幕を動画ファイルに焼き付けてもらいましょう。",
+        "M: いい視点ですね。シルバーフレーム社との契約には追加費用なしで2回までの修正が含まれているので、字幕の追加とナレーションの短縮なら予算には響きません。",
+        "W: よかった。先方が明日修正分のセリフを収録できるよう、3時までにタイムスタンプ付きの修正メモをまとめましょう。"
+      ]
+    },
+    {
+      "round": 13,
+      "part": "Part 4",
+      "trackId": "tpl_r13_p4",
+      "fileName": "tpl_r13_p4.mp3",
+      "titleJa": "第13回 問10〜12（書店イベントでの著者トークショー開演前アナウンス）",
+      "voiceGuide": "話者:女性(W)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Good evening, book lovers, and welcome to Lantern Leaf Books! In just a few minutes, food writer Clara Lindqvist will join us on stage to talk about her newest cookbook, Nordic Pantry, which explores simple weekday recipes using preserved seasonal ingredients.",
+        "<break time=\"0.8s\" />",
+        "Following a thirty-minute talk, we'll open the floor for audience questions. Because our store microphone cord doesn't reach the back rows, please step up to the standing mic in the center aisle if you'd like to ask a question.",
+        "<break time=\"0.8s\" />",
+        "Afterward, Ms. Lindqvist will sign books at the oak table beside the espresso counter. You may purchase copies of Nordic Pantry at any register tonight for fifteen percent off the cover price. Please silence your phones now, and help me welcome Clara Lindqvist!"
+      ],
+      "referenceJa": [
+        "本を愛する皆様、こんばんは。ランタン・リーフ書店へようこそ！まもなくフードライターのクララ・リンドクヴィストさんをステージにお迎えし、保存のきく旬の食材を使った手軽な平日レシピを紹介する最新料理本『ノルディック・パントリー』についてお話しいただきます。",
+        "30分間のトークの後、会場の皆様からの質疑応答の時間を設けます。当店のマイクコードは後方の列まで届かないため、質問をご希望の方は中央通路のスタンドマイクまでお進みください。",
+        "その後、リンドクヴィストさんはエスプレッソカウンター横のオーク材のテーブルでサイン会を行います。今夜はどのレジでも『ノルディック・パントリー』を定価の15％引きでお求めいただけます。それでは携帯電話をマナーモードに設定のうえ、クララ・リンドクヴィストさんを拍手でお迎えください！"
+      ]
+    },
+    {
+      "round": 14,
+      "part": "Part 2",
+      "trackId": "tpl_r14_p2_q1",
+      "fileName": "tpl_r14_p2_q1.mp3",
+      "titleJa": "第14回 問1（When（点検・修理の予定））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. When is the heating technician coming to inspect the boiler?",
+        "<break time=\"1.0s\" />",
+        "A. In the basement utility room.",
+        "<break time=\"0.8s\" />",
+        "B. Between two and four this afternoon.",
+        "<break time=\"0.8s\" />",
+        "C. Yes, it feels much warmer now."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 1. When is the heating technician coming to inspect the boiler?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. In the basement utility room. <break time=\"0.8s\" /> B. Between two and four this afternoon. <break time=\"0.8s\" /> C. Yes, it feels much warmer now."
+        }
+      ],
+      "referenceJa": [
+        "質問：暖房設備の技師はいつボイラーの点検に来ますか。",
+        "(A) 地下の設備室でです。",
+        "(B) 今日の午後2時から4時の間です。 ★正解",
+        "(C) はい、今はだいぶ暖かく感じます。"
+      ]
+    },
+    {
+      "round": 14,
+      "part": "Part 2",
+      "trackId": "tpl_r14_p2_q2",
+      "fileName": "tpl_r14_p2_q2.mp3",
+      "titleJa": "第14回 問2（What（変更内容））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. What did Human Resources change in the updated remote-work policy?",
+        "<break time=\"1.0s\" />",
+        "A. Staff can now work from home up to three days a week.",
+        "<break time=\"0.8s\" />",
+        "B. The TV remote needs new batteries.",
+        "<break time=\"0.8s\" />",
+        "C. Effective starting November first."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 2. What did Human Resources change in the updated remote-work policy?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Staff can now work from home up to three days a week. <break time=\"0.8s\" /> B. The TV remote needs new batteries. <break time=\"0.8s\" /> C. Effective starting November first."
+        }
+      ],
+      "referenceJa": [
+        "質問：人事部は改定されたリモートワーク規定で何を変更しましたか。",
+        "(A) 社員は今後、週に最大3日まで在宅勤務ができるようになりました。 ★正解",
+        "(B) テレビのリモコンに新しい電池が必要です。",
+        "(C) 11月1日から発効です。"
+      ]
+    },
+    {
+      "round": 14,
+      "part": "Part 2",
+      "trackId": "tpl_r14_p2_q3",
+      "fileName": "tpl_r14_p2_q3.mp3",
+      "titleJa": "第14回 問3（否定疑問文（Aren't you））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Aren't you attending the renewable energy summit in Copenhagen?",
+        "<break time=\"1.0s\" />",
+        "A. Ms. Haddad is going on behalf of our team.",
+        "<break time=\"0.8s\" />",
+        "B. Solar and wind power.",
+        "<break time=\"0.8s\" />",
+        "C. Near the harbor hotel."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 3. Aren't you attending the renewable energy summit in Copenhagen?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Ms. Haddad is going on behalf of our team. <break time=\"0.8s\" /> B. Solar and wind power. <break time=\"0.8s\" /> C. Near the harbor hotel."
+        }
+      ],
+      "referenceJa": [
+        "質問：コペンハーゲンで開かれる再生可能エネルギーサミットには出席しないのですか。",
+        "(A) 私たちのチームを代表してハダッドさんが行くことになりました。 ★正解",
+        "(B) 太陽光発電と風力発電です。",
+        "(C) 港のホテルの近くです。"
+      ]
+    },
+    {
+      "round": 14,
+      "part": "Part 2",
+      "trackId": "tpl_r14_p2_q4",
+      "fileName": "tpl_r14_p2_q4.mp3",
+      "titleJa": "第14回 問4（Could you（確認の依頼））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Could you double-check the totals on the third-quarter balance sheet?",
+        "<break time=\"1.0s\" />",
+        "A. A well-balanced diet.",
+        "<break time=\"0.8s\" />",
+        "B. Four quarters make a dollar.",
+        "<break time=\"0.8s\" />",
+        "C. Sure, give me fifteen minutes."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 4. Could you double-check the totals on the third-quarter balance sheet?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. A well-balanced diet. <break time=\"0.8s\" /> B. Four quarters make a dollar. <break time=\"0.8s\" /> C. Sure, give me fifteen minutes."
+        }
+      ],
+      "referenceJa": [
+        "質問：第3四半期の貸借対照表の合計欄を二重チェックしてもらえますか。",
+        "(A) 栄養バランスの取れた食事です。",
+        "(B) 25セント硬貨4枚で1ドルになります。",
+        "(C) いいですよ、15分ください。 ★正解"
+      ]
+    },
+    {
+      "round": 14,
+      "part": "Part 2",
+      "trackId": "tpl_r14_p2_q5",
+      "fileName": "tpl_r14_p2_q5.mp3",
+      "titleJa": "第14回 問5（How（方法・手段））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. How did customers hear about our weekend warehouse clearance?",
+        "<break time=\"1.0s\" />",
+        "A. Up to sixty percent off.",
+        "<break time=\"0.8s\" />",
+        "B. Mostly through our Instagram ads.",
+        "<break time=\"0.8s\" />",
+        "C. No, I couldn't hear the speaker."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 5. How did customers hear about our weekend warehouse clearance?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Up to sixty percent off. <break time=\"0.8s\" /> B. Mostly through our Instagram ads. <break time=\"0.8s\" /> C. No, I couldn't hear the speaker."
+        }
+      ],
+      "referenceJa": [
+        "質問：お客様はどうやって週末の倉庫一掃セールを知ったのですか。",
+        "(A) 最大60％引きです。",
+        "(B) 主に当店のインスタグラム広告を通じてです。 ★正解",
+        "(C) いいえ、スピーカーの声が聞こえませんでした。"
+      ]
+    },
+    {
+      "round": 14,
+      "part": "Part 2",
+      "trackId": "tpl_r14_p2_q6",
+      "fileName": "tpl_r14_p2_q6.mp3",
+      "titleJa": "第14回 問6（平叙文（機器トラブルへの提案））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. The wireless signal in the west conference room keeps dropping.",
+        "<break time=\"1.0s\" />",
+        "A. Don't drop the glass pitcher.",
+        "<break time=\"0.8s\" />",
+        "B. The conference starts on Monday.",
+        "<break time=\"0.8s\" />",
+        "C. Plug into the ethernet port under the table for your call."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 6. The wireless signal in the west conference room keeps dropping."
+        },
+        {
+          "speaker": "W",
+          "text": "A. Don't drop the glass pitcher. <break time=\"0.8s\" /> B. The conference starts on Monday. <break time=\"0.8s\" /> C. Plug into the ethernet port under the table for your call."
+        }
+      ],
+      "referenceJa": [
+        "質問：西会議室のWi-Fi電波が何度も途切れてしまいます。",
+        "(A) ガラスの水差しを落とさないでください。",
+        "(B) カンファレンスは月曜日に始まります。",
+        "(C) 通話にはテーブルの下の有線LANポートにつないでください。 ★正解"
+      ]
+    },
+    {
+      "round": 14,
+      "part": "Part 3",
+      "trackId": "tpl_r14_p3",
+      "fileName": "tpl_r14_p3.mp3",
+      "titleJa": "第14回 問7〜9（陶芸食器ブランドとパッケージ印刷会社の納期・色味調整）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Woman] Hello, Mr. Lindemann. This is Yuna Park from Solstice Tableware. We received the printed proof boxes for our holiday mug gift sets this morning.",
+        "<break time=\"0.6s\" />",
+        "[Man] Great! How did the embossed gold lettering on the lid turn out?",
+        "<break time=\"0.6s\" />",
+        "[Woman] The gold lettering looks sharp and elegant. However, the forest-green background came out noticeably darker than our brand swatch—almost charcoal in indoor lighting.",
+        "<break time=\"0.6s\" />",
+        "[Man] Ah, uncoated kraft board absorbs more pigment than glossy stock, which darkens deep greens. Our press operator can lighten the ink formula by fifteen percent and courier a new sample to you tomorrow morning.",
+        "<break time=\"0.6s\" />",
+        "[Woman] We'd really appreciate that. If we approve the new sample tomorrow afternoon, can you still deliver all five thousand boxes to our warehouse by October twentieth?",
+        "<break time=\"0.6s\" />",
+        "[Man] Yes—I already reserved press time on Thursday and Friday specifically for your run, so your delivery date won't slip."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Hello, Mr. Lindemann. This is Yuna Park from Solstice Tableware. We received the printed proof boxes for our holiday mug gift sets this morning."
+        },
+        {
+          "speaker": "M",
+          "text": "Great! How did the embossed gold lettering on the lid turn out?"
+        },
+        {
+          "speaker": "W",
+          "text": "The gold lettering looks sharp and elegant. However, the forest-green background came out noticeably darker than our brand swatch—almost charcoal in indoor lighting."
+        },
+        {
+          "speaker": "M",
+          "text": "Ah, uncoated kraft board absorbs more pigment than glossy stock, which darkens deep greens. Our press operator can lighten the ink formula by fifteen percent and courier a new sample to you tomorrow morning."
+        },
+        {
+          "speaker": "W",
+          "text": "We'd really appreciate that. If we approve the new sample tomorrow afternoon, can you still deliver all five thousand boxes to our warehouse by October twentieth?"
+        },
+        {
+          "speaker": "M",
+          "text": "Yes—I already reserved press time on Thursday and Friday specifically for your run, so your delivery date won't slip."
+        }
+      ],
+      "referenceJa": [
+        "W: もしもし、リンデマンさん。ソルスティス・テーブルウェアのユナ・パクです。今朝、ホリデー向けマグカップギフトセットの校正刷りの箱を受け取りました。",
+        "M: それはよかったです！蓋の金の浮き出し文字の仕上がりはいかがでしたか。",
+        "W: 金の文字はくっきりしていて上品です。ただ、フォレストグリーンの背景色が当社のブランド色見本よりかなり暗く出ていて——室内照明だとほぼチャコールグレーに見えるんです。",
+        "M: ああ、非塗工のクラフト厚紙は光沢紙よりも顔料を多く吸い込むので、濃い緑が暗く沈むことがあるんです。印刷担当者がインク配合を15％明るく調整して、明日の朝、新しいサンプルをバイク便でお届けできます。",
+        "W: それはとても助かります。もし明日の午後に新しいサンプルを承認したら、5,000箱すべてを10月20日までに当社倉庫へ納品することは引き続き可能でしょうか。",
+        "M: はい——御社の本番印刷のために木曜と金曜の印刷機の枠をすでに確保してありますので、納品日が遅れることはありません。"
+      ]
+    },
+    {
+      "round": 14,
+      "part": "Part 4",
+      "trackId": "tpl_r14_p4",
+      "fileName": "tpl_r14_p4.mp3",
+      "titleJa": "第14回 問10〜12（食品工場見学ツアー参加者への事前安全ガイダンス）",
+      "voiceGuide": "話者:男性(M)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Welcome to Hearthstone Artisan Bakery's main production facility! Over the next forty-five minutes, you'll see how our sourdough loaves are mixed, fermented, and stone-baked for supermarkets across the region.",
+        "<break time=\"0.8s\" />",
+        "Before we step onto the observation walkway, everyone must put on a hairnet and store loose items—including watches, earrings, and pens—inside the lockers to your right. Photography is welcome in the lobby display area, where we're standing now, but cameras and phones must stay put away once we pass through the double glass doors.",
+        "<break time=\"0.8s\" />",
+        "At the end of the tour, we'll stop by our tasting counter on the mezzanine for warm bread samples and a ten-percent-off coupon for our factory outlet shop. Follow me, please!"
+      ],
+      "referenceJa": [
+        "ハースストーン・アルチザン・ベーカリーの主力製造工場へようこそ！これからの45分間で、地域のスーパーマーケット向けに出荷されるサワードウ・ブレッドがどのようにこねられ、発酵し、石窯で焼き上げられるかをご覧いただきます。",
+        "見学用通路に入る前に、全員ヘアネットを着用し、腕時計・イヤリング・ペンなどの外れやすい持ち物は右手のロッカーにしまってください。写真撮影は今私たちが立っているロビー展示エリアでは歓迎いたしますが、二重ガラス扉を通過した先はカメラやスマートフォンをしまったままにしてください。",
+        "ツアーの最後には、中2階の試食カウンターに立ち寄り、温かいパンの試食と工場直売店で使える10％割引クーポンをお渡しします。どうぞ私についてきてください！"
+      ]
+    },
+    {
+      "round": 15,
+      "part": "Part 2",
+      "trackId": "tpl_r15_p2_q1",
+      "fileName": "tpl_r15_p2_q1.mp3",
+      "titleJa": "第15回 問1（Which（窓口・レーンの選択））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 1. Which desk handles international badge pick-up?",
+        "<break time=\"1.0s\" />",
+        "A. The one on the far right with the blue banner.",
+        "<break time=\"0.8s\" />",
+        "B. Just a photo ID, please.",
+        "<break time=\"0.8s\" />",
+        "C. From twelve different countries."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 1. Which desk handles international badge pick-up?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. The one on the far right with the blue banner. <break time=\"0.8s\" /> B. Just a photo ID, please. <break time=\"0.8s\" /> C. From twelve different countries."
+        }
+      ],
+      "referenceJa": [
+        "質問：海外からの参加者用バッジの受け取りはどの受付デスクですか。",
+        "(A) 青い横断幕が出ている一番右端のデスクです。 ★正解",
+        "(B) 顔写真付きの身分証だけで結構です。",
+        "(C) 12か国からです。"
+      ]
+    },
+    {
+      "round": 15,
+      "part": "Part 2",
+      "trackId": "tpl_r15_p2_q2",
+      "fileName": "tpl_r15_p2_q2.mp3",
+      "titleJa": "第15回 問2（How much（予算・見積額））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 2. How much did the contractor quote us for soundproofing the studio?",
+        "<break time=\"1.0s\" />",
+        "A. You can quote me on that.",
+        "<break time=\"0.8s\" />",
+        "B. Thick acoustic panels.",
+        "<break time=\"0.8s\" />",
+        "C. Just under nine thousand dollars."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 2. How much did the contractor quote us for soundproofing the studio?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. You can quote me on that. <break time=\"0.8s\" /> B. Thick acoustic panels. <break time=\"0.8s\" /> C. Just under nine thousand dollars."
+        }
+      ],
+      "referenceJa": [
+        "質問：工事業者はスタジオの防音工事にいくらの見積もりを出してきましたか。",
+        "(A) 私の言葉として引用して構いませんよ。",
+        "(B) 厚みのある吸音パネルです。",
+        "(C) 9,000ドルを少し下回る金額です。 ★正解"
+      ]
+    },
+    {
+      "round": 15,
+      "part": "Part 2",
+      "trackId": "tpl_r15_p2_q3",
+      "fileName": "tpl_r15_p2_q3.mp3",
+      "titleJa": "第15回 問3（一般疑問文（Is there））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 3. Is there a pharmacy within walking distance of the convention center?",
+        "<break time=\"1.0s\" />",
+        "A. Three days of workshops.",
+        "<break time=\"0.8s\" />",
+        "B. About ten thousand steps.",
+        "<break time=\"0.8s\" />",
+        "C. There's one right across the boulevard."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 3. Is there a pharmacy within walking distance of the convention center?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Three days of workshops. <break time=\"0.8s\" /> B. About ten thousand steps. <break time=\"0.8s\" /> C. There's one right across the boulevard."
+        }
+      ],
+      "referenceJa": [
+        "質問：コンベンションセンターから徒歩圏内に薬局はありますか。",
+        "(A) 3日間のワークショップです。",
+        "(B) 約1万歩です。",
+        "(C) 大通りを渡ったすぐ向かいに1軒ありますよ。 ★正解"
+      ]
+    },
+    {
+      "round": 15,
+      "part": "Part 2",
+      "trackId": "tpl_r15_p2_q4",
+      "fileName": "tpl_r15_p2_q4.mp3",
+      "titleJa": "第15回 問4（Can I（許可・申し出））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 4. Can I apply two promotional codes to the same online order?",
+        "<break time=\"1.0s\" />",
+        "A. Enter your postal code first.",
+        "<break time=\"0.8s\" />",
+        "B. Sorry, our checkout system accepts only one per purchase.",
+        "<break time=\"0.8s\" />",
+        "C. Free shipping over fifty dollars."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 4. Can I apply two promotional codes to the same online order?"
+        },
+        {
+          "speaker": "M",
+          "text": "A. Enter your postal code first. <break time=\"0.8s\" /> B. Sorry, our checkout system accepts only one per purchase. <break time=\"0.8s\" /> C. Free shipping over fifty dollars."
+        }
+      ],
+      "referenceJa": [
+        "質問：1回のオンライン注文に2つのプロモーションコードを併用できますか。",
+        "(A) 先に郵便番号を入力してください。",
+        "(B) 申し訳ありませんが、当店の決済システムでは1回のご購入につき1つしか使えません。 ★正解",
+        "(C) 50ドル以上で送料無料です。"
+      ]
+    },
+    {
+      "round": 15,
+      "part": "Part 2",
+      "trackId": "tpl_r15_p2_q5",
+      "fileName": "tpl_r15_p2_q5.mp3",
+      "titleJa": "第15回 問5（Why（判断の根拠））",
+      "voiceGuide": "質問:M / 応答:W（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 5. Why did Ms. Lindqvist postpone the software rollout until January?",
+        "<break time=\"1.0s\" />",
+        "A. Yes, roll the cart into the hall.",
+        "<break time=\"0.8s\" />",
+        "B. December is our busiest retail month, so training staff then would be tough.",
+        "<break time=\"0.8s\" />",
+        "C. Version four point two."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "M",
+          "text": "Number 5. Why did Ms. Lindqvist postpone the software rollout until January?"
+        },
+        {
+          "speaker": "W",
+          "text": "A. Yes, roll the cart into the hall. <break time=\"0.8s\" /> B. December is our busiest retail month, so training staff then would be tough. <break time=\"0.8s\" /> C. Version four point two."
+        }
+      ],
+      "referenceJa": [
+        "質問：なぜリンドクヴィストさんはソフトウェアの本格導入を1月まで延期したのですか。",
+        "(A) はい、カートを廊下へ転がして運んでください。",
+        "(B) 12月は小売り部門が最も忙しい月なので、その時期に社員研修を行うのは大変だからです。 ★正解",
+        "(C) バージョン4.2です。"
+      ]
+    },
+    {
+      "round": 15,
+      "part": "Part 2",
+      "trackId": "tpl_r15_p2_q6",
+      "fileName": "tpl_r15_p2_q6.mp3",
+      "titleJa": "第15回 問6（平叙文（第三者への取次・不在対応））",
+      "voiceGuide": "質問:W / 応答:M（1声TTS通し読み可）",
+      "mode": "tts",
+      "lines": [
+        "Number 6. I have the signed offer letter ready for Mr. Alvarez to review.",
+        "<break time=\"1.0s\" />",
+        "A. He stepped out for lunch, but you can leave it with his assistant.",
+        "<break time=\"0.8s\" />",
+        "B. That's a generous offer.",
+        "<break time=\"0.8s\" />",
+        "C. At the post office on Oak Street."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Number 6. I have the signed offer letter ready for Mr. Alvarez to review."
+        },
+        {
+          "speaker": "M",
+          "text": "A. He stepped out for lunch, but you can leave it with his assistant. <break time=\"0.8s\" /> B. That's a generous offer. <break time=\"0.8s\" /> C. At the post office on Oak Street."
+        }
+      ],
+      "referenceJa": [
+        "質問：アルバレスさんに確認していただく署名済みの採用通知書が用意できました。",
+        "(A) 彼は昼食で外出中ですが、アシスタントの方に預けておけますよ。 ★正解",
+        "(B) それは気前のいい申し出ですね。",
+        "(C) オーク通りの郵便局でです。"
+      ]
+    },
+    {
+      "round": 15,
+      "part": "Part 3",
+      "trackId": "tpl_r15_p3",
+      "fileName": "tpl_r15_p3.mp3",
+      "titleJa": "第15回 問7〜9（四半期全社ミーティングのハイブリッド配信リハーサルと改善）",
+      "voiceGuide": "W・M 掛け合い（Studioで2声割当）",
+      "mode": "dialogue",
+      "lines": [
+        "[Woman] Thanks for testing the auditorium audio-visual setup with me, Devon. Since half of our staff in Austin and Montreal will join tomorrow's town hall online, we can't afford any technical glitches.",
+        "<break time=\"0.6s\" />",
+        "[Man] Glad to help. The main podium microphone sounded crystal clear on the livestream, and the slide deck switched without any lag. However, when you walked toward the whiteboard on the left side of the stage, you stepped outside the camera's framing.",
+        "<break time=\"0.6s\" />",
+        "[Woman] Oh, good catch! Our CEO likes to move around while speaking, so he'd likely wander out of view too.",
+        "<break time=\"0.6s\" />",
+        "[Man] We have two options: I can widen the camera zoom slightly, or we can place small strips of yellow gaffer tape on the stage carpet so speakers can see where the camera boundary is.",
+        "<break time=\"0.6s\" />",
+        "[Woman] If we zoom out too far, the speaker's face looks tiny on laptop screens. Let's put down the tape markers—and I'll brief the CEO five minutes before we go live.",
+        "<break time=\"0.6s\" />",
+        "[Man] Sounds like a plan. I'll grab the gaffer tape from the media closet right now and mark both sides of the stage."
+      ],
+      "dialogueTurns": [
+        {
+          "speaker": "W",
+          "text": "Thanks for testing the auditorium audio-visual setup with me, Devon. Since half of our staff in Austin and Montreal will join tomorrow's town hall online, we can't afford any technical glitches."
+        },
+        {
+          "speaker": "M",
+          "text": "Glad to help. The main podium microphone sounded crystal clear on the livestream, and the slide deck switched without any lag. However, when you walked toward the whiteboard on the left side of the stage, you stepped outside the camera's framing."
+        },
+        {
+          "speaker": "W",
+          "text": "Oh, good catch! Our CEO likes to move around while speaking, so he'd likely wander out of view too."
+        },
+        {
+          "speaker": "M",
+          "text": "We have two options: I can widen the camera zoom slightly, or we can place small strips of yellow gaffer tape on the stage carpet so speakers can see where the camera boundary is."
+        },
+        {
+          "speaker": "W",
+          "text": "If we zoom out too far, the speaker's face looks tiny on laptop screens. Let's put down the tape markers—and I'll brief the CEO five minutes before we go live."
+        },
+        {
+          "speaker": "M",
+          "text": "Sounds like a plan. I'll grab the gaffer tape from the media closet right now and mark both sides of the stage."
+        }
+      ],
+      "referenceJa": [
+        "W: 講堂の映像・音響設備のテストを手伝ってくれてありがとう、デヴォン。明日の全社集会にはオースティンとモントリオールの社員の半数がオンラインで参加するから、機材トラブルは避けたいわ。",
+        "M: お役に立てて何よりです。演台のメインマイクはライブ配信でも非常にクリアに聞こえましたし、スライドの切り替えも遅延なしでした。ただ、ステージ左側のホワイトボードの方へ歩いたとき、カメラの画角から外れてしまいました。",
+        "W: あら、よく気づいてくれたわ！うちのCEOは話しながら歩き回るのが好きだから、きっと画面から外れてしまうわね。",
+        "M: 選択肢は2つあります。カメラのズームを少し広角にするか、ステージのカーペットに黄色い布テープで小さく目印を貼って、登壇者からカメラの境界線が分かるようにするかです。",
+        "W: 引きすぎると、ノートパソコンの画面では登壇者の顔が小さく見えてしまうわ。テープの目印を貼りましょう——それに本番の5分前に私からCEOに説明しておくわ。",
+        "M: いい作戦ですね。今すぐ機材庫から布テープを取ってきて、ステージの両端に印を付けておきます。"
+      ]
+    },
+    {
+      "round": 15,
+      "part": "Part 4",
+      "trackId": "tpl_r15_p4",
+      "fileName": "tpl_r15_p4.mp3",
+      "titleJa": "第15回 問10〜12（決算説明会での最高営業責任者による業績報告スピーチ）",
+      "voiceGuide": "話者:女性(W)（1声TTS）",
+      "mode": "tts",
+      "lines": [
+        "Thank you all for joining BrightWave Appliances' third-quarter briefing. I'm pleased to report that total revenue rose eleven percent compared to the same period last year, driven largely by strong demand for our compact countertop dishwashers among urban apartment dwellers.",
+        "<break time=\"0.8s\" />",
+        "While raw stainless-steel costs remained elevated during July and August, our decision to consolidate regional warehouses in Ohio reduced domestic shipping expenses enough to keep our operating margin steady.",
+        "<break time=\"0.8s\" />",
+        "Looking ahead to the fourth quarter, we will launch our smart induction cooktop line in Canada and Germany this November. Copies of the full regional sales breakdown are available on the investor relations page of our website, and I'd now be happy to take your questions."
+      ],
+      "referenceJa": [
+        "本日はブライトウェーブ家電の第3四半期説明会にご参加いただき誠にありがとうございます。都市部のマンション居住者を中心に当社の卓上コンパクト食洗機への需要が好調だったことが大きく牽引し、総売上高が前年同期比で11％増加したことをご報告でき嬉しく思います。",
+        "7月と8月はステンレス鋼の原材料費が高止まりしたものの、オハイオ州の地域倉庫を集約するという判断によって国内配送費が十分に削減され、営業利益率を安定した水準に維持することができました。",
+        "第4四半期に向けては、今年11月にカナダとドイツでスマートIHクッキングヒーターの新シリーズを発売いたします。地域別売上内訳の全文は当社ウェブサイトの投資家向け広報（IR）ページでご覧いただけます。それでは皆様からのご質問をお受けいたします。"
+      ]
+    }
+  ]
+}

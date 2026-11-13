@@ -1,0 +1,7 @@
+Number 1. When will the standing desks arrive at our branch?
+<break time="1.0s" />
+A. Twelve ergonomic chairs.
+<break time="0.8s" />
+B. Next Wednesday afternoon.
+<break time="0.8s" />
+C. Near the front reception.

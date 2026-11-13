@@ -1,0 +1,7 @@
+Number 3. Is there a pharmacy within walking distance of the convention center?
+<break time="1.0s" />
+A. Three days of workshops.
+<break time="0.8s" />
+B. About ten thousand steps.
+<break time="0.8s" />
+C. There's one right across the boulevard.

@@ -1,0 +1,7 @@
+Number 4. What time should we leave for the airport tomorrow?
+<break time="1.0s" />
+A. No later than seven thirty.
+<break time="0.8s" />
+B. Gate 18 in Terminal 2.
+<break time="0.8s" />
+C. Just one carry-on bag.

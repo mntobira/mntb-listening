@@ -1,6 +1,8 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   buildToeicPageBudgets,
+  calcToeicPageElapsedProgress,
   classifyToeicSkill,
   formatToeicBudgetTime,
   TOEIC_TIME_PRESETS,
@@ -58,5 +60,37 @@ describe('TOEIC Part 5 page time budgets', () => {
     expect(TOEIC_TIME_PRESETS.standard.label).toContain('800点前後を想定した目安');
     expect(TOEIC_TIME_PRESETS.slow.label).toContain('仮');
     expect(TOEIC_TIME_PRESETS.advanced.label).toContain('仮');
+  });
+
+  it('calculates current elapsed progress percentage and pace tone for the page bar', () => {
+    const start = calcToeicPageElapsedProgress(0, 104, 120);
+    expect(start).toMatchObject({ elapsedSec: 0, elapsedPct: 0, tone: 'ahead' });
+    expect(start.targetPct).toBeCloseTo((104 / 120) * 100, 4);
+    expect(start.slackWidthPct).toBeCloseTo((16 / 120) * 100, 4);
+
+    const mid = calcToeicPageElapsedProgress(60, 104, 120);
+    expect(mid).toMatchObject({ elapsedSec: 60, elapsedPct: 50, tone: 'ahead' });
+
+    const slack = calcToeicPageElapsedProgress(110, 104, 120);
+    expect(slack.tone).toBe('slack');
+    expect(slack.elapsedPct).toBeCloseTo((110 / 120) * 100, 4);
+
+    const over = calcToeicPageElapsedProgress(150, 104, 120);
+    expect(over).toMatchObject({ elapsedSec: 150, elapsedPct: 100, tone: 'over' });
+  });
+
+  it('renders elapsed time readout, fill bar, and current position markers in TOEIC timers', () => {
+    const timer = readFileSync(new URL('../src/components/toeic/ToeicTimer.tsx', import.meta.url), 'utf8');
+    const quiz = readFileSync(new URL('../src/components/toeic/ToeicPageQuiz.tsx', import.meta.url), 'utf8');
+    const css = readFileSync(new URL('../src/components/toeic/toeic-page.css', import.meta.url), 'utf8');
+
+    expect(timer).toContain('data-toeic-timer-elapsed');
+    expect(timer).toContain('data-toeic-timer-head');
+    expect(quiz).toContain('data-toeic-page-elapsed');
+    expect(quiz).toContain('data-toeic-budget-progress');
+    expect(quiz).toContain('data-toeic-budget-now');
+
+    const sizes = [...css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map((m) => Number(m[1]));
+    expect(Math.min(...sizes)).toBeGreaterThanOrEqual(12);
   });
 });
