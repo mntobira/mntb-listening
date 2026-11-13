@@ -8,7 +8,7 @@
  *
  * このファイルは ITEMS を import しない（growthItems → ここ の循環を避けるため、ID だけ持つ）。
  */
-import { NIJI_MOCK_PRINTS } from '../../data/nijiMockPrints';
+import { NIJI_MOCK_PRINTS, NIJI_UNIVERSITIES, OTHER_MOCK_UNIVERSITIES } from '../../data/nijiMockPrints';
 import { KOBE_MOCK_PRINTS } from '../../data/kobeMockPrints';
 import { OSAKA_MOCK_PRINTS } from '../../data/osakaMockPrints';
 import { RITSU_MOCK_PRINTS } from '../../data/ritsuMockPrints';
@@ -21,8 +21,9 @@ import { YAMAGATA_MOCK_PRINTS } from '../../data/yamagataMockPrints';
 import { FUKUSHIMA_MOCK_PRINTS } from '../../data/fukushimaMockPrints';
 import { UTSUNOMIYA_MOCK_PRINTS } from '../../data/utsunomiyaMockPrints';
 import { GUNMA_MOCK_PRINTS } from '../../data/gunmaMockPrints';
+import { PRINT_SHELVES, UNIV_REGION, univOfPrint, type PrintShelfId } from './printShelves';
 
-export type GachaPoolId = 'kyotsu' | 'niji';
+export type GachaPoolId = 'kyotsu' | 'niji' | 'univ';
 
 export interface GachaPoolDef {
   id: GachaPoolId;
@@ -52,6 +53,14 @@ export const GACHA_POOLS: readonly GachaPoolDef[] = [
     short: '2次試験',
     lrName: '大学別 英語 予想問題（2次・個別試験）',
     lrNote: '北海道大学・東北大学・弘前大学・岩手大学・秋田大学・山形大学・福島大学・宇都宮大学・茨城大学・群馬大学・東京学芸大学・東京外国語大学・金沢大学・富山大学・福井大学・福井県立大学・名古屋大学・名古屋工業大学・名古屋市立大学・愛知県立大学・愛知教育大学・岐阜大学・三重大学・静岡大学・大阪公立大学・大阪大学・神戸大学・和歌山大学・鳥取大学・島根大学・公立鳥取環境大学・和歌山県立医科大学・岡山大学・広島大学・山口大学・尾道市立大学・香川大学・徳島大学・愛媛大学・高知大学・長崎大学・九州大学・福岡女子大学・佐賀大学・熊本大学・大分大学・宮崎大学・鹿児島大学・琉球大学（前期）、立命館大学（全学統一・文系）の出題形式に沿った書き下ろしの予想問題（解答解説つき）各3回分（大阪公立大学は第3問の系統別にA・B、富山大学・福井大学・愛知県立大学・島根大学・愛媛大学・高知大学・長崎大学・大分大学・宮崎大学・鹿児島大学は学部・コースの問題別に各3回）。大学の過去問・公式問題ではありません。',
+    preferSubjects: ['english_vocab', 'english_grammar', 'english_reading'],
+  },
+  {
+    id: 'univ',
+    title: '大学選択ガチャ',
+    short: '大学選択',
+    lrName: '選んだ大学の英語 予想問題',
+    lrNote: '選んだ1大学の予想問題（3回分）だけが LR で出ます（ほかの大学の予想問題は混ざりません）。1回 500マナコイン。大学の過去問・公式問題ではありません。',
     preferSubjects: ['english_vocab', 'english_grammar', 'english_reading'],
   },
 ];
@@ -92,8 +101,80 @@ export const NIJI_SHARED_IDS: readonly string[] = [
   'wall_grid', 'wall_lined', 'wall_library', 'wall_english', 'wall_chalk', 'wall_night',
 ];
 
+/** 大学選択ガチャで選べる大学（学部・系統ごとの予想問題3回分） */
+export interface SelectableUniversity {
+  id: string;
+  name: string;
+  track: string;
+  label: string;
+  region: PrintShelfId;
+  regionLabel: string;
+  printIds: readonly string[];
+}
+
+const OTHER_TRACK_NOTES: Readonly<Record<string, string>> = {
+  gunma: '理工学部・医学部保健学科',
+  ritsu: '全学統一（文系）',
+};
+
+const REGION_ORDER: readonly PrintShelfId[] = ['hokkaido_tohoku', 'kanto_chubu', 'kinki', 'chugoku_shikoku', 'kyushu_okinawa'];
+
+function buildSelectableUniversities(): readonly SelectableUniversity[] {
+  const byId = new Map<string, string[]>();
+  for (const printId of UNIV_MOCK_PRINT_IDS) {
+    const key = univOfPrint(printId);
+    if (!key) continue;
+    const list = byId.get(key) ?? [];
+    list.push(printId);
+    byId.set(key, list);
+  }
+  const raw: SelectableUniversity[] = [];
+  for (const [id, printIds] of byId.entries()) {
+    const niji = NIJI_UNIVERSITIES.find((u) => u.id === id);
+    const other = OTHER_MOCK_UNIVERSITIES.find((u) => u.id === id);
+    const name = niji?.name ?? other?.name ?? id;
+    const track = niji?.track ?? OTHER_TRACK_NOTES[id] ?? '';
+    const region = UNIV_REGION[id] ?? 'other';
+    const regionLabel = PRINT_SHELVES.find((s) => s.id === region)?.label.replace(/^2次\s*/, '') ?? 'その他';
+    raw.push({
+      id,
+      name,
+      track,
+      label: track ? `${name}（${track}）` : name,
+      region,
+      regionLabel,
+      printIds,
+    });
+  }
+  return raw.sort((a, b) => {
+    const ra = REGION_ORDER.indexOf(a.region);
+    const rb = REGION_ORDER.indexOf(b.region);
+    const oa = ra === -1 ? 99 : ra;
+    const ob = rb === -1 ? 99 : rb;
+    return oa - ob;
+  });
+}
+
+export const SELECTABLE_UNIVERSITIES: readonly SelectableUniversity[] = buildSelectableUniversities();
+export const DEFAULT_GACHA_UNIV_ID: string = SELECTABLE_UNIVERSITIES[0]?.id ?? 'hokudai';
+
+export function selectableUniversityOf(univId?: string | null): SelectableUniversity {
+  return SELECTABLE_UNIVERSITIES.find((u) => u.id === univId) ?? SELECTABLE_UNIVERSITIES[0];
+}
+
+export function normalizeGachaUnivId(univId?: string | null): string {
+  return selectableUniversityOf(univId).id;
+}
+
+const UNIV_MOCK_SET: ReadonlySet<string> = new Set(UNIV_MOCK_PRINT_IDS);
+
 /** そのアイテムがガチャの種類 pool に入るか（ガチャで出る物かどうかの判定は呼び出し側） */
-export function inGachaPool(id: string, pool: GachaPoolId): boolean {
+export function inGachaPool(id: string, pool: GachaPoolId, univId?: string): boolean {
+  if (pool === 'univ') {
+    const targetUniv = normalizeGachaUnivId(univId);
+    if (UNIV_MOCK_SET.has(id)) return univOfPrint(id) === targetUniv;
+    return NIJI_NEW_ITEM_IDS.includes(id) || NIJI_SHARED_IDS.includes(id);
+  }
   if (pool === 'niji') return NIJI_ONLY_IDS.has(id) || NIJI_SHARED_IDS.includes(id);
   return !NIJI_ONLY_IDS.has(id);
 }

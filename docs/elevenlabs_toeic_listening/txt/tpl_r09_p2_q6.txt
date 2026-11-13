@@ -1,0 +1,7 @@
+Number 6. We're running dangerously low on takeaway coffee lids.
+<break time="1.0s" />
+A. No sugar for me, thank you.
+<break time="0.8s" />
+B. There's an unopened case in the back storage room.
+<break time="0.8s" />
+C. Yes, the lid fits tightly.

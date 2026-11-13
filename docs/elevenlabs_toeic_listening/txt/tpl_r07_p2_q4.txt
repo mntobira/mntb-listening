@@ -1,0 +1,7 @@
+Number 4. Could you grant the new intern read-only access to the project folder?
+<break time="1.0s" />
+A. Sure—just send me his employee ID.
+<break time="0.8s" />
+B. He started last Monday.
+<break time="0.8s" />
+C. A blue plastic folder.

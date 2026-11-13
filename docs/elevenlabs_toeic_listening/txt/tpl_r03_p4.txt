@@ -1,0 +1,5 @@
+Attention passengers waiting for the eight fifteen northbound express to Silverton. Due to signal maintenance near Cedar Junction, this train will depart twenty minutes late and has been reassigned from Platform 3 to Platform 6.
+<break time="0.8s" />
+Passengers holding reserved-seat tickets do not need to exchange them; your car and seat numbers remain the same. An elevator to the overhead walkway is located behind the ticket counter for travelers with heavy luggage.
+<break time="0.8s" />
+If you have a tight connection in Silverton, please speak with a station attendant wearing a blue vest, and we will arrange transfer passes for the nine ten regional bus.

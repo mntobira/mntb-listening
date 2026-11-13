@@ -1,0 +1,7 @@
+Number 2. When will the replacement parts for the packaging machine arrive?
+<break time="1.0s" />
+A. At the main loading dock.
+<break time="0.8s" />
+B. Twenty boxes per minute.
+<break time="0.8s" />
+C. Let me check the tracking number online.

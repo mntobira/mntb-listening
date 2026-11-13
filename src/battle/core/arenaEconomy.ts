@@ -4,16 +4,27 @@ import { SHARDS_PER_DUPLICATE, SHARD_EXCHANGE_COST } from './gachaSets';
 import { DEFAULT_GACHA_POOL, inGachaPool, type GachaPoolId } from './gachaPools';
 export const GACHA_COST = 100;
 export const GACHA_MULTI_COST = 1000;
+export const UNIV_GACHA_COST = 500;
+export const UNIV_GACHA_MULTI_COST = 5000;
 export const GACHA_MULTI_COUNT = 11;
 export const VIDEO_GACHA_DAILY_LIMIT = 5;
 export const GACHA_DUPLICATE_REFUND = 20;
 /** SR の重複はうれしさが減らないよう多めに返す。UR（完全版の本）・LR（共通テスト予想問題）の重複は全額返す */
 export const GACHA_DUPLICATE_REFUND_BY_RARITY: Record<GachaRarity, number> = { N: 20, R: 25, SR: 40, UR: 100, LR: 100 };
+
+/** プールごとの1回・10＋1連の必要マナコイン */
+export function gachaCostOf(pool: GachaPoolId = DEFAULT_GACHA_POOL): number {
+  return pool === 'univ' ? UNIV_GACHA_COST : GACHA_COST;
+}
+export function gachaMultiCostOf(pool: GachaPoolId = DEFAULT_GACHA_POOL): number {
+  return pool === 'univ' ? UNIV_GACHA_MULTI_COST : GACHA_MULTI_COST;
+}
+
 /**
- * ガチャで出る物。pool を渡すとそのガチャ（共通テスト／2次試験）の中身だけ。
- * 省略すると両方のガチャの合計（コレクション・かけら交換・セットの判定用）。
+ * ガチャで出る物。pool を渡すとそのガチャ（共通テスト／2次試験／大学選択）の中身だけ。
+ * 省略すると全ガチャの合計（コレクション・かけら交換・セットの判定用）。
  */
-export const gachaItems = (pool?: GachaPoolId) => ITEMS.filter(item => ('coins' in item.unlock || item.gacha) && (!pool || inGachaPool(item.id, pool)));
+export const gachaItems = (pool?: GachaPoolId, univId?: string) => ITEMS.filter(item => ('coins' in item.unlock || item.gacha) && (!pool || inGachaPool(item.id, pool, univId)));
 
 /**
  * レア枠の提供割合（合計 1）。枠を決めてから、その枠の中で等確率に1つ選ぶ。
@@ -28,36 +39,36 @@ export const GACHA_RARITY_RATES: Record<GachaRarity, number> = { LR: 0.01, UR: 0
 export const GACHA_RARITY_ORDER: readonly GachaRarity[] = ['LR', 'UR', 'SR', 'R', 'N'];
 export const GACHA_RARITY_LABELS: Record<GachaRarity, string> = { LR: 'レジェンドレア（予想問題）', UR: '大当たり（完全版の本）', SR: 'スーパーレア', R: 'レア', N: 'ノーマル' };
 
-export function gachaItemsByRarity(pool: GachaPoolId = DEFAULT_GACHA_POOL): Record<GachaRarity, ItemDef[]> {
+export function gachaItemsByRarity(pool: GachaPoolId = DEFAULT_GACHA_POOL, univId?: string): Record<GachaRarity, ItemDef[]> {
   const out: Record<GachaRarity, ItemDef[]> = { LR: [], UR: [], SR: [], R: [], N: [] };
-  for (const item of gachaItems(pool)) out[gachaRarityOf(item)].push(item);
+  for (const item of gachaItems(pool, univId)) out[gachaRarityOf(item)].push(item);
   return out;
 }
 
 /** 1つのアイテムの提供割合（0〜1） */
-export function gachaItemRate(item: ItemDef, minRarity: GachaRarity = 'N', pool: GachaPoolId = DEFAULT_GACHA_POOL): number {
-  if (!inGachaPool(item.id, pool)) return 0;
-  const table = rarityTable(minRarity, pool);
+export function gachaItemRate(item: ItemDef, minRarity: GachaRarity = 'N', pool: GachaPoolId = DEFAULT_GACHA_POOL, univId?: string): number {
+  if (!inGachaPool(item.id, pool, univId)) return 0;
+  const table = rarityTable(minRarity, pool, univId);
   const tier = gachaRarityOf(item);
   const entry = table.find(t => t.rarity === tier);
   if (!entry) return 0;
-  return entry.rate / gachaItemsByRarity(pool)[tier].length;
+  return entry.rate / gachaItemsByRarity(pool, univId)[tier].length;
 }
 
 /** minRarity 以上だけで割合を振り直した表（5連の「R以上確定」枠で使う） */
-function rarityTable(minRarity: GachaRarity, pool: GachaPoolId = DEFAULT_GACHA_POOL) {
-  const groups = gachaItemsByRarity(pool);
+function rarityTable(minRarity: GachaRarity, pool: GachaPoolId = DEFAULT_GACHA_POOL, univId?: string) {
+  const groups = gachaItemsByRarity(pool, univId);
   const allowed = GACHA_RARITY_ORDER.slice(0, GACHA_RARITY_ORDER.indexOf(minRarity) + 1).filter(r => groups[r].length > 0);
   const sum = allowed.reduce((n, r) => n + GACHA_RARITY_RATES[r], 0);
   return allowed.map(r => ({ rarity: r, rate: GACHA_RARITY_RATES[r] / sum }));
 }
 
 /** 乱数 [0,1) → アイテム。前半で枠を決め、枠の中の位置は同じ乱数を引き伸ばして使う（乱数1個で決まる） */
-export function pickGachaItem(random: number, minRarity: GachaRarity = 'N', pool: GachaPoolId = DEFAULT_GACHA_POOL): { item: ItemDef; rarity: GachaRarity } | null {
+export function pickGachaItem(random: number, minRarity: GachaRarity = 'N', pool: GachaPoolId = DEFAULT_GACHA_POOL, univId?: string): { item: ItemDef; rarity: GachaRarity } | null {
   if (!Number.isFinite(random) || random < 0 || random >= 1) return null;
-  const groups = gachaItemsByRarity(pool);
+  const groups = gachaItemsByRarity(pool, univId);
   let acc = 0;
-  for (const { rarity, rate } of rarityTable(minRarity, pool)) {
+  for (const { rarity, rate } of rarityTable(minRarity, pool, univId)) {
     if (random < acc + rate || rate === 0) {
       const within = Math.min(0.999999999, Math.max(0, (random - acc) / rate));
       const list = groups[rarity];
@@ -66,7 +77,7 @@ export function pickGachaItem(random: number, minRarity: GachaRarity = 'N', pool
     }
     acc += rate;
   }
-  const last = rarityTable(minRarity, pool).at(-1);
+  const last = rarityTable(minRarity, pool, univId).at(-1);
   const list = last ? groups[last.rarity] : [];
   return list.length ? { item: list[list.length - 1], rarity: last!.rarity } : null;
 }
@@ -78,10 +89,11 @@ export function matchCoins(match: MatchSummaryForGrowth) {
   const victory = active && match.outcome === 'win' ? 10 : 0;
   return { finish, correct, victory, total: finish + correct + victory };
 }
-export function rollGacha(progress: GrowthProgress, random: number, minRarity: GachaRarity = 'N', options: { cost?: number; refundDuplicates?: boolean; pool?: GachaPoolId } = {}) {
-  const cost = options.cost ?? GACHA_COST;
+export function rollGacha(progress: GrowthProgress, random: number, minRarity: GachaRarity = 'N', options: { cost?: number; refundDuplicates?: boolean; pool?: GachaPoolId; univId?: string } = {}) {
+  const pool = options.pool ?? DEFAULT_GACHA_POOL;
+  const cost = options.cost ?? gachaCostOf(pool);
   if (!Number.isFinite(cost) || cost < 0 || !Number.isFinite(random) || random < 0 || random >= 1 || progress.coins < cost) return null;
-  const picked = pickGachaItem(random, minRarity, options.pool ?? DEFAULT_GACHA_POOL);
+  const picked = pickGachaItem(random, minRarity, pool, options.univId);
   if (!picked) return null;
   const { item, rarity } = picked;
   const duplicate = progress.owned.includes(item.id);

@@ -1,0 +1,7 @@
+Number 2. How much did the contractor quote us for soundproofing the studio?
+<break time="1.0s" />
+A. You can quote me on that.
+<break time="0.8s" />
+B. Thick acoustic panels.
+<break time="0.8s" />
+C. Just under nine thousand dollars.

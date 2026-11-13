@@ -1,0 +1,7 @@
+Number 5. When is the final draft of the annual shareholders' report due?
+<break time="1.0s" />
+A. Let me check the production calendar on the wall.
+<break time="0.8s" />
+B. To all current shareholders.
+<break time="0.8s" />
+C. A breezy draft from the hallway.

@@ -144,11 +144,11 @@ export const SUBJECT_REGISTRY = [
     label: 'TOEIC',
     shortLabel: 'TOEIC',
     enabled: true,
-    chapterIdPattern: /^tp[567]_\d+$/,
+    chapterIdPattern: /^tp[l567]_\d+$/,
     entry: 'chapters',
     // Firestore ルール（classrooms.subject）に無いので、クラス作成の一覧には出さない
     classroom: false,
-    practiceDescription: 'TOEIC L&R Part 5（短文穴埋め・1回30問）・Part 6（長文穴埋め・1回16問）・Part 7（読解・1回24問）を解きます。全問に和訳と選択肢ごとの理由がつきます。',
+    practiceDescription: 'TOEIC L&R リスニング（応答・会話・説明文・1回12問）・Part 5（短文穴埋め・1回30問）・Part 6（長文穴埋め・1回16問）・Part 7（読解・1回24問）を解きます。全問に和訳と選択肢ごとの理由がつきます。',
     // リスニング（ミント）・英文法（琥珀）と見違えないよう、藍色
     theme: {
       label: 'TOEIC',

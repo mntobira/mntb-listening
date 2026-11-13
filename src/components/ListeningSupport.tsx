@@ -12,7 +12,7 @@ function ReadAloud({text}:{text:string}&React.Attributes) {
   useEffect(()=>{active.current=true;return()=>{active.current=false;stopSpeech();};},[text]);
   const play=()=>{
     if(playing){stopSpeech();setPlaying(false);return;}
-    pauseAllAudio();
+    pauseAllAudio(null, undefined, { keepBgm: true });
     const ok=speak('listening-support',text,1,{rate:.85,onEnd:()=>{if(active.current)setPlaying(false);}});
     setPlaying(ok);
   };

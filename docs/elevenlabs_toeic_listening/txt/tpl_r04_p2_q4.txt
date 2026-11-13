@@ -1,0 +1,7 @@
+Number 4. Let's hold the team lunch on the outdoor terrace today.
+<break time="1.0s" />
+A. Isn't it supposed to rain at noon?
+<break time="0.8s" />
+B. A soup and salad combo.
+<break time="0.8s" />
+C. Twelve team members.

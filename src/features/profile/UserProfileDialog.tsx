@@ -6,14 +6,16 @@
  *   ・窓の右上に「通報・ブロック」（既存の UserSafetyMenu）
  */
 import { useEffect, useRef, useState } from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, Swords } from 'lucide-react';
 import { fetchPublicStudyProfile, type PublicStudyProfile } from '../../utils/publicStudyProfile';
 import { UserSafetyMenu } from '../safety/UserSafetyMenu';
 import { isBlocked, type ReportTarget } from '../safety/userSafety';
-import { displaySafeNickname } from '../safety/nicknameFilter';
+import { displaySafeNickname, displaySafePublicText } from '../safety/nicknameFilter';
 import { PublicProfileView, type PublicBattleStats } from './PublicProfileView';
 import { fetchFriendBattleRanking } from '../../battle/data/battleRanking';
 import { fetchUserPosts, type StudyPost } from '../studylog/studyFeed';
+import { subjectLabel } from '../studylog/manualLogCore';
+import { formatStudyTime } from '../../utils/studyTime';
 
 export interface ProfileTarget {
   uid: string;
@@ -82,9 +84,32 @@ export function UserProfileDialog({ target, onClose }: { target: ProfileTarget |
           <PublicProfileView profile={state.profile} fallbackName={target.nickname}
             battle={extra.uid === target.uid ? extra.battle : null} posts={extra.uid === target.uid ? extra.posts : []} />
         ) : (
-          <div className="pp-private" data-profile-private>
-            <Lock size={28} aria-hidden="true" />
-            <p>この人はプロフィールを公開していません。</p>
+          <div className="pp-view">
+            <div className="pp-private" data-profile-private>
+              <Lock size={28} aria-hidden="true" />
+              <p>この人はプロフィールを公開していません。</p>
+              {extra.uid === target.uid && extra.battle && extra.battle.wins + extra.battle.losses + extra.battle.draws > 0 && (
+                <p className="pp-tags" data-public-battle>
+                  <span><Swords size={14} aria-hidden="true" />対戦 {extra.battle.wins}勝{extra.battle.losses}敗 · レート {extra.battle.rating.toLocaleString()}</span>
+                </p>
+              )}
+            </div>
+            {extra.uid === target.uid && extra.posts.length > 0 && (
+              <div className="pp-page" data-pp-page="posts">
+                <ul className="pp-posts" aria-label="フレンドに共有した学習記録">
+                  {extra.posts.map((p) => (
+                    <li key={p.id}>
+                      <span>
+                        <strong>{subjectLabel(p.subject)}{p.materialName ? `・${displaySafePublicText(p.materialName)}` : ''}</strong>
+                        {p.comment && <small>{displaySafePublicText(p.comment, 140)}</small>}
+                      </span>
+                      <b>{formatStudyTime(p.minutes * 60)}</b>
+                    </li>
+                  ))}
+                </ul>
+                <p className="ps-help pp-note">フレンドだけに共有された記録です（本人の自己申告）。</p>
+              </div>
+            )}
           </div>
         )}
       </div>

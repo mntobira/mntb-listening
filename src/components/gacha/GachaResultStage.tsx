@@ -35,11 +35,13 @@ function SetCompleteNote({ sets }: { sets: string[] }) {
 }
 
 /** 1回引いた結果 */
-export function GachaSingleResult({ result, progress, freeResult, collectionLine, setResult, setError }: {
+export function GachaSingleResult({ result, progress, freeResult, cost = GACHA_COST, collectionLine, setResult, setError }: {
   result: GachaDrawResult;
   progress: GrowthProgress | null;
   /** 動画の無料抽選だったか（重複してもコインは返さない） */
   freeResult: boolean;
+  /** この抽選で使ったマナコイン（共通テスト・2次＝100、大学選択＝500） */
+  cost?: number;
   collectionLine: ReactNode;
   setResult: (next: GachaDrawResult | null) => void;
   setError: (message: string) => void;
@@ -71,7 +73,7 @@ export function GachaSingleResult({ result, progress, freeResult, collectionLine
             <Badge tone="muted">もう持っている</Badge>
             {freeResult
               ? '無料抽選のためコイン返還はありません'
-              : `${result.refund} マナコイン返還（実質 ${GACHA_COST - result.refund}枚）`}
+              : `${result.refund} マナコイン返還（実質 ${Math.max(0, cost - result.refund)}枚）`}
             {!!result.shards && ` · かけら +${result.shards}`}
           </>
         ) : (

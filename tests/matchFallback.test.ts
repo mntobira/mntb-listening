@@ -7,7 +7,7 @@ import {
   isStaleQueueTicket,
   quotaBlockedUntil,
 } from '../src/battle/core/matchFallback';
-import { ghostProfileFor, decideAiMove, GHOST_RATING_SPREAD } from '../src/battle/core/aiOpponent';
+import { ghostProfileFor, decideAiMove, GHOST_RATING_SPREAD, GHOST_ARCHETYPE_IDS } from '../src/battle/core/aiOpponent';
 
 const base = { elapsedSec: 0, failures: 0, lastErrorCode: null, online: true, quotaBlocked: false };
 
@@ -60,9 +60,9 @@ describe('AI プレイヤーの強さ・名前', () => {
   it('同じ種なら同じ相手（試合中に名前や強さが変わらない）', () => {
     expect(ghostProfileFor(1500, 'x')).toEqual(ghostProfileFor(1500, 'x'));
   });
-  // B7（2026-10-29）：弱い人〜強い人まで出るよう ±90 → ±320 に広げた（近い相手ほど出やすい三角分布）
-  it('レートは自分の ±320 以内・近い相手が多い・名前は毎回いろいろ', () => {
+  it('レートは自分の ±480 以内・近い相手を中心に出しつつ格上〜格下・8タイプの個性が出る', () => {
     const names = new Set<string>();
+    const archetypes = new Set<string>();
     const diffs: number[] = [];
     for (let i = 0; i < 400; i += 1) {
       const p = ghostProfileFor(1600, `s${i}`);
@@ -70,19 +70,36 @@ describe('AI プレイヤーの強さ・名前', () => {
       expect(d).toBeLessThanOrEqual(GHOST_RATING_SPREAD);
       expect(p.speedRange[0]).toBeLessThanOrEqual(p.speedRange[1]);
       expect(p.human).toBeTruthy();
+      if (p.human?.archetype) archetypes.add(p.human.archetype);
       diffs.push(d);
       names.add(p.name);
     }
-    expect(names.size).toBeGreaterThan(30);
-    expect(diffs.filter(d => d > 200).length).toBeGreaterThan(5);          // たまに格上・格下
-    expect(diffs.filter(d => d <= 120).length).toBeGreaterThan(diffs.length / 3); // 近い相手が多い
+    expect(names.size).toBeGreaterThan(40);
+    expect(archetypes.size).toBe(GHOST_ARCHETYPE_IDS.length);
+    expect(diffs.filter(d => d > 200).length).toBeGreaterThan(30);         // 格上・格下もしっかり混ざる
+    expect(diffs.filter(d => d > 320).length).toBeGreaterThan(10);         // 大幅な格上・格下もたまに出る
+    expect(diffs.filter(d => d <= 150).length).toBeGreaterThan(diffs.length / 3); // 近い相手が中心
   });
-  it('レートが高い相手ほど正解率が高い（0.30〜0.97）', () => {
-    const avg = (r: number) => Array.from({ length: 100 }, (_, i) => ghostProfileFor(r, `a${i}`).accuracy).reduce((a, b) => a + b) / 100;
+  it('レートが高い相手ほど平均正解率が高く、全体では 0.22〜0.98 の幅広い強さになる', () => {
+    const avg = (r: number) => Array.from({ length: 120 }, (_, i) => ghostProfileFor(r, `a${i}`).accuracy).reduce((a, b) => a + b) / 120;
     expect(avg(1100)).toBeLessThan(avg(1500));
     expect(avg(1500)).toBeLessThan(avg(2000));
-    expect(avg(900)).toBeGreaterThanOrEqual(0.3);
-    expect(avg(2600)).toBeLessThanOrEqual(0.97);
+    const lowMin = Math.min(...Array.from({ length: 120 }, (_, i) => ghostProfileFor(900, `l${i}`).accuracy));
+    const highMax = Math.max(...Array.from({ length: 120 }, (_, i) => ghostProfileFor(2600, `h${i}`).accuracy));
+    expect(lowMin).toBeGreaterThanOrEqual(0.22);
+    expect(lowMin).toBeLessThan(0.35);
+    expect(highMax).toBeLessThanOrEqual(0.98);
+    expect(highMax).toBeGreaterThan(0.9);
+  });
+  it('同じ中堅レート帯でも、早押し型と熟考型で解答スピード・正答率に明確な差が出る', () => {
+    const profiles = Array.from({ length: 300 }, (_, i) => ghostProfileFor(1500, `style-${i}`));
+    const rush = profiles.filter(p => p.human?.archetype === 'rush');
+    const careful = profiles.filter(p => p.human?.archetype === 'careful');
+    expect(rush.length).toBeGreaterThan(5);
+    expect(careful.length).toBeGreaterThan(5);
+    const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+    expect(mean(rush.map(p => p.speedRange[0]))).toBeLessThan(mean(careful.map(p => p.speedRange[0])));
+    expect(mean(rush.map(p => p.accuracy))).toBeLessThan(mean(careful.map(p => p.accuracy)));
   });
   it('人間らしい間：同じ相手でも問題ごとに答える時間がばらつく', () => {
     const p = ghostProfileFor(1500, 'human');

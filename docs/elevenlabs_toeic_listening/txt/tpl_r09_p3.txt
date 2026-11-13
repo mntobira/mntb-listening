@@ -1,0 +1,11 @@
+[Woman] Good afternoon, David. Did you have a chance to tour the two retail spaces we're considering for our fourth bakery-café?
+<break time="0.6s" />
+[Man] I visited both this morning. The corner unit on Maple Avenue gets tremendous foot traffic from the commuter rail station, though the monthly rent is fifteen percent above our initial target.
+<break time="0.6s" />
+[Woman] And how was the second space—the one inside the Elmwood Office Plaza?
+<break time="0.6s" />
+[Man] The rent is much more reasonable, and it already has commercial kitchen ventilation installed, which would save us thousands in remodeling costs. However, the building is almost empty on weekends.
+<break time="0.6s" />
+[Woman] Hmm, weekend brunch accounts for nearly forty percent of sales at our other three cafés. Paying higher rent on Maple Avenue might still pay off if weekend volume is strong.
+<break time="0.6s" />
+[Man] True. Let's ask the Maple Avenue landlord whether they'd lower the first-year rent if we sign a five-year lease instead of three.

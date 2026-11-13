@@ -140,7 +140,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
 
   const activeGroup = groups.find(group => group.title === activeGroupTitle) || groups[0];
   const toeicTabs = isToeic && groups.length > 1;
-  const toeicSub = activeGroup?.title === 'Part 7' ? 'Part 7 読解・1回7セット24問・4択'
+  const toeicSub = activeGroup?.title === 'リスニング' ? 'リスニング（Part 2〜4）・1回12問'
+    : activeGroup?.title === 'Part 7' ? 'Part 7 読解・1回7セット24問・4択'
     : activeGroup?.title === 'Part 6' ? 'Part 6 長文穴埋め・1回16問・4択' : 'Part 5 短文穴埋め・1回30問・4択';
   /** 科目全体での通し番号（①〜⑳ → 01.〜20.）。タブを切り替えても番号が振り直されないようにする。 */
   const chapterNumberById = useMemo(() => {
@@ -207,7 +208,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
             {groups.map((group, index) => {
               const isActive = group.title === activeGroup?.title;
               const { kicker: chapterNumber, label: shortTitle } = isToeic
-                ? { kicker: String(group.chapters[0]?.abstractTitle || '').replace(/^Part \d+\s*/, ''), label: group.title }
+                ? { kicker: String(group.chapters[0]?.abstractTitle || '').replace(/^(?:Part \d+|リスニング)\s*/, ''), label: group.title }
                 : group.kicker
                 ? { kicker: `${group.kicker}・${group.chapters.length}単元`, label: group.label as string }
                 : splitTabTitle(group.title, index);

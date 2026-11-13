@@ -1,0 +1,9 @@
+[Man] Excuse me, Ms. Lindholm. Several people in the accounting suite mentioned that the air-conditioning stopped working about an hour ago.
+<break time="0.6s" />
+[Woman] Thanks for letting me know, Sam. Building maintenance is already on the roof replacing a worn fan belt, and they expect the cooling system to be back on by three o'clock.
+<break time="0.6s" />
+[Man] That's a relief, though our team has a two-hour audit call starting at one thirty, and that room gets warm quickly because of the west windows.
+<break time="0.6s" />
+[Woman] Good point. Training Room C on the north side is on a separate cooling unit and isn't booked this afternoon.
+<break time="0.6s" />
+[Man] Perfect. I'll reserve Training Room C right away and message our team to bring their laptops there.

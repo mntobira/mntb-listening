@@ -229,7 +229,11 @@ export function FriendPanel() {
                 <button type="button" className="min-h-11 shrink-0 rounded-xl border border-[#cfd8e3] bg-white px-2.5 text-xs font-bold text-[#2C3E50]"
                   onClick={() => setOpenProfile({ uid: req.fromUid, nickname: req.fromNickname, where: 'friend' })}
                   aria-label={`${name} さんのプロフィールを表示`} data-friend-request-profile>プロフィール</button>
-                <UserSafetyMenu target={{ uid: req.fromUid, nickname: req.fromNickname, where: 'friend' }} />
+                <UserSafetyMenu
+                  target={{ uid: req.fromUid, nickname: req.fromNickname, where: 'friend' }}
+                  triggerVariant="dots"
+                  onProfile={() => setOpenProfile({ uid: req.fromUid, nickname: req.fromNickname, where: 'friend' })}
+                />
                 <button disabled={loading} aria-label={`${req.fromNickname}さんを承認`} onClick={() => runAction(() => acceptFriendRequest(req), `${req.fromNickname} さんとフレンドになりました。`)} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 disabled:opacity-40"><Check size={16} /></button>
                 <button disabled={loading} aria-label={`${req.fromNickname}さんを拒否`} onClick={() => runAction(() => rejectFriendRequest(req), '申請を拒否しました。')} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-red-50 text-red-600 border border-red-100 disabled:opacity-40"><X size={16} /></button>
               </div>
@@ -273,24 +277,38 @@ export function FriendPanel() {
         ) : friends.length === 0 ? (
           <div className="text-xs text-gray-600 bg-gray-50 rounded-2xl p-3 flex items-center gap-2"><DoorMascot showSpeech={false} size="mini" className="w-auto" /><span>まだフレンドはいません。上の「あなたのコード」を友だちに伝えるか、友だちのコードを入れて「申請」しましょう（小文字や「MNTB-」なしでも送れます）。</span></div>
         ) : (
-          friends.map((f) => (
-            <div key={f.uid} className="flex items-center gap-2.5 bg-gray-50 border border-gray-150 rounded-2xl px-2.5 py-1.5">
-              <Avatar name={f.nickname} url={f.photoURL} />
-              <span className="min-w-0 flex-1">
-                {publicProfiles[f.uid]
-                  ? <button type="button" className="pp-open" onClick={() => setOpenProfile({ uid: f.uid, nickname: f.nickname, where: 'friend' })} aria-label={`${displaySafeNickname(f.nickname)} さんのプロフィールを見る`}><span className="block text-sm font-bold text-[#1B2631] truncate underline decoration-dotted underline-offset-2">{displaySafeNickname(f.nickname)}</span></button>
-                  : <span className="block text-sm font-bold text-[#1B2631] truncate">{displaySafeNickname(f.nickname)}</span>}
-                {publicProfiles[f.uid] && (() => { const pp = publicProfiles[f.uid]; return <>
-                  <span className="block truncate text-xs font-bold text-[#425c6d]" data-friend-public>
-                    {displaySafePublicText(pp.targetSchool) || '志望校未設定'} · 学習 {formatStudyTime(pp.studySeconds)}{pp.stagesCleared != null ? ` · 達成 ${pp.stagesCleared}` : ''}{pp.level != null ? ` · Lv.${pp.level}` : ''}
-                  </span>
-                  {pp.motto && <span className="block truncate text-xs font-bold text-[#6b5a3a]">「{displaySafePublicText(pp.motto)}」</span>}
-                </>; })()}
-              </span>
-              <UserSafetyMenu target={{ uid: f.uid, nickname: f.nickname, where: 'friend' }} />
-              <button disabled={loading} onClick={() => { if (confirmAction(`${f.nickname} さんとのフレンド関係を解除しますか？`)) runAction(() => removeFriend(f.uid), 'フレンドを解除しました。'); }} className="min-h-11 shrink-0 px-1.5 text-xs font-bold text-red-600 hover:underline disabled:opacity-40">解除</button>
-            </div>
-          ))
+          friends.map((f) => {
+            const safeName = displaySafeNickname(f.nickname);
+            const openFriendProfile = () => setOpenProfile({ uid: f.uid, nickname: f.nickname, where: 'friend' });
+            return (
+              <div key={f.uid} className="flex items-center gap-2.5 bg-gray-50 border border-gray-150 rounded-2xl px-2.5 py-1.5" data-friend-row>
+                <Avatar name={f.nickname} url={f.photoURL} />
+                <span className="min-w-0 flex-1">
+                  <button
+                    type="button"
+                    className="pp-open"
+                    onClick={openFriendProfile}
+                    aria-label={`${safeName} さんのプロフィールを見る`}
+                    data-friend-profile-open
+                  >
+                    <span className="block text-sm font-bold text-[#1B2631] truncate underline decoration-dotted underline-offset-2">{safeName}</span>
+                  </button>
+                  {publicProfiles[f.uid] && (() => { const pp = publicProfiles[f.uid]; return <>
+                    <span className="block truncate text-xs font-bold text-[#425c6d]" data-friend-public>
+                      {displaySafePublicText(pp.targetSchool) || '志望校未設定'} · 学習 {formatStudyTime(pp.studySeconds)}{pp.stagesCleared != null ? ` · 達成 ${pp.stagesCleared}` : ''}{pp.level != null ? ` · Lv.${pp.level}` : ''}
+                    </span>
+                    {pp.motto && <span className="block truncate text-xs font-bold text-[#6b5a3a]">「{displaySafePublicText(pp.motto)}」</span>}
+                  </>; })()}
+                </span>
+                <UserSafetyMenu
+                  target={{ uid: f.uid, nickname: f.nickname, where: 'friend' }}
+                  triggerVariant="dots"
+                  onProfile={openFriendProfile}
+                />
+                <button disabled={loading} onClick={() => { if (confirmAction(`${f.nickname} さんとのフレンド関係を解除しますか？`)) runAction(() => removeFriend(f.uid), 'フレンドを解除しました。'); }} className="min-h-11 shrink-0 px-1.5 text-xs font-bold text-red-600 hover:underline disabled:opacity-40">解除</button>
+              </div>
+            );
+          })
         )}
       </div>
       <UserProfileDialog target={openProfile} onClose={() => setOpenProfile(null)} />

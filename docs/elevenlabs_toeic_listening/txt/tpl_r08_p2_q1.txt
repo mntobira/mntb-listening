@@ -1,0 +1,7 @@
+Number 1. Who will give the safety tour to the visiting engineers?
+<break time="1.0s" />
+A. Around the packaging floor.
+<break time="0.8s" />
+B. Hard hats and steel-toe boots.
+<break time="0.8s" />
+C. Our shift supervisor, Mr. Benitez.

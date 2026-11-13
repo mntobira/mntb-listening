@@ -1,3 +1,37 @@
+## 2026-11-12 英単語再生時のBGM維持・全国対戦AIバリエーション拡充・TOEIC リスニング全15回追加
+
+- 英単語音源の再生中に BGM を止めない対応（`pauseAllAudio` / `sayWord` / `say`）：
+  - `App.tsx` の BGM 用 `<audio>` に `data-bgm-audio` 属性を付与し、`pauseAllAudio(..., { keepBgm: true })` を新設。
+  - 英単語帳・英単語4択・リスニング単語読み上げで単語音声を鳴らしても BGM は継続し、リスニング本編プレーヤーでは従来どおり BGM を一時停止する。
+- 全国対戦 AI（ゴースト）の強さ・手筋バリエーション拡充（`aiOpponent.ts` / `functions/core.mjs`）：
+  - レート幅を `±320` から `±480`（3段階混合分布）へ拡大し、8種類のプレイスタイル（標準・早押し特化・慎重高精度・波あり・かな入力巧者・ルーキー・格上チャレンジャー・ベテラン）と設問ごとのリズムゆらぎを追加。
+- TOEIC リスニング（`tpl_1`：Part 2 応答6問・Part 3 会話3問・Part 4 説明文3問＝1回12問×全15回＝180問・120トラック）：
+  - TOEIC の単元選択タブ先頭に「リスニング」を追加し、`ToeicPageQuiz` 上部に音声再生バー（`ToeicListeningAudioBar`：0.85x/1.0x/1.15x 速度切替・採点後スクリプト＆全訳表示）を統合。
+  - ElevenLabs 収録 MP3（`public/audio/toeic_listening/<trackId>.mp3`）優先＋未収録時は Web Speech API 対話読み上げへ自動フォールバック。
+  - ElevenLabs 収録用スクリプト PDF（全31ページ・120トラック分の非合字コピー枠つき）と一括取込スクリプト（`scripts/toeic-listening-audio/`）を追加。
+- 対象：`src/utils/audioElements.ts`、`src/App.tsx`、`src/components/foundationShared.tsx`、`src/components/ListeningSupport.tsx`、`src/battle/core/aiOpponent.ts`、`functions/core.mjs`、`src/data/toeic/toeicListening*.ts`、`src/utils/toeicListeningAudio.ts`、`src/components/toeic/ToeicListeningAudioBar.tsx`、`src/components/toeic/ToeicPageQuiz.tsx`、`src/components/toeic/toeicPageModel.ts`、`src/components/toeic/toeicTimeBudget.ts`、`src/components/toeic/toeic-page.css`、`src/data/toeic/toeicData.ts`、`src/data/subjects.ts`、`src/components/ChapterSelection.tsx`、`src/data/studyCatalog.ts`、`scripts/toeic-listening-audio/`、`docs/elevenlabs_toeic_listening/`。
+- 戻し方：この変更を revert。
+
+## 2026-11-12 フレンド一覧「…」メニューからのプロフィール表示と大学選択ガチャ（1回500枚）の新設
+
+- フレンド一覧（`FriendPanel` / `UserSafetyMenu` / `UserProfileDialog`）：
+  - `UserSafetyMenu` に `triggerVariant?: 'detail' | 'dots'` を追加し、フレンド一覧および届いている申請の「…」ボタンの見た目を維持したまま、メニュー最上段に「プロフィールを見る」を表示して `UserProfileDialog` を開けるようにした（ランキングの「詳細」表記は従来どおり）。
+  - フレンド一覧の名前タップでも全行でプロフィール画面を開けるようにし、公開プロフィール未設定のフレンドでも対戦記録・フレンド共有記録があれば閲覧できるようにした。
+- 大学選択ガチャ（`GachaPoolId: 'univ'`、1回500マナコイン／10＋1連5,000マナコイン）：
+  - ガチャ切替タブ・左右スワイプに「大学選択」を新設。地方の棚（北海道・東北／関東・中部／近畿／中国・四国／九州・沖縄）＋名前検索で大学（学部・系統別）を選べる `GachaUniversityModal` を追加。
+  - 選んだ大学の英語予想問題（第1〜3回）だけが LR 枠に入り、他大学の予想問題は一切混ざらない。1回500マナコイン（動画無料抽選の対象外）。1画面収まりのレイアウトは全画面サイズで維持。
+- 対象：`src/features/safety/UserSafetyMenu.tsx`、`src/components/FriendPanel.tsx`、`src/features/profile/UserProfileDialog.tsx`、`src/battle/core/gachaPools.ts`、`src/battle/core/arenaEconomy.ts`、`src/battle/core/gachaFeatured.ts`、`src/battle/data/growthStore.ts`、`src/components/GachaRoom.tsx`、`src/components/gacha/GachaPoolCarousel.tsx`、`src/components/gacha/GachaUniversityModal.tsx`、`src/components/gacha/GachaCollectionModal.tsx`、`src/components/gacha/GachaPickupModal.tsx`、`src/components/gacha/GachaItemDetail.tsx`、`src/components/gacha/GachaResultStage.tsx`、`src/components/gacha.css`、`tests/nijiGacha.test.ts`、`tests/univGachaAndFriendProfile.test.ts`。
+- 戻し方：この変更を revert。
+
+## 2026-11-12 TOEIC 回答中の時間カウントバーで現在の経過時間を可視化
+
+- 回全体のタイマー（`ToeicTimer`）：回答中に「経過 m:ss」と「残り m:ss ／ 目安」を並べて表示し、バーを 4px（25%ごとの目盛り＋現在位置マーカーつき）にして進み具合を見やすくした。
+- ページ別の時間ガイドバー（`ToeicPageQuiz` の `.tp-budget`）：見出しに「経過 m:ss／限界 m:ss」を追加し、バー上に経過時間の塗り（`.tp-budget-progress`）と現在位置マーカー（`.tp-budget-now`）を表示。目標以内は紺、余白帯は琥珀、限界超過は落ち着いたスレートグレーで変化させ（赤や点滅は使わない）、採点済みのページではそのページにかかった時間で固定表示する。
+- 対象：`src/components/toeic/ToeicTimer.tsx`、`src/components/toeic/ToeicPageQuiz.tsx`、`src/components/toeic/toeicTimeBudget.ts`、`src/components/toeic/toeic-page.css`、`tests/toeicTimeBudget.test.ts`。
+- 戻し方：この変更を revert。
+
+---
+
 ## 2026-11-07 リスニング絵問題7図をカラー版へ差し替え
 
 - 第1問B・第1回/9回/12回/14回/15回と第2問・第1回/12回の絵問題をカラー図版へ差し替え。バッグ問題を含む対象7画像のみ変更し、その他の図版や英文法音声UIは変更しない。

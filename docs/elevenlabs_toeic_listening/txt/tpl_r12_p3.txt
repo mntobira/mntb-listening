@@ -1,0 +1,11 @@
+[Woman] Good morning, Mr. Alverez. I'm calling from Bayside Grand Hotel to finalize the lunch menu for Friday's healthcare innovation forum. Are we still expecting one hundred and twenty guests?
+<break time="0.6s" />
+[Man] Actually, late registrations pushed our headcount up to one hundred and thirty-five. Also, twelve attendees indicated on their forms that they need gluten-free meals.
+<break time="0.6s" />
+[Woman] Adding fifteen seats in the Harbor Ballroom is no problem at all, and our chef can prepare grilled herb chicken with quinoa for the gluten-free plates. We'll place small green cards at their table settings so servers can spot them easily.
+<break time="0.6s" />
+[Man] That sounds very organized. One more thing—our keynote speaker's flight lands a little late, so could you push lunch service back from twelve o'clock to twelve thirty?
+<break time="0.6s" />
+[Woman] Twelve thirty works fine. I'll send over the updated banquet order within the hour—just e-mail back your signature by five P.M. today so we can lock in the kitchen order.
+<break time="0.6s" />
+[Man] Perfect, I'll watch for your e-mail.

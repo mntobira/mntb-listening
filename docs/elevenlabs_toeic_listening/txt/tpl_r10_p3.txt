@@ -1,0 +1,11 @@
+[Woman] Hi, Marcus. Thanks for compiling the employee survey results about our internal intranet portal. What stood out to you the most?
+<break time="0.6s" />
+[Man] Over seventy percent of respondents said the search bar returns too many outdated policy PDFs from three or four years ago. People waste ten minutes just trying to find the current travel reimbursement form.
+<break time="0.6s" />
+[Woman] I've run into that myself! Can we archive old documents automatically so only current versions show up in search results?
+<break time="0.6s" />
+[Man] Yes, the web developer said she can add a filter by next Wednesday, provided each department tags its active files first.
+<break time="0.6s" />
+[Woman] Okay, HR and Finance have the largest document libraries. Could you set up a brief fifteen-minute call with both department coordinators tomorrow to explain how the tagging works?
+<break time="0.6s" />
+[Man] Will do. I'll also put together a one-page screenshot guide so they can share it with their teams.

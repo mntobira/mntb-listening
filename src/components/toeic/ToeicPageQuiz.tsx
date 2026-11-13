@@ -12,7 +12,7 @@
  *   ・結果画面へ      … createQuizStepActions の終了処理（ステージ記録・章ベスト送信・onFinish）
  * 共通の ProblemPane / AnswerPane / MultipleChoiceControl / QuizHeader は使わない（リスニング・英文法に影響させない）。
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useMountEffect } from '../../hooks/useMountEffect';
 import { ArrowLeft, Bookmark, BookmarkCheck, Check, CheckCircle2, ChevronLeft, ChevronRight, FileSearch, FileText, ListChecks, MinusCircle, Settings, X, XCircle } from 'lucide-react';
 import type { Chapter, Problem, SubQuestion } from '../../types/curriculum';
@@ -34,13 +34,15 @@ import { safeSetItem } from '../../utils/storageGuard';
 import { isAnswerCorrect } from '../../utils/answerJudge';
 import { formatText } from '../../utils/textFormatter';
 import {
-  buildToeicP7PageBudgets, buildToeicPageBudgets, formatToeicBudgetDelta, formatToeicBudgetTime,
+  buildToeicListeningPageBudgets, buildToeicP7PageBudgets, buildToeicPageBudgets, calcToeicPageElapsedProgress, formatToeicBudgetDelta, formatToeicBudgetTime,
   TOEIC_TIME_PRESETS, type ToeicTimePresetId,
 } from './toeicTimeBudget';
 import {
-  countUnanswered, isToeicPart6Chapter, isToeicPart7Chapter, p6SetOf, p6Snippet, p7EvidenceDoc, p7SetOf, p7Stem, pageFromStoredStep, pageScoreKey,
+  countUnanswered, isToeicListeningChapter, isToeicPart6Chapter, isToeicPart7Chapter, p6SetOf, p6Snippet, p7EvidenceDoc, p7SetOf, p7Stem, pageFromStoredStep, pageScoreKey,
   perPageOf, prefersSingleColumn, splitToeicPages, toeicExplanationFor,
 } from './toeicPageModel';
+import { toeicListeningChoiceTexts, toeicListeningPageAudioOf, toeicListeningStem } from '../../data/toeic/toeicListeningPage';
+import { ToeicListeningAudioBar } from './ToeicListeningAudioBar';
 import { ToeicP6Passage } from './ToeicP6Passage';
 import { ToeicP7Passage } from './ToeicP7Passage';
 import { TOEIC_P7_KIND_LABEL } from '../../data/toeic/toeicPart7Kit';
@@ -81,7 +83,10 @@ function budgetPositionStyle(seconds: number, totalSec: number): React.CSSProper
 }
 
 /** 問の英文（空所 ______ のまま）。元データから引けないときは問題文の「問N　…」の行から取る */
-function stemOf(problem: Problem, sq: SubQuestion): string {
+function stemOf(problem: Problem, sq: SubQuestion, scored = false): string {
+  // リスニング：Part 2 は採点前は音声のみで伏せ、Part 3・4 は印刷設問文
+  const tpl = toeicListeningStem(sq, scored);
+  if (tpl) return tpl;
   // Part 7：設問文（文書はページの上に出す）
   const p7 = p7Stem(sq);
   if (p7) return p7;
@@ -113,7 +118,8 @@ export function ToeicPageQuiz({
   const { rangeStart, rangeEnd } = resolveQuizRange(questions.length, questionRange, currentQuestionIndex);
   const currentQuestion = questions[currentQuestionIndex];
   const subs: SubQuestion[] = useMemo(() => currentQuestion?.subQuestions || [], [currentQuestion]);
-  // Part 5 は6問ずつ、Part 6 は文書1つ（4問）ずつ、Part 7 はセットごとのページ
+  // リスニングは3問ずつ（4ページ）、Part 5 は6問ずつ、Part 6 は文書1つ（4問）ずつ、Part 7 はセットごとのページ
+  const isListening = isToeicListeningChapter(chapter.id);
   const isP6 = isToeicPart6Chapter(chapter.id);
   // Part 7 は1セット（文書1〜3つ＋設問2〜5問）ずつのページ
   const isP7 = isToeicPart7Chapter(chapter.id);
@@ -127,12 +133,13 @@ export function ToeicPageQuiz({
   const safePage = Math.min(Math.max(0, pageIndex), Math.max(0, pages.length - 1));
   const page = useMemo(() => pages[safePage] || [], [pages, safePage]);
   const [timeGuide, setTimeGuide] = useState(readTimeGuideSettings);
-  const pageBudgets = useMemo(() => (isP7 ? buildToeicP7PageBudgets : buildToeicPageBudgets)(
+  const budgetBuilder = isListening ? buildToeicListeningPageBudgets : isP7 ? buildToeicP7PageBudgets : buildToeicPageBudgets;
+  const pageBudgets = useMemo(() => budgetBuilder(
     pages.map((items) => items.map((sq) => ({ skill: sq.skill || toeicExplanationFor(sq)?.skill }))),
     timeGuide.preset,
     Number(currentQuestion?.timeLimitSec) > 0 ? Math.round(Number(currentQuestion?.timeLimitSec)) : 600,
-  ), [isP7, pages, timeGuide.preset, currentQuestion?.timeLimitSec]);
-  const pageBudget = pageBudgets[safePage] || (isP7 ? buildToeicP7PageBudgets : buildToeicPageBudgets)([page], timeGuide.preset)[0];
+  ), [budgetBuilder, pages, timeGuide.preset, currentQuestion?.timeLimitSec]);
+  const pageBudget = pageBudgets[safePage] || budgetBuilder([page], timeGuide.preset)[0];
   const isScored = (i: number) => !!(currentQuestion && pages[i] && run.perStep?.[pageScoreKey(currentQuestion, pages[i])]);
   const pageScored = isScored(safePage);
   const allScored = pages.length > 0 && pages.every((_, i) => isScored(i));
@@ -172,6 +179,8 @@ export function ToeicPageQuiz({
   const pageStartRef = useRef(0);
   const timeUsedRef = useRef(0);
   const lastScoredQuestionRef = useRef<string | null>(null);
+  const budgetProgressRef = useRef<HTMLSpanElement>(null);
+  const budgetNowRef = useRef<HTMLSpanElement>(null);
   const roundLimit = Number(currentQuestion?.timeLimitSec) > 0 ? Math.round(Number(currentQuestion?.timeLimitSec)) : 600;
   const pageLimit = Math.max(30, Math.round(roundLimit * (page.length / Math.max(1, subs.length))));
   // Part 7 はセットごとに設問の数が違うので、限界は設問の数に比例させる
@@ -179,6 +188,19 @@ export function ToeicPageQuiz({
     ? roundLimit * ((pages[i]?.length ?? 0) / Math.max(1, subs.length))
     : pageBudgets.length > 0 ? roundLimit / pageBudgets.length : roundLimit);
   const guidePageLimitSec = guidePageLimitOf(safePage);
+  const livePageElapsedSec = Math.max(0, elapsedSec - Math.floor(pageStartRef.current));
+  const activePageElapsedSec = pageScored
+    ? Math.max(0, Math.round(pageScoreRecord?.timeUsed ?? 0))
+    : livePageElapsedSec;
+  const pageProgress = calcToeicPageElapsedProgress(activePageElapsedSec, pageBudget.targetSec, guidePageLimitSec);
+  const syncBudgetBarPosition = (rawPageElapsed: number) => {
+    const p = calcToeicPageElapsedProgress(rawPageElapsed, pageBudget.targetSec, guidePageLimitSec);
+    if (budgetProgressRef.current) budgetProgressRef.current.style.width = `${p.elapsedPct}%`;
+    if (budgetNowRef.current) budgetNowRef.current.style.left = `${p.elapsedPct}%`;
+  };
+  useLayoutEffect(() => {
+    syncBudgetBarPosition(pageScored ? (pageScoreRecord?.timeUsed ?? 0) : Math.max(0, elapsedRef.current - pageStartRef.current));
+  }, [pageScored, pageScoreRecord?.timeUsed, safePage, pageBudget.targetSec, guidePageLimitSec, timeGuide.enabled, elapsedSec]);
   const [pageFeedback, setPageFeedback] = useState('');
   const pageFeedbackRef = useRef<Record<number, string>>({});
   useEffect(() => {
@@ -351,6 +373,8 @@ export function ToeicPageQuiz({
     if (hasNextRound) {
       // 範囲が複数の回にまたがるとき（復習ノートからの解き直しなど）は次の回の1ページ目へ
       pageStartRef.current = 0;
+      elapsedRef.current = 0;
+      setElapsedSec(0);
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setPageIndex(0);
       resetPane();
@@ -387,6 +411,8 @@ export function ToeicPageQuiz({
   const p6Doc = isP6 && page[0] ? p6SetOf(page[0]) : null;
   // Part 7 のときは、ページの上（PCでは左）にセットの文書（1〜3つ）を出す
   const p7Doc = isP7 && page[0] ? p7SetOf(page[0]) : null;
+  // リスニングのときは、ページの上に音声再生バーを出す
+  const listeningAudio = isListening && page.length > 0 ? toeicListeningPageAudioOf(page) : null;
   // スマホの切り替えボタンに出す「文書」側の添え書き
   const docPane = p7Doc ? { note: TOEIC_P7_KIND_LABEL[p7Doc.set.kind] } : p6Doc ? { note: `空所 ${page.length}つ` } : null;
   // 「文書で根拠を見る」を押した問題の根拠を、文書ごと（0から）に分ける
@@ -412,7 +438,7 @@ export function ToeicPageQuiz({
     {page.map((sq, idx) => {
       const no = questionNumber(sq, subs.indexOf(sq) + 1);
       const chosen = answers[sq.id] || '';
-      const texts = sq.optionTexts || [];
+      const texts = isListening ? toeicListeningChoiceTexts(sq, pageScored) : (sq.optionTexts || []);
       const ok = pageScored && isAnswerCorrect(sq, chosen);
       const status = !pageScored
         ? (chosen ? 'answered' : attempted[safePage] ? 'unanswered' : 'todo')
@@ -425,8 +451,8 @@ export function ToeicPageQuiz({
           <p className="tp-sentence" id={labelId}>
             <span className="tp-no" aria-hidden="true">{no}</span>
             <span className="tp-sr">問{no}　</span>
-            <StemWithBlank stem={stemOf(currentQuestion, sq)} filled={filled}
-              result={pageScored && chosen ? (ok ? 'right' : 'wrong') : undefined} cues={isP6 || isP7 ? undefined : ex?.cues} />
+            <StemWithBlank stem={stemOf(currentQuestion, sq, pageScored)} filled={filled}
+              result={pageScored && chosen ? (ok ? 'right' : 'wrong') : undefined} cues={isP6 || isP7 || isListening ? undefined : ex?.cues} />
             {(status === 'unanswered' || status === 'blank') && <span className="tp-tag" data-toeic-unanswered>未回答</span>}
           </p>
           <div
@@ -505,23 +531,16 @@ export function ToeicPageQuiz({
   );
 
   const forwardLabel = !pageScored ? 'このページを採点する' : !isLastPage ? '次のページ' : hasNextRound ? '次の回へ' : '結果を見る';
-  const pageElapsedSec = Math.max(0, elapsedSec - Math.floor(pageStartRef.current));
-  const pagePaceStatus = pageElapsedSec > guidePageLimitSec
-    ? '少し遅れ'
-    : pageElapsedSec < pageBudget.targetSec
-      ? `予定より ${formatToeicBudgetDelta(pageBudget.targetSec - pageElapsedSec)} 早い`
-      : pageElapsedSec === pageBudget.targetSec
-        ? '予定どおり'
-        : '余白を使用中';
+  const pagePaceStatus = feedbackForPage(safePage, activePageElapsedSec);
   const totalSlackSec = pageBudgets[pageBudgets.length - 1]?.targetRemainingSec ?? 0;
   const totalSlackLabel = totalSlackSec >= 0
     ? `全体の余白 ${formatToeicBudgetTime(totalSlackSec)}`
     : `全体の余白 不足 ${formatToeicBudgetTime(-totalSlackSec)}`;
-  const targetPosition = pageBudget.targetSec / guidePageLimitSec * 100;
+  const targetPosition = pageProgress.targetPct;
   const targetBarStyle = budgetPositionStyle(pageBudget.targetSec, guidePageLimitSec);
   const slackBandStyle = {
-    left: `${Math.min(100, targetPosition)}%`,
-    width: `${Math.max(0, Math.min(100, 100 - targetPosition))}%`,
+    left: `${pageProgress.targetPct}%`,
+    width: `${pageProgress.slackWidthPct}%`,
   };
 
   return (
@@ -545,7 +564,12 @@ export function ToeicPageQuiz({
         </dl>
       </header>
       <div className="tp-time-row">
-        <ToeicTimer timeLimit={roundLimit} running={!allScored} finished={allScored} onTick={(e) => { elapsedRef.current = e; setElapsedSec(Math.floor(e)); }}
+        <ToeicTimer timeLimit={roundLimit} running={!allScored} finished={allScored}
+          onTick={(e) => {
+            elapsedRef.current = e;
+            setElapsedSec(Math.floor(e));
+            if (!pageScored) syncBudgetBarPosition(Math.max(0, e - pageStartRef.current));
+          }}
           guideStatus={timeGuide.enabled ? totalSlackLabel : undefined} resetKey={`${chapter.id}_${currentQuestionIndex}`} />
         <details className="tp-budget-settings">
           <summary aria-label="時間ガイド設定" title="時間ガイド設定"><Settings size={18} aria-hidden="true" /><span className="tp-sr">時間ガイド設定</span></summary>
@@ -558,21 +582,28 @@ export function ToeicPageQuiz({
           </div>
         </details>
       </div>
-      {timeGuide.enabled && <section className="tp-budget" data-toeic-time-budget data-enabled>
+      {timeGuide.enabled && <section className="tp-budget" data-toeic-time-budget data-enabled data-pace={pageProgress.tone}>
         <div className="tp-budget-headline">
-          <p className="tp-budget-feedback" role="status" data-toeic-page-feedback>{pageFeedback || pagePaceStatus}</p>
+          <div className="tp-budget-status">
+            <span className="tp-budget-elapsed" data-toeic-page-elapsed>
+              <span>経過</span><b>{formatToeicBudgetTime(activePageElapsedSec)}</b><small>／{formatToeicBudgetTime(guidePageLimitSec)}</small>
+            </span>
+            <p className="tp-budget-feedback" role="status" data-toeic-page-feedback>{pageFeedback || pagePaceStatus}</p>
+          </div>
           <ol className="tp-budget-pages" aria-label={`${pages.length}ページ中${safePage + 1}ページ目`} data-toeic-page-progress
-            data-count={isP7 ? pages.length : undefined}
-            style={isP7 ? { width: `${pages.length * 20}px`, gridTemplateColumns: `repeat(${pages.length}, minmax(0, 1fr))` } : undefined}>
-            {Array.from({ length: isP7 ? pages.length : 5 }, (_, index) => <li key={`page-${index}`} data-progress={index < safePage ? 'done' : index === safePage ? 'current' : 'future'} aria-current={index === safePage ? 'step' : undefined} aria-label={`ページ${index + 1}${index < safePage ? '完了' : index === safePage ? '現在' : '未着手'}`}>
+            data-count={isP7 || isListening ? pages.length : undefined}
+            style={isP7 || isListening ? { width: `${pages.length * 20}px`, gridTemplateColumns: `repeat(${pages.length}, minmax(0, 1fr))` } : undefined}>
+            {Array.from({ length: isP7 || isListening ? pages.length : 5 }, (_, index) => <li key={`page-${index}`} data-progress={index < safePage ? 'done' : index === safePage ? 'current' : 'future'} aria-current={index === safePage ? 'step' : undefined} aria-label={`ページ${index + 1}${index < safePage ? '完了' : index === safePage ? '現在' : '未着手'}`}>
               <span aria-hidden="true">{index < safePage ? '✓' : index + 1}</span>
             </li>)}
           </ol>
         </div>
-        <div className="tp-budget-track" role="group" aria-label={`このページの限界時間 ${formatToeicBudgetTime(guidePageLimitSec)}、目標 ${formatToeicBudgetTime(pageBudget.targetSec)}。${pages.length}ページ中${safePage + 1}ページ目`} data-toeic-budget-track>
+        <div className="tp-budget-track" role="group" aria-label={`このページの経過時間 ${formatToeicBudgetTime(activePageElapsedSec)}、目標 ${formatToeicBudgetTime(pageBudget.targetSec)}、限界時間 ${formatToeicBudgetTime(guidePageLimitSec)}。${pages.length}ページ中${safePage + 1}ページ目`} data-toeic-budget-track data-pace={pageProgress.tone}>
           <span className="tp-budget-band" style={slackBandStyle} aria-hidden="true" />
+          <span className="tp-budget-progress" ref={budgetProgressRef} data-toeic-budget-progress aria-hidden="true" />
           <span className="tp-budget-target-label" data-toeic-page-target style={targetBarStyle} data-near-start={targetPosition < 18 || undefined} data-near-end={targetPosition > 82 || undefined} aria-hidden="true">目標 {formatToeicBudgetTime(pageBudget.targetSec)}</span>
           <span className="tp-budget-tick tp-budget-tick-target" style={targetBarStyle} aria-hidden="true" />
+          <span className="tp-budget-now" ref={budgetNowRef} data-toeic-budget-now aria-hidden="true" />
         </div>
       </section>}
 
@@ -609,7 +640,7 @@ export function ToeicPageQuiz({
             {timeGuide.enabled && <p className="tp-result-time" data-toeic-page-time-result>
               時間：かかった {formatToeicBudgetTime(pageScoreRecord?.timeUsed ?? 0)} / 目標 {formatToeicBudgetTime(pageBudget.targetSec)} / 限界 {formatToeicBudgetTime(guidePageLimitSec)}
             </p>}
-            <ol className="tp-result-marks" aria-label="問題ごとの正誤（押すとその問題へ移動）" data-count={isP6 || isP7 ? page.length : undefined}>
+            <ol className="tp-result-marks" aria-label="問題ごとの正誤（押すとその問題へ移動）" data-count={isP6 || isP7 || isListening ? page.length : undefined}>
               {page.map((sq) => {
                 const no = questionNumber(sq, subs.indexOf(sq) + 1);
                 const chosen = answers[sq.id] || '';
@@ -644,6 +675,11 @@ export function ToeicPageQuiz({
             <ToeicP6Passage set={p6Doc.set} setIndex={p6Doc.setIndex} offset={p6Doc.offset} page={page} answers={answers} scored={pageScored}
               focusBlank={pageScored && evFor ? evFor.no : null} />
             {paneNext}
+            {listEl}
+          </div>
+        ) : listeningAudio ? (
+          <div className="tp-listening" data-toeic-listening>
+            <ToeicListeningAudioBar info={listeningAudio} scored={pageScored} pageKey={`${currentQuestion.id}_${safePage}`} />
             {listEl}
           </div>
         ) : listEl}

@@ -1,0 +1,5 @@
+May I have your attention, passengers at Gate B14. Boarding for Pacific Skyways Flight 620 to Vancouver will begin in approximately ten minutes. Because today's flight is completely full, overhead bin space will be very tight.
+<break time="0.8s" />
+If you are seated in Boarding Groups Four or Five and have a wheeled carry-on bag, our gate agents would be happy to check it through to Vancouver free of charge. Anyone who checks a carry-on at the counter right now will receive priority boarding alongside Group Two.
+<break time="0.8s" />
+Please also have your passport open to the photo page along with your boarding pass, as this is an international departure. Families traveling with young children may line up near the podium now. Thank you for your cooperation.

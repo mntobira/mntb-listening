@@ -1,0 +1,7 @@
+Number 6. Which catering company did we hire for Friday's reception?
+<break time="1.0s" />
+A. Around sixty guests.
+<break time="0.8s" />
+B. In the main lobby.
+<break time="0.8s" />
+C. The same one we used in December.

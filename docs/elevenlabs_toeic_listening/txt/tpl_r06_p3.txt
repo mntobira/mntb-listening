@@ -1,0 +1,9 @@
+[Man] Hi, I'm looking for Dr. Miriam Cole's new book on urban architecture, Cities Built for Walking. I checked the architecture shelf, but I didn't see it.
+<break time="0.6s" />
+[Woman] Let me check our inventory system... Ah, that title came out on Tuesday and our first ten copies already sold out this morning.
+<break time="0.6s" />
+[Man] I see. I'm teaching a university seminar next Thursday and need a copy before then. Can you order one from another branch?
+<break time="0.6s" />
+[Woman] Yes, our Riverside store has four copies in stock. I can have one transferred here on Monday's courier van at no extra charge.
+<break time="0.6s" />
+[Man] That's plenty of time before Thursday. Here's my membership card so you can text me when it arrives.

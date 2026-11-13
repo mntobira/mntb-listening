@@ -15,8 +15,8 @@ import { parseAccessory, wallpaperOf } from '../src/battle/core/tobiraParts';
 const hasPdf = (() => { try { execFileSync('pdftotext', ['-v'], { stdio: 'ignore' }); return true; } catch { return false; } })();
 
 describe('2次試験ガチャ：景品', () => {
-  it('ガチャは2種類（共通テスト→2次試験の順）', () => {
-    expect(GACHA_POOLS.map((p) => p.id)).toEqual(['kyotsu', 'niji']);
+  it('ガチャは3種類（共通テスト→2次試験→大学選択の順）', () => {
+    expect(GACHA_POOLS.map((p) => p.id)).toEqual(['kyotsu', 'niji', 'univ']);
   });
   it('LR は2次試験の予想問題だけ。共通テストの予想問題は出ない（その逆も）', () => {
     const niji = gachaItemsByRarity('niji');
@@ -174,11 +174,11 @@ describe('ガチャ画面：左右スワイプで切り替え', () => {
     expect(css).toContain('.gacha-banner-buddy .tb-bubble { padding: 4px 8px; font-size: 12px; line-height: 1.25; }');
     expect(css).toContain('.gacha-banner-hero { min-height: 78px; padding: 5px 8px; gap: 8px; }');
   });
-  it('切替タブ（共通テスト｜2次試験）でも切り替えられ、引くときはそのガチャで抽選する', () => {
+  it('切替タブ（共通テスト｜2次試験｜大学選択）でも切り替えられ、引くときはそのガチャで抽選する', () => {
     expect(carousel).toContain('role="tablist"');
     expect(carousel).toContain('data-gacha-pool-tab');
-    expect(room).toContain('drawGacha(crypto.randomUUID(), owner, pool)');
-    expect(room).toContain('drawGachaMulti(crypto.randomUUID(), owner, pool)');
+    expect(room).toContain('drawGacha(crypto.randomUUID(), owner, pool, scopedUniv)');
+    expect(room).toContain('drawGachaMulti(crypto.randomUUID(), owner, pool, scopedUniv)');
     expect(room).toContain('drawVideoGacha(token, owner, pool)');
   });
   it('見えていないスライドは操作できない（inert・aria-hidden）', () => {

@@ -17,10 +17,20 @@ import {
 const REASONS = Object.keys(REPORT_REASON_LABELS) as ReportReason[];
 
 /**
- * 2026-10-28 A7：onProfile を渡すと、ボタンは「詳細」になり、窓は
+ * 2026-10-28 A7：onProfile を渡すと、ボタンは「詳細」（triggerVariant="dots" のときは「…」のまま）になり、窓は
  *   ① プロフィールを見る ② 運営に通報する ③ ブロックする の3段（名前は窓の見出しに出さない）。
  */
-export function UserSafetyMenu({ target, className = '', onProfile }: { target: ReportTarget; className?: string; onProfile?: () => void }) {
+export function UserSafetyMenu({
+  target,
+  className = '',
+  onProfile,
+  triggerVariant = 'detail',
+}: {
+  target: ReportTarget;
+  className?: string;
+  onProfile?: () => void;
+  triggerVariant?: 'detail' | 'dots';
+}) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [mode, setMode] = useState<'menu' | 'report' | 'done'>('menu');
   const [reason, setReason] = useState<ReportReason>('name');
@@ -66,17 +76,19 @@ export function UserSafetyMenu({ target, className = '', onProfile }: { target: 
     setMode('done');
   };
 
+  const showDetailLabel = Boolean(onProfile) && triggerVariant === 'detail';
+
   return (
     <>
       <button
         type="button"
         onClick={open}
-        className={`user-safety-trigger ${onProfile ? 'is-detail' : ''} ${className}`}
-        aria-label={onProfile ? `${target.nickname} さんの詳細` : `${target.nickname} さんを通報・ブロック`}
-        title={onProfile ? '詳細' : '通報・ブロック'}
+        className={`user-safety-trigger ${showDetailLabel ? 'is-detail' : ''} ${className}`}
+        aria-label={onProfile ? `${target.nickname} さんのメニュー（プロフィール・通報・ブロック）` : `${target.nickname} さんを通報・ブロック`}
+        title={showDetailLabel ? '詳細' : onProfile ? 'プロフィール・通報・ブロック' : '通報・ブロック'}
         data-user-detail={onProfile ? '' : undefined}
       >
-        {onProfile ? '詳細' : <MoreHorizontal size={16} aria-hidden="true" />}
+        {showDetailLabel ? '詳細' : <MoreHorizontal size={16} aria-hidden="true" />}
       </button>
       <dialog ref={dialog} className="user-safety-dialog" aria-labelledby="user-safety-title" onClick={(e) => { if (e.target === dialog.current) close(); }}>
         <div className="user-safety-body" onClick={(e) => e.stopPropagation()}>

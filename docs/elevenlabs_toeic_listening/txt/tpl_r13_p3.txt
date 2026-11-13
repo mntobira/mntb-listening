@@ -1,0 +1,11 @@
+[Man] Hi, Camilla. Have you watched the rough cut of our two-minute recruitment video that Silver Frame Studio sent over this morning?
+<break time="0.6s" />
+[Woman] Yes, I just watched it twice! The footage of our robotics lab looks fantastic, and the background music has great energy. My only concern is the voice-over during the middle section—it feels a little rushed when the narrator lists our overseas offices.
+<break time="0.6s" />
+[Man] I noticed that too. Instead of making the narrator read all eight city names aloud, we could display them on a world map graphic and cut two sentences from the script.
+<break time="0.6s" />
+[Woman] That's a smart solution—it'll give the narration room to breathe. Also, since we'll play this video on a muted monitor at university career fairs, let's make sure English captions are burned into the video file.
+<break time="0.6s" />
+[Man] Good point. Our contract with Silver Frame includes two rounds of edits at no extra cost, so adding captions and trimming the voice-over won't affect the budget.
+<break time="0.6s" />
+[Woman] Great. Let's type up our timestamped notes before three o'clock so they can record the revised lines tomorrow.

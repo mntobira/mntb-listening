@@ -1,0 +1,9 @@
+[Woman] Daniel, I just checked with the courier, and the crate with our smart thermostat display models is stuck in Denver due to fog.
+<break time="0.6s" />
+[Man] Oh no! The Home Tech Expo opens tomorrow morning at nine, and our booth looks empty without those units.
+<break time="0.6s" />
+[Woman] The courier promised it'll arrive by noon tomorrow, so we'll have it for the afternoon crowd. For the morning hours, what if we loop the product demo video on our large monitor?
+<break time="0.6s" />
+[Man] That'll help. Also, didn't I pack two working sample units in my checked suitcase? We can set those on the counter so visitors can test the touch screen.
+<break time="0.6s" />
+[Woman] Great thinking! Let's head to the convention hall now and test the monitor connection before the venue closes at six.

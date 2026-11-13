@@ -1,0 +1,5 @@
+Welcome to Crestview Chocolate Makers, and thank you for joining our ten o'clock factory tour. My name is Owen, and over the next forty minutes I'll guide you along the observation gallery above our roasting, molding, and wrapping lines.
+<break time="0.8s" />
+Before we enter the production building, everyone must put on one of the white hairnets in the basket by the door and store all bags and loose jewelry in these numbered lockers. Your locker key is attached to a wrist strap so you can carry it hands-free.
+<break time="0.8s" />
+Our final stop will be the tasting counter, where each guest receives a sample box and a ten-percent discount voucher valid today at our factory shop.

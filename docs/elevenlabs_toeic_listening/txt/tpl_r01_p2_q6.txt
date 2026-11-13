@@ -1,0 +1,7 @@
+Number 6. The projector in Conference Room B keeps flickering.
+<break time="1.0s" />
+A. Try replacing the display cable.
+<break time="0.8s" />
+B. A quarter-three financial slide.
+<break time="0.8s" />
+C. Yes, we reserved Room B.

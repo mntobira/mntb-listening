@@ -1,0 +1,7 @@
+Number 2. What did Human Resources change in the updated remote-work policy?
+<break time="1.0s" />
+A. Staff can now work from home up to three days a week.
+<break time="0.8s" />
+B. The TV remote needs new batteries.
+<break time="0.8s" />
+C. Effective starting November first.
