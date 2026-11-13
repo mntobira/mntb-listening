@@ -3,26 +3,28 @@
  * ★ホーム画面と同じ見た目★ クリーム紙・金の枠・パステルの札・水色の大きな丸（ホームの「対戦する」と同じ）。
  * 文字は 12px 以上。1画面に収める。
  */
-.arena-menu .notebook-paper { background: #fffaf0 !important; border: 1.5px solid #ead9b9; box-shadow: 0 3px 0 #e3d3b4; }
+.arena-menu .notebook-paper { background: #fffaf0 !important; border: 1.5px solid #ead9b9; box-shadow: 0 3px 0 #e3d3b4, 0 8px 18px rgba(80, 60, 30, .06), inset 0 1px 0 rgba(255, 255, 255, .92); }
 .arena-menu-header button, .arena-menu-header span { font-size: 12px !important; }
 .arena-menu-player small, .arena-menu-player p { font-size: 12px !important; }
-.arena-menu-player { padding: 10px 12px; border-radius: 18px; background: linear-gradient(#fbefcf, #f6e2ae); box-shadow: inset 0 0 0 1.5px #e3c77f, 0 2px 0 #d9bb6e; }
+.arena-menu-player { padding: 10px 12px; border-radius: 18px; background: linear-gradient(180deg, #fbefcf, #f6e2ae); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .78), inset 0 0 0 1.5px #e3c77f, 0 2px 0 #d9bb6e, 0 5px 12px rgba(80, 60, 30, .06); }
 
 .arena-lobby-deck { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; margin: 4px 0; }
-.arena-lobby-side { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; padding: 10px 6px; border-radius: 20px; text-align: center; box-shadow: 0 3px 0 var(--side-shadow), inset 0 0 0 1.5px var(--side-line); background: var(--side-bg); }
-.arena-lobby-friend { --side-bg: linear-gradient(#fdf4de, #f7e6bb); --side-line: #e3c77f; --side-shadow: #d7b865; }
-.arena-lobby-national { --side-bg: linear-gradient(#f7eaf3, #eed7e7); --side-line: #d9b5cd; --side-shadow: #c89ab8; }
-.arena-lobby-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #fffaf0; color: #7a5b2a; }
+.arena-lobby-side { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; padding: 10px 6px; border-radius: 20px; text-align: center; box-shadow: 0 3px 0 var(--side-shadow), 0 6px 14px rgba(80, 60, 30, .06), inset 0 1px 0 rgba(255, 255, 255, .82), inset 0 0 0 1.5px var(--side-line); background: var(--side-bg); }
+.arena-lobby-friend { --side-bg: linear-gradient(180deg, #fdf4de, #f7e6bb); --side-line: #e3c77f; --side-shadow: #d7b865; }
+.arena-lobby-national { --side-bg: linear-gradient(180deg, #f7eaf3, #eed7e7); --side-line: #d9b5cd; --side-shadow: #c89ab8; }
+.arena-lobby-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #fffaf0; color: #7a5b2a; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 1px 2px rgba(80, 60, 30, .08); }
 .arena-lobby-national .arena-lobby-icon { color: #8a4f74; }
 .arena-lobby-side strong { font-size: 15px; font-weight: 900; color: var(--mt-ink-warm); }
 .arena-lobby-side small { font-size: 12px; font-weight: 700; color: #6b5a43; }
-.arena-lobby-side button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%; min-height: 44px; margin-top: 2px; border-radius: 12px; background: var(--mt-bg-card); box-shadow: inset 0 0 0 1.5px var(--side-line); color: var(--mt-ink-warm); font-size: 12px; font-weight: 800; white-space: nowrap; }
-.arena-lobby-side button:active { transform: translateY(1px); }
-.arena-lobby-main { --size: 128px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: var(--size); height: var(--size); border-radius: 50%; background: radial-gradient(circle at 50% 35%, #e9f7fd, #bfe5f4 70%, #9fd3ea); box-shadow: 0 0 0 5px #fff, 0 0 0 7px #bfe0ee, 0 6px 14px rgba(59, 135, 168, .25); color: #2d5b75; }
+.arena-lobby-side button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%; min-height: 44px; margin-top: 2px; border-radius: 12px; background: var(--mt-bg-card); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), inset 0 0 0 1.5px var(--side-line), 0 2px 0 rgba(80, 60, 30, .08); color: var(--mt-ink-warm); font-size: 12px; font-weight: 800; white-space: nowrap; transition: transform .1s ease, box-shadow .15s ease, background-color .15s ease; }
+@media (hover: hover) { .arena-lobby-side button:hover:not(:disabled) { background: #ffffff; } }
+.arena-lobby-side button:active:not(:disabled) { transform: translateY(1.5px); box-shadow: inset 0 0 0 1.5px var(--side-line), 0 0.5px 0 rgba(80, 60, 30, .06); }
+.arena-lobby-main { --size: 128px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: var(--size); height: var(--size); border-radius: 50%; background: radial-gradient(circle at 50% 32%, #f1faff, #bfe5f4 68%, #9fd3ea); box-shadow: inset 0 2px 4px rgba(255, 255, 255, .85), 0 0 0 5px #fff, 0 0 0 7px #bfe0ee, 0 4px 0 #8cc3dc, 0 8px 18px rgba(59, 135, 168, .26); color: #2d5b75; transition: transform .12s ease, box-shadow .16s ease, filter .16s ease; }
+@media (hover: hover) { .arena-lobby-main:hover:not(:disabled) { filter: brightness(1.03); box-shadow: inset 0 2px 4px rgba(255, 255, 255, .9), 0 0 0 5px #fff, 0 0 0 7px #a8d5e8, 0 5px 0 #8cc3dc, 0 10px 22px rgba(59, 135, 168, .3); } }
 .arena-lobby-main svg { width: 30px; height: 30px; }
 .arena-lobby-main strong { font-family: var(--mt-font-display); font-size: 20px; font-weight: 900; line-height: 1.1; }
 .arena-lobby-main small { font-size: 12px; font-weight: 700; }
-.arena-lobby-main:active { transform: scale(.97); }
+.arena-lobby-main:active:not(:disabled) { transform: translateY(2px) scale(.98); box-shadow: inset 0 1px 2px rgba(255, 255, 255, .8), 0 0 0 5px #fff, 0 0 0 7px #bfe0ee, 0 2px 0 #8cc3dc, 0 4px 10px rgba(59, 135, 168, .2); }
 .arena-lobby-deck button:focus-visible { outline: none; box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--mt-brand); }
 
 .arena-login-note { font-size: 12px !important; }
@@ -103,16 +105,22 @@
 /* C18（2026-10-01）対戦も共通の文字体系：見出しは丸ゴシック、本文はゴシック。ゲーム性（色・札・演出）はそのまま */
 #battle-shell .font-handwriting, .arena-menu .font-handwriting { font-family: var(--mt-font-display) !important; }
 .arena-menu-header h1 { font: var(--mt-text-lg) !important; color: var(--mt-ink-warm); }
-.arena-menu-header > button { border: var(--mt-border); border-radius: var(--mt-r-pill); background: var(--mt-bg-card); box-shadow: var(--mt-shadow-press); padding: 0 12px; min-height: 44px; font: 700 13px/1 var(--mt-font-body); }
+.arena-menu-header > button { border: var(--mt-border); border-radius: var(--mt-r-pill); background: var(--mt-bg-card); box-shadow: 0 2px 0 #e6dccb, inset 0 1px 0 rgba(255, 255, 255, .92); padding: 0 12px; min-height: 44px; font: 700 13px/1 var(--mt-font-body); transition: transform .1s ease, border-color .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .arena-menu-header > button:hover:not(:disabled) { border-color: var(--mt-line-strong); } }
+.arena-menu-header > button:active:not(:disabled) { transform: translateY(1.5px); box-shadow: 0 0.5px 0 #e6dccb; }
 .arena-top-switch { display: flex; flex: 1; gap: 5px; min-width: 0; }
-.arena-top-switch button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; padding: 4px 7px; border: 1px solid #d8c7a5; border-radius: 12px; background: #fffdf7; color: #5d503f; font: 800 13px/1 var(--mt-font-body); }
-.arena-top-switch button[aria-selected="true"] { background: #f6e4b6; border-color: #b18434; color: var(--mt-ink-warm); }
+.arena-top-switch button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; padding: 4px 7px; border: 1px solid #d8c7a5; border-radius: 12px; background: #fffdf7; color: #5d503f; font: 800 13px/1 var(--mt-font-body); box-shadow: 0 2px 0 #e6dccb, inset 0 1px 0 rgba(255, 255, 255, .9); transition: transform .1s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .arena-top-switch button:hover:not([aria-selected="true"]) { border-color: var(--mt-line-strong); background: #ffffff; } }
+.arena-top-switch button:active { transform: translateY(1.5px); box-shadow: 0 0.5px 0 #e6dccb; }
+.arena-top-switch button[aria-selected="true"] { background: linear-gradient(180deg, #faeec7, #f6e4b6); border-color: #b18434; color: var(--mt-ink-warm); box-shadow: 0 2px 0 #d5b878, inset 0 1px 0 rgba(255, 255, 255, .75); }
 .arena-menu-player { border-radius: var(--mt-radius-lg) !important; }
 .arena-menu-player strong { font-family: var(--mt-font-display); }
 .arena-lobby-side { border-radius: var(--mt-radius-lg) !important; }
 .arena-lobby-side strong { font-family: var(--mt-font-display); }
 .arena-lobby-side button { border-radius: var(--mt-radius-md) !important; }
-.arena-menu-links button { border-radius: var(--mt-radius-md) !important; box-shadow: var(--mt-shadow-press); }
+.arena-menu-links button { border-radius: var(--mt-radius-md) !important; box-shadow: 0 2px 0 #e6dccb, inset 0 1px 0 rgba(255, 255, 255, .92); transition: transform .1s ease, filter .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .arena-menu-links button:hover:not(:disabled) { filter: brightness(.99); box-shadow: 0 2.5px 0 #dcd0bb, inset 0 1px 0 rgba(255, 255, 255, .95); } }
+.arena-menu-links button:active:not(:disabled) { transform: translateY(1.5px); box-shadow: var(--mt-shadow-press); }
 .arena-lobby-label { font: var(--mt-text-kicker) !important; letter-spacing: var(--mt-kicker-spacing) !important; color: var(--mt-ink-muted) !important; }
 
 /* D: retain history only; optional help stays expandable. */
