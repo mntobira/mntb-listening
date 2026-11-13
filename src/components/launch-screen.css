@@ -37,11 +37,11 @@
 .launch-copy-break { display: none; }
 @media (max-width: 420px) { .launch-copy-break { display: inline; } }
 .launch-chips { flex-shrink: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--mt-s2); margin: 0; padding: 0; list-style: none; }
-.launch-chips li { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 var(--mt-s3); border-radius: var(--mt-r-pill); background: var(--mt-surface); box-shadow: inset 0 0 0 1px var(--mt-line); color: var(--mt-ink-2); font: 700 var(--mt-fs-sm)/1 var(--mt-font-body); }
+.launch-chips li { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 var(--mt-s3); border-radius: var(--mt-r-pill); background: var(--mt-surface); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), inset 0 0 0 1px var(--mt-line), 0 1.5px 0 var(--mt-line); color: var(--mt-ink-2); font: 700 var(--mt-fs-sm)/1 var(--mt-font-body); }
 .launch-chips li svg { color: var(--mt-brand); }
 
 .launch-actions { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: var(--mt-s1); width: 100%; }
-.launch-start { width: min(320px, 100%); min-height: 58px; gap: var(--mt-s3); border-radius: var(--mt-r-lg); font: 800 var(--mt-fs-xl)/1 var(--mt-font-display); box-shadow: 0 3px 0 var(--mt-accent-strong); }
+.launch-start { width: min(320px, 100%); min-height: 58px; gap: var(--mt-s3); border-radius: var(--mt-r-lg); font: 800 var(--mt-fs-xl)/1 var(--mt-font-display); box-shadow: 0 3.5px 0 var(--mt-accent-strong), 0 8px 18px rgba(217, 126, 6, .22), inset 0 1px 0 rgba(255, 255, 255, .45); transition: transform .1s ease, filter .15s ease, box-shadow .15s ease; }
 .launch-start:active { box-shadow: 0 1px 0 var(--mt-accent-strong); transform: translateY(2px); }
 .launch-guest { min-height: var(--mt-tap); font-size: var(--mt-fs-sm); }
 .launch-note { min-height: var(--mt-tap); display: grid; place-items: center; margin: 0; font-size: var(--mt-fs-xs); color: var(--mt-ink-3); }
@@ -92,7 +92,8 @@
 @media (prefers-reduced-motion: reduce) { .launch-emblem-inner, .launch-screen { transition:none; animation:none; transform:none; } .launch-emblem[data-phase="hold"] .launch-emblem-inner { opacity:1; } }
 
 /* タイトル画面 → 「学びの扉」（理念）ページへの入口。主CTAの邪魔をしない文字リンク */
-.launch-philosophy { display: inline-flex; align-items: center; gap: 8px; min-height: var(--mt-tap); margin-top: 4px; padding: 0 18px; border: 1px solid #e3c49a; border-radius: 999px; background: linear-gradient(135deg, #fff3e0, #e9f1fb); color: #6e4019; font: 700 14px/1.2 'Shippori Mincho', 'Hiragino Mincho ProN', serif; letter-spacing: .06em; box-shadow: 0 2px 0 #e8d3b2; }
+.launch-philosophy { display: inline-flex; align-items: center; gap: 8px; min-height: var(--mt-tap); margin-top: 4px; padding: 0 18px; border: 1px solid #e3c49a; border-radius: 999px; background: linear-gradient(135deg, #fff6e6, #edf4fc); color: #6e4019; font: 700 14px/1.2 'Shippori Mincho', 'Hiragino Mincho ProN', serif; letter-spacing: .06em; box-shadow: 0 2px 0 #e8d3b2, inset 0 1px 0 rgba(255, 255, 255, .9); transition: transform .1s ease, box-shadow .15s ease, filter .15s ease; }
+.launch-philosophy:active { transform: translateY(1.5px); box-shadow: 0 0.5px 0 #e8d3b2; }
 
 /* ===== 2026-10-07 アプリ版：起動エンブレムはアプリのロゴ（白背景のまま・透過しない）＋新しい主コピー ===== */
 .launch-emblem-applogo { width: min(280px, 70vw); height: auto; }

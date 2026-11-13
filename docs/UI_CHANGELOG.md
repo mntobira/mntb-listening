@@ -1,3 +1,20 @@
+## 2026-11-13 既存の温かい紙・文具トーンを保ったまま全画面のUI質感・押下感・TOEIC／対戦／解説／マイページの調和を向上
+
+- 共通プリミティブ・下部ナビ／PCサイドバー・起動画面（`system.css` / `nav.css` / `launch-screen.css`）：
+  - ホームの色バランス・配置・1画面完結の寸法を1pxも変えず、共通カード（`.mt-card`）・リスト枠（`.mt-list`）・ボタン（`.mt-btn-*` / `.mt-back` / `.mt-icon-btn`）・タブ（`.mt-tabs`）・モーダル（`.mt-dialog`）・起動画面のチップ／主CTA（`.launch-chips` / `.launch-start` / `.launch-philosophy`）に上端の微細なハイライトと立体縁、滑らかなホバー・押下沈み込み（`:active`）を追加。
+  - 下部ナビ（`.app-bottom-nav`）に紙色のすりガラス質感（`backdrop-filter: blur(8px)`、低スペック端末 `data-perf=lite` では自動で無効化）と現在地インジケータの微かな奥行きを付与。
+- TOEIC 演習・リスニング解説・1問ずつ演習・結果インサイト・音読スタジオ（`toeic-page.css` / `listening-explanation.css` / `step-explanation.css` / `result-insight.css` / `read-along.css`）：
+  - 冷たいグレー地（`#f9fafb`）だった TOEIC の背景（`.tp-root`）・上部ヘッダー（`.tp-head`）・下部フッター（`.tp-foot`）を、マナトビ共通の温かいアイボリー紙トーンへ調和。
+  - 設問カード・長文カード・リスニング音声カード・結果サマリー（`.tp-item` / `.tp-doc` / `.tpl-audio-card` / `.tp-result` / `.ri` / `.lx-result` / `.lx-script` / `.lx-fold` / `.step-ex-card` / `.ra-text` / `.ra-card`）に文具カードらしい立体影と上端ハイライトを付与。
+  - 4択マーク枠・問題送りチップ・音声再生ボタン・下部バー（`.tp-choice` / `.tp-btn-*` / `.tpl-play-btn` / `.practice-pager-chips` / `.practice-detail-open` / `.pbb-main` / `.ra-entry` / `.ra-play`）の押し心地を統一。
+- 対戦ロビー・対戦の部屋・出題・結果あわせ（`battle-lobby.css` / `battle-lobby-room.css` / `battle-question.css` / `battle-result-review.css` / `opponent-card.css` / `battle-rank-switch.css`）：
+  - 対戦ロビーの札・水色の主ボタン（`.arena-lobby-side` / `.arena-lobby-main` / `.arena-top-switch`）、対戦の部屋の席カード（`.lobby-seat` / `.lobby-pick`）、出題画面の音声バー・絵4択・得点板（`.bqa` / `.bqa-play` / `.bq-picture` / `#battle-live-scoreboard`）、対戦結果の問題送り・最近の対戦・対戦相手カード（`.result-review-chips` / `.battle-recent` / `.opponent-card`）に一貫した紙の立体感と押下レスポンスを追加。
+- 演習カタログ・単元一覧・復習ノート・英単語／英文法・学習記録・ガチャ・ランキング・マイページ・設定・公開プロフィール・とびら君吹き出し（`study-catalog.css` / `unit-card.css` / `unit-select.css` / `review-note.css` / `foundation.css` / `studylog.css` / `study-record.css` / `gacha.css` / `ranking.css` / `growth-hub.css` / `profile-settings.css` / `public-profile.css` / `tobira-buddy.css` / `game-dashboard.css`）：
+  - 科目・教材・リスニング回カード（`.sc-card` / `.unit-card` / `.round-card`）のホバー浮き上がり・矢印アニメーション、検索欄や設定フォームのフォーカスリング（`:focus-within` / `:focus`）、マイページ舞台・着せ替えタイル・公開プロフィール5タブ・とびら君の吹き出し（`.tb-bubble`）の立体縁と押下レスポンスを統一。
+  - 不要な `!important` 指定も整理・削減し、`cssTokens`（色トークン直書きゼロ・`!important` 上限以下）・`battleLobbyUi`（`battle-lobby-room.css` 生16進数ゼロ）・`lowSpecMotion`（無限アニメはコンポジタ専用のみ）・`uiLegibilityGuard`（文字12px以上・タップ44px以上）をすべてクリア。
+- 対象：`src/styles/system.css`、`src/styles/nav.css`、`src/styles/game-dashboard.css`、`src/components/launch-screen.css`、`src/components/toeic/toeic-page.css`、`src/components/listening-explanation.css`、`src/components/step-explanation.css`、`src/components/explanation/result-insight.css`、`src/features/readAlong/read-along.css`、`src/battle/ui/battle-lobby.css`、`src/battle/ui/battle-lobby-room.css`、`src/battle/ui/battle-question.css`、`src/battle/ui/battle-result-review.css`、`src/battle/ui/opponent-card.css`、`src/components/battle-rank-switch.css`、`src/components/study-catalog.css`、`src/components/unit-card.css`、`src/components/unit-select.css`、`src/components/review-note.css`、`src/components/foundation.css`、`src/features/studylog/studylog.css`、`src/components/study-record.css`、`src/components/gacha.css`、`src/components/ranking.css`、`src/components/growth-hub.css`、`src/components/profile-settings.css`、`src/features/profile/public-profile.css`、`src/components/tobira-buddy.css`。
+- 戻し方：この変更を revert。
+
 ## 2026-11-12 英単語再生時のBGM維持・全国対戦AIバリエーション拡充・TOEIC リスニング全15回追加
 
 - 英単語音源の再生中に BGM を止めない対応（`pauseAllAudio` / `sayWord` / `say`）：
