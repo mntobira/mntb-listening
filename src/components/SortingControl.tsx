@@ -92,18 +92,18 @@ export function SortingControl({
             <span>タップで並べ替え :</span>
             <span className="text-xs text-[#A9CCE3] font-normal">左から順に並べる</span>
           </div>
-          <div className="flex flex-col gap-2 p-3 bg-gray-50/80 border border-gray-200 rounded-2xl">
+          <div className="sort-tray flex flex-col gap-2 p-3 border rounded-2xl">
             {activeOrder.map((item: string, idx: number) => {
               const isSelected = selIdx === idx;
               return (
                 <div
                   key={`${item}-${idx}`}
-                  className={`flex items-center gap-2 px-3 py-2.5 bg-white border rounded-xl shadow-xs transition-all duration-200 select-none
-                    ${isSelected ? 'border-[#A9CCE3] bg-[#A9CCE3]/10 ring-2 ring-[#A9CCE3]/30' : 'border-gray-200'}
+                  className={`sort-chip flex items-center gap-2 px-3 py-2.5 bg-white border rounded-xl transition-all duration-200 select-none
+                    ${isSelected ? 'border-[#A9CCE3] bg-[#EEF6FB] ring-2 ring-[#A9CCE3]/30' : 'border-[#E6DCC6]'}
                   `}
                 >
                   {/* 番号 */}
-                  <span className="text-xs bg-stone-100 text-stone-500 rounded px-1.5 py-0.5 text-center select-none font-mono font-semibold shrink-0 w-6">{idx + 1}</span>
+                  <span className="text-xs bg-[#F6EFE2] text-[#7A6A4C] border border-[#E3D9C8] rounded px-1.5 py-0.5 text-center select-none font-mono tabular-nums font-bold shrink-0 w-6">{idx + 1}</span>
                   {/* 本体：タップで選択／入れ替え */}
                   <button
                     type="button"
@@ -133,8 +133,8 @@ export function SortingControl({
                       disabled={idx === 0}
                       onClick={() => { reorderSort(sq.id, activeOrder, idx, idx - 1); setTapSortSelect(null); }}
                       // ▲▼ は 32px 角では隣同士を誤タップしやすいため 44px 角に拡大。
-                      className={`flex items-center justify-center w-11 h-11 rounded-lg border transition-colors ${
-                        idx === 0 ? 'border-gray-150 text-gray-300 bg-gray-50' : 'border-[#A9CCE3] text-[#2C3E50] bg-white active:bg-[#A9CCE3]/20'
+                      className={`sort-step-btn flex items-center justify-center w-11 h-11 rounded-lg border transition-all ${
+                        idx === 0 ? 'border-[#E6DCCB] text-[#C8BBA4] bg-[#F8F3E8]' : 'border-[#8FB8D6] text-[#2C3E50] bg-white active:bg-[#E8F1F8]'
                       }`}
                     >
                       <ChevronLeft size={18} className="stroke-[2.5] -rotate-90" />
@@ -144,8 +144,8 @@ export function SortingControl({
                       aria-label="1つ下へ移動"
                       disabled={idx === activeOrder.length - 1}
                       onClick={() => { reorderSort(sq.id, activeOrder, idx, idx + 1); setTapSortSelect(null); }}
-                      className={`flex items-center justify-center w-11 h-11 rounded-lg border transition-colors ${
-                        idx === activeOrder.length - 1 ? 'border-gray-150 text-gray-300 bg-gray-50' : 'border-[#A9CCE3] text-[#2C3E50] bg-white active:bg-[#A9CCE3]/20'
+                      className={`sort-step-btn flex items-center justify-center w-11 h-11 rounded-lg border transition-all ${
+                        idx === activeOrder.length - 1 ? 'border-[#E6DCCB] text-[#C8BBA4] bg-[#F8F3E8]' : 'border-[#8FB8D6] text-[#2C3E50] bg-white active:bg-[#E8F1F8]'
                       }`}
                     >
                       <ChevronRight size={18} className="stroke-[2.5] rotate-90" />
@@ -181,7 +181,7 @@ export function SortingControl({
             <span>ドラッグで順序を並べ替え :</span>
             <span className="text-xs text-[#A9CCE3] font-normal">左から順に並べる</span>
           </div>
-          <div className="flex flex-wrap items-center gap-2.5 p-3.5 bg-gray-50/80 border border-gray-200 rounded-2xl min-h-[72px]">
+          <div className="sort-tray flex flex-wrap items-center gap-2.5 p-3.5 border rounded-2xl min-h-[72px]">
             {activeOrder.map((item: string, idx: number) => {
               const isDragging = draggingIndex === idx;
               const isDragOver = dragOverIndex === idx;
@@ -214,14 +214,14 @@ export function SortingControl({
                     setDraggingIndex(null);
                     setDragOverIndex(null);
                   }}
-                  className={`flex items-center gap-2 px-3 py-2 bg-white border rounded-xl shadow-xs transition-all duration-200 cursor-grab select-none active:cursor-grabbing
+                  className={`sort-chip flex items-center gap-2 px-3 py-2 bg-white border rounded-xl transition-all duration-200 cursor-grab select-none active:cursor-grabbing
                     ${isDragging ? 'opacity-30 border-dashed border-gray-300 scale-95' : 'opacity-100'}
-                    ${isDragOver ? 'border-[#A9CCE3] bg-[#A9CCE3]/15 scale-105 ring-2 ring-[#A9CCE3]/20' : 'border-gray-200 hover:border-[#A9CCE3]/50 hover:bg-gray-50/50'}
+                    ${isDragOver ? 'border-[#A9CCE3] bg-[#EEF6FB] scale-105 ring-2 ring-[#A9CCE3]/20' : 'border-[#E6DCC6] hover:border-[#A9CCE3]/65 hover:bg-[#FFFCF5]'}
                   `}
                 >
-                  <GripVertical size={13} className="text-gray-400 font-bold shrink-0" />
+                  <GripVertical size={13} className="text-[#9E8F73] font-bold shrink-0" />
                   <span className="font-bold text-gray-800 text-sm whitespace-nowrap">{formatText(item)}</span>
-                  <span className="text-xs bg-stone-100 text-stone-500 rounded px-1.5 py-0.5 text-center select-none font-mono font-semibold shrink-0">{idx + 1}</span>
+                  <span className="text-xs bg-[#F6EFE2] text-[#7A6A4C] border border-[#E3D9C8] rounded px-1.5 py-0.5 text-center select-none font-mono tabular-nums font-bold shrink-0">{idx + 1}</span>
                 </div>
               );
             })}

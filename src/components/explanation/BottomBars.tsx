@@ -15,12 +15,12 @@ import type { ReviewNav } from './types';
  */
 export function MobileAnswerNav({ onNextQuestion, isLastQuestion }: { onBack?: () => void; onNextQuestion: () => void; isLastQuestion?: boolean }) {
   return (
-          <div className="order-4 fixed left-0 right-0 bottom-0 z-50 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.10)] px-3 pt-2.5 pb-[calc(0.6rem+env(safe-area-inset-bottom))]">
+          <div className="ex-mobile-bottom order-4 fixed left-0 right-0 bottom-0 z-50 border-t px-3 pt-2.5 pb-[calc(0.6rem+env(safe-area-inset-bottom))]">
             <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
               {/* 「問題に戻る」は置かない（答え合わせの後は進むだけ。2026-10-23） */}
               <button
                 onClick={onNextQuestion}
-                className="flex shadow-md active:translate-y-0.5 items-center justify-center gap-1.5 px-5 py-3 rounded-xl font-bold tracking-wider transition-all duration-200 text-sm bg-[#2C3E50] text-white active:bg-[#1B2631] flex-1 cursor-pointer"
+                className="ex-nav-primary flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl font-bold tracking-wider text-sm border flex-1 cursor-pointer"
               >
                 <span>{isLastQuestion ? '結果を見る' : '次の問題へ'}</span>
                 <ArrowLeft size={16} className="rotate-180 stroke-[2.5]" />

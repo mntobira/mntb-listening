@@ -773,7 +773,7 @@ function QuizBody({ mode, chapter, onFinish, onBack, onReturnToBattle, isGuest, 
   }
 
   return (
-    <div className="fixed inset-0 w-full flex flex-col bg-gray-50 overflow-hidden z-40">
+    <div className="fixed inset-0 w-full flex flex-col quiz-shell-paper overflow-hidden z-40">
       {onReturnToBattle && <button type="button" onClick={onReturnToBattle} className="min-h-11 shrink-0 border-b border-blue-200 bg-blue-50 px-3 py-2 text-sm font-bold text-blue-900">バトル結果・解説に戻る</button>}
       
       {/* ヘッダー帯（単元名・スコア・順位・進捗）の JSX は
@@ -797,7 +797,7 @@ function QuizBody({ mode, chapter, onFinish, onBack, onReturnToBattle, isGuest, 
           ★B-3：入力中は隠す（3%）★
             計測は running のまま続くので、隠しても時間の進みは変わらない。
             表示だけを止めている（＝止めたら不正になる、を避ける）。 */}
-      <div className={`flex-none bg-white border-b border-gray-100 ${
+      <div className={`flex-none bg-[#FFFAF0] border-b border-[#EADFC8] ${
         !isDesktop && keyboardVisible ? 'hidden' : ''
       }`}>
         <QuizTimerBar

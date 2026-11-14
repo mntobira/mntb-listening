@@ -3,17 +3,18 @@
    変えたのは並べ方・行間・余白だけ。タップは44px以上、文字12px以上、コントラスト4.5:1以上。
    戻し方：Quiz.tsx の TOEIC の分岐を消せば、このファイルは読まれなくなる。 */
 
-.tp-root { position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; background: #f9fafb; color: #1f2937; }
+.tp-root { position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; background: linear-gradient(180deg, #fcfaf4 0%, #f6f1e7 100%); color: #1f2937; }
 .tp-battle-return { min-height: 44px; flex-shrink: 0; border-bottom: 1px solid #bfdbfe; background: #eff6ff; padding: 8px 12px; font-size: 14px; font-weight: 700; color: #1e3a8a; }
 
 /* 上の帯（固定）：戻る・演習・単元名・ページ位置・回答済み */
-.tp-head { flex: none; display: flex; align-items: center; gap: 8px; padding: calc(6px + env(safe-area-inset-top, 0px)) 8px 6px; border-bottom: 1px solid #eadfc8; background: #fffaf0; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
-.tp-back { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 999px; color: #6b7280; }
-.tp-back:hover { background: var(--mt-rare-n-bg); }
-.tp-mode { flex-shrink: 0; border-radius: 999px; background: #f3c64f; padding: 0 8px; font-size: 12px; font-weight: 800; line-height: 20px; color: #5b3d00; }
+.tp-head { flex: none; display: flex; align-items: center; gap: 8px; padding: calc(6px + env(safe-area-inset-top, 0px)) 8px 6px; border-bottom: 1px solid #e6dbc6; background: linear-gradient(180deg, #fffdf7 0%, #fff8eb 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 2px 6px rgba(80, 60, 30, .05); }
+.tp-back { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 999px; color: #52606d; transition: background-color .14s ease, color .14s ease, transform .1s ease; }
+.tp-back:hover { background: #f2ebde; color: #1f2937; }
+.tp-back:active { transform: scale(.95); }
+.tp-mode { flex-shrink: 0; border-radius: 999px; background: linear-gradient(180deg, #f8d264, #f0be3d); padding: 0 9px; font-size: 12px; font-weight: 800; line-height: 20px; color: #5b3d00; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), 0 1px 0 #d5a328; }
 .tp-title { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 700; color: #2c3e50; }
 .tp-stats { display: flex; flex-shrink: 0; gap: 4px; margin: 0; }
-.tp-stats > div { display: flex; align-items: center; gap: 4px; border-radius: 999px; background: var(--mt-rare-n-bg); padding: 4px 10px; }
+.tp-stats > div { display: flex; align-items: center; gap: 4px; border-radius: 999px; border: 1px solid #e8dfd0; background: #fffdf8; padding: 3px 10px; box-shadow: inset 0 1px 0 #ffffff; }
 .tp-stats dt { display: flex; color: #4b5563; }
 .tp-stats dd { margin: 0; font-size: 13px; font-weight: 700; color: #4b5563; white-space: nowrap; }
 .tp-stats dd b { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; color: #2c3e50; }
@@ -23,16 +24,16 @@
 .tp-scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
 .tp-list { display: grid; gap: 10px; padding: 12px 12px 16px; }
 
-.tp-item { border: 1px solid #e5e7eb; border-radius: 14px; background: #fff; padding: 12px 12px 10px; }
-.tp-item { border-left-width: 4px; border-left-color: #e5e7eb; }
-.tp-item[data-status=answered] { border-left-color: #1f3566; }
+.tp-item { border: 1px solid #e5ddd0; border-radius: 14px; background: #ffffff; padding: 12px 12px 10px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 2px 0 #eae1d2, 0 5px 14px rgba(52, 42, 24, .045); transition: border-color .15s ease, box-shadow .15s ease; }
+.tp-item { border-left-width: 4px; border-left-color: #dcd3c4; }
+.tp-item[data-status=answered] { border-left-color: #1f3566; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 2px 0 #dfe5f2, 0 5px 14px rgba(31, 53, 102, .055); }
 .tp-item[data-status=unanswered] { border-left-color: #d97706; }
-.tp-item[data-status=correct] { border-color: #9fd8c3; }
-.tp-item[data-status=wrong], .tp-item[data-status=blank] { border-color: #f0b8b3; }
+.tp-item[data-status=correct] { border-color: #9fd8c3; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 2px 0 #cbeadd, 0 5px 14px rgba(22, 101, 52, .05); }
+.tp-item[data-status=wrong], .tp-item[data-status=blank] { border-color: #f0b8b3; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 2px 0 #f5d3cf, 0 5px 14px rgba(153, 27, 27, .05); }
 
 /* 番号は小さな丸にして英文の1行目の先頭へ（問題文の幅を広く取る） */
 .tp-sentence { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.75; color: #111827; font-family: var(--font-modern); overflow-wrap: anywhere; }
-.tp-no { display: inline-grid; place-items: center; min-width: 24px; height: 24px; margin-right: 8px; padding: 0 4px; border-radius: 999px; background: #2c3e50; color: #fff; font-size: 13px; font-weight: 800; line-height: 1; vertical-align: 2px; }
+.tp-no { display: inline-grid; place-items: center; min-width: 24px; height: 24px; margin-right: 8px; padding: 0 4px; border-radius: 999px; background: linear-gradient(180deg, #354b60, #243546); color: #fff; font-size: 13px; font-weight: 800; line-height: 1; vertical-align: 2px; box-shadow: 0 1px 2px rgba(17, 24, 39, .18); }
 .tp-tag { display: inline-block; margin-left: 6px; border-radius: 999px; border: 1px solid #f5c26b; background: #fff7e6; padding: 0 8px; font-size: 12px; font-weight: 700; line-height: 20px; color: #92400e; vertical-align: 2px; }
 /* 空所：太い下線の枠。選んだ語が入る */
 .tp-blank { display: inline-block; min-width: 4.5em; margin: 0 2px; padding: 0 6px; border-bottom: 3px solid #1f3566; border-radius: 4px 4px 0 0; background: #eef2fb; line-height: 1.45; text-align: center; vertical-align: baseline; }
@@ -46,34 +47,45 @@
 .tp-choices.is-single { grid-template-columns: 1fr; }
 .tp-choices:focus-visible { box-shadow: 0 0 0 3px #3d5a99; }
 
-.tp-choice { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 8px 4px 4px; border: 1.5px solid transparent; border-radius: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.tp-choice { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 8px 4px 4px; border: 1.5px solid #e8ecf2; border-radius: 10px; background: #fcfdff; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color .13s ease, border-color .13s ease, box-shadow .13s ease, transform .09s ease; }
 .tp-choice-check { margin-left: auto; flex-shrink: 0; color: #1f3566; }
-.tp-choice:hover { background: #f8fafc; }
+@media (hover: hover) {
+  .tp-choice:hover { border-color: #c2d0e6; background: #f4f7fc; }
+  .tp-choice:hover .tp-bubble { border-color: #3d5a99; color: #1f3566; }
+}
+.tp-choices:not([aria-disabled=true]) .tp-choice:active { transform: translateY(1px); }
 .tp-choices[aria-disabled=true] .tp-choice { cursor: default; }
-.tp-choices[aria-disabled=true] .tp-choice:hover { background: none; }
+.tp-choices[aria-disabled=true] .tp-choice:hover { border-color: #e8ecf2; background: #fcfdff; }
+.tp-choices[aria-disabled=true] .tp-choice:hover .tp-bubble { border-color: #6b7280; color: #374151; }
 .tp-choice-body { display: flex; min-width: 0; flex: 1; flex-direction: column; justify-content: center; }
 /* 単語の途中では折らない（anywhere だと「hav/e/rec/eiv/ed」のように1文字ずつ縦に伸びた） */
 .tp-choice-text { min-width: 0; font-size: 15px; font-weight: 500; line-height: 1.4; color: #1f2937; font-family: var(--font-modern); overflow-wrap: break-word; word-break: normal; hyphens: none; }
 
 /* マークの丸：未選択は細い枠、選択は塗り＋太い枠（色だけに頼らない） */
-.tp-bubble { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; border-radius: 999px; border: 1.5px solid #6b7280; background: #fff; font-size: 13px; font-weight: 800; color: #374151; transition: background-color .12s, border-color .12s, color .12s; }
-.tp-choice[data-checked] { border-color: #1f3566; background: #eef2fb; }
+.tp-bubble { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; border-radius: 999px; border: 1.5px solid #6b7280; background: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 1px 2px rgba(15, 23, 42, .06); font-size: 13px; font-weight: 800; color: #374151; transition: background-color .12s, border-color .12s, color .12s, box-shadow .12s; }
+.tp-choice[data-checked], .tp-choices[aria-disabled=true] .tp-choice[data-checked] { border-color: #1f3566; background: #eef2fb; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75), 0 1px 0 #c6d3ee; }
 .tp-choice[data-checked] .tp-choice-text { font-weight: 700; color: #1f3566; }
-.tp-choice[data-checked] .tp-bubble { border-width: 3px; border-color: #1f3566; background: #1f3566; color: #fff; }
-.tp-choice[data-result=right] { border-color: var(--mt-done); background: #ecfdf5; }
-.tp-choice[data-result=right] .tp-bubble { border-width: 3px; border-color: var(--mt-done); background: var(--mt-done); color: #fff; }
-.tp-choice[data-result=wrong] { border-color: var(--mt-danger); background: #fef2f2; }
-.tp-choice[data-result=wrong] .tp-bubble { border-color: var(--mt-danger); background: var(--mt-danger); color: #fff; }
+.tp-choice[data-checked] .tp-bubble, .tp-choices[aria-disabled=true] .tp-choice[data-checked] .tp-bubble { border-width: 3px; border-color: #1f3566; background: #1f3566; color: #fff; box-shadow: 0 1px 3px rgba(31, 53, 102, .25); }
+.tp-choice[data-result=right], .tp-choices[aria-disabled=true] .tp-choice[data-result=right] { border-color: var(--mt-done); background: #ecfdf5; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 1px 0 #b7e4cf; }
+.tp-choice[data-result=right] .tp-bubble, .tp-choices[aria-disabled=true] .tp-choice[data-result=right] .tp-bubble { border-width: 3px; border-color: var(--mt-done); background: var(--mt-done); color: #fff; }
+.tp-choice[data-result=wrong], .tp-choices[aria-disabled=true] .tp-choice[data-result=wrong] { border-color: var(--mt-danger); background: #fef2f2; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 1px 0 #f5c6c4; }
+.tp-choice[data-result=wrong] .tp-bubble, .tp-choices[aria-disabled=true] .tp-choice[data-result=wrong] .tp-bubble { border-color: var(--mt-danger); background: var(--mt-danger); color: #fff; }
 
 
 
 
 /* 下の帯（固定）：前のページ・未回答数・採点／次へ */
-.tp-foot { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #e5e7eb; background: #fff; }
-.tp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; border-radius: 999px; padding: 0 16px; font-size: 15px; font-weight: 700; }
-.tp-btn-sub { flex-shrink: 0; border: 2px solid #e5e7eb; background: #fff; color: #374151; }
-.tp-btn-sub:disabled { color: #9ca3af; cursor: not-allowed; }
-.tp-btn-main { margin-left: auto; min-width: 0; flex: 1; max-width: 420px; background: #2c3e50; color: #fff; }
+.tp-foot { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #e6dbc6; background: linear-gradient(180deg, #fffefb 0%, #fbf7ef 100%); box-shadow: inset 0 1px 0 #ffffff, 0 -3px 10px rgba(80, 60, 30, .04); }
+.tp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; border-radius: 999px; padding: 0 16px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color .14s ease, border-color .14s ease, box-shadow .12s ease, transform .1s ease, filter .14s ease; }
+.tp-btn-sub { flex-shrink: 0; border: 1.5px solid #d9d0c0; background: #ffffff; color: #374151; box-shadow: inset 0 1px 0 #ffffff, 0 2px 0 #e3dacb; }
+@media (hover: hover) {
+  .tp-btn-sub:hover:not(:disabled) { border-color: #bfae94; background: #fdfaf3; }
+  .tp-btn-main:hover:not(:disabled) { filter: brightness(1.07); }
+}
+.tp-btn-sub:active:not(:disabled) { transform: translateY(1.5px); box-shadow: 0 1px 0 #e3dacb; }
+.tp-btn-sub:disabled { color: #9ca3af; background: #f8f6f2; border-color: #e5e0d6; box-shadow: none; cursor: not-allowed; }
+.tp-btn-main { margin-left: auto; min-width: 0; flex: 1; max-width: 420px; background: linear-gradient(180deg, #34495e 0%, #243546 100%); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 3px 0 #17232f, 0 4px 10px rgba(23, 35, 47, .16); }
+.tp-btn-main:active:not(:disabled) { transform: translateY(1.5px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 1px 0 #17232f; }
 .tp-btn:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
 .tp-unanswered { flex-shrink: 0; font-size: 13px; font-weight: 700; color: #92400e; }
 .tp-empty { padding: 24px; text-align: center; font-size: 14px; color: #4b5563; }
@@ -127,13 +139,14 @@
 .tp-timer[data-state=over] .tp-timer-text, .tp-timer[data-state=over] .tp-timer-elapsed, .tp-timer[data-state=done] .tp-timer-text { color: #475569; }
 
 /* 結果の帯：このページ n/6問正解・6問の ○× の並び（押すとその問題へ）・分野別 */
-.tp-result { display: grid; gap: 8px; margin: 12px 12px 0; padding: 10px 12px; border-radius: 14px; border: 1px solid #c3cfea; background: #f5f7fc; color: #1f3566; }
-.tp-result[data-perfect] { border-color: #9fd8c3; background: #ecfdf5; color: #14532d; }
+.tp-result { display: grid; gap: 8px; margin: 12px 12px 0; padding: 10px 12px; border-radius: 14px; border: 1px solid #c3cfea; background: linear-gradient(180deg, #f8faff 0%, #eff3fb 100%); color: #1f3566; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 2px 0 #d5def1, 0 5px 12px rgba(31, 53, 102, .05); }
+.tp-result[data-perfect] { border-color: #9fd8c3; background: linear-gradient(180deg, #f3fef9 0%, #e6f9ef 100%); color: #14532d; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 2px 0 #bfe8d6, 0 5px 12px rgba(20, 83, 45, .06); }
 .tp-result-score { display: flex; align-items: baseline; gap: 4px; margin: 0; font-size: 14px; font-weight: 800; }
 .tp-result-score svg { align-self: center; }
 .tp-result-score b { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 24px; line-height: 1; margin-left: 2px; }
 .tp-result-marks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
-.tp-result-mark { display: flex; width: 100%; min-height: 44px; flex-direction: column; align-items: center; justify-content: center; gap: 0; border-radius: 10px; border: 1.5px solid #cbd5e1; background: #fff; cursor: pointer; }
+.tp-result-mark { display: flex; width: 100%; min-height: 44px; flex-direction: column; align-items: center; justify-content: center; gap: 0; border-radius: 10px; border: 1.5px solid #cbd5e1; background: #fff; box-shadow: 0 2px 0 rgba(15, 23, 42, .06); cursor: pointer; transition: transform .1s ease, box-shadow .12s ease, background-color .12s ease; }
+.tp-result-mark:active { transform: translateY(1px); box-shadow: none; }
 .tp-result-mark:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
 .tp-result-no { font-size: 12px; font-weight: 700; line-height: 1.1; color: #475569; }
 .tp-result-sym { font-size: 18px; font-weight: 900; line-height: 1.1; }
@@ -206,7 +219,7 @@
 
 /* ───────── Part 6（長文穴埋め）：1ページ＝文書1つ＋その4問（2026-10-31）。Part 5 のクラスは変えない ───────── */
 .tp-p6 { display: grid; gap: 0; }
-.tp-doc { margin: 12px 12px 0; border: 1px solid #c3cfea; border-radius: 14px; background: #fff; padding: 12px 14px; font-family: var(--font-modern); }
+.tp-doc { margin: 12px 12px 0; border: 1px solid #c3cfea; border-radius: 14px; background: #fff; padding: 12px 14px; font-family: var(--font-modern); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 2px 0 #dce4f3, 0 6px 16px rgba(31, 53, 102, .05); }
 .tp-doc-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #334155; }
 .tp-doc-genre { border-radius: 999px; background: #eef2fb; padding: 0 10px; line-height: 22px; color: #1f3566; }
 .tp-doc-title { margin: 0 0 6px; font-size: 16px; font-weight: 800; line-height: 1.4; color: #111827; }
@@ -331,12 +344,13 @@
    1024px 未満だけ。上に切り替えのボタン（高さ48px）、文書の最後に「設問・選択肢へ進む」。
    PC（1024px 以上）は今までどおり左に文書・右に設問の2列で、切り替えのボタンは出さない。
    戻し方：この段を消し、ToeicPageQuiz.tsx の tp-pane-switch / tp-pane-next / data-pane を外す。 */
-.tp-pane-switch { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px 12px; border-bottom: 1px solid #e5e7eb; background: #fff; }
-.tp-pane-tab { display: grid; min-height: 48px; place-items: center; align-content: center; gap: 0; border: 1px solid #94a3b8; border-radius: 12px; background: #fff; padding: 4px 6px; color: #1f3566; font: inherit; cursor: pointer; }
+.tp-pane-switch { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px 12px; border-bottom: 1px solid #e6dbc6; background: #fffcf6; }
+.tp-pane-tab { display: grid; min-height: 48px; place-items: center; align-content: center; gap: 0; border: 1px solid #b8c4d6; border-radius: 12px; background: #fff; padding: 4px 6px; color: #1f3566; font: inherit; box-shadow: 0 2px 0 #dce3ee; cursor: pointer; transition: background-color .13s ease, border-color .13s ease, box-shadow .12s ease, transform .1s ease; }
+.tp-pane-tab:active { transform: translateY(1px); box-shadow: 0 1px 0 #dce3ee; }
 .tp-pane-label { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 800; line-height: 1.3; }
 .tp-pane-tab small { font-size: 12px; font-weight: 700; line-height: 1.3; color: #475569; }
 .tp-pane-tab small[data-tone="todo"] { color: #92400e; }
-.tp-pane-tab[aria-pressed="true"] { border-color: #1f3566; background: #1f3566; color: #fff; }
+.tp-pane-tab[aria-pressed="true"] { border-color: #1f3566; background: linear-gradient(180deg, #27427d 0%, #1b2f5c 100%); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 2px 0 #122040; }
 .tp-pane-tab[aria-pressed="true"] small { color: #dbe4f5; }
 .tp-pane-tab:focus-visible, .tp-pane-next:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
 .tp-pane-next { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; margin: 12px 12px 16px; border: 2px solid #1f3566; border-radius: 999px; background: #eef2fb; padding: 0 16px; font: inherit; font-size: 15px; font-weight: 800; color: #1f3566; cursor: pointer; }
@@ -383,21 +397,23 @@
 
 /* ───────── TOEIC リスニング（tpl_1）：音声再生バー＋採点後スクリプト（2026-11-12） ───────── */
 .tp-listening { display: grid; gap: 0; }
-.tpl-audio-card { display: grid; gap: 8px; margin: 12px 12px 0; border: 1px solid #c3cfea; border-radius: 14px; background: #fff; padding: 12px; font-family: var(--font-modern); }
+.tpl-audio-card { display: grid; gap: 8px; margin: 12px 12px 0; border: 1px solid #c3cfea; border-radius: 14px; background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%); padding: 12px; font-family: var(--font-modern); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 2px 0 #dce4f3, 0 6px 16px rgba(31, 53, 102, .05); }
 .tpl-audio-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
 .tpl-audio-heading { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
-.tpl-part-badge { flex-shrink: 0; border-radius: 999px; background: #1f3566; padding: 2px 10px; font-size: 12px; font-weight: 800; line-height: 20px; color: #fff; }
+.tpl-part-badge { flex-shrink: 0; border-radius: 999px; background: linear-gradient(180deg, #27427d, #1b2f5c); padding: 2px 10px; font-size: 12px; font-weight: 800; line-height: 20px; color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2); }
 .tpl-audio-title { min-width: 0; margin: 0; font-size: 15px; font-weight: 800; line-height: 1.4; color: #111827; }
 .tpl-speed-group { display: inline-flex; align-items: center; gap: 4px; }
-.tpl-speed-btn { min-width: 48px; min-height: 44px; border: 1px solid #94a3b8; border-radius: 10px; background: #fff; padding: 0 8px; font-size: 12px; font-weight: 800; color: #334155; cursor: pointer; font-variant-numeric: tabular-nums; }
-.tpl-speed-btn[aria-pressed="true"] { border-color: #1f3566; background: #1f3566; color: #fff; }
+.tpl-speed-btn { min-width: 48px; min-height: 44px; border: 1px solid #b8c4d6; border-radius: 10px; background: #fff; padding: 0 8px; font-size: 12px; font-weight: 800; color: #334155; box-shadow: 0 2px 0 #e2e8f0; cursor: pointer; font-variant-numeric: tabular-nums; transition: background-color .12s ease, border-color .12s ease, transform .1s ease, box-shadow .12s ease; }
+.tpl-speed-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 #e2e8f0; }
+.tpl-speed-btn[aria-pressed="true"] { border-color: #1f3566; background: #1f3566; color: #fff; box-shadow: 0 2px 0 #122040; }
 .tpl-speed-btn:focus-visible, .tpl-play-btn:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
 .tpl-audio-guide { margin: 0; font-size: 13px; line-height: 1.5; color: #475569; }
 .tpl-track-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .tpl-track-grid.is-single { grid-template-columns: minmax(0, 1fr); }
-.tpl-play-btn { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 6px; border: 1.5px solid #1f3566; border-radius: 12px; background: #eef2fb; padding: 6px 10px; font-size: 13px; font-weight: 800; line-height: 1.3; color: #1f3566; cursor: pointer; }
-.tpl-play-btn:hover { background: #e0e8f9; }
-.tpl-play-btn[data-playing] { border-color: #166534; background: #166534; color: #fff; }
+.tpl-play-btn { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 6px; border: 1.5px solid #1f3566; border-radius: 12px; background: linear-gradient(180deg, #f4f7fd 0%, #e7eefb 100%); padding: 6px 10px; font-size: 13px; font-weight: 800; line-height: 1.3; color: #1f3566; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .85), 0 2px 0 #b8c8e8; cursor: pointer; transition: background .13s ease, transform .1s ease, box-shadow .12s ease; }
+.tpl-play-btn:hover { background: linear-gradient(180deg, #ebf1fc 0%, #dce6f9 100%); }
+.tpl-play-btn:active { transform: translateY(1.5px); box-shadow: 0 1px 0 #b8c8e8; }
+.tpl-play-btn[data-playing] { border-color: #166534; background: linear-gradient(180deg, #1d7a42 0%, #155e31 100%); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 2px 0 #0f4423; }
 .tpl-script { margin: 2px 0 0; border-top: 1px solid #e5e7eb; }
 .tpl-script > summary { display: flex; min-height: 44px; align-items: center; gap: 6px; padding: 0 4px; font-size: 13px; font-weight: 800; color: #1f3566; cursor: pointer; list-style: none; }
 .tpl-script > summary::-webkit-details-marker { display: none; }

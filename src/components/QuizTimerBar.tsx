@@ -123,7 +123,7 @@ export function QuizTimerBar({ timeLimit, running, onTick, resetKey }: QuizTimer
           )}
         </div>
       </div>
-      <div className="h-1 md:h-1.5 w-full bg-gray-100/80 overflow-hidden">
+      <div className="h-1 md:h-1.5 w-full bg-[#EFE7D6] shadow-[inset_0_1px_1px_rgba(60,42,18,0.08)] overflow-hidden">
         <div
           className={`h-full ${barColor} transition-all duration-200 ease-linear ${isOver ? 'animate-pulse' : ''}`}
           style={{ width: `${pct}%` }}

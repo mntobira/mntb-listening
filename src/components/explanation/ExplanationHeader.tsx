@@ -23,15 +23,13 @@ export interface ExplanationHeaderProps {
 
 export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reorderMobile, isResultView, savingNote, handleSaveNote, calculateScore, onBack, onNextQuestion, isLastQuestion }: ExplanationHeaderProps) {
   return (
-      <div className={`p-4 md:p-6 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] md:pt-6 border-b-2 z-30 flex items-start justify-between gap-4 flex-none ${
+      <div className={`ex-head-bar p-4 md:p-6 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] md:pt-6 border-b z-30 flex items-start justify-between gap-4 flex-none ${
         // ★スマホの1問ごとの答え合わせ（reorderMobile）では、
         //   「解答・解説 / 章名」の右横に Score・答え合わせ・Q番号・ノートに保存・正答率を
         //   横並びで置き、縦方向の占有を減らす（上部の1行に集約する）。
         reorderMobile ? 'flex-row' : 'flex-col md:flex-row md:items-center'
       } ${
         isResultView ? 'sticky top-0 backdrop-blur-md' : 'relative'
-      } ${
-        'bg-white/95 border-gray-100'
       }`}>
         <div className={`flex flex-1 min-w-0 ${
           reorderMobile
@@ -44,8 +42,8 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
             }`}>
               解答・解説
             </h3>
-            <div className={`mt-0.5 md:mt-1 ${reorderMobile ? 'text-xs' : 'text-xs md:text-sm'} ${
-              'text-gray-500'
+            <div className={`mt-0.5 md:mt-1 font-bold ${reorderMobile ? 'text-xs' : 'text-xs md:text-sm'} ${
+              'text-[#7A6A4C]'
             }`}>
               {chapter.realTitle}
             </div>
@@ -83,7 +81,7 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
             <div className={reorderMobile
               ? 'flex flex-nowrap items-center justify-end gap-1 min-w-0 flex-1'
               : `flex flex-wrap items-center gap-2 sm:gap-3 sm:border-l sm:pl-4 md:pl-6 lg:pl-8 ${
-                  'border-gray-200'
+                  'border-[#E3D9C8]'
                 } w-full sm:w-auto`
             }>
               {/* 「答え合わせ」チップ。
@@ -124,12 +122,12 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
                 onClick={(e) => { e.stopPropagation(); handleSaveNote(questions[0], singleQuestionIndex); }}
                 aria-label={savingNote[questions[0].id] ? 'ノートに保存中' : 'ノートに保存'}
                 title={savingNote[questions[0].id] ? '保存中...' : 'ノートに保存'}
-                className={`flex items-center rounded-full font-bold transition-colors border shrink-0 ${
+                className={`ex-save-btn flex items-center rounded-full font-bold border shrink-0 ${
                   reorderMobile ? 'gap-0 text-xs px-1 py-0.5' : 'gap-1 text-xs px-2.5 py-1'
                 } ${
                   savingNote[questions[0].id] 
-                    ? ('bg-gray-100 text-gray-500 border-gray-200') 
-                    : ('bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100')
+                    ? ('bg-[#F6EFE2] text-[#7A6A4C] border-[#E3D9C8]') 
+                    : ('bg-[#FFF8DF] text-[#8A5A00] border-[#EAD07A] hover:bg-[#FFF2C2]')
                 }`}
                 disabled={savingNote[questions[0].id]}
               >
@@ -174,9 +172,7 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
           <div className={`${reorderMobile ? 'hidden' : 'flex'} items-center gap-3 w-full md:w-auto`}>
             <button 
               onClick={onNextQuestion}
-              className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border flex-1 md:flex-none justify-center ${
-                'text-white bg-[#2C3E50] hover:bg-[#1a252f] border-[#2C3E50]'
-              }`}
+              className="ex-nav-primary flex items-center gap-2 font-bold px-4 min-h-11 rounded-full border flex-1 md:flex-none justify-center"
             >
               <span>{isLastQuestion ? '結果を見る' : '次の問題へ'}</span>
               <ArrowLeft size={18} className="rotate-180" />
@@ -185,9 +181,7 @@ export function ExplanationHeader({ chapter, questions, singleQuestionIndex, reo
         ) : isResultView ? null : (
           <button 
             onClick={onBack}
-            className={`flex items-center gap-2 transition-colors font-bold px-4 py-2 rounded-full border w-full md:w-auto justify-center ${
-              'text-gray-500 hover:text-[#2C3E50] border-gray-200 hover:border-[#2C3E50] bg-gray-50'
-            }`}
+            className="ex-nav-secondary flex items-center gap-2 font-bold px-4 min-h-11 rounded-full border w-full md:w-auto justify-center"
           >
             <ArrowLeft size={18} />
             <span>単元選択に戻る</span>

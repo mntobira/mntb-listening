@@ -47,9 +47,9 @@ export function MobileResultChips({ question, objectiveSqs, answers, selectedSqI
                                             }}
                                             aria-pressed={active}
                                             aria-label={`${marker} ${!attempted ? '未解答' : ok ? '正解' : '不正解'}の解答・解説を${active ? '閉じる' : '見る'}`}
-                                            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 px-1 py-2 min-h-[3.25rem] transition-all ${
+                                            className={`ex-chip-btn flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 px-1 py-2 min-h-[3.25rem] transition-all ${
                                               !attempted
-                                                ? (active ? 'bg-gray-200 border-gray-400' : 'bg-gray-50 border-gray-200')
+                                                ? (active ? 'bg-[#EFE8D8] border-[#B8AA92]' : 'bg-[#FAF5EB] border-[#E3D9C8]')
                                                 : ok
                                                   ? (active ? 'bg-emerald-100 border-emerald-500 shadow-sm' : 'bg-emerald-50 border-emerald-200')
                                                   : (active ? 'bg-red-100 border-red-500 shadow-sm' : 'bg-red-50 border-red-200')

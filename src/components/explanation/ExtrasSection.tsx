@@ -40,7 +40,7 @@ export function ExtrasSection({ wrapClassName, questions, isEnglishChapter, fold
                 <ExtraWrap key={`extra-${question.id}`} className={foldExtras ? 'lx-fold lx-fold-extra' : 'space-y-6'} {...(foldExtras && openByDefault ? { open: true } : {})}>
                   {foldExtras && <summary><BookOpen size={16} aria-hidden="true" /><span className="lx-lbl-long">周辺知識・深掘り</span><span className="lx-lbl-short">周辺知識</span><ChevronDown size={18} aria-hidden="true" /></summary>}
                   <ExtraInner {...(foldExtras ? { className: 'lx-fold-body space-y-6' } : {})}>
-                  <div className={`flex items-center gap-3 border-b pb-2 ${'border-gray-200'}`}>
+                  <div className={`flex items-center gap-3 border-b pb-2 ${'border-[#E6DCCB]'}`}>
                     <div className={`font-bold px-2 py-0.5 rounded text-xs shadow-sm border ${'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
                       Q{qNumberOf(qIndex)}
                     </div>
@@ -60,9 +60,9 @@ export function ExtrasSection({ wrapClassName, questions, isEnglishChapter, fold
                           const titleMatch = k.match(/^(【.*?】)(.*)/s);
                           if (titleMatch) {
                             return (
-                              <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${'bg-blue-50 border-blue-200'}`}>
+                              <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_2px_0_#cfe0f2] relative overflow-hidden ${'bg-[#F3F8FD] border-[#C7DCF0]'}`}>
                                 <div className={`absolute top-0 left-0 w-1.5 h-full ${'bg-blue-400'}`}></div>
-                                <div className={`inline-flex items-center gap-1.5 text-xs md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-blue-600 border-blue-200'}`}>
+                                <div className={`inline-flex items-center gap-1.5 text-xs md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-blue-700 border-[#C7DCF0]'}`}>
                                   <BookOpen size={14} />
                                   {/* 見出しバッジも prose 対象。英語では見出しに英単語が
                                       そのまま入ることがあり、ここを素の formatText に
@@ -77,7 +77,7 @@ export function ExtrasSection({ wrapClassName, questions, isEnglishChapter, fold
                             );
                           }
                           return (
-                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${'bg-gray-50 border-gray-200 text-gray-700'}`}>
+                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_2px_0_#e8dfd0] text-xs md:text-sm leading-relaxed whitespace-pre-wrap ${'bg-[#FFFDF9] border-[#E6DCCB] text-gray-700'}`}>
                               {formatText(k, [], { prose: isEnglishChapter })}
                             </div>
                           );
@@ -108,9 +108,9 @@ export function ExtrasSection({ wrapClassName, questions, isEnglishChapter, fold
                           }
 
                           return (
-                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-sm relative overflow-hidden ${'bg-amber-50 border-amber-200'}`}>
+                            <div key={idx} className={`p-4 md:p-5 rounded-xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_2px_0_#ecd596] relative overflow-hidden ${'bg-[#FFF9EA] border-[#EDD89E]'}`}>
                               <div className={`absolute top-0 left-0 w-1.5 h-full ${'bg-amber-400'}`}></div>
-                              <div className={`inline-flex items-center gap-1.5 text-xs md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-amber-600 border-amber-200'}`}>
+                              <div className={`inline-flex items-center gap-1.5 text-xs md:text-xs font-bold px-2.5 py-1 rounded-md mb-3 border ${'bg-white text-amber-700 border-[#EDD89E]'}`}>
                                 <Lightbulb size={14} />
                                 {/* 【】が無い深掘りでは title = 1行目まるごとになり、
                                     英文（usually / on weekdays など）を含みうる。

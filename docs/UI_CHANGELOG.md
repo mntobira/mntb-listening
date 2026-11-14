@@ -1,3 +1,26 @@
+## 2026-11-14 既存の温かい紙・文具トーンを保ったまま全画面（全62ファイル）のUI質感・押下感・演習／解答解説／TOEIC／対戦／フレンド／マイページの調和を徹底向上
+
+- 共通プリミティブ・下部ナビ／PCサイドバー・起動画面・基本サーフェス・読み込み扉（`system.css` / `nav.css` / `launch-screen.css` / `surfaces.css` / `screen-loading.css`）：
+  - ホームの色バランス・配置・1画面完結の寸法を1pxも変えず、共通カード（`.mt-card` / `.card`）・リスト枠（`.mt-list`）・ボタン（`.mt-btn-*` / `.mt-back` / `.mt-icon-btn`）・タブ（`.mt-tabs`）・モーダル（`.mt-dialog`）・起動画面のチップ／主CTA（`.launch-chips` / `.launch-start` / `.launch-philosophy`）・読み込み中の扉（`.screen-loading-door`）に上端の微細なハイライトと立体縁、滑らかなホバー・押下沈み込み（`:active`）を追加。
+  - 下部ナビ（`.app-bottom-nav`）に紙色のすりガラス質感（`backdrop-filter: blur(8px)`、低スペック端末 `data-perf=lite` では自動で無効化）と現在地インジケータの微かな奥行きを付与。
+- ひとりで学ぶ本編・リスニング演習・共通テスト資料（図・表メモ）・説明ページ・音声プレーヤー（`quiz-compact.css` / `Quiz.tsx` / `QuizHeader.tsx` / `QuizTimerBar.tsx` / `ListeningBriefing.tsx` / `ProblemPane.tsx` / `ListeningMaterialPane.tsx` / `ListeningMaterials.tsx` / `AnswerPane.tsx` / `MultipleChoiceControl.tsx` / `SortingControl.tsx` / `MobileFloatingBar.tsx` / `ListeningAudioPlayer.tsx`）：
+  - 冷たいグレー（`bg-gray-50` / `border-gray-200`）だった演習シェルの外枠・タイマー溝・ブリーフィング・問題／資料ペイン・解答ペイン・スマホ下部固定バー（`.quiz-floating-bar`）を、マナトビ共通の温かいアイボリー紙トーンへ統一（1画面収まりの高さ・余白・flex配分は1pxも不変）。
+  - 4択ボタン（`.mc-opt-idle` / `.mc-opt-selected`）、並べ替えトレイ＆チップ（`.sort-tray` / `.sort-chip` / `.sort-step-btn`）、解答カード・記述／短答入力欄（`.quiz-answer-card`）、共通テストリスニングの図枠・カルーセル送り・○×メモ表（`ListeningMaterials.tsx`）、再生・速度ボタン（`.lap-btn-idle` / `.lap-btn-active`）、単元ポイントボタン・進捗ピル・「解答と解説を見る」主CTA（`.quiz-primary-cta`）に文具らしい立体縁と押し心地を追加。
+- 解答・解説本編・結果インサイト・リスニング解説・1問ずつ演習・音読スタジオ（`Explanation.tsx` / `ExplanationHeader.tsx` / `ProblemStatement.tsx` / `SubQuestionCard.tsx` / `MobileResultChips.tsx` / `ResultSummary.tsx` / `BottomBars.tsx` / `ReasonBox.tsx` / `ExtrasSection.tsx` / `ExplanationBody.tsx` / `explanationBlocks.ts` / `toeic-page.css` / `listening-explanation.css` / `step-explanation.css` / `result-insight.css` / `read-along.css`）：
+  - 全教科の解答・解説画面（`Explanation.tsx` 系）の真っ白／冷たいグレー枠・ヘッダー・小問正誤カード・解説／思考手順トグル・スマホ正誤チップ・下部バー・ノート保存／理由送信ボタン・Markdown表（`ExplanationBody.tsx`）を、温かいアイボリー紙面と立体縁（`.ex-head-bar` / `.ex-problem-card` / `.ex-sq-card` / `.ex-fold-btn` / `.ex-chip-btn` / `.ex-mobile-bottom`）に刷新。
+  - TOEIC の背景・ヘッダー・フッター（`.tp-root` / `.tp-head` / `.tp-foot`）もアイボリー紙トーンへ調和させ、設問カード・長文カード・リスニング音声カード・結果サマリー・4択マーク枠・問題送りチップの押し心地を統一。
+- 対戦ロビー・教科／単元／問題数選択・対戦の部屋・出題・選択肢／かなキー・結果あわせ（`battle-lobby.css` / `battle-lobby-room.css` / `battle-question.css` / `BattleAnswerControls.tsx` / `battle-result-review.css` / `opponent-card.css` / `battle-rank-switch.css`）：
+  - 対戦ロビーの札・水色の主ボタン（`.arena-lobby-side` / `.arena-lobby-main` / `.arena-top-switch`）、教科・単元・問題数カード（`[id^="battle-subject-"]` / `[data-battle-unit]` / `[data-question-count]`）、対戦の部屋の席カード（`.lobby-seat` / `.lobby-pick`）、出題画面のタイマー溝（`#battle-time-bar`）・問題枠・音声バー・絵4択・得点板に紙の立体感を付与。
+  - 対戦の4択ボタン（`.bq-choice-btn`）および文字パネル・五十音キーボードのキーキャップ・決定ボタン（`.bq-slot-tray` / `.bq-keycap` / `.bq-kana-commit`）、対戦結果の問題送り・最近の対戦・対戦相手カードに心地よいキー押下感を追加。
+- フレンドパネル・リスニングホーム＆補助学習・ナビ画面・復習記録・マナラッシュ・各種ダイアログ・PDFビュー・使い方ガイド（`FriendPanel.tsx` / `listening-home.css` / `navigation-screens.css` / `review-record.css` / `game-extras.css` / `index.css` / `pdf-viewer.css` / `intro.css`）：
+  - `FriendPanel` の外枠・自分のコード帯・コピー／共有・コード入力／貼り付け／申請・届いている申請・フレンド行カードを温かい紙トーン＆立体札（`.friend-panel` / `.friend-own-banner` / `.friend-row-card`）へ刷新。
+  - リスニングホーム＆単語・文法補助学習モーダル（`listening-home.css`）、書斎・学習机ナビ（`navigation-screens.css`）、復習メダルの棚（`review-record.css`）、マナラッシュ、単元ポイントモーダル、通報・規約ダイアログ、アプリ内 PDF ビュー、使い方ガイドの質感と押下レスポンスを統一。
+- 演習カタログ・単元一覧・復習ノート・英単語／英文法・学習記録・ガチャ・ランキング・マイページ・設定・公開プロフィール・とびら君吹き出し（`study-catalog.css` / `unit-card.css` / `unit-select.css` / `review-note.css` / `foundation.css` / `studylog.css` / `study-record.css` / `gacha.css` / `ranking.css` / `growth-hub.css` / `profile-settings.css` / `public-profile.css` / `tobira-buddy.css` / `game-dashboard.css`）：
+  - 科目・教材・リスニング回カードのホバー浮き上がり・矢印アニメーション、検索欄や設定フォームのフォーカスリング、マイページ舞台・着せ替えタイル・公開プロフィール5タブ・とびら君の吹き出し（`.tb-bubble`）の立体縁と押下レスポンスを統一。
+  - 不要な `!important` 指定も整理・削減し、プロジェクト全体の冷たいグレークラス（`bg-gray-*` / `border-gray-*`）残存ゼロ、`cssTokens`（色トークン直書きゼロ・`!important`／`style={{ }}` 上限以下）・`battleLobbyUi`（`battle-lobby-room.css` 生16進数ゼロ）・`lowSpecMotion`（無限アニメはコンポジタ専用のみ）・`uiLegibilityGuard`（文字12px以上・タップ44px以上）をすべてクリア。
+- 対象：全62ファイル（`src/styles/*`、`src/components/*`、`src/components/explanation/*`、`src/components/toeic/*`、`src/battle/ui/*`、`src/features/*`、`src/index.css`）。
+- 戻し方：この変更を revert。
+
 ## 2026-11-12 英単語再生時のBGM維持・全国対戦AIバリエーション拡充・TOEIC リスニング全15回追加
 
 - 英単語音源の再生中に BGM を止めない対応（`pauseAllAudio` / `sayWord` / `say`）：
