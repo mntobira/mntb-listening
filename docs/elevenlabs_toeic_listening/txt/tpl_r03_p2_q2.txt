@@ -1,0 +1,7 @@
+Number 2. Do you know if Mr. Sato approved the travel reimbursement?
+<break time="1.0s" />
+A. To the Kyoto branch office.
+<break time="0.8s" />
+B. He signed off on it an hour ago.
+<break time="0.8s" />
+C. Yes, I know Mr. Sato well.

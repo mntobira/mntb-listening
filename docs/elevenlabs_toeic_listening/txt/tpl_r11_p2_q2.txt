@@ -1,0 +1,7 @@
+Number 2. How many people RSVP'd for the retirement dinner?
+<break time="1.0s" />
+A. At Harbor Grill on Fifth Street.
+<break time="0.8s" />
+B. After twenty-five years at the firm.
+<break time="0.8s" />
+C. Thirty-eight so far, plus two maybes.

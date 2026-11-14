@@ -1,0 +1,5 @@
+Good afternoon, visitors, and welcome to the Harborview Science Museum. In fifteen minutes, at two thirty, marine biologist Dr. Alan Cho will give a special presentation in the Coral Theater on the second floor.
+<break time="0.8s" />
+Dr. Cho will share underwater footage from his team's recent expedition and explain how coastal reefs recover from warm-water seasons. Admission to the talk is free with your museum wristband, though seating is limited to eighty guests on a first-come, first-served basis.
+<break time="0.8s" />
+Please remember that flash photography is not permitted inside the Coral Theater. After the talk, Dr. Cho will be at the museum bookshop on the ground floor to sign copies of his new guide.

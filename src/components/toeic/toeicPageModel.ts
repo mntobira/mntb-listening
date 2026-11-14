@@ -21,6 +21,11 @@ import {
   p7AnswerPositions, p7Offsets, placeP7Choices, plainP7, TOEIC_P7_CHAPTER_ID, type ToeicP7Q, type ToeicP7Set,
 } from '../../data/toeic/toeicPart7Kit';
 import { TOEIC_P7_ROUNDS } from '../../data/toeic/toeicPart7Rounds';
+import {
+  isToeicListeningChapter, locateToeicListening, splitToeicListeningPages, TOEIC_LISTENING_PER_PAGE, toeicListeningExplanationFor,
+} from '../../data/toeic/toeicListeningPage';
+
+export { isToeicListeningChapter };
 
 /** 1ページに並べる問題の数。変えるとページ数も自動で変わる（30問 ÷ 6 = 5ページ） */
 export const QUESTIONS_PER_PAGE = 6;
@@ -28,9 +33,12 @@ export const QUESTIONS_PER_PAGE = 6;
 /** 選択肢がこの文字数を超えたら、その問題だけ1列にする（2×2だと折り返して読みにくい） */
 export const LONG_CHOICE_CHARS = 18;
 
-/** TOEIC Part 5・Part 6・Part 7 の単元か（演習画面をこのページ式に切り替える条件） */
+/** TOEIC リスニング・Part 5・Part 6・Part 7 の単元か（演習画面をこのページ式に切り替える条件） */
 export function isToeicPageChapter(chapterId: string | undefined | null): boolean {
-  return chapterId === TOEIC_P5_CHAPTER_ID || chapterId === TOEIC_P6_CHAPTER_ID || chapterId === TOEIC_P7_CHAPTER_ID;
+  return isToeicListeningChapter(chapterId)
+    || chapterId === TOEIC_P5_CHAPTER_ID
+    || chapterId === TOEIC_P6_CHAPTER_ID
+    || chapterId === TOEIC_P7_CHAPTER_ID;
 }
 
 /** TOEIC Part 7（読解）の単元か。1ページ＝1セット（文書1〜3つ＋その設問2〜5問） */
@@ -117,17 +125,19 @@ export function splitP7Pages<T extends Pick<SubQuestion, 'id'>>(items: readonly 
   return pages;
 }
 
-/** 単元に合わせたページ分け（Part 5 は6問ずつ、Part 6 は文書ごと、Part 7 はセットごと） */
+/** 単元に合わせたページ分け（リスニングは3問ずつ、Part 5 は6問ずつ、Part 6 は文書ごと、Part 7 はセットごと） */
 export function splitToeicPages<T extends Pick<SubQuestion, 'id'>>(chapterId: string | undefined | null, items: readonly T[]): T[][] {
+  if (isToeicListeningChapter(chapterId)) return splitToeicListeningPages(items);
   if (isToeicPart7Chapter(chapterId)) return splitP7Pages(items);
   return isToeicPart6Chapter(chapterId) ? splitP6Pages(items) : splitPages(items, QUESTIONS_PER_PAGE);
 }
 
 /**
- * 保存したページ位置の1単位（Part 5 は6問、Part 6 は4問）。
+ * 保存したページ位置の1単位（リスニングは3問、Part 5 は6問、Part 6 は4問）。
  * Part 7 はセットごとに設問の数が違うので 1（＝ページ番号をそのまま保存する）。
  */
 export function perPageOf(chapterId: string | undefined | null): number {
+  if (isToeicListeningChapter(chapterId)) return TOEIC_LISTENING_PER_PAGE;
   if (isToeicPart7Chapter(chapterId)) return 1;
   return isToeicPart6Chapter(chapterId) ? TOEIC_P6_BLANKS_PER_SET : QUESTIONS_PER_PAGE;
 }
@@ -283,6 +293,7 @@ const SUB_ID = /_r(\d+)_(\d+)$/;
  * 引けないとき（想定外のID）は null。画面は解説を出さずに続ける。
  */
 export function toeicExplanationFor(sq: SubQuestion): ToeicExplanation | null {
+  if (locateToeicListening(sq.id)) return toeicListeningExplanationFor(sq);
   if (locateP6(sq.id)) return toeicP6ExplanationFor(sq);
   if (P7_SUB_ID.test(String(sq.id))) return toeicP7ExplanationFor(sq);
   const m = String(sq.id).match(SUB_ID);

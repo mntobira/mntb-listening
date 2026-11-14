@@ -57,6 +57,7 @@ export interface StudySubject {
 const listening = getSubjectStats('english_listening');
 const grammar = getSubjectStats('english_grammar');
 const toeic = getSubjectStats('toeic_part5');
+const toeicL = getChapterIndexOfSubject('toeic_part5').find((c) => c.id === 'tpl_1')?.problemCount ?? 0;
 const toeicP6 = getChapterIndexOfSubject('toeic_part5').find((c) => c.id === 'tp6_1')?.problemCount ?? 0;
 const toeicP7 = getChapterIndexOfSubject('toeic_part5').find((c) => c.id === 'tp7_1')?.problemCount ?? 0;
 
@@ -104,11 +105,11 @@ export const STUDY_CATALOG: readonly StudySubject[] = [
         action: { kind: 'foundation', tab: 'words' },
       },
       {
-        // 2026-10-28：TOEIC L&Rリーディング演習を試験導入。とびら君の吹き出しの右に置く（カードの列は動かさない）
+        // 2026-10-28：TOEIC L&R演習を試験導入。とびら君の吹き出しの右に置く（カードの列は動かさない）
         id: 'english_toeic', title: 'TOEIC® L&R TEST', icon: 'briefcase', badge: 'NEW', section: 'spotlight',
-        // 2026-11-02 読解形式ごとの演習回をまとめて案内
-        description: 'リーディング（短文・長文穴埋め／読解）',
-        meta: `短文穴埋め全${(toeic.questions ?? 0) - toeicP6 - toeicP7}回・長文穴埋め全${toeicP6}回・読解全${toeicP7}回`,
+        // 2026-11-12 リスニングも追加し、Part番号ブランド表記を避けて形式ごとに案内
+        description: 'リスニング・リーディング（穴埋め／読解）',
+        meta: `リスニング全${toeicL}回・短文穴埋め全${(toeic.questions ?? 0) - toeicL - toeicP6 - toeicP7}回・長文穴埋め全${toeicP6}回・読解全${toeicP7}回`,
         progressSubject: 'toeic_part5',
         action: { kind: 'units', subject: 'toeic_part5' },
       },

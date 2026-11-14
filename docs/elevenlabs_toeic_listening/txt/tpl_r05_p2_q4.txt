@@ -1,0 +1,7 @@
+Number 4. How many prototype units did the lab assemble yesterday?
+<break time="1.0s" />
+A. On the third floor of the lab.
+<break time="0.8s" />
+B. Yes, the test went smoothly.
+<break time="0.8s" />
+C. Enough for all five testing teams.

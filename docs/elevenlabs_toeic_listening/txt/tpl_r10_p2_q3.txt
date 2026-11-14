@@ -1,0 +1,7 @@
+Number 3. Do we need a reservation for dinner at Bistro Lune tonight?
+<break time="1.0s" />
+A. On Tuesday nights, walk-ins are usually fine.
+<break time="0.8s" />
+B. The roasted salmon was delicious.
+<break time="0.8s" />
+C. For six thirty, please.

@@ -16,7 +16,7 @@ import { gachaItemRate } from '../../battle/core/arenaEconomy';
 import { GACHA_PREVIEWS } from '../../data/gachaPreviews.generated';
 import { kyotsuAudioOf } from '../../data/kyotsuMockAudio';
 import { RarityTag, pct } from '../GachaParts';
-import { DEFAULT_GACHA_POOL, gachaPoolOf, type GachaPoolId } from '../../battle/core/gachaPools';
+import { DEFAULT_GACHA_POOL, gachaPoolOf, selectableUniversityOf, type GachaPoolId } from '../../battle/core/gachaPools';
 import { NIJI_DISCLAIMER, mockUniversityOf, nijiUniversityOf } from '../../data/nijiMockPrints';
 import { PRINT_SHELVES, printShelfOf, type PrintShelfId } from '../../battle/core/printShelves';
 import { KYOTSU_FREE_FULL_IDS } from '../../data/kyotsuMockPrints';
@@ -71,47 +71,49 @@ export function pickupLrSummary(lr: readonly ItemDef[]): string | null {
   return univs.size ? `${univs.size}大学・${lr.length}冊。地方を選ぶと、大学ごとに並びます。` : null;
 }
 
-function PickupItem({ item, progress, pool }: { item: ItemDef; progress: GrowthProgress | null; pool: GachaPoolId }) {
+function PickupItem({ item, progress, pool, univId }: { item: ItemDef; progress: GrowthProgress | null; pool: GachaPoolId; univId?: string }) {
   const print = printOf(item.id);
   const owned = !!progress?.owned.includes(item.id);
   const sample = kyotsuAudioOf(item.id)[0];
   return (
     <details className="gacha-pickup-item" data-gacha-pickup-item={item.id}>
-        <summary>
-          {print && <img src={print.thumb} alt="" loading="lazy" width={40} height={56} />}
-          <span>
-            <span className="gacha-pickup-meta">
-              <RarityTag rarity={gachaRarityOf(item)} />
-              {print ? `${print.pages}ページ` : ''} · {pct(gachaItemRate(item, 'N', pool))}%{owned ? ' · 所持済み' : ''}
-              {sample ? ' · 音声つき' : ''}
-            </span>
-            <strong>{item.label}</strong>
+      <summary>
+        {print && <img src={print.thumb} alt="" loading="lazy" width={40} height={56} />}
+        <span>
+          <span className="gacha-pickup-meta">
+            <RarityTag rarity={gachaRarityOf(item)} />
+            {print ? `${print.pages}ページ` : ''} · {pct(gachaItemRate(item, 'N', pool, univId))}%{owned ? ' · 所持済み' : ''}
+            {sample ? ' · 音声つき' : ''}
           </span>
-          <em aria-hidden="true">少し見る</em>
-        </summary>
-        <div className="gacha-pickup-pages">
-          {(GACHA_PREVIEWS[item.id] ?? []).map((src) => (
-            <img key={src} src={src} alt={`${item.label} の一部（${src.match(/_p(\d+)\.webp$/)?.[1] ?? ''}ページ目の上半分）`} loading="lazy" />
-          ))}
-        </div>
-        {sample && (
-          <p className="gacha-pickup-audio">
-            <span>試聴（問1）</span>
-            <audio controls preload="none" src={sample.file} />
-          </p>
-        )}
+          <strong>{item.label}</strong>
+        </span>
+        <em aria-hidden="true">少し見る</em>
+      </summary>
+      <div className="gacha-pickup-pages">
+        {(GACHA_PREVIEWS[item.id] ?? []).map((src) => (
+          <img key={src} src={src} alt={`${item.label} の一部（${src.match(/_p(\d+)\.webp$/)?.[1] ?? ''}ページ目の上半分）`} loading="lazy" />
+        ))}
+      </div>
+      {sample && (
+        <p className="gacha-pickup-audio">
+          <span>試聴（問1）</span>
+          <audio controls preload="none" src={sample.file} />
+        </p>
+      )}
     </details>
   );
 }
 
-export function GachaPickupModal({ dialog, items, progress, pool = DEFAULT_GACHA_POOL }: {
+export function GachaPickupModal({ dialog, items, progress, pool = DEFAULT_GACHA_POOL, univId }: {
   dialog: RefObject<HTMLDialogElement | null>;
   items: readonly ItemDef[];
   progress: GrowthProgress | null;
   pool?: GachaPoolId;
+  univId?: string;
 }) {
   const list = pickupItems(items);
   const def = gachaPoolOf(pool);
+  const selectedUniv = pool === 'univ' ? selectableUniversityOf(univId) : null;
   // F5（2026-11-04）：共通テストガチャは、第1回（全文を見られる）を一番上に固定する
   const free = pool === 'kyotsu' ? KYOTSU_FREE_FULL_IDS.map((id) => printOf(id)).filter((p): p is NonNullable<typeof p> => !!p) : [];
   const lr = list.filter((i) => gachaRarityOf(i) === 'LR');
@@ -139,7 +141,7 @@ export function GachaPickupModal({ dialog, items, progress, pool = DEFAULT_GACHA
       </header>
       <div className="game-details-body gacha-pickup">
         <p className="gacha-pickup-lead">ページの一部だけ見られます。全部は、ガチャで当てて「マイPDF」から。</p>
-        {pool === 'niji' && (
+        {(pool === 'niji' || pool === 'univ') && (
           <details className="gacha-pickup-disclaimer" data-niji-disclaimer>
             <summary>※ 各大学の過去問・公式問題ではありません（予想問題）。収録している大学を見る</summary>
             <p className="gacha-detail-disclaimer">※ {NIJI_DISCLAIMER}</p>
@@ -174,7 +176,7 @@ export function GachaPickupModal({ dialog, items, progress, pool = DEFAULT_GACHA
         </div>
         {tab === 'LR' ? (
           <section className="gacha-pickup-group" aria-label={`LR ${def.lrName}`} data-pickup-panel="LR">
-            <p>{summary ?? def.lrNote}</p>
+            <p>{selectedUniv ? `${selectedUniv.label}の全${lr.length}冊だけが LR で出ます。` : summary ?? def.lrNote}</p>
             {shelves.length > 1 && (
               <nav className="gacha-pickup-shelves" aria-label="地方の棚" data-pickup-shelves>
                 {shelves.map((s) => (
@@ -187,14 +189,14 @@ export function GachaPickupModal({ dialog, items, progress, pool = DEFAULT_GACHA
             {shelf?.groups.map((g) => (
               <div key={g.label ?? 'all'} className="gacha-pickup-univ">
                 {g.label && <h3>{g.label}<small>{g.items.length}冊</small></h3>}
-                <ul>{g.items.map((item) => <li key={item.id}><PickupItem item={item} progress={progress} pool={pool} /></li>)}</ul>
+                <ul>{g.items.map((item) => <li key={item.id}><PickupItem item={item} progress={progress} pool={pool} univId={univId} /></li>)}</ul>
               </div>
             ))}
           </section>
         ) : (
           <section className="gacha-pickup-group" aria-label="厳選UR 完全版の本" data-pickup-panel="UR">
             <p>大当たり（その一冊で完成する本）から、{def.title}で出るもの。</p>
-            <ul>{ur.map((item) => <li key={item.id}><PickupItem item={item} progress={progress} pool={pool} /></li>)}</ul>
+            <ul>{ur.map((item) => <li key={item.id}><PickupItem item={item} progress={progress} pool={pool} univId={univId} /></li>)}</ul>
           </section>
         )}
       </div>

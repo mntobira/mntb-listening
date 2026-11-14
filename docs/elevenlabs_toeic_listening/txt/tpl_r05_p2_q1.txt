@@ -1,0 +1,7 @@
+Number 1. When are travel expense claims due this month?
+<break time="1.0s" />
+A. On the twenty-fifth, by five P.M.
+<break time="0.8s" />
+B. About three hundred dollars.
+<break time="0.8s" />
+C. Yes, my flight was on time.

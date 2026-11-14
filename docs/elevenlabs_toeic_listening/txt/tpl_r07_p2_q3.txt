@@ -1,0 +1,7 @@
+Number 3. Should we book an aisle seat or a window seat for Ms. Cho?
+<break time="1.0s" />
+A. She prefers the aisle on long flights.
+<break time="0.8s" />
+B. Flight 408 to Seattle.
+<break time="0.8s" />
+C. Yes, her ticket is confirmed.

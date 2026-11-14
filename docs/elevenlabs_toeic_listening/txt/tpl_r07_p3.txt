@@ -1,0 +1,11 @@
+[Man] Hello, welcome to Crestline Outdoor Gear. How can I help you today?
+<break time="0.6s" />
+[Woman] Hi. I ordered this waterproof trail jacket from your website last week, but the medium is a bit too tight across the shoulders. Could I exchange it for a large here in the store?
+<break time="0.6s" />
+[Man] Certainly, as long as the tags are still attached and you have the order number. Let me check our stockroom—what color is that, slate blue?
+<break time="0.6s" />
+[Woman] Yes, slate blue. Here's the digital receipt on my phone.
+<break time="0.6s" />
+[Man] Hmm, my tablet shows we're sold out of the large in slate blue at this location, though we do have it in olive green. Alternatively, I can have a slate blue large shipped directly to your home at no charge.
+<break time="0.6s" />
+[Woman] Oh, I'm leaving for a hiking trip this Saturday, so shipping might be cutting it close. Let me try on the olive green one instead.

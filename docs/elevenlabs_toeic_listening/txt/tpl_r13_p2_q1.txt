@@ -1,0 +1,7 @@
+Number 1. Where did you put the packing slips from this morning's delivery?
+<break time="1.0s" />
+A. They're clipped to the clipboard on my desk.
+<break time="0.8s" />
+B. Twelve cartons of copy paper.
+<break time="0.8s" />
+C. Be careful not to slip.

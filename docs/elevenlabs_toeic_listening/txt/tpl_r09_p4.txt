@@ -1,0 +1,5 @@
+Hello, Mr. Kowalski. This is Elena Vance calling from Northstar Cloud Solutions. I'm following up because our engineering team finished migrating your firm's historical billing records onto the new encrypted server early this morning.
+<break time="0.8s" />
+All sixty-five employee accounts are active, and our test searches ran smoothly. However, before we permanently shut down your old server next Tuesday, we need one person from your finance department to verify ten sample invoices and sign the completion form.
+<break time="0.8s" />
+I've uploaded that form to your client dashboard under the Documents tab. Please give me a call back at 555-0194 if your team notices any formatting issues with exported spreadsheets. Thank you!

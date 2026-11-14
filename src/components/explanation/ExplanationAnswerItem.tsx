@@ -55,6 +55,20 @@ export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
      中身はそのまま。詳しくは下の使用箇所のコメントを参照。 */
   const listeningTracks = textTracksOf(question);
   const optionTextsBySq = buildListeningOptionTexts(allQuestions.find((q) => q?.id === question?.id) ?? question);
+  // 英文法の完成文音声は問題文欄ではなく、答え合わせ・解説欄で聞けるようにする。
+  const grammarReviewPlayerBlock = !question.audioTracks?.length && question.explanationTracks?.length ? (
+    <ListeningAudioPlayer
+      tracks={question.explanationTracks}
+      mode="review"
+      title="英文法の音声を聞く"
+      variant="panel"
+      orientation="horizontal"
+      tone="light"
+      readCount={1}
+      compact={reorderMobile}
+      className="mb-2"
+    />
+  ) : null;
   const audioPlayerBlock = Array.isArray(question.audioTracks) &&
             question.audioTracks.length > 0 && (
               <ListeningAudioPlayer
@@ -181,7 +195,7 @@ export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
               プレーヤーに渡す設定（compact / alwaysOpenScript など）は
               一切変えていない。並べ替えだけで、項目は1つも消していない。
           */}
-          {!reorderMobile && !pcListening && audioPlayerBlock}
+          {!reorderMobile && !pcListening && (audioPlayerBlock || grammarReviewPlayerBlock)}
 
           {/* ★スマホの1問ごとの答え合わせ：
                 「全ての問いのあってるか間違ってるかだけ出して、
@@ -198,21 +212,24 @@ export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
                ・問ごとに「○×・あなたの答え→正解」を1行で出す
                ・その下にスクリプトと和訳を直接出す（押さなくても読める）
                ・解説／思考手順／押さえたい表現はタップで開く */
-            <ListeningCompactAnswers
-              question={question}
-              objectiveSqs={objectiveSqs}
-              answers={answers}
-              listeningTracks={listeningTracks}
-              optionTextsBySq={optionTextsBySq}
-              pcListening={pcListening}
-              openExplanationBySq={openExplanationBySq}
-              setOpenExplanationBySq={setOpenExplanationBySq}
-              sliceForSq={sliceForSq}
-              explBodyBaseClass={explBodyBaseClass}
-              explBodyFontClass={explBodyFontClass}
-              isEnglishChapter={isEnglishChapter}
-              isPracticeMode={isPracticeMode}
-            />
+            <>
+              {grammarReviewPlayerBlock}
+              <ListeningCompactAnswers
+                question={question}
+                objectiveSqs={objectiveSqs}
+                answers={answers}
+                listeningTracks={listeningTracks}
+                optionTextsBySq={optionTextsBySq}
+                pcListening={pcListening}
+                openExplanationBySq={openExplanationBySq}
+                setOpenExplanationBySq={setOpenExplanationBySq}
+                sliceForSq={sliceForSq}
+                explBodyBaseClass={explBodyBaseClass}
+                explBodyFontClass={explBodyFontClass}
+                isEnglishChapter={isEnglishChapter}
+                isPracticeMode={isPracticeMode}
+              />
+            </>
           ) : reorderMobile ? (
             <>
               <MobileResultChips

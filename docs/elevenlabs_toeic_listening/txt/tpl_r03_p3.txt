@@ -1,0 +1,9 @@
+[Woman] Kenji, have you reviewed last month's sales numbers from the three cafés where we tested our oat-milk smoothie line?
+<break time="0.6s" />
+[Man] Yes, I just put the summary together. Overall sales beat our target by fifteen percent, especially during weekday mornings.
+<break time="0.6s" />
+[Woman] That's encouraging! Were all three flavors equally popular?
+<break time="0.6s" />
+[Man] Berry and mango sold out almost daily, but the matcha flavor lagged behind. Store managers said customers found the cup size too large for a morning drink.
+<break time="0.6s" />
+[Woman] Interesting. Before we roll out the line to all twenty locations in May, let's test a smaller twelve-ounce cup at our downtown shop.

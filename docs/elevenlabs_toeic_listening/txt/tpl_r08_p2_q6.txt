@@ -1,0 +1,7 @@
+Number 6. The travel expense report needs to be submitted in euros, doesn't it?
+<break time="1.0s" />
+A. No, convert all amounts into US dollars first.
+<break time="0.8s" />
+B. My flight was delayed in Frankfurt.
+<break time="0.8s" />
+C. Yes, it was a productive trip.

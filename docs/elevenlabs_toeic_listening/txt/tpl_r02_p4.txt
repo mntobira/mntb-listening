@@ -1,0 +1,5 @@
+Hi, Elena. This is Victor in Human Resources. I'm calling about the interview schedule for the junior accountant position next Wednesday.
+<break time="0.8s" />
+One of our three finalists, Ms. Hannah Brooks, lives in Chicago and asked if her morning slot could be moved to two P.M. because her flight arrives at eleven thirty. Since you're on the interview panel, I wanted to make sure two o'clock doesn't conflict with your team briefing.
+<break time="0.8s" />
+If that time works, I'll update the calendar invite and reserve Conference Room D. Please call me back at extension 412 by the end of the day.

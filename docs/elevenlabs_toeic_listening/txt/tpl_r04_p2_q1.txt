@@ -1,0 +1,7 @@
+Number 1. Where do we keep the extra toner cartridges?
+<break time="1.0s" />
+A. Color and black-and-white.
+<break time="0.8s" />
+B. On the bottom shelf in the supply closet.
+<break time="0.8s" />
+C. Yes, it prints double-sided.

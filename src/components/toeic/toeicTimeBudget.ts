@@ -72,12 +72,83 @@ export function formatToeicBudgetDelta(seconds: number): string {
   return `${Math.floor(safe / 60) > 0 ? `${Math.floor(safe / 60)}分` : ''}${safe % 60}秒`;
 }
 
+export type ToeicPagePaceTone = 'ahead' | 'slack' | 'over';
+
+export interface ToeicPageElapsedProgress {
+  elapsedSec: number;
+  targetSec: number;
+  limitSec: number;
+  /** このページの経過時間の位置（0〜100%） */
+  elapsedPct: number;
+  /** 目標ラインの位置（0〜100%） */
+  targetPct: number;
+  /** 余白の帯の幅（0〜100%） */
+  slackWidthPct: number;
+  tone: ToeicPagePaceTone;
+}
+
+/** 1ページの時間カウントバー用：現在の経過時間・目標・限界から塗り幅と状態を計算する */
+export function calcToeicPageElapsedProgress(
+  elapsedSec: number,
+  targetSec: number,
+  limitSec: number,
+): ToeicPageElapsedProgress {
+  const safeLimit = Math.max(1, Number.isFinite(limitSec) && limitSec > 0 ? limitSec : 1);
+  const safeTarget = Math.max(0, Number.isFinite(targetSec) ? targetSec : 0);
+  const safeElapsed = Math.max(0, Number.isFinite(elapsedSec) ? elapsedSec : 0);
+  const clampPct = (v: number) => Math.max(0, Math.min(100, v));
+  const elapsedPct = clampPct((safeElapsed / safeLimit) * 100);
+  const targetPct = clampPct((safeTarget / safeLimit) * 100);
+  const tone: ToeicPagePaceTone = safeElapsed > safeLimit
+    ? 'over'
+    : safeElapsed > safeTarget
+      ? 'slack'
+      : 'ahead';
+  return {
+    elapsedSec: Math.floor(safeElapsed),
+    targetSec: Math.round(safeTarget),
+    limitSec: Math.round(safeLimit),
+    elapsedPct,
+    targetPct,
+    slackWidthPct: clampPct(100 - targetPct),
+    tone,
+  };
+}
+
 /**
  * Part 7（読解）の時間の目安（2026-11-02）。1問あたりの秒数を決め、セット（ページ）ごとに足す。
  * 品詞・文法・語彙の区別は Part 5・6 用なので、Part 7 では使わない（counts は文法枠に入れておく）。
  * 標準 50秒は、本番 Part 7 の 54問をおよそ 45〜55分で解く想定の目安。得点を保証するものではない。
  */
 export const TOEIC_P7_SECONDS: Record<ToeicTimePresetId, number> = { standard: 50, slow: 60, advanced: 40 };
+
+/** TOEIC リスニング（Part 2・3・4）の時間の目安（1問あたり：音声再生＋解答選択の合計目安） */
+export const TOEIC_LISTENING_SECONDS: Record<ToeicTimePresetId, number> = { standard: 35, slow: 42, advanced: 28 };
+
+export function buildToeicListeningPageBudgets(
+  pages: readonly (readonly Pick<SubQuestion, 'skill'>[])[],
+  preset: ToeicTimePresetId = 'standard',
+  totalLimitSec = 540,
+): ToeicPageBudget[] {
+  const safeTotal = Math.max(0, Number.isFinite(totalLimitSec) ? totalLimitSec : 540);
+  const per = TOEIC_LISTENING_SECONDS[preset] ?? TOEIC_LISTENING_SECONDS.standard;
+  const total = pages.reduce((n, p) => n + p.length, 0);
+  let targetElapsedSec = 0;
+  let limitElapsedSec = 0;
+  return pages.map((page) => {
+    const targetSec = page.length * per;
+    targetElapsedSec += targetSec;
+    limitElapsedSec += total > 0 ? safeTotal * (page.length / total) : 0;
+    return {
+      targetSec,
+      targetRemainingSec: safeTotal - targetElapsedSec,
+      limitRemainingSec: safeTotal - limitElapsedSec,
+      targetElapsedSec,
+      limitElapsedSec,
+      counts: { 品詞: 0, 文法: page.length, 語彙: 0 },
+    };
+  });
+}
 
 export function buildToeicP7PageBudgets(
   pages: readonly (readonly Pick<SubQuestion, 'skill'>[])[],

@@ -114,7 +114,7 @@ export function parseDeviceAchievements(data) {
  *   相手のレートは自分の ±320 に丸める（端末から極端な相手レートを送られても大きく動かない）。
  */
 export const GHOST_K = 16;
-export const GHOST_SPREAD = 320;
+export const GHOST_SPREAD = 480;
 export const GHOST_DAILY_MAX = 30;
 export function ghostNextRating(current, ghostRating, outcome) {
   const me = Number.isFinite(current) ? current : 1500;

@@ -1,16 +1,16 @@
 /**
- * ガチャの種類を左右スワイプで切り替えるバナー（2026-10-29 追加：共通テストガチャ／2次試験ガチャ）。
+ * ガチャの種類を左右スワイプで切り替えるバナー（2026-10-29 追加：共通テストガチャ／2次試験ガチャ／大学選択ガチャ）。
  *
- *   ・上の切替（共通テスト｜2次試験）を押しても、バナーを左右にスワイプしても切り替わる（どちらも同じ状態）。
+ *   ・上の切替（共通テスト｜2次試験｜大学選択）を押しても、バナーを左右にスワイプしても切り替わる（どちらも同じ状態）。
  *   ・縦には伸ばさない（UI の決まり「1画面でスクロールしない」）。横の scroll-snap で1枚ずつ止まる。
  *   ・各スライドの中身（今週の目玉・ピックアップ・ひとこと・案内）は、これまでの1枚のバナーと同じ作り。
- *     目玉・ピックアップはそのガチャの中身（gachaItems(pool)）から毎週自動で選ぶ。アイテム名は書かない。
+ *     目玉・ピックアップはそのガチャの中身（gachaItems(pool, univId)）から毎週自動で選ぶ。アイテム名は書かない。
  */
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
-import { Info, Sparkles, Target } from 'lucide-react';
+import { Info, School, Sparkles, Target } from 'lucide-react';
 import { gachaItems, gachaItemRate } from '../../battle/core/arenaEconomy';
 import { gachaFeatured } from '../../battle/core/gachaFeatured';
-import { GACHA_POOLS, type GachaPoolId } from '../../battle/core/gachaPools';
+import { GACHA_POOLS, selectableUniversityOf, type GachaPoolId } from '../../battle/core/gachaPools';
 import { gachaRarityOf, type GrowthProgress, type ItemDef } from '../../battle/core/growth';
 import { ItemArt, RarityTag, pct } from '../GachaParts';
 import { TobiraBuddy } from '../TobiraBuddy';
@@ -22,9 +22,11 @@ export const HERO_FADE_MS = 450;
 
 const reducedMotion = () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-export function GachaPoolCarousel({ pool, onPool, progress, onDetail, onPickup, onOdds, coinsLow, onMissions }: {
+export function GachaPoolCarousel({ pool, onPool, univId, onOpenUniv, progress, onDetail, onPickup, onOdds, coinsLow, onMissions }: {
   pool: GachaPoolId;
   onPool: (pool: GachaPoolId) => void;
+  univId: string;
+  onOpenUniv: () => void;
   progress: GrowthProgress | null;
   onDetail: (item: ItemDef, pool: GachaPoolId) => void;
   onPickup: () => void;
@@ -104,12 +106,12 @@ export function GachaPoolCarousel({ pool, onPool, progress, onDetail, onPickup, 
             </button>
           ))}
         </div>
-        <small>{weekEndLabel(week)}</small>
+        <small>{pool === 'univ' ? '1回500枚' : weekEndLabel(week)}</small>
       </header>
       <div className="gacha-carousel" ref={track} onScroll={onScroll} data-gacha-carousel>
         {GACHA_POOLS.map((p) => (
-          <PoolSlide key={p.id} poolId={p.id} active={p.id === pool} progress={progress} onDetail={onDetail}
-            onPickup={onPickup} onOdds={onOdds} coinsLow={coinsLow} onMissions={onMissions} />
+          <PoolSlide key={p.id} poolId={p.id} active={p.id === pool} univId={univId} onOpenUniv={onOpenUniv}
+            progress={progress} onDetail={onDetail} onPickup={onPickup} onOdds={onOdds} coinsLow={coinsLow} onMissions={onMissions} />
         ))}
       </div>
       <p className="gacha-swipe-hint" aria-hidden="true">
@@ -120,11 +122,13 @@ export function GachaPoolCarousel({ pool, onPool, progress, onDetail, onPickup, 
   );
 }
 
-function PoolSlide({ poolId, active, progress, onDetail, onPickup, onOdds, coinsLow, onMissions }: {
+function PoolSlide({ poolId, active, univId, onOpenUniv, progress, onDetail, onPickup, onOdds, coinsLow, onMissions }: {
   /** このリポジトリの JSX 型では key を props に書いておく必要がある（GachaRoomContent と同じ） */
   key?: string;
   poolId: GachaPoolId;
   active: boolean;
+  univId: string;
+  onOpenUniv: () => void;
   progress: GrowthProgress | null;
   onDetail: (item: ItemDef, pool: GachaPoolId) => void;
   onPickup: () => void;
@@ -133,10 +137,21 @@ function PoolSlide({ poolId, active, progress, onDetail, onPickup, onOdds, coins
   onMissions: () => void;
 }) {
   const def = GACHA_POOLS.find((p) => p.id === poolId)!;
-  const items = useMemo(() => gachaItems(poolId), [poolId]);
-  const featured = useMemo(() => gachaFeatured({ pool: poolId, preferSubjects: def.preferSubjects, srCount: 0, rCount: 0 }), [poolId, def]);
-  // 目玉は週ごとに LR と UR を交互に（いつも UR にならない）。割合はそのガチャの本物の抽選表の値
-  const hero = useMemo(() => weeklyHero(items, featured.week, featured.hero?.item ?? null), [items, featured]);
+  const scopedUniv = poolId === 'univ' ? univId : undefined;
+  const selectedUniv = useMemo(() => (poolId === 'univ' ? selectableUniversityOf(univId) : null), [poolId, univId]);
+  const items = useMemo(() => gachaItems(poolId, scopedUniv), [poolId, scopedUniv]);
+  const featured = useMemo(
+    () => gachaFeatured({ pool: poolId, univId: scopedUniv, preferSubjects: def.preferSubjects, srCount: 0, rCount: 0 }),
+    [poolId, scopedUniv, def],
+  );
+  // 大学選択ガチャでは、選んだ大学の予想問題（LR 第1回）を常時目玉に据え、第2・3回＋厳選URをピックアップに並べる
+  const hero = useMemo(() => {
+    if (poolId === 'univ') {
+      const firstLr = items.find((i) => gachaRarityOf(i) === 'LR');
+      if (firstLr) return firstLr;
+    }
+    return weeklyHero(items, featured.week, featured.hero?.item ?? null);
+  }, [poolId, items, featured]);
   const pickup = useMemo(() => weeklyPickup(items, featured.week, hero?.id), [items, featured, hero]);
   // ★E2（2026-10-30）目玉の枠を順に回す★ 今週の目玉 → ピックアップの LR → UR の順に、
   //   しばらく見せたらフェードアウト → 次の物がフェードイン。押すと、いま出ている物の詳細が開く。
@@ -187,9 +202,12 @@ function PoolSlide({ poolId, active, progress, onDetail, onPickup, onOdds, coins
         <span className="gacha-banner-swap" key={shown.id}>
           <span className="gacha-banner-art"><ItemArt item={shown} progress={progress} size={76} /></span>
           <span className="gacha-banner-body">
-            <span className="gacha-banner-top"><RarityTag rarity={gachaRarityOf(shown)} /><em>{heroAt === 0 ? `${def.title}の目玉` : 'ピックアップ'}</em></span>
+            <span className="gacha-banner-top">
+              <RarityTag rarity={gachaRarityOf(shown)} />
+              <em>{selectedUniv ? `${selectedUniv.name}限定LR` : heroAt === 0 ? `${def.title}の目玉` : 'ピックアップ'}</em>
+            </span>
             <strong>{shown.label}</strong>
-            <small>1種あたり {pct(gachaItemRate(shown, 'N', poolId))}%{progress?.owned.includes(shown.id) ? ' · 所持済み' : ''}</small>
+            <small>1種あたり {pct(gachaItemRate(shown, 'N', poolId, scopedUniv))}%{progress?.owned.includes(shown.id) ? ' · 所持済み' : ''}</small>
             <span className="gacha-banner-tap"><Info size={13} aria-hidden="true" />タップで詳細</span>
           </span>
         </span>
@@ -210,6 +228,18 @@ function PoolSlide({ poolId, active, progress, onDetail, onPickup, onOdds, coins
         <TobiraBuddy size="sm" input={{ screen: 'gacha', seed: featured.week }} line={`${def.title}の目玉は「${hero.label}」！${gachaRarityOf(hero)}はめったに出ないよ`} />
       </div>
       <nav className="gacha-banner-links" aria-label={`${def.title}の案内`}>
+        {selectedUniv && (
+          <button
+            type="button"
+            className="gacha-chip gacha-chip-univ"
+            aria-haspopup="dialog"
+            onClick={onOpenUniv}
+            data-gacha-univ-open
+          >
+            <School size={13} aria-hidden="true" />
+            <span>{selectedUniv.name}を変更</span>
+          </button>
+        )}
         <button type="button" className="gacha-chip" aria-haspopup="dialog" onClick={onPickup} data-gacha-pickup-open>ピックアップ一覧</button>
         <button type="button" className="gacha-chip gacha-odds-toggle" aria-haspopup="dialog" onClick={onOdds}>提供割合</button>
         {coinsLow && <button type="button" className="gacha-chip" onClick={onMissions}><Target size={13} aria-hidden="true" />コインをためる</button>}

@@ -1,0 +1,7 @@
+Number 1. How long has the fitness center been offering yoga classes?
+<break time="1.0s" />
+A. Twice a week on evenings.
+<break time="0.8s" />
+B. About forty-five meters.
+<break time="0.8s" />
+C. Since last October.

@@ -1,0 +1,11 @@
+[Man] Hi, Sora. Our test riders just finished a two-week road trial of the Volt-E folding commuter bike. Overall, they loved how light the aluminum frame feels on stairs.
+<break time="0.6s" />
+[Woman] That's great to hear! Did they report any issues with the folding latch or the battery range?
+<break time="0.6s" />
+[Man] The battery easily lasted fifty kilometers per charge. However, three riders noted that the rear fender rattled over cobblestone streets, and one said the handlebar grips felt slippery in the rain.
+<break time="0.6s" />
+[Woman] Adding a rubber washer under the fender bracket should stop the rattling right away. As for the grips, didn't we test a textured silicone material on our mountain bike line last year?
+<break time="0.6s" />
+[Man] Good memory—that supplier is Apex Polymer. Switching to their silicone grip would add only about eighty cents per unit.
+<break time="0.6s" />
+[Woman] That's well within our margin. Could you request twenty sample pairs from Apex Polymer so we can fit them onto the prototypes before next month's dealer showcase?

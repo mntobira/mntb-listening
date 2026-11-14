@@ -5,22 +5,29 @@
  * 教科ID は Part 5 を始めたときの toeic_part5 のまま（進み具合・復習・ノートの記録を付け替えないため）。
  * 単元選択では parts の順に「Part 5」「Part 6」のタブになる。
  */
+import { toeicListeningData, getToeicListeningStats } from './toeicListeningData';
 import { toeicPart5Data, getToeicPart5Stats, type ToeicPart } from './toeicPart5Data';
 import { toeicPart6Data, getToeicPart6Stats } from './toeicPart6Data';
 import { toeicPart7Data, getToeicPart7Stats } from './toeicPart7Data';
 
 export const toeicData: { parts: ToeicPart[] } = {
-  parts: [...toeicPart5Data.parts, ...toeicPart6Data.parts, ...toeicPart7Data.parts],
+  parts: [
+    ...toeicListeningData.parts,
+    ...toeicPart5Data.parts,
+    ...toeicPart6Data.parts,
+    ...toeicPart7Data.parts,
+  ],
 };
 
-/** 収録状況（単元数・回数・問題数）。Part 5・6・7 の合計 */
+/** 収録状況（単元数・回数・問題数）。リスニング・Part 5・6・7 の合計 */
 export function getToeicStats() {
+  const pl = getToeicListeningStats();
   const p5 = getToeicPart5Stats();
   const p6 = getToeicPart6Stats();
   const p7 = getToeicPart7Stats();
   return {
-    chapters: p5.chapters + p6.chapters + p7.chapters,
-    questions: p5.questions + p6.questions + p7.questions,
-    marks: p5.marks + p6.marks + p7.marks,
+    chapters: pl.chapters + p5.chapters + p6.chapters + p7.chapters,
+    questions: pl.questions + p5.questions + p6.questions + p7.questions,
+    marks: pl.marks + p5.marks + p6.marks + p7.marks,
   };
 }

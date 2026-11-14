@@ -1,0 +1,7 @@
+Number 3. Are there any openings left in the Thursday coding bootcamp?
+<break time="1.0s" />
+A. Please close the window.
+<break time="0.8s" />
+B. Two spots just opened up this morning.
+<break time="0.8s" />
+C. In the computer lab downstairs.

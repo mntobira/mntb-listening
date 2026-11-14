@@ -1,0 +1,7 @@
+Number 6. I heard you were appointed director of the Melbourne branch!
+<break time="1.0s" />
+A. Thanks! I'm relocating there in early August.
+<break time="0.8s" />
+B. Direct flights take fourteen hours.
+<break time="0.8s" />
+C. No, in the mailroom downstairs.

@@ -140,7 +140,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
 
   const activeGroup = groups.find(group => group.title === activeGroupTitle) || groups[0];
   const toeicTabs = isToeic && groups.length > 1;
-  const toeicSub = activeGroup?.title === 'Part 7' ? 'リーディング（読解）・1回7セット24問・4択'
+  const toeicSub = activeGroup?.title === 'リスニング' ? 'リスニング（応答・会話・説明文）・1回12問'
+    : activeGroup?.title === 'Part 7' ? 'リーディング（読解）・1回7セット24問・4択'
     : activeGroup?.title === 'Part 6' ? 'リーディング（長文穴埋め）・1回16問・4択' : 'リーディング（短文穴埋め）・1回30問・4択';
   /** 科目全体での通し番号（①〜⑳ → 01.〜20.）。タブを切り替えても番号が振り直されないようにする。 */
   const chapterNumberById = useMemo(() => {
@@ -206,11 +207,12 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           >
             {groups.map((group, index) => {
               const isActive = group.title === activeGroup?.title;
-              const toeicTabTitle = group.title === 'Part 5' ? '短文穴埋め'
+              const toeicTabTitle = group.title === 'リスニング' ? '応答・会話・説明文'
+                : group.title === 'Part 5' ? '短文穴埋め'
                 : group.title === 'Part 6' ? '長文穴埋め'
                   : group.title === 'Part 7' ? '読解' : group.title;
               const { kicker: chapterNumber, label: shortTitle } = isToeic
-                ? { kicker: 'リーディング', label: toeicTabTitle }
+                ? { kicker: group.title === 'リスニング' ? 'リスニング' : 'リーディング', label: toeicTabTitle }
                 : group.kicker
                 ? { kicker: `${group.kicker}・${group.chapters.length}単元`, label: group.label as string }
                 : splitTabTitle(group.title, index);
