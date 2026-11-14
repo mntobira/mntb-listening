@@ -40,7 +40,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
   return (
                   <div className="space-y-4 md:space-y-6">
                     {singleQuestionIndex === undefined && (
-                      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${'border-gray-200'}`}>
+                      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${'border-[#E6DCCB]'}`}>
                         <div className="flex items-center gap-3">
                           <div className={`font-bold px-3 py-1 rounded-full text-xs md:text-sm shadow-sm border ${'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
                             Q{(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1}
@@ -52,7 +52,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                         <div className="flex items-center gap-4">
                           <button
                             onClick={(e) => { e.stopPropagation(); handleSaveNote(question, qIndex); }}
-                            className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-colors border ${savingNote[question.id] ? ('bg-gray-100 text-gray-500 border-gray-200') : ('bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100')}`}
+                            className={`ex-save-btn flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${savingNote[question.id] ? ('bg-[#F6EFE2] text-[#7A6A4C] border-[#E3D9C8]') : ('bg-[#FFF8DF] text-[#8A5A00] border-[#EAD07A] hover:bg-[#FFF2C2]')}`}
                             disabled={savingNote[question.id]}
                           >
                             <Save size={14} />
@@ -75,8 +75,8 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                       // スマホの1問ごとの答え合わせ：枠なし・演習画面と同じ文字サイズ
                       //（親ペインの text-[15px] leading-[1.85] を継承）。
                       ? ''
-                      : 'p-4 rounded-lg border text-sm md:text-base leading-relaxed'} ${
-                      (reorderMobile ? 'text-gray-800' : 'bg-white border-gray-200 text-gray-800')
+                      : 'ex-problem-card p-4 rounded-2xl border text-sm md:text-base leading-relaxed'} ${
+                      (reorderMobile ? 'text-gray-800' : 'text-gray-800')
                     }`}>
                       {/* ★英語リスニング：復習用の音源を問題文欄に置く。
                           採点直後の画面なので、「聞き取れなかった箇所を

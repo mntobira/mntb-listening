@@ -55,19 +55,30 @@
 }
 
 /* リスニングの回：1行・約60px。左＝その回を解く／右＝音源だけ聞く */
-.chapter-route [data-listening-rounds] .round-card:hover { border-color: #e2c98f; }
+.chapter-route [data-listening-rounds] .round-card { box-shadow: 0 2px 0 #ebe1cd, inset 0 1px 0 rgba(255, 255, 255, .92); transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease; }
+@media (hover: hover) {
+  .chapter-route [data-listening-rounds] .round-card:hover { border-color: #dec183; box-shadow: 0 3px 0 #e2cfa8, 0 6px 12px rgba(80, 60, 30, .06), inset 0 1px 0 rgba(255, 255, 255, .95); }
+}
+.chapter-route [data-listening-rounds] .round-card:active { transform: translateY(1px); box-shadow: 0 1px 0 #ebe1cd; }
 .chapter-route [data-listening-rounds] .round-main:focus-visible { outline: none; box-shadow: var(--mt-focus); border-radius: 8px; }
+.chapter-route [data-listening-rounds] .round-audio { transition: background-color .14s ease, border-color .14s ease, transform .1s ease; }
+.chapter-route [data-listening-rounds] .round-audio:active { transform: translateY(1px); }
 .chapter-route [data-listening-rounds] .round-audio span { font-size: 12px; line-height: 1; }
 
 /* C17（2026-10-01）学習画面を共通UIへ：中身（単元・問題）の見やすさを優先し、枠・タブ・文字・角丸だけを共通に */
-.chapter-route { font-family: var(--mt-font-body) !important; }
-.chapter-route .chapter-workspace { font-family: var(--mt-font-body) !important; }
-.chapter-route .unit-head-back { border: var(--mt-border); border-radius: var(--mt-r-pill); background: var(--mt-bg-card); color: var(--mt-ink); box-shadow: var(--mt-shadow-press); font: 700 14px/1 var(--mt-font-body); }
-.chapter-route .unit-head-title h2 { font: var(--mt-text-xl) !important; font-size: 20px !important; color: var(--mt-ink-warm) !important; }
+.chapter-route, .chapter-route .chapter-workspace { font-family: var(--mt-font-body); }
+.chapter-route .unit-head-back { border: var(--mt-border); border-radius: var(--mt-r-pill); background: var(--mt-bg-card); color: var(--mt-ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 2px 0 #e6dccb, 0 3px 8px rgba(80, 60, 30, .05); font: 700 14px/1 var(--mt-font-body); transition: background-color .14s ease, border-color .14s ease, transform .1s ease, box-shadow .12s ease; }
+@media (hover: hover) { .chapter-route .unit-head-back:hover { border-color: var(--mt-line-strong); background: var(--mt-surface); } }
+.chapter-route .unit-head-back:active { transform: translateY(1.5px); box-shadow: 0 1px 0 #e6dccb; }
+.chapter-route .unit-head .unit-head-title h2 { font: var(--mt-text-xl); font-size: 20px; color: var(--mt-ink-warm); }
 .chapter-route .unit-head-title p { color: var(--mt-ink-3); }
 /* 大問タブ：選択中は「白い札＋茶の文字＋下の縁」（共通タブと同じ）。濃いピンクの塗りはやめる */
-.chapter-index [role="tab"] { border-radius: var(--mt-radius-md) !important; border: 1.5px solid var(--mt-line) !important; background: var(--mt-bg-sunken) !important; color: var(--mt-ink-2) !important; box-shadow: none !important; }
-.chapter-index [role="tab"][aria-selected="true"] { background: var(--mt-bg-card) !important; border-color: #e3c77f !important; color: var(--mt-ink-warm) !important; box-shadow: 0 3px 0 #d7b865 !important; }
+.chapter-route .chapter-index [role="tab"] { border-radius: var(--mt-radius-md); border: 1.5px solid var(--mt-line); background: var(--mt-bg-sunken); color: var(--mt-ink-2); box-shadow: none; transition: background-color .14s ease, border-color .14s ease, color .14s ease, transform .1s ease; }
+@media (hover: hover) {
+  .chapter-route .chapter-index [role="tab"]:hover:not([aria-selected="true"]) { border-color: var(--mt-line-strong); background: var(--mt-bg-card); color: var(--mt-ink); }
+}
+.chapter-route .chapter-index [role="tab"]:active { transform: translateY(1px); }
+.chapter-route .chapter-index [role="tab"][aria-selected="true"] { background: var(--mt-bg-card); border-color: #e3c77f; color: var(--mt-ink-warm); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 3px 0 #d7b865; }
 .chapter-index [role="tab"][aria-selected="true"] > span:first-child { color: #9a6a12 !important; }
 .chapter-route #chapter-tab-panel { border-radius: var(--mt-radius-lg) !important; border: 1.5px solid var(--mt-line) !important; background: var(--mt-bg-card) !important; box-shadow: var(--mt-shadow-card) !important; }
 .chapter-route.mtb-page { background: var(--mt-bg-screen) !important; }
@@ -96,9 +107,9 @@
 .grammar-rounds-meter i[data-on] { background: var(--mt-done); }
 .grammar-rounds-meter i[data-next] { background: var(--unit-accent, var(--mt-accent)); }
 .grammar-rounds-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
-.grammar-round { width: 100%; min-height: 52px; display: grid; grid-template-columns: 30px minmax(0, 1fr) auto 16px; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--mt-radius-md); border: var(--mt-border); background: var(--mt-surface); color: var(--mt-ink-2); text-align: left; cursor: pointer; }
-.grammar-round:hover { background: var(--mt-paper); }
-.grammar-round:active { transform: translateY(1px); }
+.grammar-round { width: 100%; min-height: 52px; display: grid; grid-template-columns: 30px minmax(0, 1fr) auto 16px; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--mt-radius-md); border: var(--mt-border); background: var(--mt-surface); color: var(--mt-ink-2); box-shadow: 0 2px 0 #efe6d4; text-align: left; cursor: pointer; transition: background-color .14s ease, border-color .14s ease, transform .1s ease, box-shadow .12s ease; }
+.grammar-round:hover { border-color: var(--mt-line-strong); background: var(--mt-paper); }
+.grammar-round:active { transform: translateY(1.5px); box-shadow: none; }
 .grammar-round-no { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--mt-surface-2); color: var(--mt-ink-2); font: 800 14px/1 var(--mt-font-display); }
 .grammar-round[data-state=done] .grammar-round-no { background: var(--mt-done); color: var(--mt-on-brand); }
 .grammar-round[data-state=doing] .grammar-round-no { background: var(--mt-doing-soft); color: var(--mt-doing); }
@@ -123,7 +134,7 @@
 
 /* ★E11（2026-10-31）リスニング「読み方・解き方のテクニック」★
    回のカード（黄・緑）と見分けがつくよう青系。開閉式で、閉じていれば1行（44px）だけ */
-.lt-card { margin: 0 0 10px; border: 1.5px solid var(--mt-brand); border-radius: 14px; background: var(--mt-brand-soft); color: var(--mt-ink); }
+.lt-card { margin: 0 0 10px; border: 1.5px solid var(--mt-brand); border-radius: 14px; background: var(--mt-brand-soft); color: var(--mt-ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75), 0 2px 0 rgba(36, 88, 166, .14); }
 .lt-card > summary { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; font-size: 14px; font-weight: 800; color: var(--mt-brand-strong); cursor: pointer; list-style: none; }
 .lt-card > summary::-webkit-details-marker { display: none; }
 .lt-card > summary::after { content: '▼'; margin-left: auto; font-size: 12px; transition: transform .2s; }

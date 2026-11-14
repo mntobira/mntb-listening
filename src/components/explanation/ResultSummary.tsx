@@ -87,8 +87,8 @@ export function WeakAreasPanel({ weakAreas, isMobile }: {
   isMobile: boolean;
 }) {
   return (
-          <div className={`rounded-2xl p-5 md:p-6 shadow-lg border relative flex flex-col flex-none ${
-            'bg-gray-50 border-gray-100'
+          <div className={`rounded-2xl p-5 md:p-6 shadow-sm border relative flex flex-col flex-none ${
+            'bg-[#FFFDF9] border-[#E6DCCB]'
           }`}>
             <h3 className={`text-lg md:text-xl font-bold mb-4 md:mb-6 flex items-center gap-2 flex-none ${
               'text-[#2C3E50]'
@@ -103,8 +103,8 @@ export function WeakAreasPanel({ weakAreas, isMobile }: {
               ? "grid grid-cols-1 gap-4"
               : "grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 overflow-y-auto max-h-[40vh] md:max-h-[34vh] pr-1 -mr-1"}>
               {weakAreas.map((area) => (
-                <div key={area.category} className={`p-4 md:p-5 rounded-xl border shadow-sm ${
-                  'bg-white border-gray-100'
+                <div key={area.category} className={`p-4 md:p-5 rounded-xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_2px_0_#e8dfd0] ${
+                  'bg-white border-[#E6DCCB]'
                 }`}>
                   <div className="flex justify-between items-end mb-2 md:mb-3">
                     <div className={`flex items-center gap-1.5 md:gap-2 font-bold text-sm md:text-base ${
@@ -124,7 +124,7 @@ export function WeakAreasPanel({ weakAreas, isMobile }: {
                   
                   {/* Gauge/Slider UI */}
                   <div className={`relative h-3 md:h-4 rounded-full overflow-hidden shadow-inner ${
-                    'bg-gray-100'
+                    'bg-[#F3ECE0]'
                   }`}>
                     <div 
                       className={`absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out ${

@@ -103,25 +103,26 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: SubQuesti
                           <div
                             id={`sq-${sq.id}`}
                             key={sq.id}
-                            className={`rounded-xl border overflow-hidden shadow-sm ${
+                            data-verdict={isCorrect ? 'ok' : isUnanswered ? 'skip' : 'ng'}
+                            className={`ex-sq-card rounded-2xl border overflow-hidden ${
                               isCorrect
                                   ? ('border-emerald-200')
                                   : isUnanswered
-                                    ? ('border-gray-200')
+                                    ? ('border-[#E3D9C8]')
                                     : ('border-red-200')
                             }`}
                           >
                             {/* 正誤・自分の解答・正解は、アコーディオンに入れず常に表示する。 */}
                             <div className={`p-3 md:p-4 space-y-3 ${answerBoxBaseClass} ${
                               isCorrect
-                                  ? ('bg-emerald-50')
+                                  ? ('bg-emerald-50/85')
                                   : isUnanswered
-                                    ? ('bg-gray-50')
-                                    : ('bg-red-50')
+                                    ? ('bg-[#FAF5EB]')
+                                    : ('bg-red-50/85')
                             }`}>
                               <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div className="flex items-center gap-3 min-w-0">
-                                  <div className={`font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border shadow-xs ${'text-gray-700 bg-white border-gray-200'}`}>
+                                  <div className={`font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_1px_0_#e6dccb] ${'text-[#2C3E50] bg-white border-[#E3D9C8]'}`}>
                                     {formatText(displayLabel)}
                                   </div>
                                   {isUnanswered ? (
@@ -169,18 +170,18 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: SubQuesti
                               </div>
                             </div>
 
-                            <div className={`border-t p-2.5 space-y-2 ${'bg-white border-gray-200'}`}>
+                            <div className={`border-t p-2.5 space-y-2 ${'bg-[#FFFDF9] border-[#E6DCCB]'}`}>
                               <button
                                 type="button"
                                 onClick={() => setOpenExplanationBySq(prev => ({ ...prev, [sq.id]: !explanationOpen }))}
                                 aria-expanded={explanationOpen}
-                                className={`w-full flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left font-bold ${'bg-sky-50 border-sky-200 text-sky-700 hover:bg-sky-100'}`}
+                                className={`ex-fold-btn w-full flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left font-bold ${'bg-[#EEF6FB] border-[#C5DDF0] text-[#1D5480] hover:bg-[#E3F0FA]'}`}
                               >
                                 <span className="flex items-center gap-2"><BookOpen size={16} />解説</span>
                                 <ChevronDown size={18} className={`transition-transform ${explanationOpen ? 'rotate-180' : ''}`} />
                               </button>
                               {explanationOpen && (
-                                <div className={`rounded-lg border p-3 md:p-4 ${explBodyBaseClass} ${'bg-sky-50/40 border-sky-100'}`}>
+                                <div className={`rounded-xl border p-3 md:p-4 ${explBodyBaseClass} ${'bg-white border-[#DCE9F3]'}`}>
                                   {sqSlice.trim() ? (
                                     <ExplanationBody
                                       text={sqSlice}
@@ -189,7 +190,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: SubQuesti
                                       className={`${explBodyFontClass} ${'text-gray-700'}`}
                                     />
                                   ) : (
-                                    <p className="text-xs text-gray-500">この小問の解説は「思考手順・答えの核心」にまとめています。</p>
+                                    <p className="text-xs text-[#7A6A4C]">この小問の解説は「思考手順・答えの核心」にまとめています。</p>
                                   )}
                                 </div>
                               )}
@@ -198,7 +199,7 @@ export function renderSubQuestionCard(ctx: SubQuestionCardContext, sq: SubQuesti
                                 type="button"
                                 onClick={() => setOpenThinkingBySq(prev => ({ ...prev, [sq.id]: !thinkingOpen }))}
                                 aria-expanded={thinkingOpen}
-                                className={`w-full flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left font-bold ${'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100'}`}
+                                className={`ex-fold-btn w-full flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left font-bold ${'bg-[#FFF8E4] border-[#EDD493] text-[#8A5A00] hover:bg-[#FFF2CF]'}`}
                               >
                                 <span className="flex items-center gap-2"><KeyRound size={16} />思考手順・答えの核心</span>
                                 <ChevronDown size={18} className={`transition-transform ${thinkingOpen ? 'rotate-180' : ''}`} />

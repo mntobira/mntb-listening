@@ -9,7 +9,7 @@ import { subjectTheme } from '../data/subjectTheme';
 import { ListeningAudioPlayer } from './ListeningAudioPlayer';
 import type { Chapter } from '../types/curriculum';
 import { buildListeningRounds } from '../utils/listeningRounds';
-import { TOEIC_DISCLAIMER } from '../data/toeic/toeicPart5Kit';
+import { TOEIC_DISCLAIMER } from '../utils/toeicDisclaimer';
 import { problemKey, readSolvedMap } from '../utils/progress';
 // 章 × モードごとの保存キー名は utils/quizStorageKeys.ts が唯一の定義
 import {
@@ -140,9 +140,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
 
   const activeGroup = groups.find(group => group.title === activeGroupTitle) || groups[0];
   const toeicTabs = isToeic && groups.length > 1;
-  const toeicSub = activeGroup?.title === 'リスニング' ? 'リスニング（Part 2〜4）・1回12問'
-    : activeGroup?.title === 'Part 7' ? 'Part 7 読解・1回7セット24問・4択'
-    : activeGroup?.title === 'Part 6' ? 'Part 6 長文穴埋め・1回16問・4択' : 'Part 5 短文穴埋め・1回30問・4択';
+  const toeicSub = activeGroup?.title === 'リスニング' ? 'リスニング（応答・会話・説明文）・1回12問'
+    : activeGroup?.title === 'Part 7' ? 'リーディング（読解）・1回7セット24問・4択'
+    : activeGroup?.title === 'Part 6' ? 'リーディング（長文穴埋め）・1回16問・4択' : 'リーディング（短文穴埋め）・1回30問・4択';
   /** 科目全体での通し番号（①〜⑳ → 01.〜20.）。タブを切り替えても番号が振り直されないようにする。 */
   const chapterNumberById = useMemo(() => {
     const m = new Map<string, number>();
@@ -177,8 +177,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           <ArrowLeft size={18} aria-hidden="true" /><span>{backLabel}</span>
         </button>
         <div className="unit-head-title">
-          <h2 style={{ color: theme.accent }}>{isListening ? '英語リスニング' : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
-          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '共通テスト大問別・1回ずつ完結' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
+          <h2 style={{ color: theme.accent }}>{isListening ? '英語リスニング' : isGrammar ? '英文法' : isToeic ? 'TOEIC® L&R TEST' : theme.label}</h2>
+          <p>{isToeic ? (toeicTabs ? toeicSub : 'リーディング（短文穴埋め）・1回30問・4択') : mode === 'mini_test' ? '小テスト' : isListening ? '共通テスト大問別・1回ずつ完結' : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
         </div>
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />
       </header>
@@ -199,7 +199,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
               長い章名は途中で省略せず、タブ内で折り返して全文を表示する。
         */}
         {/* TOEIC は「1章 Part 5」のタブ（1枚だけ）を出さない（ご要望：単元選択には TOEIC とだけ書く） */}
-        {(!isToeic || toeicTabs) && <div className="chapter-index mb-3 shrink-0 border-b border-slate-200/80" data-few-tabs={groups.length <= 3 || undefined}>
+        {(!isToeic || toeicTabs) && <div className="chapter-index mb-3 shrink-0 border-b border-[#E5DCCC]" data-few-tabs={groups.length <= 3 || undefined}>
           <div
             role="tablist"
             aria-label="章を選択"
@@ -207,8 +207,12 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           >
             {groups.map((group, index) => {
               const isActive = group.title === activeGroup?.title;
+              const toeicTabTitle = group.title === 'リスニング' ? '応答・会話・説明文'
+                : group.title === 'Part 5' ? '短文穴埋め'
+                : group.title === 'Part 6' ? '長文穴埋め'
+                  : group.title === 'Part 7' ? '読解' : group.title;
               const { kicker: chapterNumber, label: shortTitle } = isToeic
-                ? { kicker: String(group.chapters[0]?.abstractTitle || '').replace(/^(?:Part \d+|リスニング)\s*/, ''), label: group.title }
+                ? { kicker: group.title === 'リスニング' ? 'リスニング' : 'リーディング', label: toeicTabTitle }
                 : group.kicker
                 ? { kicker: `${group.kicker}・${group.chapters.length}単元`, label: group.label as string }
                 : splitTabTitle(group.title, index);
@@ -272,9 +276,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
             aria-labelledby={isToeic && !toeicTabs ? undefined : `chapter-tab-${groups.indexOf(activeGroup)}`}
             aria-label={isToeic && !toeicTabs ? 'TOEIC の回一覧' : undefined}
             tabIndex={0}
-            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain rounded-2xl border border-slate-200/80 bg-white/35 p-3 pb-6 sm:p-4 sm:pb-6 [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable]"
+            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain rounded-2xl border border-[#E5DCCC] bg-[#FFFDF8]/60 p-3 pb-6 sm:p-4 sm:pb-6 [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable]"
           >
-            {!isToeic && <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 pb-3">
+            {!isToeic && <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-[#E5DCCC] pb-3">
               <div>
                 <p className="text-xs font-bold" style={{ color: theme.accent }}>{activeGroup.partTitle}</p>
                 {/* タブと同じ名前をもう一度出さない（UIの決まり：同じものを2つ置かない）。
@@ -315,16 +319,16 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                           回のボタンだけだと「第1問Aって何をするんだっけ」が分からない。 */}
                       <div className="mb-2.5">
                         {chapter.topics && chapter.topics.length > 0 && (
-                          <p className="text-xs font-bold leading-relaxed text-slate-600">
+                          <p className="text-xs font-bold leading-relaxed text-[#5C4F3D]">
                             {chapter.topics.join(' ・ ')}
                           </p>
                         )}
-                        <p className="mt-1 text-xs font-bold text-slate-600">
+                        <p className="mt-1 text-xs font-bold text-[#5C4F3D]">
                           {rounds.length > 0
                             ? `全${rounds.length}回 ／ 達成 ${rounds.filter((r) => isStageCleared(stageRecords[stageKey(chapter.id, r.questionId)])).length}回（満点${STAGE_CLEAR_PERFECTS}回で達成）`
                             : 'この大問の問題は準備中です'}
                         </p>
-                        {isToeic && <p className="mt-1 text-xs leading-relaxed text-slate-600" data-toeic-disclaimer>{TOEIC_DISCLAIMER}</p>}
+                        {isToeic && <p className="mt-1 text-xs leading-relaxed text-[#6E604C]" data-toeic-disclaimer>{TOEIC_DISCLAIMER}</p>}
                       </div>
 
                       {rounds.length > 0 ? (
@@ -379,7 +383,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                                   </span>
                                   {/* 2026-10-28 TOEIC は内訳（語彙・品詞・文法の数）を出さない。データの分野ラベルと結果の集計はそのまま */}
                                   {round.detail && !isToeic && (
-                                    <span className="round-detail mt-0.5 line-clamp-1 font-bold leading-snug text-slate-600">
+                                    <span className="round-detail mt-0.5 line-clamp-1 font-bold leading-snug text-[#5C4F3D]">
                                       {round.detail}
                                     </span>
                                   )}
@@ -411,7 +415,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                           })}
                         </div>
                       ) : (
-                        <div className="rounded-xl border border-slate-200 bg-white/70 p-4 text-center text-xs font-bold text-slate-400">
+                        <div className="rounded-xl border border-[#E5DCCC] bg-[#FFFDF8]/85 p-4 text-center text-xs font-bold text-[#7A6A52]">
                           準備中（問題は順次追加しています）
                         </div>
                       )}
@@ -591,9 +595,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                           <button
                             type="button"
                             onClick={() => setOpenAudioSetId(null)}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold text-slate-500 transition-colors hover:bg-slate-50 cursor-pointer"
+                            className="inline-flex min-h-[44px] items-center gap-1 rounded-xl border border-[#DFD2BC] bg-[#FFFDF8] px-3 py-1 text-xs font-bold text-[#5C4F3D] shadow-[0_1.5px_0_#E5D9C4] transition-all hover:bg-[#FAF6EC] active:translate-y-[1px] active:shadow-none cursor-pointer"
                           >
-                            <X size={11} />
+                            <X size={13} />
                             閉じる
                           </button>
                         </div>

@@ -527,10 +527,10 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         */}
         <div className={isMobile 
           ? `w-full flex flex-col ${isResultView || reviewNav ? 'flex-1' : ''} ${CARD_FONT_FAMILY} relative ${
-              'bg-white text-gray-800'
+              'bg-[#FDFBF7] text-gray-800'
             }`
           : `${isResultView ? 'w-full flex-1' : 'w-full h-full'} flex flex-col ${CARD_FONT_FAMILY} relative ${
-              'bg-white text-gray-800'
+              'bg-[#FDFBF7] text-gray-800'
             }`
         }>
       {/* Background effects */}
@@ -576,11 +576,11 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         ? reorderMobile
           // スマホの1問ごとの答え合わせ：問題文ペインを sticky で上部に
           // 固定するため、外側の余白は付けない（全幅の上下2ペイン）。
-          ? `relative z-10 ${'bg-white'}`
-          : `p-4 md:p-6 relative z-10 space-y-6 md:space-y-8 ${'bg-white'}`
+          ? `relative z-10 ${'bg-[#FDFBF7]'}`
+          : `p-4 md:p-6 relative z-10 space-y-6 md:space-y-8 ${'bg-[#FDFBF7]'}`
         : isResultView
-          ? `p-4 md:p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] relative z-10 space-y-6 md:space-y-8 ${'bg-white'}`
-          : `p-4 md:p-6 relative z-10 flex-1 overflow-hidden flex flex-col ${'bg-white'}`
+          ? `p-4 md:p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] relative z-10 space-y-6 md:space-y-8 ${'bg-[#FDFBF7]'}`
+          : `p-4 md:p-6 relative z-10 flex-1 overflow-hidden flex flex-col ${'bg-[#FDFBF7]'}`
       }>
       {/* Weak Areas Analysis
           ★ 修正：問題数が多い場合（弱点エリアが多数）に desktop で潜在的にはみ出してスクロールできなかった不具合を解消。
@@ -611,8 +611,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           ? reorderMobile
             // 1問ごとの答え合わせ（スマホ）：問題文ペインを sticky にするため
             // 枠・角丸を付けず全幅で使う。
-            ? `${'bg-white'}`
-            : `rounded-2xl shadow-lg border ${'bg-white border-gray-200'}`
+            ? `${'bg-[#FDFBF7]'}`
+            : `rounded-2xl shadow-lg border ${'bg-[#FFFDF9] border-[#E6DCCB]'}`
           : isResultView
             // 結果表示（全問の解答・解説一覧）はページ全体スクロールに任せる。
             // ここで flex-1 / h-full / overflow-hidden を付けると、スコアパネルに圧迫されて
@@ -642,19 +642,19 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                   下の解説をスクロールしても問題文が常に見える（ご要望
                   「解答と解説・問題は一緒に一画面で見える状態で出したい」）。 */}
             <div className={reorderMobile
-              ? `sticky ${reviewNav ? 'top-[calc(57px+env(safe-area-inset-top,0px))]' : 'top-[env(safe-area-inset-top,0px)]'} z-20 min-w-0 bg-white border-b-2 border-gray-200 shadow-md flex flex-col`
+              ? `sticky ${reviewNav ? 'top-[calc(57px+env(safe-area-inset-top,0px))]' : 'top-[env(safe-area-inset-top,0px)]'} z-20 min-w-0 bg-[#FFFDF9] border-b-2 border-[#E6DCCB] shadow-md flex flex-col`
               : `space-y-6 pb-8 min-w-0 ${isResultView ? 'lg:pr-4' : 'lg:overflow-y-auto lg:h-full lg:pr-4'}`}>
               {/* スマホ：問題文ペインのヘッダー（演習画面と同じ「たたむ」付き） */}
               {reorderMobile && (
-                <div className="lx-problem-head flex items-center justify-between px-3 py-1 border-b border-gray-100 bg-blue-50/30">
+                <div className="lx-problem-head flex items-center justify-between px-3 py-1 border-b border-[#EADFC8] bg-[#FAF4E8]">
                   <span className="font-bold text-[#2C3E50] text-sm flex items-center gap-2">
-                    <BookOpen size={15} className="text-[#A9CCE3]" />
+                    <BookOpen size={15} className="text-[#4E8AB8]" />
                     問題文
                   </span>
                   <button
                     onClick={() => setMobileProblemCollapsed(v => !v)}
                     aria-expanded={!mobileProblemCollapsed}
-                    className="flex min-h-[44px] items-center gap-0.5 rounded-md px-2 text-xs font-bold text-gray-600 active:bg-gray-50 whitespace-nowrap"
+                    className="flex min-h-[44px] items-center gap-0.5 rounded-md px-2 text-xs font-bold text-[#5A4E3C] hover:bg-[#EFE7D6]/70 active:translate-y-px transition-all whitespace-nowrap cursor-pointer"
                   >
                     {mobileProblemCollapsed ? (
                       <>問題文を表示<ChevronDown size={12} /></>
@@ -715,7 +715,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 );
               })
             ) : (
-              <div className={`p-12 text-center rounded-2xl border-2 border-dashed ${'bg-gray-50 border-gray-200 text-gray-500'}`}>
+              <div className={`p-12 text-center rounded-2xl border-2 border-dashed ${'bg-[#FAF5EB] border-[#E3D9C8] text-[#7A6A4C]'}`}>
                 <div className="flex flex-col items-center gap-4">
                   <AlertCircle size={48} className="text-amber-500" />
                   <p className="text-lg font-bold">問題がありません。</p>

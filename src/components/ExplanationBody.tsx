@@ -27,12 +27,12 @@ const toneStyles: Record<ExplanationTone, {
 }> = {
   light: {
     // ★罫線は「薄いグレー」ではなく本文と同系の濃さにする（下の実測コメント参照）
-    wrapper: 'border-slate-400 bg-white',
-    headCell: 'border-slate-400 bg-slate-100 text-slate-700',
-    rowHeadCell: 'border-slate-400 text-slate-700',
-    bodyCell: 'border-slate-400 text-slate-700',
+    wrapper: 'border-[#B8AEA0] bg-white',
+    headCell: 'border-[#B8AEA0] bg-[#F5EFE3] text-[#2C3E50]',
+    rowHeadCell: 'border-[#B8AEA0] text-[#2C3E50]',
+    bodyCell: 'border-[#B8AEA0] text-slate-700',
     rowEven: 'bg-white',
-    rowOdd: 'bg-slate-50/70',
+    rowOdd: 'bg-[#FBF7EF]',
   },
   dark: {
     wrapper: 'border-[#3A506B] bg-[#0B132B]/60',

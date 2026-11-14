@@ -93,7 +93,7 @@ export function MobileFloatingBar({
     */}
     {!isDesktop && !isProblemExpanded && !focusedSub && (
       <div
-        className="fixed left-0 right-0 bottom-0 z-50 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.10)] px-3 pt-2.5 pb-[calc(0.6rem+env(safe-area-inset-bottom))]"
+        className="quiz-floating-bar fixed left-0 right-0 bottom-0 z-50 border-t px-3 pt-2.5 pb-[calc(0.6rem+env(safe-area-inset-bottom))]"
       >
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
           <button
@@ -103,8 +103,8 @@ export function MobileFloatingBar({
             aria-label="前の問題へ"
             className={`flex items-center justify-center p-3 rounded-xl font-bold transition-all duration-200 border-2 shrink-0 cursor-pointer
               ${!canGoPrevious
-                ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50/50'
-                : 'border-[#A9CCE3] text-[#A9CCE3] active:bg-[#A9CCE3] active:text-white bg-white shadow-sm'}`}
+                ? 'border-[#E6DCCB] text-[#C8BBA4] cursor-not-allowed bg-[#F6EFE2]/60'
+                : 'quiz-secondary-nav border-[#8FB8D6] text-[#2C5E8A] active:bg-[#E8F1F8] bg-white'}`}
           >
             <ChevronLeft size={18} className="stroke-[2.5]" aria-hidden="true" />
             <span className="ml-1 text-xs">前へ</span>
@@ -112,7 +112,7 @@ export function MobileFloatingBar({
 
           <button
             onClick={handleNext}
-            className="flex shadow-md active:translate-y-0.5 items-center justify-center gap-1.5 px-5 py-3 rounded-xl font-bold tracking-wider transition-all duration-200 text-sm bg-[#2C3E50] text-white active:bg-[#1B2631] flex-1 cursor-pointer"
+            className="quiz-primary-cta flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl font-bold tracking-wider text-sm bg-[#2C3E50] text-white active:bg-[#1B2631] flex-1 cursor-pointer"
           >
             <span>解答と解説を見る</span>
             <ChevronRight size={16} className="stroke-[2.5]" />
@@ -139,7 +139,7 @@ export function MobileFloatingBar({
     {!isDesktop && focusedSub && (isShortAnswerType(focusedSub) || focusedSub.type === 'descriptive') && (
       <div
         id="floating-answer-bar"
-        className="fixed left-0 right-0 z-[60] bg-white border-t-2 border-[#A9CCE3]/60 shadow-[0_-4px_20px_rgba(0,0,0,0.12)] px-3 pt-2 transition-[bottom] duration-150"
+        className="quiz-floating-bar fixed left-0 right-0 z-[60] border-t-2 border-[#8FB8D6]/70 px-3 pt-2 transition-[bottom] duration-150"
         style={{
           bottom: keyboardOffset,
           // キーボード非表示時（オフセット0）はセーフエリア分の余白を確保
@@ -161,16 +161,16 @@ export function MobileFloatingBar({
                   disabled={focusedIndex <= 0}
                   aria-label="前の空欄へ"
                   // 空欄移動は入力中に最も多く押すボタン。44px 相当の高さを確保する。
-                  className={`flex items-center justify-center gap-0.5 px-3 py-2.5 min-h-[2.75rem] rounded-lg text-[13px] font-bold border transition-colors ${
+                  className={`sort-step-btn flex items-center justify-center gap-0.5 px-3 py-2.5 min-h-[2.75rem] rounded-lg text-[13px] font-bold border transition-all ${
                     focusedIndex <= 0
-                      ? 'border-gray-200 text-gray-300 bg-gray-50'
-                      : 'border-[#A9CCE3] text-[#2C3E50] bg-white active:bg-[#A9CCE3]/20'
+                      ? 'border-[#E6DCCB] text-[#C8BBA4] bg-[#F8F3E8]'
+                      : 'border-[#8FB8D6] text-[#2C3E50] bg-white active:bg-[#E8F1F8]'
                   }`}
                 >
                   <ChevronLeft size={16} className="stroke-[2.5]" />
                   前へ
                 </button>
-                <span className="text-xs text-gray-400 font-bold tabular-nums">
+                <span className="text-xs text-[#7A6A4C] font-bold tabular-nums">
                   {focusedIndex + 1}/{inputNavSubs.length}
                 </span>
                 <button
@@ -178,10 +178,10 @@ export function MobileFloatingBar({
                   onClick={() => moveFocus(1)}
                   disabled={focusedIndex >= inputNavSubs.length - 1}
                   aria-label="次の空欄へ"
-                  className={`flex items-center justify-center gap-0.5 px-3 py-2.5 min-h-[2.75rem] rounded-lg text-[13px] font-bold border transition-colors ${
+                  className={`sort-step-btn flex items-center justify-center gap-0.5 px-3 py-2.5 min-h-[2.75rem] rounded-lg text-[13px] font-bold border transition-all ${
                     focusedIndex >= inputNavSubs.length - 1
-                      ? 'border-gray-200 text-gray-300 bg-gray-50'
-                      : 'border-[#A9CCE3] text-[#2C3E50] bg-white active:bg-[#A9CCE3]/20'
+                      ? 'border-[#E6DCCB] text-[#C8BBA4] bg-[#F8F3E8]'
+                      : 'border-[#8FB8D6] text-[#2C3E50] bg-white active:bg-[#E8F1F8]'
                   }`}
                 >
                   次へ
@@ -197,7 +197,7 @@ export function MobileFloatingBar({
                 el?.blur();
                 setFocusedSubId(null);
               }}
-              className="flex items-center justify-center px-4 py-2.5 min-h-[2.75rem] rounded-lg text-[13px] font-bold border border-[#2C3E50] bg-[#2C3E50] text-white active:bg-[#1B2631]"
+              className="quiz-primary-cta flex items-center justify-center px-4 py-2.5 min-h-[2.75rem] rounded-lg text-[13px] font-bold border border-[#2C3E50] bg-[#2C3E50] text-white active:bg-[#1B2631] cursor-pointer"
             >
               完了
             </button>

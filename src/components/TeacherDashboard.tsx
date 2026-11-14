@@ -314,8 +314,8 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
           <ArrowLeft className="w-5 h-5" />
           <span className="text-sm">戻る</span>
         </button>
-        <div className="max-w-md mx-auto bg-white rounded-2xl border border-[#E0E1DD] p-6 text-center">
-          <School className="w-10 h-10 mx-auto mb-3 text-[#9BA3AE]" />
+          <div className="max-w-md mx-auto bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2.5px_0_#E6DCCB]">
+          <School className="w-10 h-10 mx-auto mb-3 text-[#B5A58B]" />
           <h2 className="text-lg font-bold text-[#1B2631] mb-2">先生用の画面です</h2>
           <p className="text-sm text-[#4B5563] leading-relaxed">
             クラスの管理には Google ログインが必要です。
@@ -352,7 +352,7 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
           </div>
           <button
             onClick={() => setShowCreate(true)}
-            className="flex min-h-[44px] items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white transition-transform active:scale-95"
+            className="flex min-h-[44px] items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white shadow-[0_2.5px_0_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.25)] transition-all active:translate-y-[1.5px] active:shadow-none"
             style={{ backgroundColor: theme.accent }}
           >
             <Plus className="w-4 h-4" />
@@ -367,10 +367,10 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
               <button
                 key={room.id}
                 onClick={() => setActiveClassId(room.id)}
-                className={`shrink-0 min-h-[44px] px-3.5 py-2 rounded-xl text-sm border transition-colors ${
+                className={`shrink-0 min-h-[44px] px-3.5 py-2 rounded-xl text-sm border transition-all ${
                   room.id === activeClassId
-                    ? 'bg-white border-transparent font-bold text-[#1B2631]'
-                    : 'bg-transparent border-[#E0E1DD] text-[#4B5563] hover:bg-white/60'
+                    ? 'bg-[#FFFDF8] border-[#DFD2BC] font-bold text-[#1B2631]'
+                    : 'bg-transparent border-[#E5DCCC] text-[#5C4F3D] hover:bg-[#FFFDF8]/70'
                 }`}
                 style={room.id === activeClassId ? { boxShadow: theme.bubbleShadow } : undefined}
               >
@@ -382,7 +382,7 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
 
         {/* タブ */}
         {classrooms.length > 0 && (
-          <div className="grid grid-cols-4 sm:flex gap-1 p-1 bg-[#F1EFE9] rounded-xl mb-5 sm:w-fit">
+          <div className="grid grid-cols-4 sm:flex gap-1 p-1 bg-[#F2EADE] border border-[#E4D8C5] rounded-xl mb-5 sm:w-fit shadow-[inset_0_1px_2px_rgba(28,42,57,0.04)]">
             {([
               { id: 'students' as Tab, label: '生徒の様子' },
               { id: 'kanten' as Tab, label: '観点別評価' },
@@ -392,8 +392,8 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
               <button
                 key={item.id}
                 onClick={() => setTab(item.id)}
-                className={`min-h-[44px] px-1 sm:px-4 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-colors ${
-                  tab === item.id ? 'bg-white font-bold text-[#1B2631] shadow-sm' : 'text-[#4B5563]'
+                className={`min-h-[44px] px-1 sm:px-4 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all ${
+                  tab === item.id ? 'bg-[#FFFDF8] font-bold text-[#1B2631] shadow-[0_2px_0_#E2D4BC,inset_0_1px_0_rgba(255,255,255,0.9)]' : 'text-[#5C4F3D]'
                 }`}
               >
                 {item.label}

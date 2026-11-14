@@ -91,8 +91,11 @@ export function ChoiceAnswer({
             type="button"
             disabled={answered || locked}
             onClick={() => onChoose(i)}
+            data-picked={picked || undefined}
+            data-right={correct || undefined}
+            data-wrong={wrongPick || undefined}
             // 英文法・英単語の選択肢は英語そのものなので、一人で学ぶと同じ 15px 太字で読みやすく
-            className={`flex min-w-0 min-h-[58px] items-center justify-center gap-1.5 rounded-2xl border-2 px-3 py-2.5 text-center ${(question.subject === 'english_grammar' || question.subject === 'english_vocab') ? 'text-[15px] font-extrabold' : 'text-[13px] font-bold'} leading-snug shadow-sm transition active:scale-[0.97] disabled:active:scale-100`}
+            className={`bq-choice-btn flex min-w-0 min-h-[58px] items-center justify-center gap-1.5 rounded-2xl border-2 px-3 py-2.5 text-center ${(question.subject === 'english_grammar' || question.subject === 'english_vocab') ? 'text-[15px] font-extrabold' : 'text-[13px] font-bold'} leading-snug`}
             // ★圏外のときだけ薄くする★
             // 解答済み（answered）では自分の選択を見せ続けたいので薄くしない。
             // 押せない理由（圏外）のときは、見た目でも伝わる必要がある。
@@ -158,7 +161,7 @@ export function PanelAnswer({
     <div className="flex flex-col gap-3">
       {/* 組み立て中の欄 */}
       <div
-        className="flex items-center justify-center gap-1.5 rounded-2xl border-2 px-3 py-3"
+        className="bq-slot-tray flex items-center justify-center gap-1.5 rounded-2xl border-2 px-3 py-3"
         style={{
           borderColor: reveal ? (isCorrect ? CORRECT : WRONG) : `${GOLD}AA`,
           background: '#FFFFFF',
@@ -200,7 +203,7 @@ export function PanelAnswer({
               type="button"
               disabled={answered || locked || used}
               onClick={() => onPush(i)}
-              className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 text-xl font-black shadow-sm transition active:scale-[0.94] disabled:opacity-25 disabled:active:scale-100"
+              className="bq-keycap flex h-14 w-14 items-center justify-center rounded-2xl border-2 text-xl font-black disabled:opacity-25"
               style={{
                 borderColor: LINE,
                 background: '#FFFFFF',
@@ -218,7 +221,7 @@ export function PanelAnswer({
         <button
           type="button"
           onClick={onPop}
-          className="mx-auto flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-bold"
+          className="bq-keycap mx-auto flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-bold"
           style={{ borderColor: LINE, background: '#FFFFFF', color: INK_SUB }}
         >
           <RotateCcw size={13} />
@@ -305,7 +308,7 @@ export function KanaAnswer({
     <div className="flex flex-col gap-2.5">
       {/* 書いている途中の欄 */}
       <div
-        className="flex flex-wrap items-center justify-center gap-1.5 rounded-2xl border-2 px-3 py-2.5"
+        className="bq-slot-tray flex flex-wrap items-center justify-center gap-1.5 rounded-2xl border-2 px-3 py-2.5"
         style={{
           borderColor: reveal ? (isCorrect ? CORRECT : WRONG) : `${GOLD}AA`,
           background: '#FFFFFF',
@@ -366,7 +369,7 @@ export function KanaAnswer({
                       type="button"
                       disabled={disabled || full}
                       onClick={() => onPush(key)}
-                      className="flex aspect-square items-center justify-center rounded-lg border text-base font-black shadow-sm transition active:scale-[0.9] disabled:opacity-30 disabled:active:scale-100"
+                      className="bq-keycap flex aspect-square items-center justify-center rounded-lg border text-base font-black disabled:opacity-30"
                       style={{ borderColor: LINE, background: '#FFFFFF', color: INK }}
                     >
                       {kanaTextOf([key])}
@@ -387,7 +390,7 @@ export function KanaAnswer({
               type="button"
               disabled={disabled || myPanel.length === 0}
               onClick={onCycle}
-              className="rounded-xl border-2 px-4 py-2.5 text-sm font-black shadow-sm transition active:scale-[0.95] disabled:opacity-30 disabled:active:scale-100"
+              className="bq-keycap rounded-xl border-2 px-4 py-2.5 text-sm font-black disabled:opacity-30"
               style={{ borderColor: AMBER, background: '#FFFFFF', color: AMBER }}
             >
               ゛゜小
@@ -396,7 +399,7 @@ export function KanaAnswer({
               type="button"
               disabled={disabled || myPanel.length === 0}
               onClick={onPop}
-              className="flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-bold transition active:scale-[0.95] disabled:opacity-30 disabled:active:scale-100"
+              className="bq-keycap flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-bold disabled:opacity-30"
               style={{ borderColor: LINE, background: '#FFFFFF', color: INK_SUB }}
             >
               <RotateCcw size={13} />
@@ -409,7 +412,7 @@ export function KanaAnswer({
               type="button"
               disabled={disabled || !full}
               onClick={onCommit}
-              className="flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-black shadow transition active:scale-[0.95] disabled:opacity-30 disabled:active:scale-100"
+              className="bq-kana-commit flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-black transition disabled:opacity-30"
               style={{ background: full ? GOLD : LINE, color: INK }}
             >
               <Check size={15} />

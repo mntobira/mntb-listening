@@ -68,8 +68,8 @@ export function KantenTab({ reports, loading, theme, activeClass, onRefresh }: K
 
   if (reports.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-[#E0E1DD] p-7 text-center">
-        <Info className="w-10 h-10 mx-auto mb-3 text-[#9BA3AE]" />
+      <div className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-7 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2.5px_0_#E6DCCB]">
+        <Info className="w-10 h-10 mx-auto mb-3 text-[#B5A58B]" />
         <h2 className="text-base font-bold text-[#1B2631] mb-2">まだ材料がありません</h2>
         <p className="text-sm text-[#4B5563] leading-relaxed">
           生徒がクラスに参加して学習を始めると、ここに観点別評価の材料が並びます。
@@ -84,14 +84,14 @@ export function KantenTab({ reports, loading, theme, activeClass, onRefresh }: K
       <div className="flex flex-wrap gap-2">
         <button
           onClick={onRefresh}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#E0E1DD] bg-white text-[#4B5563] hover:bg-[#FAF8F2] transition-colors"
+          className="flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#DFD2BC] bg-[#FFFDF8] text-[#3F3527] shadow-[0_2px_0_#E5D9C4] hover:bg-[#FAF6EC] active:translate-y-[1.5px] active:shadow-none transition-all"
         >
           <RefreshCw className="w-4 h-4" />
           更新
         </button>
         <button
           onClick={handleExportKantenCsv}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-bold text-white transition-transform active:scale-95"
+          className="flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-bold text-white shadow-[0_2.5px_0_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.25)] transition-all active:translate-y-[1.5px] active:shadow-none"
           style={{ backgroundColor: theme.accent }}
         >
           <Download className="w-4 h-4" />
@@ -118,7 +118,7 @@ export function KantenTab({ reports, loading, theme, activeClass, onRefresh }: K
       {/* 生徒ごとのレポートカード */}
       <div className="space-y-3">
         {reports.map((report) => (
-          <div key={report.uid} className="bg-white rounded-2xl border border-[#E0E1DD] p-4">
+          <div key={report.uid} className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB]">
             {/* 名前 */}
             <p className="text-sm font-bold text-[#1B2631] mb-3">{report.displayName}</p>
 
@@ -180,7 +180,7 @@ export function KantenTab({ reports, loading, theme, activeClass, onRefresh }: K
                 <p className="text-xs font-bold text-[#3C5A6E]">所見の下書き（編集前提）</p>
                 <button
                   onClick={() => void handleCopyDraft(report)}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs border border-[#C9D2DA] text-[#4B5563] bg-white hover:bg-[#FAF8F2] transition-colors"
+                  className="flex min-h-[44px] items-center gap-1 px-2.5 py-1 rounded-lg text-xs border border-[#DFD2BC] text-[#3F3527] bg-white shadow-[0_1.5px_0_#E5D9C4] hover:bg-[#FAF6EC] active:translate-y-[1px] active:shadow-none transition-all"
                 >
                   {copiedUid === report.uid ? (
                     <>

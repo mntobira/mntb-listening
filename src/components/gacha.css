@@ -53,8 +53,11 @@
 /* ③ ガチャを引く（1回／5連を横並び。5連が少し目立つ） */
 .gacha-pulls { display: grid; grid-template-columns: auto 1fr 1.25fr; align-items: stretch; gap: 8px; }
 .gacha-pulls > .gacha-step { align-self: center; }
-.mana-hub-gacha .gacha-pulls .gacha-pull { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 56px; margin: 0; padding: 6px 10px; border-radius: var(--mt-radius-lg); border: 1.5px solid #cfa649; background: linear-gradient(#f8e3a4, #ecc96c); color: #5e3f0c; box-shadow: 0 3px 0 #c79a3b; font: 800 16px/1.15 var(--mt-font-display); text-align: left; }
-.mana-hub-gacha .gacha-pulls .gacha-pull-multi { background: linear-gradient(#ffe39a, #f5bf3e) !important; border-color: #c48a1d; box-shadow: 0 3px 0 #b5801a; }
+.mana-hub-gacha .gacha-pulls .gacha-pull { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 56px; margin: 0; padding: 6px 10px; border-radius: var(--mt-radius-lg); border: 1.5px solid #cfa649; background: linear-gradient(#f8e3a4, #ecc96c); color: #5e3f0c; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .68), 0 3px 0 #c79a3b, 0 5px 12px rgba(160, 115, 25, .14); font: 800 16px/1.15 var(--mt-font-display); text-align: left; transition: filter .14s ease, transform .1s ease, box-shadow .12s ease; }
+.mana-hub-gacha .gacha-pulls .gacha-pull-multi { background: linear-gradient(#ffe39a, #f5bf3e) !important; border-color: #c48a1d; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .72), 0 3px 0 #b5801a, 0 5px 12px rgba(180, 128, 26, .18); }
+@media (hover: hover) {
+  .mana-hub-gacha .gacha-pulls .gacha-pull:hover:not(:disabled) { filter: brightness(1.04); }
+}
 .gacha-pull > span { display: grid; gap: 1px; }
 .gacha-pull small { font: 700 12px/1.2 var(--mt-font-body); color: #74531a; }
 .mana-hub-gacha .gacha-pulls .gacha-pull:disabled { opacity: .55; box-shadow: none; }
@@ -389,7 +392,9 @@
 .gacha-banner-picks .mt-rarity { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); min-height: 16px; padding: 0 5px; font-size: 12px; }
 .gacha-banner-picks .mt-rarity-crown { display: none; }
 .gacha-banner-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-.gacha-chip { display: inline-flex; align-items: center; gap: 3px; min-height: 44px; padding: 0 12px; border: 1px solid #c9a04a; border-radius: 999px; background: #fffaf0; color: #5a3b06; font: 800 12px/1 var(--mt-font-body); }
+.gacha-chip { display: inline-flex; align-items: center; gap: 3px; min-height: 44px; padding: 0 12px; border: 1px solid #c9a04a; border-radius: 999px; background: #fffaf0; color: #5a3b06; font: 800 12px/1 var(--mt-font-body); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .85), 0 2px 0 rgba(169, 125, 38, .22); transition: filter .14s ease, transform .1s ease, box-shadow .12s ease; }
+@media (hover: hover) { .gacha-chip:hover { filter: brightness(1.03); } }
+.gacha-chip:active { transform: translateY(1.5px); box-shadow: none; }
 .gacha-detail-body { display: grid; gap: 10px; }
 .gacha-detail-head { display: flex; gap: 10px; align-items: center; }
 .gacha-detail-art { flex-shrink: 0; display: grid; place-items: center; width: 80px; height: 96px; border-radius: 12px; background: #fff8e6; border: 1px solid #ead9b4; overflow: hidden; }
@@ -471,7 +476,8 @@
 /* ===== 2026-10-29 ガチャの種類（共通テスト／2次試験）を左右スワイプで切り替え =====
    バナーの中だけ横にスクロール（scroll-snap で1枚ずつ止まる）。縦には伸ばさない（1画面の決まり）。 */
 .gacha-pool-tabs { display: inline-flex; gap: 2px; padding: 2px; border-radius: 999px; background: rgba(90, 59, 6, .12); }
-.gacha-pool-tabs button { display: inline-flex; align-items: center; gap: 3px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: #5a3b06; font: 800 13px/1 var(--mt-font-display); white-space: nowrap; }
+.gacha-pool-tabs button { display: inline-flex; align-items: center; gap: 3px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: #5a3b06; font: 800 13px/1 var(--mt-font-display); white-space: nowrap; transition: background-color .14s ease, color .14s ease, box-shadow .14s ease, transform .1s ease; }
+.gacha-pool-tabs button:active { transform: scale(.97); }
 .gacha-pool-tabs button[aria-selected=true] { background: #5a3b06; color: #fff6d8; box-shadow: 0 2px 0 rgba(0,0,0,.18); }
 .gacha-pool-tabs button:focus-visible { outline: 3px solid #245e7a; outline-offset: 2px; }
 .gacha-carousel { display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; margin: 0 -2px; }
@@ -539,7 +545,9 @@
 .gacha-pickup-free > h3 { margin:0; color:#59451f; font:800 14px/1.35 var(--mt-font-body); }
 .gacha-pickup-free > p { margin:0; font-size:12px; color:#6b5a3a; }
 .gacha-pickup-free > ul { display:grid; gap:6px; margin:0; padding:0; list-style:none; }
-.gacha-pickup-free-btn { display:flex; align-items:center; gap:8px; width:100%; min-height:56px; padding:6px 10px; border:1px solid #e7decb; border-radius:12px; background:#fffdf8; text-align:left; cursor:pointer; }
+.gacha-pickup-free-btn { display:flex; align-items:center; gap:8px; width:100%; min-height:56px; padding:6px 10px; border:1px solid #e7decb; border-radius:12px; background:#fffdf8; text-align:left; cursor:pointer; box-shadow: 0 2px 0 #e6dac5, inset 0 1px 0 rgba(255, 255, 255, .92); transition: transform .1s ease, border-color .14s ease, box-shadow .12s ease; }
+.gacha-pickup-free-btn:hover { border-color: #cdb898; }
+.gacha-pickup-free-btn:active { transform: translateY(1.5px); box-shadow: none; }
 .gacha-pickup-free-btn > img { flex-shrink:0; width:40px; height:56px; object-fit:cover; border:1px solid #e3d8c3; border-radius:4px; background:#fff; }
 .gacha-pickup-free-btn > span { flex:1; min-width:0; display:grid; gap:2px; }
 .gacha-pickup-free-btn strong { font-size:13px; line-height:1.35; color:#344451; }
@@ -567,11 +575,13 @@
 
 /* 大学選択ダイアログ */
 .gacha-univ-modal { display: grid; gap: 10px; line-height: 1.5; }
-.gacha-univ-search { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1.5px solid var(--mt-line-strong); border-radius: var(--mt-radius-md); background: var(--mt-surface); color: var(--mt-ink-2); }
+.gacha-univ-search { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1.5px solid var(--mt-line-strong); border-radius: var(--mt-radius-md); background: var(--mt-surface); color: var(--mt-ink-2); box-shadow: inset 0 1px 2px rgba(28, 42, 57, .04); transition: border-color .14s ease, box-shadow .14s ease; }
+.gacha-univ-search:focus-within { border-color: #2d6a5a; box-shadow: 0 0 0 3px #e3f4ee; }
 .gacha-univ-search input { flex: 1; min-width: 0; min-height: 42px; border: 0; background: transparent; color: var(--mt-ink); font: 600 14px/1.3 var(--mt-font-body); outline: none; }
 .gacha-univ-empty { margin: 0; padding: 16px 8px; text-align: center; font: 700 13px/1.5 var(--mt-font-body); color: var(--mt-ink-3); }
 .gacha-univ-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.gacha-univ-option { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 54px; padding: 8px 12px; border: 1.5px solid #dfe7e4; border-radius: var(--mt-radius-md); background: var(--mt-surface); color: var(--mt-ink); text-align: left; cursor: pointer; }
+.gacha-univ-option { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 54px; padding: 8px 12px; border: 1.5px solid #dfe7e4; border-radius: var(--mt-radius-md); background: var(--mt-surface); color: var(--mt-ink); text-align: left; box-shadow: 0 2px 0 #e6eeeb; cursor: pointer; transition: border-color .14s ease, background-color .14s ease, transform .1s ease, box-shadow .12s ease; }
+.gacha-univ-option:active { transform: translateY(1.5px); box-shadow: none; }
 .gacha-univ-option:hover, .gacha-univ-option:focus-visible { border-color: #2d6a5a; background: #f4fbf8; }
 .gacha-univ-option[aria-pressed=true] { border-color: #184e42; background: #e6f6ef; box-shadow: inset 0 0 0 1px #184e42; }
 .gacha-univ-option > svg:first-child { flex-shrink: 0; color: #2d6a5a; }
