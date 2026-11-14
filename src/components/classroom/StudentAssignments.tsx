@@ -51,18 +51,18 @@ export function StudentAssignments({
   const titles = useMemo(() => Object.fromEntries(catalog.map((c) => [c.id, c.title])), [catalog]);
   const solved = readSolvedMap(auth.currentUser?.uid);
 
-  if (!loaded) return <p className="mt-2 text-xs text-gray-400">課題を読み込んでいます…</p>;
-  if (failed) return <p className="mt-2 text-xs text-gray-400">課題を読み込めませんでした。</p>;
+  if (!loaded) return <p className="mt-2 text-xs text-[#7A6A52]">課題を読み込んでいます…</p>;
+  if (failed) return <p className="mt-2 text-xs text-[#7A6A52]">課題を読み込めませんでした。</p>;
 
   return (
-    <div className="mt-2 border-t border-gray-200 pt-2" data-testid="student-assignments">
+    <div className="mt-2 border-t border-[#E6DAC5] pt-2" data-testid="student-assignments">
       {/* 見出しは ClassPanel の「先生に見えていること」と同じ形 */}
       <p className="flex items-center gap-1.5 text-xs font-bold text-[#3C5A6E] mb-1.5">
         <ClipboardList size={13} />
         先生からの課題
       </p>
       {rows.length === 0 ? (
-        <p className="text-xs text-gray-500">いま出ている課題はありません。</p>
+        <p className="text-xs text-[#6E604C]">いま出ている課題はありません。</p>
       ) : (
         <ul className="space-y-1.5">
           {rows.map((a) => {
@@ -74,15 +74,15 @@ export function StudentAssignments({
             }) || a.chapterIds[0];
             const past = a.dueAt < Date.now();
             return (
-              <li key={a.id} className="flex items-center gap-2 rounded-xl bg-white border border-gray-200 px-2.5 py-1.5">
+              <li key={a.id} className="flex items-center gap-2 rounded-xl bg-[#FFFDF8] border border-[#E5DCCC] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_1.5px_0_#E8DFCE]">
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-bold text-[#1B2631] truncate">{a.title}</p>
-                  <p className="text-xs text-gray-500 truncate">
-                    <span className={past && !finished ? 'text-red-600 font-bold' : ''}>締切 {formatDue(a.dueAt)}</span>
+                  <p className="text-xs text-[#6E604C] truncate">
+                    <span className={past && !finished ? 'text-[#B83227] font-bold' : ''}>締切 {formatDue(a.dueAt)}</span>
                     {' ・ '}
                     {STATUS_LABELS[p.status]}
                   </p>
-                  <p className="text-xs text-gray-400 truncate">
+                  <p className="text-xs text-[#7A6A52] truncate">
                     {p.solved}/{p.total}問 ・ {a.chapterIds.map((id) => titles[id] || id).join('、')}
                   </p>
                 </div>
@@ -95,7 +95,7 @@ export function StudentAssignments({
                   <button
                     type="button"
                     onClick={() => onStartChapter(next, membership.subject)}
-                    className="shrink-0 flex min-h-[44px] items-center gap-1.5 px-3.5 rounded-xl bg-[#2C3E50] text-white text-xs font-bold"
+                    className="shrink-0 flex min-h-[44px] items-center gap-1.5 px-3.5 rounded-xl bg-[#2C3E50] text-white text-xs font-bold shadow-[0_2px_0_#1B2631] active:translate-y-[1.5px] active:shadow-none transition-all"
                   >
                     <Play size={14} />
                     解く

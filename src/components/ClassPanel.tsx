@@ -142,9 +142,9 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
 
   if (!uid) {
     return (
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 text-center">
-        <School className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-        <p className="text-xs text-gray-500 leading-relaxed">
+      <div className="bg-[#FFFDF7] border border-[#E5DCCC] rounded-2xl p-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB]">
+        <School className="w-8 h-8 mx-auto mb-2 text-[#B8A990]" />
+        <p className="text-xs text-[#6E604C] leading-relaxed">
           クラスへの参加には Google ログインが必要です。
           <br />
           先に「アカウント」からログインしてください。
@@ -159,15 +159,15 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
   return (
     <div className="space-y-2.5">
       {/* 参加中のクラス（＝いま見られている相手） */}
-      <section className="bg-white border border-gray-200 rounded-2xl p-3 shadow-sm">
-        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+      <section className="bg-[#FFFDF7] border border-[#E5DCCC] rounded-2xl p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB,0_4px_12px_rgba(80,60,30,0.04)]">
+        <h3 className="text-xs font-bold text-[#7A6A52] uppercase tracking-wider mb-2">
           参加中のクラス
         </h3>
 
         {loading ? (
-          <p className="text-xs text-gray-400 py-3 text-center">読み込んでいます…</p>
+          <p className="text-xs text-[#7A6A52] py-3 text-center">読み込んでいます…</p>
         ) : memberships.length === 0 ? (
-          <p className="text-xs text-gray-500 leading-relaxed py-1">
+          <p className="text-xs text-[#6E604C] leading-relaxed py-1">
             まだどのクラスにも参加していません。
             <br />
             学習の記録は<strong>あなただけのもの</strong>で、誰にも見えていません。
@@ -179,11 +179,11 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
               return (
                 <li
                   key={membership.classId}
-                  className="rounded-xl border border-gray-200 bg-gray-50/60 p-2.5"
+                  className="rounded-xl border border-[#E6DAC5] bg-[#FBF6EA] p-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-400 truncate">{membership.schoolName}</p>
+                      <p className="text-xs text-[#7A6A52] truncate">{membership.schoolName}</p>
                       <p className="text-xs font-bold text-[#1B2631] truncate">
                         {membership.className}
                       </p>
@@ -193,7 +193,7 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
                         >
                           {theme.label}
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-[#7A6A52]">
                           先生の画面での表示名：{membership.rosterName}
                         </span>
                       </div>
@@ -201,7 +201,7 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
                     <button
                       onClick={() => handleLeave(membership)}
                       disabled={leavingClassId === membership.classId}
-                      className="shrink-0 flex min-h-[44px] items-center gap-1 px-2.5 rounded-lg border border-red-100 bg-red-50 text-xs font-bold text-red-600 disabled:opacity-50"
+                      className="shrink-0 flex min-h-[44px] items-center gap-1 px-2.5 rounded-lg border border-[#EAB8B2] bg-[#FDF2F0] text-xs font-bold text-[#A93226] shadow-[0_1.5px_0_#DFABA4] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-50"
                     >
                       {leavingClassId === membership.classId ? (
                         <Loader2 size={12} className="animate-spin" />
@@ -252,11 +252,11 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
       )}
 
       {/* 参加コードの入力 */}
-      <section className="bg-white border border-gray-200 rounded-2xl p-3 shadow-sm space-y-2">
-        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+      <section className="bg-[#FFFDF7] border border-[#E5DCCC] rounded-2xl p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB,0_4px_12px_rgba(80,60,30,0.04)] space-y-2">
+        <h3 className="text-xs font-bold text-[#7A6A52] uppercase tracking-wider">
           クラスに参加する
         </h3>
-        <p className="text-xs text-gray-500 leading-snug">
+        <p className="text-xs text-[#6E604C] leading-snug">
           先生から聞いた{JOIN_CODE_LENGTH}文字のコードを入力してください。
         </p>
 
@@ -274,19 +274,19 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
             spellCheck={false}
             placeholder="ABC234"
             aria-label="参加コード"
-            className="flex-1 min-w-0 min-h-[44px] px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm font-bold tracking-[0.2em] text-[#1B2631] uppercase focus:outline-none focus:border-[#6FA8C5]"
+            className="flex-1 min-w-0 min-h-[44px] px-3 py-2 rounded-xl border border-[#DFD2BC] bg-[#FBF6EA] text-sm font-bold tracking-[0.2em] text-[#1B2631] uppercase shadow-[inset_0_1px_2px_rgba(28,42,57,0.04)] focus:outline-none focus:border-[#2458A6] focus:bg-white focus:ring-2 focus:ring-[#E5EEF9]"
           />
           <button
             onClick={handleJoin}
             disabled={!canJoin}
-            className="shrink-0 flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#2C3E50] text-white text-xs font-bold disabled:opacity-40"
+            className="shrink-0 flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#2C3E50] text-white text-xs font-bold shadow-[0_2.5px_0_#1B2631] active:translate-y-[1.5px] active:shadow-none transition-all disabled:opacity-40 disabled:shadow-none"
           >
             {joining ? <Loader2 size={14} className="animate-spin" /> : <LogIn size={14} />}
             {joining ? '参加中…' : '参加'}
           </button>
         </div>
 
-        <p className="text-xs text-gray-400 leading-snug">
+        <p className="text-xs text-[#7A6A52] leading-snug">
           コードには <strong>O・0</strong>、<strong>I・1</strong> のような
           見間違えやすい文字は使われていません。打ち間違えても自動で直します。
         </p>
@@ -321,7 +321,7 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
         </div>
       )}
 
-      <p className="flex items-start gap-1.5 text-xs text-gray-400 leading-snug px-1">
+      <p className="flex items-start gap-1.5 text-xs text-[#7A6A52] leading-snug px-1">
         <Users size={11} className="shrink-0 mt-[1px]" />
         <span>
           先生の側からあなたを勝手にクラスへ追加することはできません。

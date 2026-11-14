@@ -34,8 +34,8 @@ export function StudentsTab(props: StudentsTabProps) {
   // ここで一番大きく出すべきなのは参加コードそのもの。
   if (!loading && students.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-[#E0E1DD] p-7 text-center">
-        <Users className="w-10 h-10 mx-auto mb-3 text-[#9BA3AE]" />
+      <div className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-7 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2.5px_0_#E6DCCB]">
+        <Users className="w-10 h-10 mx-auto mb-3 text-[#B5A58B]" />
         <h2 className="text-base font-bold text-[#1B2631] mb-2">まだ誰も参加していません</h2>
         <p className="text-sm text-[#4B5563] leading-relaxed mb-5">
           下のコードを生徒に伝えてください。
@@ -58,16 +58,16 @@ export function StudentsTab(props: StudentsTabProps) {
     <div className="space-y-4">
       {/* 参加コード（授業中にすぐ言えるよう常設） */}
       {activeClass && (
-        <div className="bg-white rounded-2xl border border-[#E0E1DD] p-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-4 flex flex-wrap items-center justify-between gap-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB]">
           <div>
-            <p className="text-xs text-[#6B7280] mb-1">参加コード</p>
+            <p className="text-xs text-[#6E604C] mb-1">参加コード</p>
             <p className="text-2xl font-bold tracking-[0.2em] text-[#1B2631]">
               {activeClass.joinCode}
             </p>
           </div>
           <button
             onClick={() => props.onCopyCode(activeClass.joinCode)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#E0E1DD] text-[#4B5563] hover:bg-[#FAF8F2] transition-colors"
+            className="flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#DFD2BC] bg-white text-[#3F3527] shadow-[0_2px_0_#E5D9C4] hover:bg-[#FAF6EC] active:translate-y-[1.5px] active:shadow-none transition-all"
           >
             {props.copiedCode === activeClass.joinCode ? (
               <>
@@ -126,7 +126,7 @@ export function StudentsTab(props: StudentsTabProps) {
         <button
           onClick={props.onRefresh}
           disabled={loading}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#E0E1DD] bg-white text-[#4B5563] hover:bg-[#FAF8F2] transition-colors disabled:opacity-50"
+          className="flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#DFD2BC] bg-[#FFFDF8] text-[#3F3527] shadow-[0_2px_0_#E5D9C4] hover:bg-[#FAF6EC] active:translate-y-[1.5px] active:shadow-none transition-all disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           更新
@@ -134,7 +134,7 @@ export function StudentsTab(props: StudentsTabProps) {
         <button
           onClick={props.onExportCsv}
           disabled={students.length === 0}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
+          className="flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-bold text-white shadow-[0_2.5px_0_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.25)] transition-all active:translate-y-[1.5px] active:shadow-none disabled:opacity-50"
           style={{ backgroundColor: theme.accent }}
         >
           <Download className="w-4 h-4" />
@@ -210,7 +210,7 @@ function JoinCodeBlock({
       </p>
       <button
         onClick={onCopy}
-        className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#E0E1DD] text-[#4B5563] hover:bg-[#FAF8F2] transition-colors"
+        className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#DFD2BC] bg-white text-[#3F3527] shadow-[0_2px_0_#E5D9C4] hover:bg-[#FAF6EC] active:translate-y-[1.5px] active:shadow-none transition-all"
       >
         {copied ? (
           <>
@@ -230,8 +230,8 @@ function JoinCodeBlock({
 
 function StatCard({ label, value, accent }: { label: string; value: string; accent: string }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#E0E1DD] p-3.5">
-      <p className="text-xs text-[#6B7280] mb-1">{label}</p>
+    <div className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB]">
+      <p className="text-xs text-[#6E604C] mb-1">{label}</p>
       <p className="text-xl font-bold" style={{ color: accent }}>
         {value}
       </p>
@@ -269,7 +269,7 @@ const StudentRow: React.FC<StudentRowProps> = ({
   const hasOverdue = review.overdue > 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E0E1DD] p-4">
+    <div className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB]">
       {/* 名前の行 */}
       <div className="flex items-start justify-between gap-3 mb-2.5">
         {isEditing ? (

@@ -64,8 +64,8 @@ function todayPlus(days: number): string {
 
 function EmptyCard({ icon: Icon, title, children }: { icon: typeof Info; title: string; children: ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#E0E1DD] p-7 text-center">
-      <Icon className="w-10 h-10 mx-auto mb-3 text-[#9BA3AE]" />
+    <div className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-7 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2.5px_0_#E6DCCB]">
+      <Icon className="w-10 h-10 mx-auto mb-3 text-[#B5A58B]" />
       <h2 className="text-base font-bold text-[#1B2631] mb-2">{title}</h2>
       <p className="text-sm text-[#4B5563] leading-relaxed">{children}</p>
     </div>
@@ -143,7 +143,7 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
     <div className="space-y-4" data-testid="juku-tab">
       {/* 表示の切り替え（ダッシュボード上部のタブと同じ見た目）＋ 操作ボタン（観点別評価タブと同じ見た目） */}
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex gap-1 p-1 bg-[#F1EFE9] rounded-xl" role="group" aria-label="表示の切り替え">
+        <div className="flex gap-1 p-1 bg-[#F2EADE] border border-[#E4D8C5] rounded-xl shadow-[inset_0_1px_2px_rgba(28,42,57,0.04)]" role="group" aria-label="表示の切り替え">
           {([
             { id: 'assign' as const, label: `課題（${assignments.length}）` },
             { id: 'reasons' as const, label: `選んだ理由（${reasons.length}）` },
@@ -153,8 +153,8 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
               type="button"
               aria-pressed={view === item.id}
               onClick={() => setView(item.id)}
-              className={`min-h-[44px] px-3 sm:px-4 rounded-lg text-sm transition-colors ${
-                view === item.id ? 'bg-white font-bold text-[#1B2631] shadow-sm' : 'text-[#4B5563]'
+              className={`min-h-[44px] px-3 sm:px-4 rounded-lg text-sm transition-all ${
+                view === item.id ? 'bg-[#FFFDF8] font-bold text-[#1B2631] shadow-[0_2px_0_#E2D4BC,inset_0_1px_0_rgba(255,255,255,0.9)]' : 'text-[#5C4F3D]'
               }`}
             >
               {item.label}
@@ -164,7 +164,7 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
         <button
           type="button"
           onClick={() => void load()}
-          className="flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#E0E1DD] bg-white text-[#4B5563] hover:bg-[#FAF8F2] transition-colors"
+          className="flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm border border-[#DFD2BC] bg-[#FFFDF8] text-[#3F3527] shadow-[0_2px_0_#E5D9C4] hover:bg-[#FAF6EC] active:translate-y-[1.5px] active:shadow-none transition-all"
         >
           <RefreshCw className="w-4 h-4" />
           更新
@@ -173,7 +173,7 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-bold text-white transition-transform active:scale-95"
+            className="flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-bold text-white shadow-[0_2.5px_0_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.25)] transition-all active:translate-y-[1.5px] active:shadow-none"
             style={{ backgroundColor: theme.accent }}
           >
             <Plus className="w-4 h-4" />
@@ -200,18 +200,18 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
               const counts = countStatuses(rows.map((r) => r.p));
               const opened = openId === a.id;
               return (
-                <div key={a.id} className="bg-white rounded-2xl border border-[#E0E1DD] p-4">
+                <div key={a.id} className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB]">
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs text-[#6B7280]">締切 {formatDue(a.dueAt)}</p>
+                      <p className="text-xs text-[#6E604C]">締切 {formatDue(a.dueAt)}</p>
                       <p className="text-base font-bold text-[#1B2631] truncate">{a.title}</p>
-                      <p className="text-xs text-[#6B7280] truncate">{a.chapterIds.map((id) => titles[id] || id).join('、')}</p>
+                      <p className="text-xs text-[#6E604C] truncate">{a.chapterIds.map((id) => titles[id] || id).join('、')}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => void handleDelete(a)}
                       aria-label={`課題「${a.title}」を消す`}
-                      className="shrink-0 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-[#E0E1DD] text-[#6B7280] hover:bg-[#FAF8F2] transition-colors"
+                      className="shrink-0 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-[#DFD2BC] bg-white text-[#5C4F3D] shadow-[0_1.5px_0_#E5D9C4] hover:bg-[#FAF6EC] active:translate-y-[1px] active:shadow-none transition-all"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -261,7 +261,7 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
             <span>生徒が自分で「先生に送る」を押した理由だけが並びます。生徒はいつでも取り消せます。</span>
           </div>
           {groups.map((g) => (
-            <div key={`${g.chapterId}::${g.questionId}`} className="bg-white rounded-2xl border border-[#E0E1DD] p-4">
+            <div key={`${g.chapterId}::${g.questionId}`} className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB]">
               <p className="text-xs text-[#6B7280] truncate">{titles[g.chapterId] || g.chapterId}</p>
               <p className="text-base font-bold text-[#1B2631] mb-2">
                 {reasonHeading(g)}
@@ -349,7 +349,7 @@ function CreateAssignmentModal({
       aria-label="課題を出す"
     >
       <div
-        className="w-full max-w-md max-h-full flex flex-col bg-white rounded-2xl border border-[#E0E1DD] p-5"
+        className="w-full max-w-md max-h-full flex flex-col bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-5 shadow-[0_18px_40px_rgba(32,24,14,0.22),inset_0_1px_0_rgba(255,255,255,0.95)]"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 className="text-lg font-bold text-[#1B2631] mb-1">課題を出す</h2>
@@ -410,7 +410,7 @@ function CreateAssignmentModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-sm border border-[#E0E1DD] text-[#4B5563] hover:bg-[#FAF8F2] transition-colors"
+            className="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-sm border border-[#DFD2BC] bg-white text-[#3F3527] shadow-[0_2px_0_#E5D9C4] hover:bg-[#FAF6EC] active:translate-y-[1.5px] active:shadow-none transition-all"
           >
             やめる
           </button>
@@ -418,7 +418,7 @@ function CreateAssignmentModal({
             type="button"
             onClick={() => void submit()}
             disabled={!canSubmit}
-            className="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
+            className="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-bold text-white shadow-[0_2.5px_0_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.25)] transition-all active:translate-y-[1.5px] active:shadow-none disabled:opacity-50 disabled:shadow-none"
             style={{ backgroundColor: accent }}
           >
             {busy ? '作成中…' : '出す'}
