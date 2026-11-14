@@ -179,6 +179,7 @@ export function LaunchScreen({ onStart }: {
         <button type="button" className="launch-start mt-btn mt-btn-accent" onClick={() => { fadeOutLaunchSfx(); enter(); }}><Headphones size={20} aria-hidden="true" />はじめる<ArrowRight size={20} aria-hidden="true" /></button>
         <p className="launch-note">{auth.currentUser ? '学習のつづきから始まります' : 'Google か Apple でログインして始めます'}</p>
         <button type="button" className="launch-philosophy" data-open-philosophy onClick={() => setGate('philosophy')}><BookHeart size={16} aria-hidden="true" />学びの扉 ～私達に出来ることを～</button>
+        <p className="launch-trademark-disclaimer" data-toeic-disclaimer>{TOEIC_DISCLAIMER}</p>
         <p className="launch-kbd" aria-hidden="true"><kbd>Enter</kbd> ではじめる</p>
       </div>
     </div>

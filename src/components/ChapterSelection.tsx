@@ -9,7 +9,7 @@ import { subjectTheme } from '../data/subjectTheme';
 import { ListeningAudioPlayer } from './ListeningAudioPlayer';
 import type { Chapter } from '../types/curriculum';
 import { buildListeningRounds } from '../utils/listeningRounds';
-import { TOEIC_DISCLAIMER } from '../data/toeic/toeicPart5Kit';
+import { TOEIC_DISCLAIMER } from '../utils/toeicDisclaimer';
 import { problemKey, readSolvedMap } from '../utils/progress';
 // 章 × モードごとの保存キー名は utils/quizStorageKeys.ts が唯一の定義
 import {
@@ -140,9 +140,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
 
   const activeGroup = groups.find(group => group.title === activeGroupTitle) || groups[0];
   const toeicTabs = isToeic && groups.length > 1;
-  const toeicSub = activeGroup?.title === 'リスニング' ? 'リスニング（Part 2〜4）・1回12問'
-    : activeGroup?.title === 'Part 7' ? 'Part 7 読解・1回7セット24問・4択'
-    : activeGroup?.title === 'Part 6' ? 'Part 6 長文穴埋め・1回16問・4択' : 'Part 5 短文穴埋め・1回30問・4択';
+  const toeicSub = activeGroup?.title === 'リスニング' ? 'リスニング（応答・会話・説明文）・1回12問'
+    : activeGroup?.title === 'Part 7' ? 'リーディング（読解）・1回7セット24問・4択'
+    : activeGroup?.title === 'Part 6' ? 'リーディング（長文穴埋め）・1回16問・4択' : 'リーディング（短文穴埋め）・1回30問・4択';
   /** 科目全体での通し番号（①〜⑳ → 01.〜20.）。タブを切り替えても番号が振り直されないようにする。 */
   const chapterNumberById = useMemo(() => {
     const m = new Map<string, number>();
@@ -177,8 +177,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           <ArrowLeft size={18} aria-hidden="true" /><span>{backLabel}</span>
         </button>
         <div className="unit-head-title">
-          <h2 style={{ color: theme.accent }}>{isListening ? '英語リスニング' : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
-          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '共通テスト大問別・1回ずつ完結' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
+          <h2 style={{ color: theme.accent }}>{isListening ? '英語リスニング' : isGrammar ? '英文法' : isToeic ? 'TOEIC® L&R TEST' : theme.label}</h2>
+          <p>{isToeic ? (toeicTabs ? toeicSub : 'リーディング（短文穴埋め）・1回30問・4択') : mode === 'mini_test' ? '小テスト' : isListening ? '共通テスト大問別・1回ずつ完結' : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
         </div>
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />
       </header>
@@ -207,8 +207,12 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           >
             {groups.map((group, index) => {
               const isActive = group.title === activeGroup?.title;
+              const toeicTabTitle = group.title === 'リスニング' ? '応答・会話・説明文'
+                : group.title === 'Part 5' ? '短文穴埋め'
+                : group.title === 'Part 6' ? '長文穴埋め'
+                  : group.title === 'Part 7' ? '読解' : group.title;
               const { kicker: chapterNumber, label: shortTitle } = isToeic
-                ? { kicker: String(group.chapters[0]?.abstractTitle || '').replace(/^(?:Part \d+|リスニング)\s*/, ''), label: group.title }
+                ? { kicker: group.title === 'リスニング' ? 'リスニング' : 'リーディング', label: toeicTabTitle }
                 : group.kicker
                 ? { kicker: `${group.kicker}・${group.chapters.length}単元`, label: group.label as string }
                 : splitTabTitle(group.title, index);

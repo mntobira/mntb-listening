@@ -45,6 +45,7 @@
 .launch-start:active { box-shadow: 0 1px 0 var(--mt-accent-strong); transform: translateY(2px); }
 .launch-guest { min-height: var(--mt-tap); font-size: var(--mt-fs-sm); }
 .launch-note { min-height: var(--mt-tap); display: grid; place-items: center; margin: 0; font-size: var(--mt-fs-xs); color: var(--mt-ink-3); }
+.launch-trademark-disclaimer { flex-shrink: 0; max-width: 560px; margin: 0; color: var(--mt-ink-2); font: 500 12px/1.45 var(--mt-font-body); text-align: center; white-space: pre-line; }
 .launch-screen button:focus-visible { outline: none; box-shadow: var(--mt-focus); }
 
 /* 背の低い画面：ロゴとステージを縮めて、はじめるボタンを必ず1画面に入れる */
@@ -57,6 +58,18 @@
 @media (max-height: 600px) {
   .launch-chips { display: none; }
   .launch-brand { width: min(200px, 56%); }
+  .launch-content { gap: var(--mt-s1); padding-bottom: max(var(--mt-s1), env(safe-area-inset-bottom)); }
+  .launch-stage { min-height: 92px; max-height: 180px; }
+  .launch-actions { gap: 2px; }
+  .launch-note { min-height: 32px; }
+  .launch-philosophy { min-height: 36px; }
+  .launch-content { gap: 2px; padding-top: 4px; }
+  .launch-stage { min-height: 80px; max-height: 130px; }
+  .launch-copy { font-size: 18px; line-height: 1.15; }
+  .launch-start { min-height: 44px; }
+  .launch-note { min-height: 28px; }
+  .launch-philosophy { min-height: 32px; }
+  .launch-trademark-disclaimer { font-size: 11px; line-height: 1.2; }
 }
 
 /* 歩いて登場（動画が使えないとき） */
@@ -140,7 +153,7 @@
   .launch-chips li > span { display: grid; gap: 6px; }
   .launch-chips li b { font: 800 16px/1.2 var(--mt-font-display); color: var(--mt-ink); }
   .launch-chips li small { display: block; font: 600 12.5px/1.5 var(--mt-font-body); color: var(--mt-ink-3); }
-  .launch-actions { grid-area: actions; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "start guest" "count count" "phil kbd"; align-items: center; justify-items: start; column-gap: 18px; row-gap: 12px; padding-top: 4px; }
+  .launch-actions { grid-area: actions; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "start guest" "count count" "trademark trademark" "phil kbd"; align-items: center; justify-items: start; column-gap: 18px; row-gap: 12px; padding-top: 4px; }
   .launch-start { grid-area: start; width: 300px; min-height: 64px; }
   .launch-start:hover { filter: brightness(1.04); }
   .launch-guest, .launch-note { grid-area: guest; }
@@ -149,6 +162,7 @@
   .launch-countdown-mini strong { font: 900 26px/1 var(--mt-font-display); color: #496d80; font-variant-numeric: tabular-nums; }
   .launch-countdown-mini small { margin-left: 6px; font-size: 12px; color: var(--mt-ink-3); }
   .launch-philosophy { grid-area: phil; margin-top: 0; }
+  .launch-trademark-disclaimer { grid-area: trademark; max-width: 720px; text-align: left; }
   .launch-philosophy:hover { filter: brightness(.98); box-shadow: 0 2px 0 #e8d3b2, 0 0 0 3px #f3e3c7; }
   .launch-kbd { grid-area: kbd; display: block; margin: 0; justify-self: end; font-size: 12px; color: var(--mt-ink-3); }
   .launch-kbd kbd { display: inline-block; min-width: 44px; padding: 3px 8px; margin-right: 4px; border: 1px solid var(--mt-line-strong); border-bottom-width: 3px; border-radius: 8px; background: #fff; font: 700 12px/1.2 var(--mt-font-body); color: var(--mt-ink-2); text-align: center; }
