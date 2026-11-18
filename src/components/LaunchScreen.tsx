@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AlphaCinematicClip, ALPHA_CINEMATIC_CLIPS, FULLFRAME_CINEMATIC_MOVIES } from './AlphaCinematicClip';
 import { TitleBgmMuteButton, TITLE_SCREEN_BGM_SRC, useLaunchTitleBgm } from './TitleBgmControl';
-import { ArrowRight, BookHeart, Headphones, PenLine, Repeat2, Swords } from 'lucide-react';
+import { ArrowRight, BookHeart, Headphones, PenLine, Play, Repeat2, Swords } from 'lucide-react';
 import { PhilosophyPage } from './PhilosophyPage';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc } from '../battle/core/growth';
@@ -15,14 +15,15 @@ import { readAudioPreferences } from '../battle/audio/audioPreferences';
 import { TOEIC_DISCLAIMER } from '../utils/toeicDisclaimer';
 
 /**
- * タイトル画面（2026-11-15 モンスト風フル画面オープニングムービー ＋ ①高精度切り抜きとびら君登場演出）。
+ * タイトル画面（2026-11-18 モンスト風フル画面オープニングムービー ＋ ①高精度切り抜きとびら君登場演出 ＋ 0.00s同期・1回完結BGM）。
  *
  * 起動の流れ:
  *   1. gate = 'emblem' : マナトビ起動エンブレム（白→フェードイン→保持→フェードアウト）
  *   2. gate = 'op'     : エンブレムがフェードアウトした直後、画面向き・幅に応じて
  *                        ・横向き／PC（orientation: landscape かつ min-width: 768px）＝ ② title_op_landscape.mp4（15秒フル画面）
  *                        ・縦向き／スマホ（それ以外）＝ ③ title_op_portrait.mp4（15秒フル画面）
- *                        を切り抜かず星空・水面反射そのまま再生。画面タップまたは「スキップ」でいつでも即スキップ可能。
+ *                        を先頭 0.00s から BGM（1回完結・ループなし）と完全同期で再生。
+ *                        ブラウザの音声自動再生制限時は 0.00s で待機し、最初のタップで映像＋BGMを同時に最初から開始する。
  *   3. gate = 'title'  : OP終了（またはスキップ）で既存のタイトル画面へ遷移し、
  *                        とびら君ステージの位置で高精度切り抜きした ①（battle_countdown）のジャンプ登場演出を再生 →
  *                        そのままタイトル画面のとびら君待機ポーズへシームレスに移行する。
@@ -65,6 +66,10 @@ export function LaunchScreen({ onStart }: {
   const {
     audioRef: titleBgmRef,
     muted: titleBgmMuted,
+    needsSoundGesture,
+    primeFromGesture,
+    startBgmFromBeginning,
+    markEnded: markTitleBgmEnded,
     toggleMute: toggleTitleBgm,
     stopTitleBgm,
   } = useLaunchTitleBgm(gate === 'op' || gate === 'title');
@@ -109,7 +114,7 @@ export function LaunchScreen({ onStart }: {
     return () => { alive = false; visualTimers.forEach(t => window.clearTimeout(t)); clearSfxTimers(); };
   }, [gate]);
 
-  const finishOpToTitle = () => {
+  const finishOpToTitle = useCallback(() => {
     if (opDoneRef.current) return;
     opDoneRef.current = true;
     opVideoRef.current?.pause();
@@ -117,9 +122,22 @@ export function LaunchScreen({ onStart }: {
     window.setTimeout(() => {
       setGate(g => (g === 'op' ? 'title' : g));
     }, 320);
-  };
+  }, []);
 
-  // OPムービー再生ライフサイクル＆セーフティタイマー
+  /** 自動再生制限で待機中のOP映像とBGMを、ユーザータップで 0.00s から同時に開始する */
+  const startSyncedOpFromGesture = useCallback(() => {
+    resumeSharedAudio();
+    const el = opVideoRef.current;
+    if (el) {
+      try { el.currentTime = 0; } catch { /* ignore */ }
+    }
+    void startBgmFromBeginning();
+    if (el) {
+      el.play().catch(() => finishOpToTitle());
+    }
+  }, [finishOpToTitle, startBgmFromBeginning]);
+
+  // OPムービー再生ライフサイクル＆0.00s完全同期スタート
   useEffect(() => {
     if (gate !== 'op') return;
     opDoneRef.current = false;
@@ -131,25 +149,71 @@ export function LaunchScreen({ onStart }: {
     }
     let disposed = false;
     let started = false;
-    const onPlay = () => { started = true; };
+    let loadWatchdog = 0;
+    let maxWatchdog = 0;
+
+    const clearWatchdogs = () => {
+      if (loadWatchdog) window.clearTimeout(loadWatchdog);
+      if (maxWatchdog) window.clearTimeout(maxWatchdog);
+      loadWatchdog = 0;
+      maxWatchdog = 0;
+    };
+
+    const armWatchdogs = () => {
+      clearWatchdogs();
+      loadWatchdog = window.setTimeout(() => {
+        if (!disposed && !started) finishOpToTitle();
+      }, 4500);
+      maxWatchdog = window.setTimeout(() => {
+        if (!disposed) finishOpToTitle();
+      }, Math.ceil(opMovie.durationSec * 1000) + 2500);
+    };
+
+    const onPlay = () => {
+      started = true;
+      if (loadWatchdog) {
+        window.clearTimeout(loadWatchdog);
+        loadWatchdog = 0;
+      }
+      if (!maxWatchdog) {
+        maxWatchdog = window.setTimeout(() => {
+          if (!disposed) finishOpToTitle();
+        }, Math.ceil(opMovie.durationSec * 1000) + 2500);
+      }
+    };
     el.addEventListener('playing', onPlay);
-    const loadWatchdog = window.setTimeout(() => {
-      if (!disposed && !started) finishOpToTitle();
-    }, 4500);
-    const maxWatchdog = window.setTimeout(() => {
-      if (!disposed) finishOpToTitle();
-    }, Math.ceil(opMovie.durationSec * 1000) + 2500);
-    el.play().catch(() => {
-      if (!disposed) finishOpToTitle();
+
+    try { el.currentTime = 0; } catch { /* ignore */ }
+
+    void startBgmFromBeginning().then(status => {
+      if (disposed) return;
+      const isHeadless = typeof navigator !== 'undefined' && navigator.webdriver === true;
+      if (status === 'blocked' && !isHeadless) {
+        // 音声が自動再生制限された場合、映像だけ無音で先に進んでしまうのを防ぎ 0.00s で待機する
+        el.pause();
+        try { el.currentTime = 0; } catch { /* ignore */ }
+        return;
+      }
+      try { el.currentTime = 0; } catch { /* ignore */ }
+      armWatchdogs();
+      el.play().catch(() => {
+        if (!disposed) finishOpToTitle();
+      });
     });
+
     return () => {
       disposed = true;
       el.removeEventListener('playing', onPlay);
-      window.clearTimeout(loadWatchdog);
-      window.clearTimeout(maxWatchdog);
+      clearWatchdogs();
       el.pause();
     };
-  }, [gate, opMovie.mp4, opMovie.durationSec]);
+  }, [finishOpToTitle, gate, opMovie.mp4, opMovie.durationSec, startBgmFromBeginning]);
+
+  // エンブレム・OP を経ずに直接 gate === 'title' へ入った場合（reduced-motion 等）も BGM が未再生なら 0.00s から1回だけ開始
+  useEffect(() => {
+    if (gate !== 'title') return;
+    void startBgmFromBeginning();
+  }, [gate, startBgmFromBeginning]);
 
   useEffect(() => {
     if (gate !== 'title' || bloomDone.current) return;
@@ -172,11 +236,11 @@ export function LaunchScreen({ onStart }: {
       fadeOutLaunchSfx();
       stopTitleBgm();
     }
-  }, [gate]);
+  }, [gate, stopTitleBgm]);
   useEffect(() => () => {
     fadeOutLaunchSfx();
     stopTitleBgm();
-  }, []);
+  }, [stopTitleBgm]);
 
   const skipEmblem = () => {
     if (emblemPhase === 'out') return;
@@ -185,6 +249,7 @@ export function LaunchScreen({ onStart }: {
     setEmblemPhase('out');
     clearSfxTimers();
     resumeSharedAudio();
+    primeFromGesture();
     void preloadLaunchSfx().then(() => {
       resumeSharedAudio();
       window.setTimeout(advancepastEmblem, 420);
@@ -224,16 +289,23 @@ export function LaunchScreen({ onStart }: {
 
   return (
     <>
-      <audio ref={titleBgmRef} src={TITLE_SCREEN_BGM_SRC} loop preload="auto" playsInline data-title-screen-bgm="" />
+      <audio
+        ref={titleBgmRef}
+        src={TITLE_SCREEN_BGM_SRC}
+        preload="auto"
+        playsInline
+        onEnded={markTitleBgmEnded}
+        data-title-screen-bgm=""
+      />
       {gate === 'emblem' ? (
-        <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label={`マナトビ 起動エンブレム（タップで進む）。${TOEIC_DISCLAIMER}`} role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><img className="launch-emblem-applogo" src="/brand/app-icon-logo.webp" alt="マナトビ" width={640} height={640}/><h1>聞いて、解いて、<br/>競って、<em>これ1本</em>で。</h1></div><p className="launch-emblem-disclaimer">{TOEIC_DISCLAIMER}</p></main>
+        <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label={`マナトビ 起動エンブレム（タップで進む）。${TOEIC_DISCLAIMER}`} role="button" tabIndex={0} onPointerDown={primeFromGesture} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><img className="launch-emblem-applogo" src="/brand/app-icon-logo.webp" alt="マナトビ" width={640} height={640}/><h1>聞いて、解いて、<br/>競って、<em>これ1本</em>で。</h1></div><p className="launch-emblem-disclaimer">{TOEIC_DISCLAIMER}</p></main>
       ) : gate === 'op' ? (
         <main
           className={`launch-op-stage ${opFadingOut ? 'is-fading-out' : ''}`}
           data-launch-op
           data-orientation={isLandscape ? 'landscape' : 'portrait'}
-          aria-label="マナトビ オープニングムービー（タップでスキップ）"
-          onClick={finishOpToTitle}
+          aria-label={needsSoundGesture ? 'マナトビ オープニングムービー（タップして最初から再生）' : 'マナトビ オープニングムービー（タップでスキップ）'}
+          onClick={needsSoundGesture ? startSyncedOpFromGesture : finishOpToTitle}
         >
           <video
             key={opMovie.mp4}
@@ -249,8 +321,26 @@ export function LaunchScreen({ onStart }: {
             onError={finishOpToTitle}
           />
           <div className="launch-op-hud" onClick={e => e.stopPropagation()}>
-            <TitleBgmMuteButton muted={titleBgmMuted} onToggle={toggleTitleBgm} />
+            <TitleBgmMuteButton muted={titleBgmMuted} onToggle={() => {
+              const wasMuted = titleBgmMuted;
+              toggleTitleBgm();
+              if (wasMuted && needsSoundGesture && opVideoRef.current?.paused) {
+                try { opVideoRef.current.currentTime = 0; } catch { /* ignore */ }
+                void opVideoRef.current.play().catch(() => finishOpToTitle());
+              }
+            }} />
           </div>
+          {needsSoundGesture && (
+            <button
+              type="button"
+              className="launch-op-sound-start"
+              data-op-sound-start
+              onClick={e => { e.stopPropagation(); startSyncedOpFromGesture(); }}
+            >
+              <Play size={18} aria-hidden="true" />
+              <span>タップして音ありで再生</span>
+            </button>
+          )}
           <div className="launch-op-bottom">
             <img className="launch-op-brand" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" draggable={false} />
             <button
@@ -316,6 +406,7 @@ export function LaunchScreen({ onStart }: {
               <button type="button" className="launch-start mt-btn mt-btn-accent" onClick={() => { fadeOutLaunchSfx(); enter(); }}><Headphones size={20} aria-hidden="true" />はじめる<ArrowRight size={20} aria-hidden="true" /></button>
               <p className="launch-note">{auth.currentUser ? '学習のつづきから始まります' : 'Google か Apple でログインして始めます'}</p>
               <button type="button" className="launch-philosophy" data-open-philosophy onClick={() => setGate('philosophy')}><BookHeart size={16} aria-hidden="true" />学びの扉 ～私達に出来ることを～</button>
+              <p className="launch-trademark-disclaimer" data-toeic-disclaimer>{TOEIC_DISCLAIMER}</p>
               <p className="launch-kbd" aria-hidden="true"><kbd>Enter</kbd> ではじめる</p>
             </div>
           </div>

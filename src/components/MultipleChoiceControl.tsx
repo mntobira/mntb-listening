@@ -283,12 +283,12 @@ export function MultipleChoiceControl({
                 handleOptionSelect(sq.id, opt);
               }}
               // スマホは 48px 以上の高さ・幅を確保してタップしやすくする（PC は従来寸法）。
-              className={optionImages ? `relative flex flex-col items-stretch gap-1 rounded-xl border-2 p-1.5 shadow-sm cursor-pointer transition-all ${
+              className={optionImages ? `relative flex flex-col items-stretch gap-1 rounded-xl border-2 p-1.5 cursor-pointer transition-all ${
                 struck
                   ? 'bg-gray-100 border-gray-300 border-dashed opacity-60'
                   : isSelected
-                    ? 'bg-[#F4D03F]/25 border-[#E5B93C] ring-2 ring-[#E5B93C]/30'
-                    : 'bg-white border-[#E6DCC6] hover:border-[#E5B93C]/60'
+                    ? 'mc-opt-selected border-[#E5B93C]'
+                    : 'mc-opt-idle bg-white border-[#E6DCC6] hover:border-[#E5B93C]/70'
               }` : `relative ${
                 /* ★B-1：本文つき選択肢（英文）はスマホで左右余白を詰める★
                    px-4（16px×2）→ px-2.5（10px×2）で 12px を英文に回す。
@@ -345,8 +345,8 @@ export function MultipleChoiceControl({
                   ? `bg-gray-100 text-gray-400 border-gray-300 border-dashed line-through decoration-2 decoration-[#E8A87C] opacity-70 shadow-none ${strikeAnimating ? 'animate-strike-out' : ''}`
                   // 2026-10-02 D2：選択中の見た目を対戦の4択と同じ「金枠・薄い金」に統一（操作が同じに見えるように）
                   : isSelected
-                    ? 'bg-[#F4D03F]/25 text-[#2C3E50] border-[#E5B93C] ring-2 ring-[#E5B93C]/25 scale-[1.01]'
-                    : 'bg-white text-[#2C3E50] border-[#E6DCC6] hover:border-[#E5B93C]/60 hover:bg-[#FFFCF3]'
+                    ? 'mc-opt-selected text-[#2C3E50] border-[#E5B93C]'
+                    : 'mc-opt-idle bg-white text-[#2C3E50] border-[#E6DCC6] hover:border-[#E5B93C]/70 hover:bg-[#FFFCF3]'
                 }`}
             >
               {optionImages ? (
@@ -369,8 +369,8 @@ export function MultipleChoiceControl({
                 // 「読む場所」と「押す場所」を1つにするのがこの表示の目的。
                 <span className="flex w-full items-start gap-2.5">
                   <span
-                    className={`shrink-0 text-[15px] md:text-base ${listeningMaterialsMobile ? 'leading-[1.4]' : 'leading-6'} ${
-                      struck ? 'text-gray-400' : isSelected ? 'text-white' : 'text-[#2C3E50]'
+                    className={`shrink-0 text-[15px] md:text-base font-extrabold ${listeningMaterialsMobile ? 'leading-[1.4]' : 'leading-6'} ${
+                      struck ? 'text-gray-400' : isSelected ? 'text-[#8A5A00]' : 'text-[#2C3E50]'
                     }`}
                   >
                     {opt}

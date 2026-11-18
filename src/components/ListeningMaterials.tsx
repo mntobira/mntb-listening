@@ -73,7 +73,7 @@ function FitFigure({ image, badge, marks, onMarks, onZoom }: {
         <div data-material-figure-tap role="button" tabIndex={0} onClick={onTap}
           aria-label={`${image.caption}：タップした場所に ○ を書く（印は ${marks.length} 個）`}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onZoom(); } }}
-          className="absolute cursor-crosshair select-none overflow-hidden rounded border border-gray-300 bg-white"
+          className="absolute cursor-crosshair select-none overflow-hidden rounded border border-[#CFC3AF] bg-white shadow-[0_2px_6px_rgba(60,42,18,0.06)]"
           style={size
             ? { width: size.width, height: size.height, left: (box.w - size.width) / 2, top: (box.h - size.height) / 2, touchAction: 'manipulation' }
             : { inset: 0, visibility: 'hidden' }}>
@@ -155,18 +155,18 @@ export function FigureCarousel({ count, labels, children }: { count: number; lab
     }}>
     <div className="relative flex min-h-0 flex-1 items-stretch gap-1">
       <button type="button" onClick={() => go(-1)} aria-label="前の図" data-carousel-prev
-        className="flex w-11 shrink-0 items-center justify-center rounded-lg border border-gray-300 bg-white text-2xl font-black text-[#2C3E50] active:bg-gray-100">‹</button>
+        className="quiz-subnav-btn flex w-11 shrink-0 items-center justify-center rounded-lg border text-2xl font-black cursor-pointer">‹</button>
       <div data-material-figures data-cols={1} className="grid min-h-0 min-w-0 flex-1" style={{ gridTemplateColumns: 'minmax(0, 1fr)', gridTemplateRows: 'minmax(0, 1fr)', minHeight: 96 }} aria-live="polite" aria-label={`図 ${index + 1} / ${count}（${labels[index]}）`}>
         {children(index)}
       </div>
       <button type="button" onClick={() => go(1)} aria-label="次の図" data-carousel-next
-        className="flex w-11 shrink-0 items-center justify-center rounded-lg border border-gray-300 bg-white text-2xl font-black text-[#2C3E50] active:bg-gray-100">›</button>
+        className="quiz-subnav-btn flex w-11 shrink-0 items-center justify-center rounded-lg border text-2xl font-black cursor-pointer">›</button>
     </div>
     <div className="mt-1 flex shrink-0 items-center justify-center gap-1.5" role="tablist" aria-label="図を選ぶ">
       {labels.map((label, i) => <button key={i} type="button" role="tab" aria-selected={i === index} data-carousel-dot={i}
         onClick={() => setIndex(i)}
-        className={`flex h-11 min-w-11 items-center justify-center rounded-full border px-2 text-sm font-bold ${
-          i === index ? 'border-[#2C3E50] bg-[#2C3E50] text-white' : 'border-gray-300 bg-white text-gray-700'}`}>{label}</button>)}
+        className={`flex h-11 min-w-11 items-center justify-center rounded-full border px-2 text-sm font-bold transition-all cursor-pointer ${
+          i === index ? 'border-[#2C3E50] bg-[#2C3E50] text-white shadow-[0_2px_0_#162029]' : 'quiz-subnav-btn'}`}>{label}</button>)}
     </div>
   </div>;
 }
@@ -223,7 +223,7 @@ export function ListeningMaterials({ material, activeSubId }: {
     話者の列は1行で収まるように幅を取り、A/B/C の列は ○× が入る幅だけにする。
   */
   const sections = material.sections?.map((section, i) => (
-        <section key={i} className={`rounded-lg border border-gray-200 ${markable ? 'mb-2 px-2.5 py-1.5' : 'mb-3 px-3 py-2'}`}>
+        <section key={i} className={`rounded-lg border border-[#DFD4BF] bg-[#FFFDF8] ${markable ? 'mb-2 px-2.5 py-1.5' : 'mb-3 px-3 py-2'}`}>
           {section.heading && <h3 className="mb-2 font-bold">{section.heading}</h3>}
           <ul className={markable ? 'space-y-0.5 text-[15px] leading-snug' : 'space-y-2'}>
             {section.rows.map((row, j) => <li key={j}>{text(row)}</li>)}
@@ -245,8 +245,8 @@ export function ListeningMaterials({ material, activeSubId }: {
           return <button key={i} type="button" data-material-mark={mark || 'none'}
             onClick={() => setMarks(m => ({ ...m, [key]: NEXT_MARK[mark] ?? '' }))}
             aria-label={`${row[0]}：${mark === '○' ? '○' : mark === '×' ? '×' : '未記入'}（タップで切り替え）`}
-            className={`flex h-11 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg border text-sm font-bold ${
-              mark === '○' ? 'border-emerald-400 bg-emerald-50 text-emerald-800' : mark === '×' ? 'border-rose-400 bg-rose-50 text-rose-800' : 'border-gray-300 bg-white text-gray-800'
+            className={`flex h-11 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg border text-sm font-bold transition-all cursor-pointer ${
+              mark === '○' ? 'border-emerald-400 bg-emerald-50 text-emerald-800 shadow-[0_1.5px_0_#a7f3d0]' : mark === '×' ? 'border-rose-400 bg-rose-50 text-rose-800 shadow-[0_1.5px_0_#fecdd3]' : 'quiz-subnav-btn'
             }`}>
             <span className="min-w-0 truncate">{row[0]}</span>
             <span aria-hidden="true" className="text-lg leading-none">{mark || '・'}</span>
@@ -259,25 +259,25 @@ export function ListeningMaterials({ material, activeSubId }: {
             {table.headers.map((h, i) => <col key={i} style={i > 0 && isMarkColumn(h) ? { width: '3.25rem' } : undefined} />)}
           </colgroup>}
           <thead><tr>{table.headers.map((cell, i) =>
-            <th key={i} scope="col" className={`border border-gray-300 bg-blue-50 ${markable ? 'px-2 py-1 text-center first:text-left' : 'px-3 py-2'}`}>{cell}</th>)}</tr></thead>
+            <th key={i} scope="col" className={`border border-[#C9BEAA] bg-[#EEF5FA] text-[#2C3E50] ${markable ? 'px-2 py-1 text-center first:text-left' : 'px-3 py-2'}`}>{cell}</th>)}</tr></thead>
           <tbody>{table.rows.map((row, i) => <tr key={i}>
             {row.map((cell, j) => {
               const header = table.headers[j] ?? '';
               if (markable && j > 0 && !cell && isMarkColumn(header)) {
                 const key = `${i}:${j}`;
                 const mark = marks[key] || '';
-                return <td key={j} className="border border-gray-300 p-0">
+                return <td key={j} className="border border-[#C9BEAA] bg-white p-0">
                   <button type="button" data-material-mark={mark || 'none'}
                     onClick={() => setMarks(m => ({ ...m, [key]: NEXT_MARK[mark] ?? '' }))}
                     aria-label={`${row[0]} の ${header}：${mark === '○' ? '○' : mark === '×' ? '×' : '未記入'}（タップで切り替え）`}
-                    className={`flex h-11 w-full items-center justify-center text-xl font-bold ${
-                      mark === '○' ? 'bg-emerald-50 text-emerald-700' : mark === '×' ? 'bg-rose-50 text-rose-700' : 'text-gray-300'
+                    className={`flex h-11 w-full items-center justify-center text-xl font-bold cursor-pointer transition-colors ${
+                      mark === '○' ? 'bg-emerald-50 text-emerald-700' : mark === '×' ? 'bg-rose-50 text-rose-700' : 'text-[#BFB39D] hover:bg-[#FAF5EB]'
                     }`}>
                     {mark || <span aria-hidden="true" className="text-base">・</span>}
                   </button>
                 </td>;
               }
-              return <td key={j} className={`border border-gray-300 ${markable ? 'px-2 py-1' : 'min-w-20 px-3 py-2'}`}>{text(cell) || '\u00a0'}</td>;
+              return <td key={j} className={`border border-[#C9BEAA] bg-white ${markable ? 'px-2 py-1' : 'min-w-20 px-3 py-2'}`}>{text(cell) || '\u00a0'}</td>;
             })}
           </tr>)}</tbody>
         </table>

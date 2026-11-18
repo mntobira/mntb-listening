@@ -6,6 +6,7 @@ import { QuestionFigure } from '../QuestionFigure';
 import { ListeningAudioPlayer } from '../ListeningAudioPlayer';
 import { getFigureNumber } from '../../utils/figureNumbering';
 import { buildSubQuestionList, isSubQuestionListRedundant, extractInlineQuestionRows, extractListeningQuestionRows, cleanQuestionText, findSubQuestionSentence } from '../../utils/questionDisplay';
+import { splitDialogueTurns } from './helpers';
 import type { Problem } from '../../types/curriculum';
 import type { ResultPage } from './explanationLogic';
 
@@ -30,17 +31,32 @@ export interface ProblemStatementProps {
   handleSaveNote: (question: Problem, index: number) => void;
   reorderMobile: boolean;
   isEnglishChapter: boolean;
+  noMath?: boolean;
   figureNumberMap: Record<string, number>;
   // このリポジトリは @types/react を導入していないため、JSX の key が
   // props として型チェックされる（ExplanationBody.tsx と同じ書き方）。
   key?: React.Key;
 }
 
-export function ProblemStatement({ question, qIndex, scorePercentage, singleQuestionIndex, rangeOffset, pagerOn, resultPages, safeResultPage, savingNote, handleSaveNote, reorderMobile, isEnglishChapter, figureNumberMap }: ProblemStatementProps) {
+export function ProblemStatement({ question, qIndex, scorePercentage, singleQuestionIndex, rangeOffset, pagerOn, resultPages, safeResultPage, savingNote, handleSaveNote, reorderMobile, isEnglishChapter, noMath, figureNumberMap }: ProblemStatementProps) {
+  const fmtOpts = { prose: isEnglishChapter, noMath };
+  const renderBlankAwareEnglish = (raw: string) => {
+    const parts = raw.split(/(\(\s*\)|_{3,})/);
+    if (parts.length <= 1) return formatText(raw, [], fmtOpts);
+    return (
+      <>
+        {parts.map((part, i) => (
+          /^(?:\(\s*\)|_{3,})$/.test(part)
+            ? <span key={i} className="ex-inline-blank" aria-label="空所" />
+            : <React.Fragment key={i}>{formatText(part, [], fmtOpts)}</React.Fragment>
+        ))}
+      </>
+    );
+  };
   return (
                   <div className="space-y-4 md:space-y-6">
                     {singleQuestionIndex === undefined && (
-                      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${'border-gray-200'}`}>
+                      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${'border-[#E6DCCB]'}`}>
                         <div className="flex items-center gap-3">
                           <div className={`font-bold px-3 py-1 rounded-full text-xs md:text-sm shadow-sm border ${'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
                             Q{(singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1}
@@ -52,7 +68,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                         <div className="flex items-center gap-4">
                           <button
                             onClick={(e) => { e.stopPropagation(); handleSaveNote(question, qIndex); }}
-                            className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-colors border ${savingNote[question.id] ? ('bg-gray-100 text-gray-500 border-gray-200') : ('bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100')}`}
+                            className={`ex-save-btn flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${savingNote[question.id] ? ('bg-[#F6EFE2] text-[#7A6A4C] border-[#E3D9C8]') : ('bg-[#FFF8DF] text-[#8A5A00] border-[#EAD07A] hover:bg-[#FFF2C2]')}`}
                             disabled={savingNote[question.id]}
                           >
                             <Save size={14} />
@@ -75,8 +91,8 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                       // スマホの1問ごとの答え合わせ：枠なし・演習画面と同じ文字サイズ
                       //（親ペインの text-[15px] leading-[1.85] を継承）。
                       ? ''
-                      : 'p-4 rounded-lg border text-sm md:text-base leading-relaxed'} ${
-                      (reorderMobile ? 'text-gray-800' : 'bg-white border-gray-200 text-gray-800')
+                      : 'ex-problem-card p-4 rounded-2xl border text-sm md:text-base leading-relaxed'} ${
+                      (reorderMobile ? 'text-gray-800' : 'text-gray-800')
                     }`}>
                       {/* ★英語リスニング：復習用の音源を問題文欄に置く。
                           採点直後の画面なので、「聞き取れなかった箇所を
@@ -188,7 +204,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                                     {row.marker}
                                   </span>
                                   <span className="min-w-0 whitespace-pre-line break-words [overflow-wrap:anywhere]">
-                                    {formatText(sentence || row.body, [], { prose: true })}
+                                    {formatText(sentence || row.body, [], { prose: true, noMath })}
                                   </span>
                                 </li>
                                 );
@@ -196,15 +212,30 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                             </ul>
                           );
                         }
+                        const cleaned = cleanQuestionText(question.text);
+                        const dialogue = isEnglishChapter ? splitDialogueTurns(cleaned) : null;
+                        if (dialogue) {
+                          return (
+                            <ul className="ex-dialogue-list">
+                              {dialogue.map((turn, tIdx) => (
+                                <li key={tIdx} className="ex-dialogue-turn" lang="en">
+                                  <span className="ex-speaker-chip" aria-label={`話者 ${turn.speaker}`}>{turn.speaker}</span>
+                                  <span className="ex-dialogue-text">{renderBlankAwareEnglish(turn.text)}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }
                         const inline = reorderMobile
-                          ? extractInlineQuestionRows(cleanQuestionText(question.text))
+                          ? extractInlineQuestionRows(cleaned)
                           : null;
                         if (!inline) {
                           return (
                             <ExplanationBody
-                              text={cleanQuestionText(question.text)}
+                              text={cleaned}
                               tone={'light'}
                               prose={isEnglishChapter}
+                              noMath={noMath}
                             />
                           );
                         }
@@ -215,6 +246,7 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                                 text={inline.lead}
                                 tone={'light'}
                                 prose={isEnglishChapter}
+                                noMath={noMath}
                               />
                             )}
                             {/* grid ではなく flex-wrap（想定より長い項目が来ても
@@ -227,11 +259,11 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                                 >
                                   {row.marker && (
                                     <span className="shrink-0 font-bold text-gray-500">
-                                      {formatText(row.marker)}
+                                      {formatText(row.marker, [], fmtOpts)}
                                     </span>
                                   )}
                                   {/* 英語は散文として組む（化学式扱いのセリフ体を避ける） */}
-                                  <span className="min-w-0">{formatText(row.body, [], { prose: isEnglishChapter })}</span>
+                                  <span className="min-w-0">{formatText(row.body, [], fmtOpts)}</span>
                                 </li>
                               ))}
                             </ul>
@@ -287,11 +319,11 @@ export function ProblemStatement({ question, qIndex, scorePercentage, singleQues
                                     <span className={`shrink-0 font-bold text-xs px-2 py-0.5 rounded-md border mt-0.5 ${
                                       'bg-gray-50 text-gray-600 border-gray-200'
                                     }`}>
-                                      {formatText(item.marker)}
+                                      {formatText(item.marker, [], fmtOpts)}
                                     </span>
                                   )}
                                   <span className="min-w-0 leading-relaxed">
-                                    {formatText(item.body, [], { prose: isEnglishChapter })}
+                                    {formatText(item.body, [], fmtOpts)}
                                   </span>
                                 </li>
                               ))}

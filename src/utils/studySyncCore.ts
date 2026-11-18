@@ -81,16 +81,19 @@ export type SolvedMap = Record<string, number>;
  *
  * 可換かつ結合的なので、マージの順序や回数に結果が依存しない。
  */
+const isSafeMapKey = (key: string): boolean =>
+  Boolean(key) && key !== '__proto__' && key !== 'constructor' && key !== 'prototype' && key.length <= 256;
+
 export function mergeSolvedMaps(a: SolvedMap | null | undefined, b: SolvedMap | null | undefined): SolvedMap {
   const result: SolvedMap = {};
 
   const absorb = (source: SolvedMap | null | undefined) => {
     if (!source || typeof source !== 'object') return;
     Object.keys(source).forEach((key) => {
-      if (!key) return;
+      if (!isSafeMapKey(key)) return;
       const raw = Number((source as Record<string, unknown>)[key]);
       const time = Number.isFinite(raw) && raw > 0 ? raw : 0;
-      const current = result[key];
+      const current = Object.prototype.hasOwnProperty.call(result, key) ? result[key] : undefined;
       if (current === undefined) {
         result[key] = time;
         return;

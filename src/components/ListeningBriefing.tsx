@@ -58,15 +58,15 @@ export function ListeningBriefing({
   const difficulty = extractListeningDifficulty(lead);
   const brief = parseListeningBriefing(lead);
   return (
-    <div className="fixed inset-0 w-full flex flex-col bg-gray-50 overflow-hidden z-40">
+    <div className="fixed inset-0 w-full flex flex-col quiz-shell-paper overflow-hidden z-40">
       {onReturnToBattle && <button type="button" onClick={onReturnToBattle} className="min-h-11 shrink-0 bg-blue-50 px-3 pt-[calc(0.5rem+env(safe-area-inset-top,0px))] pb-2 text-sm font-bold text-blue-900 border-b border-blue-200">バトル結果・解説に戻る</button>}
       {/* ヘッダー（戻る＝単元選択へ） */}
-      <div className={`flex-none flex items-center gap-2 md:gap-4 px-3 pb-3 md:px-4 md:pb-4 ${onReturnToBattle ? 'pt-3 md:pt-4' : 'pt-[calc(0.75rem+env(safe-area-inset-top,0px))] md:pt-[calc(1rem+env(safe-area-inset-top,0px))]'} bg-white border-b border-gray-200`}>
+      <div className={`flex-none flex items-center gap-2 md:gap-4 px-3 pb-3 md:px-4 md:pb-4 ${onReturnToBattle ? 'pt-3 md:pt-4' : 'pt-[calc(0.75rem+env(safe-area-inset-top,0px))] md:pt-[calc(1rem+env(safe-area-inset-top,0px))]'} bg-[#FFFAF0] border-b border-[#EADFC8] shadow-[0_2px_8px_rgba(60,42,18,0.05)]`}>
         <button
           onClick={handleExit}
           title="単元選択に戻る"
           aria-label="単元選択に戻る"
-          className="flex items-center justify-center p-1.5 md:p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors shrink-0"
+          className="flex items-center justify-center p-1.5 md:p-2 rounded-full hover:bg-[#F3EBDC] active:translate-y-px text-[#5A4E3C] transition-all shrink-0 cursor-pointer"
         >
           <ArrowLeft size={18} className="md:w-5 md:h-5" aria-hidden="true" />
         </button>
@@ -74,7 +74,7 @@ export function ListeningBriefing({
           <h2 className="text-sm md:text-xl font-handwriting text-[#2C3E50] font-bold truncate">
             {chapter.abstractTitle}
           </h2>
-          <div className="text-xs md:text-xs text-gray-500 font-bold mt-0.5">
+          <div className="text-xs md:text-xs text-[#7A6A4C] font-bold mt-0.5">
             {mode === 'mini_test' ? '小テスト' : '演習問題'}
           </div>
         </div>
@@ -97,7 +97,7 @@ export function ListeningBriefing({
           </div>
           <h3 className="mb-1.5 text-[17px] font-bold leading-snug text-[#1B2631]">{brief.title}</h3>
           {brief.paragraphs.map((p, i) => <p key={i} className="mb-1.5 text-[15px] leading-[1.65]">{p}</p>)}
-          {brief.situations.length > 0 && <section aria-label="状況" className="mt-2 rounded-xl bg-[#F4F8FB] px-3 py-1.5">
+          {brief.situations.length > 0 && <section aria-label="状況" className="mt-2 rounded-xl border border-[#DCE8F2] bg-[#F4F8FB] px-3 py-1.5">
             <h4 className="mb-1 text-sm font-bold text-[#2C3E50]">状況</h4>
             <ul className="space-y-1">
               {brief.situations.map((s, i) => <li key={i} className="text-[16px] leading-[1.6]">
@@ -114,11 +114,11 @@ export function ListeningBriefing({
       </div>
 
       {/* 開始ボタン（下部固定・親指で押しやすい位置） */}
-      <div className="flex-none bg-white border-t border-gray-200 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+      <div className="flex-none quiz-floating-bar border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
         <div className="max-w-2xl mx-auto">
           <button
             onClick={() => setShowingBriefing(false)}
-            className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold tracking-wider text-sm bg-[#2C3E50] text-white active:bg-[#1B2631] hover:bg-[#1B2631] shadow-md transition-all duration-200 cursor-pointer"
+            className="quiz-primary-cta w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold tracking-wider text-sm bg-[#2C3E50] text-white active:bg-[#1B2631] hover:bg-[#1B2631] cursor-pointer"
           >
             <span>問題をはじめる</span>
             <ChevronRight size={16} className="stroke-[2.5]" />

@@ -41,15 +41,17 @@ export function StudyCard({ icon, title, description, meta, progress, primary, b
 }) {
   const Icon = ICONS[icon];
   const pct = progress && progress.total > 0 ? Math.round((progress.solved / progress.total) * 100) : null;
+  const badgeKind = badge === 'NEW' ? 'new' : badge === '前回' ? 'resume' : undefined;
   return (
-    <button type="button" className="sc-card" data-primary={primary || undefined} data-study-card={dataId} onClick={onClick}>
+    <button type="button" className="sc-card" data-primary={primary || undefined} data-resume={badge === '前回' || undefined} data-study-card={dataId} onClick={onClick}>
       <span className="sc-icon"><Icon size={24} aria-hidden /></span>
       <span className="sc-body">
-        <span className="sc-title"><strong>{title}</strong>{badge && <em data-badge={badge === 'NEW' ? 'new' : undefined}>{badge}</em>}</span>
+        <span className="sc-title"><strong>{title}</strong>{badge && <em data-badge={badgeKind}>{badge}</em>}</span>
         <span className="sc-desc">{description}</span>
         {(meta || pct !== null) && <span className="sc-meta">
           {meta && <small>{meta}</small>}
-          {pct !== null && <span className="sc-progress" role="progressbar" aria-label={`${title}の進捗`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>
+          {pct !== null && progress && <span className="sc-progress" role="progressbar" aria-label={`${title}の進捗 ${progress.solved}/${progress.total}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>
+            <span className="sc-count">{progress.solved}/{progress.total}</span>
             <span className="sc-track"><i style={{ width: `${pct}%` }} /></span><b>{pct}%</b>
           </span>}
         </span>}
@@ -91,12 +93,22 @@ export function StudyCatalog({ subjectId, onSubject, onContent, onBack, progress
         {/* 2026-10-28：とびら君の吹き出しの右に置く小さな入口（TOEIC）。カードの列は動かさない */}
         {subject.contents.filter(c => c.section === 'spotlight').map(c => {
           const Icon = ICONS[c.icon];
-          return <button key={c.id} type="button" className="sc-spot" data-study-card={c.id} onClick={() => onContent(c)}
+          const isResume = lastContentId === c.id;
+          return <button key={c.id} type="button" className="sc-spot" data-study-card={c.id} data-resume={isResume || undefined} onClick={() => onContent(c)}
             aria-label={`${c.title} ${c.description}（${c.meta}）を開く`}>
             <span className="sc-spot-icon"><Icon size={18} aria-hidden /></span>
-            <span className="sc-spot-body"><strong>{c.title}</strong><small>{c.description}</small></span>
-            {c.badge && lastContentId !== c.id && <em data-badge={c.badge === 'NEW' ? 'new' : undefined}>{c.badge}</em>}
-            {lastContentId === c.id && <em>前回</em>}
+            <span className="sc-spot-body">
+              <span className="sc-spot-head">
+                <strong>
+                  {c.id === 'english_toeic'
+                    ? <><span className="sc-spot-title-full">{c.title}</span><span className="sc-spot-title-short">TOEIC®</span></>
+                    : c.title}
+                </strong>
+                {c.badge && !isResume && <em data-badge={c.badge === 'NEW' ? 'new' : undefined}>{c.badge}</em>}
+                {isResume && <em data-badge="resume">前回</em>}
+              </span>
+              <small>{c.description}</small>
+            </span>
           </button>;
         })}
       </div>}

@@ -18,7 +18,7 @@
  * 押した瞬間にトランザクションで保存する。失敗したら画面に知らせる。
  */
 
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { ArrowLeft, Award, BarChart3, Coins, Shirt, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import {
@@ -38,11 +38,12 @@ import {
   INK_SUB,
   LINE,
   } from './BattleParts';
-import { GachaRoom } from '../../components/GachaRoom';
 import { useGrowthProgress } from '../../hooks/useGrowthProgress';
 import { GrowthAvatar, LevelBar, NextGoals, StatCard, TitleChip } from './GrowthParts';
 import { logRejection } from '../../utils/reportError';
 import { OutfitTab, BadgesTab, StatsTab } from './BattleProfileTabs';
+
+const LazyGachaRoom = lazy(() => import('../../components/GachaRoom').then((m) => ({ default: m.GachaRoom })));
 import type { Runner } from './BattleProfileTabs';
 
 
@@ -171,7 +172,7 @@ export function BattleProfile({ onBack, initialTab = 'outfit', standalone = fals
         ))}
       </nav>}
 
-      {tab === 'gacha' && <GachaRoom onBack={() => setTab('outfit')} onMissions={onMissions || onBack} />}
+      {tab === 'gacha' && <Suspense fallback={null}><LazyGachaRoom onBack={() => setTab('outfit')} onMissions={onMissions || onBack} /></Suspense>}
       {tab === 'outfit' && <OutfitTab progress={progress} busy={busy} run={run} setNotice={setNotice} />}
       {tab === 'badges' && <BadgesTab progress={progress} busy={busy} run={run} />}
       {tab === 'stats' && <StatsTab progress={progress} />}

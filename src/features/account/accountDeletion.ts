@@ -12,7 +12,7 @@
  */
 import { deleteUser, type User } from 'firebase/auth';
 import { db } from '../../firebase';
-import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from '../../utils/firestoreMetered';
+import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from '../../utils/firestoreMetered';
 import { fetchMyMemberships, leaveClassroom } from '../../utils/classroom';
 import { STUDY_PROGRESS_COLLECTION } from '../../utils/studySync';
 import { USER_DATA_COLLECTION } from '../../utils/userDataSync';
@@ -66,12 +66,23 @@ export async function deleteMyCloudData(uid: string): Promise<void> {
   } catch (error) { reportError('account.delete.friendCode', error); }
   await quiet(deleteDoc(doc(db, 'friend_profiles', uid)));
 
-  // ランキングは削除できない（ルール）ので、名前とアイコンを外して個人が分からないようにする
+  // ランキング・レート表は削除できない（ルール）ので、既存行がある場合のみ名前とアイコンを即座に匿名化する
   const ANON = '退会したユーザー';
-  await quiet(setDoc(doc(db, 'leaderboard_total', uid), { nickname: ANON, photoURL: '', updatedAt: serverTimestamp() }, { merge: true }));
+  try {
+    const totalRef = doc(db, 'leaderboard_total', uid);
+    if ((await getDoc(totalRef)).exists()) {
+      await quiet(updateDoc(totalRef, { nickname: ANON, photoURL: '', updatedAt: serverTimestamp() }));
+    }
+  } catch (error) { reportError('account.delete.leaderboardTotal', error); }
+  try {
+    const rankRef = doc(db, 'battle_ranking', uid);
+    if ((await getDoc(rankRef)).exists()) {
+      await quiet(updateDoc(rankRef, { nickname: ANON, photoURL: '', updatedAt: serverTimestamp() }));
+    }
+  } catch (error) { reportError('account.delete.battleRanking', error); }
   try {
     const rows = await getDocs(query(collection(db, 'leaderboard_chapter'), where('uid', '==', uid)));
-    for (const r of rows.docs) await quiet(setDoc(r.ref, { nickname: ANON, photoURL: '' }, { merge: true }));
+    for (const r of rows.docs) await quiet(updateDoc(r.ref, { nickname: ANON, photoURL: '', playedAt: serverTimestamp() }));
   } catch (error) { reportError('account.delete.leaderboardChapter', error); }
 
   try {
@@ -89,6 +100,17 @@ export function clearLocalData(uid: string, store: Storage | null = safeStorage(
     if (k && (k.includes(uid) || k.startsWith('mntb_'))) keys.push(k);
   }
   keys.forEach((k) => store.removeItem(k));
+  // 共通マップ（user_registry_last_sync_v1）内に残る uid キーも除去する
+  try {
+    const rawSync = store.getItem('user_registry_last_sync_v1');
+    if (rawSync) {
+      const parsed = JSON.parse(rawSync) as Record<string, unknown>;
+      if (parsed && typeof parsed === 'object' && uid in parsed) {
+        delete parsed[uid];
+        store.setItem('user_registry_last_sync_v1', JSON.stringify(parsed));
+      }
+    }
+  } catch { /* ignore */ }
   return keys.length;
 }
 

@@ -170,7 +170,7 @@ export function AnswerPane({
         解答欄が小さなチップの集まりで、余白を詰めると窮屈になるため。
         md 以上（PC）は md:p-8 が後ろで上書きするので影響しない。 */}
     <div ref={answerScrollRef} data-listening-answer-pane={listeningMaterialsMobile || undefined}
-      className={`lg:w-[42%] min-h-0 overflow-y-auto bg-gray-50/50 ${
+      className={`lg:w-[42%] min-h-0 overflow-y-auto quiz-answer-pane ${
         listeningMobileSplit ? 'px-2' : 'px-4'
       } md:p-8 ${
         /*
@@ -211,12 +211,12 @@ export function AnswerPane({
             各カードの先頭に (ア) や 問2 のマーカーがあるので、
             見出しがなくても「ここが解答欄」と分かる。浮いた縦幅は
             選択肢・入力欄の表示に回す。PC は余白が十分なので従来どおり。 */}
-        <h3 className="hidden lg:block font-bold text-gray-400 text-sm md:text-base mb-2 md:mb-4">解答入力</h3>
+        <h3 className="hidden lg:block font-bold text-[#7A6A4C] text-sm md:text-base mb-2 md:mb-4">解答入力</h3>
         {/* スマホ：解答欄ページャー（要望：スクロールをやめ、1設問ずつ固定表示。
             左右の黒い小さな矢印で表示する解答欄を切り替える）。
             位置表示（n / 全体）で「あといくつ解答欄があるか」も分かるようにする。 */}
         {!isDesktop && !listeningMaterialsMobile && mobileAnswerSubs.length > 1 && (
-          <div className="text-center text-xs font-bold text-gray-400 tracking-widest select-none -mb-1">
+          <div className="text-center text-xs font-bold text-[#7A6A4C] tracking-widest tabular-nums select-none -mb-1">
             {safeMobileAnsIdx + 1} / {mobileAnswerSubs.length}
           </div>
         )}
@@ -264,7 +264,7 @@ export function AnswerPane({
             いま見ている小問の 問N（＋空所の見出し）をこのバーの左に置き、
             カード側の札はスマホでは出さない（重複を避ける）。
           */
-          <nav aria-label="小問の切り替え" className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b bg-gray-50 py-0.5">
+          <nav aria-label="小問の切り替え" className="quiz-subnav-sticky sticky top-0 z-20 flex items-center justify-between gap-2 border-b py-0.5">
             <span className="flex min-w-0 items-baseline gap-1.5 text-xs font-bold text-gray-600">
               {(() => {
                 const cur = mobileAnswerSubs[safeMobileAnsIdx]?.sq;
@@ -289,9 +289,9 @@ export function AnswerPane({
             </span>
             <div className="flex shrink-0 gap-1">
               <button type="button" aria-label="前の解答欄へ" disabled={safeMobileAnsIdx === 0}
-                onClick={() => goMobileAns(-1)} className="min-h-11 min-w-11 rounded border bg-white px-2 text-xs font-bold disabled:opacity-30">前の小問</button>
+                onClick={() => goMobileAns(-1)} className="quiz-subnav-btn min-h-11 min-w-11 rounded border px-2 text-xs font-bold disabled:opacity-30 cursor-pointer">前の小問</button>
               <button type="button" aria-label="次の解答欄へ" disabled={safeMobileAnsIdx >= mobileAnswerSubs.length - 1}
-                onClick={() => goMobileAns(1)} className="min-h-11 min-w-11 rounded border bg-white px-2 text-xs font-bold disabled:opacity-30">次の小問</button>
+                onClick={() => goMobileAns(1)} className="quiz-subnav-btn min-h-11 min-w-11 rounded border px-2 text-xs font-bold disabled:opacity-30 cursor-pointer">次の小問</button>
             </div>
           </nav>
         )}
@@ -326,8 +326,8 @@ export function AnswerPane({
         {renderedAnswerGroups.map((g: AnswerGroup, gIdx: number) => {
           if (g.type === 'group') {
             return (
-              <div key={`group-${gIdx}`} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 hover:border-[#A9CCE3]/50 transition-all duration-250 flex flex-col gap-4">
-                <span className="font-bold text-[#2C3E50] text-sm text-left bg-blue-50/50 border border-[#A9CCE3]/30 py-2.5 px-4 rounded-xl leading-relaxed shadow-xs w-full block">
+              <div key={`group-${gIdx}`} className="quiz-answer-card p-5 rounded-2xl border border-[#E6DCCB] hover:border-[#A9CCE3]/70 transition-all duration-250 flex flex-col gap-4">
+                <span className="font-bold text-[#2C3E50] text-sm text-left bg-[#EEF5FA] border border-[#A9CCE3]/40 py-2.5 px-4 rounded-xl leading-relaxed shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] w-full block">
                   {formatText(g.groupName)}
                 </span>
 
@@ -410,7 +410,7 @@ export function AnswerPane({
           // そうしないと解答欄に "(1)" が並び、今どれを入力中か分からなくなる。
           const sqMarker = answerCardMarker(sq, sqAllIndex < 0 ? gIdx : sqAllIndex, currentQuestion);
           return (
-            <div key={sq.id} className={`flex flex-col gap-4 bg-white rounded-2xl shadow-sm border transition-all duration-250 ${
+            <div key={sq.id} className={`quiz-answer-card flex flex-col gap-4 rounded-2xl border transition-all duration-250 ${
               // 図が無い大問はカード自身も余り高さを受け取り、
               // 中の選択肢を伸ばせるようにする（内側余白も少し詰める）。
               /* ★B-1：カード内側も詰めて本文幅を稼ぐ★
@@ -454,7 +454,7 @@ export function AnswerPane({
                   ? 'px-3 py-3.5'
                   : 'p-5'
             } ${
-              isFocusedCard ? 'border-[#A9CCE3] ring-2 ring-[#A9CCE3]/30' : 'border-gray-200 hover:border-[#A9CCE3]/50'
+              isFocusedCard ? 'quiz-answer-card-focused border-[#A9CCE3]' : 'border-[#E6DCCB] hover:border-[#A9CCE3]/65'
             }`}>
               {/*
                 ★リスニング：この解答カードには「解答」だけを置く
@@ -482,7 +482,7 @@ export function AnswerPane({
                     化学など（listeningUnified=false）は (ア)/(1) の目印が
                     入力に必須なので従来どおり表示する。 */}
                 {!listeningUnified && (
-                  <span className={`font-bold text-[#2C3E50] text-sm text-left bg-blue-50/45 border border-[#A9CCE3]/25 py-2 px-4 rounded-xl leading-relaxed shadow-xs w-fit block ${questionNeedsMathPalette ? 'font-math math-content' : ''}`}>
+                  <span className={`font-bold text-[#2C3E50] text-sm text-left bg-[#EEF5FA] border border-[#A9CCE3]/35 py-2 px-4 rounded-xl leading-relaxed shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] w-fit block ${questionNeedsMathPalette ? 'font-math math-content' : ''}`}>
                     {formatText(sqMarker)}
                   </span>
                 )}
@@ -536,7 +536,7 @@ export function AnswerPane({
                             onFocus={(e) => { setFocusedSubId(sq.id); handleInputFocusScroll(e); }}
                             placeholder="解答を入力...（改行可）"
                             rows={3}
-                            className="w-full pl-9 pr-4 py-2 md:py-2.5 text-[16px] md:text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern resize-none bg-gray-50 focus:bg-white leading-relaxed"
+                            className="w-full pl-9 pr-4 py-2 md:py-2.5 text-[16px] md:text-sm rounded-xl border border-[#D8CCB8] focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern resize-none bg-[#FAF5EB] focus:bg-white shadow-[inset_0_1px_2px_rgba(60,42,18,0.05)] leading-relaxed"
                           />
                         </div>
                       </>
@@ -557,7 +557,7 @@ export function AnswerPane({
                             onFocus={(e) => { setFocusedSubId(sq.id); handleInputFocusScroll(e); }}
                             placeholder="解答を入力...（改行可）"
                             rows={3}
-                            className="w-full pl-9 pr-4 py-3 text-[16px] rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern resize-none bg-gray-50 focus:bg-white leading-relaxed"
+                            className="w-full pl-9 pr-4 py-3 text-[16px] rounded-xl border border-[#D8CCB8] focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern resize-none bg-[#FAF5EB] focus:bg-white shadow-[inset_0_1px_2px_rgba(60,42,18,0.05)] leading-relaxed"
                           />
                         </div>
                       </>
@@ -576,7 +576,7 @@ export function AnswerPane({
                             onChange={(e) => handleTextChange(sq.id, e.target.value)}
                             onFocus={(e) => { setFocusedSubId(sq.id); handleInputFocusScroll(e); }}
                             placeholder="解答を入力..."
-                            className="w-full pl-9 pr-4 py-2.5 md:py-2.5 text-[16px] md:text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern bg-gray-50 focus:bg-white shadow-sm leading-relaxed"
+                            className="w-full pl-9 pr-4 py-2.5 md:py-2.5 text-[16px] md:text-sm rounded-xl border border-[#D8CCB8] focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern bg-[#FAF5EB] focus:bg-white shadow-[inset_0_1px_2px_rgba(60,42,18,0.05)] leading-relaxed"
                           />
                         </div>
                       </>
@@ -596,7 +596,7 @@ export function AnswerPane({
                             onKeyDown={handleMobileCardKeyDown(sq)}
                             enterKeyHint={isLastNavSub(sq) ? 'done' : 'next'}
                             placeholder="解答を入力..."
-                            className="w-full pl-9 pr-4 py-3 min-h-[3.25rem] text-[16px] rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern bg-gray-50 focus:bg-white shadow-sm leading-relaxed"
+                            className="w-full pl-9 pr-4 py-3 min-h-[3.25rem] text-[16px] rounded-xl border border-[#D8CCB8] focus:ring-2 focus:ring-[#A9CCE3] focus:border-[#A9CCE3] outline-none transition-all font-modern bg-[#FAF5EB] focus:bg-white shadow-[inset_0_1px_2px_rgba(60,42,18,0.05)] leading-relaxed"
                           />
                         </div>
                       </>
@@ -627,7 +627,7 @@ export function AnswerPane({
             （PC版のみ：解答欄カラムの末尾にインライン表示。
             　スマホ版では下部固定ナビゲーションバーに置き換える＝要件1） */}
         {isDesktop && (
-          <div className="pt-6 border-t border-gray-200/60 flex items-center justify-between gap-3">
+          <div className="pt-6 border-t border-[#E6DCCB]/80 flex items-center justify-between gap-3">
             <button
               onClick={handlePrevious}
               disabled={!canGoPrevious}
@@ -635,15 +635,15 @@ export function AnswerPane({
               aria-label="前の問題へ"
               className={`flex h-11 w-11 items-center justify-center rounded-xl font-bold transition-all duration-200 border-2 shrink-0 cursor-pointer
                 ${!canGoPrevious 
-                  ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50/50' 
-                  : 'border-[#A9CCE3] text-[#A9CCE3] hover:bg-[#A9CCE3] hover:text-white bg-white shadow-sm'}`}
+                  ? 'border-[#E6DCCB] text-[#C8BBA4] cursor-not-allowed bg-[#F6EFE2]/60' 
+                  : 'quiz-secondary-nav border-[#8FB8D6] text-[#2C5E8A] hover:bg-[#E8F1F8] bg-white'}`}
             >
               <ChevronLeft size={16} className="stroke-[2.5]" aria-hidden="true" />
             </button>
 
             <button
               onClick={handleNext}
-              className="flex shadow-md hover:shadow-lg hover:-translate-y-0.5 items-center justify-center gap-1.5 px-5 min-h-11 rounded-xl font-bold tracking-wider transition-all duration-300 text-xs md:text-sm bg-[#2C3E50] text-white hover:bg-[#1B2631] flex-1 sm:flex-none sm:w-[180px] cursor-pointer"
+              className="quiz-primary-cta flex items-center justify-center gap-1.5 px-5 min-h-11 rounded-xl font-bold tracking-wider text-xs md:text-sm bg-[#2C3E50] text-white hover:bg-[#1B2631] flex-1 sm:flex-none sm:w-[180px] cursor-pointer"
             >
               <span>解答と解説を見る</span>
               <ChevronRight size={14} className="stroke-[2.5]" />

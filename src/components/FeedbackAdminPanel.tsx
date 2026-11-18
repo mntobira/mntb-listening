@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { auth } from '../firebase';
 import { UsageMeterPanel } from './UsageMeterPanel';
+import { OutcomeAdminPanel } from './OutcomeAdminPanel';
 import {
   fetchFeedbackList,
   sendFeedbackReply,
@@ -175,7 +176,8 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
           </div>
         )}
 
-        {/* Firebase 使用量（運営専用） */}
+        {/* アプリ全体の学習成果指標 ＋ Firebase 使用量（運営専用） */}
+        {admin && <OutcomeAdminPanel />}
         {admin && <UsageMeterPanel />}
 
         {/* 絞り込みタブ */}

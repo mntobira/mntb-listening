@@ -38,6 +38,7 @@
 
 import { mergeReviewLists, mergeSolvedMaps, type SolvedMap } from './studySyncCore';
 import { mergeStores as mergeManualLog } from '../features/studylog/manualLogCore';
+import { isOutcomesStore, mergeOutcomesStores, OUTCOMES_KEY, type LearningOutcomesStore } from './learningOutcomes';
 
 /** 読み書きに使う最小の Storage（テストでは Map で代用できる） */
 export interface KV {
@@ -345,6 +346,9 @@ export const SYNC_SECTIONS: readonly SyncSection[] = [
   jsonSection('manualLog', uid => 'manual_log_v1_' + enc(uid),
     (l, r) => (l == null ? r : r == null ? l : mergeManualLog(l, r)),
     v => isObj(v) && v.version === 1 && Array.isArray(v.records) && Array.isArray(v.materials)),
+  jsonSection('outcomes', OUTCOMES_KEY,
+    (l, r, b) => (l == null ? r : r == null ? l : mergeOutcomesStores(l as LearningOutcomesStore, r as LearningOutcomesStore, b as LearningOutcomesStore | null) as unknown as Json),
+    isOutcomesStore),
   {
     // 連続日数は2つのキー（数と日付）に分かれているので、1つにまとめて扱う
     id: 'streak',

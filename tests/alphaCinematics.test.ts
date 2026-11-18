@@ -63,10 +63,25 @@ describe('2026-11-15 モンスト風OPムービー（②横/③縦）＋ ①高�
     expect(launch).toContain('data-launch-op');
     expect(launch).toContain('タップしてスキップ');
     expect(launch).toContain('TitleBgmMuteButton');
+    // ループ属性を持たず1回完結再生し、0.00s同期再生を行うことを保証
+    expect(launch).not.toMatch(/<audio[^>]*\bloop\b/);
+    expect(launch).toContain('startBgmFromBeginning');
+    expect(launch).toContain('onEnded={markTitleBgmEnded}');
+
+    const bgmControl = readFileSync('src/components/TitleBgmControl.tsx', 'utf8');
+    expect(bgmControl).toContain('audio.loop = false');
+    expect(bgmControl).toContain('endedOnceRef');
+    expect(bgmControl).toContain('audio.currentTime = 0');
 
     const bgmFile = resolve('public', '.' + TITLE_SCREEN_BGM_SRC);
     expect(existsSync(bgmFile)).toBe(true);
     expect(statSync(bgmFile).size).toBeLessThan(500_000);
+    const bgmInfo = probe(bgmFile);
+    if (bgmInfo?.format?.duration) {
+      const dur = Number(bgmInfo.format.duration);
+      expect(dur).toBeGreaterThanOrEqual(14.5);
+      expect(dur).toBeLessThanOrEqual(15.5);
+    }
     expect(TITLE_SCREEN_BGM_SUBTLE_GAIN).toBeGreaterThan(0.1);
     expect(TITLE_SCREEN_BGM_SUBTLE_GAIN).toBeLessThanOrEqual(0.5);
   });

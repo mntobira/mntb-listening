@@ -117,3 +117,53 @@
   .game-home-countdown > div { padding: 0 6px; gap: 2px; }
   .game-home-countdown dd b { font-size: 14px; }
 }
+
+/* ==========================================================================
+   2026-11-16 UI/UX プロフェッショナル仕上げ
+   - 「今日のボーナス」ラベルが 360px 端末で「今日のボーナ / ス」と1文字折れしないよう nowrap
+   - モバイル HUD 下段に連続学習ピル（.home-mobile-streak）を横並び配置（PC では STUDY DESK にあるため非表示）
+   - PC（1100px以上）では左サイドバーにロゴがあるため、中央ヘッダーの重複 mntb ロゴを隠して挨拶とカウントダウンをすっきり見せる
+   ========================================================================== */
+.game-home .game-hud-bonus .game-hud-label { white-space: nowrap; }
+.game-home .game-hud-wallet .game-hud-label { white-space: nowrap; }
+@media (max-width: 390px) {
+  .game-home .game-hud-top { grid-template-columns: 1.24fr 1fr; gap: 6px; }
+  .game-home .game-hud-wallet { padding-inline: 8px; gap: 6px; }
+  .game-home .game-hud-wallet > span { gap: 4px; }
+  .game-home .game-hud-bonus { padding-inline: 7px; gap: 6px; }
+}
+.game-home .game-hud-xp { display: flex; align-items: center; gap: 8px; }
+.game-home .game-hud-xp > :first-child { flex: 1 1 auto; min-width: 0; }
+.game-home .home-mobile-streak {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff4db;
+  border: 1px solid #e6cb8e;
+  color: #7c5619;
+  font: 800 12px/1.3 var(--mt-font-body, inherit);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.game-home .home-mobile-streak-door {
+  display: inline-block;
+  width: 8px;
+  height: 11px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, #f0ae38, #c97f12);
+  box-shadow: inset -1.5px 0 0 #fff3cf;
+}
+.game-home .home-mobile-streak b { font-size: 13px; color: #6d470e; }
+.game-home .home-mobile-streak small { font-size: 12px !important; font-weight: 700; }
+@media (max-width: 340px) {
+  .game-home .home-mobile-streak { padding-inline: 6px; }
+  .game-home .home-mobile-streak-door { display: none; }
+}
+@media (min-width: 1100px) {
+  .game-home .game-home-brand h1 { display: none; }
+  .game-home .game-home-brand .game-home-greeting { font-size: 13px !important; font-weight: 700; color: #5b5247; margin-top: 0; }
+  .game-home .home-mobile-streak { display: none; }
+}

@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { closePdf } from './pdfViewer';
+import { closePdf, isSafeSameOriginPdfPath } from './pdfViewer';
 
 /**
  * PDF の印刷・保存（2026-10-21 ご指摘「PDF が印刷できない」）
@@ -16,7 +16,8 @@ import { closePdf } from './pdfViewer';
 export const isNativeApp = () => Capacitor.isNativePlatform();
 
 async function fetchPdf(url: string): Promise<Blob> {
-  const r = await fetch(url, { cache: 'force-cache' });
+  if (!isSafeSameOriginPdfPath(url)) throw new Error('unsafe pdf url');
+  const r = await fetch(url, { cache: 'force-cache', credentials: 'same-origin' });
   if (!r.ok) throw new Error(`pdf ${r.status}`);
   return r.blob();
 }
@@ -34,7 +35,8 @@ function toBase64(blob: Blob): Promise<string> {
 async function shareNative(url: string, fileName: string, title: string, closeAfter = false): Promise<string> {
   const [{ Filesystem, Directory }, { Share }] = await Promise.all([import('@capacitor/filesystem'), import('@capacitor/share')]);
   const data = await toBase64(await fetchPdf(url));
-  const path = `pdf/${fileName.replace(/[\\/:*?"<>|]+/g, '_')}`;
+  const cleanName = fileName.replace(/[\u0000-\u001F\u007F\\/:*?"<>|]+/g, '_').replace(/^\.+/, '') || 'document.pdf';
+  const path = `pdf/${cleanName}`;
   const res = await Filesystem.writeFile({ path, data, directory: Directory.Cache, recursive: true });
   try {
     await Share.share({ title, files: [res.uri], dialogTitle: '印刷・保存' });

@@ -10,6 +10,8 @@ import { sayWord, prefetchVocabAudioIndex } from './foundationShared';
 import { hasVocabAudio, stopVocabAudio } from '../utils/vocabAudio';
 import { TobiraBuddy } from './TobiraBuddy';
 import { trackEvent } from '../utils/analytics';
+import { recordOutcomeAttempts } from '../utils/learningOutcomes';
+import { schedulePush } from '../utils/studySync';
 
 /**
  * 英単語の4択（2026-10-01 D／2026-10-17 市販の単語アプリと同じ「出題の設定」）
@@ -68,6 +70,18 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
   const pool = prefs.only === 'unlearned' ? list.length - learnedInRange : list.length;
 
   const save = (results: { wordId: string; correct: boolean }[], scope: Scope) => {
+    try {
+      recordOutcomeAttempts(
+        uid,
+        results.map((r) => ({
+          itemKey: `vocab::${r.wordId}`,
+          format: 'vocab_quiz',
+          correct: r.correct,
+          alreadyKnownSeen: scope.kind === 'missed' || mastered.has(r.wordId) || missedSet.has(r.wordId) || known.has(r.wordId),
+        })),
+      );
+      schedulePush();
+    } catch { /* 成果記録の失敗で演習は止めない */ }
     const nextRec = applyQuizResult(rec, results, scopeKey(scope));
     writeQuizRecord(uid, nextRec); setRec(nextRec);
   };

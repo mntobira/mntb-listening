@@ -145,8 +145,8 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
               )}
             </div>
           ) : (
-            <div className="h-full flex flex-col gap-2">
-            <div className="profile-workspace flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 overflow-y-auto md:overflow-hidden no-scrollbar">
+            <div className="h-full min-h-0 flex flex-col gap-2">
+            <div className="profile-workspace flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 overflow-y-auto md:overflow-hidden no-scrollbar pb-10 sm:pb-4">
               <div className="ps-col-app space-y-2 sm:space-y-3 flex flex-col">
                 <h3 className="ps-group-title">サウンド</h3>
                 <section className="ps-sound mt-card" aria-label="サウンド">
@@ -171,12 +171,12 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
                        「見慣れた形」にして心理的なハードルを下げる。 */
                     <div className="space-y-2">
                       {/* 利点の一覧は押したら開く（設定画面を縦に長くしない） */}
-                      <details className="ps-benefits rounded-xl bg-[#FBE0E9]/40 border border-[#F4A9C4]/50 px-2.5">
-                        <summary className="text-xs font-bold text-[#1B2631]">連携するとできること（オンライン対戦・記録の引き継ぎ など）</summary>
+                      <details className="ps-benefits rounded-xl bg-[#E7EEF8]/65 border border-[#C3D4EC] px-2.5">
+                        <summary className="text-xs font-bold text-[#1C2A39]">連携するとできること（オンライン対戦・記録の引き継ぎ など）</summary>
                         <ul className="space-y-1 pb-2.5">
                           {GOOGLE_LINK_BENEFITS.map((benefit) => (
-                            <li key={benefit} className="flex items-start gap-1.5 text-xs text-[#5D6D7E] leading-snug">
-                              <Check size={13} className="shrink-0 mt-[1px] text-[#D9466E]" />
+                            <li key={benefit} className="flex items-start gap-1.5 text-xs text-[#3E4C5B] leading-snug">
+                              <Check size={13} className="shrink-0 mt-[1px] text-[#2458A6]" />
                               <span>{benefit}</span>
                             </li>
                           ))}

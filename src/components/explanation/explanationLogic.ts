@@ -58,18 +58,21 @@ export function computeWeakAreas(baseQuestions: Problem[], answers: Answers) {
     .sort((a, b) => a.percentage - b.percentage);
 }
 
-/** 結果画面のページ送りの一覧（小問1つ＝1ページ。音源1本に複数の小問がある場合はその先頭だけ） */
+/** 結果画面のページ送りの一覧（小問1つ＝1ページ。音源1本に複数の小問がある第4問以降は先頭だけ。TOEIC リスニングは1問ずつ確認できるよう全問並べる） */
 export function buildResultPages(baseQuestions: Problem[], singleQuestionIndex: number | undefined): ResultPage[] {
   if (singleQuestionIndex !== undefined) return [];
   const out: ResultPage[] = [];
   baseQuestions.forEach((q, qIndex: number) => {
+    const isToeicListening = /^q_tpl_\d+_r\d+$/.test(String(q?.id || ''));
     const covered = new Set<string>();
     const tracks = textTracksOf(q);
     (q?.subQuestions || []).forEach((sq) => {
       const id = String(sq?.id);
       if (covered.has(id)) return;
-      const t = tracks.find((tr) => Array.isArray(tr?.subIds) && tr.subIds.map(String).includes(id));
-      if (t) t.subIds?.forEach((x) => covered.add(String(x)));
+      if (!isToeicListening) {
+        const t = tracks.find((tr) => Array.isArray(tr?.subIds) && tr.subIds.map(String).includes(id));
+        if (t) t.subIds?.forEach((x) => covered.add(String(x)));
+      }
       out.push({ qIndex, sq });
     });
   });
@@ -80,21 +83,24 @@ export function buildResultPages(baseQuestions: Problem[], singleQuestionIndex: 
 export function scopeQuestionsToFocus(picked: Problem[], focusSubQuestionId: string | null): Problem[] {
   if (!focusSubQuestionId) return picked;
   return picked.map((q): Problem => {
+    const isToeicListening = /^q_tpl_\d+_r\d+$/.test(String(q?.id || ''));
     const subs: SubQuestion[] = Array.isArray(q?.subQuestions) ? q.subQuestions : [];
     const hasAudio = Array.isArray(q?.audioTracks) && q.audioTracks.length > 0;
     const tracks = textTracksOf(q);
     // ★第4問以降：音源1本に複数の小問（問18〜21 など）★
     //   その音源（subIds）に属する小問は全部まとめて解いたので、解説も全部出す。
-    //   第1〜3問は subIds が無いので従来どおり1問だけ。
+    //   TOEIC リスニングは詳しい解説でも Part 5・6・7 と同じく1問ずつ（1画面）で見せる。
     const focusedTracks = tracks.filter(
       (t) =>
         t?.subId === focusSubQuestionId ||
         (Array.isArray(t?.subIds) && t.subIds.includes(focusSubQuestionId)),
     );
     const focusIds = new Set<string>([focusSubQuestionId]);
-    focusedTracks.forEach((t) => {
-      if (Array.isArray(t?.subIds)) t.subIds.forEach((id) => focusIds.add(String(id)));
-    });
+    if (!isToeicListening) {
+      focusedTracks.forEach((t) => {
+        if (Array.isArray(t?.subIds)) t.subIds.forEach((id) => focusIds.add(String(id)));
+      });
+    }
     const hit = subs.filter((sq) => focusIds.has(String(sq?.id)));
     if (hit.length === 0) return q;
     // ★問題文も「いま見ている問のブロックだけ」に絞る（ご指摘：

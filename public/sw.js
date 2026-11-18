@@ -11,7 +11,7 @@
  *   - Range リクエスト（音声のシーク）はキャッシュしない（206 を保存すると壊れる）。
  */
 // デプロイ済みアセットを確実に取り直すため、UI更新時は世代を上げる。
-const VERSION = 'v7';
+const VERSION = 'v8';
 /** 画面（HTML）の取得をこれ以上待たない（電波が弱いとき白い画面のまま待ち続けないため） */
 const NAV_TIMEOUT_MS = 8000;
 const SHELL = `manatobi-shell-${VERSION}`;
@@ -50,7 +50,11 @@ async function trim(cacheName, max) {
 }
 
 function cacheable(res) {
-  return res && res.ok && res.status === 200 && res.type === 'basic';
+  if (!res || !res.ok || res.status !== 200 || res.type !== 'basic') return false;
+  const cc = (res.headers.get('cache-control') || '').toLowerCase();
+  if (cc.includes('no-store') || cc.includes('private')) return false;
+  if (res.headers.has('set-cookie')) return false;
+  return true;
 }
 
 function fetchWithTimeout(request, ms) {
@@ -108,7 +112,7 @@ self.addEventListener('fetch', (event) => {
   if (request.headers.has('range')) return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.startsWith('/__') || url.pathname.startsWith('/_vercel')) return;
+  if (url.pathname.startsWith('/__') || url.pathname.startsWith('/_vercel') || url.pathname.startsWith('/api/')) return;
   // 学習プリント PDF はサイズが大きいので SW では扱わない（ブラウザの通常キャッシュに任せる）
   if (url.pathname.startsWith('/prints/') && url.pathname.endsWith('.pdf')) return;
   // 英単語の録音の一覧は、届いた録音がすぐ使えるよう SW で古いものを返さない（ブラウザの通常の取得に任せる）。

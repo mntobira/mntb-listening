@@ -178,8 +178,8 @@ export function groupSections(blocks: Block[]): Section[] {
 
 export const boxTone: Record<ExplanationTone, { box: string; heading: string }> = {
   light: {
-    box: 'border-slate-400 bg-slate-50/60',
-    heading: 'text-slate-700',
+    box: 'border-[#B8AEA0] bg-[#FBF7EF]',
+    heading: 'text-[#2C3E50]',
   },
   dark: {
     box: 'border-[#3A506B] bg-[#1C2541]/40',
