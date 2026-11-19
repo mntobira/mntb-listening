@@ -256,7 +256,7 @@ export function LaunchScreen({ onStart }: {
     });
   };
 
-  const [played, setPlayed] = useState(false);
+  const played = useRef(false);
   const [walkReady, setWalkReady] = useState(false);
 
   useEffect(() => {
@@ -265,8 +265,11 @@ export function LaunchScreen({ onStart }: {
     return () => clearTimeout(t);
   }, [phase]);
 
-  const finishIntro = () => setPhase(p => (p === 'intro' ? (played ? 'crossfade' : 'done') : p));
-  const walk = phase === 'done' && !played;
+  const finishIntro = () => {
+    const next = played.current && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'crossfade' : 'done';
+    setPhase(p => (p === 'intro' ? next : p));
+  };
+  const walk = phase === 'done' && !played.current;
 
   useEffect(() => {
     if (gate !== 'title') return;
@@ -359,26 +362,22 @@ export function LaunchScreen({ onStart }: {
           <TitleBgmMuteButton muted={titleBgmMuted} onToggle={toggleTitleBgm} />
           <div className="launch-content">
             <h1 className="launch-brand"><img src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" fetchPriority="high" /></h1>
-            <div className="launch-stage" data-phase={phase} aria-label="とびら君の登場演出">
+            <div className="launch-stage" data-phase={phase} role="group" aria-label="とびら君の登場演出">
               <div className="launch-box">
                 <div className="launch-scene" aria-hidden="true">
-                  {/* 既存の美しい紙色背景プレート（雲・星・紙飛行機・光の輪・床）をそのまま活かす */}
                   <img className="launch-plate" src="/cinematics/title-plate.webp" alt="" width={720} height={720} draggable={false} />
+                  <div className="launch-ground" />
                   <div className="launch-sparkles"><i /><i /><i /><i /><i /><i /></div>
-                  {phase !== 'intro' && (
-                    <div className={`launch-arrival ${walk && walkReady ? 'walk-ready' : ''} ${!walk ? 'is-idle' : ''}`}>
-                      <div className="launch-gait">
-                        <img className="launch-walking-pose" src="/mascots/walking.webp" alt="" draggable={false} onLoad={() => setWalkReady(true)} />
-                        <img className="launch-equipped-pose" src={progress ? equippedPoseSrc(progress) : '/mascots/basic.webp'} alt="" draggable={false} />
-                        {progress && <TobiraAccessories progress={progress} />}
-                      </div>
+                  <div className={`launch-arrival ${walk ? (walkReady ? 'walk-ready' : '') : 'is-idle'}`}>
+                    <div className="launch-gait">
+                      {walk && <img className="launch-walking-pose" src="/mascots/walking.webp" alt="" draggable={false} onLoad={() => setWalkReady(true)} />}
+                      <img className="launch-equipped-pose" src={progress ? equippedPoseSrc(progress) : '/mascots/basic.webp'} alt="" draggable={false} />
+                      {progress && <TobiraAccessories progress={progress} />}
                     </div>
-                  )}
+                  </div>
                 </div>
-                {/* タイトル画面のとびら君の位置に、高精度で切り抜いた ①（battle_countdown）を重ねて再生 */}
                 {phase !== 'done' && (
-                  <div className="launch-tobira-cutout-wrap">
-                    <img className="launch-plate launch-plate-under-video" src="/cinematics/title-plate.webp" alt="" width={720} height={720} draggable={false} aria-hidden="true" />
+                  <div className="launch-tobira-cutout-wrap" inert={phase === 'crossfade'}>
                     <AlphaCinematicClip
                       clip={ALPHA_CINEMATIC_CLIPS.battleCountdown}
                       className="launch-tobira-cutout"
@@ -387,7 +386,7 @@ export function LaunchScreen({ onStart }: {
                       skippable
                       fadeInMs={280}
                       label="とびら君の登場動画"
-                      onActiveChange={active => { if (active) setPlayed(true); }}
+                      onActiveChange={active => { if (active) played.current = true; }}
                       onComplete={finishIntro}
                     />
                   </div>
