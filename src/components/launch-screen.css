@@ -17,9 +17,6 @@
 .launch-stage[data-phase=intro] .launch-ground { opacity: .55; }
 .launch-gait { position: relative; width: 100%; height: 100%; transform-origin: 50% 95%; }
 .launch-gait > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; }
-.launch-walking-pose { opacity: 0; }
-.launch-arrival.is-idle .launch-walking-pose { display: none; }
-.launch-arrival.is-idle .launch-equipped-pose { opacity: 1; }
 .launch-gait > .tobira-accessories { inset: 0; }
 .launch-box .cinematic-clip { inset: 0; border-radius: 0; overflow: visible; }
 .launch-box .cinematic-clip video { background: transparent; }
@@ -58,16 +55,8 @@
   .launch-note { min-height: 24px; }
 }
 
-/* 歩いて登場（動画が使えないとき） */
-.walk-ready { animation: tobira-walk-in 1.8s linear both; }
-.walk-ready .launch-gait { animation: tobira-footsteps .3s ease-in-out 6; }
-.walk-ready .launch-walking-pose { animation: tobira-walking-visibility 1.8s linear both; }
-.walk-ready .launch-equipped-pose { animation: tobira-equipped-visibility 1.8s linear both; }
 @media (prefers-reduced-motion: reduce) {
   .launch-arrival { transition: none; }
-  .launch-arrival, .launch-gait, .launch-gait > img { animation: none !important; transform: none !important; }
-  .launch-walking-pose { display: none; }
-  .launch-equipped-pose { opacity: 1 !important; }
 }
 
 .launch-emblem { position:relative; height:100dvh; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:20px; background:var(--mt-paper); color:#344451; font-family:var(--mt-font-body); }
@@ -176,11 +165,21 @@
   .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(4) { animation-delay: 1.9s; }
   .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(5) { animation-delay: 2.5s; }
   .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(6) { animation-delay: 2.9s; }
-  .launch-stage[data-phase=done] .launch-arrival.is-idle .launch-gait { animation: launch-idle-breathe 3.6s ease-in-out .4s infinite; }
+  .launch-stage[data-phase=done] .launch-arrival .launch-gait,
+  .launch-cinematic-idle[data-visible=true] .launch-idle-actor { animation: launch-idle-breathe 4.8s ease-in-out infinite; }
+  .launch-cinematic-idle[data-visible=true] .launch-idle-blink { animation: launch-idle-blink 8s linear infinite; }
   @keyframes launch-twinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0deg); } 45% { opacity: 1; transform: scale(1.15) rotate(45deg); } 60% { opacity: .7; transform: scale(.9) rotate(60deg); } }
-  @keyframes launch-idle-breathe { 0%, 100% { transform: none; } 50% { transform: scale(1.008, 1.018); } }
+  @keyframes launch-idle-breathe {
+    0%, 100% { transform: none; }
+    46% { transform: rotate(-.8deg) scale(1.008, 1.023); }
+    74% { transform: rotate(.55deg) scale(.997, 1.008); }
+  }
+  @keyframes launch-idle-blink {
+    0%, 23%, 26%, 78%, 81%, 100% { opacity: 0; }
+    24.25%, 24.75%, 79.25%, 79.75% { opacity: 1; }
+  }
 }
-html[data-perf=lite] .launch-sparkles > i, html[data-perf=lite] .launch-arrival.is-idle .launch-gait { animation: none; }
+html[data-perf=lite] :is(.launch-sparkles > i, .launch-stage[data-phase=done] .launch-arrival .launch-gait) { animation: none; }
 
 /* F6（2026-11-04）タイトル画面の演出（ボタン・文字の位置は変えない。transform / opacity だけ）
  *   ・ロゴ → 主コピー → チップ → はじめる の順に、少しずつふわっと出る
@@ -349,14 +348,19 @@ html[data-perf=lite] .launch-copy em::after, html[data-perf=lite] .launch-start:
   inset: 0;
   pointer-events: none;
 }
-.launch-box .launch-tobira-cutout {
+.launch-box .launch-tobira-framing {
   position: absolute;
   inset: -6.5% 0 auto;
   width: 100%;
   height: 108%;
   z-index: 2;
-  transition: none;
 }
+.launch-box .launch-tobira-cutout { transition: opacity .22s ease-out; }
+.launch-cinematic-idle { visibility: hidden; pointer-events: none; }
+.launch-cinematic-idle[data-visible=true] { visibility: visible; }
+.launch-idle-actor { position: absolute; inset: 0; transform-origin: 50% 75.5%; }
+.launch-idle-actor > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; }
+.launch-idle-blink { opacity: 0; }
 .launch-box .launch-tobira-cutout.is-held { opacity: 1; }
 .launch-box .launch-tobira-cutout :is(.alpha-cinematic-video, .alpha-cinematic-canvas, .alpha-cinematic-poster, .alpha-cinematic-endplate) {
   position: absolute;

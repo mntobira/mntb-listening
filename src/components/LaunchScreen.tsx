@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AlphaCinematicClip, ALPHA_CINEMATIC_CLIPS, FULLFRAME_CINEMATIC_MOVIES } from './AlphaCinematicClip';
+import { AlphaCinematicClip, ALPHA_CINEMATIC_CLIPS, FULLFRAME_CINEMATIC_MOVIES, type AlphaClipSpec } from './AlphaCinematicClip';
 import { TitleBgmMuteButton, TITLE_SCREEN_BGM_SRC, useLaunchTitleBgm } from './TitleBgmControl';
 import { ArrowRight, BookHeart, Headphones, PenLine, Play, Repeat2, Swords } from 'lucide-react';
 import { PhilosophyPage } from './PhilosophyPage';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
-import { equippedPoseSrc } from '../battle/core/growth';
+import { equippedAccessory, equippedPoseSrc } from '../battle/core/growth';
 import { TobiraAccessories } from '../battle/ui/TobiraAccessories';
 import { auth } from '../firebase';
 import './launch-screen.css';
@@ -32,6 +32,14 @@ type Phase = 'intro' | 'crossfade' | 'done';
 type Gate = 'emblem' | 'op' | 'title' | 'philosophy';
 
 const LANDSCAPE_QUERY = '(orientation: landscape) and (min-width: 768px)';
+const BASIC_POSE = '/mascots/basic.webp';
+const TITLE_TOBIRA_CLIP: AlphaClipSpec = {
+  ...ALPHA_CINEMATIC_CLIPS.battleCountdown,
+  webm: '/cinematics/title_tobira.webm',
+  sbsMp4: '/cinematics/title_tobira-sbs.mp4',
+  poster: '/cinematics/title_tobira-poster.webp',
+  endPlate: '/cinematics/title_tobira-landed.webp',
+};
 
 function useLandscapeTitle(): boolean {
   const [isLandscape, setIsLandscape] = useState(() => {
@@ -257,7 +265,11 @@ export function LaunchScreen({ onStart }: {
   };
 
   const played = useRef(false);
-  const [walkReady, setWalkReady] = useState(false);
+  const [landedReady, setLandedReady] = useState(false);
+  const poseSrc = progress ? equippedPoseSrc(progress) : BASIC_POSE;
+  const hasAccessories = progress && (['hat', 'glasses', 'cheek', 'aura'] as const)
+    .some(slot => equippedAccessory(progress, slot));
+  const useCinematicIdle = poseSrc === BASIC_POSE && !hasAccessories && landedReady;
 
   useEffect(() => {
     if (phase !== 'crossfade') return;
@@ -266,10 +278,11 @@ export function LaunchScreen({ onStart }: {
   }, [phase]);
 
   const finishIntro = () => {
-    const next = played.current && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'crossfade' : 'done';
+    // 通常は同じ座標の最終フレームへ直接つなぐ。きせかえ中だけ専用ポーズへフェードする。
+    const next = !useCinematicIdle && played.current && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 'crossfade' : 'done';
     setPhase(p => (p === 'intro' ? next : p));
   };
-  const walk = phase === 'done' && !played.current;
 
   useEffect(() => {
     if (gate !== 'title') return;
@@ -368,19 +381,28 @@ export function LaunchScreen({ onStart }: {
                   <img className="launch-plate" src="/cinematics/title-plate.webp" alt="" width={720} height={720} draggable={false} />
                   <div className="launch-ground" />
                   <div className="launch-sparkles"><i /><i /><i /><i /><i /><i /></div>
-                  <div className={`launch-arrival ${walk ? (walkReady ? 'walk-ready' : '') : 'is-idle'}`}>
-                    <div className="launch-gait">
-                      {walk && <img className="launch-walking-pose" src="/mascots/walking.webp" alt="" draggable={false} onLoad={() => setWalkReady(true)} />}
-                      <img className="launch-equipped-pose" src={progress ? equippedPoseSrc(progress) : '/mascots/basic.webp'} alt="" draggable={false} />
-                      {progress && <TobiraAccessories progress={progress} />}
+                  {!useCinematicIdle && (
+                    <div className="launch-arrival">
+                      <div className="launch-gait">
+                        <img className="launch-equipped-pose" src={poseSrc} alt="" draggable={false} />
+                        {progress && <TobiraAccessories progress={progress} align="bottom" />}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {poseSrc === BASIC_POSE && !hasAccessories && (
+                  <div className="launch-tobira-framing launch-cinematic-idle" data-visible={phase === 'done' && useCinematicIdle} aria-hidden="true">
+                    <div className="launch-idle-actor">
+                      <img src={TITLE_TOBIRA_CLIP.endPlate} alt="" draggable={false} onLoad={() => setLandedReady(true)} onError={() => setLandedReady(false)} />
+                      <img className="launch-idle-blink" src="/cinematics/title_tobira-blink.webp" alt="" draggable={false} />
                     </div>
                   </div>
-                </div>
+                )}
                 {phase !== 'done' && (
                   <div className="launch-tobira-cutout-wrap" inert={phase === 'crossfade'}>
                     <AlphaCinematicClip
-                      clip={ALPHA_CINEMATIC_CLIPS.battleCountdown}
-                      className="launch-tobira-cutout"
+                      clip={TITLE_TOBIRA_CLIP}
+                      className="launch-tobira-framing launch-tobira-cutout"
                       hold
                       eager
                       skippable
