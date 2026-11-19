@@ -259,6 +259,10 @@ export function formatText(
   options: FormatTextOptions = {}
 ) {
   if (!text) return null;
+  // 内部で HTML タグ・数式の退避に使う制御文字（\u0000 / \u0001）が入力に含まれていると
+  // プレースホルダー復元と衝突するため、入口で無条件に除去する。
+  const safeInput = text.replace(/[\u0000\u0001]/g, '');
+  if (!safeInput) return null;
   const prose = options.prose === true;
   const mathContext = !prose && (options.math ?? mathContextDefault);
 
@@ -271,7 +275,7 @@ export function formatText(
     「解 答」の pill だけセリフ体（KaTeX_Main）になっていた。
     詳しい経緯は extractTags の説明を参照。
   */
-  const { text: withoutTags, tags: rawTags } = extractTags(text);
+  const { text: withoutTags, tags: rawTags } = extractTags(safeInput);
 
   /*
     ★**…** を <strong> にする★

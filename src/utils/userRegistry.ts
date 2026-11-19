@@ -110,6 +110,12 @@ function readEnv(key: string): string {
  */
 const safeStorage = safeLocalStorage;
 
+function safeRegistryPhotoUrl(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const url = String(raw);
+  return url.length <= 512 && /^https:\/\/[^\s"'<>]{1,504}$/.test(url) ? url : null;
+}
+
 /**
  * ゲスト用の匿名端末ID。
  * 個人は特定できないが「何台の端末がゲストで使っているか」は数えられる。
@@ -117,8 +123,10 @@ const safeStorage = safeLocalStorage;
 function getGuestDeviceId(): string {
   const storage = safeStorage();
   const existing = storage?.getItem(GUEST_DEVICE_ID_KEY);
-  if (existing) return existing;
-  const generated = `guest_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+  if (existing && /^guest_[a-z0-9]{8,40}$/i.test(existing)) return existing;
+  const bytes = new Uint8Array(12);
+  crypto.getRandomValues(bytes);
+  const generated = `guest_${[...bytes].map((x) => x.toString(16).padStart(2, '0')).join('')}`;
   try {
     storage?.setItem(GUEST_DEVICE_ID_KEY, generated);
   } catch {
@@ -164,7 +172,7 @@ function buildPayload(event: UserEventType): UserRecordPayload {
     isGoogleLinked: Boolean(user),
     displayName: user?.displayName ?? null,
     email: user?.email ?? null,
-    photoUrl: user?.photoURL ?? null,
+    photoUrl: safeRegistryPhotoUrl(user?.photoURL),
     profileName: stats.profileName,
     grade: stats.grade,
     streak: stats.streak,

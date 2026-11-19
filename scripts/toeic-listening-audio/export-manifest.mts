@@ -41,8 +41,6 @@ TOEIC_LISTENING_ROUNDS.forEach((roundData, rIdx) => {
     const pos = p2AnswerPositions(round)[qIdx] ?? 0;
     const placed = placeP2Choices(item, pos);
     const lines = buildP2ElevenLabsLines(round, qIdx, item);
-    const answerer = item.sp === 'W' ? '男性 (M)' : '女性 (W)';
-    const asker = item.sp === 'W' ? '女性 (W)' : '男性 (M)';
     tracks.push({
       round,
       part: 'Part 2',

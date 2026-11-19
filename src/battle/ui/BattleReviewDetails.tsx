@@ -86,13 +86,13 @@ export function BattleReviewDetails({ question, oneLine }: { question: BattleQue
       .catch(() => { if (alive) setFailed(true); });
     return () => { alive = false; };
   }, [open, question, retry]);
-  return <details className="mt-3 rounded-xl border border-slate-200 bg-white p-3" open={open}
+  return <details className="mt-3 rounded-xl border border-[#E5DCCC] bg-[#FFFDF8] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_1.5px_0_#E6DCCB]" open={open}
     onToggle={event => setOpen(event.currentTarget.open)}>
-    <summary className="min-h-11 cursor-pointer py-2 text-sm font-black text-blue-800">詳しい解説を読む</summary>
+    <summary className="min-h-11 cursor-pointer py-2 text-sm font-black text-[#1E4B8F]">詳しい解説を読む</summary>
     {open && <div className="min-w-0 break-words text-base leading-8" data-battle-explanation>
       {failed ? <div role="alert">解説を読み込めませんでした。<button type="button" className="ml-2 min-h-11 underline" onClick={() => setRetry(n => n + 1)}>再読み込み</button></div>
         : text === null ? <p role="status">解説を読み込んでいます…</p>
-        : text ? <><p className="mb-2 text-xs text-slate-500">この問題の解説</p><BattleText text={text} subject={question.subject} /></>
+        : text ? <><p className="mb-2 text-xs font-bold text-[#7A6A52]">この問題の解説</p><BattleText text={text} subject={question.subject} /></>
         : oneLine ? <BattleText text={oneLine} subject={question.subject} />
         : <p>この問題には詳しい解説が登録されていません。上の問題文と正しい答えを確認し、対応する演習で復習できます。</p>}
     </div>}

@@ -7,6 +7,7 @@ import './study-record.css';
 import { KineticText, ScoreRing } from '../motion';
 import { CountUp } from './ui/CountUp';
 import { StudyRecordBattleActions } from './StudyRecordBattleActions';
+import { PersonalOutcomesCard } from './PersonalOutcomesCard';
 
 /**
  * 学習記録（2026-10-04 ご要望）
@@ -42,6 +43,7 @@ export function StudyRecord({ onReview, onRetry, embedded = false }: { onReview?
         <span className="is-wrong"><b><CountUp value={wrong} fromZero duration={900} delay={400} /></b>問 まちがえた</span>
         {onReview && wrong > 0 && <button type="button" onClick={onReview}><RotateCcw size={16} aria-hidden="true" />復習ノートで直す</button>}
       </div>
+      <PersonalOutcomesCard uid={uid} />
       <div className="mt-segment sr-filter" role="tablist" aria-label="表示">
         <button type="button" role="tab" aria-selected={filter === 'all'} onClick={() => setFilter('all')}>すべて</button>
         <button type="button" role="tab" aria-selected={filter === 'wrong'} onClick={() => setFilter('wrong')}>まちがえた問題だけ</button>

@@ -144,9 +144,7 @@ import { useIsMobile } from './hooks/useMediaQuery';
  */
 import { countSolvedProblemsIn } from './utils/progress';
 import { getChapterIndexOfSubject as getUnitIndexOf } from './data/chapterIndex.generated';
-import { TeacherDashboard } from './components/TeacherDashboard';
 import { useTitleBgmController } from './hooks/useTitleBgmController';
-import { FeedbackAdminPanel } from './components/FeedbackAdminPanel';
 import { battleAudio } from './battle/audio/battleAudio';
 import { installFriendPresence } from './utils/friendPresence';
 import { BattleMode } from './battle/ui/BattleMode';
@@ -158,6 +156,8 @@ import { confirmAction } from './utils/dialog';
 import type { AppState, AppMode } from './appState';
 export { isAppState, isAppMode } from './appState';
 export type { AppState, AppMode } from './appState';
+const TeacherDashboard = React.lazy(() => import('./components/TeacherDashboard').then(m => ({ default: m.TeacherDashboard })));
+const FeedbackAdminPanel = React.lazy(() => import('./components/FeedbackAdminPanel').then(m => ({ default: m.FeedbackAdminPanel })));
 const GrowthHub = React.lazy(() => import('./components/GrowthHub').then(m => ({ default: m.GrowthHub })));
 const MissionToast = React.lazy(() => import('./components/MissionToast').then(m => ({ default: m.MissionToast })));
 const CoinCelebration = React.lazy(() => import('./components/CoinCelebration').then(m => ({ default: m.CoinCelebration })));
@@ -583,9 +583,9 @@ export default function App() {
           }`}>
             {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
             {/* 先生ダッシュボード。戻る先を設定にしているのは、入ってきた経路と揃えるため。 */}
-            {appState === 'teacher_dashboard' && <TeacherDashboard onBack={() => setAppState('settings')} />}
+            {appState === 'teacher_dashboard' && <React.Suspense fallback={<ScreenLoading />}><TeacherDashboard onBack={() => setAppState('settings')} /></React.Suspense>}
             {/* フィードバック管理（運営専用）。入口は設定内の運営専用ボタン。 */}
-            {appState === 'feedback_admin' && <FeedbackAdminPanel onBack={() => setAppState('settings')} />}
+            {appState === 'feedback_admin' && <React.Suspense fallback={<ScreenLoading />}><FeedbackAdminPanel onBack={() => setAppState('settings')} /></React.Suspense>}
 
             {/* ログイン／ゲスト開始の直後は、必ず科目選択（＝タイトル）画面を経由する */}
             {/* ログイン（またはログインできないときの「この端末だけで続ける」）の直後は、そのままホームへ入る。
@@ -714,7 +714,7 @@ export default function App() {
                 />
               </React.Suspense>
             )}
-            {appState === 'study_hub' && <StudyHub view={studyHubView} onViewChange={setStudyHubView} onBack={() => setAppState('home')} onPractice={() => handleSelectMode('practice')} isGuest={isGuest} onSelectNote={(note) => { setSelectedNote(note); setAppState('note_detail'); }} onReview={handleReviewNote} onRetry={(t) => { void handleReviewNote({ chapterId: t.chapterId, questionId: t.questionId, subQuestionIds: t.wrongOnly ? t.subQuestionIds : undefined, wholeQuestion: !t.wrongOnly }); }} />}
+            {appState === 'study_hub' && <StudyHub view={studyHubView} onViewChange={setStudyHubView} onBack={() => setAppState('home')} onPractice={() => { setFoundationBackTo('home'); navigateMain('study'); }} isGuest={isGuest} onSelectNote={(note) => { setSelectedNote(note); setAppState('note_detail'); }} onReview={handleReviewNote} onRetry={(t) => { void handleReviewNote({ chapterId: t.chapterId, questionId: t.questionId, subQuestionIds: t.wrongOnly ? t.subQuestionIds : undefined, wholeQuestion: !t.wrongOnly }); }} />}
             {/* ★英文法・英単語を固める（A1/A17/A18）★
                 リスニング（主役・学習タブ）とは別のページ。下のナビを残したまま1画面で完結させる。
                 英文法の4択演習・単語の例から解くリスニングは、どちらも通常の演習と同じ経路を通す。 */}

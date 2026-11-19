@@ -1,50 +1,40 @@
-/*
- * タイトル画面（LaunchScreen.tsx）。トークンは src/styles/tokens.css。
- * 地色は登場動画 title.mp4 の背景色（#FCF5E9）と同じ紙色の無地にする。
- * グラデーションや罫線を敷くと、動画の四角い縁が浮いて見えるため。
- */
+/* タイトル画面（LaunchScreen.tsx）。トークンは src/styles/tokens.css。 */
 .launch-screen { position: relative; isolation: isolate; min-height: 100dvh; background: var(--mt-paper); color: var(--mt-ink); font-family: var(--mt-font-body); }
 .launch-content { display: flex; flex-direction: column; align-items: center; gap: var(--mt-s3); width: min(560px, 100%); height: 100dvh; min-height: 520px; margin: 0 auto; padding: max(var(--mt-s3), env(safe-area-inset-top)) var(--mt-s5) max(var(--mt-s4), env(safe-area-inset-bottom)); }
 
 .launch-brand { flex-shrink: 0; width: min(320px, 78%); margin-top: var(--mt-s2); }
 .launch-brand img { display: block; width: 100%; height: auto; }
 
-/* とびら君のステージ：残りの高さをすべて使い、正方形の箱を中央に置く */
-.launch-stage { position: relative; flex: 1 1 auto; min-height: 150px; max-height: 380px; width: 100%; }
-.launch-box { position: relative; height: 100%; max-width: 100%; aspect-ratio: 1; margin: 0 auto; }
-.launch-scene { position: absolute; inset: 0; transition: opacity .35s ease; }
-.launch-stage[data-phase=intro] .launch-scene { opacity: 0; }
-/* 閉じた円の光背（途中で切れた弧にしない） */
-.launch-halo { position: absolute; left: 16%; top: 11%; width: 68%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 50% 45%, #ffffff 0%, #fff9ee 55%, #f7ead3 100%); box-shadow: inset 0 0 0 1px var(--mt-line); }
-/* 床（動画の床と同じ位置）＋足元の接地影 */
-.launch-ground { position: absolute; left: 13.5%; top: 76.4%; width: 72.8%; height: 12.1%; border-radius: 50%; background: radial-gradient(ellipse at 50% 40%, #f3e6c9 0%, #eddcb9 70%, #e6d2ab 100%); }
-.launch-ground::after { content: ''; position: absolute; left: 27%; top: 8%; width: 46%; height: 42%; border-radius: 50%; background: radial-gradient(ellipse, rgba(28, 42, 57, .28) 0%, rgba(28, 42, 57, .12) 55%, transparent 72%); }
-.launch-arrival { position: absolute; left: 20.7%; top: 17.2%; width: 58.3%; height: 62.8%; pointer-events: none; }
+/* 幅・高さの小さい方を基準に正方形を保ち、狭いPC列でも立ち絵を伸ばさない。 */
+.launch-stage { position: relative; display: grid; place-items: center; container-type: size; flex: 1 1 0; min-height: 150px; max-height: 380px; width: 100%; }
+.launch-box { position: relative; width: min(100%, 100cqh); aspect-ratio: 1; }
+.launch-scene { position: absolute; inset: 0; }
+/* 最終フレームと待機ポーズで足元の位置を揃え、紙の床へ柔らかい接地影を落とす。 */
+.launch-ground { position: absolute; left: 28%; top: 73%; width: 44%; height: 8%; border-radius: 50%; background: radial-gradient(ellipse, #4b372948, #4b37291c 48%, transparent 72%); }
+.launch-arrival { position: absolute; left: 22%; top: 17%; width: 56%; height: 59%; pointer-events: none; }
+.launch-stage[data-phase=intro] .launch-arrival { opacity: 0; }
+.launch-arrival { transition: opacity .38s ease; }
+.launch-stage[data-phase=intro] .launch-ground { opacity: .55; }
 .launch-gait { position: relative; width: 100%; height: 100%; transform-origin: 50% 95%; }
 .launch-gait > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; }
-.launch-walking-pose { opacity: 0; }
-.launch-arrival.is-idle .launch-walking-pose { display: none; }
-.launch-arrival.is-idle .launch-equipped-pose { opacity: 1; }
 .launch-gait > .tobira-accessories { inset: 0; }
 .launch-box .cinematic-clip { inset: 0; border-radius: 0; overflow: visible; }
-.launch-box .cinematic-clip video { background: transparent; -webkit-mask-image: radial-gradient(closest-side, #000 86%, transparent 100%); mask-image: radial-gradient(closest-side, #000 86%, transparent 100%); }
-.launch-box .cinematic-clip.has-poster { opacity: 1; }
-.launch-box .cinematic-clip.is-held { opacity: 0; transition: opacity .35s ease; }
-.launch-box .cinematic-skip { bottom: 2%; right: 2%; }
+.launch-box .cinematic-clip video { background: transparent; }
 
 /* 主コピー：ロゴの 1/3〜1/2 の存在感。濃い文字で */
 .launch-copy { flex-shrink: 0; margin: 0; text-align: center; font: 800 clamp(24px, 6.4vw, 32px)/1.3 var(--mt-font-display); color: var(--mt-ink); letter-spacing: .02em; }
 .launch-copy-break { display: none; }
 @media (max-width: 420px) { .launch-copy-break { display: inline; } }
 .launch-chips { flex-shrink: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--mt-s2); margin: 0; padding: 0; list-style: none; }
-.launch-chips li { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 var(--mt-s3); border-radius: var(--mt-r-pill); background: var(--mt-surface); box-shadow: inset 0 0 0 1px var(--mt-line); color: var(--mt-ink-2); font: 700 var(--mt-fs-sm)/1 var(--mt-font-body); }
+.launch-chips li { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 var(--mt-s3); border-radius: var(--mt-r-pill); background: var(--mt-surface); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), inset 0 0 0 1px var(--mt-line), 0 1.5px 0 var(--mt-line); color: var(--mt-ink-2); font: 700 var(--mt-fs-sm)/1 var(--mt-font-body); }
 .launch-chips li svg { color: var(--mt-brand); }
 
 .launch-actions { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: var(--mt-s1); width: 100%; }
-.launch-start { width: min(320px, 100%); min-height: 58px; gap: var(--mt-s3); border-radius: var(--mt-r-lg); font: 800 var(--mt-fs-xl)/1 var(--mt-font-display); box-shadow: 0 3px 0 var(--mt-accent-strong); }
+.launch-start { width: min(320px, 100%); min-height: 58px; gap: var(--mt-s3); border-radius: var(--mt-r-lg); font: 800 var(--mt-fs-xl)/1 var(--mt-font-display); box-shadow: 0 3.5px 0 var(--mt-accent-strong), 0 8px 18px rgba(217, 126, 6, .22), inset 0 1px 0 rgba(255, 255, 255, .45); transition: transform .1s ease, filter .15s ease, box-shadow .15s ease; }
 .launch-start:active { box-shadow: 0 1px 0 var(--mt-accent-strong); transform: translateY(2px); }
 .launch-guest { min-height: var(--mt-tap); font-size: var(--mt-fs-sm); }
 .launch-note { min-height: var(--mt-tap); display: grid; place-items: center; margin: 0; font-size: var(--mt-fs-xs); color: var(--mt-ink-3); }
+.launch-trademark-disclaimer { flex-shrink: 0; max-width: 560px; margin: 0; color: var(--mt-ink-2); font: 500 12px/1.45 var(--mt-font-body); text-align: center; white-space: pre-line; }
 .launch-screen button:focus-visible { outline: none; box-shadow: var(--mt-focus); }
 
 /* 背の低い画面：ロゴとステージを縮めて、はじめるボタンを必ず1画面に入れる */
@@ -57,18 +47,16 @@
 @media (max-height: 600px) {
   .launch-chips { display: none; }
   .launch-brand { width: min(200px, 56%); }
+  .launch-content { gap: var(--mt-s2); padding-bottom: max(var(--mt-s2), env(safe-area-inset-bottom)); }
+  .launch-stage { min-height: 128px; max-height: 260px; }
+  .launch-actions { gap: 4px; }
+  .launch-copy { font-size: 20px; line-height: 1.2; }
+  .launch-start { min-height: 44px; }
+  .launch-note { min-height: 24px; }
 }
 
-/* 歩いて登場（動画が使えないとき） */
-.walk-ready { animation: tobira-walk-in 1.8s linear both; }
-.walk-ready .launch-gait { animation: tobira-footsteps .3s ease-in-out 6; }
-.walk-ready .launch-walking-pose { animation: tobira-walking-visibility 1.8s linear both; }
-.walk-ready .launch-equipped-pose { animation: tobira-equipped-visibility 1.8s linear both; }
 @media (prefers-reduced-motion: reduce) {
-  .launch-scene, .launch-box .cinematic-clip.is-held { transition: none; }
-  .launch-arrival, .launch-gait, .launch-gait > img { animation: none !important; transform: none !important; }
-  .launch-walking-pose { display: none; }
-  .launch-equipped-pose { opacity: 1 !important; }
+  .launch-arrival { transition: none; }
 }
 
 .launch-emblem { position:relative; height:100dvh; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:20px; background:var(--mt-paper); color:#344451; font-family:var(--mt-font-body); }
@@ -92,7 +80,8 @@
 @media (prefers-reduced-motion: reduce) { .launch-emblem-inner, .launch-screen { transition:none; animation:none; transform:none; } .launch-emblem[data-phase="hold"] .launch-emblem-inner { opacity:1; } }
 
 /* タイトル画面 → 「学びの扉」（理念）ページへの入口。主CTAの邪魔をしない文字リンク */
-.launch-philosophy { display: inline-flex; align-items: center; gap: 8px; min-height: var(--mt-tap); margin-top: 4px; padding: 0 18px; border: 1px solid #e3c49a; border-radius: 999px; background: linear-gradient(135deg, #fff3e0, #e9f1fb); color: #6e4019; font: 700 14px/1.2 'Shippori Mincho', 'Hiragino Mincho ProN', serif; letter-spacing: .06em; box-shadow: 0 2px 0 #e8d3b2; }
+.launch-philosophy { display: inline-flex; align-items: center; gap: 8px; min-height: var(--mt-tap); margin-top: 4px; padding: 0 18px; border: 1px solid #e3c49a; border-radius: 999px; background: linear-gradient(135deg, #fff6e6, #edf4fc); color: #6e4019; font: 700 14px/1.2 'Shippori Mincho', 'Hiragino Mincho ProN', serif; letter-spacing: .06em; box-shadow: 0 2px 0 #e8d3b2, inset 0 1px 0 rgba(255, 255, 255, .9); transition: transform .1s ease, box-shadow .15s ease, filter .15s ease; }
+.launch-philosophy:active { transform: translateY(1.5px); box-shadow: 0 0.5px 0 #e8d3b2; }
 
 /* ===== 2026-10-07 アプリ版：起動エンブレムはアプリのロゴ（白背景のまま・透過しない）＋新しい主コピー ===== */
 .launch-emblem-applogo { width: min(280px, 70vw); height: auto; }
@@ -139,7 +128,7 @@
   .launch-chips li > span { display: grid; gap: 6px; }
   .launch-chips li b { font: 800 16px/1.2 var(--mt-font-display); color: var(--mt-ink); }
   .launch-chips li small { display: block; font: 600 12.5px/1.5 var(--mt-font-body); color: var(--mt-ink-3); }
-  .launch-actions { grid-area: actions; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "start guest" "count count" "phil kbd"; align-items: center; justify-items: start; column-gap: 18px; row-gap: 12px; padding-top: 4px; }
+  .launch-actions { grid-area: actions; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "start guest" "count count" "trademark trademark" "phil kbd"; align-items: center; justify-items: start; column-gap: 18px; row-gap: 12px; padding-top: 4px; }
   .launch-start { grid-area: start; width: 300px; min-height: 64px; }
   .launch-start:hover { filter: brightness(1.04); }
   .launch-guest, .launch-note { grid-area: guest; }
@@ -148,6 +137,7 @@
   .launch-countdown-mini strong { font: 900 26px/1 var(--mt-font-display); color: #496d80; font-variant-numeric: tabular-nums; }
   .launch-countdown-mini small { margin-left: 6px; font-size: 12px; color: var(--mt-ink-3); }
   .launch-philosophy { grid-area: phil; margin-top: 0; }
+  .launch-trademark-disclaimer { grid-area: trademark; max-width: 720px; text-align: left; }
   .launch-philosophy:hover { filter: brightness(.98); box-shadow: 0 2px 0 #e8d3b2, 0 0 0 3px #f3e3c7; }
   .launch-kbd { grid-area: kbd; display: block; margin: 0; justify-self: end; font-size: 12px; color: var(--mt-ink-3); }
   .launch-kbd kbd { display: inline-block; min-width: 44px; padding: 3px 8px; margin-right: 4px; border: 1px solid var(--mt-line-strong); border-bottom-width: 3px; border-radius: 8px; background: #fff; font: 700 12px/1.2 var(--mt-font-body); color: var(--mt-ink-2); text-align: center; }
@@ -156,12 +146,9 @@
   .launch-emblem h1 { font-size: 34px; }
 }
 
-/* F6（2026-11-04）動画の終わりと静止画をひと続きにする
- *   背景は動画の最後のコマから作った板（title-plate.webp）。動画と同じ丸いぼかしをかけるので、縁の形も同じ。
- *   動画が終わったあとは、星がまたたき・とびら君がゆっくり呼吸する（transform / opacity だけ）。
- *   戻すとき：LaunchScreen.tsx の .launch-plate / .launch-sparkles を消し、.launch-halo / .launch-ground を戻す。 */
+/* 動画から待機ポーズまで、同じ背景を表示する。 */
 .launch-plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; user-select: none;
-  -webkit-mask-image: radial-gradient(closest-side, #000 86%, transparent 100%); mask-image: radial-gradient(closest-side, #000 86%, transparent 100%); }
+  mask-image: radial-gradient(closest-side, #000 78%, transparent 100%); }
 .launch-sparkles { position: absolute; inset: 0; pointer-events: none; }
 .launch-sparkles > i { position: absolute; width: 3.2%; aspect-ratio: 1; opacity: 0;
   background: radial-gradient(circle, #ffffff 0 22%, #fff3c4 38%, transparent 70%); border-radius: 50%; }
@@ -178,11 +165,21 @@
   .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(4) { animation-delay: 1.9s; }
   .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(5) { animation-delay: 2.5s; }
   .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(6) { animation-delay: 2.9s; }
-  .launch-stage[data-phase=done] .launch-arrival.is-idle .launch-gait { animation: launch-idle-breathe 3.6s ease-in-out .4s infinite; }
+  .launch-stage[data-phase=done] .launch-arrival .launch-gait,
+  .launch-cinematic-idle[data-visible=true] .launch-idle-actor { animation: launch-idle-breathe 4.8s ease-in-out infinite; }
+  .launch-cinematic-idle[data-visible=true] .launch-idle-blink { animation: launch-idle-blink 8s linear infinite; }
   @keyframes launch-twinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0deg); } 45% { opacity: 1; transform: scale(1.15) rotate(45deg); } 60% { opacity: .7; transform: scale(.9) rotate(60deg); } }
-  @keyframes launch-idle-breathe { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-1.6%) scale(1.012, .992); } }
+  @keyframes launch-idle-breathe {
+    0%, 100% { transform: none; }
+    46% { transform: rotate(-.8deg) scale(1.008, 1.023); }
+    74% { transform: rotate(.55deg) scale(.997, 1.008); }
+  }
+  @keyframes launch-idle-blink {
+    0%, 23%, 26%, 78%, 81%, 100% { opacity: 0; }
+    24.25%, 24.75%, 79.25%, 79.75% { opacity: 1; }
+  }
 }
-html[data-perf=lite] .launch-sparkles > i, html[data-perf=lite] .launch-arrival.is-idle .launch-gait { animation: none; }
+html[data-perf=lite] :is(.launch-sparkles > i, .launch-stage[data-phase=done] .launch-arrival .launch-gait) { animation: none; }
 
 /* F6（2026-11-04）タイトル画面の演出（ボタン・文字の位置は変えない。transform / opacity だけ）
  *   ・ロゴ → 主コピー → チップ → はじめる の順に、少しずつふわっと出る
@@ -319,30 +316,63 @@ html[data-perf=lite] .launch-copy em::after, html[data-perf=lite] .launch-start:
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   cursor: pointer;
 }
+.launch-op-sound-start {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 232, 178, 0.92);
+  background: rgba(10, 19, 38, 0.86);
+  color: #fffaf0;
+  font: 800 14px/1.2 var(--mt-font-body);
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.launch-op-sound-start:active {
+  transform: translate(-50%, calc(-50% + 1.5px));
+}
 
-/* 既存のタイトル画面ステージ：背景プレートの上に①（battle_countdown）高精度切り抜きとびら君をぴたりと重ねる */
+/* 透過動画の縦長フレーム内の余白を見込んで、着地フレームを待機ポーズと同じ尺度にする。 */
 .launch-tobira-cutout-wrap {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
-.launch-plate-under-video {
-  z-index: 0;
-}
-.launch-box .launch-tobira-cutout {
+.launch-box .launch-tobira-framing {
   position: absolute;
-  left: 16%;
-  top: 4%;
-  width: 68%;
-  height: 83%;
+  inset: -6.5% 0 auto;
+  width: 100%;
+  height: 108%;
   z-index: 2;
-  pointer-events: auto;
 }
+.launch-box .launch-tobira-cutout { transition: opacity .22s ease-out; }
+.launch-cinematic-idle { visibility: hidden; pointer-events: none; }
+.launch-cinematic-idle[data-visible=true] { visibility: visible; }
+.launch-idle-actor { position: absolute; inset: 0; transform-origin: 50% 75.5%; }
+.launch-idle-actor > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; }
+.launch-idle-blink { opacity: 0; }
+.launch-box .launch-tobira-cutout.is-held { opacity: 1; }
+.launch-box .launch-tobira-cutout :is(.alpha-cinematic-video, .alpha-cinematic-canvas, .alpha-cinematic-poster, .alpha-cinematic-endplate) {
+  position: absolute;
+  inset: 0;
+}
+.launch-box .launch-tobira-cutout.is-held :is(.alpha-cinematic-video, .alpha-cinematic-canvas) { visibility: hidden; }
 .launch-box .cinematic-skip.alpha-cinematic-skip {
   font-size: 12px;
   min-height: 44px;
-  bottom: -2%;
-  right: -12%;
+  bottom: 4%;
+  right: 0;
+  pointer-events: auto;
 }
 .launch-box .cinematic-clip.alpha-cinematic video,
 .launch-box .alpha-cinematic canvas,

@@ -114,6 +114,12 @@ export function useQuizLaunch({
       // 章・問題の位置を決めるのは utils/battlePracticeBridge.ts（文言・探し方は分離前と同じ）
       const target = await resolveBattlePractice(subject, chapterId, problemId, subQuestionId);
       if (request !== reviewRequest.current) return;
+      try {
+        const { recordBattleFollowup } = await import('../utils/learningOutcomes');
+        const { schedulePush } = await import('../utils/studySync');
+        recordBattleFollowup(auth.currentUser?.uid || (isGuest ? 'guest' : null), 'practice');
+        schedulePush();
+      } catch { /* 成果記録の失敗で演習遷移は止めない */ }
       rememberBattleScroll();
       setBattleReturnActive(true);
       setSelectedSubject(target.subject);

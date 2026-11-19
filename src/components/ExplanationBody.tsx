@@ -27,12 +27,12 @@ const toneStyles: Record<ExplanationTone, {
 }> = {
   light: {
     // ★罫線は「薄いグレー」ではなく本文と同系の濃さにする（下の実測コメント参照）
-    wrapper: 'border-slate-400 bg-white',
-    headCell: 'border-slate-400 bg-slate-100 text-slate-700',
-    rowHeadCell: 'border-slate-400 text-slate-700',
-    bodyCell: 'border-slate-400 text-slate-700',
+    wrapper: 'border-[#B8AEA0] bg-white',
+    headCell: 'border-[#B8AEA0] bg-[#F5EFE3] text-[#2C3E50]',
+    rowHeadCell: 'border-[#B8AEA0] text-[#2C3E50]',
+    bodyCell: 'border-[#B8AEA0] text-slate-700',
     rowEven: 'bg-white',
-    rowOdd: 'bg-slate-50/70',
+    rowOdd: 'bg-[#FBF7EF]',
   },
   dark: {
     wrapper: 'border-[#3A506B] bg-[#0B132B]/60',
@@ -49,14 +49,16 @@ interface ExplanationTableProps {
   tone: ExplanationTone;
   /** 英語の表なら true（散文として組む）。数式・化学の表は false のまま */
   prose?: boolean;
+  /** TOEIC 等の英文で金額の $ が数式扱いになるのを防ぐ */
+  noMath?: boolean;
   // このリポジトリは @types/react を導入していないため、JSX の key が
   // props として型チェックされる。明示的に受け取って型エラーを避ける。
   key?: React.Key;
 }
 
-function ExplanationTable({ block, tone, prose = false }: ExplanationTableProps) {
+function ExplanationTable({ block, tone, prose = false, noMath = false }: ExplanationTableProps) {
   // 2026-10-21：英語の表（第4問B の条件表・第6問B など）は prose で組む。数式用のセリフ体に化けるのを防ぐ
-  const cellText = (cell: string) => formatText(cell, [], { prose });
+  const cellText = (cell: string) => formatText(cell, [], noMath ? { prose, noMath } : { prose });
   const colCount = block.header.length;
   const t = toneStyles[tone];
   return (
@@ -169,6 +171,7 @@ interface SectionBoxProps {
   tone: ExplanationTone;
   highlights: string[];
   prose: boolean;
+  noMath?: boolean;
   key?: React.Key;
 }
 
@@ -205,8 +208,9 @@ interface SectionBoxProps {
  *   枠・余白・背景はすべて md: で打ち消し、PC では従来と同一の
  *   べた組みに戻す。
  */
-function SectionBox({ section, tone, highlights, prose }: SectionBoxProps) {
+function SectionBox({ section, tone, highlights, prose, noMath = false }: SectionBoxProps) {
   const t = boxTone[tone];
+  const fmtOpts = noMath ? { prose, noMath } : { prose };
 
   /** 区画の中身（地の文・表）。枠の内でも外でも同じ描画を使う。 */
   const inner = section.blocks.map((block, i) =>
@@ -214,7 +218,7 @@ function SectionBox({ section, tone, highlights, prose }: SectionBoxProps) {
       <ExplanationTable key={`t-${i}`} block={block} tone={tone} prose={prose} />
     ) : (
       <div key={`p-${i}`} className="whitespace-pre-wrap">
-        {formatText(block.text, highlights, { prose })}
+        {formatText(block.text, highlights, fmtOpts)}
       </div>
     )
   );
@@ -235,7 +239,7 @@ function SectionBox({ section, tone, highlights, prose }: SectionBoxProps) {
     >
       {/* 見出しは枠の中の1行目に置き、冊子の「資料名」と同じ役割にする */}
       <div className={`mb-1.5 text-[13px] font-bold md:mb-0 md:text-inherit ${t.heading}`}>
-        {formatText(section.heading, [], { prose })}
+        {formatText(section.heading, [], fmtOpts)}
       </div>
       {inner}
     </div>
@@ -256,6 +260,8 @@ export interface ExplanationBodyProps {
    * 日本語（ゴシック）と書体が食い違って読みにくくなる。
    */
   prose?: boolean;
+  /** TOEIC 等の英文で金額の $ が数式扱いになるのを防ぐ */
+  noMath?: boolean;
   /**
    * ★「【…】のまとまりを四角囲みにする」モード（スマホのみ）★
    *
@@ -276,10 +282,12 @@ export function ExplanationBody({
   tone = 'light',
   highlights = [],
   prose = false,
+  noMath = false,
   boxedSections = false,
 }: ExplanationBodyProps) {
   if (!text) return null;
   const blocks = parseExplanationBlocks(text);
+  const fmtOpts = noMath ? { prose, noMath } : { prose };
 
   /*
     ★ご要望「問題文の改行ができていない。見にくい。」の原因はここだった★
@@ -319,7 +327,7 @@ export function ExplanationBody({
     return (
       <div className={className}>
         {sections.map((sec, i) => (
-          <SectionBox key={`s-${i}`} section={sec} tone={tone} highlights={highlights} prose={prose} />
+          <SectionBox key={`s-${i}`} section={sec} tone={tone} highlights={highlights} prose={prose} noMath={noMath} />
         ))}
       </div>
     );
@@ -332,7 +340,7 @@ export function ExplanationBody({
           <ExplanationTable key={`t-${i}`} block={block} tone={tone} prose={prose} />
         ) : (
           <div key={`p-${i}`} className="whitespace-pre-wrap">
-            {formatText(block.text, highlights, { prose })}
+            {formatText(block.text, highlights, fmtOpts)}
           </div>
         )
       )}

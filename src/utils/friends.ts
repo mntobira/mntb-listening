@@ -127,12 +127,17 @@ export function normalizeFriendCode(input: string): string {
  * 自分のプロフィールとフレンドコード逆引きインデックスを用意する。
  * 一度発行したコードは変更せず、共有済みコードを無効にしない。
  */
+function safeFriendPhotoUrl(raw: string | null | undefined): string {
+  const url = String(raw || '');
+  return url.length <= 512 && /^https:\/\/[^\s"'<>]{1,504}$/.test(url) ? url : '';
+}
+
 export async function ensureFriendProfile(): Promise<FriendProfile | null> {
   const user = auth.currentUser;
   if (!user) return null;
 
   const nickname = resolveNickname();
-  const photoURL = user.photoURL || '';
+  const photoURL = safeFriendPhotoUrl(user.photoURL);
 
   // すでに発行済みのコードがあれば、それを維持する（共有済みコードを無効にしない）。
   let savedCode: string | null = null;
