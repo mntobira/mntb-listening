@@ -45,6 +45,7 @@ export function useLaunchTitleBgm(active: boolean) {
       const audio = audioRef.current;
       if (audio && activeRef.current && !mutedRef.current && document.visibilityState !== 'hidden') {
         unlockTitleBgm(audio, targetVolume());
+        // 自動再生制限時は次のユーザー操作で再開するため意図して無視する
         void audio.play().catch(() => undefined);
       }
     };
@@ -62,6 +63,7 @@ export function useLaunchTitleBgm(active: boolean) {
     if (active && interacted && !muted && document.visibilityState !== 'hidden') {
       unlockTitleBgm(audio, targetVolume());
       if (audio.paused) {
+        // 自動再生制限時は次のユーザー操作で再開するため意図して無視する
         void audio.play().catch(() => undefined);
       }
     } else if (!audio.paused) {
@@ -79,6 +81,7 @@ export function useLaunchTitleBgm(active: boolean) {
         audio.pause();
       } else if (activeRef.current && interacted && !mutedRef.current) {
         unlockTitleBgm(audio, targetVolume());
+        // 自動再生制限時は次のユーザー操作で再開するため意図して無視する
         void audio.play().catch(() => undefined);
       }
     };
@@ -107,6 +110,7 @@ export function useLaunchTitleBgm(active: boolean) {
       audio.pause();
     } else if (activeRef.current) {
       unlockTitleBgm(audio, Math.max(0.08, readAudioPreferences().volume * TITLE_SCREEN_BGM_SUBTLE_GAIN));
+      // 再生拒否時は次操作で再開されるため無視する
       void audio.play().catch(() => undefined);
     }
   };

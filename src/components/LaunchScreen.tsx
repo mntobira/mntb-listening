@@ -193,6 +193,27 @@ export function LaunchScreen({ onStart }: {
 
   const [played, setPlayed] = useState(false);
   const [walkReady, setWalkReady] = useState(false);
+  const equippedSpriteSrc = progress ? equippedPoseSrc(progress) : '/mascots/basic.webp';
+
+  useEffect(() => {
+    const urls = [
+      '/cinematics/title-plate.webp',
+      ALPHA_CINEMATIC_CLIPS.battleCountdown.poster,
+      ALPHA_CINEMATIC_CLIPS.battleCountdown.endPlate,
+      '/mascots/walking.webp',
+      equippedSpriteSrc,
+    ];
+    urls.forEach((src) => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = src;
+      if (src === '/mascots/walking.webp') {
+        img.onload = () => setWalkReady(true);
+      }
+      // 事前デコード非対応ブラウザや未キャッシュ時の失敗は通常描画へ委ねる
+      void img.decode?.().catch(() => { /* ignore decode race */ });
+    });
+  }, [equippedSpriteSrc]);
 
   useEffect(() => {
     if (phase !== 'crossfade') return;
@@ -278,8 +299,8 @@ export function LaunchScreen({ onStart }: {
                   {phase !== 'intro' && (
                     <div className={`launch-arrival ${walk && walkReady ? 'walk-ready' : ''} ${!walk ? 'is-idle' : ''}`}>
                       <div className="launch-gait">
-                        <img className="launch-walking-pose" src="/mascots/walking.webp" alt="" draggable={false} onLoad={() => setWalkReady(true)} />
-                        <img className="launch-equipped-pose" src={progress ? equippedPoseSrc(progress) : '/mascots/basic.webp'} alt="" draggable={false} />
+                        <img className="launch-walking-pose" src="/mascots/walking.webp" alt="" decoding="sync" draggable={false} onLoad={() => setWalkReady(true)} />
+                        <img className="launch-equipped-pose" src={equippedSpriteSrc} alt="" decoding="sync" draggable={false} />
                         {progress && <TobiraAccessories progress={progress} />}
                       </div>
                     </div>

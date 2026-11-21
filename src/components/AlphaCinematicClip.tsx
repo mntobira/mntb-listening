@@ -31,8 +31,8 @@ export const ALPHA_CINEMATIC_CLIPS = {
     sbsMp4: '/cinematics/battle_countdown-sbs.mp4',
     poster: '/cinematics/battle_countdown-poster.webp',
     endPlate: '/cinematics/battle_countdown-end.webp',
-    width: 420,
-    height: 736,
+    width: 560,
+    height: 980,
     durationSec: 5.16,
   },
 } as const satisfies Record<string, AlphaClipSpec>;
@@ -233,26 +233,66 @@ function AlphaPlayback({
     const sctx = scratch.getContext('2d', { willReadFrequently: true });
     const octx = outCanvas.getContext('2d');
     if (!sctx || !octx) return;
+    sctx.imageSmoothingEnabled = true;
+    sctx.imageSmoothingQuality = 'high';
+    octx.imageSmoothingEnabled = true;
+    octx.imageSmoothingQuality = 'high';
 
     let raf = 0;
+    let vfc = 0;
     let active = true;
-    const renderFrame = () => {
+    type VideoWithVFC = HTMLVideoElement & {
+      requestVideoFrameCallback?: (cb: () => void) => number;
+      cancelVideoFrameCallback?: (id: number) => void;
+    };
+    const vfcVideo = video as VideoWithVFC;
+    const hasVfc = typeof vfcVideo.requestVideoFrameCallback === 'function';
+
+    const drawCurrentFrame = () => {
       if (!active) return;
       if (video.readyState >= 2 && !video.paused && !video.ended) {
+        sctx.clearRect(0, 0, w, h * 2);
         sctx.drawImage(video, 0, 0, w, h * 2);
         const top = sctx.getImageData(0, 0, w, h);
         const bot = sctx.getImageData(0, h, w, h);
         const td = top.data;
         const bd = bot.data;
         for (let i = 0, len = td.length; i < len; i += 4) {
-          td[i + 3] = bd[i];
+          const rawA = bd[i];
+          const a = rawA < 8 ? 0 : rawA > 248 ? 255 : rawA;
+          td[i + 3] = a;
+          if (a === 0) {
+            td[i] = 0;
+            td[i + 1] = 0;
+            td[i + 2] = 0;
+          }
         }
         octx.putImageData(top, 0, 0);
       }
-      raf = window.requestAnimationFrame(renderFrame);
     };
-    raf = window.requestAnimationFrame(renderFrame);
-    return () => { active = false; window.cancelAnimationFrame(raf); };
+
+    const scheduleNext = () => {
+      if (!active) return;
+      if (hasVfc && vfcVideo.requestVideoFrameCallback) {
+        vfc = vfcVideo.requestVideoFrameCallback(() => {
+          drawCurrentFrame();
+          scheduleNext();
+        });
+      } else {
+        raf = window.requestAnimationFrame(() => {
+          drawCurrentFrame();
+          scheduleNext();
+        });
+      }
+    };
+
+    drawCurrentFrame();
+    scheduleNext();
+    return () => {
+      active = false;
+      if (raf) window.cancelAnimationFrame(raf);
+      if (vfc && vfcVideo.cancelVideoFrameCallback) vfcVideo.cancelVideoFrameCallback(vfc);
+    };
   }, [useCanvas, allowed, stopped, playing, clip.width, clip.height]);
 
   if (!allowed || stopped) return null;

@@ -258,6 +258,7 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
       const { isBgmEnabled, isAudioValid, appState } = bgmStateRef.current;
       if (!isBgmEnabled || !isAudioValid || !hasInteracted || !hasEntered || BGM_SILENT_STATES.includes(appState)) return;
       unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current, bgmElapsedMs()));
+      // バックグラウンド復帰直後の自動再生ブロックは次操作で再開するため無視する
       void audio.play().catch(() => undefined);
     };
     const stopOnPageHide = () => {
