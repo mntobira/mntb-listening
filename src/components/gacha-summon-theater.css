@@ -1,13 +1,15 @@
 /*
  * ===================================================================
- * ガチャ確定演出：星辰召喚神殿シアター 最上級版
+ * ガチャ確定演出：星辰召喚神殿シアター 極致版
  * （モンスターストライク × パズル＆ドラゴンズ × ドッカンバトル流・多層空間演出）
  * ===================================================================
  * - 小さな枠へのベタ貼りではなく、画面全体を支配するフルスクリーン宇宙星辰神殿
- * - 第1幕（data-act="duo"）：ストライク牽引照準リング＋流星の尾＋共鳴クリスタルゲート（丸窓被りゼロ）
- * - 第2幕（data-act="orb"）：三重逆回転魔法陣＋天頂ゴッドピラー＋龍脈オーブ冠ベゼル＋
- *   二連衝撃波リング＋二段斜め閃光カットイン＋縦書き確定印＋二重プラズマ稲妻クラック＋プリズム破片バースト
- * - 結果画面（.gacha-outcome）のSR/UR/LRカードにも王道ソシャゲ級のホログラム光沢スイープ＆後光を付与
+ * - 60fps Canvas 2D 星辰マナ渦粒子エンジン（第1幕は中心へ螺旋吸引 → 第2幕・昇格時は放射爆発）
+ * - 第1幕（data-act="duo"）：双方向ストライク牽引照準リング＋流星の尾＋共鳴クリスタルゲート（丸窓被りゼロ）
+ * - 第2幕（data-act="orb"）：三重逆回転魔法陣＋天頂ゴッドピラー＋12宝珠龍爪オーブ冠ベゼル＋
+ *   オーブ表面プリズム亀裂＋昇格暗転ヒットストップ＆特大確定漢字スラッシュ＋二連衝撃波リング＋
+ *   二段斜め閃光カットイン＋縦書き確定印＋二重プラズマ稲妻クラック＋16枚プリズム破片バースト
+ * - 結果画面（.gacha-outcome / .gacha-multi-result）にも王道ソシャゲ級のホログラム光沢＆レインボー枠を付与
  * - 属性付き高詳細度セレクタ（[data-gacha-reveal]）で上書きし強制フラグゼロを実現
  * - 文字サイズ 12px 以上・スキップボタン 44px 以上・prefers-reduced-motion 完全対応
  */
@@ -43,6 +45,7 @@
     radial-gradient(ellipse 84% 58% at 50% 44%, var(--bg-core) 0%, rgba(8, 14, 32, 0.95) 58%, var(--bg-deep) 100%);
   box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.78);
   user-select: none;
+  touch-action: manipulation;
 }
 
 /* レア度ステージ別の空間カラーパレット（青 → 黄金 → 7色プリズム虹 → 黒金紫UR → 深紅創世金LR） */
@@ -82,7 +85,12 @@
   --bg-deep: #0c0206;
 }
 
-/* 昇格時の重厚カメラシェイク（ドッカン／モンストの確定ヒットストップ打撃感） */
+/* 昇格瞬間の一瞬コントラスト・ヒットストップ増幅（ドッカン／モンストの確定インパクト） */
+.gacha-cinema.gacha-reveal[data-gacha-reveal][data-impact] {
+  animation: gacha-impact-contrast 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 昇格時の重厚カメラシェイク */
 .gacha-cinema.gacha-reveal[data-step-bump='1'] .gacha-summon-core-stage,
 .gacha-cinema.gacha-reveal[data-step-bump='2'] .gacha-summon-core-stage,
 .gacha-cinema.gacha-reveal[data-step-bump='3'] .gacha-summon-core-stage,
@@ -145,25 +153,25 @@
   transition: opacity 0.35s ease, width 0.35s ease;
 }
 
-.gacha-cinema.gacha-reveal[data-stage='gold'] .gacha-summon-pillar { opacity: 0.62; }
+.gacha-cinema.gacha-reveal[data-stage='gold'] .gacha-summon-pillar { opacity: 0.65; }
 .gacha-cinema.gacha-reveal[data-stage='rainbow'] .gacha-summon-pillar {
-  opacity: 0.8;
-  width: min(68vw, 310px);
+  opacity: 0.84;
+  width: min(70vw, 320px);
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(56, 189, 248, 0.28) 18%,
-    rgba(232, 121, 249, 0.44) 38%,
-    rgba(255, 255, 255, 0.68) 50%,
-    rgba(250, 204, 21, 0.44) 62%,
-    rgba(59, 130, 246, 0.28) 82%,
+    rgba(56, 189, 248, 0.3) 18%,
+    rgba(232, 121, 249, 0.46) 38%,
+    rgba(255, 255, 255, 0.72) 50%,
+    rgba(250, 204, 21, 0.46) 62%,
+    rgba(59, 130, 246, 0.3) 82%,
     transparent 100%
   );
 }
 .gacha-cinema.gacha-reveal[data-stage='ur'] .gacha-summon-pillar,
 .gacha-cinema.gacha-reveal[data-stage='lr'] .gacha-summon-pillar {
-  opacity: 0.92;
-  width: min(74vw, 340px);
+  opacity: 0.94;
+  width: min(76vw, 350px);
 }
 
 /* Layer 2: ドッカンバトル風 集中スピードライン＆7色プリズム回転ゴッドレイ */
@@ -187,23 +195,23 @@
 
 .gacha-cinema.gacha-reveal[data-stage='rainbow'] .gacha-summon-speedlines {
   opacity: 0.95;
-  animation-duration: 7.2s;
+  animation-duration: 7s;
   background: conic-gradient(
     from 0deg,
-    rgba(244, 63, 94, 0.42),
-    rgba(251, 191, 36, 0.42),
-    rgba(52, 211, 153, 0.42),
-    rgba(56, 189, 248, 0.46),
-    rgba(168, 85, 247, 0.46),
-    rgba(236, 72, 153, 0.42),
-    rgba(244, 63, 94, 0.42)
+    rgba(244, 63, 94, 0.44),
+    rgba(251, 191, 36, 0.44),
+    rgba(52, 211, 153, 0.44),
+    rgba(56, 189, 248, 0.48),
+    rgba(168, 85, 247, 0.48),
+    rgba(236, 72, 153, 0.44),
+    rgba(244, 63, 94, 0.44)
   );
 }
 
 .gacha-cinema.gacha-reveal[data-stage='ur'] .gacha-summon-speedlines,
 .gacha-cinema.gacha-reveal[data-stage='lr'] .gacha-summon-speedlines {
   opacity: 0.96;
-  animation-duration: 5.6s;
+  animation-duration: 5.2s;
 }
 
 .gacha-cinema.gacha-reveal .gacha-reveal-rays {
@@ -211,7 +219,17 @@
   opacity: 0.88;
 }
 
-/* Layer 2.5: 上空から飛来する召喚メテオ群（inline style を使わず nth-child で軌道定義） */
+/* Layer 2.2: 60fps Canvas 2D マナ渦＆昇格爆発パーティクルキャンバス */
+.gacha-summon-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Layer 2.5: 上空から飛来する召喚メテオ群 */
 .gacha-summon-meteors {
   position: absolute;
   inset: 0;
@@ -230,7 +248,7 @@
   left: var(--mx);
   top: var(--my);
   width: 3px;
-  height: 120px;
+  height: 125px;
   border-radius: 999px;
   background: linear-gradient(180deg, transparent 0%, var(--c1) 55%, #ffffff 100%);
   box-shadow: 0 0 12px 2px var(--c1);
@@ -262,8 +280,8 @@
 .gacha-summon-magic-circle {
   position: absolute;
   left: 50%;
-  top: 45%;
-  width: min(90vw, 480px);
+  top: 44%;
+  width: min(90vw, 484px);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   z-index: 2;
@@ -280,7 +298,7 @@
   height: 100%;
   color: var(--c1);
   filter: drop-shadow(0 0 12px var(--c1)) drop-shadow(0 0 28px color-mix(in srgb, var(--c1) 58%, transparent));
-  opacity: 0.8;
+  opacity: 0.82;
   transition: color 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
 }
 
@@ -303,30 +321,74 @@
 }
 
 .gacha-cinema.gacha-reveal[data-stage='gold'] .gacha-magic-ring-outer { animation-duration: 12s; }
-.gacha-cinema.gacha-reveal[data-stage='rainbow'] .gacha-magic-ring-outer { animation-duration: 7.2s; opacity: 0.96; }
+.gacha-cinema.gacha-reveal[data-stage='rainbow'] .gacha-magic-ring-outer { animation-duration: 7s; opacity: 0.96; }
 .gacha-cinema.gacha-reveal[data-stage='ur'] .gacha-magic-ring-outer,
-.gacha-cinema.gacha-reveal[data-stage='lr'] .gacha-magic-ring-outer { animation-duration: 4.2s; opacity: 1; }
+.gacha-cinema.gacha-reveal[data-stage='lr'] .gacha-magic-ring-outer { animation-duration: 4s; opacity: 1; }
 .gacha-cinema.gacha-reveal[data-tease] .gacha-magic-ring-outer,
 .gacha-cinema.gacha-reveal[data-tease] .gacha-magic-ring-inner,
 .gacha-cinema.gacha-reveal[data-tease] .gacha-magic-ring-core {
-  animation-duration: 2.2s;
+  animation-duration: 2s;
   opacity: 1;
+}
+
+/* ドッカン／モンスト流 昇格瞬間の特大確定漢字インパクトバナー（全画面横断フラッシュ） */
+.gacha-summon-impact-banner {
+  position: absolute;
+  inset-inline: -8%;
+  top: 41%;
+  z-index: 8;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  border-top: 2.5px solid #ffffff;
+  border-bottom: 2.5px solid #ffffff;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(4, 7, 18, 0.92) 20%,
+    color-mix(in srgb, var(--c3) 82%, #050814) 50%,
+    rgba(4, 7, 18, 0.92) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 48px 12px var(--c1);
+  transform: rotate(-5deg);
+  animation: gacha-impact-banner-flash 0.46s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.gacha-summon-impact-banner > small {
+  font: 900 12px/1.1 var(--mt-font-display, sans-serif);
+  letter-spacing: 0.24em;
+  color: var(--c2);
+  text-shadow: 0 0 10px var(--c1);
+}
+
+.gacha-summon-impact-banner > strong {
+  font: 900 clamp(28px, 8.5vw, 44px)/1.12 var(--mt-font-display, sans-serif);
+  letter-spacing: 0.12em;
+  color: #ffffff;
+  text-shadow:
+    0 0 16px var(--c1),
+    0 0 34px var(--c1),
+    0 3px 6px rgba(0, 0, 0, 0.95);
 }
 
 /* 縦書き確定印スタンプ（モンスト「確定！」× ドッカン漢字演出） */
 .gacha-summon-seal {
   position: absolute;
   right: max(12px, 4vw);
-  top: 22%;
+  top: 21%;
   z-index: 6;
   pointer-events: none;
   padding: 10px 8px;
   border: 2px solid var(--c2);
   border-radius: 10px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--c3) 86%, #090612), rgba(8, 10, 24, 0.9));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c3) 88%, #090612), rgba(8, 10, 24, 0.92));
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--c1) 42%, transparent),
-    0 0 28px 6px var(--c1);
+    0 0 0 3px color-mix(in srgb, var(--c1) 45%, transparent),
+    0 0 30px 7px var(--c1);
   writing-mode: vertical-rl;
   text-orientation: upright;
   font: 900 16px/1.15 var(--mt-font-display, sans-serif);
@@ -336,7 +398,7 @@
   animation: gacha-seal-stamp 0.36s cubic-bezier(0.18, 1.4, 0.32, 1) both;
 }
 
-/* 中央コア舞台（第1幕デュオポータル ⇄ 第2幕召喚オーブ） */
+/* 中央コア舞台（第1幕デュオポータル ⇄ 第2幕召喚オーブ・タップ＆プル対応） */
 .gacha-summon-core-stage {
   position: relative;
   z-index: 3;
@@ -345,6 +407,7 @@
   display: grid;
   place-items: center;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 /* モンスト風・ストライクショット牽引照準アロー（第1幕で引っ張り収束 → 第2幕で解放フェード） */
@@ -356,14 +419,18 @@
   z-index: 4;
   pointer-events: none;
   color: var(--c2);
-  filter: drop-shadow(0 0 10px var(--c1)) drop-shadow(0 0 20px var(--c1));
+  filter: drop-shadow(0 0 10px var(--c1)) drop-shadow(0 0 22px var(--c1));
   animation: gacha-slingshot-pull 0.76s cubic-bezier(0.22, 1, 0.36, 1) both;
-  transition: opacity 0.28s ease, transform 0.32s ease;
+  transition: opacity 0.28s ease, transform 0.2s ease;
+}
+
+.gacha-summon-slingshot[data-pulled] {
+  transform: scale(0.92) translateY(8px);
 }
 
 .gacha-cinema.gacha-reveal[data-act='orb'] .gacha-summon-slingshot {
   opacity: 0;
-  transform: scale(1.26);
+  transform: scale(1.28);
 }
 
 /* 第1幕：とびら君＆カギノスケ共鳴クリスタルポータル（丸窓と被らずクリアに主役表示！） */
@@ -380,7 +447,7 @@
   box-shadow:
     0 0 0 3px var(--c2),
     0 0 0 8px color-mix(in srgb, var(--c1) 45%, transparent),
-    0 0 46px 14px var(--c1),
+    0 0 48px 15px var(--c1),
     inset 0 0 28px rgba(0, 0, 0, 0.55);
   transition: opacity 0.42s ease, transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), filter 0.42s ease, box-shadow 0.3s ease;
 }
@@ -406,13 +473,13 @@
   mask-image: radial-gradient(circle, transparent 36%, #000 58%, transparent 76%);
 }
 
-/* 第2幕：龍脈オーブ冠ラッパー＆聖なる召喚オーブ（GACHA_REVEAL_CLIPS） */
+/* 第2幕：龍爪オーブ冠ラッパー＆聖なる召喚オーブ（GACHA_REVEAL_CLIPS） */
 .gacha-reveal-orb-wrap {
   position: relative;
   z-index: 3;
   display: grid;
   place-items: center;
-  width: min(74vw, 286px);
+  width: min(74vw, 288px);
   aspect-ratio: 1;
   animation: gacha-orb-materialize 0.42s cubic-bezier(0.18, 1.35, 0.34, 1) both;
 }
@@ -425,8 +492,8 @@
   z-index: 4;
   pointer-events: none;
   color: var(--c2);
-  filter: drop-shadow(0 0 10px var(--c1)) drop-shadow(0 0 22px var(--c1));
-  animation: gacha-rays-spin-rev 22s linear infinite;
+  filter: drop-shadow(0 0 10px var(--c1)) drop-shadow(0 0 24px var(--c1));
+  animation: gacha-rays-spin-rev 20s linear infinite;
 }
 
 .gacha-cinema.gacha-reveal[data-gacha-reveal] .gacha-reveal-orb {
@@ -439,9 +506,9 @@
   background: radial-gradient(circle at 50% 45%, #fbf5e8 58%, #ead9b5 100%);
   box-shadow:
     0 0 0 4px var(--c2),
-    0 0 0 10px color-mix(in srgb, var(--c1) 52%, transparent),
-    0 0 42px 12px var(--c1),
-    0 0 105px 30px color-mix(in srgb, var(--c1) 70%, transparent);
+    0 0 0 10px color-mix(in srgb, var(--c1) 54%, transparent),
+    0 0 44px 13px var(--c1),
+    0 0 110px 32px color-mix(in srgb, var(--c1) 72%, transparent);
   transition: opacity 0.32s ease, transform 0.38s cubic-bezier(0.2, 1.4, 0.35, 1), box-shadow 0.3s ease;
 }
 
@@ -449,9 +516,22 @@
 .gacha-cinema.gacha-reveal[data-gacha-reveal][data-stage='rainbow'] .gacha-reveal-orb {
   box-shadow:
     0 0 0 4px #ffffff,
-    0 0 0 10px rgba(232, 121, 249, 0.62),
-    0 0 46px 14px rgba(56, 189, 248, 0.88),
-    0 0 110px 34px rgba(232, 121, 249, 0.72);
+    0 0 0 10px rgba(232, 121, 249, 0.65),
+    0 0 48px 15px rgba(56, 189, 248, 0.9),
+    0 0 115px 36px rgba(232, 121, 249, 0.75);
+}
+
+/* オーブ表面に走る光の亀裂（パズドラのダイヤタマゴ割れ／モンストのオーブ覚醒クラック） */
+.gacha-orb-fracture {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.75;
+  filter: drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 14px var(--c1));
+  animation: gacha-crack-flicker 0.24s steps(2, jump-none) infinite;
 }
 
 /* オーブ内縁のクリスタル球面レンズ光沢（クリーム背景の境目を宝石オーブ化） */
@@ -462,14 +542,14 @@
   border-radius: 50%;
   pointer-events: none;
   background:
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.56) 0%, rgba(255, 255, 255, 0.1) 25%, transparent 48%),
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.58) 0%, rgba(255, 255, 255, 0.12) 25%, transparent 48%),
     radial-gradient(circle, transparent 56%, color-mix(in srgb, var(--c1) 48%, rgba(10, 16, 36, 0.58)) 88%, var(--c2) 100%);
   box-shadow: inset 0 0 24px 5px color-mix(in srgb, var(--c1) 68%, transparent);
 }
 
 /* 溜め（tease）中の中央オーブ鼓動 */
 .gacha-cinema.gacha-reveal[data-tease] .gacha-reveal-orb-wrap {
-  animation: gacha-orb-overcharge 0.26s ease-in-out infinite alternate;
+  animation: gacha-orb-overcharge 0.24s ease-in-out infinite alternate;
 }
 
 /* 二連昇格ショックウェーブリング（モンスト／パズドラの確定波紋！） */
@@ -485,7 +565,7 @@
   inset: 8%;
   border-radius: 50%;
   border: 4px solid var(--c2);
-  box-shadow: 0 0 30px 8px var(--c1), inset 0 0 24px 4px var(--c1);
+  box-shadow: 0 0 32px 8px var(--c1), inset 0 0 24px 4px var(--c1);
   opacity: 0;
   animation: gacha-shockwave-expand 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -497,7 +577,7 @@
   animation-duration: 0.86s;
 }
 
-/* 終幕シャッターバースト：14枚のプリズム結晶シャードが放射飛散（nth-child で角度割当） */
+/* 終幕シャッターバースト：16枚のプリズム結晶シャードが放射飛散（nth-child で角度割当） */
 .gacha-summon-shards {
   position: absolute;
   inset: 0;
@@ -507,7 +587,7 @@
 
 .gacha-summon-shards > i {
   --sdeg: 0deg;
-  --sdist: 155px;
+  --sdist: 160px;
   --ssize: 16px;
   position: absolute;
   left: 50%;
@@ -522,19 +602,21 @@
   animation: gacha-shard-burst 0.46s cubic-bezier(0.14, 0.92, 0.28, 1) forwards;
 }
 
-.gacha-summon-shards > i:nth-child(2) { --sdeg: 26deg; --sdist: 185px; --ssize: 20px; }
-.gacha-summon-shards > i:nth-child(3) { --sdeg: 51deg; --sdist: 210px; --ssize: 24px; }
-.gacha-summon-shards > i:nth-child(4) { --sdeg: 77deg; --sdist: 155px; --ssize: 16px; }
-.gacha-summon-shards > i:nth-child(5) { --sdeg: 103deg; --sdist: 185px; --ssize: 20px; }
-.gacha-summon-shards > i:nth-child(6) { --sdeg: 129deg; --sdist: 210px; --ssize: 24px; }
-.gacha-summon-shards > i:nth-child(7) { --sdeg: 154deg; --sdist: 155px; --ssize: 16px; }
-.gacha-summon-shards > i:nth-child(8) { --sdeg: 180deg; --sdist: 185px; --ssize: 20px; }
-.gacha-summon-shards > i:nth-child(9) { --sdeg: 206deg; --sdist: 210px; --ssize: 24px; }
-.gacha-summon-shards > i:nth-child(10) { --sdeg: 231deg; --sdist: 155px; --ssize: 16px; }
-.gacha-summon-shards > i:nth-child(11) { --sdeg: 257deg; --sdist: 185px; --ssize: 20px; }
-.gacha-summon-shards > i:nth-child(12) { --sdeg: 283deg; --sdist: 210px; --ssize: 24px; }
-.gacha-summon-shards > i:nth-child(13) { --sdeg: 309deg; --sdist: 155px; --ssize: 16px; }
-.gacha-summon-shards > i:nth-child(14) { --sdeg: 334deg; --sdist: 185px; --ssize: 20px; }
+.gacha-summon-shards > i:nth-child(2) { --sdeg: 22.5deg; --sdist: 190px; --ssize: 20px; }
+.gacha-summon-shards > i:nth-child(3) { --sdeg: 45deg; --sdist: 215px; --ssize: 24px; }
+.gacha-summon-shards > i:nth-child(4) { --sdeg: 67.5deg; --sdist: 160px; --ssize: 16px; }
+.gacha-summon-shards > i:nth-child(5) { --sdeg: 90deg; --sdist: 195px; --ssize: 22px; }
+.gacha-summon-shards > i:nth-child(6) { --sdeg: 112.5deg; --sdist: 215px; --ssize: 24px; }
+.gacha-summon-shards > i:nth-child(7) { --sdeg: 135deg; --sdist: 160px; --ssize: 16px; }
+.gacha-summon-shards > i:nth-child(8) { --sdeg: 157.5deg; --sdist: 190px; --ssize: 20px; }
+.gacha-summon-shards > i:nth-child(9) { --sdeg: 180deg; --sdist: 220px; --ssize: 25px; }
+.gacha-summon-shards > i:nth-child(10) { --sdeg: 202.5deg; --sdist: 160px; --ssize: 16px; }
+.gacha-summon-shards > i:nth-child(11) { --sdeg: 225deg; --sdist: 190px; --ssize: 20px; }
+.gacha-summon-shards > i:nth-child(12) { --sdeg: 247.5deg; --sdist: 215px; --ssize: 24px; }
+.gacha-summon-shards > i:nth-child(13) { --sdeg: 270deg; --sdist: 165px; --ssize: 18px; }
+.gacha-summon-shards > i:nth-child(14) { --sdeg: 292.5deg; --sdist: 195px; --ssize: 21px; }
+.gacha-summon-shards > i:nth-child(15) { --sdeg: 315deg; --sdist: 215px; --ssize: 24px; }
+.gacha-summon-shards > i:nth-child(16) { --sdeg: 337.5deg; --sdist: 170px; --ssize: 18px; }
 
 /* 二重プラズマ稲妻＆次元ガラス破砕クラック（SR / UR / LR ＆ 溜め ＆ バーストで発動！） */
 .gacha-summon-cracks {
@@ -550,7 +632,7 @@
   transition: opacity 0.22s ease;
 }
 
-.gacha-cinema.gacha-reveal[data-stage='rainbow'] .gacha-summon-cracks { opacity: 0.58; }
+.gacha-cinema.gacha-reveal[data-stage='rainbow'] .gacha-summon-cracks { opacity: 0.6; }
 .gacha-cinema.gacha-reveal[data-stage='ur'] .gacha-summon-cracks,
 .gacha-cinema.gacha-reveal[data-stage='lr'] .gacha-summon-cracks,
 .gacha-cinema.gacha-reveal[data-tease] .gacha-summon-cracks,
@@ -644,7 +726,7 @@
 }
 
 .gacha-cinema.gacha-reveal[data-gacha-reveal] > .gacha-reveal-meter li[data-on] {
-  transform: skewX(-18deg) scaleY(1.18);
+  transform: skewX(-18deg) scaleY(1.2);
 }
 
 .gacha-room .gacha-cinema.gacha-reveal[data-gacha-reveal] > button,
@@ -697,7 +779,12 @@
 .gacha-cinema.gacha-reveal[data-gacha-reveal] .gacha-reveal-sparks > i:nth-child(15) { --i: 10.5; }
 .gacha-cinema.gacha-reveal[data-gacha-reveal] .gacha-reveal-sparks > i:nth-child(16) { --i: 11.25; }
 
-/* 結果画面の星（RarityStars）の遅延も CSS nth-child で制御 */
+/* 結果画面の星（RarityStars）の遅延＆黄金きらめき強化 */
+.gacha-stars > i {
+  display: inline-block;
+  color: #f59e0b;
+  text-shadow: 0 1px 0 #fff, 0 0 8px rgba(251, 191, 36, 0.55);
+}
 .gacha-stars > i:nth-child(1) { animation-delay: 0.15s; }
 .gacha-stars > i:nth-child(2) { animation-delay: 0.27s; }
 .gacha-stars > i:nth-child(3) { animation-delay: 0.39s; }
@@ -706,29 +793,57 @@
 .gacha-stars > i:nth-child(6) { animation-delay: 0.75s; }
 
 .gacha-cinema.gacha-reveal .gacha-reveal-flash {
-  z-index: 7;
+  z-index: 9;
 }
 
 /* ===================================================================
- * ④ 結果降臨ステージ（SR / UR / LR）のソシャゲ最高峰ホログラム＆後光強化
+ * ④ 結果降臨ステージ（単発 .gacha-outcome ＆ 連ガチャ .gacha-multi-result）
+ *    モンスト／ドッカン級のホログラム光沢スイープ・7色虹ベゼル・NEWカード輝き強化
  * =================================================================== */
-.gacha-room .gacha-outcome {
+.gacha-room .gacha-outcome,
+.gacha-room .gacha-multi-result {
   position: relative;
   overflow: hidden;
   isolation: isolate;
 }
 
+/* 単発 SR / UR / LR：回転サンバースト後光 */
+.gacha-room .gacha-outcome > .gacha-result-halo {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 300px;
+  height: 300px;
+  margin-left: -150px;
+  margin-top: -150px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(251, 191, 36, 0.24) 0deg 9deg,
+    transparent 9deg 18deg
+  );
+  -webkit-mask-image: radial-gradient(circle, #000 0%, #000 42%, transparent 72%);
+  mask-image: radial-gradient(circle, #000 0%, #000 42%, transparent 72%);
+  animation: gacha-rays-spin 18s linear infinite;
+}
+
 .gacha-room .gacha-outcome[data-rarity='SR'],
 .gacha-room .gacha-outcome[data-rarity='UR'],
-.gacha-room .gacha-outcome[data-rarity='LR'] {
+.gacha-room .gacha-outcome[data-rarity='LR'],
+.gacha-room .gacha-multi-result[data-rarity='UR'],
+.gacha-room .gacha-multi-result[data-rarity='LR'] {
   box-shadow:
     0 0 0 3px #ffffff,
-    0 8px 28px rgba(120, 74, 12, 0.24),
-    0 0 38px rgba(251, 191, 36, 0.32);
+    0 10px 30px rgba(120, 74, 12, 0.24),
+    0 0 42px rgba(251, 191, 36, 0.34);
 }
 
 .gacha-room .gacha-outcome[data-rarity='UR']::after,
-.gacha-room .gacha-outcome[data-rarity='LR']::after {
+.gacha-room .gacha-outcome[data-rarity='LR']::after,
+.gacha-room .gacha-multi-result[data-rarity='UR']::after,
+.gacha-room .gacha-multi-result[data-rarity='LR']::after {
   content: '';
   position: absolute;
   inset: -40% -80%;
@@ -737,8 +852,8 @@
   background: linear-gradient(
     115deg,
     transparent 38%,
-    rgba(255, 255, 255, 0.55) 47%,
-    rgba(254, 240, 138, 0.38) 51%,
+    rgba(255, 255, 255, 0.56) 47%,
+    rgba(254, 240, 138, 0.4) 51%,
     transparent 60%
   );
   animation: gacha-holo-sheen 3.8s ease-in-out infinite;
@@ -749,9 +864,16 @@
   z-index: 1;
 }
 
-.gacha-room .gacha-outcome > .gacha-result-halo {
-  position: absolute;
-  z-index: 0;
+/* 連ガチャ結果グリッドの UR / LR ＆ NEW カードにも王道ソシャゲの金虹リムを付与 */
+.gacha-room .gacha-multi-grid > li[data-rarity='SR'] {
+  box-shadow: 0 0 0 1.5px #c084fc, 0 4px 12px rgba(168, 85, 247, 0.2);
+}
+
+.gacha-room .gacha-multi-grid > li[data-rarity='UR'],
+.gacha-room .gacha-multi-grid > li[data-rarity='LR'] {
+  box-shadow:
+    0 0 0 2px #fbbf24,
+    0 0 18px rgba(251, 191, 36, 0.42);
 }
 
 /* 背の低いスマホ横画面などでも1画面に美しく収める */
@@ -780,6 +902,31 @@
   .gacha-room .gacha-cinema.gacha-reveal[data-gacha-reveal] > .gacha-reveal-meter,
   .gacha-cinema.gacha-reveal[data-gacha-reveal] > .gacha-reveal-meter {
     margin-bottom: 4px;
+  }
+}
+
+@keyframes gacha-impact-contrast {
+  0% { filter: brightness(1.55) contrast(1.25); }
+  35% { filter: brightness(0.92) contrast(1.18); }
+  100% { filter: none; }
+}
+
+@keyframes gacha-impact-banner-flash {
+  0% {
+    opacity: 0;
+    transform: rotate(-5deg) scaleY(0.25) scaleX(1.15);
+  }
+  22% {
+    opacity: 1;
+    transform: rotate(-5deg) scaleY(1.06) scaleX(1);
+  }
+  78% {
+    opacity: 1;
+    transform: rotate(-5deg) scaleY(1) scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-5deg) scaleY(1.25) scaleX(1.05);
   }
 }
 
@@ -920,22 +1067,28 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .gacha-cinema.gacha-reveal[data-gacha-reveal][data-impact],
   .gacha-summon-cosmos::before,
   .gacha-summon-speedlines,
   .gacha-summon-meteors > i,
   .gacha-magic-ring-outer,
   .gacha-magic-ring-inner,
   .gacha-magic-ring-core,
+  .gacha-summon-impact-banner,
   .gacha-summon-slingshot,
   .gacha-reveal-orb-wrap,
   .gacha-orb-crest,
+  .gacha-orb-fracture,
   .gacha-summon-seal,
   .gacha-summon-shockwave,
   .gacha-summon-shards > i,
   .gacha-summon-cutin,
   .gacha-summon-cracks,
+  .gacha-room .gacha-outcome > .gacha-result-halo,
   .gacha-room .gacha-outcome[data-rarity='UR']::after,
-  .gacha-room .gacha-outcome[data-rarity='LR']::after {
+  .gacha-room .gacha-outcome[data-rarity='LR']::after,
+  .gacha-room .gacha-multi-result[data-rarity='UR']::after,
+  .gacha-room .gacha-multi-result[data-rarity='LR']::after {
     animation: none;
   }
 }

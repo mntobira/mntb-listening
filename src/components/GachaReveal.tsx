@@ -1,5 +1,5 @@
 import { useMountEffect } from '../hooks/useMountEffect';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { CinematicSequence, GACHA_REVEAL_CLIPS } from './CinematicClip';
 import { FULLFRAME_CINEMATIC_MOVIES } from './AlphaCinematicClip';
 import type { GachaRarity } from '../battle/core/growth';
@@ -23,7 +23,10 @@ type StageSpec = {
   cutin: string;
   sub: string;
   sealJp: string;
+  impactKanji: string;
+  impactSub: string;
   freq: number;
+  colors: readonly [string, string, string];
 };
 
 const STAGE_SPEC: Record<RevealStage, StageSpec> = {
@@ -31,46 +34,224 @@ const STAGE_SPEC: Record<RevealStage, StageSpec> = {
     cutin: '✦ STARLIGHT PULL — 星辰召喚 ✦',
     sub: 'SUMMON GATE ENGAGED',
     sealJp: '星扉開放',
+    impactKanji: '召喚発動',
+    impactSub: 'STARLIGHT GATE',
     freq: 329.63,
+    colors: ['#60a5fa', '#e0f2fe', '#38bdf8'],
   },
   gold: {
     cutin: '⚡ GOLD STRIKE — 金扉昇格・R以上確定！ ⚡',
     sub: 'GOLDEN DRAGONPULSE',
     sealJp: '黄金昇格',
+    impactKanji: '金扉昇格！',
+    impactSub: 'RARE OR ABOVE',
     freq: 440,
+    colors: ['#fbbf24', '#fef9c3', '#f59e0b'],
   },
   rainbow: {
     cutin: '🌈 PRISM OVERDRIVE — 虹扉突破・SR以上確定！！ 🌈',
     sub: 'SEVENFOLD RAINBOW SURGE',
     sealJp: '虹彩突破',
+    impactKanji: '虹扉突破！！',
+    impactSub: 'SUPER RARE GUARANTEED',
     freq: 587.33,
+    colors: ['#e879f9', '#38bdf8', '#fde047'],
   },
   ur: {
     cutin: '👑 ULTRA AWAKENING — 超激レア UR確定！！ 👑',
     sub: 'DIMENSIONAL SHATTER',
     sealJp: '超絶確定',
+    impactKanji: '超絶確定！！',
+    impactSub: 'ULTRA RARE AWAKENING',
     freq: 783.99,
+    colors: ['#facc15', '#c084fc', '#f472b6'],
   },
   lr: {
     cutin: '🔥 LEGENDARY ADVENT — 伝説降臨 LR確定！！！ 🔥',
     sub: 'GENESIS SUPERNOVA',
     sealJp: '伝説降臨',
+    impactKanji: '伝説降臨！！！',
+    impactSub: 'LEGENDARY GENESIS',
     freq: 1046.5,
+    colors: ['#fde047', '#fb7185', '#ffffff'],
   },
 };
 
 const METEOR_COUNT = 6;
-const SHARD_COUNT = 14;
+const SHARD_COUNT = 16;
+
+type SummonParticle = {
+  angle: number;
+  radius: number;
+  vr: number;
+  omega: number;
+  size: number;
+  alpha: number;
+  decay: number;
+  color: string;
+  diamond: boolean;
+};
 
 /**
- * 共有 AudioContext 上で鳴らす召喚シンセレイヤー（モンストの引っ張り溜め音・ドッカンの気弾上昇音・ガラス破砕チャイム）。
+ * 60fps Canvas 2D 星辰マナ渦＆昇格爆発パーティクルエンジン（GPU合成を邪魔しない軽量 48〜96 粒子）。
+ * 第1幕は外周から中央ゲートへ螺旋吸引（ドッカンの気集束）、第2幕＆昇格時は中央オーブから螺旋噴出！
+ */
+function SummonParticleCanvas({
+  act,
+  stage,
+  shockSeq,
+  burst,
+}: {
+  act: 'duo' | 'orb';
+  stage: RevealStage;
+  shockSeq: number;
+  burst: boolean;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const stateRef = useRef({ act, stage, burst });
+  stateRef.current = { act, stage, burst };
+  const prevShockRef = useRef(0);
+  const particlesRef = useRef<SummonParticle[]>([]);
+
+  useEffect(() => {
+    const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const resize = () => {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const w = Math.max(320, window.innerWidth);
+      const h = Math.max(480, window.innerHeight);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const spawnAmbient = (inward: boolean, palette: readonly [string, string, string]): SummonParticle => {
+      const maxR = Math.hypot(window.innerWidth, window.innerHeight) * 0.48;
+      return {
+        angle: Math.random() * Math.PI * 2,
+        radius: inward ? 130 + Math.random() * maxR * 0.75 : 34 + Math.random() * 90,
+        vr: inward ? -(1.8 + Math.random() * 2.6) : 0.9 + Math.random() * 2.4,
+        omega: (Math.random() < 0.5 ? -1 : 1) * (0.012 + Math.random() * 0.022),
+        size: 2.2 + Math.random() * 4.4,
+        alpha: 0.55 + Math.random() * 0.45,
+        decay: 0.006 + Math.random() * 0.008,
+        color: palette[Math.floor(Math.random() * palette.length)] ?? '#ffffff',
+        diamond: Math.random() > 0.38,
+      };
+    };
+
+    const initialPalette = STAGE_SPEC[stateRef.current.stage].colors;
+    particlesRef.current = Array.from({ length: 44 }, () => spawnAmbient(true, initialPalette));
+
+    let rafId = 0;
+    const render = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const cx = w * 0.5;
+      const cy = h * 0.44;
+      const { act: curAct, stage: curStage, burst: isBurst } = stateRef.current;
+      const palette = STAGE_SPEC[curStage].colors;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+
+      const list = particlesRef.current;
+      const targetCount = curStage === 'lr' || curStage === 'ur' ? 68 : curStage === 'rainbow' ? 58 : 44;
+      while (list.length < targetCount) {
+        list.push(spawnAmbient(curAct === 'duo', palette));
+      }
+
+      for (let i = list.length - 1; i >= 0; i--) {
+        const p = list[i];
+        p.angle += p.omega * (isBurst ? 2.2 : 1);
+        p.radius += p.vr * (isBurst ? 2.8 : 1);
+        p.alpha -= p.decay;
+
+        if (p.alpha <= 0.02 || p.radius < 12 || p.radius > Math.max(w, h) * 0.75) {
+          if (list.length <= targetCount) {
+            list[i] = spawnAmbient(curAct === 'duo', palette);
+          } else {
+            list.splice(i, 1);
+          }
+          continue;
+        }
+
+        const x = cx + Math.cos(p.angle) * p.radius;
+        const y = cy + Math.sin(p.angle) * p.radius;
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.alpha));
+        ctx.fillStyle = p.color;
+
+        if (p.diamond) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(p.angle + Math.PI * 0.25);
+          const s = p.size;
+          ctx.beginPath();
+          ctx.moveTo(0, -s * 1.45);
+          ctx.lineTo(s * 0.85, 0);
+          ctx.lineTo(0, s * 1.45);
+          ctx.lineTo(-s * 0.85, 0);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        } else {
+          ctx.beginPath();
+          ctx.arc(x, y, p.size * 0.75, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.restore();
+      rafId = requestAnimationFrame(render);
+    };
+    rafId = requestAnimationFrame(render);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (shockSeq <= prevShockRef.current) return;
+    prevShockRef.current = shockSeq;
+    const palette = STAGE_SPEC[stage].colors;
+    const burstCount = stage === 'lr' || stage === 'ur' ? 34 : 24;
+    for (let k = 0; k < burstCount; k++) {
+      particlesRef.current.push({
+        angle: (Math.PI * 2 * k) / burstCount + (Math.random() - 0.5) * 0.18,
+        radius: 42 + Math.random() * 26,
+        vr: 3.4 + Math.random() * 4.8,
+        omega: (Math.random() - 0.5) * 0.03,
+        size: 3.2 + Math.random() * 4.6,
+        alpha: 0.96,
+        decay: 0.016 + Math.random() * 0.012,
+        color: k % 3 === 0 ? '#ffffff' : (palette[k % palette.length] ?? '#ffffff'),
+        diamond: true,
+      });
+    }
+  }, [shockSeq, stage]);
+
+  return <canvas ref={canvasRef} className="gacha-summon-particles" aria-hidden="true" />;
+}
+
+/**
+ * 共有 AudioContext 上で鳴らす召喚シンセレイヤー（モンストの引っ張り溜め音・ドッカンの重低音インパクト＆上昇和音・結晶破砕ファンファーレ）。
  * 既存の battle_sfx 設定と音量設定を厳守し、新しい AudioContext は絶対に作らない。
  */
-function playSummonSynth(kind: 'charge' | 'step' | 'tease' | 'shatter', stage: RevealStage): void {
+function playSummonSynth(kind: 'charge' | 'pull' | 'step' | 'tease' | 'shatter', stage: RevealStage): void {
   if (!sfxEnabled()) return;
   const ac = sharedAudioContextResumed();
   if (!ac || ac.state !== 'running') return;
-  const masterVol = Math.max(0, Math.min(1, readAudioPreferences().volume)) * 0.16;
+  const masterVol = Math.max(0, Math.min(1, readAudioPreferences().volume)) * 0.17;
   if (masterVol <= 0.001) return;
 
   try {
@@ -81,31 +262,60 @@ function playSummonSynth(kind: 'charge' | 'step' | 'tease' | 'shatter', stage: R
       const osc = ac.createOscillator();
       const gain = ac.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(196, now);
-      osc.frequency.exponentialRampToValueAtTime(392, now + 0.58);
+      osc.frequency.setValueAtTime(185, now);
+      osc.frequency.exponentialRampToValueAtTime(415, now + 0.62);
       gain.gain.setValueAtTime(0.0001, now);
       gain.gain.linearRampToValueAtTime(masterVol * 0.85, now + 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.62);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.66);
       osc.connect(gain).connect(ac.destination);
       osc.start(now);
-      osc.stop(now + 0.64);
+      osc.stop(now + 0.68);
+      return;
+    }
+
+    if (kind === 'pull') {
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.11);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(masterVol * 0.75, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+      osc.connect(gain).connect(ac.destination);
+      osc.start(now);
+      osc.stop(now + 0.16);
       return;
     }
 
     if (kind === 'step') {
-      [1, 1.25, 1.5].forEach((ratio, idx) => {
+      // 重低音サブベース打撃（モンスト／ドッカンの「ドンッ！」）
+      const sub = ac.createOscillator();
+      const subGain = ac.createGain();
+      sub.type = 'sine';
+      sub.frequency.setValueAtTime(135, now);
+      sub.frequency.exponentialRampToValueAtTime(42, now + 0.22);
+      subGain.gain.setValueAtTime(0.0001, now);
+      subGain.gain.linearRampToValueAtTime(masterVol * 1.15, now + 0.012);
+      subGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+      sub.connect(subGain).connect(ac.destination);
+      sub.start(now);
+      sub.stop(now + 0.26);
+
+      // 昇格アルペジオ倍音
+      [1, 1.25, 1.5, stage === 'ur' || stage === 'lr' ? 2 : 1.5].forEach((ratio, idx) => {
         const osc = ac.createOscillator();
         const gain = ac.createGain();
-        const t0 = now + idx * 0.035;
+        const t0 = now + idx * 0.032;
         osc.type = stage === 'ur' || stage === 'lr' ? 'sawtooth' : 'triangle';
-        osc.frequency.setValueAtTime(base * ratio * 0.92, t0);
-        osc.frequency.exponentialRampToValueAtTime(base * ratio, t0 + 0.09);
+        osc.frequency.setValueAtTime(base * ratio * 0.94, t0);
+        osc.frequency.exponentialRampToValueAtTime(base * ratio, t0 + 0.08);
         gain.gain.setValueAtTime(0.0001, t0);
-        gain.gain.linearRampToValueAtTime(masterVol * (idx === 2 ? 0.95 : 0.65), t0 + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.34);
+        gain.gain.linearRampToValueAtTime(masterVol * (idx >= 2 ? 0.92 : 0.62), t0 + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.36);
         osc.connect(gain).connect(ac.destination);
         osc.start(t0);
-        osc.stop(t0 + 0.36);
+        osc.stop(t0 + 0.38);
       });
       return;
     }
@@ -115,30 +325,42 @@ function playSummonSynth(kind: 'charge' | 'step' | 'tease' | 'shatter', stage: R
       const gain = ac.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(base * 0.85, now);
-      osc.frequency.exponentialRampToValueAtTime(base * 1.45, now + 0.72);
+      osc.frequency.exponentialRampToValueAtTime(base * 1.52, now + 0.74);
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.linearRampToValueAtTime(masterVol * 0.8, now + 0.25);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.78);
+      gain.gain.linearRampToValueAtTime(masterVol * 0.85, now + 0.24);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
       osc.connect(gain).connect(ac.destination);
       osc.start(now);
-      osc.stop(now + 0.8);
+      osc.stop(now + 0.82);
       return;
     }
 
-    // shatter: 結晶ブレイク＋高次倍音ファンファーレ和音
-    [1, 1.25, 1.5, 2].forEach((ratio, idx) => {
+    // shatter: 重低音インパクト＋結晶ブレイク高次倍音ファンファーレ
+    const sub = ac.createOscillator();
+    const subGain = ac.createGain();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(150, now);
+    sub.frequency.exponentialRampToValueAtTime(38, now + 0.28);
+    subGain.gain.setValueAtTime(0.0001, now);
+    subGain.gain.linearRampToValueAtTime(masterVol * 1.2, now + 0.012);
+    subGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+    sub.connect(subGain).connect(ac.destination);
+    sub.start(now);
+    sub.stop(now + 0.32);
+
+    [1, 1.25, 1.5, 2, 2.5].forEach((ratio, idx) => {
       const osc = ac.createOscillator();
       const gain = ac.createGain();
-      const t0 = now + idx * 0.022;
+      const t0 = now + idx * 0.02;
       osc.type = idx % 2 === 0 ? 'triangle' : 'sine';
       osc.frequency.setValueAtTime(base * ratio, t0);
-      osc.frequency.exponentialRampToValueAtTime(base * ratio * 1.03, t0 + 0.42);
+      osc.frequency.exponentialRampToValueAtTime(base * ratio * 1.03, t0 + 0.44);
       gain.gain.setValueAtTime(0.0001, t0);
-      gain.gain.linearRampToValueAtTime(masterVol * 0.9, t0 + 0.018);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.48);
+      gain.gain.linearRampToValueAtTime(masterVol * 0.92, t0 + 0.016);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
       osc.connect(gain).connect(ac.destination);
       osc.start(t0);
-      osc.stop(t0 + 0.5);
+      osc.stop(t0 + 0.52);
     });
   } catch {
     // WebAudio 非対応または閉鎖済みコンテキストでは既存の play() 効果音のみで進行する
@@ -180,42 +402,65 @@ function ArcaneSummonCircles() {
   );
 }
 
-/** モンスト風・ストライクショット牽引リング＆照準アロー（第1幕で発動し中央オーブへ収束） */
-function StrikeSlingshotAim() {
+/** モンスト風・ストライクショット牽引リング＆照準アロー（実際にドラッグ／タップでも引ける双方向ギミック付き！） */
+function StrikeSlingshotAim({ pulled }: { pulled: boolean }) {
   return (
-    <svg className="gacha-summon-slingshot" viewBox="0 0 320 320" fill="none" aria-hidden="true">
+    <svg className="gacha-summon-slingshot" data-pulled={pulled || undefined} viewBox="0 0 320 320" fill="none" aria-hidden="true">
       <defs>
         <linearGradient id="gacha-strike-grad" x1="160" y1="305" x2="160" y2="22" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="currentColor" stopOpacity="0.1" />
-          <stop offset="55%" stopColor="currentColor" stopOpacity="0.85" />
+          <stop offset="55%" stopColor="currentColor" stopOpacity="0.88" />
           <stop offset="100%" stopColor="#ffffff" stopOpacity="1" />
         </linearGradient>
       </defs>
-      <circle cx="160" cy="160" r="142" stroke="currentColor" strokeWidth="1.6" strokeDasharray="12 8" opacity="0.72" />
-      <line x1="160" y1="304" x2="160" y2="34" stroke="url(#gacha-strike-grad)" strokeWidth="5" strokeLinecap="round" />
-      <polygon points="160,14 143,46 160,38 177,46" fill="#ffffff" />
-      <polyline points="134,256 160,232 186,256" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      <polyline points="140,282 160,262 180,282" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+      <circle cx="160" cy="160" r="144" stroke="currentColor" strokeWidth="1.8" strokeDasharray="12 7" opacity="0.78" />
+      <circle cx="160" cy="160" r="126" stroke="#ffffff" strokeWidth="1" strokeDasharray="4 8" opacity="0.55" />
+      <line x1="160" y1="308" x2="160" y2="30" stroke="url(#gacha-strike-grad)" strokeWidth="6" strokeLinecap="round" />
+      <polygon points="160,10 140,46 160,36 180,46" fill="#ffffff" />
+      <polyline points="130,256 160,228 190,256" stroke="#ffffff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="138,284 160,262 182,284" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
     </svg>
   );
 }
 
-/** パズドラ×ドッカン風・聖なる召喚龍脈オーブ冠ベゼル（中央オーブを包む王冠フレーム） */
+/** パズドラ×モンスト風・聖なる龍爪ダイヤオーブ冠ベゼル＆プリズムファセット亀裂（オーブ表面に走る光のひび） */
 function SacredOrbCrest() {
   return (
     <svg className="gacha-orb-crest" viewBox="0 0 280 280" fill="none" aria-hidden="true">
-      <circle cx="140" cy="140" r="129" stroke="currentColor" strokeWidth="2.4" opacity="0.9" />
-      <circle cx="140" cy="140" r="135" stroke="currentColor" strokeWidth="1.1" strokeDasharray="8 6" opacity="0.65" />
-      {/* 上下左右の聖結晶クロー */}
-      <path d="M140 2 L152 22 L140 16 L128 22 Z" fill="currentColor" />
-      <path d="M140 278 L152 258 L140 264 L128 258 Z" fill="currentColor" />
-      <path d="M2 140 L22 128 L16 140 L22 152 Z" fill="currentColor" />
-      <path d="M278 140 L258 128 L264 140 L258 152 Z" fill="currentColor" />
-      {/* 斜め四隅のウイング装飾 */}
-      <path d="M42 42 L64 50 L50 64 Z" fill="currentColor" opacity="0.85" />
-      <path d="M238 42 L216 50 L230 64 Z" fill="currentColor" opacity="0.85" />
-      <path d="M42 238 L64 230 L50 216 Z" fill="currentColor" opacity="0.85" />
-      <path d="M238 238 L216 230 L230 216 Z" fill="currentColor" opacity="0.85" />
+      <circle cx="140" cy="140" r="129" stroke="currentColor" strokeWidth="2.6" opacity="0.92" />
+      <circle cx="140" cy="140" r="136" stroke="currentColor" strokeWidth="1.2" strokeDasharray="8 5" opacity="0.72" />
+      {/* 12方位の聖宝石スタッド */}
+      {Array.from({ length: 12 }, (_, k) => {
+        const deg = k * 30;
+        return (
+          <g key={deg} transform={`rotate(${deg} 140 140)`}>
+            <polygon points="140,4 145,14 140,20 135,14" fill="currentColor" opacity={k % 3 === 0 ? 1 : 0.65} />
+          </g>
+        );
+      })}
+      {/* 上下左右の聖龍爪クロー */}
+      <path d="M140 0 L155 24 L140 17 L125 24 Z" fill="#ffffff" />
+      <path d="M140 280 L155 256 L140 263 L125 256 Z" fill="#ffffff" />
+      <path d="M0 140 L24 125 L17 140 L24 155 Z" fill="#ffffff" />
+      <path d="M280 140 L256 125 L263 140 L256 155 Z" fill="#ffffff" />
+      {/* 斜め四隅のドラゴニックウイング装飾 */}
+      <path d="M38 38 L66 48 L48 66 Z" fill="currentColor" opacity="0.9" />
+      <path d="M242 38 L214 48 L232 66 Z" fill="currentColor" opacity="0.9" />
+      <path d="M38 242 L66 232 L48 214 Z" fill="currentColor" opacity="0.9" />
+      <path d="M242 242 L214 232 L232 214 Z" fill="currentColor" opacity="0.9" />
+    </svg>
+  );
+}
+
+/** パズドラのダイヤタマゴ／モンストの確定オーブひび割れのように、昇格・溜め時にオーブ表面に浮かび上がる光の亀裂 */
+function OrbFractureOverlay() {
+  return (
+    <svg className="gacha-orb-fracture" viewBox="0 0 240 240" fill="none" aria-hidden="true">
+      <path d="M120 18 L112 64 L134 98 L116 132 L128 178 L118 222" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M134 98 L178 76 L212 84" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M112 64 L68 54 L34 68" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M116 132 L64 154 L28 148" stroke="#ffffff" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M128 178 L176 190 L206 176" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -225,14 +470,14 @@ function DimensionalCracks() {
   return (
     <svg className="gacha-summon-cracks" viewBox="0 0 400 400" preserveAspectRatio="none" fill="none" aria-hidden="true">
       {/* 外側ハロー稲妻 */}
-      <g className="gacha-crack-glow" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.38">
+      <g className="gacha-crack-glow" stroke="currentColor" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.42">
         <path d="M200 185 L148 126 L164 94 L104 38 L68 10" />
         <path d="M200 185 L258 120 L298 106 L346 44 L386 14" />
         <path d="M200 185 L132 238 L88 264 L28 340" />
         <path d="M200 185 L270 244 L318 268 L374 350" />
       </g>
       {/* 鋭利な白芯クラック */}
-      <g className="gacha-crack-core" stroke="#ffffff" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <g className="gacha-crack-core" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M200 185 L148 126 L164 94 L104 38 L68 10" />
         <path d="M148 126 L106 138 L58 108" strokeWidth="1.5" />
         <path d="M164 94 L192 58 L184 22" strokeWidth="1.3" />
@@ -249,18 +494,21 @@ function DimensionalCracks() {
 }
 
 /**
- * ガチャの確定演出（モンスト × パズドラ × ドッカンバトル流・フルスクリーン3層召喚シアター最上級版）。
- * - 第1幕（act = 'duo'）：ストライク牽引リング＆星辰神殿の中央クリスタルゲートに、とびら君＆カギノスケ共鳴映像
- *   （FULLFRAME_CINEMATIC_MOVIES.gachaDuoIntro）を丸窓の被りゼロで主役表示。斜め上空から召喚メテオが飛来！
- * - 第2幕（act = 'orb'）：エネルギーが聖なる龍脈オーブ冠（GACHA_REVEAL_CLIPS[rarity]）へ凝縮し、
- *   青 → 金 → 虹 → UR → LR の段階昇格ごとに確定ショックウェーブ・斜め閃光カットイン・縦書き確定印・次元稲妻クラックが炸裂！
- * - 終幕（burst）：14枚のプリズムクリスタル破片が放射状に弾け飛ぶシャッターバーストで結果画面へ突入！
+ * ガチャの確定演出（モンスト × パズドラ × ドッカンバトル流・フルスクリーン星辰召喚シアター極致版）。
+ * - 60fps Canvas マナ渦粒子エンジン（第1幕は中心へ螺旋集束 → 第2幕・昇格時は放射爆発！）
+ * - 第1幕（act = 'duo'）：モンスト風ストライク牽引照準（タップ／下スワイプでも手応え反応！）＋流星の尾＋
+ *   とびら君＆カギノスケ共鳴クリスタルポータル（FULLFRAME_CINEMATIC_MOVIES.gachaDuoIntro・丸窓被りゼロ）。
+ * - 第2幕（act = 'orb'）：聖なる龍爪ダイヤオーブ冠（GACHA_REVEAL_CLIPS[rarity]）へ凝縮し、
+ *   昇格の瞬間にドッカン／モンスト流「暗転ヒットストップ＆特大漢字フラッシュ（金扉昇格！／虹扉突破！！／超絶確定！！／伝説降臨！！！）」が炸裂！
+ * - 終幕（burst）：オーブに光の亀裂が走り、16枚のプリズム結晶シャードが弾け飛んで結果画面へ突入！
  */
 export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: () => void; key?: number }) {
   const steps = revealSteps(rarity);
   const [act, setAct] = useState<'duo' | 'orb'>('duo');
   const [index, setIndex] = useState(0);
   const [shockSeq, setShockSeq] = useState(0);
+  const [impactStage, setImpactStage] = useState<RevealStage | null>(null);
+  const [pulled, setPulled] = useState(false);
   const [burst, setBurst] = useState(false);
   /** E1：最後の段のあとの溜め（次のゲージがチカチカ） */
   const [tease, setTease] = useState(false);
@@ -268,6 +516,8 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
   doneRef.current = onDone;
   const finished = useRef(false);
   const bgVideoRef = useRef<HTMLVideoElement>(null);
+  const dragStartY = useRef<number | null>(null);
+
   const finish = () => {
     if (finished.current) return;
     finished.current = true;
@@ -306,8 +556,8 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
 
     playSummonSynth('charge', 'blue');
 
-    // 第1幕（共鳴ストライクカットイン 780ms）→ 第2幕（召喚オーブ凝縮＆段階昇格）へシームレス転換
-    const actSwitchMs = Math.min(780, Math.floor(steps[0].ms * 0.62));
+    // 第1幕（共鳴ストライクカットイン 760ms）→ 第2幕（召喚オーブ凝縮＆段階昇格）へシームレス転換
+    const actSwitchMs = Math.min(760, Math.floor(steps[0].ms * 0.6));
     timers.push(
       setTimeout(() => {
         setAct('orb');
@@ -323,8 +573,10 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
           setIndex(i);
           if (i > 0) {
             setShockSeq(n => n + 1);
+            setImpactStage(s.stage);
             play(s.sfx, s.vibrate);
             playSummonSynth('step', s.stage);
+            timers.push(setTimeout(() => setImpactStage(cur => (cur === s.stage ? null : cur)), 460));
           }
         }, at),
       );
@@ -366,6 +618,24 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
     setTimeout(finish, 180);
   };
 
+  // ステージ中央をタップまたは下に引っ張ると、モンスト／ドッカンの手動チャージ波紋が追加発動する遊び心ギミック
+  const onStagePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    dragStartY.current = e.clientY;
+    setPulled(true);
+    setShockSeq(n => n + 1);
+    playSummonSynth('pull', step.stage);
+  };
+
+  const onStagePointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (dragStartY.current !== null && e.clientY - dragStartY.current > 24 && act === 'duo') {
+      setAct('orb');
+      setShockSeq(n => n + 1);
+      playSummonSynth('step', step.stage);
+    }
+    dragStartY.current = null;
+    setPulled(false);
+  };
+
   const cutinMain = tease
     ? '⚡ OVERCHARGE — 限界突破の予兆…！？ ⚡'
     : act === 'duo'
@@ -375,10 +645,11 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
   const cutinSub = tease
     ? 'LIMIT GAUGE PULSING'
     : act === 'duo'
-      ? 'TOBIRAKUN × KAGINOSUKE'
+      ? 'PULL OR TAP TO BOOST MANA'
       : spec.sub;
 
   const showSeal = act === 'orb' && (step.stage === 'gold' || step.stage === 'rainbow' || step.stage === 'ur' || step.stage === 'lr');
+  const showOrbFracture = tease || burst || step.stage === 'rainbow' || step.stage === 'ur' || step.stage === 'lr';
 
   return (
     <div
@@ -386,6 +657,7 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
       data-act={act}
       data-stage={step.stage}
       data-step-bump={index > 0 ? String(index) : undefined}
+      data-impact={impactStage || undefined}
       data-burst={burst || undefined}
       data-tease={tease || undefined}
       data-gacha-reveal
@@ -394,6 +666,7 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
       <div className="gacha-summon-pillar" aria-hidden="true" />
       <div className="gacha-summon-speedlines" aria-hidden="true" />
       <div className="gacha-reveal-rays" aria-hidden="true" />
+      <SummonParticleCanvas act={act} stage={step.stage} shockSeq={shockSeq} burst={burst} />
 
       {/* 上空から中央ゲートへ降り注ぐ召喚流星の尾（ドッカンバトル風メテオフォール） */}
       <div className="gacha-summon-meteors" aria-hidden="true">
@@ -405,7 +678,15 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
       <ArcaneSummonCircles />
       <DimensionalCracks />
 
-      {/* 高レア昇格時に左右へ刻印される「黄金昇格／虹彩突破／超絶確定／伝説降臨」縦書きエンブレム */}
+      {/* 昇格の瞬間に走るドッカン／モンスト流「暗転ヒットストップ＆特大確定文字スラッシュ」！ */}
+      {impactStage && (
+        <div className="gacha-summon-impact-banner" key={`imp:${impactStage}`} aria-hidden="true">
+          <small>{STAGE_SPEC[impactStage].impactSub}</small>
+          <strong>{STAGE_SPEC[impactStage].impactKanji}</strong>
+        </div>
+      )}
+
+      {/* 高レア昇格時に右上へ刻印される「黄金昇格／虹彩突破／超絶確定／伝説降臨」縦書きエンブレム */}
       {showSeal && (
         <div className="gacha-summon-seal" key={`seal:${step.stage}`} aria-hidden="true">
           <span>{spec.sealJp}</span>
@@ -419,8 +700,14 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
         </div>
       </div>
 
-      <div className="gacha-summon-core-stage" aria-hidden="true">
-        <StrikeSlingshotAim />
+      <div
+        className="gacha-summon-core-stage"
+        onPointerDown={onStagePointerDown}
+        onPointerUp={onStagePointerUp}
+        onPointerCancel={() => setPulled(false)}
+        aria-hidden="true"
+      >
+        <StrikeSlingshotAim pulled={pulled} />
         <div className="gacha-reveal-duo-backdrop">
           <video
             ref={bgVideoRef}
@@ -437,6 +724,7 @@ export function GachaReveal({ rarity, onDone }: { rarity: GachaRarity; onDone: (
             <SacredOrbCrest />
             <div className="gacha-reveal-orb">
               <CinematicSequence names={GACHA_REVEAL_CLIPS[rarity]} label="ガチャの開封動画" />
+              {showOrbFracture && <OrbFractureOverlay />}
             </div>
           </div>
         )}
