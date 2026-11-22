@@ -26,7 +26,7 @@ import { ChevronLeft, ChevronRight, Edit3 } from 'lucide-react';
 import type { AnswerGroup } from '../hooks/useQuestionDerived';
 import type { Problem, SubQuestion } from '../types/curriculum';
 import { formatText } from '../utils/textFormatter';
-import { answerCardMarker } from '../utils/questionDisplay';
+import { answerCardMarker, splitQuestionLabel } from '../utils/questionDisplay';
 import { handleInputFocusScroll } from '../utils/quizInputScroll';
 
 /** バーの1行（約14文字）に収まらない設問文か。見出し（Monday / 1st step 等）は短いのでバーに残す。 */
@@ -116,6 +116,7 @@ export function AnswerPane({
   useEffect(() => {
     if (listeningMaterialsMobile && answerScrollRef.current) answerScrollRef.current.scrollTop = 0;
   }, [listeningMaterialsMobile, safeMobileAnsIdx, currentQuestion.id]);
+  const nonListeningMobileMulti = !isDesktop && !listeningUnified && mobileAnswerSubs.length > 1;
   return (
     <>
     {/* Section 2: Answers Area
@@ -171,26 +172,11 @@ export function AnswerPane({
         md 以上（PC）は md:p-8 が後ろで上書きするので影響しない。 */}
     <div ref={answerScrollRef} data-listening-answer-pane={listeningMaterialsMobile || undefined}
       className={`lg:w-[42%] min-h-0 overflow-y-auto bg-gray-50/50 ${
-        listeningMobileSplit ? 'px-2' : 'px-4'
+        listeningMobileSplit || nonListeningMobileMulti ? 'px-2.5' : 'px-4'
       } md:p-8 ${
-        /*
-          ★資料つきリスニング（スマホ）の高さ配分★
-          ご指摘：「リスニングがまだ一画面に映ってない（後半パート）。見にくい」
-          以前は資料ペインも解答ペインも flex-[1_1_0%]（きっちり半々）だった。
-          実測（375x740）：
-            第4問A … 解答の中身 437px に対して枠 298px → ⑤ が隠れる
-            第4問B … 解答の中身 230px しか無いのに枠 298px → 下 70px が空白、
-                     一方で資料（条件＋表 525px）は 188px しか見えない
-          つまり「解答が足りない問」と「解答が余っている問」が同時に起きていた。
-          そこで解答ペインは「中身のぶんだけ・上限 58%」にし、残りを全部資料へ渡す。
-            ・中身が小さい問（第4問B・第6問 問37）… 余りが資料の高さになる
-            ・中身が大きい問（第4問A・第5問・第6問A）… 58% まで伸びて選択肢が
-              ほぼ全部見える（残りは従来どおりこのペイン内でスクロール）
-          資料ペイン側は flex-[1_1_0%] のままなので、常に「解答が取らなかった分」を受け取る。
-        */
         listeningMaterialsMobile ? 'flex-[0_1_auto] max-h-[58%] pt-0 overscroll-contain' : listeningMobileNoFigure
           ? 'flex-1 flex flex-col justify-end pt-2'
-          : listeningMobileSplit ? 'flex-none pt-2' : 'flex-1 pt-4'
+          : nonListeningMobileMulti ? 'flex-1 pt-2' : listeningMobileSplit ? 'flex-none pt-2' : 'flex-1 pt-4'
       } ${listeningMaterialsMobile ? 'pb-2' : isDesktop
         ? 'pb-8'
         : listeningMobileSplit
@@ -203,23 +189,64 @@ export function AnswerPane({
           : listeningMobileNoFigure ? 'z-10' : 'block z-10'}`}>
       {/* 図が無い大問では、この内側ラッパにも flex/min-h-0 を通しておく。
           ここで連鎖が切れると下の auto-rows-fr が伸びる先を失う。 */}
-      <div className={`max-w-2xl mx-auto md:space-y-6 ${listeningMobileSplit ? 'space-y-2' : 'space-y-4'} ${
+      <div className={`max-w-2xl mx-auto md:space-y-6 ${listeningMobileSplit || nonListeningMobileMulti ? 'space-y-2' : 'space-y-4'} ${
         listeningMobileNoFigure ? 'flex min-h-0 flex-1 flex-col' : ''
       }`}>
-        {/* 「解答入力」見出しはスマホでは出さない（ご指摘：「左上にある
-            解答入力というボタンでスペースなくなってるから消してほしい」）。
-            各カードの先頭に (ア) や 問2 のマーカーがあるので、
-            見出しがなくても「ここが解答欄」と分かる。浮いた縦幅は
-            選択肢・入力欄の表示に回す。PC は余白が十分なので従来どおり。 */}
         <h3 className="hidden lg:block font-bold text-gray-400 text-sm md:text-base mb-2 md:mb-4">解答入力</h3>
-        {/* スマホ：解答欄ページャー（要望：スクロールをやめ、1設問ずつ固定表示。
-            左右の黒い小さな矢印で表示する解答欄を切り替える）。
-            位置表示（n / 全体）で「あといくつ解答欄があるか」も分かるようにする。 */}
-        {!isDesktop && !listeningMaterialsMobile && mobileAnswerSubs.length > 1 && (
+        {!isDesktop && !listeningMaterialsMobile && !nonListeningMobileMulti && mobileAnswerSubs.length > 1 && (
           <div className="text-center text-xs font-bold text-gray-400 tracking-widest select-none -mb-1">
             {safeMobileAnsIdx + 1} / {mobileAnswerSubs.length}
           </div>
         )}
+        {nonListeningMobileMulti && (
+          <nav aria-label="小問の切り替え" className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b bg-gray-50/95 py-1">
+            <span className="flex min-w-0 items-baseline gap-1.5 text-xs font-bold text-gray-600">
+              {(() => {
+                const cur = mobileAnswerSubs[safeMobileAnsIdx]?.sq;
+                const idx = cur ? (currentQuestion?.subQuestions || []).indexOf(cur) : -1;
+                const marker = cur ? answerCardMarker(cur, idx < 0 ? safeMobileAnsIdx : idx, currentQuestion) : '';
+                const stemBody = cur
+                  ? String(cur.blankHint || splitQuestionLabel(cur.label || '', marker).body || '').trim()
+                  : '';
+                return (
+                  <>
+                    {marker && (
+                      <span className="shrink-0 rounded-md bg-[#2C3E50] px-2 py-0.5 text-[12px] text-white">
+                        {formatText(marker)}
+                      </span>
+                    )}
+                    {stemBody && !isLongBlankHint(stemBody) && (
+                      <span className="min-w-0 truncate text-[12px] text-[#2C3E50] font-modern">
+                        {formatText(stemBody, [], { prose: true })}
+                      </span>
+                    )}
+                    <span className="shrink-0 tabular-nums text-gray-500">{safeMobileAnsIdx + 1}/{mobileAnswerSubs.length}</span>
+                  </>
+                );
+              })()}
+            </span>
+            <div className="flex shrink-0 gap-1">
+              <button type="button" aria-label="前の解答欄へ" disabled={safeMobileAnsIdx === 0}
+                onClick={() => goMobileAns(-1)} className="min-h-11 min-w-11 rounded-lg border bg-white px-2.5 text-xs font-bold text-gray-800 disabled:opacity-30">前へ</button>
+              <button type="button" aria-label="次の解答欄へ" disabled={safeMobileAnsIdx >= mobileAnswerSubs.length - 1}
+                onClick={() => goMobileAns(1)} className="min-h-11 min-w-11 rounded-lg border bg-white px-2.5 text-xs font-bold text-gray-800 disabled:opacity-30">次へ</button>
+            </div>
+          </nav>
+        )}
+        {nonListeningMobileMulti && (() => {
+          const cur = mobileAnswerSubs[safeMobileAnsIdx]?.sq;
+          const idx = cur ? (currentQuestion?.subQuestions || []).indexOf(cur) : -1;
+          const marker = cur ? answerCardMarker(cur, idx < 0 ? safeMobileAnsIdx : idx, currentQuestion) : '';
+          const stemBody = cur
+            ? String(cur.blankHint || splitQuestionLabel(cur.label || '', marker).body || '').trim()
+            : '';
+          if (!stemBody || !isLongBlankHint(stemBody)) return null;
+          return (
+            <p data-answer-prompt className="mb-0.5 px-0.5 text-sm font-bold leading-snug text-[#2C3E50] font-modern break-words [overflow-wrap:anywhere]">
+              {formatText(stemBody, [], { prose: true })}
+            </p>
+          );
+        })()}
         {/*
           ★スマホ：解答欄ページャーの矢印は「切り替える先があるとき」だけ置く★
           ─────────────────────────────────────────────────────────────
@@ -311,7 +338,7 @@ export function AnswerPane({
           </p>;
         })()}
         <div className={isDesktop ? 'contents' : 'flex items-stretch gap-1'}>
-          {!isDesktop && !listeningMaterialsMobile && mobileAnswerSubs.length > 1 && (
+          {!isDesktop && !listeningMaterialsMobile && !nonListeningMobileMulti && mobileAnswerSubs.length > 1 && (
             <button
               type="button"
               onClick={() => goMobileAns(-1)}
@@ -420,39 +447,10 @@ export function AnswerPane({
               listeningMaterialsMobile ? 'px-2 py-2' : listeningMobileNoFigure
                 ? 'min-h-0 flex-1 max-h-full px-2 py-3'
                 : listeningMobileSplit
-                  /*
-                    ★図がある大問（第1問B）だけ、カードの余白を図に譲る★
-                    ご要望「画像のある問題の画像が小さいので確認して」
-
-                    ■ 実測（390x844・第1問B・900x900 の4コマ）
-                        図は 298x298。横幅は 366px 空いているのに
-                        298px 止まりで、原因は「高さが尽きている」こと。
-                        高さの内訳を測ると
-                          画面 844
-                          − ヘッダー 80 − 下部ナビ 76
-                          − 見出し行 40 − 音源バー 44 − 図の上余白 12
-                          − キャプション 28
-                          − 解答ペイン 278（うちカード p-5 の上下 40）
-                        ＝ 図に残るのは 298px で、余りは 0px（実測で確認）。
-                        つまり図を大きくするには、どこかから高さを
-                        もらう以外に方法がない。
-
-                    ■ もらう先は「選択肢そのもの」ではなくカードの余白
-                        ①〜④ のボタン高さ（52px）と行間は既出のご要望
-                        「選択肢のスペースに当てて／タップしやすく」で
-                        確保したものなので削らない。
-                        代わりに p-5（上下 40px）を py-3.5（上下 28px）に
-                        するだけにする。これは純粋な余白なので、
-                        タップ領域を一切減らさずに 12px を図へ回せる。
-                        左右も px-3 にして 16px を選択肢の幅に回す。
-
-                    ■ PC・化学は対象外
-                        listeningMobileSplit はスマホかつ音源つきのときだけ
-                        真になるので、PC（isDesktop）と化学・数学
-                        （listeningUnified=false）は従来の p-5 のまま。
-                  */
                   ? 'px-3 py-3.5'
-                  : 'p-5'
+                  : nonListeningMobileMulti
+                    ? 'px-3 py-3'
+                    : 'p-5'
             } ${
               isFocusedCard ? 'border-[#A9CCE3] ring-2 ring-[#A9CCE3]/30' : 'border-gray-200 hover:border-[#A9CCE3]/50'
             }`}>
@@ -482,9 +480,11 @@ export function AnswerPane({
                     化学など（listeningUnified=false）は (ア)/(1) の目印が
                     入力に必須なので従来どおり表示する。 */}
                 {!listeningUnified && (
-                  <span className={`font-bold text-[#2C3E50] text-sm text-left bg-blue-50/45 border border-[#A9CCE3]/25 py-2 px-4 rounded-xl leading-relaxed shadow-xs w-fit block ${questionNeedsMathPalette ? 'font-math math-content' : ''}`}>
-                    {formatText(sqMarker)}
-                  </span>
+                  !nonListeningMobileMulti ? (
+                    <span className={`font-bold text-[#2C3E50] text-sm text-left bg-blue-50/45 border border-[#A9CCE3]/25 py-2 px-4 rounded-xl leading-relaxed shadow-xs w-fit block ${questionNeedsMathPalette ? 'font-math math-content' : ''}`}>
+                      {formatText(sqMarker)}
+                    </span>
+                  ) : null
                 )}
                 {/*
                   ★第4問以降：1画面に解答欄が複数並ぶので、欄ごとに「問N＋空所の見出し」を出す★
@@ -610,7 +610,7 @@ export function AnswerPane({
           </div>
           {/* 右矢印も左と同じ条件でガードする（B-1）。
               片側だけ残すと解答欄が中央からずれるので必ず対で揃える。 */}
-          {!isDesktop && !listeningMaterialsMobile && mobileAnswerSubs.length > 1 && (
+          {!isDesktop && !listeningMaterialsMobile && !nonListeningMobileMulti && mobileAnswerSubs.length > 1 && (
             <button
               type="button"
               onClick={() => goMobileAns(1)}

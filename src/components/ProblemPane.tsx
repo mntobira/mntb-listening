@@ -682,6 +682,9 @@ export function ProblemPane({
                 その場合は設問一覧を出さず、解答カード側に一本化する。 */}
           {(() => {
             if (listeningUnified) return null;
+            /* ★スマホの複数小問では AnswerPane 側の固定バーに現在の設問文（問N＋本文）を
+                 全文表示するため、上ペイン末尾の設問一覧で高さを二重消費しない。 */
+            if (!isDesktop && (currentQuestion.subQuestions?.length || 0) > 1) return null;
             /* ★スマホ：設問一覧が問題文の丸写しなら出さない（ご要望8）
                  「設問一覧と問題が同じなので、同じやつはもう設問一覧いらない」
                数学の (1)〜(4) のように、設問一覧が上の問題文と一字一句
