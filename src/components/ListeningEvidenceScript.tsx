@@ -38,6 +38,8 @@ export function ListeningEvidenceScript({
   showHint?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
+  const [activePhraseIdx, setActivePhraseIdx] = useState<number | null>(null);
+  useEffect(() => { setActivePhraseIdx(null); }, [track.subId]);
   const phrases = track.keyPhrases.map((item) => item.phrase);
   const segments = track.turns?.length ? track.turns.map((turn) => turn.text) : [track.script];
   const located = new Set(
@@ -54,6 +56,7 @@ export function ListeningEvidenceScript({
           key={hit.start}
           tabIndex={-1}
           data-listening-evidence={hit.phraseIndex}
+          data-active={activePhraseIdx === hit.phraseIndex ? true : undefined}
           className="listening-evidence"
           aria-label={`聞き取りの決め手 ${hit.phraseIndex + 1}`}
         >
@@ -84,8 +87,9 @@ export function ListeningEvidenceScript({
   ) : null;
 
   const jump = (index: number) => {
+    setActivePhraseIdx(index);
     const target = root.current?.querySelector<HTMLElement>(`[data-listening-evidence="${index}"]`);
-    target?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
+    target?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
     target?.focus({ preventScroll: true });
   };
 
@@ -96,6 +100,8 @@ export function ListeningEvidenceScript({
           <button
             type="button"
             disabled={!located.has(index)}
+            data-active={activePhraseIdx === index ? true : undefined}
+            aria-pressed={located.has(index) ? activePhraseIdx === index : undefined}
             onClick={() => jump(index)}
             aria-label={`${index + 1}. ${item.phrase} の英文箇所へ移動`}
           >
@@ -125,10 +131,10 @@ export function ListeningEvidenceScript({
         compact={collapsiblePhrases}
         fallback={
           interleave ? (
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {segs.map((seg, k) => (
                 <div key={k} className="listening-tr-pair">
-                  <p className="listening-script-text">{seg.who && <b className="mr-2 text-xs">{seg.who}</b>}{renderScript(seg.text)}</p>
+                  <p className="listening-script-text">{seg.who && <b className="lx-who-pill">{seg.who}</b>}{renderScript(seg.text)}</p>
                   {trLine(k)}
                 </div>
               ))}
@@ -136,8 +142,8 @@ export function ListeningEvidenceScript({
           ) : track.turns?.length ? (
             <ul className="space-y-2">
               {track.turns.map((turn, index) => (
-                <li key={index} className="flex gap-2">
-                  <b className="shrink-0 text-xs">{turn.who}</b>
+                <li key={index} className="flex items-baseline gap-2">
+                  <b className="lx-who-pill shrink-0">{turn.who}</b>
                   <span className="listening-script-text">{renderScript(turn.text)}</span>
                 </li>
               ))}

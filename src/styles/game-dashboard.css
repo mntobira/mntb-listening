@@ -461,18 +461,22 @@
 .mtb-math .katex-html { white-space: nowrap; overflow-wrap: normal; word-break: normal; }
 
 /* Listening cues remain readable on both light and dark explanation panels. */
-.listening-evidence { background: #ffed9e; color: #43361b; border-bottom: 2px solid #b58c26; border-radius: 3px; padding: 1px 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.listening-evidence sup { font: 800 10px sans-serif; margin-right: 3px; color: #79530e; }
+.listening-evidence { background: #ffed9e; color: #43361b; border-bottom: 2px solid #b58c26; border-radius: 3px; padding: 1px 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: box-shadow .18s, background-color .18s; }
+.listening-evidence[data-active] { background: #ffe066; box-shadow: 0 0 0 2px #b58c26; }
+.listening-evidence sup { font: 800 12px sans-serif; margin-right: 3px; color: #79530e; }
 .listening-evidence:focus { outline: 3px solid #5896bb; outline-offset: 3px; }
 .listening-script-text { font-size: 14px; line-height: 1.9; white-space: pre-wrap; }
-.listening-evidence-hint { font-size: 11px; line-height: 1.6; margin-bottom: 10px; }
+.listening-evidence-hint { font-size: 12px; line-height: 1.6; margin-bottom: 10px; }
 .listening-evidence-list { border-top: 1px dashed #9b987766; margin-top: 12px; padding-top: 10px; }
 .listening-evidence-list h3 { font-size: 12px; font-weight: 800; }
 .listening-evidence-list li { margin-top: 6px; }
-.listening-evidence-list button { display: flex; align-items: center; gap: 8px; min-height: 44px; text-align: left; padding: 6px 9px; border: 1px solid #c9b968; border-radius: 9px; background: #fff4c7; color: #574321; font-size: 13px; }
-.listening-evidence-list button:disabled { background: #e8e8e2; border-color: #bcbcb2; color: #4e5047; }
+.listening-evidence-list button { display: flex; align-items: center; gap: 8px; min-height: 44px; text-align: left; padding: 6px 10px; border: 1px solid #c9b968; border-radius: 10px; background: #fff4c7; color: #574321; font-size: 13px; font-weight: 700; cursor: pointer; transition: background-color .15s, border-color .15s, box-shadow .15s; }
+.listening-evidence-list button[data-active] { border-color: #b58c26; background: #ffe58f; box-shadow: 0 0 0 2px #b58c2640; }
+.listening-evidence-list button b { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 999px; background: #79530e; color: #fff; font-size: 12px; line-height: 1; }
+.listening-evidence-list button:disabled { background: #e8e8e2; border-color: #bcbcb2; color: #4e5047; cursor: default; }
+.listening-evidence-list button:disabled b { background: #787a70; }
 .listening-evidence-list p { font-size: 12px; line-height: 1.6; margin: 4px 0; }
-.listening-evidence-list small { display: block; font-size: 10px; }
+.listening-evidence-list small { display: block; font-size: 12px; }
 
 /* Combat is contained above the question; no overlays intercept answer controls. */
 .combat-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }

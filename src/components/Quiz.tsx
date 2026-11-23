@@ -628,7 +628,7 @@ function QuizBody({ mode, chapter, onFinish, onBack, onReturnToBattle, isGuest, 
   }, [focusedSubId, inputNavSubs]);
 
   // フォーカス移動・スマホの解答欄ページ送り・Enter キーは utils/quizNavigationActions.ts（フックなし）
-  const { moveFocus, goMobileAns, isLastNavSub, handleMobileCardKeyDown } = createQuizFocusActions({
+  const { moveFocus, goMobileAns, jumpMobileAns, isLastNavSub, handleMobileCardKeyDown } = createQuizFocusActions({
     inputNavSubs, mobileAnswerSubs, focusedSubId, focusedIndex, safeMobileAnsIdx,
     pendingFocusIdRef, setFocusedSubId, setMobileAnsIdx,
   });
@@ -889,6 +889,7 @@ function QuizBody({ mode, chapter, onFinish, onBack, onReturnToBattle, isGuest, 
           mobileAnswerSubs={mobileAnswerSubs}
           safeMobileAnsIdx={safeMobileAnsIdx}
           goMobileAns={goMobileAns}
+          jumpMobileAns={jumpMobileAns}
           handleMobileCardKeyDown={handleMobileCardKeyDown}
           isLastNavSub={isLastNavSub}
           renderedAnswerGroups={renderedAnswerGroups}

@@ -65,6 +65,8 @@ export interface AnswerPaneProps {
   safeMobileAnsIdx: number;
   /** ページャーを1つ進める／戻す。 */
   goMobileAns: (dir: -1 | 1) => void;
+  /** ページャーを指定インデックスへ直接切り替える。 */
+  jumpMobileAns?: (targetIdx: number) => void;
   /** スマホのカードでキー操作したときの扱い。 */
   handleMobileCardKeyDown: (sq: SubQuestion) => (e: React.KeyboardEvent) => void;
   /** その設問が「入力の並びの最後」かどうか（Enter を done にするため）。 */
@@ -101,6 +103,7 @@ export function AnswerPane({
   mobileAnswerSubs,
   safeMobileAnsIdx,
   goMobileAns,
+  jumpMobileAns,
   handleMobileCardKeyDown,
   isLastNavSub,
   renderedAnswerGroups,
@@ -114,8 +117,10 @@ export function AnswerPane({
 }: AnswerPaneProps) {
   const answerScrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (listeningMaterialsMobile && answerScrollRef.current) answerScrollRef.current.scrollTop = 0;
-  }, [listeningMaterialsMobile, safeMobileAnsIdx, currentQuestion.id]);
+    if ((listeningMaterialsMobile || (!isDesktop && !listeningUnified && mobileAnswerSubs.length > 1)) && answerScrollRef.current) {
+      answerScrollRef.current.scrollTop = 0;
+    }
+  }, [listeningMaterialsMobile, isDesktop, listeningUnified, mobileAnswerSubs.length, safeMobileAnsIdx, currentQuestion.id]);
   const nonListeningMobileMulti = !isDesktop && !listeningUnified && mobileAnswerSubs.length > 1;
   return (
     <>
@@ -199,38 +204,70 @@ export function AnswerPane({
           </div>
         )}
         {nonListeningMobileMulti && (
-          <nav aria-label="小問の切り替え" className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b bg-gray-50/95 py-1">
-            <span className="flex min-w-0 items-baseline gap-1.5 text-xs font-bold text-gray-600">
-              {(() => {
-                const cur = mobileAnswerSubs[safeMobileAnsIdx]?.sq;
-                const idx = cur ? (currentQuestion?.subQuestions || []).indexOf(cur) : -1;
-                const marker = cur ? answerCardMarker(cur, idx < 0 ? safeMobileAnsIdx : idx, currentQuestion) : '';
-                const stemBody = cur
-                  ? String(cur.blankHint || splitQuestionLabel(cur.label || '', marker).body || '').trim()
-                  : '';
-                return (
-                  <>
-                    {marker && (
-                      <span className="shrink-0 rounded-md bg-[#2C3E50] px-2 py-0.5 text-[12px] text-white">
-                        {formatText(marker)}
-                      </span>
-                    )}
-                    {stemBody && !isLongBlankHint(stemBody) && (
-                      <span className="min-w-0 truncate text-[12px] text-[#2C3E50] font-modern">
-                        {formatText(stemBody, [], { prose: true })}
-                      </span>
-                    )}
-                    <span className="shrink-0 tabular-nums text-gray-500">{safeMobileAnsIdx + 1}/{mobileAnswerSubs.length}</span>
-                  </>
-                );
-              })()}
-            </span>
-            <div className="flex shrink-0 gap-1">
-              <button type="button" aria-label="前の解答欄へ" disabled={safeMobileAnsIdx === 0}
-                onClick={() => goMobileAns(-1)} className="min-h-11 min-w-11 rounded-lg border bg-white px-2.5 text-xs font-bold text-gray-800 disabled:opacity-30">前へ</button>
-              <button type="button" aria-label="次の解答欄へ" disabled={safeMobileAnsIdx >= mobileAnswerSubs.length - 1}
-                onClick={() => goMobileAns(1)} className="min-h-11 min-w-11 rounded-lg border bg-white px-2.5 text-xs font-bold text-gray-800 disabled:opacity-30">次へ</button>
+          <nav aria-label="小問の切り替え" className="sticky top-0 z-20 flex flex-col gap-1 border-b border-[#eadfc8] bg-[#fffaf0]/95 py-1.5 backdrop-blur-xs">
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex min-w-0 items-baseline gap-1.5 text-xs font-bold text-gray-700">
+                {(() => {
+                  const cur = mobileAnswerSubs[safeMobileAnsIdx]?.sq;
+                  const idx = cur ? (currentQuestion?.subQuestions || []).indexOf(cur) : -1;
+                  const marker = cur ? answerCardMarker(cur, idx < 0 ? safeMobileAnsIdx : idx, currentQuestion) : '';
+                  const stemBody = cur
+                    ? String(cur.blankHint || splitQuestionLabel(cur.label || '', marker).body || '').trim()
+                    : '';
+                  return (
+                    <>
+                      {marker && (
+                        <span className="shrink-0 rounded-md bg-[#2C3E50] px-2 py-0.5 text-[12px] text-white shadow-xs">
+                          {formatText(marker)}
+                        </span>
+                      )}
+                      {stemBody && !isLongBlankHint(stemBody) && (
+                        <span className="min-w-0 truncate text-[13px] font-extrabold text-[#1c2a39] font-modern">
+                          {formatText(stemBody, [], { prose: true })}
+                        </span>
+                      )}
+                      <span className="shrink-0 tabular-nums text-gray-500">{safeMobileAnsIdx + 1}/{mobileAnswerSubs.length}</span>
+                    </>
+                  );
+                })()}
+              </span>
+              <div className="flex shrink-0 gap-1">
+                <button type="button" aria-label="前の解答欄へ" disabled={safeMobileAnsIdx === 0}
+                  onClick={() => goMobileAns(-1)} className="min-h-11 min-w-11 rounded-lg border border-[#e3d9c8] bg-white px-2.5 text-xs font-bold text-[#1c2a39] shadow-2xs disabled:opacity-30">前へ</button>
+                <button type="button" aria-label="次の解答欄へ" disabled={safeMobileAnsIdx >= mobileAnswerSubs.length - 1}
+                  onClick={() => goMobileAns(1)} className="min-h-11 min-w-11 rounded-lg border border-[#e3d9c8] bg-white px-2.5 text-xs font-bold text-[#1c2a39] shadow-2xs disabled:opacity-30">次へ</button>
+              </div>
             </div>
+            {jumpMobileAns && mobileAnswerSubs.length <= 8 && (
+              <div className="flex items-center gap-1 overflow-x-auto pb-0.5" role="tablist" aria-label="小問を直接選ぶ">
+                {mobileAnswerSubs.map((entry, mIdx) => {
+                  const raw = answers[entry.sq.id];
+                  const answered = Array.isArray(raw) ? raw.some((v) => String(v).trim().length > 0) : String(raw ?? '').trim().length > 0;
+                  const sqGlobalIdx = (currentQuestion?.subQuestions || []).indexOf(entry.sq);
+                  const chipLabel = answerCardMarker(entry.sq, sqGlobalIdx < 0 ? mIdx : sqGlobalIdx, currentQuestion) || `${mIdx + 1}`;
+                  const active = mIdx === safeMobileAnsIdx;
+                  return (
+                    <button
+                      key={entry.sq.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      aria-label={`${chipLabel}（${answered ? '入力済み' : '未入力'}）`}
+                      onClick={() => jumpMobileAns(mIdx)}
+                      className={`min-h-11 min-w-11 shrink-0 rounded-full border px-2.5 text-[12px] font-extrabold transition-colors ${
+                        active
+                          ? 'border-[#2458a6] bg-[#2458a6] text-white shadow-xs'
+                          : answered
+                            ? 'border-[#9fd8c3] bg-[#eef9f3] text-[#1f7a4d]'
+                            : 'border-[#e3d9c8] bg-white text-[#5a6573]'
+                      }`}
+                    >
+                      {formatText(chipLabel)}{answered && !active ? ' ✓' : ''}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </nav>
         )}
         {nonListeningMobileMulti && (() => {
@@ -242,7 +279,7 @@ export function AnswerPane({
             : '';
           if (!stemBody || !isLongBlankHint(stemBody)) return null;
           return (
-            <p data-answer-prompt className="mb-0.5 px-0.5 text-sm font-bold leading-snug text-[#2C3E50] font-modern break-words [overflow-wrap:anywhere]">
+            <p data-answer-prompt className="mb-0.5 rounded-xl border border-[#eadfc8] bg-[#fffdf6] px-3 py-2 text-[14px] font-bold leading-snug text-[#1c2a39] shadow-2xs font-modern break-words [overflow-wrap:anywhere]">
               {formatText(stemBody, [], { prose: true })}
             </p>
           );
