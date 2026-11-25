@@ -108,7 +108,12 @@ export function ProblemPane({
   problemScrollRef,
 }: ProblemPaneProps) {
   // Quiz.tsx にあったときの呼び名をそのまま残す（下の JSX を書き換えないため）
-  const materialTrack = listeningTracks.find(t => t.subId === activeStepSub?.id);
+  // やり直し（reviewFocus）で subIds の2問目以降から始まる場合も資料と音源が出るよう subIds も照合する
+  const materialTrack = listeningTracks.find(
+    (t) =>
+      t.subId === activeStepSub?.id ||
+      (Boolean(activeStepSub?.id) && Array.isArray(t.subIds) && t.subIds.map(String).includes(String(activeStepSub?.id))),
+  );
   useEffect(() => {
     const pane = problemScrollRef.current;
     if (!pane || !materialTrack?.material || isDesktop) return;

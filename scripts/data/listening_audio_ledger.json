@@ -1772,17 +1772,17 @@
  {
   "audioUrl": "/listening_audio/el2_set1_q3.mp3",
   "status": "replaced",
-  "provider": "ElevenLabs（利用者が直接生成・eleven_v3）",
-  "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-28。契約画面の証拠は未確認）",
-  "importedAt": "2026-09-28T18:28:27.716Z",
+  "provider": "ElevenLabs v4 TTS（Genspark有料生成）",
+  "license": "有料サブスクリプション枠で新規生成（2026-11-24 利用者指示により話者男女逆転を修正）",
+  "importedAt": "2026-11-24T15:30:00.518Z",
   "sourceFile": "el2_set1_q3.mp3",
-  "sha256": "0972ac88e62e1b1e0025f09254ce47416dcc1cbb8be1333193e9d5fba5bb2787",
-  "durationSec": 17.58,
+  "sha256": "53a5c34fa2d8a0e715040245860d9e79f903d3c30e56fd050482696fc1fa7655",
+  "durationSec": 13.56,
   "masterFiles": [
-   "audio_sources/commercial/elevenlabs_2026-09-28_q2/listening_audio/el2_set1_q3.mp3"
+   "audio_sources/commercial/elevenlabs_2026-11-24_q2_fix/listening_audio/el2_set1_q3.mp3"
   ],
-  "note": "第2問。5ファイル（Q2_1〜5）を台本とASRで照合して分割。設問文（Question. …）まで含む",
-  "legacyDiscardedAt": "2026-09-28T18:28:27.719Z"
+  "note": "第2問 第1回 問3：客=女性(Alexandra)・店員=男性(Mark)・設問=ナレーター(Adeline)で再収録（2026-11-24）",
+  "legacyDiscardedAt": "2026-11-24T15:30:00.521Z"
  },
  {
   "audioUrl": "/listening_audio/el2_set2_q1.mp3",
@@ -2177,17 +2177,17 @@
  {
   "audioUrl": "/listening_audio/el2_set10_q3.mp3",
   "status": "replaced",
-  "provider": "ElevenLabs（利用者が直接生成・eleven_v3）",
-  "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-28。契約画面の証拠は未確認）",
-  "importedAt": "2026-09-28T18:28:19.535Z",
+  "provider": "ElevenLabs v4 TTS（Genspark有料生成）",
+  "license": "有料サブスクリプション枠で新規生成（2026-11-25 利用者指示により対話整合・男女話者一致で再収録）",
+  "importedAt": "2026-11-25T01:46:35.553Z",
   "sourceFile": "el2_set10_q3.mp3",
-  "sha256": "6d3532738dab344a9076defc098928fe4a91e12b07c87a42c19154ca9ba5271a",
-  "durationSec": 21.19,
+  "sha256": "164fc81ca9bf78e78ba6a2fbfd16b7fd32dd3f5d304d5acfb09a8662a7693504",
+  "durationSec": 20.85,
   "masterFiles": [
-   "audio_sources/commercial/elevenlabs_2026-09-28_q2/listening_audio/el2_set10_q3.mp3"
+   "audio_sources/commercial/elevenlabs_2026-11-25_q2_q3_retake/listening_audio/el2_set10_q3.mp3"
   ],
-  "note": "第2問。5ファイル（Q2_1〜5）を台本とASRで照合して分割。設問文（Question. …）まで含む",
-  "legacyDiscardedAt": "2026-09-28T18:28:19.539Z"
+  "note": "第2問第10回問3（セット割1000円への合意発話を追加）・第3問第1回問4（女子A・男子Bで男子が絵の具セットを持参する対話に修正）を再収録（2026-11-25）",
+  "legacyDiscardedAt": "2026-11-25T01:46:35.556Z"
  },
  {
   "audioUrl": "/listening_audio/el2_set11_q1.mp3",
@@ -2252,17 +2252,17 @@
  {
   "audioUrl": "/listening_audio/el2_set12_q2.mp3",
   "status": "replaced",
-  "provider": "ElevenLabs（利用者が直接生成・eleven_v3）",
-  "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-28。契約画面の証拠は未確認）",
-  "importedAt": "2026-09-28T18:28:21.866Z",
+  "provider": "ElevenLabs v4-tts",
+  "license": "Commercial API",
+  "importedAt": "2026-11-25T08:24:33.331Z",
   "sourceFile": "el2_set12_q2.mp3",
-  "sha256": "6198c0cd8c8e84e57baa675146b1338ab5bd229f395281226669d7e9a3721fbf",
-  "durationSec": 16.54,
+  "sha256": "0450d589d28ce5eb2eaa8f44fb230762f296397e1827866f402ec0f325f3f63e",
+  "durationSec": 14.11,
   "masterFiles": [
-   "audio_sources/commercial/elevenlabs_2026-09-28_q2/listening_audio/el2_set12_q2.mp3"
+   "audio_sources/commercial/elevenlabs_2026-11-25_q2_q3_retake/listening_audio/el2_set12_q2.mp3"
   ],
-  "note": "第2問。5ファイル（Q2_1〜5）を台本とASRで照合して分割。設問文（Question. …）まで含む",
-  "legacyDiscardedAt": "2026-09-28T18:28:21.869Z"
+  "note": "Re-recorded el2_set12_q2 so W (customer) is a female voice and M (clerk) is a male voice",
+  "legacyDiscardedAt": "2026-11-25T08:24:33.333Z"
  },
  {
   "audioUrl": "/listening_audio/el2_set12_q3.mp3",
@@ -2507,17 +2507,17 @@
  {
   "audioUrl": "/listening_audio/el3_set1_q4.mp3",
   "status": "replaced",
-  "provider": "ElevenLabs（利用者が直接生成・eleven_v3）",
-  "license": "ElevenLabs有料契約中に新規生成（利用者申告 2026-09-28。契約画面の証拠は未確認）",
-  "importedAt": "2026-09-28T16:09:17.117Z",
+  "provider": "ElevenLabs v4 TTS（Genspark有料生成）",
+  "license": "有料サブスクリプション枠で新規生成（2026-11-25 利用者指示により対話整合・男女話者一致で再収録）",
+  "importedAt": "2026-11-25T01:46:36.034Z",
   "sourceFile": "el3_set1_q4.mp3",
-  "sha256": "9bed5d7aeb6dca786dba9343b331e617743d5cc7b50cad36e5a252bd34401a42",
-  "durationSec": 18.1,
+  "sha256": "c778262ffd014223d3dbcc0f6b139e072040ea3ed8c34b4df1bce85cc42957f7",
+  "durationSec": 17.95,
   "masterFiles": [
-   "audio_sources/commercial/elevenlabs_2026-09-28_q3/listening_audio/el3_set1_q4.mp3"
+   "audio_sources/commercial/elevenlabs_2026-11-25_q2_q3_retake/listening_audio/el3_set1_q4.mp3"
   ],
-  "note": "まとめ録り原本（receipt/・1本3問×30本）を台本×音声認識(faster-whisper)の単語時刻で照合し、問と問の間の無音中央で切り出し（速度・音程無変更）。切り出し後の全90本を再度文字起こしして台本と照合（差は数字表記・a/the など聞き取り誤差のみ）。旧音源は利用者の指示で削除（2026-09-28）。",
-  "legacyDiscardedAt": "2026-09-28T16:09:17.121Z"
+  "note": "第2問第10回問3（セット割1000円への合意発話を追加）・第3問第1回問4（女子A・男子Bで男子が絵の具セットを持参する対話に修正）を再収録（2026-11-25）",
+  "legacyDiscardedAt": "2026-11-25T01:46:36.037Z"
  },
  {
   "audioUrl": "/listening_audio/el3_set1_q5.mp3",

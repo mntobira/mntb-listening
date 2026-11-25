@@ -105,14 +105,14 @@ const EL3_SET1_TRACKS: ListeningAudioTrack[] = [
     audioUrl: '/listening_audio/el3_set1_q4.mp3',
     label: '問4',
     hint: '放課後、明日の持ち物について話している。',
-    script: 'A: Do we need our gym clothes tomorrow?\nB: Let me check... Tomorrow we have math, English, and art.\nA: No PE?\nB: Right. But bring a paint set for art class.\nA: I don\'t have one. Can I borrow yours?\nB: Sure, I have two.',
+    script: 'A: Do we need our gym clothes tomorrow?\nB: Let me check... Tomorrow we have math, English, and art.\nA: No PE?\nB: Right. But bring a paint set for art class.\nA: Oh, I left mine in my locker at school. Do you have yours?\nB: No, it\'s at home, so I\'ll bring my paint set tomorrow.',
     turns: [
       { who: 'A', text: 'Do we need our gym clothes tomorrow?' },
       { who: 'B', text: 'Let me check... Tomorrow we have math, English, and art.' },
       { who: 'A', text: 'No PE?' },
       { who: 'B', text: 'Right. But bring a paint set for art class.' },
-      { who: 'A', text: 'I don\'t have one. Can I borrow yours?' },
-      { who: 'B', text: 'Sure, I have two.' },
+      { who: 'A', text: 'Oh, I left mine in my locker at school. Do you have yours?' },
+      { who: 'B', text: 'No, it\'s at home, so I\'ll bring my paint set tomorrow.' },
     ],
     translation: '',
     keyPhrases: [],
@@ -194,7 +194,7 @@ Question: How many sandwiches will the mother make?
 ④ 64
 
 ────────────────────
-問4（話者：男性（高校生） / 女性（高校生））
+問4（話者：女性（高校生） / 男性（高校生））
 場面：放課後、明日の持ち物について話している。
 Question: What will the boy bring to school tomorrow?
 ① Gym clothes
@@ -212,10 +212,10 @@ Question: What will the boy do this week?
 ④ Feed the dog once a day
 
 ────────────────────
-問6（話者：男性（大学生） / 女性（大学生））
+問6（話者：女性（大学生） / 女性（大学生））
 場面：映画館で席を探している。
 Question: What is the problem?
-① A man is sitting in the woman's seat.
+① Someone is already sitting in one of their seats.
 ② Their tickets are for another movie.
 ③ They are in the wrong row.
 ④ Their seats are in different rows.`,
@@ -285,7 +285,7 @@ Question: What is the problem?
       correctAnswer: '②',
       correctAnswerRate: 70,
       detailedExplanation: {
-        theme: '持ち物の候補（体操着→不要、絵の具セット→必要）の絞り込み',
+        theme: '体育なし（体操着不要）→ 女子は学校のロッカーに置いてあるが、男子（B）は自宅から絵の具セット（a paint set）を持参する',
         type: '短い対話の内容一致型',
         difficulty: 2,
         steps: [
@@ -377,11 +377,11 @@ Question: How many sandwiches will the mother make?
 B: Let me check... Tomorrow we have math, English, and art.
 A: No PE?
 B: Right. But bring a paint set for art class.
-A: I don't have one. Can I borrow yours?
-B: Sure, I have two.
+A: Oh, I left mine in my locker at school. Do you have yours?
+B: No, it's at home, so I'll bring my paint set tomorrow.
 Question: What will the boy bring to school tomorrow?
 正解の選択肢：A paint set
-持ち物の候補（体操着→不要、絵の具セット→必要）の絞り込み。gym clothesは先に出てくるダミー。
+体育がないため gym clothes は不要。女子（A）は学校のロッカーに置いてあるが、男子（B）は自宅にあるため明日②A paint set を持ってくる。
 
 問5　正解は ①
 場面：ペットの世話の分担について話している。
@@ -402,7 +402,7 @@ A: Right. G-11 is here. You're next to me.
 B: Wait, there's someone in G-12 already.
 A: Let me check his ticket... Oh, he's in the wrong row. His seat is H-12.
 Question: What is the problem?
-正解の選択肢：A man is sitting in the woman's seat.
+正解の選択肢：Someone is already sitting in one of their seats.
 G-12に先客→その人のチケットはH-12＝その人が間違えている。誰が間違えたかの特定。2026年問1 5型（間違いの所在を問う）。`,
   surroundingKnowledge: [
     '第3問は1回読み。音声が流れる前に場面と設問文を読み終えておくのが前提の大問である。',
@@ -1687,9 +1687,9 @@ Question: What will the student cut from her speech?
 ④ One minute from the middle
 
 ────────────────────
-問5（話者：男性（父親） / 女性（母親））
+問5（話者：女性（姉） / 女性（母））
 場面：夜、夕食の買い出しについて話している。
-Question: What will the father buy?
+Question: What will the shopper buy?
 ① Rice, salmon, and ice cream
 ② Rice, tuna, and ice cream
 ③ Salmon and ice cream only
@@ -1782,7 +1782,7 @@ Question: What will the woman wear to the interview?
     },
     {
       id: 'q_el3_set5_5',
-      label: '問5 What will the father buy?',
+      label: '問5 What will the shopper buy?',
       type: 'multiple_choice',
       options: MARK_OPTIONS,
       correctAnswer: '①',
@@ -1876,7 +1876,7 @@ A: Salmon or tuna?
 B: Tuna is on sale today, but the kids prefer salmon.
 A: I'll get salmon, then. Anything sweet for dessert?
 B: The kids ate all the ice cream yesterday, so yes, please.
-Question: What will the father buy?
+Question: What will the shopper buy?
 正解の選択肢：Rice, salmon, and ice cream
 米・魚（セールのマグロではなく子供の好みでサケ）・アイス（昨日食べ尽くした）。on sale情報で誘導するひっかけ。
 
@@ -2452,7 +2452,7 @@ Question: Where will the woman probably exchange her money?
 ────────────────────
 問6（話者：男性（高校生） / 女性（高校生））
 場面：試験の結果について話している。
-Question: What will the boy help the girl with? (※男女の発話を確認)
+Question: What will the girl help the boy with?
 ① Reading
 ② Writing
 ③ Grammar
@@ -2555,13 +2555,13 @@ Question: What will the boy help the girl with? (※男女の発話を確認)
     },
     {
       id: 'q_el3_set7_6',
-      label: '問6 What will the boy help the girl with? (※男女の発話を確認)',
+      label: '問6 What will the girl help the boy with?',
       type: 'multiple_choice',
       options: MARK_OPTIONS,
       correctAnswer: '④',
       correctAnswerRate: 54,
       detailedExplanation: {
-        theme: '男性（B）がリスニングが苦手で女子が教える、という設定に注意',
+        theme: '男子（A）の Then you teach me listening に対し女子（B）が Deal と合意する流れ',
         type: '短い対話の内容一致型',
         difficulty: 3,
         steps: [
@@ -2643,9 +2643,9 @@ A: Same here. I got seventy-eight, and my reading score was fine but writing was
 B: Let's practice together. I'll teach you listening if you help me with... wait, actually my writing is OK.
 A: Then you teach me listening, and I'll ask the teacher for writing help.
 B: Deal. Let's start after school on Thursday.
-Question: What will the boy help the girl with? (※男女の発話を確認)
+Question: What will the girl help the boy with?
 正解の選択肢：Listening
-男性（B）がリスニングが苦手で女子が教える、という設定に注意。設問の主語（boy/girl）と苦手科目の対応が鍵。主語の取り違え型。2025年問16型の類似。`,
+男子（A）が Then you teach me listening, and I'll ask the teacher for writing help. と提案し、女子（B）が Deal. と引き受けているため、女子が男子に教えるのは④Listening。ライティングは先生に質問する点に注意。`,
   surroundingKnowledge: [
     '第3問は1回読み。音声が流れる前に場面と設問文を読み終えておくのが前提の大問である。',
     '設問文の疑問詞が答えの型を決める。How long → 期間、How much → 金額、What will 〜 do → 次の行動。',
@@ -4332,7 +4332,7 @@ Question: What should the group members (not the leader) do with their phones?
 ④ Leave them at the hotel
 
 ────────────────────
-問6（話者：男性（利用者） / 女性（受付））
+問6（話者：女性（受付） / 女性（利用者））
 場面：市民プールの利用方法を確認している。
 Question: How much will they pay in total today?
 ① 400 yen
@@ -5044,7 +5044,7 @@ const EL3_SET14: ListeningProblem = {
 音声が流れる前に「場面」と「Question」を読み、選択肢4つの違いを1語で言えるようにしておきます。1回読みでは、聞くべき1語が決まっているかどうかで勝負が決まります。
 
 ────────────────────
-問1（話者：女性（先生） / 男性（生徒））
+問1（話者：男性（先生） / 男性（生徒））
 場面：学校の補習授業の日程調整をしている。
 Question: What should the boy bring on Saturday?
 ① His club equipment

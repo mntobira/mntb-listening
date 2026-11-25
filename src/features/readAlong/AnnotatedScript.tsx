@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { type RaWord, type ReadAlong, LINK_LABEL, toIpa } from './readAlong';
+import { Play, Square } from 'lucide-react';
+import { type RaLine, type RaWord, type ReadAlong, LINK_LABEL, toIpa } from './readAlong';
 import { requireLocalStorage } from '../../utils/safeLocalStorage';
 import { safeSetItem } from '../../utils/storageGuard';
 
@@ -51,8 +52,12 @@ function dotsOf(w: RaWord, n: number): number[] {
   return Array.from({ length: n }, (_, k) => (k === st ? Math.max(1, top) : 0));
 }
 
-export function AnnotatedScript({ data, opts, cur = -1, curChunk = -1, pickedId = -1, onWord, hidden = false, evidence, breaks, renderBreak }: {
-  data: ReadAlong; opts: AnnotateOpts; cur?: number; curChunk?: number; pickedId?: number; onWord?: (w: RaWord) => void; hidden?: boolean;
+export function AnnotatedScript({ data, opts, cur = -1, curChunk = -1, pickedId = -1, onWord, onLinePlay, activeLine = -1, hidden = false, evidence, breaks, renderBreak }: {
+  data: ReadAlong; opts: AnnotateOpts; cur?: number; curChunk?: number; pickedId?: number; onWord?: (w: RaWord) => void;
+  /** 文（発話）の先頭にある ▶ ボタンを押したとき、その文頭から最後まで再生／停止する */
+  onLinePlay?: (line: RaLine, lineIndex: number) => void;
+  activeLine?: number;
+  hidden?: boolean;
   /** 語番号 → 「聞き取りの決め手」の番号（黄色で示す） */
   evidence?: Map<number, number>;
   /** 語番号 → まとまりの番号。その語の後ろで改行し、renderBreak の中身（和訳）を差し込む（2026-10-21） */
@@ -99,6 +104,18 @@ export function AnnotatedScript({ data, opts, cur = -1, curChunk = -1, pickedId 
   return <div className={`ra-annot${opts.ipa ? ' has-ipa' : ''}${opts.stress ? ' has-stress' : ''}${hidden ? ' is-hidden' : ''}${breaks && renderBreak ? ' has-tr' : ''}`} lang="en">
     {data.lines.map((ln, li) => groupsOf(ln.words).map((g, gi) => <React.Fragment key={`${li}-${gi}`}>
       <div className="ra-aline">
+        {gi === 0 && onLinePlay && ln.words.length > 0 && (
+          <button
+            type="button"
+            className="ra-line-play"
+            data-playing={activeLine === li || undefined}
+            onClick={() => onLinePlay(ln, li)}
+            aria-label={`${ln.who ? `${ln.who} の発話` : `${li + 1}行目`}から再生${activeLine === li ? 'を停止' : ''}`}
+            title="この文から再生"
+          >
+            {activeLine === li ? <Square size={11} aria-hidden="true" /> : <Play size={12} aria-hidden="true" />}
+          </button>
+        )}
         {gi === 0 && ln.who && <b className="ra-who">{ln.who}</b>}
         {g.ws.map(renderWord)}
       </div>

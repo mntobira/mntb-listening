@@ -1980,12 +1980,13 @@ const EL2_SET10_TRACKS: ListeningAudioTrack[] = [
     label: '問3',
     hint: '男女がフリーマーケットで買い物をしている。（話者：女性 / 男性（店主））',
     audioUrl: '/listening_audio/el2_set10_q3.mp3',
-    script: 'W: How much for this vase and this teapot?\nM: The vase is 500 yen, the teapot 800. Both together, 1200 yen.\nW: I\'ll take just the teapot.\nM: Actually, if you take both, I\'ll make it 1000.',
+    script: 'W: How much for this vase and this teapot?\nM: The vase is 500 yen, the teapot 800. Both together, 1200 yen.\nW: Hmm, I\'ll take just the teapot.\nM: Actually, if you take both, I\'ll make it 1000 yen.\nW: Oh, great! I\'ll take both, then.',
     turns: [
       { who: 'W', text: 'How much for this vase and this teapot?' },
       { who: 'M', text: 'The vase is 500 yen, the teapot 800. Both together, 1200 yen.' },
-      { who: 'W', text: 'I\'ll take just the teapot.' },
-      { who: 'M', text: 'Actually, if you take both, I\'ll make it 1000.' },
+      { who: 'W', text: 'Hmm, I\'ll take just the teapot.' },
+      { who: 'M', text: 'Actually, if you take both, I\'ll make it 1000 yen.' },
+      { who: 'W', text: 'Oh, great! I\'ll take both, then.' },
     ],
     translation: '',
     keyPhrases: [],
@@ -2077,7 +2078,7 @@ Question: How much will the woman pay?
       imageUrl: '/listening_q2/el2_set10_q3.jpg',
       imageCaption: '問3 の選択肢イラスト（①〜④の4枚）',
       detailedExplanation: {
-        theme: '最初は teapot 単体（800）→ 店主の提案（両方で1000）を受け入れる流れ',
+        theme: '最初は teapot 単体（800円）→ 店主の提案（両方で1000円）に「I\'ll take both, then.」と合意する流れ',
         type: 'イラスト選択型（短い対話）',
         difficulty: 4,
         steps: [
@@ -2125,8 +2126,9 @@ Question: Which timetable matches?
 場面：男女がフリーマーケットで買い物をしている。（話者：女性 / 男性（店主））
 スクリプト：W: How much for this vase and this teapot?
 M: The vase is 500 yen, the teapot 800. Both together, 1200 yen.
-W: I'll take just the teapot.
-M: Actually, if you take both, I'll make it 1000.
+W: Hmm, I'll take just the teapot.
+M: Actually, if you take both, I'll make it 1000 yen.
+W: Oh, great! I'll take both, then.
 Question: How much will the woman pay?
 選択肢のイラスト：
 ① 500円

@@ -63,7 +63,7 @@ const EL1_A_SET2_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set2_4',
     audioUrl: '/listening_audio/el1A_set2_q4.mp3',
     label: '問4',
-    hint: '男性（高校生）',
+    hint: '女性（高校生）',
     script: 'There are fifteen books on the shelf, and I\'ll add five more from the library.',
     translation: '',
     keyPhrases: [],
@@ -104,11 +104,11 @@ const EL1_A_SET2: ListeningProblem = {
 ④ She wants her dad to watch TV.
 
 ────────────────────
-問4（話者：男性（高校生））
+問4（話者：女性（高校生））
 ① There will be ten books on the shelf.
 ② There are twenty books on the shelf now.
 ③ There will be twenty books on the shelf.
-④ He will return five books to the library.`,
+④ She will return five books to the library.`,
   subQuestions: [
     {
       id: 'q_el1_A_set2_1',
@@ -245,7 +245,7 @@ const EL1_A_SET3_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set3_3',
     audioUrl: '/listening_audio/el1A_set3_q3.mp3',
     label: '問3',
-    hint: '女性（店員）',
+    hint: '男性（店員）',
     script: 'This coupon can only be used on weekdays, not on weekends.',
     translation: '',
     keyPhrases: [],
@@ -288,7 +288,7 @@ const EL1_A_SET3: ListeningProblem = {
 ④ He quit his part-time job.
 
 ────────────────────
-問3（話者：女性（店員））
+問3（話者：男性（店員））
 ① The coupon can be used on weekends.
 ② The coupon can be used on weekdays.
 ③ The coupon has already expired.
@@ -427,7 +427,7 @@ const EL1_A_SET4_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set4_2',
     audioUrl: '/listening_audio/el1A_set4_q2.mp3',
     label: '問2',
-    hint: '男性（父親）',
+    hint: '女性（母親）',
     script: 'I haven\'t fixed the chair yet, but I\'ve already bought the tools.',
     translation: '',
     keyPhrases: [],
@@ -472,11 +472,11 @@ const EL1_A_SET4: ListeningProblem = {
 ④ She wants to go outside.
 
 ────────────────────
-問2（話者：男性（父親））
-① He has already fixed the chair.
-② He has already bought the tools.
-③ He still needs to buy the tools.
-④ He broke the chair yesterday.
+問2（話者：女性（母親））
+① She has already fixed the chair.
+② She has already bought the tools.
+③ She still needs to buy the tools.
+④ She broke the chair yesterday.
 
 ────────────────────
 問3（話者：女の子（小学生））
@@ -578,7 +578,7 @@ Should we〜? は提案表現。2021年問2の How about〜? と同型。「閉�
 
 問2　正解は ②
 スクリプト：I haven't fixed the chair yet, but I've already bought the tools.
-正解の選択肢：He has already bought the tools.
+正解の選択肢：She has already bought the tools.
 2023年問2型。haven't fixed yet と already bought の完了形2つを聞き分ける。部分一致の選択肢を正確に。
 
 問3　正解は ③
@@ -618,7 +618,7 @@ const EL1_A_SET5_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set5_2',
     audioUrl: '/listening_audio/el1A_set5_q2.mp3',
     label: '問2',
-    hint: '男性（図書館の司書）',
+    hint: '女性（図書館の司書）',
     script: 'You won\'t be able to enter the library after six, so please come before then.',
     translation: '',
     keyPhrases: [],
@@ -663,11 +663,11 @@ const EL1_A_SET5: ListeningProblem = {
 ④ She doesn't want to go out.
 
 ────────────────────
-問2（話者：男性（図書館の司書））
+問2（話者：女性（図書館の司書））
 ① The library closes at five.
 ② You can enter the library after six.
 ③ You should come before six o'clock.
-④ He will open the library at six.
+④ She will open the library at six.
 
 ────────────────────
 問3（話者：女性（高校生））
@@ -809,7 +809,7 @@ const EL1_A_SET6_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set6_2',
     audioUrl: '/listening_audio/el1A_set6_q2.mp3',
     label: '問2',
-    hint: '女性（病院の受付係）',
+    hint: '男性（病院の受付係）',
     script: 'The doctor will see you in about twenty minutes. Please have a seat over there.',
     translation: '',
     keyPhrases: [],
@@ -854,7 +854,7 @@ const EL1_A_SET6: ListeningProblem = {
 ④ He is asking her to bring an umbrella.
 
 ────────────────────
-問2（話者：女性（病院の受付係））
+問2（話者：男性（病院の受付係・女性患者に話している））
 ① The doctor is seeing her right now.
 ② She should wait for about twenty minutes.
 ③ She needs to come back tomorrow.
@@ -991,7 +991,7 @@ const EL1_A_SET7_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set7_1',
     audioUrl: '/listening_audio/el1A_set7_q1.mp3',
     label: '問1',
-    hint: '男性（お年寄り）',
+    hint: '女性（お年寄り）',
     script: 'I used to walk to the park every day, but these days my knees hurt, so I take the bus.',
     translation: '',
     keyPhrases: [],
@@ -1009,7 +1009,7 @@ const EL1_A_SET7_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set7_3',
     audioUrl: '/listening_audio/el1A_set7_q3.mp3',
     label: '問3',
-    hint: '男性（家電量販店の店員）',
+    hint: '女性（家電量販店の店員）',
     script: 'This camera doesn\'t come with a memory card, so you\'ll have to buy one separately.',
     translation: '',
     keyPhrases: [],
@@ -1038,11 +1038,11 @@ const EL1_A_SET7: ListeningProblem = {
 各問の解答欄の横にある再生ボタンから、その問だけを何度でも聞けます。本番と同じ条件で練習したいときは「2回続けて」を使ってください。
 
 ────────────────────
-問1（話者：男性（お年寄り））
-① He walks to the park every day now.
-② He goes to the park by bus now.
-③ He doesn't go to the park anymore.
-④ He drives his car to the park.
+問1（話者：女性（お年寄り））
+① She walks to the park every day now.
+② She goes to the park by bus now.
+③ She doesn't go to the park anymore.
+④ She drives her car to the park.
 
 ────────────────────
 問2（話者：女性（高校生））
@@ -1052,7 +1052,7 @@ const EL1_A_SET7: ListeningProblem = {
 ④ They have canceled the movie.
 
 ────────────────────
-問3（話者：男性（家電量販店の店員））
+問3（話者：女性（家電量販店の店員））
 ① A memory card is included with the camera.
 ② The camera is free of charge.
 ③ You need to buy a memory card separately.
@@ -1146,7 +1146,7 @@ const EL1_A_SET7: ListeningProblem = {
 
 問1　正解は ②
 スクリプト：I used to walk to the park every day, but these days my knees hurt, so I take the bus.
-正解の選択肢：He goes to the park by bus now.
+正解の選択肢：She goes to the park by bus now.
 used to（以前は）と these days（最近は）の時制対比。過去の習慣と現在の習慣を混同させる問題。
 
 問2　正解は ②
@@ -1373,7 +1373,7 @@ const EL1_A_SET9_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set9_1',
     audioUrl: '/listening_audio/el1A_set9_q1.mp3',
     label: '問1',
-    hint: '男性（教師）',
+    hint: '女性（教師）',
     script: 'Since everyone handed in the homework early, I\'ll return your tests a day sooner than I planned.',
     translation: '',
     keyPhrases: [],
@@ -1382,7 +1382,7 @@ const EL1_A_SET9_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set9_2',
     audioUrl: '/listening_audio/el1A_set9_q2.mp3',
     label: '問2',
-    hint: '女性（高校生）',
+    hint: '男性（高校生）',
     script: 'I wonder if it\'ll snow tomorrow. The weather app says there\'s a thirty percent chance.',
     translation: '',
     keyPhrases: [],
@@ -1420,14 +1420,14 @@ const EL1_A_SET9: ListeningProblem = {
 各問の解答欄の横にある再生ボタンから、その問だけを何度でも聞けます。本番と同じ条件で練習したいときは「2回続けて」を使ってください。
 
 ────────────────────
-問1（話者：男性（教師））
+問1（話者：女性（教師））
 ① The tests will be returned later than planned.
 ② Nobody handed in the homework on time.
 ③ The tests will be returned earlier than planned.
 ④ The homework was handed in late.
 
 ────────────────────
-問2（話者：女性（高校生））
+問2（話者：男性（高校生））
 ① It will definitely snow tomorrow.
 ② There is a small chance of snow tomorrow.
 ③ It snowed heavily yesterday.
@@ -1564,7 +1564,7 @@ const EL1_A_SET10_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set10_1',
     audioUrl: '/listening_audio/el1A_set10_q1.mp3',
     label: '問1',
-    hint: '男性（高校生）',
+    hint: '女性（高校生）',
     script: 'My phone battery is almost dead. Can I borrow your charger, Emma?',
     translation: '',
     keyPhrases: [],
@@ -1611,11 +1611,11 @@ const EL1_A_SET10: ListeningProblem = {
 各問の解答欄の横にある再生ボタンから、その問だけを何度でも聞けます。本番と同じ条件で練習したいときは「2回続けて」を使ってください。
 
 ────────────────────
-問1（話者：男性（高校生））
-① He wants to borrow a charger.
-② His phone is fully charged.
-③ He wants to lend Emma his charger.
-④ He will buy a new phone.
+問1（話者：女性（高校生））
+① She wants to borrow a charger.
+② Her phone is fully charged.
+③ She wants to lend Emma her charger.
+④ She will buy a new phone.
 
 ────────────────────
 問2（話者：女性（祖母））
@@ -1719,7 +1719,7 @@ const EL1_A_SET10: ListeningProblem = {
 
 問1　正解は ①
 スクリプト：My phone battery is almost dead. Can I borrow your charger, Emma?
-正解の選択肢：He wants to borrow a charger.
+正解の選択肢：She wants to borrow a charger.
 Can I borrow〜? の依頼表現。borrow（借りる）と③の lend（貸す）の方向の入れ替えがひっかけ。
 
 問2　正解は ②
@@ -1964,7 +1964,7 @@ const EL1_A_SET12_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set12_3',
     audioUrl: '/listening_audio/el1A_set12_q3.mp3',
     label: '問3',
-    hint: '女性（大学生）',
+    hint: '男性（大学生）',
     script: 'I won\'t buy a new laptop until this old one stops working completely.',
     translation: '',
     keyPhrases: [],
@@ -1973,7 +1973,7 @@ const EL1_A_SET12_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set12_4',
     audioUrl: '/listening_audio/el1A_set12_q4.mp3',
     label: '問4',
-    hint: '男性（電気店の店員）',
+    hint: '女性（電気店の店員）',
     script: 'This washing machine was two hundred dollars last month, but it\'s on sale for one fifty now.',
     translation: '',
     keyPhrases: [],
@@ -2007,14 +2007,14 @@ const EL1_A_SET12: ListeningProblem = {
 ④ He arrived before the movie started.
 
 ────────────────────
-問3（話者：女性（大学生））
-① She has already bought a new laptop.
-② She will buy one when hers breaks.
-③ Her laptop stopped working yesterday.
-④ She will never buy a new laptop.
+問3（話者：男性（大学生））
+① He has already bought a new laptop.
+② He will buy one when his breaks.
+③ His laptop stopped working yesterday.
+④ He will never buy a new laptop.
 
 ────────────────────
-問4（話者：男性（電気店の店員））
+問4（話者：女性（電気店の店員））
 ① It costs two hundred dollars now.
 ② It is now fifty dollars.
 ③ It is cheaper now than last month.
@@ -2111,7 +2111,7 @@ missed the first ten minutes（最初の10分だけ見逃した）。①の whol
 
 問3　正解は ②
 スクリプト：I won't buy a new laptop until this old one stops working completely.
-正解の選択肢：She will buy one when hers breaks.
+正解の選択肢：He will buy one when his breaks.
 not〜until（〜するまで〜しない）構文。「壊れたら買う」と読み替える。④の never は言い過ぎ。
 
 問4　正解は ③
@@ -2146,7 +2146,7 @@ const EL1_A_SET13_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_A_set13_2',
     audioUrl: '/listening_audio/el1A_set13_q2.mp3',
     label: '問2',
-    hint: '男性（会社員）',
+    hint: '女性（会社員）',
     script: 'My flight was supposed to leave at nine, but it\'s been delayed until noon.',
     translation: '',
     keyPhrases: [],
@@ -2191,11 +2191,11 @@ const EL1_A_SET13: ListeningProblem = {
 ④ She feels too cold.
 
 ────────────────────
-問2（話者：男性（会社員））
-① His flight left at nine.
-② His flight will leave at noon.
-③ His flight has been canceled.
-④ He arrived at noon.
+問2（話者：女性（会社員））
+① Her flight left at nine.
+② Her flight will leave at noon.
+③ Her flight has been canceled.
+④ She arrived at noon.
 
 ────────────────────
 問3（話者：女性（母親））
@@ -2297,7 +2297,7 @@ Do you mind if I〜?（〜してもいいですか）の依頼表現。④は ho
 
 問2　正解は ②
 スクリプト：My flight was supposed to leave at nine, but it's been delayed until noon.
-正解の選択肢：His flight will leave at noon.
+正解の選択肢：Her flight will leave at noon.
 was supposed to（〜するはずだった）と delayed until noon の対比。9時と正午の時刻混同がひっかけ。
 
 問3　正解は ③

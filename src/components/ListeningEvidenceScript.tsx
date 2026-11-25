@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Play, Square } from 'lucide-react';
 import { locateListeningEvidence } from '../utils/listeningExplanation';
 import type { ListeningAudioTrack } from '../data/englishListeningQ1AProblems';
-import { ScriptReading } from '../features/readAlong/ScriptReading';
+import { ScriptReading, type LinePlayControl } from '../features/readAlong/ScriptReading';
 import type { ReadAlong } from '../features/readAlong/readAlong';
 import './listening-explanation.css';
 import { isLongTrack, loadListeningTranslations, segmentBreaks, segmentsOf, trackKey } from '../features/listeningTranslation/segments';
@@ -123,6 +124,70 @@ export function ListeningEvidenceScript({
       <ScriptReading
         track={track}
         compact={collapsiblePhrases}
+        renderPlainFallback={(ctrl: LinePlayControl) =>
+          interleave ? (
+            <div className="space-y-1">
+              {segs.map((seg, k) => (
+                <div key={k} className="listening-tr-pair">
+                  <p className="listening-script-text flex items-baseline gap-1.5">
+                    {ctrl.canPlayLine(k) && (
+                      <button
+                        type="button"
+                        className="ra-line-play self-center"
+                        data-playing={ctrl.activeLine === k || undefined}
+                        onClick={() => ctrl.toggleLine(k)}
+                        aria-label={`${seg.who ? `${seg.who} の発話` : `${k + 1}行目`}から再生${ctrl.activeLine === k ? 'を停止' : ''}`}
+                        title="この文から再生"
+                      >
+                        {ctrl.activeLine === k ? <Square size={11} aria-hidden="true" /> : <Play size={12} aria-hidden="true" />}
+                      </button>
+                    )}
+                    {seg.who && <b className="mr-1 shrink-0 text-xs">{seg.who}</b>}
+                    <span>{renderScript(seg.text)}</span>
+                  </p>
+                  {trLine(k)}
+                </div>
+              ))}
+            </div>
+          ) : track.turns?.length ? (
+            <ul className="space-y-2">
+              {track.turns.map((turn, index) => (
+                <li key={index} className="flex items-baseline gap-1.5">
+                  {ctrl.canPlayLine(index) && (
+                    <button
+                      type="button"
+                      className="ra-line-play self-center"
+                      data-playing={ctrl.activeLine === index || undefined}
+                      onClick={() => ctrl.toggleLine(index)}
+                      aria-label={`${turn.who ? `${turn.who} の発話` : `${index + 1}行目`}から再生${ctrl.activeLine === index ? 'を停止' : ''}`}
+                      title="この文から再生"
+                    >
+                      {ctrl.activeLine === index ? <Square size={11} aria-hidden="true" /> : <Play size={12} aria-hidden="true" />}
+                    </button>
+                  )}
+                  <b className="shrink-0 text-xs">{turn.who}</b>
+                  <span className="listening-script-text">{renderScript(turn.text)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="listening-script-text flex items-baseline gap-1.5">
+              {ctrl.canPlayLine(0) && (
+                <button
+                  type="button"
+                  className="ra-line-play self-center"
+                  data-playing={ctrl.activeLine === 0 || undefined}
+                  onClick={() => ctrl.toggleLine(0)}
+                  aria-label={`先頭から再生${ctrl.activeLine === 0 ? 'を停止' : ''}`}
+                  title="先頭から再生"
+                >
+                  {ctrl.activeLine === 0 ? <Square size={11} aria-hidden="true" /> : <Play size={12} aria-hidden="true" />}
+                </button>
+              )}
+              <span>{renderScript(track.script)}</span>
+            </p>
+          )
+        }
         fallback={
           interleave ? (
             <div className="space-y-1">

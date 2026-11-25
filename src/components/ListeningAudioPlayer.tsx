@@ -146,9 +146,16 @@ export function ListeningAudioPlayer({
   // compact は panel バリアントだけの装飾（inline はもともと十分小さい）
   const isCompact = compact && !isInline;
 
-  // focusSubId が指定されていればその問だけに絞る
+  // focusSubId が指定されていればその問だけに絞る（第4問以降のグループ音源は subIds も照合する）
   const list = useMemo(
-    () => (focusSubId ? tracks.filter((t) => t.subId === focusSubId) : tracks),
+    () =>
+      focusSubId
+        ? tracks.filter(
+            (t) =>
+              t.subId === focusSubId ||
+              (Array.isArray(t.subIds) && t.subIds.map(String).includes(focusSubId)),
+          )
+        : tracks,
     [tracks, focusSubId],
   );
 
@@ -156,7 +163,16 @@ export function ListeningAudioPlayer({
   const {
     playingId, setPlayingId, openScriptId, setOpenScriptId, rate, setRate,
     lockOnce, isLocked, audioRefs, usesSpeech, speechBlocked, play, toggle, handleEnded,
+    progressMap, seek, updateProgress,
   } = useListeningPlayback(list, { playOnce, isReview });
+
+  const fmtTime = (sec: number) => {
+    if (!Number.isFinite(sec) || sec <= 0) return '0:00';
+    const total = Math.floor(sec);
+    const m = Math.floor(total / 60);
+    const s = total % 60;
+    return `${m}:${String(s).padStart(2, '0')}`;
+  };
 
   if (list.length === 0) return null;
 
@@ -350,9 +366,13 @@ export function ListeningAudioPlayer({
                     audioRefs.current[track.subId] = el;
                   }}
                   src={track.audioUrl}
-                  preload="none"
+                  preload={isReview ? 'metadata' : 'none'}
+                  onLoadedMetadata={(e) => updateProgress(track.subId, e.currentTarget)}
+                  onTimeUpdate={(e) => updateProgress(track.subId, e.currentTarget)}
+                  onPlay={() => setPlayingId(track.subId)}
                   onEnded={() => handleEnded(track.subId)}
-                  onPause={() => {
+                  onPause={(e) => {
+                    updateProgress(track.subId, e.currentTarget);
                     if (playingId === track.subId) setPlayingId(null);
                   }}
                   playsInline
@@ -556,6 +576,35 @@ export function ListeningAudioPlayer({
                 </>
               )}
 
+              {/* 復習モード：シークバー＋5秒戻しで途中から再生・聞き返しができるようにする */}
+              {isReview && hasRealAudio(track) && (
+                <div className={`flex items-center gap-1.5 ${isCompact ? 'col-span-2 mt-0.5' : 'mt-0.5'}`}>
+                  <button
+                    type="button"
+                    onClick={() => seek(track.subId, Math.max(0, (progressMap[track.subId]?.cur ?? 0) - 5), playingId === track.subId)}
+                    aria-label={`${track.label} を5秒戻す`}
+                    title="5秒戻す"
+                    className={`shrink-0 rounded-md border px-1.5 py-0.5 text-xs font-bold leading-tight cursor-pointer ${idleBtnClass}`}
+                  >
+                    -5秒
+                  </button>
+                  <input
+                    type="range"
+                    min={0}
+                    max={Math.max(progressMap[track.subId]?.dur ?? 0, 0.1)}
+                    step={0.1}
+                    value={Math.min(progressMap[track.subId]?.cur ?? 0, Math.max(progressMap[track.subId]?.dur ?? 0, 0.1))}
+                    onChange={(e) => seek(track.subId, Number(e.target.value), false)}
+                    aria-label={`${track.label} の再生位置`}
+                    className="h-2 min-w-0 flex-1 cursor-pointer accent-[#2B7A72]"
+                  />
+                  <span className={`shrink-0 tabular-nums text-xs font-bold ${subTextClass}`}>
+                    {fmtTime(progressMap[track.subId]?.cur ?? 0)}
+                    {(progressMap[track.subId]?.dur ?? 0) > 0 ? ` / ${fmtTime(progressMap[track.subId]?.dur ?? 0)}` : ''}
+                  </span>
+                </div>
+              )}
+
               {/*
                 音声本体。controls は出さず、上のボタンに操作を集約する。
                 MP3 が無いトラックでは <audio> を作らない（src="" の読み込み
@@ -567,9 +616,13 @@ export function ListeningAudioPlayer({
                     audioRefs.current[track.subId] = el;
                   }}
                   src={track.audioUrl}
-                  preload="none"
+                  preload={isReview ? 'metadata' : 'none'}
+                  onLoadedMetadata={(e) => updateProgress(track.subId, e.currentTarget)}
+                  onTimeUpdate={(e) => updateProgress(track.subId, e.currentTarget)}
+                  onPlay={() => setPlayingId(track.subId)}
                   onEnded={() => handleEnded(track.subId)}
-                  onPause={() => {
+                  onPause={(e) => {
+                    updateProgress(track.subId, e.currentTarget);
                     if (playingId === track.subId) setPlayingId(null);
                   }}
                   playsInline

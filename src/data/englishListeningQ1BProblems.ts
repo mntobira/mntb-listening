@@ -63,7 +63,7 @@ const EL1_B_SET1_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set1_4',
     audioUrl: '/listening_audio/el1B_set1_q4.mp3',
     label: '問4',
-    hint: '男性（高校生）',
+    hint: '女性（高校生）',
     script: '"Two boys are playing soccer, and one more is just watching them."',
     translation: '',
     keyPhrases: [],
@@ -98,7 +98,7 @@ const EL1_B_SET1: ListeningProblem = {
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問4（話者：男性（高校生））
+問4（話者：女性（高校生））
 イラスト①〜④から、発話の内容に合うものを選びなさい。`,
   subQuestions: [
     {
@@ -636,7 +636,7 @@ const EL1_B_SET4_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set4_3',
     audioUrl: '/listening_audio/el1B_set4_q3.mp3',
     label: '問3',
-    hint: '女性（小学生の母）',
+    hint: '男性（小学生の父）',
     script: '"My son is holding the round clock, and my daughter has the square one."',
     translation: '',
     keyPhrases: [],
@@ -645,7 +645,7 @@ const EL1_B_SET4_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set4_4',
     audioUrl: '/listening_audio/el1B_set4_q4.mp3',
     label: '問4',
-    hint: '男性（ケーキ店の店員）',
+    hint: '女性（ケーキ店の店員）',
     script: '"The large cake is 800 yen, and the small one is 300 yen."',
     translation: '',
     keyPhrases: [],
@@ -676,11 +676,11 @@ const EL1_B_SET4: ListeningProblem = {
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問3（話者：女性（小学生の母））
+問3（話者：男性（小学生の父））
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問4（話者：男性（ケーキ店の店員））
+問4（話者：女性（ケーキ店の店員））
 イラスト①〜④から、発話の内容に合うものを選びなさい。`,
   subQuestions: [
     {
@@ -821,7 +821,7 @@ const EL1_B_SET5_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set5_2',
     audioUrl: '/listening_audio/el1B_set5_q2.mp3',
     label: '問2',
-    hint: '男性（高校生）',
+    hint: '女性（高校生）',
     script: '"I had bread for breakfast this morning, not rice."',
     translation: '',
     keyPhrases: [],
@@ -866,7 +866,7 @@ const EL1_B_SET5: ListeningProblem = {
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問2（話者：男性（高校生））
+問2（話者：女性（高校生））
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
@@ -1218,7 +1218,7 @@ const EL1_B_SET7_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set7_3',
     audioUrl: '/listening_audio/el1B_set7_q3.mp3',
     label: '問3',
-    hint: '女性（駅員）',
+    hint: '男性（駅員）',
     script: '"To get to the platform, go up the stairs and turn right. Don\'t use the escalator today."',
     translation: '',
     keyPhrases: [],
@@ -1227,7 +1227,7 @@ const EL1_B_SET7_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set7_4',
     audioUrl: '/listening_audio/el1B_set7_q4.mp3',
     label: '問4',
-    hint: '男性（高校生）',
+    hint: '女性（高校生）',
     script: '"There are more oranges than apples in the basket. I count five oranges and three apples."',
     translation: '',
     keyPhrases: [],
@@ -1258,11 +1258,11 @@ const EL1_B_SET7: ListeningProblem = {
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問3（話者：女性（駅員））
+問3（話者：男性（駅員））
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問4（話者：男性（高校生））
+問4（話者：女性（高校生））
 イラスト①〜④から、発話の内容に合うものを選びなさい。`,
   subQuestions: [
     {
@@ -1403,7 +1403,7 @@ const EL1_B_SET8_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set8_2',
     audioUrl: '/listening_audio/el1B_set8_q2.mp3',
     label: '問2',
-    hint: '男性（高校生）',
+    hint: '女性（高校生）',
     script: '"I put the dictionary on the top shelf because I use it every day. The photo album is on the bottom shelf."',
     translation: '',
     keyPhrases: [],
@@ -1448,7 +1448,7 @@ const EL1_B_SET8: ListeningProblem = {
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問2（話者：男性（高校生））
+問2（話者：女性（高校生））
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
@@ -1800,7 +1800,7 @@ const EL1_B_SET10_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set10_3',
     audioUrl: '/listening_audio/el1B_set10_q3.mp3',
     label: '問3',
-    hint: '女性（カフェ店員）',
+    hint: '男性（カフェ店員）',
     script: '"Here you are. Two cups of coffee and one cup of tea. The tea is for the lady by the window."',
     translation: '',
     keyPhrases: [],
@@ -1840,7 +1840,7 @@ const EL1_B_SET10: ListeningProblem = {
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問3（話者：女性（カフェ店員））
+問3（話者：男性（カフェ店員））
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
@@ -1985,7 +1985,7 @@ const EL1_B_SET11_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set11_2',
     audioUrl: '/listening_audio/el1B_set11_q2.mp3',
     label: '問2',
-    hint: '男性（父親）',
+    hint: '女性（母親）',
     script: '"There are two bicycles in front of our house. The blue one is mine."',
     translation: '',
     keyPhrases: [],
@@ -2030,7 +2030,7 @@ const EL1_B_SET11: ListeningProblem = {
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問2（話者：男性（父親））
+問2（話者：女性（母親））
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
@@ -2382,7 +2382,7 @@ const EL1_B_SET13_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set13_3',
     audioUrl: '/listening_audio/el1B_set13_q3.mp3',
     label: '問3',
-    hint: '女性（店員）',
+    hint: '男性（店員）',
     script: '"The clock on the wall is ten minutes fast. It says nine ten, but it\'s actually nine o\'clock."',
     translation: '',
     keyPhrases: [],
@@ -2422,7 +2422,7 @@ const EL1_B_SET13: ListeningProblem = {
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問3（話者：女性（店員））
+問3（話者：男性（店員））
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
@@ -2567,7 +2567,7 @@ const EL1_B_SET14_TRACKS: ListeningAudioTrack[] = [
     subId: 'q_el1_B_set14_2',
     audioUrl: '/listening_audio/el1B_set14_q2.mp3',
     label: '問2',
-    hint: '男性（高校生）',
+    hint: '女性（高校生）',
     script: '"There are two balls under the chair. The red one is bigger than the blue one."',
     translation: '',
     keyPhrases: [],
@@ -2612,7 +2612,7 @@ const EL1_B_SET14: ListeningProblem = {
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────
-問2（話者：男性（高校生））
+問2（話者：女性（高校生））
 イラスト①〜④から、発話の内容に合うものを選びなさい。
 
 ────────────────────

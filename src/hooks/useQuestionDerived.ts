@@ -302,9 +302,14 @@ export function useQuestionDerived({
     return Array.isArray(t) ? t : [];
   }, [currentQuestion]);
 
-  /** 設問IDに対応する音源トラックがあるか（無ければ再生ボタンを出さない）。 */
+  /** 設問IDに対応する音源トラックがあるか（無ければ再生ボタンを出さない）。
+   *  第4問以降のグループ音源は subIds に複数の設問IDを持つため、やり直し等で
+   *  2問目以降だけが残った場合でも音源を失わないよう subIds も見る。 */
   const hasTrackFor = useCallback(
-    (sqId: string) => listeningTracks.some((t) => t?.subId === sqId),
+    (sqId: string) =>
+      listeningTracks.some(
+        (t) => t?.subId === sqId || (Array.isArray(t?.subIds) && t.subIds.map(String).includes(sqId)),
+      ),
     [listeningTracks],
   );
 
