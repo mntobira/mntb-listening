@@ -55,6 +55,10 @@ import { BattleGrowthReward, type GrowthReward } from './BattleGrowthReward';
 import { BattleGrowthCard } from './BattleGrowthCard';
 import { recordLocalBattle } from '../data/localBattleLog';
 import { recordStudyLog } from '../../utils/studyLog';
+import { classifyOutcomeFormat, recordBattleFinished, recordBattleFollowup, recordOutcomeAttempts } from '../../utils/learningOutcomes';
+import { loadReviewList, reviewKeyOf } from '../../utils/reviewList';
+import { readSolvedMap } from '../../utils/progress';
+import { schedulePush } from '../../utils/studySync';
 import { auth } from '../../firebase';
 import { ShareButton } from './GrowthFx';
 import { equippedTitleLabel, levelOf, ratingTierOf, shareTextForMatch } from '../core/growth';
@@ -309,6 +313,31 @@ export function BattleResult({
           answer: !pq.correct && q && q.answerIndex >= 0 ? String(q.options[q.answerIndex] ?? '') : undefined };
       }),
     });
+    // ★学習成果指標★ 対戦完了（転換率の分母）＋ 対戦での週あたり解答数・未見問題の正答率推移
+    try {
+      const outcomeUid = auth.currentUser?.uid || 'guest';
+      const bKey = matchKey || `${subject}-${questions[0]?.id ?? ''}-${result.me.score}`;
+      recordBattleFinished(outcomeUid, bKey);
+      const solvedMap = readSolvedMap(outcomeUid);
+      const revSet = new Set(loadReviewList(outcomeUid).map((r) => r.key));
+      recordOutcomeAttempts(
+        outcomeUid,
+        result.me.perQuestion.map((pq) => {
+          const q = questions[pq.index];
+          const itemKey = q?.chapterId && q?.problemId && q?.subQuestionId
+            ? reviewKeyOf(q.chapterId, q.problemId, q.subQuestionId)
+            : `battle_q::${subject}::${q?.id ?? pq.index}`;
+          const probKey = q?.chapterId && q?.problemId ? `${q.chapterId}::${q.problemId}` : '';
+          return {
+            itemKey,
+            format: classifyOutcomeFormat(q?.chapterId || '', q?.subject || subject),
+            correct: Boolean(pq.correct),
+            alreadyKnownSeen: Boolean((probKey && solvedMap[probKey]) || revSet.has(itemKey)),
+          };
+        }),
+      );
+      schedulePush();
+    } catch { /* 成果記録の失敗でリザルト表示は止めない */ }
     // 学習記録は1試合につき1回だけ書く（結果の表示が更新されても書き直さない）
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchKey]);
@@ -363,7 +392,14 @@ export function BattleResult({
   if (page === 'profile') return <BattleProfile onBack={() => setPage('detail')} onMissions={() => setPage('missions')} />;
 
   const retryButton = onRetryWrong && wrongIds.length > 0 ? (
-    <BattleButton variant="ghost" onClick={() => onRetryWrong(subject, wrongIds)} icon={<Swords size={18} />}>
+    <BattleButton variant="ghost" onClick={() => {
+      try {
+        const bKey = matchKey || `${subject}-${questions[0]?.id ?? ''}-${result.me.score}`;
+        recordBattleFollowup(auth.currentUser?.uid || 'guest', 'practice', bKey);
+        schedulePush();
+      } catch { /* 成果記録の失敗で再対戦は止めない */ }
+      onRetryWrong(subject, wrongIds);
+    }} icon={<Swords size={18} />}>
       間違えた{wrongIds.length}問だけ再対戦
     </BattleButton>
   ) : null;

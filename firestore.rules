@@ -99,8 +99,12 @@ service cloud.firestore {
     // ---------------------------------------------------------------
     // Helper Functions
     // ---------------------------------------------------------------
+    function isNotAnonymousAuth() {
+      return request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous';
+    }
+
     function isAuthenticated() {
-      return request.auth != null;
+      return request.auth != null && isNotAnonymousAuth();
     }
 
     function isOwner(userId) {
@@ -200,13 +204,19 @@ service cloud.firestore {
     // アバターURL（lh3.googleusercontent.com/...）が十分収まる長さで、
     // かつデータURL等を押し込めない値として選んだもの。
 
+    // URL の安全性（空文字または https:// かつ 512 文字以内。javascript: / data: / http: を排除）
+    function isSafePhotoUrl(url) {
+      return url is string
+        && url.size() <= 512
+        && (url == '' || url.matches('^https://[^\\s"\'<>]{1,504}$'));
+    }
+
     // 表示名の妥当性。フレンド系（friend_profiles など）と同じ 24 文字上限で揃える。
     function isValidRankingIdentity(data) {
       return data.nickname is string
         && data.nickname.size() > 0
         && data.nickname.size() <= 24
-        && data.photoURL is string
-        && data.photoURL.size() <= 512;
+        && isSafePhotoUrl(data.photoURL);
     }
 
     // 章ごとのベストスコア。ドキュメントID = `${chapterId}_${uid}`
@@ -314,7 +324,9 @@ service cloud.firestore {
       return request.resource.data.uid == request.auth.uid
         && request.resource.data.keys().hasOnly(['uid', 'nickname', 'photoURL', 'updatedAt'])
         && request.resource.data.nickname is string
-        && request.resource.data.nickname.size() <= 24;
+        && request.resource.data.nickname.size() <= 24
+        && (!('photoURL' in request.resource.data) || isSafePhotoUrl(request.resource.data.photoURL))
+        && (!('updatedAt' in request.resource.data) || request.resource.data.updatedAt == request.time);
     }
 
     // ============================================================
@@ -407,9 +419,15 @@ service cloud.firestore {
       allow list: if false;
 
       allow create, update: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['uid', 'nickname', 'photoURL', 'friendCode', 'updatedAt'])
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.nickname is string
-        && request.resource.data.nickname.size() <= 24;
+        && request.resource.data.nickname.size() <= 24
+        && (!('photoURL' in request.resource.data) || isSafePhotoUrl(request.resource.data.photoURL))
+        && (!('friendCode' in request.resource.data)
+            || (request.resource.data.friendCode is string
+                && request.resource.data.friendCode.matches('^MNTB-[A-Z0-9]{4}-[A-Z0-9]{4}$')))
+        && (!('updatedAt' in request.resource.data) || request.resource.data.updatedAt == request.time);
       allow delete: if isOwner(userId);
     }
 
@@ -436,6 +454,7 @@ service cloud.firestore {
               'createdAt', 'updatedAt'])
         && request.resource.data.fromNickname is string
         && request.resource.data.fromNickname.size() <= 24
+        && (!('fromPhotoURL' in request.resource.data) || isSafePhotoUrl(request.resource.data.fromPhotoURL))
         // 新規申請は必ず pending から始まる
         && request.resource.data.status == 'pending'
         // すでにフレンドなら申請不要
@@ -483,6 +502,8 @@ service cloud.firestore {
         && request.resource.data.uid == friendUid
         && friendUid != userId
         && request.resource.data.keys().hasOnly(['uid', 'nickname', 'photoURL', 'addedAt'])
+        && (!('nickname' in request.resource.data) || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 24))
+        && (!('photoURL' in request.resource.data) || isSafePhotoUrl(request.resource.data.photoURL))
         && (
           // (1) 受信者が承認する場合:
           //     自分の配下に「自分へ申請してきた相手」を登録する
@@ -505,6 +526,8 @@ service cloud.firestore {
       allow update: if isAuthenticated()
         && request.resource.data.uid == resource.data.uid
         && request.resource.data.keys().hasOnly(['uid', 'nickname', 'photoURL', 'addedAt'])
+        && (!('nickname' in request.resource.data) || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 24))
+        && (!('photoURL' in request.resource.data) || isSafePhotoUrl(request.resource.data.photoURL))
         && (
           isOwner(userId)
           || (request.auth.uid == friendUid && requestUsableForFriendship(userId, friendUid))
@@ -566,8 +589,12 @@ service cloud.firestore {
           && (!('appVersion' in data) || (data.appVersion is string && data.appVersion.size() <= 40))
           && (!('createdAtIso' in data) || (data.createdAtIso is string && data.createdAtIso.size() <= 40))
           && (!('displayName' in data) || data.displayName == null || (data.displayName is string && data.displayName.size() <= 100))
-          && (!('authEmail' in data) || data.authEmail == null || (data.authEmail is string && data.authEmail.size() <= 200))
-          && (!('contactEmail' in data) || data.contactEmail == null || (data.contactEmail is string && data.contactEmail.size() <= 200))
+          && (!('authEmail' in data) || data.authEmail == null
+              || (data.authEmail is string && data.authEmail.size() <= 200
+                  && (data.authEmail == '' || data.authEmail.matches('^[^\\s@\\r\\n<>]+@[^\\s@\\r\\n<>]+\\.[^\\s@\\r\\n<>]+$'))))
+          && (!('contactEmail' in data) || data.contactEmail == null
+              || (data.contactEmail is string && data.contactEmail.size() <= 200
+                  && (data.contactEmail == '' || data.contactEmail.matches('^[^\\s@\\r\\n<>]+@[^\\s@\\r\\n<>]+\\.[^\\s@\\r\\n<>]+$'))))
           // 新規投函は必ず status = 'new'（運営が Admin SDK 側で更新する）
           && (!('status' in data) || data.status == 'new')
           // 時刻はサーバー時刻のみ（端末時計の偽装で並び順を荒らせない）
@@ -680,7 +707,7 @@ service cloud.firestore {
           // 文字列項目の長さ制限（ストレージの暴走防止）
           && (!('displayName' in data) || data.displayName == null || (data.displayName is string && data.displayName.size() <= 100))
           && (!('email' in data) || data.email == null || (data.email is string && data.email.size() <= 200))
-          && (!('photoUrl' in data) || data.photoUrl == null || (data.photoUrl is string && data.photoUrl.size() <= 500))
+          && (!('photoUrl' in data) || data.photoUrl == null || isSafePhotoUrl(data.photoUrl))
           && (!('profileName' in data) || data.profileName == null || (data.profileName is string && data.profileName.size() <= 100))
           && (!('grade' in data) || data.grade == null || (data.grade is string && data.grade.size() <= 50))
           && (!('createdAtIso' in data) || data.createdAtIso == null || (data.createdAtIso is string && data.createdAtIso.size() <= 40))
@@ -751,7 +778,7 @@ service cloud.firestore {
 
       function isValidProgress(data) {
         return data.keys().hasOnly([
-                 'uid', 'solved', 'reviewItems',
+                 'uid', 'solved', 'reviewItems', 'outcomes',
                  'solvedTotal', 'reviewTotal', 'lastStudiedAt', 'updatedAt'
                ])
           // uid の偽装を防ぐ（他人の進捗として書き込めない）
@@ -759,10 +786,25 @@ service cloud.firestore {
           && data.uid == userId
           && data.uid == request.auth.uid
           && data.solved is map
+          && data.solved.size() <= 5000
           && data.reviewItems is list
           // 復習リストは studySyncCore.MAX_SYNCED_REVIEW_ITEMS = 600 で
           // 上限を掛けている。ドキュメント1MiB制限に触れる前に弾く。
           && data.reviewItems.size() <= 600
+          && (!('outcomes' in data) || (
+               data.outcomes is map
+               && data.outcomes.keys().hasOnly(['v', 'firstDay', 'daily', 'battles', 'formats'])
+               && data.outcomes.v == 1
+               && (data.outcomes.firstDay == null || (data.outcomes.firstDay is string && data.outcomes.firstDay.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
+               && data.outcomes.daily is map && data.outcomes.daily.size() <= 60
+               && data.outcomes.battles is map
+               && data.outcomes.battles.keys().hasOnly(['total', 'toReview', 'toPractice', 'converted'])
+               && (!('total' in data.outcomes.battles) || (data.outcomes.battles.total is int && data.outcomes.battles.total >= 0 && data.outcomes.battles.total <= 100000))
+               && (!('toReview' in data.outcomes.battles) || (data.outcomes.battles.toReview is int && data.outcomes.battles.toReview >= 0 && data.outcomes.battles.toReview <= 100000))
+               && (!('toPractice' in data.outcomes.battles) || (data.outcomes.battles.toPractice is int && data.outcomes.battles.toPractice >= 0 && data.outcomes.battles.toPractice <= 100000))
+               && (!('converted' in data.outcomes.battles) || (data.outcomes.battles.converted is int && data.outcomes.battles.converted >= 0 && data.outcomes.battles.converted <= 100000))
+               && data.outcomes.formats is map && data.outcomes.formats.size() <= 16
+             ))
           && (!('solvedTotal' in data) || (data.solvedTotal is int && data.solvedTotal >= 0))
           && (!('reviewTotal' in data) || (data.reviewTotal is int && data.reviewTotal >= 0))
           && (!('lastStudiedAt' in data) || data.lastStudiedAt is int)
@@ -791,10 +833,10 @@ service cloud.firestore {
       allow create: if request.resource.data.keys().hasOnly([
             'day', 'platform', 'appVersion', 'install', 'signedIn', 'durationSec',
             'screens', 'screenSec', 'events', 'errors', 'createdAt'])
-        && request.resource.data.day is string && request.resource.data.day.size() == 10
+        && request.resource.data.day is string && request.resource.data.day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
         && request.resource.data.platform in ['web', 'ios', 'android']
         && request.resource.data.appVersion is string && request.resource.data.appVersion.size() <= 40
-        && request.resource.data.install is string && request.resource.data.install.size() == 16
+        && request.resource.data.install is string && request.resource.data.install.matches('^[A-Za-z0-9_-]{16}$')
         && request.resource.data.signedIn is bool
         && request.resource.data.durationSec is int && request.resource.data.durationSec >= 0 && request.resource.data.durationSec <= 86400
         && smallMap(request.resource.data.screens) && smallMap(request.resource.data.screenSec)
@@ -821,7 +863,7 @@ service cloud.firestore {
         return data.keys().hasOnly([
                  'uid', 'updatedAt',
                  's_growth', 's_vocabQuiz', 's_vocabPrefs', 's_support', 's_studyTime', 's_studyLog',
-                 's_unitStats', 's_stageHistory', 's_battleLog', 's_profile', 's_completed', 's_notes', 's_streak', 's_reading', 's_manualLog'
+                 's_unitStats', 's_stageHistory', 's_battleLog', 's_profile', 's_completed', 's_notes', 's_streak', 's_reading', 's_manualLog', 's_outcomes'
                ])
           && data.uid == userId
           && data.uid == request.auth.uid
@@ -829,7 +871,7 @@ service cloud.firestore {
           && sec(data, 's_support') && sec(data, 's_studyTime') && sec(data, 's_studyLog')
           && sec(data, 's_unitStats') && sec(data, 's_stageHistory') && sec(data, 's_battleLog')
           && sec(data, 's_profile') && sec(data, 's_completed') && sec(data, 's_notes') && sec(data, 's_streak')
-          && sec(data, 's_reading') && sec(data, 's_manualLog')
+          && sec(data, 's_reading') && sec(data, 's_manualLog') && sec(data, 's_outcomes')
           && (!('updatedAt' in data) || data.updatedAt == request.time);
       }
       allow get: if isOwner(userId);
@@ -861,12 +903,20 @@ service cloud.firestore {
       allow list: if false;
 
       // 作成できるのは生徒本人のみ。
-      // ドキュメントIDを `${studentUid}_${teacherUid}` に固定することで、
-      // 中身とIDの食い違い（別人の許可をこっそり作る）を防ぐ。
+      // ドキュメントIDを `${studentUid}_${teacherUid}` に固定し、
+      // かつ実在するクラスの担任であり、本人がそのクラスに在籍していること（または同時作成）を検証する。
       allow create, update: if isAuthenticated()
+        && request.resource.data.keys().hasOnly(['studentUid', 'teacherUid', 'classId', 'grantedAt'])
         && request.resource.data.studentUid == request.auth.uid
         && request.resource.data.teacherUid is string
+        && request.resource.data.teacherUid.size() > 0 && request.resource.data.teacherUid.size() <= 128
         && request.resource.data.classId is string
+        && request.resource.data.classId.size() > 0 && request.resource.data.classId.size() <= 80
+        && exists(/databases/$(database)/documents/classrooms/$(request.resource.data.classId))
+        && get(/databases/$(database)/documents/classrooms/$(request.resource.data.classId)).data.teacherUid == request.resource.data.teacherUid
+        && (exists(/databases/$(database)/documents/class_members/$(request.resource.data.classId + '_' + request.auth.uid))
+            || existsAfter(/databases/$(database)/documents/class_members/$(request.resource.data.classId + '_' + request.auth.uid)))
+        && (!('grantedAt' in request.resource.data) || request.resource.data.grantedAt == request.time)
         && accessId == request.resource.data.studentUid + '_' + request.resource.data.teacherUid;
 
       // 取り消せるのは生徒本人のみ（先生に許可を消させない＝
@@ -901,13 +951,15 @@ service cloud.firestore {
                  'id', 'teacherUid', 'schoolName', 'className', 'joinCode',
                  'subject', 'joinOpen', 'memberCount', 'plan', 'createdAt', 'updatedAt'
                ])
+          && (!('id' in data) || (data.id is string && data.id == classId))
           && data.teacherUid is string
           && data.teacherUid == request.auth.uid
           && data.schoolName is string && data.schoolName.size() > 0 && data.schoolName.size() <= 40
           && data.className is string && data.className.size() > 0 && data.className.size() <= 40
           && data.joinCode is string && data.joinCode.matches('^[ACDEFGHJKMNPQRSTWXYZ2345679]{6}$')
           && data.subject in ['chemistry_basic', 'chemistry', 'english_listening', 'english_grammar']
-          && data.joinOpen is bool;
+          && data.joinOpen is bool
+          && (!('memberCount' in data) || (data.memberCount is int && data.memberCount >= 0 && data.memberCount <= 10000));
       }
 
       allow get: if isAuthenticated();
@@ -957,6 +1009,9 @@ service cloud.firestore {
       // 生徒の参加先をすり替えることを防ぐ）
       allow update: if isAuthenticated()
         && resource.data.teacherUid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['classId', 'teacherUid', 'createdAt'])
+        && request.resource.data.classId is string
+        && request.resource.data.classId.size() <= 80
         && request.resource.data.teacherUid == resource.data.teacherUid;
 
       allow delete: if isAuthenticated() && resource.data.teacherUid == request.auth.uid;
@@ -1000,20 +1055,31 @@ service cloud.firestore {
       allow get, list: if isAuthenticated()
         && (resource.data.uid == request.auth.uid || isClassTeacher(resource.data.classId));
 
-      // 参加するのは生徒本人のみ（先生が生徒を勝手に登録できない）
+      // 参加するのは生徒本人のみ（先生が生徒を勝手に登録できない）。
+      // クラスが実在し、かつ参加受付中（joinOpen == true）であることをルール側でも強制する。
+      // 新規参加時に生徒自身が rosterName（出席番号）を偽装することも禁止する。
       allow create: if isAuthenticated()
         && request.resource.data.uid == request.auth.uid
-        && isValidMember(request.resource.data);
+        && isValidMember(request.resource.data)
+        && !('rosterName' in request.resource.data)
+        && exists(/databases/$(database)/documents/classrooms/$(request.resource.data.classId))
+        && get(/databases/$(database)/documents/classrooms/$(request.resource.data.classId)).data.joinOpen == true;
 
-      // 更新は
-      //   ・本人（表示名の変更）
-      //   ・担任（rosterName = 出席番号などの設定）
-      // のみ。uid / classId は変更不可。
+      // 更新は役割ごとに変更可能な項目を分離する：
+      //   ・生徒本人 … displayName の変更のみ（先生の名簿 rosterName は書き換え不可）
+      //   ・担任     … rosterName の設定のみ（生徒の displayName は書き換え不可）
+      // uid / classId / joinedAt は双方とも変更不可。
       allow update: if isAuthenticated()
         && isValidMember(request.resource.data)
         && request.resource.data.uid == resource.data.uid
         && request.resource.data.classId == resource.data.classId
-        && (resource.data.uid == request.auth.uid || isClassTeacher(resource.data.classId));
+        && request.resource.data.get('joinedAt', null) == resource.data.get('joinedAt', null)
+        && (
+          (resource.data.uid == request.auth.uid
+            && request.resource.data.get('rosterName', null) == resource.data.get('rosterName', null))
+          || (isClassTeacher(resource.data.classId)
+            && request.resource.data.displayName == resource.data.displayName)
+        );
 
       // 退出は本人、除籍は担任
       allow delete: if isAuthenticated()
@@ -1159,7 +1225,7 @@ service cloud.firestore {
     // 画面側でボタンを隠すだけでは、SDK を直接叩けば書き込めてしまう。
     // 「uid が無ければ何も書けない」ことをここで保証する。
     function battleSignedIn() {
-      return request.auth != null && request.auth.uid != null;
+      return request.auth != null && request.auth.uid != null && isNotAnonymousAuth();
     }
 
     // 自分がこの部屋の参加者か。
@@ -1168,7 +1234,7 @@ service cloud.firestore {
     // 部屋IDは推測できない乱数だが、万一漏れても
     // 第三者が解答を書き込めないようにする。
     function battleIsPlayer(playersList) {
-      return battleSignedIn() && request.auth.uid in playersList;
+      return request.auth.uid in playersList;
     }
 
     // 変更前後で値が変わっていないフィールドか。
@@ -1286,14 +1352,17 @@ service cloud.firestore {
         && request.resource.data.subject is string
         && request.resource.data.subject.size() <= 40
         && request.resource.data.profile is map
+        && request.resource.data.profile.keys().hasOnly(['uid', 'nickname', 'photoURL', 'rating', 'matchSessionId'])
         && request.resource.data.profile.uid == uid
         && request.resource.data.profile.nickname is string
         && request.resource.data.profile.nickname.size() <= 40
-        && request.resource.data.profile.photoURL is string
-        && request.resource.data.profile.photoURL.size() <= 500
+        && isSafePhotoUrl(request.resource.data.profile.photoURL)
         && request.resource.data.profile.rating is number
         && request.resource.data.profile.rating >= 0
         && request.resource.data.profile.rating <= 4000
+        && (!('matchSessionId' in request.resource.data.profile)
+            || (request.resource.data.profile.matchSessionId is string
+                && request.resource.data.profile.matchSessionId.size() <= 64))
         && request.resource.data.createdAt == request.time;
 
       // ★2026-10-03 締め直し★ 以前は「ログインしていれば誰の票でも消せる」で、
@@ -1340,7 +1409,9 @@ service cloud.firestore {
           && d.players is list && d.players.size() == 2
           && d.players[0] == request.auth.uid
           && d.players[1] != request.auth.uid
-          && d.profiles is map && d.profiles.keys().hasOnly(d.players)
+          && d.profiles is map && d.profiles.size() == 2 && d.profiles.keys().hasOnly(d.players)
+          && lobbyProfileValid(d.profiles[d.players[0]], d.players[0])
+          && lobbyProfileValid(d.profiles[d.players[1]], d.players[1])
           && d.picks is map && d.picks.size() == 0
           && d.round == 0
           && d.roomId == ''
@@ -1356,7 +1427,7 @@ service cloud.firestore {
           && p.keys().hasOnly(['uid', 'nickname', 'photoURL', 'rating'])
           && p.uid == playerUid
           && p.nickname is string && p.nickname.size() <= 40
-          && p.photoURL is string && p.photoURL.size() <= 500
+          && isSafePhotoUrl(p.photoURL)
           && p.rating is number && p.rating >= 0 && p.rating <= 4000;
       }
       function lobbyValidFriendNew(d) {
@@ -1483,6 +1554,19 @@ service cloud.firestore {
     match /battle_rooms/{roomId} {
 
       // -----------------------------------------------------------
+      // プロフィール 1 人分の形の検査（文字数・URL スキーム・レート範囲・未知キー拒否）
+      // -----------------------------------------------------------
+      function battleRoomProfileValid(p, playerUid) {
+        return p is map
+          && p.keys().hasOnly(['uid', 'nickname', 'photoURL', 'rating', 'matchSessionId'])
+          && p.uid == playerUid
+          && p.nickname is string && p.nickname.size() <= 40
+          && isSafePhotoUrl(p.photoURL)
+          && p.rating is number && p.rating >= 0 && p.rating <= 4000
+          && p.get('matchSessionId', '').size() <= 64;
+      }
+
+      // -----------------------------------------------------------
       // 作成時の形の検査
       // -----------------------------------------------------------
       function battleValidNewRoom(d) {
@@ -1502,6 +1586,9 @@ service cloud.firestore {
           && d.players.size() >= 1 && d.players.size() <= 2
           && request.auth.uid in d.players
           && d.profiles is map && d.profiles.size() <= 2
+          && d.profiles.keys().hasOnly(d.players)
+          && (!(d.players[0] in d.profiles) || battleRoomProfileValid(d.profiles[d.players[0]], d.players[0]))
+          && (d.players.size() < 2 || !(d.players[1] in d.profiles) || battleRoomProfileValid(d.profiles[d.players[1]], d.players[1]))
           // ★出題は作成時に確定させる★
           //   数を制限するのは、巨大な配列を書き込んで
           //   ドキュメント上限（1MiB）を狙う攻撃を防ぐため。
@@ -1601,8 +1688,8 @@ service cloud.firestore {
       //   get だけを緩めた。list は従来どおり参加者限定なので、
       //   「今開いている部屋を一覧で漁って割り込む」はできない。
       //   部屋にたどり着くには合言葉（31^4 通り）が必要なままである。
-      allow get: if battleIsPlayer(resource.data.players)
-        || battleOpenForJoin();
+      allow get: if battleSignedIn()
+        && (battleIsPlayer(resource.data.players) || battleOpenForJoin());
 
       // 「これから入れる部屋」か。上の例外の判定。
       function battleOpenForJoin() {
@@ -1636,7 +1723,7 @@ service cloud.firestore {
       //   where('players','array-contains', 自分のuid)
       // という検索が必要。ルール側で resource.data.players を見ることで、
       // この条件を満たさない検索は結果ごと拒否される。
-      allow list: if battleIsPlayer(resource.data.players);
+      allow list: if battleSignedIn() && battleIsPlayer(resource.data.players);
 
       // -----------------------------------------------------------
       // 作成（部屋を作る側）
@@ -1725,7 +1812,7 @@ service cloud.firestore {
       //   実際に (D) の中だけで left を守ろうとして、
       //   (C) 経由で相手の離脱を偽装できる穴が空いていた。
 
-      // (A) 入室。待機中の部屋に、自分を 2 人目として足すときだけ。
+      // 相手（2人目）に answers / attest を同時に足させない・ホストの回答を壊させないための入室検査
       function battleJoining() {
         return resource.data.status == 'waiting'
           // フレンド対戦の部屋に入れるのは、部屋主のフレンドだけ
@@ -1739,15 +1826,21 @@ service cloud.firestore {
           && resource.data.players[0] in request.resource.data.players
           && request.resource.data.status == 'waiting'
           && request.resource.data.currentIndex == 0
+          && battleUnchanged('deadlineAt')
+          && battleUnchanged('attest')
+          // 入室時に answers を触るなら自分の空マップ（{}）を足すだけ・ホストの answers は不変
+          && request.resource.data.answers is map
+          && request.resource.data.answers.keys().hasOnly(request.resource.data.players)
+          && battleSameAnswerSlot(resource.data.players[0])
+          && (!(request.auth.uid in request.resource.data.answers)
+              || request.resource.data.answers[request.auth.uid] == {})
           // ★入室時も、部屋主のプロフィールは触れない★
-          //   入室する人は「まだ旧 players に入っていない」ので、
-          //   進行中用の battleProfilesOnlyMine() は使えない
-          //   （旧 players に自分がおらず hasOnly で落ちる）。
-          //   そこで新しい players を基準に検査する。
           && request.resource.data.profiles is map
           && request.resource.data.profiles.keys()
                .hasOnly(request.resource.data.players)
-          && battleSameProfileSlot(resource.data.players[0]);
+          && battleSameProfileSlot(resource.data.players[0])
+          && (!(request.auth.uid in request.resource.data.profiles)
+              || battleRoomProfileValid(request.resource.data.profiles[request.auth.uid], request.auth.uid));
       }
 
       // (B)(C)(D) 参加者による進行。
@@ -1774,16 +1867,19 @@ service cloud.firestore {
       //   answeredAt にはサーバ時刻しか入れられない（下で検査）ので、
       //   後から時刻を偽って速度点を稼ぐことはできない。
       function battleAnswersOnlyMine() {
-        return request.resource.data.answers is map
-          // 参加者以外のキーを増やせない
-          && request.resource.data.answers.keys().hasOnly(resource.data.players)
-          // 相手の欄が変わっていない（2人部屋のときだけ意味を持つ）
-          && (
-               resource.data.players.size() < 2
-               || battleOpponentAnswersKept()
-             )
-          // ★自分の解答の中身を検査する（これが無いと不正が全部通る）★
-          && battleMyAnswerSane();
+        return request.resource.data.answers == resource.data.answers
+          || (
+               request.resource.data.answers is map
+               // 参加者以外のキーを増やせない
+               && request.resource.data.answers.keys().hasOnly(resource.data.players)
+               // 相手の欄が変わっていない（2人部屋のときだけ意味を持つ）
+               && (
+                    resource.data.players.size() < 2
+                    || battleOpponentAnswersKept()
+                  )
+               // ★自分の解答の中身を検査する（これが無いと不正が全部通る）★
+               && battleMyAnswerSane()
+             );
       }
 
       // ===========================================================
@@ -1948,13 +2044,16 @@ service cloud.firestore {
       // 相手の申告を自分で書けたら、一致を偽装して
       // 相手のレートを下げられてしまう。
       function battleAttestOnlyMine() {
-        return request.resource.data.attest is map
-          && request.resource.data.attest.keys().hasOnly(resource.data.players)
-          // ★自分の申告の中身も検査する★（下の battleMyAttestSane）
-          && battleMyAttestSane()
-          && (
-               resource.data.players.size() < 2
-               || battleOpponentAttestKept()
+        return request.resource.data.attest == resource.data.attest
+          || (
+               request.resource.data.attest is map
+               && request.resource.data.attest.keys().hasOnly(resource.data.players)
+               // ★自分の申告の中身も検査する★（下の battleMyAttestSane）
+               && battleMyAttestSane()
+               && (
+                    resource.data.players.size() < 2
+                    || battleOpponentAttestKept()
+                  )
              );
       }
 
@@ -2143,41 +2242,20 @@ service cloud.firestore {
         return 'left' in request.resource.data ? request.resource.data.left : {};
       }
 
-      // left を触っていないか、触っているなら「自分の離脱を1回書いた」だけか。
       function battleLeftOnlyMine() {
-        return (
-          battleNewLeft() == battleOldLeft()
-            ? true
-            : battleLeftAddedMine()
-        );
+        let oldL = battleOldLeft();
+        let newL = battleNewLeft();
+        return newL == oldL ? true : battleLeftAddedMine(oldL, newL);
       }
 
-      function battleLeftAddedMine() {
-        return battleNewLeft() is map
-          // ── 退出を書けるのは待機中・進行中だけ ──
-          //    決着後（finished）に left を足せると、
-          //    「負けた後に相手が逃げたことにする」偽装の余地が生まれる。
-          //    中断後（aborted）はもう誰も残っていないので書く意味が無い。
+      function battleLeftAddedMine(oldL, newL) {
+        return newL is map
           && (resource.data.status == 'waiting' || resource.data.status == 'playing')
-          // 参加者以外のキーを増やせない（膨らませ攻撃も同時に防ぐ）
-          && battleNewLeft().keys().hasOnly(resource.data.players)
-
-          // ── 変化したキーが「自分」1つだけである ──
-          //    ★これで相手の離脱の偽装と、相手の離脱の削除を同時に封じる★
-          //    diff().affectedKeys() は増えた・消えた・変わったキー全部を返す。
-          && battleNewLeft().diff(battleOldLeft()).affectedKeys()
-               == [request.auth.uid].toSet()
-
-          // ── まだ自分の離脱が記録されていない ──
-          //    上だけだと「値の書き換え」も affectedKeys 1つなので通ってしまう。
-          && !(request.auth.uid in battleOldLeft())
-          && request.auth.uid in battleNewLeft()
-
-          // ── 値はサーバ時刻そのもの ──
-          //    ★端末時刻を書けないようにする★
-          //    離脱時刻は「いつ逃げたか」の証拠なので、
-          //    過去や未来を書けると不戦敗の判定をずらせてしまう。
-          && battleNewLeft()[request.auth.uid] == request.time;
+          && newL.keys().hasOnly(resource.data.players)
+          && newL.diff(oldL).affectedKeys() == [request.auth.uid].toSet()
+          && !(request.auth.uid in oldL)
+          && request.auth.uid in newL
+          && newL[request.auth.uid] == request.time;
       }
 
       // profiles（表示名・レート）は自分の欄だけ。
@@ -2190,12 +2268,7 @@ service cloud.firestore {
       // が通ってしまっていた。
       // 相手の欄を固定し、大きさに上限を付ける。
       function battleProfilesOnlyMine() {
-        return request.resource.data.profiles is map
-          && request.resource.data.profiles.keys().hasOnly(resource.data.players)
-          && (
-               resource.data.players.size() < 2
-               || battleOpponentProfileKept()
-             );
+        return request.resource.data.profiles == resource.data.profiles;
       }
 
       function battleOpponentProfileKept() {
@@ -2283,75 +2356,52 @@ service cloud.firestore {
         ]);
       }
 
-      allow update: if battleSignedIn()
+      allow update: if resource != null
+        && battleSignedIn()
         && battleCoreFixed()
         && request.resource.data.updatedAt == request.time
         // ★どの種類の更新でも共通で守るもの★
-        //   下の (A)〜(D) はどれか1つ満たせば通るので、
-        //   「全部に効かせたい検査」はここに置かなければならない。
-        //   (D) の中だけに書くと、(C) 経由で素通りしてしまう。
         && battleFieldsAllowed()
         && battleLeftOnlyMine()
         && battleSomethingChanged()
         && (
-             // (A) 入室
-             battleJoining()
-
-             // (B)(C) 開始・進行・解答
-             || (
-                  battlePlaying()
-                  && battleIndexForward()
-                  && (
-                       // 締切を更新する更新（開始・進行）
-                       battleDeadlineSane()
-                       // 締切を触らない更新（解答・申告）
-                       || battleUnchanged('deadlineAt')
-                     )
-                )
-
-             // (D) 離脱の記録だけの更新
-             //
-             // ★left そのものの検査は上の共通部（battleLeftOnlyMine）で
-             //   済んでいる★ ので、ここでは
-             //   「left 以外を何も動かしていない」ことだけを確かめる。
-             //
-             //   共通部に出した理由:
-             //     ここに書くと (C)（解答・進行）を選んだ更新では
-             //     left の検査が走らず、
-             //     「解答と同時に相手の離脱を偽装する」が通ってしまう。
-             || (
-                  battleIsPlayer(resource.data.players)
-                  && battleUnchanged('players')
-                  && battleUnchanged('profiles')
-                  // ★待機中の退出は部屋を閉じる（status: aborted）ことを許す★
-                  //
-                  //   以前は status も不変を要求していた。すると待機中に
-                  //   部屋主が退出しても部屋は waiting のまま残り、
-                  //   合言葉を知る人が「誰もいない部屋」に入れてしまった
-                  //   （独立検証で再現）。
-                  //   許すのは「waiting → aborted」だけ。
-                  //   進行中（playing）の退出で status を触ることはできない。
-                  //   進行中の勝敗は残った側が left を見て決め、
-                  //   finished への遷移は (C) の申告で行う。
-                  && (
-                       battleUnchanged('status')
-                       || (
-                            resource.data.status == 'waiting'
-                            && request.resource.data.status == 'aborted'
-                            // left を足す更新であることを要求する
-                            // （status だけを aborted にする更新は通さない）
-                            && battleNewLeft() != battleOldLeft()
-                          )
-                     )
-                  && battleUnchanged('currentIndex')
-                  && battleUnchanged('deadlineAt')
-                  && battleUnchanged('answers')
-                  && battleUnchanged('attest')
-                  // 「何かが変わっている」ことは共通部
-                  // （battleSomethingChanged）が保証している。
-                  // この枝では他が全部不変なので、
-                  // 必然的に left が変わった更新だけが通る。
-                )
+             // 参加者の顔ぶれが変わる更新は (A) 入室だけ。? : で分岐させることで、
+             // 進行中の更新で battleIsHostFriend（exists×3 + get）が無駄に評価されて
+             // Firestore の 1,000 式上限（expression budget）を踏み抜くのも同時に防ぐ。
+             !battleUnchanged('players')
+               ? battleJoining()
+               : (
+                    battleIsPlayer(resource.data.players)
+                    && battleUnchanged('profiles')
+                    && (
+                         // (B)(C) 開始・進行・解答・申告
+                         (
+                           battleAnswersOnlyMine()
+                           && battleAttestOnlyMine()
+                           && battleStatusStep()
+                           && battleIndexForward()
+                           && (
+                                battleDeadlineSane()
+                                || battleUnchanged('deadlineAt')
+                              )
+                         )
+                         // (D) 離脱の記録だけの更新
+                         || (
+                              (
+                                battleUnchanged('status')
+                                || (
+                                     resource.data.status == 'waiting'
+                                     && request.resource.data.status == 'aborted'
+                                     && battleNewLeft() != battleOldLeft()
+                                   )
+                              )
+                              && battleUnchanged('currentIndex')
+                              && battleUnchanged('deadlineAt')
+                              && battleUnchanged('answers')
+                              && battleUnchanged('attest')
+                            )
+                       )
+                  )
            );
 
       // -----------------------------------------------------------
@@ -2480,7 +2530,7 @@ service cloud.firestore {
                ])
           && d.uid == uid
           && d.nickname is string && d.nickname.size() <= 40
-          && d.photoURL is string && d.photoURL.size() <= 500
+          && isSafePhotoUrl(d.photoURL)
           && d.rating is number && d.rating >= 800 && d.rating <= 4000
           && d.wins is number && d.wins >= 0
           && d.losses is number && d.losses >= 0
@@ -2507,31 +2557,51 @@ service cloud.firestore {
       //   3. lastRoomId が必ず変わる（同じ試合の二重反映を防ぐ）
       //   4. lastRoomId の部屋が実在し、自分が参加して決着している
       //      （これが無いと 1〜3 は全部回避できる。上の battleRoomProof 参照）
+      // 退会時の自己匿名化：レート・勝敗数・lastRoomId は1ミリも変えず、名前とアイコンだけを消す操作に限定
+      function battleSelfAnonymize() {
+        return request.resource.data.nickname == '退会したユーザー'
+          && request.resource.data.photoURL == ''
+          && request.resource.data.rating == resource.data.rating
+          && request.resource.data.wins == resource.data.wins
+          && request.resource.data.losses == resource.data.losses
+          && request.resource.data.draws == resource.data.draws
+          && request.resource.data.lastRoomId == resource.data.lastRoomId;
+      }
+
+      // プロフィール変更（syncRankingNickname）：レート・勝敗数・lastRoomId は一切変えず、表示名・アイコンだけを更新する
+      function battleIdentityOnlyUpdate() {
+        return request.resource.data.rating == resource.data.rating
+          && request.resource.data.wins == resource.data.wins
+          && request.resource.data.losses == resource.data.losses
+          && request.resource.data.draws == resource.data.draws
+          && request.resource.data.lastRoomId == resource.data.lastRoomId;
+      }
+
       allow update: if isOwner(uid)
         && battleValidRankingRow(request.resource.data)
-        // 1. 変化量
-        && request.resource.data.rating
-           <= resource.data.rating + battleRatingDelta()
-        && request.resource.data.rating
-           >= resource.data.rating - battleRatingDelta()
-        // 2. 勝敗数は減らせない／増えるのはちょうど 1
-        //
-        //    ★「<= 1」ではなく「== 1」にする理由★
-        //    以前は <= 1 だったので「0 件」も通っていた。
-        //    つまり勝敗数を一切増やさずに
-        //    レートだけを毎回 +60 する更新が許されていた。
-        //    正しい反映は必ず勝ち・負け・引き分けのどれかが1増える。
-        && request.resource.data.wins >= resource.data.wins
-        && request.resource.data.losses >= resource.data.losses
-        && request.resource.data.draws >= resource.data.draws
-        && (request.resource.data.wins - resource.data.wins)
-           + (request.resource.data.losses - resource.data.losses)
-           + (request.resource.data.draws - resource.data.draws) == 1
-        // 3. 同じ試合を 2 回反映できない
-        && request.resource.data.lastRoomId != resource.data.lastRoomId
-        && request.resource.data.lastRoomId.size() > 0
-        // 4. その試合が本当にあったか
-        && battleRoomProof();
+        && (
+          battleSelfAnonymize()
+          || battleIdentityOnlyUpdate()
+          || (
+            // 1. 変化量
+            request.resource.data.rating
+               <= resource.data.rating + battleRatingDelta()
+            && request.resource.data.rating
+               >= resource.data.rating - battleRatingDelta()
+            // 2. 勝敗数は減らせない／増えるのはちょうど 1
+            && request.resource.data.wins >= resource.data.wins
+            && request.resource.data.losses >= resource.data.losses
+            && request.resource.data.draws >= resource.data.draws
+            && (request.resource.data.wins - resource.data.wins)
+               + (request.resource.data.losses - resource.data.losses)
+               + (request.resource.data.draws - resource.data.draws) == 1
+            // 3. 同じ試合を 2 回反映できない
+            && request.resource.data.lastRoomId != resource.data.lastRoomId
+            && request.resource.data.lastRoomId.size() > 0
+            // 4. その試合が本当にあったか
+            && battleRoomProof()
+          )
+        );
 
       // ★削除を禁止する理由★
       // 負けたレートを消して作り直せると、レートが意味を失う。

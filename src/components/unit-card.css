@@ -2,7 +2,10 @@
  * 単元カード（UnitCard.tsx）。ホームの色の感じ（クリーム地・細い線・やわらかい影）に合わせる。
  * ★UIの決まり★ 閉じた状態 80〜100px／文字12px以上／タップ44px以上。
  */
-.unit-card { --unit-accent: #aa6c87; position: relative; border: 1px solid #e5dccc; border-radius: 14px; background: #fffdf5; box-shadow: 0 2px 0 #efe6d4; }
+.unit-card { --unit-accent: #aa6c87; position: relative; border: 1px solid #e5dccc; border-radius: 14px; background: #fffdf5; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 2px 0 #efe6d4, 0 4px 10px rgba(80, 60, 30, .045); transition: border-color .14s ease, box-shadow .14s ease, background-color .14s ease; }
+@media (hover: hover) {
+  .unit-card:hover { border-color: #d7cbb6; background: #ffffff; box-shadow: inset 0 1px 0 #ffffff, 0 3px 0 #e6dcc8, 0 6px 14px rgba(80, 60, 30, .065); }
+}
 .unit-card[data-status=done] { border-color: #bfe0cd; }
 .unit-card[data-status=doing] { border-color: #f1d3ad; }
 .unit-card-row { display: flex; align-items: center; gap: 8px; min-height: 80px; padding: 8px 10px 8px 12px; }
@@ -16,13 +19,16 @@
 .unit-card-acc { font: 700 12px/1 var(--mt-font-body); color: #5a6573; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .unit-card-chev { flex-shrink: 0; color: #8c806b; transition: transform .2s; }
 .unit-card[data-expanded] .unit-card-chev { transform: rotate(180deg); }
-.unit-card-primary { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 14px; border-radius: 999px; background: var(--unit-accent); color: #fff; font: 800 13px/1 var(--mt-font-body); white-space: nowrap; box-shadow: 0 3px 0 color-mix(in srgb, var(--unit-accent) 70%, #000 12%); cursor: pointer; }
+.unit-card-primary { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 14px; border-radius: 999px; background: var(--unit-accent); color: #fff; font: 800 13px/1 var(--mt-font-body); white-space: nowrap; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 3px 0 color-mix(in srgb, var(--unit-accent) 70%, #000 14%), 0 4px 10px rgba(44, 62, 80, .1); cursor: pointer; transition: filter .14s ease, transform .1s ease, box-shadow .12s ease; }
+@media (hover: hover) { .unit-card-primary:hover { filter: brightness(1.06); } }
 .unit-card-primary:active { transform: translateY(2px); box-shadow: none; }
 .unit-card-panel { padding: 0 12px 12px; border-top: 1px dashed #e5dccc; }
 .unit-card-topics { margin: 10px 0 0; padding-left: 1.1em; list-style: disc; font: 400 13px/1.6 var(--mt-font-body); color: #4f5a66; }
 .unit-card-count { margin-top: 6px; font: 700 12px/1.4 var(--mt-font-body); color: #765f70; }
 .unit-card-secondary { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.unit-card-secondary button { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; padding: 0 14px; border: 1px solid #e5dccc; border-radius: 12px; background: #fff; color: #4f5a66; font: 700 13px/1 var(--mt-font-body); cursor: pointer; }
+.unit-card-secondary button { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; padding: 0 14px; border: 1px solid #e5dccc; border-radius: 12px; background: #fff; color: #4f5a66; box-shadow: 0 2px 0 #efe6d4; font: 700 13px/1 var(--mt-font-body); cursor: pointer; transition: background-color .14s ease, border-color .14s ease, transform .1s ease, box-shadow .12s ease; }
+@media (hover: hover) { .unit-card-secondary button:hover { border-color: #d4c6b0; background: #fffbf2; } }
+.unit-card-secondary button:active { transform: translateY(1px); box-shadow: none; }
 .unit-card-secondary button[aria-pressed=true] { border-color: #3e9c93; background: #eaf9f6; color: #2f7c74; }
 .unit-card :focus-visible { outline: none; box-shadow: var(--mt-focus); border-radius: 10px; }
 @media (max-width: 360px) {

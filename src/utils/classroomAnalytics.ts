@@ -10,6 +10,7 @@ import { STUDY_PROGRESS_COLLECTION } from './studySync';
 import { fromSyncedReviewItems, type SolvedMap } from './studySyncCore';
 import { type ReviewItem } from './reviewList';
 import { buildStudentSummary, type StudentSummary } from './studySummary';
+import { fromSyncedOutcomesSummary } from './learningOutcomes';
 import { CLASSROOMS_COLLECTION, MASTERED_BOX, fetchMyMemberships, fetchClassMembers } from './classroomShared';
 import { requireLocalStorage, setItemOrThrow } from './safeLocalStorage';
 
@@ -36,13 +37,15 @@ export async function fetchClassSummaries(classId: string): Promise<StudentSumma
         const data = snapshot.exists() ? snapshot.data() || {} : {};
         const solved = (data.solved && typeof data.solved === 'object' ? data.solved : {}) as SolvedMap;
         const reviewItems: ReviewItem[] = fromSyncedReviewItems(data.reviewItems);
-        return buildStudentSummary({
+        const summary = buildStudentSummary({
           uid: member.uid,
           displayName,
           solved,
           reviewItems,
           masteredBox: MASTERED_BOX,
         });
+        summary.outcomes = fromSyncedOutcomesSummary(data.outcomes);
+        return summary;
       } catch {
         // 読めなかった生徒は「データなし」として並べる（画面を落とさない）
         return buildStudentSummary({

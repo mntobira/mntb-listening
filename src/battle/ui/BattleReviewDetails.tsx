@@ -4,17 +4,59 @@ import type { Chapter, Problem, SubQuestion } from '../../types/curriculum';
 import { BattleText } from './BattleText';
 
 /** Only called after a result's explanation is opened. Never loads study data during a match. */
-export async function loadReviewExplanation(question: BattleQuestion): Promise<string> {
+export interface LoadedReviewData {
+  text: string;
+  audioUrl?: string;
+  audioLabel?: string;
+  scriptLines?: { who?: string; text: string }[];
+  translationLines?: string[];
+}
+
+export async function loadReviewData(question: BattleQuestion): Promise<LoadedReviewData> {
   const { getChaptersOfSubject, miniTestProblemsOf } = await import('../../data/allChapters');
   const chapter = getChaptersOfSubject(question.subject).find((c: Chapter) => c.id === question.chapterId);
-  if (!chapter) return '';
+  if (!chapter) return { text: '' };
   const mini = miniTestProblemsOf(chapter);
   const problem = [...chapter.practiceProblems || [], ...mini].find((p: Problem) => p.id === question.problemId);
   const sub = problem?.subQuestions?.find((sq: SubQuestion) => sq.id === question.subQuestionId);
-  if (!sub) return '';
+  if (!sub || !problem) return { text: '' };
+  const tracks = Array.isArray(problem.audioTracks) ? problem.audioTracks : [];
+  const matchedTrack = tracks.find(
+    (t) => t.subId === sub.id || (Array.isArray(t.subIds) && t.subIds.map(String).includes(sub.id)),
+  );
+  let translationLines: string[] | undefined;
+  if (matchedTrack) {
+    try {
+      const { loadListeningTranslations, trackKey } = await import('../../features/listeningTranslation/segments');
+      const allTr = await loadListeningTranslations();
+      const tr = allTr[trackKey(matchedTrack)];
+      if (Array.isArray(tr) && tr.length > 0) translationLines = tr;
+      else if (matchedTrack.translation?.trim()) translationLines = [matchedTrack.translation.trim()];
+    } catch {
+      // 和訳取得失敗時はスクリプト・解説のみ表示する
+    }
+  }
+  const scriptLines = matchedTrack
+    ? matchedTrack.turns?.length
+      ? matchedTrack.turns.map((t) => ({ who: t.who, text: t.text }))
+      : matchedTrack.script?.trim()
+        ? [{ text: matchedTrack.script.trim() }]
+        : undefined
+    : undefined;
   // 英文法の演習解説は大問内に「問1〜問5」単位で保存されているため、
   // 対戦で出た小問番号に対応する詳しい本文だけを取り出す。
-  return practiceQuestionExplanation(problem, sub, chapter.id);
+  return {
+    text: practiceQuestionExplanation(problem, sub, chapter.id),
+    audioUrl: matchedTrack?.audioUrl || undefined,
+    audioLabel: matchedTrack?.label || undefined,
+    scriptLines,
+    translationLines,
+  };
+}
+
+export async function loadReviewExplanation(question: BattleQuestion): Promise<string> {
+  const loaded = await loadReviewData(question);
+  return loaded.text;
 }
 
 /** 小問1つぶんの解説テキスト（ポイント・考え方の手順）。無ければ空文字 */
@@ -76,23 +118,62 @@ export function practiceQuestionExplanation(
 export function BattleReviewDetails({ question, oneLine }: { question: BattleQuestion; oneLine?: string }) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState<string | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | undefined>(undefined);
+  const [audioLabel, setAudioLabel] = useState<string | undefined>(undefined);
+  const [scriptLines, setScriptLines] = useState<{ who?: string; text: string }[] | undefined>(undefined);
+  const [translationLines, setTranslationLines] = useState<string[] | undefined>(undefined);
   const [failed, setFailed] = useState(false);
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     if (!open) return;
     let alive = true;
-    setText(null); setFailed(false);
-    void loadReviewExplanation(question).then(value => { if (alive) setText(value); })
-      .catch(() => { if (alive) setFailed(true); });
+    setText(null); setAudioUrl(undefined); setAudioLabel(undefined); setScriptLines(undefined); setTranslationLines(undefined); setFailed(false);
+    void loadReviewData(question).then(loaded => {
+      if (!alive) return;
+      setText(loaded.text);
+      setAudioUrl(loaded.audioUrl);
+      setAudioLabel(loaded.audioLabel);
+      setScriptLines(loaded.scriptLines);
+      setTranslationLines(loaded.translationLines);
+    }).catch(() => { if (alive) setFailed(true); });
     return () => { alive = false; };
   }, [open, question, retry]);
-  return <details className="mt-3 rounded-xl border border-slate-200 bg-white p-3" open={open}
+  return <details className="mt-3 rounded-xl border border-[#E5DCCC] bg-[#FFFDF8] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_1.5px_0_#E6DCCB]" open={open}
     onToggle={event => setOpen(event.currentTarget.open)}>
-    <summary className="min-h-11 cursor-pointer py-2 text-sm font-black text-blue-800">詳しい解説を読む</summary>
+    <summary className="min-h-11 cursor-pointer py-2 text-sm font-black text-[#1E4B8F]">詳しい解説を読む</summary>
     {open && <div className="min-w-0 break-words text-base leading-8" data-battle-explanation>
+      {audioUrl && (
+        <div className="mb-3 rounded-lg border border-teal-200 bg-teal-50/60 p-2.5">
+          <p className="mb-1 text-xs font-bold text-teal-800">
+            {audioLabel ? `${audioLabel} の音源を聞き直す` : 'この問題の音源を聞き直す'}
+          </p>
+          <audio controls preload="metadata" src={audioUrl} className="h-9 w-full" playsInline />
+          {scriptLines && scriptLines.length > 0 && (
+            <details className="mt-2 rounded-md border border-teal-200/80 bg-white px-2.5 py-1.5 text-sm leading-6">
+              <summary className="min-h-9 cursor-pointer py-1 text-xs font-bold text-teal-800">スクリプト・和訳を見る</summary>
+              <div className="mt-1 space-y-1.5 text-slate-800" lang="en">
+                {scriptLines.map((ln, idx) => (
+                  <div key={idx}>
+                    <p className="font-medium">
+                      {ln.who && <b className="mr-1.5 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-700">{ln.who}</b>}
+                      {ln.text}
+                    </p>
+                    {translationLines?.[idx] && (
+                      <p className="text-xs text-slate-600" lang="ja">{translationLines[idx]}</p>
+                    )}
+                  </div>
+                ))}
+                {translationLines && translationLines.length > 0 && scriptLines.length === 1 && translationLines.length > 1 && (
+                  <p className="text-xs text-slate-600" lang="ja">{translationLines.join(' ')}</p>
+                )}
+              </div>
+            </details>
+          )}
+        </div>
+      )}
       {failed ? <div role="alert">解説を読み込めませんでした。<button type="button" className="ml-2 min-h-11 underline" onClick={() => setRetry(n => n + 1)}>再読み込み</button></div>
         : text === null ? <p role="status">解説を読み込んでいます…</p>
-        : text ? <><p className="mb-2 text-xs text-slate-500">この問題の解説</p><BattleText text={text} subject={question.subject} /></>
+        : text ? <><p className="mb-2 text-xs font-bold text-[#7A6A52]">この問題の解説</p><BattleText text={text} subject={question.subject} /></>
         : oneLine ? <BattleText text={oneLine} subject={question.subject} />
         : <p>この問題には詳しい解説が登録されていません。上の問題文と正しい答えを確認し、対応する演習で復習できます。</p>}
     </div>}

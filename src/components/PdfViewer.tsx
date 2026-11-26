@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, Download, Minus, Plus, Printer, RotateCw } from 'lucide-react';
-import { pdfViewerStore, closePdf, type OpenPdf } from '../utils/pdfViewer';
+import { pdfViewerStore, closePdf, isSafeSameOriginPdfPath, type OpenPdf } from '../utils/pdfViewer';
 import { isNativeApp, printPdf, savePdf } from '../utils/pdfShare';
 import './pdf-viewer.css';
 
@@ -20,7 +20,7 @@ import './pdf-viewer.css';
 export function PdfViewerHost() {
   const [doc, setDoc] = useState<OpenPdf | null>(pdfViewerStore.get());
   useEffect(() => pdfViewerStore.subscribe(setDoc), []);
-  if (!doc) return null;
+  if (!doc || !isSafeSameOriginPdfPath(doc.url)) return null;
   return <PdfViewer key={doc.url} doc={doc} />;
 }
 
@@ -132,7 +132,7 @@ function PdfViewer({ doc }: { doc: OpenPdf } & React.Attributes) {
     <div className="pdfv-scroll" data-zoom={zoom > 1 || undefined}>
       {note && <p className="pdfv-note" role="status">{note}</p>}
       {state === 'loading' && !fallback && <p className="pdfv-status" role="status">PDF を開いています…{attempt > 0 && <><br /><small>読み込みを再試行しています</small></>}</p>}
-      {fallback && <p className="pdfv-note" role="status">ブラウザ標準のPDF表示を使用しています。表示されない場合は <a href={doc.url} target="_blank" rel="noreferrer">PDFを別タブで開く</a> をお試しください。</p>}
+      {fallback && <p className="pdfv-note" role="status">ブラウザ標準のPDF表示を使用しています。表示されない場合は <a href={doc.url} target="_blank" rel="noopener noreferrer">PDFを別タブで開く</a> をお試しください。</p>}
       {state === 'error' && <div className="pdfv-status" role="alert">
         <p>PDF を表示できませんでした。接続を確認して、もう一度お試しください。</p>
         <div className="pdfv-status-actions">

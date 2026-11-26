@@ -239,12 +239,16 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 /* フレンドコード入力（合言葉と同じ見た目・2026-10-05） */
 .friend-code-row { display: flex; flex-direction: column; gap: 8px; }
 .friend-code-input { display: flex; align-items: stretch; gap: 8px; width: 100%; min-width: 0; }
-.friend-code-field { flex: 1; min-width: 0; height: 52px; box-sizing: border-box; padding: 0 12px; border: 2px solid var(--mt-line); border-radius: 14px; background: #fff; color: var(--mt-ink); font: 900 17px/1 var(--mt-font-display, inherit); letter-spacing: .06em; text-transform: uppercase; outline: none; -webkit-user-select: text; user-select: text; }
+.friend-code-field { flex: 1; min-width: 0; height: 52px; box-sizing: border-box; padding: 0 12px; border: 2px solid var(--mt-line); border-radius: 14px; background: #fff; color: var(--mt-ink); font: 900 17px/1 var(--mt-font-display, inherit); letter-spacing: .06em; text-transform: uppercase; outline: none; box-shadow: inset 0 1px 2px rgba(60, 42, 18, .05); transition: border-color .15s ease, box-shadow .15s ease; -webkit-user-select: text; user-select: text; }
 .friend-code-field::placeholder { color: #b3aa99; letter-spacing: .04em; text-transform: none; }
-.friend-code-field:focus { border-color: var(--mt-accent); box-shadow: 0 0 0 3px var(--mt-accent-soft); }
-.friend-code-paste { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 52px; min-height: 52px; padding: 0 10px; border: 2px solid var(--mt-line); border-radius: 14px; background: #fffaf0; color: #2c3e50; font-weight: 800; font-size: 12px; }
-.friend-code-send { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background: #2c3e50; color: #fff; font-weight: 800; font-size: 15px; box-shadow: 0 3px 0 #1b2631; }
-.friend-code-send:disabled { background: #b8c0c6; box-shadow: none; }
+.friend-code-field:focus { border-color: var(--mt-accent); box-shadow: inset 0 1px 2px rgba(60, 42, 18, .04), 0 0 0 3px var(--mt-accent-soft); }
+.friend-code-paste { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 52px; min-height: 52px; padding: 0 10px; border: 2px solid var(--mt-line); border-radius: 14px; background: #fffaf0; color: #2c3e50; font-weight: 800; font-size: 12px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 2px 0 #e6dccb; transition: transform .1s ease, box-shadow .14s ease, background-color .14s ease; cursor: pointer; }
+.friend-code-paste:hover:not(:disabled) { background: #fff5e0; border-color: var(--mt-line-strong); }
+.friend-code-paste:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 0 #e6dccb; }
+.friend-code-send { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background: #2c3e50; color: #fff; font-weight: 800; font-size: 15px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 3px 0 #1b2631, 0 5px 12px rgba(28, 42, 57, .14); transition: transform .1s ease, box-shadow .14s ease, background-color .15s ease; cursor: pointer; }
+.friend-code-send:hover:not(:disabled) { background: #233342; }
+.friend-code-send:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #1b2631; }
+.friend-code-send:disabled { background: #b8c0c6; box-shadow: none; cursor: not-allowed; }
 @media (max-width: 374px) { .friend-code-field { font-size: 16px; padding: 0 10px; letter-spacing: .03em; } .friend-code-paste span { display: none; } }
 .friend-code-hint { margin: 4px 2px 0; font-size: 12px; color: #5a6573; }
 /* 申請ボタンを入力欄と同じ行に（FriendPanel・2026-10-18） */

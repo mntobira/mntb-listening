@@ -10,6 +10,7 @@ import {
   type Dependencies,
 } from 'firebase/auth';
 import { getFirestore, initializeFirestore, connectFirestoreEmulator, disableNetwork, type Firestore } from 'firebase/firestore';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider, ReCaptchaV3Provider } from 'firebase/app-check';
 // authDomain を「同じドメイン」にするかの判定（Firebase を初期化せずにテストできるよう別ファイル。説明もそちら）
 import { shouldUseSameOriginAuth } from './authDomainPolicy';
 const env = import.meta.env;
@@ -88,4 +89,20 @@ if (USE_EMULATORS) {
 } else if (!FIREBASE_CONFIGURED) {
   // Guest preview only. Never connect to the integrated app or an unknown backend.
   void disableNetwork(db);
+} else if (typeof window !== 'undefined' && env.VITE_FIREBASE_APPCHECK_SITE_KEY) {
+  // App Check：VITE_FIREBASE_APPCHECK_SITE_KEY が設定された本番環境でのみ起動（未設定時は無害にスキップ）
+  try {
+    const siteKey = String(env.VITE_FIREBASE_APPCHECK_SITE_KEY).trim();
+    if (siteKey) {
+      const providerKind = env.VITE_FIREBASE_APPCHECK_PROVIDER === 'enterprise' ? 'enterprise' : 'v3';
+      initializeAppCheck(app, {
+        provider: providerKind === 'enterprise'
+          ? new ReCaptchaEnterpriseProvider(siteKey)
+          : new ReCaptchaV3Provider(siteKey),
+        isTokenAutoRefreshEnabled: true,
+      });
+    }
+  } catch {
+    // HMR 再初期化や非対応 WebView でもアプリ本体は止めない
+  }
 }

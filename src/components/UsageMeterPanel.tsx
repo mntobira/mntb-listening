@@ -73,7 +73,7 @@ export function UsageMeterPanel() {
       <div className="flex items-center gap-2">
         <Activity size={18} className="text-[#E67E22]" />
         <h2 className="font-bold text-sm flex-1">Firebase 使用量（この端末）</h2>
-        <a href={FIREBASE_USAGE_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-[#2980B9]">
+        <a href={FIREBASE_USAGE_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-[#2980B9]">
           全体はコンソールで <ExternalLink size={12} />
         </a>
       </div>

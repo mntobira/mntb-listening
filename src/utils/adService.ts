@@ -13,6 +13,55 @@ import { reportError } from './reportError';
 
 let isInitialized = false;
 let isBannerShowing = false;
+let desiredBannerVisible = false;
+let desiredBannerMargin = 72;
+let bannerOpChain: Promise<void> = Promise.resolve();
+
+function syncNativeBannerState(): Promise<void> {
+  const shouldShow = desiredBannerVisible;
+  const margin = desiredBannerMargin;
+  bannerOpChain = bannerOpChain
+    .then(async () => {
+      if (!Capacitor.isNativePlatform()) return;
+      if (shouldShow && AD_TOGGLES.enableBottomBanner) {
+        if (isBannerShowing) return;
+        try {
+          const platform = Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
+          const adId = getEffectiveBannerId(platform);
+          const isDemo = isDemoAdId(adId);
+          const options: BannerAdOptions = {
+            adId,
+            adSize: BannerAdSize.BANNER,
+            position: BannerAdPosition.BOTTOM_CENTER,
+            margin,
+            isTesting: isDemo,
+          };
+          await AdMob.showBanner(options);
+          isBannerShowing = true;
+          // showBanner の await 中に quiz / explanation 画面へ遷移して非表示要求が来ていた場合は即座に消す
+          if (!desiredBannerVisible || !AD_TOGGLES.enableBottomBanner) {
+            await AdMob.hideBanner().catch(() => {}); // 既に消えている場合のプラグイン例外は画面状態に影響しない
+            await AdMob.removeBanner().catch(() => {}); // 同上（バナー未生成時の例外を無視）
+            isBannerShowing = false;
+          }
+        } catch (error) {
+          reportError('[AdMob] Show banner failed', error);
+        }
+      } else {
+        // isBannerShowing の真偽に関わらず念のため hide/remove を送り、非同期レースで残ったバナーも確実に消す
+        try {
+          await AdMob.hideBanner().catch(() => {}); // バナー未表示時のプラグイン例外は問題ないため無視
+          await AdMob.removeBanner().catch(() => {}); // 同上（バナー未生成時の例外を無視）
+        } finally {
+          isBannerShowing = false;
+        }
+      }
+    })
+    .catch((error) => {
+      reportError('[AdMob] Banner sync failed', error);
+    });
+  return bannerOpChain;
+}
 
 /**
  * AdMobの初期化（アプリ起動時に一度実行）
@@ -190,43 +239,18 @@ export async function showInterstitialAd(): Promise<void> {
  */
 export async function showNativeBottomBanner(margin = 72): Promise<void> {
   if (!Capacitor.isNativePlatform() || !AD_TOGGLES.enableBottomBanner) {
-    hideNativeBottomBanner();
-    return;
+    return hideNativeBottomBanner();
   }
-  if (isBannerShowing) return;
-
-  try {
-    const platform = Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
-    const adId = getEffectiveBannerId(platform);
-    const isDemo = isDemoAdId(adId);
-
-    const options: BannerAdOptions = {
-      adId,
-      adSize: BannerAdSize.BANNER,
-      position: BannerAdPosition.BOTTOM_CENTER,
-      margin,
-      isTesting: isDemo,
-    };
-
-    await AdMob.showBanner(options);
-    isBannerShowing = true;
-  } catch (error) {
-    reportError('[AdMob] Show banner failed', error);
-  }
+  desiredBannerMargin = margin;
+  desiredBannerVisible = true;
+  return syncNativeBannerState();
 }
 
 /**
  * 妙案2: 画面下部バナー広告の非表示・削除
  */
 export async function hideNativeBottomBanner(): Promise<void> {
+  desiredBannerVisible = false;
   if (!Capacitor.isNativePlatform()) return;
-  try {
-    if (isBannerShowing) {
-      await AdMob.hideBanner();
-      await AdMob.removeBanner();
-      isBannerShowing = false;
-    }
-  } catch (error) {
-    reportError('[AdMob] Hide banner failed', error);
-  }
+  return syncNativeBannerState();
 }

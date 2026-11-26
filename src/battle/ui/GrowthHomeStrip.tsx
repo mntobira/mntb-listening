@@ -8,7 +8,7 @@ import { Coins, Gift, Shirt, Award, Target, Store, ChevronRight, Flame } from 'l
 import { CountUp } from '../../components/ui/CountUp';
 
 /** Compact, optional entry: never place an automatic reward overlay in front of matchmaking. */
-export function GrowthHomeStrip({ onProfile, onMissions, onShop, onBadges, onWallet, onGacha, expanded = false, homeLayout = false }: { onProfile: () => void; onMissions: () => void; onShop?: () => void; onBadges?: () => void; onWallet?: () => void; onGacha?: () => void; expanded?: boolean; homeLayout?: boolean }) {
+export function GrowthHomeStrip({ onProfile, onMissions, onShop, onBadges, onWallet, onGacha, expanded = false, homeLayout = false, studyStreak }: { onProfile: () => void; onMissions: () => void; onShop?: () => void; onBadges?: () => void; onWallet?: () => void; onGacha?: () => void; expanded?: boolean; homeLayout?: boolean; studyStreak?: number }) {
   const { progress, uid } = useGrowthProgress();
   const [bonus, setBonus] = useState<LoginBonus | null>(null);
   const [busy, setBusy] = useState(false);
@@ -37,7 +37,7 @@ export function GrowthHomeStrip({ onProfile, onMissions, onShop, onBadges, onWal
       <button type="button" className="game-hud-wallet" onClick={onWallet || onShop || onProfile} aria-label="マナコインの使い道を開く" data-mana-coins><Coins /><span><i className="game-hud-label">マナコイン</i><strong><CountUp value={progress.coins} duration={1000} delay={300} /><small>枚</small></strong></span><ChevronRight size={14} /></button>
       <button type="button" className="game-hud-bonus" aria-label={received ? '今日のボーナス受取済み' : 'デイリーボーナスを受け取る'} disabled={busy || received} onClick={() => void claim()}><Gift /><span><i className="game-hud-label">{received ? '受取済み' : '今日のボーナス'}</i><strong>{received ? 'また明日' : `+${nextBonus?.coins ?? 0}枚`}</strong></span></button>
     </div>
-    <div className="game-hud-xp"><LevelBar xp={progress.xp} compact /></div>
+    <div className="game-hud-xp"><LevelBar xp={progress.xp} compact />{typeof studyStreak === 'number' && studyStreak > 0 && <span className="home-mobile-streak" aria-label={`連続学習 ${studyStreak}日`}><i className="home-mobile-streak-door" aria-hidden="true" /><b>{studyStreak}</b><small>日連続</small></span>}</div>
     {error && <p role="alert">{error}</p>}
     {bonus && <LoginBonusSheet bonus={bonus} progress={progress} onClose={() => setBonus(null)} />}
   </section>;

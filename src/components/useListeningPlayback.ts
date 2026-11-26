@@ -35,6 +35,9 @@ export function useListeningPlayback(list: ListeningAudioTrack[], { playOnce, is
 
   const audioRefs = useRef<Record<string, HTMLAudioElement | null>>({});
 
+  /** 復習用のシークバー表示（現在時刻と総時間・秒） */
+  const [progressMap, setProgressMap] = useState<Record<string, { cur: number; dur: number }>>({});
+
   /**
    * MP3 を持たないトラックがあるか。
    * PDF 由来の類題集は音源ファイルが無いため、読み上げ（SpeechSynthesis）で代替する。
@@ -63,13 +66,13 @@ export function useListeningPlayback(list: ListeningAudioTrack[], { playOnce, is
   }, [rate]);
 
   /**
-   * 指定トラックを先頭から再生する。repeat=true なら本番同様に2回続けて流す。
-   *
-   * MP3 がある場合は <audio> を鳴らし、無い場合は script を読み上げる。
-   * どちらの経路でも playingId の見え方は同じにして、UI を1本化する。
+   * 指定トラックを再生する。
+   *   - startFromSec 指定時 … その秒数から流す（復習時の途中再生・文頭ジャンプ用）
+   *   - resumeIfPaused=true かつ一時停止中の位置が残っている場合 … 先頭に戻さず続きから流す
+   *   - repeat=true … 本番同様に2回続けて流す（先頭から）
    */
   const play = useCallback(
-    (subId: string, repeat = false) => {
+    (subId: string, repeat = false, opts?: { startFromSec?: number; resumeIfPaused?: boolean }) => {
       const track = list.find((t) => t.subId === subId);
       if (!track) return;
       // 1回だけ再生：聞き終えた音源はもう鳴らさない（本番は1回読み）
@@ -106,7 +109,18 @@ export function useListeningPlayback(list: ListeningAudioTrack[], { playOnce, is
       stopSpeech();
       pauseAllAudio(el);
       repeatLeft.current = repeat ? 1 : 0;
-      el.currentTime = 0;
+      if (typeof opts?.startFromSec === 'number' && Number.isFinite(opts.startFromSec)) {
+        el.currentTime = Math.max(0, opts.startFromSec);
+      } else if (
+        opts?.resumeIfPaused &&
+        !repeat &&
+        el.currentTime > 0.15 &&
+        (!Number.isFinite(el.duration) || el.currentTime < el.duration - 0.15)
+      ) {
+        // 一時停止位置が残っていれば続きから再開する
+      } else {
+        el.currentTime = 0;
+      }
       el.playbackRate = rate;
       const p = el.play();
       if (p !== undefined) {
@@ -118,7 +132,33 @@ export function useListeningPlayback(list: ListeningAudioTrack[], { playOnce, is
     [rate, list, lockOnce, finishedIds],
   );
 
-  /** 再生／一時停止のトグル（同じボタンを2回押したら止まる）。 */
+  /** 再生位置（秒）を動かす。再生中ならそのままの位置から鳴らし続け、停止中なら位置だけ合わせて再生を始められるようにする。 */
+  const seek = useCallback((subId: string, sec: number, autoPlay = false) => {
+    const el = audioRefs.current[subId];
+    if (!el) return;
+    const clamped = Math.max(0, Number.isFinite(el.duration) && el.duration > 0 ? Math.min(sec, el.duration) : sec);
+    el.currentTime = clamped;
+    setProgressMap((prev) => ({
+      ...prev,
+      [subId]: { cur: clamped, dur: Number.isFinite(el.duration) && el.duration > 0 ? el.duration : prev[subId]?.dur ?? 0 },
+    }));
+    if (autoPlay) {
+      play(subId, false, { startFromSec: clamped });
+    }
+  }, [play]);
+
+  const updateProgress = useCallback((subId: string, el: HTMLAudioElement | null) => {
+    if (!el) return;
+    const dur = Number.isFinite(el.duration) && el.duration > 0 ? el.duration : 0;
+    const cur = Number.isFinite(el.currentTime) ? el.currentTime : 0;
+    setProgressMap((prev) => {
+      const old = prev[subId];
+      if (old && Math.abs(old.cur - cur) < 0.08 && Math.abs(old.dur - dur) < 0.08) return prev;
+      return { ...prev, [subId]: { cur, dur } };
+    });
+  }, []);
+
+  /** 再生／一時停止のトグル（同じボタンを2回押したら止まる。復習モードでは一時停止位置から再開）。 */
   const toggle = useCallback(
     (subId: string) => {
       const track = list.find((t) => t.subId === subId);
@@ -143,9 +183,9 @@ export function useListeningPlayback(list: ListeningAudioTrack[], { playOnce, is
         setPlayingId(null);
         return;
       }
-      play(subId, false);
+      play(subId, false, { resumeIfPaused: isReview });
     },
-    [playingId, play, list],
+    [playingId, play, list, isReview],
   );
 
   /** 再生終了時。2回読みの残りがあればもう一度鳴らす。 */
@@ -161,12 +201,18 @@ export function useListeningPlayback(list: ListeningAudioTrack[], { playOnce, is
       }
     }
     setPlayingId(null);
+    const el = audioRefs.current[subId];
+    if (el) {
+      el.currentTime = 0;
+      updateProgress(subId, el);
+    }
     // 最後まで聞き終えた → 1回だけ再生の制限が掛かる
     if (lockOnce) setFinishedIds((prev) => new Set(prev).add(subId));
-  }, [lockOnce]);
+  }, [lockOnce, updateProgress]);
 
   return {
     playingId, setPlayingId, openScriptId, setOpenScriptId, rate, setRate,
     lockOnce, isLocked, audioRefs, usesSpeech, speechBlocked, play, toggle, handleEnded,
+    progressMap, seek, updateProgress,
   };
 }

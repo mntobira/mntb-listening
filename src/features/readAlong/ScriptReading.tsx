@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Mic, SlidersHorizontal } from 'lucide-react';
-import { loadReadAlong, wordAt, type RaWord, type ReadAlong } from './readAlong';
+import { loadReadAlong, wordAt, type RaLine, type RaWord, type ReadAlong } from './readAlong';
 import { AnnotLegend, AnnotToggles, AnnotatedScript, useAnnotOpts } from './AnnotatedScript';
 import { DictationTip, ReadAlongStudio } from './ReadAlongStudio';
 import { locateListeningEvidence } from '../../utils/listeningExplanation';
@@ -93,8 +93,17 @@ function useLiveWord(audioUrl: string | undefined, data: ReadAlong | null | unde
 
 interface Track { subId: string; label: string; audioUrl?: string; script: string; turns?: { who: string; text: string }[]; translation?: string; keyPhrases?: { phrase: string }[] }
 
-export function ScriptReading({ track, fallback, after, compact = false, breaks, renderBreak }: {
-  track: Track; fallback: React.ReactNode; after?: React.ReactNode; compact?: boolean;
+export interface LinePlayControl {
+  activeLine: number;
+  canPlayLine: (lineIndex: number) => boolean;
+  toggleLine: (lineIndex: number) => void;
+}
+
+export function ScriptReading({ track, fallback, renderPlainFallback, after, compact = false, breaks, renderBreak }: {
+  track: Track; fallback: React.ReactNode;
+  /** 読み方表示が OFF のときでも、時刻データがあれば各発話の先頭に ▶ 途中再生ボタンを出せるようにする */
+  renderPlainFallback?: (ctrl: LinePlayControl) => React.ReactNode;
+  after?: React.ReactNode; compact?: boolean;
   /** 長い大問：英文のまとまりごとに和訳を挟む（2026-10-21）。data を受け取り、語番号→まとまり番号を返す */
   breaks?: (data: ReadAlong) => Map<number, number>; renderBreak?: (seg: number) => React.ReactNode;
 }) {
@@ -103,6 +112,7 @@ export function ScriptReading({ track, fallback, after, compact = false, breaks,
   const [on, setOn] = useState<boolean>(() => safeGetItem('mtb_readalong_inline') !== 'off');
   const [studio, setStudio] = useState(false);
   const [picked, setPicked] = useState(-1);
+  const [activeLine, setActiveLine] = useState(-1);
   const [settings, setSettings] = useState(false);
   const audio = useRef<HTMLAudioElement | null>(null);
   const stopAt = useRef<number | null>(null);
@@ -113,23 +123,88 @@ export function ScriptReading({ track, fallback, after, compact = false, breaks,
   const brk = useMemo(() => (data && breaks && renderBreak ? breaks(data) : undefined), [data, breaks, renderBreak]);
   const evidence = useMemo(() => (data ? evidenceOf(data, track.turns?.length ? track.turns.map(t => t.text) : [track.script], (track.keyPhrases ?? []).map(k => k.phrase)) : new Map()), [data, track]);
 
-  const playWord = (w: RaWord) => {
-    setPicked(w.i);
-    if (!track.audioUrl) return;
+  const ensureAudio = () => {
+    if (!track.audioUrl) return null;
     if (!audio.current) {
-      const a = new Audio(track.audioUrl); a.preload = 'auto';
-      a.addEventListener('timeupdate', () => { if (stopAt.current != null && a.currentTime * 1000 >= stopAt.current) { a.pause(); stopAt.current = null; } });
+      const a = new Audio(track.audioUrl);
+      a.preload = 'auto';
+      a.addEventListener('timeupdate', () => {
+        if (stopAt.current != null && a.currentTime * 1000 >= stopAt.current) {
+          a.pause();
+          stopAt.current = null;
+        }
+      });
+      a.addEventListener('ended', () => setActiveLine(-1));
+      a.addEventListener('pause', () => {
+        if (stopAt.current == null) setActiveLine(-1);
+      });
       audio.current = a;
     }
-    const a = audio.current;
-    pauseAllAudio();
+    return audio.current;
+  };
+
+  const playWord = (w: RaWord) => {
+    setPicked(w.i);
+    setActiveLine(-1);
+    const a = ensureAudio();
+    if (!a) return;
+    const shared = findPageAudio();
+    if (shared && Number.isFinite(shared.playbackRate) && shared.playbackRate > 0) {
+      a.playbackRate = shared.playbackRate;
+    }
+    pauseAllAudio(a);
     a.currentTime = Math.max(0, (w.start - 60) / 1000);
     stopAt.current = w.end + 120;
     // 自動再生の制限で拒まれたら、利用者が再生ボタンを押せばよい
     void a.play().catch(() => undefined);
   };
+
+  /** ページ内に ListeningAudioPlayer の <audio> が既にあれば共有してシークバー・再生速度（0.75倍／標準）と完全連動させる */
+  const findPageAudio = (): HTMLAudioElement | null => {
+    if (!track.audioUrl || typeof document === 'undefined') return null;
+    const list = Array.from(document.querySelectorAll('audio'));
+    return list.find(el => sameSrc(el, track.audioUrl!)) ?? null;
+  };
+
+  /** 文頭の ▶ ボタン：その文から最後まで通して再生する（もう一度押したら止める） */
+  const playFromLine = (line: RaLine, lineIndex: number) => {
+    if (!line.words.length) return;
+    const shared = findPageAudio();
+    const a = shared ?? ensureAudio();
+    if (!a) return;
+    if (activeLine === lineIndex && !a.paused) {
+      a.pause();
+      setActiveLine(-1);
+      return;
+    }
+    pauseAllAudio(a);
+    stopAt.current = null;
+    setPicked(-1);
+    setActiveLine(lineIndex);
+    if (shared) {
+      const clear = () => {
+        setActiveLine(-1);
+        shared.removeEventListener('pause', clear);
+        shared.removeEventListener('ended', clear);
+      };
+      shared.addEventListener('pause', clear);
+      shared.addEventListener('ended', clear);
+    }
+    a.currentTime = Math.max(0, (line.words[0].start - 80) / 1000);
+    void a.play().catch(() => setActiveLine(-1));
+  };
+
   useEffect(() => () => { audio.current?.pause(); }, []);
   const toggleOn = () => { const v = !on; setOn(v); safeSetItem('mtb_readalong_inline', v ? 'on' : 'off'); };
+
+  const linePlayCtrl: LinePlayControl | null = data && track.audioUrl ? {
+    activeLine,
+    canPlayLine: (lineIndex: number) => Boolean(data.lines[lineIndex]?.words.length),
+    toggleLine: (lineIndex: number) => {
+      const ln = data.lines[lineIndex];
+      if (ln) playFromLine(ln, lineIndex);
+    },
+  } : null;
 
   // 並び：スクリプト → 和訳 → [読み方 / 音読練習 / 表示] の1行 → 書き取りのすすめ（たたんだ状態）
   //   スクリプトの上には何も置かない（解説を読むじゃまにしない）。
@@ -137,10 +212,10 @@ export function ScriptReading({ track, fallback, after, compact = false, breaks,
   return <div className={`ra-inline${compact ? ' is-compact' : ''}`} data-script-reading>
     {on ? <>
       <div className="ra-inline-text">
-        <AnnotatedScript data={data} opts={opts} cur={cur} curChunk={curChunk} pickedId={picked} onWord={playWord} evidence={evidence} breaks={brk} renderBreak={brk ? renderBreak : undefined} />
+        <AnnotatedScript data={data} opts={opts} cur={cur} curChunk={curChunk} pickedId={picked} onWord={playWord} onLinePlay={track.audioUrl ? playFromLine : undefined} activeLine={activeLine} evidence={evidence} breaks={brk} renderBreak={brk ? renderBreak : undefined} />
       </div>
       <AnnotLegend opts={opts} />
-    </> : fallback}
+    </> : (linePlayCtrl && renderPlainFallback ? renderPlainFallback(linePlayCtrl) : fallback)}
     {after}
     <div className="ra-inline-bar">
       <button type="button" className="ra-inline-switch" aria-pressed={on} onClick={toggleOn}>

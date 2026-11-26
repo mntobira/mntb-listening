@@ -9,6 +9,7 @@ class CutoutConfig:
     video_path: str = "/home/user/uploaded_files/tobirakun_home_github.mp4"
     u2_mask_path: str = "/tmp/u2netp_masks.npy"
     sil_mask_path: str = "/tmp/silueta_masks.npy"
+    isnet_mask_path: str = "/tmp/isnet_masks.npy"
     title_plate_path: str = "/home/user/work-repos/mntb-listening/public/cinematics/title-plate.webp"
 
     expected_src_size: Tuple[int, int] = (768, 1344)  # (W, H)

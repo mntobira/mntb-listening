@@ -444,6 +444,7 @@ export function ToeicPageQuiz({
         ? (chosen ? 'answered' : attempted[safePage] ? 'unanswered' : 'todo')
         : !chosen ? 'blank' : ok ? 'correct' : 'wrong';
       const filled = chosen ? (texts[sq.options.indexOf(chosen)] ?? '') : '';
+      const correctOptionText = texts[sq.options.indexOf(sq.correctAnswer)] ?? '';
       const ex = pageScored ? toeicExplanationFor(sq) : null;
       const correctText = ex?.choices.find((c) => c.correct)?.text ?? (texts[sq.options.indexOf(sq.correctAnswer)] ?? '');
       const labelId = `tp-q-${sq.id}`;
@@ -455,7 +456,7 @@ export function ToeicPageQuiz({
             <StemWithBlank
               stem={stemOf(currentQuestion, sq, pageScored)}
               filled={pageScored && ok ? correctText : filled}
-              correctWord={pageScored ? correctText : undefined}
+              correctWord={pageScored ? (correctOptionText || correctText) : undefined}
               result={pageScored ? (ok ? 'right' : chosen ? 'wrong' : 'blank') : undefined}
               cues={isP6 || isP7 || isListening ? undefined : ex?.cues}
             />
@@ -527,6 +528,7 @@ export function ToeicPageQuiz({
           )}
           {ex && (
             <ToeicExplanationPanel ex={ex} correctText={ex.choices.find((c) => c.correct)?.text ?? ''}
+              disableSpeech={isListening}
               open={openEx[sq.id] ?? status !== 'correct'}
               onToggle={(next) => setOpenEx((prev) => ({ ...prev, [sq.id]: next }))} />
           )}

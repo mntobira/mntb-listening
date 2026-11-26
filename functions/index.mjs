@@ -15,6 +15,11 @@ const memberRef=uid=>db.collection('mana_memberships').doc(uid);
 const clanRef=id=>db.collection('mana_clans').doc(id);
 const stamp=()=>FieldValue.serverTimestamp();
 const safeId=value=>typeof value==='string' && /^[A-Za-z0-9_-]{1,128}$/.test(value);
+const safeHttpsPhoto=value=>{
+  if (typeof value !== 'string' || value.length === 0 || value.length > 500) return '';
+  return /^https:\/\/[^\s"'<>]{1,492}$/.test(value) ? value : '';
+};
+const enforceAppCheck = process.env.ENFORCE_APP_CHECK === 'true';
 function fail(code,message) { throw new HttpsError(code,message); }
 function requireUid(req) {
   if (!req.auth?.uid || req.auth.token?.firebase?.sign_in_provider === 'anonymous') fail('unauthenticated','Googleログインが必要です。');
@@ -34,12 +39,17 @@ async function overview(uid) {
   return {mine,ranking:ranked(rank.docs.map(publicClan),'power')};
 }
 export async function handleClan(req) {
-  const data=req.data ?? {}; const action=data.action;
+  const rawData=req.data ?? {};
+  if(typeof rawData!=='object' || Array.isArray(rawData)) fail('invalid-argument','操作の形式が正しくありません。');
+  const data=rawData; const action=data.action;
   if(action==='status') {const config=await db.collection('league_control').doc('config').get(); return {ready:config.get('enabled')===true && Boolean(privatePolicy()),epoch:EPOCH,periodDays:14};}
-  if(action==='overview' || action==='refresh') return overview(req.auth?.uid);
+  if(action==='overview' || action==='refresh') {
+    if(req.auth?.uid) await quota(req.auth.uid);
+    return overview(req.auth?.uid);
+  }
   const uid=requireUid(req); await quota(uid);
   if(action==='rewards') {const snap=await db.collection('league_rewards').doc(uid).collection('items').orderBy('createdAt','desc').limit(100).get(); return {rewards:snap.docs.map(d=>({id:d.id,itemId:d.get('itemId')??null,season:d.get('season'),label:d.get('label'),rank:d.get('rank'),kind:d.get('kind')??'individual',coins:d.get('coins')??0}))};}
-  if(action==='claimReward') {if(!safeId(data.rewardId)) fail('invalid-argument','プレゼントを選び直してください。'); const d=await db.collection('league_rewards').doc(uid).collection('items').doc(data.rewardId).get(); const item=d.get('itemId')??null; if(!d.exists || (item!==null && item!==REWARD_ITEM)) fail('not-found','このアカウントのプレゼントはありません。'); return {id:d.id,itemId:item,season:d.get('season'),label:d.get('label'),rank:d.get('rank'),kind:d.get('kind')??'individual',coins:Math.max(0,Math.min(1000,Number(d.get('coins'))||0))};}
+  if(action==='claimReward') {if(!safeId(data.rewardId)) fail('invalid-argument','プレゼントを選び直してください。'); const d=await db.collection('league_rewards').doc(uid).collection('items').doc(data.rewardId).get(); const item=d.get('itemId')??null; if(!d.exists || (item!==null && item!==REWARD_ITEM)) fail('not-found','このアカウントのプレゼントはありません。'); if(!d.get('claimedAt')) await d.ref.set({claimedAt:stamp()},{merge:true}); return {id:d.id,itemId:item,season:d.get('season'),label:d.get('label'),rank:d.get('rank'),kind:d.get('kind')??'individual',coins:Math.max(0,Math.min(1000,Number(d.get('coins'))||0))};}
   if(action==='create' || action==='join') {
     const now=Date.now(); const invite=String(data.inviteCode ?? '').toUpperCase(); const name=String(data.name ?? '').normalize('NFKC').trim();
     if(action==='create' && (name.length<2 || name.length>16 || /[\p{Cc}<>@]|https?:|死ね|殺す|fuck|sex/iu.test(name))) fail('invalid-argument','クラン名は個人情報や不適切な語を含まない2〜16文字で入力してください。');
@@ -92,7 +102,7 @@ export async function handleClan(req) {
   }
   fail('invalid-argument','操作を選び直してください。');
 }
-export const manaClan=onCall({region,maxInstances:10,timeoutSeconds:60,secrets:[powerPolicy]},handleClan);
+export const manaClan=onCall({region,maxInstances:10,timeoutSeconds:60,enforceAppCheck,secrets:[powerPolicy]},handleClan);
 
 /** Recalculate privately, never trust a browser-supplied clan power or membership. */
 export async function refreshClan(uid) {
@@ -235,10 +245,10 @@ export async function handleAchievements(req) {
   await root.set({xp:agg.xp,level:agg.level,stagesCleared:agg.stagesCleared,devices:devices.size,updatedAt:stamp()});
   const pub=db.collection('public_study_profiles').doc(uid);
   await db.runTransaction(async tx=>{const s=await tx.get(pub); if(s.exists && s.get('public')===true) tx.update(pub,{stagesCleared:agg.stagesCleared,level:agg.level});});
-  const stages={}; for(const [k,v] of Object.entries(agg.stages)) if(v.n>0) stages[k]=v;
-  return {stages,stagesCleared:agg.stagesCleared,level:agg.level,xp:agg.xp};
+  const stages=Object.create(null); for(const [k,v] of Object.entries(agg.stages)) if(v.n>0) stages[k]=v;
+  return {stages:{...stages},stagesCleared:agg.stagesCleared,level:agg.level,xp:agg.xp};
 }
-export const achievements=onCall({region,maxInstances:20,timeoutSeconds:30},handleAchievements);
+export const achievements=onCall({region,maxInstances:20,timeoutSeconds:30,enforceAppCheck},handleAchievements);
 
 /**
  * ★B7（2026-10-29）全国対戦のボット戦もレートを動かす★
@@ -267,7 +277,7 @@ export async function handleGhostMatch(req) {
     const after=ghostNextRating(before,input.ghostRating,input.outcome);
     const k=input.outcome==='win'?'wins':input.outcome==='lose'?'losses':'draws';
     tx.set(rankRef,{
-      uid, nickname:String(d.nickname || 'なまえ未設定').slice(0,40), photoURL:String(d.photoURL || '').slice(0,500),
+      uid, nickname:String(d.nickname || 'なまえ未設定').slice(0,40), photoURL:safeHttpsPhoto(d.photoURL),
       rating:after, wins:(d.wins ?? 0)+(k==='wins'?1:0), losses:(d.losses ?? 0)+(k==='losses'?1:0), draws:(d.draws ?? 0)+(k==='draws'?1:0),
       lastRoomId:`ghost_${input.matchId}`.slice(0,64), updatedAt:stamp(),
     },{merge:true});
@@ -276,4 +286,4 @@ export async function handleGhostMatch(req) {
     return {before,after};
   });
 }
-export const ghostMatch=onCall({region,maxInstances:20,timeoutSeconds:30},handleGhostMatch);
+export const ghostMatch=onCall({region,maxInstances:20,timeoutSeconds:30,enforceAppCheck},handleGhostMatch);

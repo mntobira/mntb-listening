@@ -17,8 +17,9 @@ import type { StudentSummary } from './studySummaryTypes';
  * 先頭に ' を付けて無効化する。学校へ配る成果物なので、ここは必須。
  */
 export function escapeCsvCell(value: unknown): string {
-  const text = value === null || value === undefined ? '' : String(value);
-  const neutralized = /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
+  const text = (value === null || value === undefined ? '' : String(value)).replace(/\u0000/g, '');
+  // 先頭が = + - @ | タブ 改行、または空白の直後に = + - @ | が続く場合は ' を前置して数式実行を防ぐ
+  const neutralized = /^(?:[=+\-@|\t\r\n]|\s+[=+\-@|])/.test(text) ? `'${text}` : text;
   if (/[",\r\n]/.test(neutralized)) {
     return `"${neutralized.replace(/"/g, '""')}"`;
   }

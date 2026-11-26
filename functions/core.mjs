@@ -75,22 +75,25 @@ export function levelFromXp(xp) {
   return level;
 }
 export const STAGE_CLEAR_PERFECTS = 3;
+const SAFE_STAGE_KEY = (k) => k !== '__proto__' && k !== 'constructor' && k !== 'prototype' && /^[A-Za-z0-9_:-]{1,200}$/.test(k);
 /** 端末ごとの記録を合算する。満点・挑戦回数・XP は足し算（各端末の記録は独立しているため） */
 export function aggregateAchievements(devices) {
-  const stages = {};
+  const stages = Object.create(null);
   let xp = 0;
   for (const d of devices) {
     xp += Number.isInteger(d?.xp) ? d.xp : 0;
     for (const [k, v] of Object.entries(d?.stages ?? {})) {
+      if (!SAFE_STAGE_KEY(k)) continue;
       const cur = stages[k] ?? { p: 0, n: 0 };
       stages[k] = { p: cur.p + (v?.p ?? 0), n: cur.n + (v?.n ?? 0) };
     }
   }
   const cleared = Object.values(stages).filter((s) => s.p >= STAGE_CLEAR_PERFECTS).length;
-  return { stages, xp, stagesCleared: Math.min(100000, cleared), level: levelFromXp(xp) };
+  return { stages: { ...stages }, xp, stagesCleared: Math.min(100000, cleared), level: levelFromXp(xp) };
 }
 /** 端末から届いた記録の検証（壊れた・大きすぎる値は受け取らない） */
 export function parseDeviceAchievements(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
   if (!/^[A-Za-z0-9_-]{8,64}$/.test(String(data?.deviceId ?? ''))) return null;
   const xp = data?.xp;
   if (!Number.isInteger(xp) || xp < 0 || xp > 100000000) return null;
@@ -98,14 +101,15 @@ export function parseDeviceAchievements(data) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
   const entries = Object.entries(raw);
   if (entries.length > 2000) return null;
-  const stages = {};
+  const stages = Object.create(null);
   for (const [k, v] of entries) {
-    if (!/^[A-Za-z0-9_:-]{1,200}$/.test(k)) return null;
+    if (!SAFE_STAGE_KEY(k)) return null;
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return null;
     const p = v?.p, n = v?.n;
     if (!Number.isInteger(p) || !Number.isInteger(n) || p < 0 || n < 0 || p > n || n > 100000) return null;
     stages[k] = { p, n };
   }
-  return { deviceId: data.deviceId, xp, stages };
+  return { deviceId: data.deviceId, xp, stages: { ...stages } };
 }
 
 /**
@@ -125,10 +129,12 @@ export function ghostNextRating(current, ghostRating, outcome) {
 }
 /** 端末から届いた結果の形と、点数と勝敗の食い違いを調べる */
 export function parseGhostMatch(data) {
-  const { matchId, ghostRating, outcome, myScore, opponentScore } = data ?? {};
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
+  const { matchId, ghostRating, outcome, myScore, opponentScore } = data;
   if (typeof matchId !== 'string' || !/^[A-Za-z0-9_-]{8,48}$/.test(matchId)) return null;
   if (!['win', 'lose', 'draw'].includes(outcome)) return null;
   if (![ghostRating, myScore, opponentScore].every(Number.isFinite)) return null;
+  if (ghostRating < 0 || ghostRating > 5000) return null;
   if (myScore < 0 || opponentScore < 0 || myScore > 100000 || opponentScore > 100000) return null;
   const byScore = myScore > opponentScore ? 'win' : myScore < opponentScore ? 'lose' : null;
   if (byScore && byScore !== outcome) return null;

@@ -39,13 +39,19 @@ export function requireUid(): string {
   return uid;
 }
 
+export function safeBattlePhotoUrl(raw: string | null | undefined): string {
+  const url = String(raw || '');
+  return url.length <= 512 && /^https:\/\/[^\s"'<>]{1,504}$/.test(url) ? url : '';
+}
+
 export function myProfile(rating: number): BattlePlayer {
   const user = auth.currentUser;
+  const safeRating = Number.isFinite(rating) ? Math.max(0, Math.min(4000, rating)) : RATING_INITIAL;
   return {
     uid: user?.uid || '',
     nickname: resolveNickname(),
-    photoURL: user?.photoURL || '',
-    rating,
+    photoURL: safeBattlePhotoUrl(user?.photoURL),
+    rating: safeRating,
   };
 }
 
