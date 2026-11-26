@@ -207,8 +207,8 @@
     "generated_at": "2026-09-06T15:04:42Z",
     "synthesis": {
       "speaker": "Sam",
-      "style": 0.0,
-      "speed": 1.0,
+      "style": 0,
+      "speed": 1,
       "audio_type": "tts",
       "is_direct_prompt": true
     },
@@ -231,8 +231,8 @@
       "model": "elevenlabs/v3-tts",
       "params": {
         "speaker": "Sam",
-        "style": 0.0,
-        "speed": 1.0,
+        "style": 0,
+        "speed": 1,
         "audio_type": "tts",
         "is_direct_prompt": true
       }
@@ -3501,7 +3501,7 @@
     "subId": "q_el1_B_set1_2",
     "label": "問2",
     "hint": "男性（会社員）",
-    "script": "\"I'll take this red shoulder bag with the long strap, please.\"",
+    "script": "\"I'll take this shoulder bag with the long strap, please.\"",
     "translation": "",
     "keyPhrases": [],
     "source": "src/data/englishListeningQ1BProblems.ts",
@@ -7987,7 +7987,7 @@
     "subId": "q_el3_set1_4",
     "label": "問4",
     "hint": "放課後、明日の持ち物について話している。",
-    "script": "A: Do we need our gym clothes tomorrow?\nB: Let me check... Tomorrow we have math, English, and art.\nA: No PE?\nB: Right. But bring a paint set for art class.\nA: I don't have one. Can I borrow yours?\nB: Sure, I have two.",
+    "script": "A: Do we need our gym clothes tomorrow?\nB: Let me check... Tomorrow we have math, English, and art.\nA: No PE?\nB: Right. But bring a paint set for art class.\nA: Oh, I left mine in my locker at school. Do you have yours?\nB: No, it's at home, so I'll bring my paint set tomorrow.",
     "turns": [
       {
         "who": "A",
@@ -8007,11 +8007,11 @@
       },
       {
         "who": "A",
-        "text": "I don't have one. Can I borrow yours?"
+        "text": "Oh, I left mine in my locker at school. Do you have yours?"
       },
       {
         "who": "B",
-        "text": "Sure, I have two."
+        "text": "No, it's at home, so I'll bring my paint set tomorrow."
       }
     ],
     "translation": "",
@@ -8026,12 +8026,12 @@
     "app_read_count": 1,
     "speakers": {
       "A": {
-        "description": "男性(高校生)",
-        "voice": "Sam"
+        "description": "女性(高校生)",
+        "voice": "Jessica"
       },
       "B": {
-        "description": "女性(高校生)",
-        "voice": "Adeline"
+        "description": "男性(高校生)",
+        "voice": "Eric"
       }
     },
     "utterances": [
@@ -8067,7 +8067,7 @@
       }
     ],
     "status": "generated",
-    "engine": "elevenlabs/v3-tts",
+    "engine": "elevenlabs/v4-tts",
     "generated_at": "2026-09-06T15:06:07Z",
     "synthesis": {
       "style": 0,
@@ -8119,8 +8119,8 @@
         ]
       }
     },
-    "sha256": "bc06a286bb2106ffcc228cc6d22351f8a24746a5bd73b1c12e24e23ecf6c3377",
-    "bytes": 296795,
+    "sha256": "c778262ffd014223d3dbcc0f6b139e072040ea3ed8c34b4df1bce85cc42957f7",
+    "bytes": 287598,
     "duration_seconds": 18.520816,
     "revision_history": [
       {

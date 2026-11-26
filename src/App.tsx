@@ -9,7 +9,6 @@ import { usePdfOpen } from './hooks/usePdfOpen';
 import { useBannerAdSuppressed } from './utils/adSuppress';
 import { useJukuAdFree } from './hooks/useJukuAdFree';
 import React, { useState, useEffect, useRef } from 'react';
-import { Capacitor } from '@capacitor/core';
 import { BottomNavigation } from './components/ui/BottomNavigation';
 import { DoorTransition } from './components/ui/DoorTransition';
 import { ListeningHome as Home } from './components/ListeningHome';
@@ -759,9 +758,7 @@ export default function App() {
                   if (!node) return;
                   const shell = node.closest<HTMLElement>('.app-shell');
                   const measure = () => {
-                    const isAndroid = Capacitor.getPlatform() === 'android';
-                    const adGap = isAndroid ? ' + var(--ad-gap, 16px)' : '';
-                    shell?.style.setProperty('--app-nav-h', `calc(${node.getBoundingClientRect().height}px + var(--ad-bottom-h, 0px)${adGap})`);
+                    shell?.style.setProperty('--app-nav-h', `calc(${node.getBoundingClientRect().height}px + var(--ad-bottom-h, 0px) + var(--ad-gap, 0px))`);
                   };
                   measure();
                   const observer = new ResizeObserver(measure);

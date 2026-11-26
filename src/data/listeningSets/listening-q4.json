@@ -329,7 +329,7 @@
       "Four people or more",
       "No talking at all",
       "5:00 p.m.",
-      "7:00 p.m.",
+      "6:00 p.m.",
       "9:00 p.m."
      ],
      "blanks": [
@@ -356,7 +356,7 @@
      ],
      "script": "Now, about our four areas. The Reading Room closes at eight, and you may bring a drink, but only in a bottle with a lid — no open cups. The Study Booths stay open the longest, right up to nine, though you do need to book one first. The Group Room shuts at six and, as the name suggests, it cannot be used by fewer than four people. And the Café Corner, where drinks are of course fine, closes two hours before the Reading Room does.",
      "wordCount": 86,
-     "explain": "①と③の区別が要点。Reading Room は a drink, but only in a bottle with a lid なので①Drinks in bottles only。③No talking at all は一切言及されないダミー。Group Room の cannot be used by fewer than four people（4人未満は不可）＝②Four people or more の言い換え。Café Corner は closes two hours before the Reading Room（＝8時の2時間前）で⑤7:00 p.m. を計算させる。④5:00 p.m. は未使用。",
+     "explain": "①と③の区別が要点。Reading Room は a drink, but only in a bottle with a lid なので①Drinks in bottles only。③No talking at all は一切言及されないダミー。Group Room の cannot be used by fewer than four people（4人未満は不可）＝②Four people or more の言い換え。Café Corner は closes two hours before the Reading Room（＝8時の2時間前）で⑤6:00 p.m. を計算させる。④5:00 p.m. は未使用。",
      "keyPhrases": [
       "you may bring a drink, but only in a bottle with a lid",
       "stay open the longest, right up to nine",
