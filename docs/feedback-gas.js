@@ -163,33 +163,22 @@ function doGet(e) {
   var params = (e && e.parameter) || {};
 
   if (params.ping) {
-    var body = JSON.stringify({ ok: true, service: 'chemnote-feedback' });
+    var body = JSON.stringify({ ok: true, service: 'manatobi-feedback' });
     if (params.callback) {
+      var cb = String(params.callback);
+      if (!/^[A-Za-z_$][A-Za-z0-9_$.]{0,63}$/.test(cb)) {
+        return ContentService.createTextOutput('/* invalid callback */').setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
       return ContentService
-        .createTextOutput(params.callback + '(' + body + ');')
+        .createTextOutput(cb + '(' + body + ');')
         .setMimeType(ContentService.MimeType.JAVASCRIPT);
     }
     return ContentService.createTextOutput(body).setMimeType(ContentService.MimeType.JSON);
   }
 
-  var status = 'ChemNote feedback endpoint is running.';
-  if (CONFIG.APPEND_SHEET) {
-    try {
-      status += '\nsheet: OK (' + getSheet().getName() + ')';
-    } catch (error) {
-      status += '\nsheet: NG - ' + error;
-    }
-    try {
-      var userSheet = getUserSheet();
-      // 見出し行を除いた行数 = 登録ユーザー数
-      var userCount = Math.max(0, userSheet.getLastRow() - 1);
-      status += '\nusers: OK (' + userSheet.getName() + ', ' + userCount + '人)';
-    } catch (error) {
-      status += '\nusers: NG - ' + error;
-    }
-  }
-  status += '\nmail: ' + (CONFIG.SEND_EMAIL ? 'ON -> ' + CONFIG.NOTIFY_EMAIL : 'OFF');
-  return ContentService.createTextOutput(status).setMimeType(ContentService.MimeType.TEXT);
+  return ContentService
+    .createTextOutput('Manatobi feedback endpoint is running.')
+    .setMimeType(ContentService.MimeType.TEXT);
 }
 
 /**
@@ -328,34 +317,42 @@ function getSheet() {
   return sheet;
 }
 
+/**
+ * Google スプレッドシートの数式インジェクション（=IMPORTXML / =IMAGE 等による情報持ち出し）を防ぐ。
+ */
+function safeSheetCell(value, maxLen) {
+  var limit = maxLen || 2000;
+  var text = (value === null || value === undefined ? '' : String(value))
+    .replace(/\u0000/g, '')
+    .slice(0, limit);
+  if (/^(?:[=+\-@|\t\r\n]|\s+[=+\-@|])/.test(text)) {
+    return "'" + text;
+  }
+  return text;
+}
+
 function label(map, key, fallback) {
-  return map[key] || key || fallback;
+  return safeSheetCell(map[key] || key || fallback, 80);
 }
 
 function appendToSheet(p) {
   var sheet = getSheet();
   sheet.appendRow([
     new Date(),
-    p.id || '',
+    safeSheetCell(p.id || '', 80),
     label(SCREEN_LABELS, p.screen, '不明'),
     label(CATEGORY_LABELS, p.category, '不明'),
-    // ★ 評価は「数値」として書く。
-    //   以前は '5 / 5' という文字列だったため、シート上で
-    //   AVERAGE() の対象にならず平均が計算できなかった。
-    //   アプリ側で星評価を必須化したので通常は 1〜5 が入るが、
-    //   旧バージョンのアプリからの送信に備え、
-    //   未選択は空セルにする（0 を入れると平均を下げてしまうため）。
-    typeof p.rating === 'number' && p.rating > 0 ? p.rating : '',
-    p.message || '',
-    p.contactEmail || '',
-    p.displayName || 'ゲスト',
-    p.uid || '',
-    p.authEmail || '',
-    p.context ? JSON.stringify(p.context) : '',
-    p.appVersion || '',
-    p.viewport || '',
-    p.userAgent || '',
-    p.createdAtIso || '',
+    typeof p.rating === 'number' && p.rating > 0 && p.rating <= 5 ? Math.round(p.rating) : '',
+    safeSheetCell(p.message || '', 2000),
+    safeSheetCell(p.contactEmail || '', 200),
+    safeSheetCell(p.displayName || 'ゲスト', 100),
+    safeSheetCell(p.uid || '', 128),
+    safeSheetCell(p.authEmail || '', 200),
+    p.context ? safeSheetCell(JSON.stringify(p.context), 2000) : '',
+    safeSheetCell(p.appVersion || '', 40),
+    safeSheetCell(p.viewport || '', 40),
+    safeSheetCell(p.userAgent || '', 400),
+    safeSheetCell(p.createdAtIso || '', 40),
   ]);
   // 折り返し表示にして長文でも読める状態を保つ
   sheet.getRange(sheet.getLastRow(), 6).setWrap(true);
@@ -393,8 +390,8 @@ function getUserSheet() {
 function upsertUserRow(p) {
   var sheet = getUserSheet();
   var now = new Date();
-  var uid = p.uid || '';
-  if (!uid) return;
+  var uid = String(p.uid || '').trim();
+  if (!/^[A-Za-z0-9:_-]{4,128}$/.test(uid)) return;
 
   var uidColumn = USER_HEADERS.indexOf('uid') + 1; // 1-based
   var lastRow = sheet.getLastRow();
@@ -421,16 +418,16 @@ function upsertUserRow(p) {
     firstSeen,
     now,
     p.isGoogleLinked ? '連携済み' : 'ゲスト',
-    p.email || '',
-    p.displayName || '',
-    p.profileName || '',
-    p.grade || '',
-    typeof p.streak === 'number' ? p.streak : '',
-    typeof p.completedCount === 'number' ? p.completedCount : '',
-    uid,
-    p.createdAtIso || '',
-    p.appVersion || '',
-    p.userAgent || '',
+    safeSheetCell(p.email || '', 200),
+    safeSheetCell(p.displayName || '', 100),
+    safeSheetCell(p.profileName || '', 100),
+    safeSheetCell(p.grade || '', 50),
+    typeof p.streak === 'number' && p.streak >= 0 ? Math.min(100000, Math.floor(p.streak)) : '',
+    typeof p.completedCount === 'number' && p.completedCount >= 0 ? Math.min(100000, Math.floor(p.completedCount)) : '',
+    safeSheetCell(uid, 128),
+    safeSheetCell(p.createdAtIso || '', 40),
+    safeSheetCell(p.appVersion || '', 40),
+    safeSheetCell(p.userAgent || '', 400),
   ];
 
   if (targetRow) {

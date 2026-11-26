@@ -21,7 +21,8 @@ import { ReviewTopNav } from './explanation/ReviewTopNav';
 
 import { computeQuestionScore, computeWeakAreas, buildResultPages, scopeQuestionsToFocus } from './explanation/explanationLogic';
 // 画面に依存しない小さな関数（isAttempted / textTracksOf / formatResultTime / pictureCellOf）
-import { isAttempted, textTracksOf } from './explanation/helpers';
+import { isAttempted, isEnglishProseChapter, isNoMathChapter, textTracksOf } from './explanation/helpers';
+import { isToeicPageChapter } from './toeic/toeicPageModel';
 import './listening-explanation.css';
 import { buildFigureNumberMap } from '../utils/figureNumbering';
 import { isAnswerCorrect } from '../utils/answerJudge';
@@ -277,10 +278,10 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
    *   問題データそのものの事実で判定する（科目名で分岐しない）。
    */
   const isEnglishChapter = useMemo(() => {
-    return allQuestions.some((q) => {
-      return textTracksOf(q).length > 0;
-    });
-  }, [allQuestions]);
+    return isEnglishProseChapter(chapter.id, allQuestions);
+  }, [chapter.id, allQuestions]);
+  const noMath = useMemo(() => isNoMathChapter(chapter.id), [chapter.id]);
+  const isToeicChapter = useMemo(() => isToeicPageChapter(chapter.id), [chapter.id]);
 
   const BODY_FONT_FAMILY = 'font-modern';
 
@@ -527,10 +528,10 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         */}
         <div className={isMobile 
           ? `w-full flex flex-col ${isResultView || reviewNav ? 'flex-1' : ''} ${CARD_FONT_FAMILY} relative ${
-              'bg-white text-gray-800'
+              'bg-[#FDFBF7] text-gray-800'
             }`
           : `${isResultView ? 'w-full flex-1' : 'w-full h-full'} flex flex-col ${CARD_FONT_FAMILY} relative ${
-              'bg-white text-gray-800'
+              'bg-[#FDFBF7] text-gray-800'
             }`
         }>
       {/* Background effects */}
@@ -576,11 +577,11 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
         ? reorderMobile
           // スマホの1問ごとの答え合わせ：問題文ペインを sticky で上部に
           // 固定するため、外側の余白は付けない（全幅の上下2ペイン）。
-          ? `relative z-10 ${'bg-white'}`
-          : `p-4 md:p-6 relative z-10 space-y-6 md:space-y-8 ${'bg-white'}`
+          ? `relative z-10 ${'bg-[#FDFBF7]'}`
+          : `p-4 md:p-6 relative z-10 space-y-6 md:space-y-8 ${'bg-[#FDFBF7]'}`
         : isResultView
-          ? `p-4 md:p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] relative z-10 space-y-6 md:space-y-8 ${'bg-white'}`
-          : `p-4 md:p-6 relative z-10 flex-1 overflow-hidden flex flex-col ${'bg-white'}`
+          ? `p-4 md:p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] relative z-10 space-y-6 md:space-y-8 ${'bg-[#FDFBF7]'}`
+          : `p-4 md:p-6 relative z-10 flex-1 overflow-hidden flex flex-col ${'bg-[#FDFBF7]'}`
       }>
       {/* Weak Areas Analysis
           ★ 修正：問題数が多い場合（弱点エリアが多数）に desktop で潜在的にはみ出してスクロールできなかった不具合を解消。
@@ -611,8 +612,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
           ? reorderMobile
             // 1問ごとの答え合わせ（スマホ）：問題文ペインを sticky にするため
             // 枠・角丸を付けず全幅で使う。
-            ? `${'bg-white'}`
-            : `rounded-2xl shadow-lg border ${'bg-white border-gray-200'}`
+            ? `${'bg-[#FDFBF7]'}`
+            : `rounded-2xl shadow-lg border ${'bg-[#FFFDF9] border-[#E6DCCB]'}`
           : isResultView
             // 結果表示（全問の解答・解説一覧）はページ全体スクロールに任せる。
             // ここで flex-1 / h-full / overflow-hidden を付けると、スコアパネルに圧迫されて
@@ -625,7 +626,9 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
             // 「問題文（上・sticky）→ 正誤一覧＋解説（下）」の上下2ペイン。
             // 演習画面と同じ「上＝問題文 / 下＝解答」の並びで迷わない。
             ? "flex flex-col"
-            : isMobile
+            : isToeicChapter
+              ? "grid grid-cols-1 max-w-3xl mx-auto w-full gap-4 p-0 flex-1 overflow-y-auto"
+              : isMobile
             ? "grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 sm:p-6 md:p-8"
             : isResultView
               ? "grid grid-cols-1 lg:grid-cols-[minmax(0,1.38fr)_minmax(0,1fr)] gap-6 p-0 items-start"
@@ -640,21 +643,25 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 ★スマホの1問ごとの答え合わせ（reorderMobile）では、演習画面と同じ
                   「上＝問題文ペイン」として sticky で画面上部に固定する。
                   下の解説をスクロールしても問題文が常に見える（ご要望
-                  「解答と解説・問題は一緒に一画面で見える状態で出したい」）。 */}
+                  「解答と解説・問題は一緒に一画面で見える状態で出したい」）。
+                ★TOEIC は ToeicReviewCard 自体が演習画面と同じ設問文・文書・音声を
+                  そのまま持つため、上の定型3段落（「第1回 TOEIC… 空所に入れるのに…」）を
+                  二重に出さない（約270px の無駄を解消して1画面に収める）。 */}
+            {!isToeicChapter && (
             <div className={reorderMobile
-              ? `sticky ${reviewNav ? 'top-[calc(57px+env(safe-area-inset-top,0px))]' : 'top-[env(safe-area-inset-top,0px)]'} z-20 min-w-0 bg-white border-b-2 border-gray-200 shadow-md flex flex-col`
+              ? `sticky ${reviewNav ? 'top-[calc(57px+env(safe-area-inset-top,0px))]' : 'top-[env(safe-area-inset-top,0px)]'} z-20 min-w-0 bg-[#FFFDF9] border-b-2 border-[#E6DCCB] shadow-md flex flex-col`
               : `space-y-6 pb-8 min-w-0 ${isResultView ? 'lg:pr-4' : 'lg:overflow-y-auto lg:h-full lg:pr-4'}`}>
               {/* スマホ：問題文ペインのヘッダー（演習画面と同じ「たたむ」付き） */}
               {reorderMobile && (
-                <div className="lx-problem-head flex items-center justify-between px-3 py-1 border-b border-gray-100 bg-blue-50/30">
+                <div className="lx-problem-head flex items-center justify-between px-3 py-1 border-b border-[#EADFC8] bg-[#FAF4E8]">
                   <span className="font-bold text-[#2C3E50] text-sm flex items-center gap-2">
-                    <BookOpen size={15} className="text-[#A9CCE3]" />
+                    <BookOpen size={15} className="text-[#4E8AB8]" />
                     問題文
                   </span>
                   <button
                     onClick={() => setMobileProblemCollapsed(v => !v)}
                     aria-expanded={!mobileProblemCollapsed}
-                    className="flex min-h-[44px] items-center gap-0.5 rounded-md px-2 text-xs font-bold text-gray-600 active:bg-gray-50 whitespace-nowrap"
+                    className="flex min-h-[44px] items-center gap-0.5 rounded-md px-2 text-xs font-bold text-[#5A4E3C] hover:bg-[#EFE7D6]/70 active:translate-y-px transition-all whitespace-nowrap cursor-pointer"
                   >
                     {mobileProblemCollapsed ? (
                       <>問題文を表示<ChevronDown size={12} /></>
@@ -680,13 +687,14 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 questions.map((question, qIndex: number) => {
                 const scorePercentage = calculateScore(question);
                 return (
-                  <ProblemStatement key={question.id} question={question} qIndex={qIndex} scorePercentage={scorePercentage} singleQuestionIndex={singleQuestionIndex} rangeOffset={rangeOffset} pagerOn={pagerOn} resultPages={resultPages} safeResultPage={safeResultPage} savingNote={savingNote} handleSaveNote={handleSaveNote} reorderMobile={reorderMobile} isEnglishChapter={isEnglishChapter} figureNumberMap={figureNumberMap} />
+                  <ProblemStatement key={question.id} question={question} qIndex={qIndex} scorePercentage={scorePercentage} singleQuestionIndex={singleQuestionIndex} rangeOffset={rangeOffset} pagerOn={pagerOn} resultPages={resultPages} safeResultPage={safeResultPage} savingNote={savingNote} handleSaveNote={handleSaveNote} reorderMobile={reorderMobile} isEnglishChapter={isEnglishChapter} noMath={noMath} figureNumberMap={figureNumberMap} />
                 );
               })
               ) : null}
               </div>
               
             </div>
+            )}
 
             {/* RIGHT COLUMN: Answers, grading, and explanations
                 （スマホの1問ごとの答え合わせでは問題文ペインの下＝下ペインとして表示） */}
@@ -694,16 +702,18 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
               // 下部固定ナビ（問題に戻る/次の問題へ）に最後のカードが隠れない
               // よう、下余白を大きめに取る。
               ? 'order-2 px-3 pt-3 pb-[calc(6rem+env(safe-area-inset-bottom))]'
-              : 'pb-8'} ${isResultView ? '' : 'lg:overflow-y-auto lg:h-full'}${pcListening ? ' lx-pc-right' : ''}`}>
+              : isToeicChapter
+                ? 'pb-36'
+                : 'pb-8'} ${isResultView || isToeicChapter ? '' : 'lg:overflow-y-auto lg:h-full'}${pcListening && !isToeicChapter ? ' lx-pc-right' : ''}`}>
               {questions.length > 0 ? (
                 questions.map((question, qIndex: number) => {
                 return (
-                  <div key={`right-${question.id}`} className={reorderMobile ? 'space-y-2' : pcListening ? 'space-y-6 lx-pc-flat' : 'space-y-6'}>
-                    <div className={reorderMobile ? 'space-y-2' : pcListening ? 'space-y-6 md:space-y-8 lx-pc-flat' : 'space-y-6 md:space-y-8'}>
+                  <div key={`right-${question.id}`} className={reorderMobile ? 'space-y-2' : pcListening && !isToeicChapter ? 'space-y-6 lx-pc-flat' : 'space-y-6'}>
+                    <div className={reorderMobile ? 'space-y-2' : pcListening && !isToeicChapter ? 'space-y-6 md:space-y-8 lx-pc-flat' : 'space-y-6 md:space-y-8'}>
                       {/* 大問1つぶんの採点結果・解説。中身は explanation/ExplanationAnswerItem.tsx（元の JSX のまま・C-03） */}
                       {renderExplanationAnswerItem({
                         question, answers, allQuestions, reorderMobile, pcListening, focusSubQuestionId,
-                        isMobile, isPracticeMode, isEnglishChapter, answerBoxBaseClass, explBodyBaseClass, explBodyFontClass,
+                        isMobile, isPracticeMode, isEnglishChapter, noMath, chapter, chapterId: chapter.id, isGuest, answerBoxBaseClass, explBodyBaseClass, explBodyFontClass,
                         openExplanationBySq, openThinkingBySq, setOpenExplanationBySq, setOpenThinkingBySq,
                         selectedSqId, setSelectedSqId,
                       })}
@@ -715,7 +725,7 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
                 );
               })
             ) : (
-              <div className={`p-12 text-center rounded-2xl border-2 border-dashed ${'bg-gray-50 border-gray-200 text-gray-500'}`}>
+              <div className={`p-12 text-center rounded-2xl border-2 border-dashed ${'bg-[#FAF5EB] border-[#E3D9C8] text-[#7A6A4C]'}`}>
                 <div className="flex flex-col items-center gap-4">
                   <AlertCircle size={48} className="text-amber-500" />
                   <p className="text-lg font-bold">問題がありません。</p>
@@ -729,7 +739,8 @@ export function Explanation({ mode: initialMode, chapter, answers, onBack, onRet
             questions={questions}
            
             isEnglishChapter={isEnglishChapter}
-            foldable={reorderMobile || pcListening}
+            noMath={noMath}
+            foldable={reorderMobile || pcListening || isToeicChapter}
             openByDefault={pcListening}
             qNumberOf={(qIndex) => (singleQuestionIndex !== undefined ? singleQuestionIndex : rangeOffset + (pagerOn ? (resultPages[safeResultPage]?.qIndex ?? qIndex) : qIndex)) + 1}
           />

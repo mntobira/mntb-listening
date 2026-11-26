@@ -30,7 +30,7 @@ import type { AudioTrack, Problem, SubQuestion } from '../../types/curriculum';
 export function ListeningCompactAnswers({
   question, objectiveSqs, answers, listeningTracks, optionTextsBySq, pcListening,
   openExplanationBySq, setOpenExplanationBySq, sliceForSq,
-  explBodyBaseClass, explBodyFontClass, isEnglishChapter, isPracticeMode,
+  explBodyBaseClass, explBodyFontClass, isEnglishChapter, noMath, isPracticeMode,
 }: {
   question: Problem;
   objectiveSqs: SubQuestion[];
@@ -44,6 +44,7 @@ export function ListeningCompactAnswers({
   explBodyBaseClass: string;
   explBodyFontClass: string;
   isEnglishChapter: boolean;
+  noMath?: boolean;
   isPracticeMode: boolean;
 }) {
   return (
@@ -66,7 +67,7 @@ export function ListeningCompactAnswers({
                                         <section key={`lx-${sq.id}`} className="lx-choices" data-status={status} aria-label={`${marker} の答え合わせ`}>
                                           <header className="lx-choices-head">
                                             <span className="lx-result-mark" aria-hidden="true">{status === 'none' ? <Circle size={18} /> : ok ? <CheckCircle2 size={18} /> : <XCircle size={18} />}</span>
-                                            <span className="lx-result-label">{formatText(marker)}</span>
+                                            <span className="lx-result-label">{formatText(marker, [], { prose: isEnglishChapter, noMath })}</span>
                                             <span className="lx-result-verdict">{status === 'none' ? '未解答' : ok ? '正解' : '不正解'}</span>
                                           </header>
                                           {options.length > 0 && !hasImages ? (
@@ -84,8 +85,8 @@ export function ListeningCompactAnswers({
                                                 return (
                                                   <li key={opt + oi} className={`lx-choice${pic ? ' has-pic' : ''}`} data-tone={tone} data-mine={isMine || undefined}>
                                                     {pic && <span className="lx-choice-pic" role="img" aria-label={`${mark || opt} のイラスト`} style={pic} />}
-                                                    <span className="lx-choice-mark">{mark ? `${mark} ` : ''}{formatText(opt)}</span>
-                                                    {body && <span className="lx-choice-text">{formatText(body, [], { prose: true })}</span>}
+                                                    <span className="lx-choice-mark">{mark ? `${mark} ` : ''}{formatText(opt, [], { prose: isEnglishChapter, noMath })}</span>
+                                                    {body && <span className="lx-choice-text">{formatText(body, [], { prose: true, noMath })}</span>}
                                                     {(isRight || isMine) && (
                                                       <span className="lx-choice-tag">{isRight && isMine ? 'あなた・正解' : isRight ? '正解' : 'あなた'}</span>
                                                     )}
@@ -95,8 +96,8 @@ export function ListeningCompactAnswers({
                                             </ol>
                                           ) : (
                                             <p className="lx-result-answers">
-                                              {attempted && !ok && <><span className="lx-yours">{formatText(mine)}</span><span aria-hidden="true">→</span></>}
-                                              <span className="lx-right" aria-label={`正解 ${right}`}>{formatText(right)}</span>
+                                              {attempted && !ok && <><span className="lx-yours">{formatText(mine, [], { prose: isEnglishChapter, noMath })}</span><span aria-hidden="true">→</span></>}
+                                              <span className="lx-right" aria-label={`正解 ${right}`}>{formatText(right, [], { prose: isEnglishChapter, noMath })}</span>
                                             </p>
                                           )}
                                         </section>
@@ -121,14 +122,14 @@ export function ListeningCompactAnswers({
                                         <div key={`lx-ex-${sq.id}`} className="lx-fold">
                                           <button type="button" onClick={() => setOpenExplanationBySq(prev => ({ ...prev, [sq.id]: !open }))} aria-expanded={open}>
                                             <BookOpen size={16} aria-hidden="true" />
-                                            <span>{objectiveSqs.length > 1 ? <>{formatText(marker)} の</> : null}詳しい解説</span>
+                                            <span>{objectiveSqs.length > 1 ? <>{formatText(marker, [], { prose: isEnglishChapter, noMath })} の</> : null}詳しい解説</span>
                                             <ChevronDown size={18} aria-hidden="true" className={open ? 'rotate-180' : ''} />
                                           </button>
                                           {open && (
                                             <div className={`lx-fold-body ${explBodyBaseClass}`}>
                                               {theme && <p className="lx-core"><KeyRound size={14} aria-hidden="true" />{formatText(theme, [], { prose: isEnglishChapter })}</p>}
                                               {slice.trim()
-                                                ? <ExplanationBody text={slice} tone="light" prose={isEnglishChapter} className={`${explBodyFontClass} text-gray-700`} />
+                                                ? <ExplanationBody text={slice} tone="light" prose={isEnglishChapter} noMath={noMath} className={`${explBodyFontClass} text-gray-700`} />
                                                 : !theme && <p className="text-xs text-gray-500">この問の解説は下の「共通ポイント」にまとめています。</p>}
                                               {steps.length > 0 && isPracticeMode && (
                                                 <ol className="lx-steps">{steps.map((step, i) => <li key={i}><b>{i + 1}</b><span>{formatText(step, [], { prose: isEnglishChapter })}</span></li>)}</ol>

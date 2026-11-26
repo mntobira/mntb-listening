@@ -27,6 +27,8 @@ import { BookOpenCheck, Clock3, Flame, RotateCcw, Target } from 'lucide-react';
 
 import { auth } from '../../firebase';
 import { captureWrongAnswers, loadReviewList, type WrongAnswerInput } from '../../utils/reviewList';
+import { recordBattleFollowup } from '../../utils/learningOutcomes';
+import { schedulePush } from '../../utils/studySync';
 import { kanaTextOf } from '../core/kanaKeyboard';
 import {
   pickReviewQuestions,
@@ -322,6 +324,10 @@ export function ResultActions({
       setError('復習リストに保存できませんでした。保存設定・空き容量を確認してください。');
       return;
     }
+    try {
+      recordBattleFollowup(uid, 'review');
+      schedulePush();
+    } catch { /* 転換記録の失敗で遷移は止めない */ }
     onReview();
   };
 

@@ -75,11 +75,17 @@ export function safeLocalStorage(): Storage | null {
  *   などで中身が配列でないと、その直後の .push / .includes / .map で例外になり、
  *   ノートの保存や結果画面が丸ごと失敗する（端末を変えるまで直らない）。
  */
+/** JSON.parse 時にプロトタイプ汚染につながる危険キーを落とす reviver */
+function protoSafeReviver(key: string, value: unknown): unknown {
+  if (key === '__proto__' || key === 'constructor' || key === 'prototype') return undefined;
+  return value;
+}
+
 export function readJsonArray<T = unknown>(key: string): T[] {
   try {
     const raw = safeLocalStorage()?.getItem(key);
     if (!raw) return [];
-    const parsed: unknown = JSON.parse(raw);
+    const parsed: unknown = JSON.parse(raw, protoSafeReviver);
     return Array.isArray(parsed) ? (parsed as T[]) : [];
   } catch {
     return [];
@@ -157,7 +163,7 @@ export function safeParseJson<T>(raw: string | null | undefined, fallback: T, is
 export function safeParseJson<T>(raw: string | null | undefined, fallback: T, isValid?: (value: unknown) => boolean): T {
   if (raw === null || raw === undefined || raw === '') return fallback;
   try {
-    const parsed: unknown = JSON.parse(raw);
+    const parsed: unknown = JSON.parse(raw, protoSafeReviver);
     if (isValid && !isValid(parsed)) return fallback;
     return parsed as T;
   } catch {
@@ -170,7 +176,9 @@ export function readStoredJson<T>(key: string, fallback: T, isValid?: (value: un
   return safeParseJson(safeGetItem(key), fallback, isValid);
 }
 
-/** よく使う型ガード：ふつうのオブジェクト（配列・null 以外） */
+/** よく使う型ガード：ふつうのオブジェクト（配列・null・特殊プロトタイプ以外） */
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const proto = Object.getPrototypeOf(value);
+  return proto === null || proto === Object.prototype;
 }

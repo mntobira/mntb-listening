@@ -3,6 +3,8 @@ import { BookOpen, NotebookPen } from 'lucide-react';
 import { BattleText } from '../battle/ui/BattleText';
 import type { BattleQuestion } from '../battle/core/types';
 import { captureWrongAnswers, loadReviewList, reviewKeyOf, type WrongAnswerInput } from '../utils/reviewList';
+import { recordBattleFollowup } from '../utils/learningOutcomes';
+import { schedulePush } from '../utils/studySync';
 import type { StudyLogEntry, StudyLogItem } from '../utils/studyLog';
 
 type StudyRetryRequest = { chapterId: string; questionId: string; wrongOnly: boolean; subQuestionIds: string[] };
@@ -116,6 +118,11 @@ export function StudyRecordBattleActions({
         throw new Error('復習ノートに保存できませんでした');
       }
       setSaved(true);
+      try {
+        const rawKey = entry.key.startsWith('battle:') ? entry.key.slice('battle:'.length) : entry.key;
+        recordBattleFollowup(uid, 'review', rawKey);
+        schedulePush();
+      } catch { /* 成果記録の失敗で保存表示は止めない */ }
       window.dispatchEvent(new Event('review-list-changed'));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : '復習ノートに保存できませんでした');
@@ -130,6 +137,11 @@ export function StudyRecordBattleActions({
     setError('');
     try {
       const result = await loadQuestion();
+      try {
+        const rawKey = entry.key.startsWith('battle:') ? entry.key.slice('battle:'.length) : entry.key;
+        recordBattleFollowup(uid, 'practice', rawKey);
+        schedulePush();
+      } catch { /* 成果記録の失敗で演習遷移は止めない */ }
       onRetry({
         chapterId: result.question.chapterId,
         questionId: result.question.problemId,
@@ -146,40 +158,40 @@ export function StudyRecordBattleActions({
   return (
     <div className="mt-2 grid gap-1.5" data-study-record-battle-actions>
       <div className="flex flex-wrap gap-2">
-        <button type="button" className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800" onClick={handleShowQuestion} disabled={loading !== null}>
+        <button type="button" className="min-h-11 rounded-xl border border-[#DDD0BA] bg-[#FFFDF8] px-3 py-2 text-xs font-bold text-[#2E2519] shadow-[0_2px_0_#E5D9C4] active:translate-y-[1.5px] active:shadow-none transition-all disabled:opacity-55" onClick={handleShowQuestion} disabled={loading !== null}>
           <BookOpen size={14} className="mr-1 inline" aria-hidden="true" />
           {loading === 'question' ? '問題を読み込み中…' : showQuestion ? '問題を閉じる' : '問題を見る'}
         </button>
         {canPractice && !item.correct && !saved && (
-          <button type="button" className="min-h-11 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900" onClick={handleAddToReview} disabled={loading !== null}>
+          <button type="button" className="min-h-11 rounded-xl border border-[#E5C167] bg-[#FFF8E2] px-3 py-2 text-xs font-bold text-[#7A5308] shadow-[0_2px_0_#DFBA5E] active:translate-y-[1.5px] active:shadow-none transition-all disabled:opacity-55" onClick={handleAddToReview} disabled={loading !== null}>
             <NotebookPen size={14} className="mr-1 inline" aria-hidden="true" />
             {loading === 'review' ? '追加中…' : '復習ノートに追加'}
           </button>
         )}
-        {canPractice && saved && <span className="inline-flex min-h-11 items-center text-xs font-bold text-green-700" role="status">復習ノートに登録済み</span>}
+        {canPractice && saved && <span className="inline-flex min-h-11 items-center text-xs font-bold text-[#2F7A52]" role="status">復習ノートに登録済み</span>}
       </div>
       {onRetry && canPractice && (
         <div className="flex flex-wrap gap-2" role="group" aria-label={`${item.label}の解き直し`}>
-          <button type="button" className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800" onClick={() => void handleRetry(false)} disabled={retryLoading || loading !== null}>
+          <button type="button" className="min-h-11 rounded-xl border border-[#DDD0BA] bg-[#FFFDF8] px-3 py-2 text-xs font-bold text-[#2E2519] shadow-[0_2px_0_#E5D9C4] active:translate-y-[1.5px] active:shadow-none transition-all disabled:opacity-55" onClick={() => void handleRetry(false)} disabled={retryLoading || loading !== null}>
             {retryLoading ? '演習を準備中…' : '解きなおす'}
           </button>
-          <button type="button" className="min-h-11 rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-900 disabled:opacity-60" onClick={() => void handleRetry(true)} disabled={!isWrong || retryLoading || loading !== null}>
+          <button type="button" className="min-h-11 rounded-xl border border-[#E6B8B2] bg-[#FDF1EF] px-3 py-2 text-xs font-bold text-[#8A2A24] shadow-[0_2px_0_#DFABA4] active:translate-y-[1.5px] active:shadow-none transition-all disabled:opacity-60 disabled:shadow-none" onClick={() => void handleRetry(true)} disabled={!isWrong || retryLoading || loading !== null}>
             {isWrong ? 'まちがえた問題だけ解く' : 'まちがえた問題だけ解く（なし）'}
           </button>
         </div>
       )}
       {showQuestion && resolved && (
-        <div className="rounded-xl border border-slate-200 bg-white p-3 text-sm leading-7" data-study-record-question>
+        <div className="rounded-xl border border-[#E5DCCC] bg-[#FFFDF8] p-3 text-sm leading-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]" data-study-record-question>
           {resolved.prompt ? <BattleText text={resolved.prompt} subject={subject} /> : <p>問題文が見つかりませんでした。</p>}
           {resolved.question.options.length > 0 && (
             <ol className="mt-2 list-inside list-decimal space-y-1">
               {resolved.question.options.map((option, index) => <li key={index}><BattleText text={option} subject={subject} /></li>)}
             </ol>
           )}
-          {resolved.correctAnswer && <p className="mt-2 font-bold text-green-800">正しい答え：<BattleText text={resolved.correctAnswer} subject={subject} /></p>}
+          {resolved.correctAnswer && <p className="mt-2 font-bold text-[#236B43]">正しい答え：<BattleText text={resolved.correctAnswer} subject={subject} /></p>}
         </div>
       )}
-      {error && <p className="text-xs font-bold text-red-700" role="alert">{error}</p>}
+      {error && <p className="text-xs font-bold text-[#B83227]" role="alert">{error}</p>}
     </div>
   );
 }

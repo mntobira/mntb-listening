@@ -21,7 +21,7 @@ export function ClassesTab({ classrooms, theme, copiedCode, onCopyCode, onToggle
       {classrooms.map((room) => {
         const roomTheme = subjectTheme(room.subject);
         return (
-          <div key={room.id} className="bg-white rounded-2xl border border-[#E0E1DD] p-4">
+          <div key={room.id} className="bg-[#FFFDF8] rounded-2xl border border-[#E5DCCC] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_2px_0_#E6DCCB]">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
               <div>
                 <p className="text-xs text-[#6B7280]">{room.schoolName}</p>
@@ -40,7 +40,7 @@ export function ClassesTab({ classrooms, theme, copiedCode, onCopyCode, onToggle
                   </span>
                   <button
                     onClick={() => onCopyCode(room.joinCode)}
-                    className="p-1.5 rounded-lg border border-[#E0E1DD] text-[#4B5563] hover:bg-[#FAF8F2] transition-colors"
+                    className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border border-[#DFD2BC] bg-white text-[#3F3527] shadow-[0_1.5px_0_#E5D9C4] hover:bg-[#FAF6EC] active:translate-y-[1px] active:shadow-none transition-all"
                     aria-label="参加コードをコピー"
                   >
                     {copiedCode === room.joinCode ? (
@@ -60,10 +60,10 @@ export function ClassesTab({ classrooms, theme, copiedCode, onCopyCode, onToggle
             */}
             <button
               onClick={() => onToggleJoin(room)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border transition-colors ${
+              className={`flex min-h-[44px] items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border shadow-[0_1.5px_0_rgba(80,60,30,0.08)] active:translate-y-[1px] active:shadow-none transition-all ${
                 room.joinOpen
                   ? 'border-[#A9E0D8] bg-[#F5FCFA] text-[#2F7C74]'
-                  : 'border-[#E0E1DD] bg-[#FAF8F2] text-[#6B7280]'
+                  : 'border-[#E5DCCC] bg-[#FAF6EC] text-[#6E604C]'
               }`}
             >
               {room.joinOpen ? (

@@ -6,19 +6,27 @@ import './screen-loading.css';
  * 0.3秒より早く読み込めたときは出さない（チラつき防止）。
  */
 export function ScreenLoading() {
-  return <section role="status" aria-live="polite" className="screen-loading notebook-paper p-6 text-center font-handwriting text-[#2C3E50]">
-    <span className="screen-loading-door" aria-hidden="true"><i /></span>
-    <p className="font-bold">読み込んでいます…</p>
-    <p className="mt-2 text-sm">そのままお待ちください。</p>
-  </section>;
+  return (
+    <div className="screen-status-shell">
+      <section role="status" aria-live="polite" className="screen-loading screen-status-card">
+        <span className="screen-loading-door" aria-hidden="true"><i /></span>
+        <p className="screen-status-title">読み込んでいます…</p>
+        <p className="screen-status-sub">そのままお待ちください。</p>
+      </section>
+    </div>
+  );
 }
 
 export function ScreenUnavailable({ message, onBack, backLabel = '単元一覧へ戻る' }: {
   message: string; onBack: () => void; backLabel?: string;
 }) {
-  return <section role="alert" className="notebook-paper p-6 text-center font-handwriting text-[#2C3E50]">
-    <p className="font-bold">この画面を開けませんでした</p>
-    <p className="mt-2 text-sm">{message}</p>
-    <button type="button" onClick={onBack} className="mt-4 min-h-[44px] rounded-xl bg-[#2C3E50] px-5 py-3 font-bold text-white">{backLabel}</button>
-  </section>;
+  return (
+    <div className="screen-status-shell">
+      <section role="alert" className="screen-status-card screen-unavailable">
+        <p className="screen-status-title">この画面を開けませんでした</p>
+        <p className="screen-status-sub">{message}</p>
+        <button type="button" onClick={onBack} className="mt-btn mt-btn-primary screen-status-btn">{backLabel}</button>
+      </section>
+    </div>
+  );
 }

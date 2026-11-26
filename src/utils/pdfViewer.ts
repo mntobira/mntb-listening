@@ -35,15 +35,24 @@ export const pdfViewerStore = {
   subscribe(l: Listener) { listeners.add(l); return () => { listeners.delete(l); }; },
 };
 
+/** 同一オリジン内の安全な相対 PDF パスか判定する（`//` プロトコル相対・`..`・制御文字を拒否） */
+export function isSafeSameOriginPdfPath(path: string | null | undefined): boolean {
+  if (!path || typeof path !== 'string' || path.length > 512) return false;
+  if (!path.startsWith('/') || path.startsWith('//')) return false;
+  if (/[\u0000-\u001F\u007F\\]|\.\./.test(path)) return false;
+  return /\.pdf$/i.test(path);
+}
+
 /** 同じサイト内の PDF だけ開く（外のサイトは開かない） */
 export function openPdf(url: string, title: string, fileName?: string): void {
   if (typeof window === 'undefined') return;
   let safe: URL;
   try { safe = new URL(url, window.location.href); } catch { return; }
-  if (safe.origin !== window.location.origin || !/\.pdf$/i.test(safe.pathname)) return;
+  if (safe.origin !== window.location.origin || !isSafeSameOriginPdfPath(safe.pathname)) return;
   trackEvent('pdf_open');
   installPop();
-  const name = fileName ?? `${title.replace(/[\\/:*?"<>|\s]+/g, '_')}.pdf`;
+  const safeBase = (fileName ?? `${title}.pdf`).replace(/[\u0000-\u001F\u007F\\/:*?"<>|\s]+/g, '_').replace(/^\.+/, '');
+  const name = /\.pdf$/i.test(safeBase) ? safeBase : `${safeBase || 'document'}.pdf`;
   const wasOpen = !!current;
   current = { url: safe.pathname, title, fileName: name };
   try {

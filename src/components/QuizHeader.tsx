@@ -116,7 +116,7 @@ export function QuizHeader({
           onClick={handleExit}
           title="単元選択に戻る"
           aria-label="単元選択に戻る"
-          className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors shrink-0"
+          className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-[#F3EBDC] active:translate-y-px text-[#5A4E3C] transition-all shrink-0 cursor-pointer"
         >
           <ArrowLeft size={18} className="md:w-5 md:h-5" aria-hidden="true" />
         </button>
@@ -143,8 +143,8 @@ export function QuizHeader({
 
         {/* 2026-10-02 D2：演習では点数（累積スコア）を出さない。学習に集中する画面にする */}
 
-        <div className="flex items-center gap-2 md:gap-3 bg-gray-100 rounded-full px-3 py-1 md:px-4 md:py-1.5 shrink-0">
-          <div className="text-xs md:text-sm text-gray-500 font-bold hidden sm:block">進捗</div>
+        <div className="quiz-progress-pill flex items-center gap-2 md:gap-3 rounded-full px-3 py-1 md:px-4 md:py-1.5 shrink-0">
+          <div className="text-xs md:text-sm text-[#7A6A4C] font-bold hidden sm:block">進捗</div>
           {/* 分母は「今回解く範囲の問題数」。
               1回分（例：第3回演習）だけを選んで解いているときに
               章全体の 14 が分母になると、あと13回残っているように見えて
@@ -155,9 +155,9 @@ export function QuizHeader({
               4問ある回では 1/4 → 2/4 → 3/4 → 4/4 と動く。
               以前は4問まとめて1件だったので 1/1 のまま動かず、
               解いた実感がまったく残らなかった。 */}
-          <div className="font-mono font-bold text-[#2C3E50] text-xs md:text-base">
+          <div className="font-mono tabular-nums font-bold text-[#2C3E50] text-xs md:text-base">
             <span className="text-sm md:text-lg">{progressPosition}{progressPositionEnd ? `〜${progressPositionEnd}` : ''}</span>
-            <span className="text-gray-400 mx-1">/</span>
+            <span className="text-[#9E8F73] mx-1">/</span>
             <span>{progressTotal}</span>
           </div>
         </div>

@@ -167,8 +167,9 @@ export async function sendFeedbackReply(
  * ゲスト投函や「メールで返事がほしい」人への返信経路。
  */
 export function buildReplyMailto(item: AdminFeedbackItem): string | null {
-  const to = item.contactEmail || item.authEmail;
-  if (!to) return null;
+  const rawTo = (item.contactEmail || item.authEmail || '').trim();
+  if (!rawTo || rawTo.length > 200 || !/^[^\s@\r\n<>]+@[^\s@\r\n<>]+\.[^\s@\r\n<>]+$/.test(rawTo)) return null;
+  const to = rawTo;
   const categoryLabel = (FEEDBACK_CATEGORY_LABELS as Record<string, string>)[item.category] || item.category;
   const screenLabel = (FEEDBACK_SCREEN_LABELS as Record<string, string>)[item.screen] || item.screen;
   const subject = `【マナトビ】いただいたご意見への返信（${categoryLabel}）`;

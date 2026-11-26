@@ -15,12 +15,12 @@ import type { ReviewNav } from './types';
  */
 export function MobileAnswerNav({ onNextQuestion, isLastQuestion }: { onBack?: () => void; onNextQuestion: () => void; isLastQuestion?: boolean }) {
   return (
-          <div className="order-4 fixed left-0 right-0 bottom-0 z-50 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.10)] px-3 pt-2.5 pb-[calc(0.6rem+env(safe-area-inset-bottom))]">
+          <div className="ex-mobile-bottom order-4 fixed left-0 right-0 bottom-0 z-50 border-t px-3 pt-2.5 pb-[calc(0.6rem+env(safe-area-inset-bottom))]">
             <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
               {/* 「問題に戻る」は置かない（答え合わせの後は進むだけ。2026-10-23） */}
               <button
                 onClick={onNextQuestion}
-                className="flex shadow-md active:translate-y-0.5 items-center justify-center gap-1.5 px-5 py-3 rounded-xl font-bold tracking-wider transition-all duration-200 text-sm bg-[#2C3E50] text-white active:bg-[#1B2631] flex-1 cursor-pointer"
+                className="ex-nav-primary flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl font-bold tracking-wider text-sm border flex-1 cursor-pointer"
               >
                 <span>{isLastQuestion ? '結果を見る' : '次の問題へ'}</span>
                 <ArrowLeft size={16} className="rotate-180 stroke-[2.5]" />
@@ -36,24 +36,30 @@ export function MobileAnswerNav({ onNextQuestion, isLastQuestion }: { onBack?: (
  */
 export function ReviewBottomBar({ reviewNav }: { reviewNav: ReviewNav }) {
   // D2（2026-10-30）：詳しい解説の画面の下に「次の回へ／単元選択に戻る／ホームに戻る」をそろえる。
-  //   次の回があれば必ず主ボタンにする。「間違えた問題だけ解き直す」は消さずに控えめな文字ボタンで残す。
+  //   1画面に解説本文をしっかり収めるため、主ボタン行＋サブ操作行の最大2段にまとめる（タップ領域はすべて 44px 以上）。
   const main = reviewNav.onNext
     ? <button type="button" className="pbb-main" data-review-next onClick={reviewNav.onNext}>{reviewNav.nextLabel}<ChevronRight size={17} aria-hidden="true" /></button>
     : reviewNav.onRetryWrong
       ? <button type="button" className="pbb-main" onClick={reviewNav.onRetryWrong}><Target size={17} aria-hidden="true" />{reviewNav.retryLabel}</button>
       : null;
+  const hasInlineRetry = Boolean(reviewNav.onNext && reviewNav.onRetryWrong);
   return (
     <>
         <div className="practice-bottom-spacer is-review" aria-hidden="true" />
           <div className="practice-bottom-bar is-review" data-review-actions>
-            {main}
+            {hasInlineRetry ? (
+              <div className="pbb-primary-row">
+                <button type="button" className="pbb-retry-btn" data-review-retry onClick={reviewNav.onRetryWrong}>
+                  <Target size={15} aria-hidden="true" />
+                  <span>間違いだけ復習</span>
+                </button>
+                {main}
+              </div>
+            ) : main}
             <div className="pbb-sub">
-              <button type="button" data-review-chapters onClick={reviewNav.onChapters}><ListOrdered size={16} aria-hidden="true" />単元選択に戻る</button>
-              {reviewNav.onHome && <button type="button" data-review-home onClick={reviewNav.onHome}><Home size={16} aria-hidden="true" />ホームに戻る</button>}
+              <button type="button" data-review-chapters onClick={reviewNav.onChapters}><ListOrdered size={15} aria-hidden="true" />単元選択に戻る</button>
+              {reviewNav.onHome && <button type="button" data-review-home onClick={reviewNav.onHome}><Home size={15} aria-hidden="true" />ホームに戻る</button>}
             </div>
-            {reviewNav.onNext && reviewNav.onRetryWrong && (
-              <button type="button" className="pbb-retry" data-review-retry onClick={reviewNav.onRetryWrong}><Target size={15} aria-hidden="true" />{reviewNav.retryLabel}</button>
-            )}
           </div>
     </>
   );

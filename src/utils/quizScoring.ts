@@ -30,10 +30,11 @@ import {
   comboMultiplier,
   type ScoreBreakdown,
 } from './scoring';
-import { captureWrongAnswers, applyReviewRetry, noteCorrectAnswers, reviewKeyOf, type WrongAnswerInput } from './reviewList';
+import { captureWrongAnswers, applyReviewRetry, loadReviewList, noteCorrectAnswers, reviewKeyOf, type WrongAnswerInput } from './reviewList';
 import { recordStudyLog } from './studyLog';
 import { focusedSubIds, readReviewFocus } from './reviewFocus';
-import { markProblemSolved } from './progress';
+import { markProblemSolved, readSolvedMap } from './progress';
+import { classifyOutcomeFormat, recordOutcomeAttempts } from './learningOutcomes';
 import { recordUnitResult } from './unitStats';
 import { schedulePush } from './studySync';
 import { isAnswerCorrect, isDescriptive } from './answerJudge';
@@ -180,6 +181,18 @@ export function createScoreCurrentQuestion({
     saveRun(chapter.id, mode, nextRun);
 
     // ===== 学習進捗の記録（1点でも取れた大問は「解いた」として永続化） =====
+    // 未見問題の正答率推移を正確に測るため、markProblemSolved / captureWrongAnswers の前に既見かを控えておく
+    const priorUid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
+    const problemKey = `${chapter.id}::${currentQuestion.id}`;
+    let hadSolvedProblemBefore = false;
+    let priorReviewKeys = new Set<string>();
+    try {
+      if (priorUid) {
+        hadSolvedProblemBefore = Boolean(readSolvedMap(priorUid)[problemKey]);
+        priorReviewKeys = new Set(loadReviewList(priorUid).map((r) => r.key));
+      }
+    } catch { /* 既見判定が読めなくても採点は止めない */ }
+
     // run state（quiz_run_*）は章を解き終えた時点で削除され、
     // quiz_answers_* も章に入り直すと消えるため、
     // 「採点したこの瞬間」に別台帳（solved_problems_v1_*）へ追記しておく。
@@ -267,6 +280,22 @@ export function createScoreCurrentQuestion({
           applyReviewRetry(uid, chapter.id, currentQuestion.id,
             judged.filter((sq) => focusIds.includes(String(sq.id)))
               .map((sq) => ({ subQuestionId: String(sq.id), correct: isAnswerCorrect(sq, answers[sq.id]) })));
+        }
+        // 学習成果指標：週あたり解答数 ＋ 同形式の未見問題の正答率推移
+        if (uid) {
+          const fmt = classifyOutcomeFormat(chapter.id);
+          recordOutcomeAttempts(
+            uid,
+            judged.map((sq) => {
+              const rKey = reviewKeyOf(chapter.id, currentQuestion.id, String(sq.id));
+              return {
+                itemKey: rKey,
+                format: fmt,
+                correct: isAnswerCorrect(sq, answers[sq.id]),
+                alreadyKnownSeen: Boolean(focusIds) || hadSolvedProblemBefore || priorReviewKeys.has(rKey),
+              };
+            }),
+          );
         }
       }
     } catch { /* 記録できなくても学習は止めない */ }

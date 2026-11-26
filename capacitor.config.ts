@@ -10,10 +10,6 @@ const config: CapacitorConfig = {
       presentationOptions: ['badge', 'sound', 'banner', 'list'],
       sound: 'notify_chime.wav',
     },
-    FirebaseAuthentication: {
-      skipNativeAuth: true,
-      providers: ['apple.com', 'google.com'],
-    },
     AdMob: {
       appId: {
         android: 'ca-app-pub-9838177330528377~5499323313',

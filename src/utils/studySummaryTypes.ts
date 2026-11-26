@@ -43,6 +43,8 @@ export interface EngagementScore {
 // 生徒1人分のサマリー
 // ===================================================================
 
+import type { SyncedOutcomesSummary } from './learningOutcomes';
+
 export interface StudentSummary {
   uid: string;
   displayName: string;
@@ -52,6 +54,10 @@ export interface StudentSummary {
   activeDaysIn14: number;
   /** 最終学習日（YYYY-MM-DD、記録が無ければ null） */
   lastStudiedAt: string | null;
+  /** 学習した日の昇順リスト（D7/D30 継続率の既存データ補完用） */
+  studyDays?: string[];
+  /** 同期された学習成果サマリー（週あたり解答数・対戦後転換・未見正答率推移） */
+  outcomes?: SyncedOutcomesSummary | null;
   review: ReviewDiscipline;
   engagement: EngagementScore;
 }

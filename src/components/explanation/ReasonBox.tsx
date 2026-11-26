@@ -112,9 +112,9 @@ export function ReasonBox({ chapterId, questionId, correct, qNo }: { chapterId: 
           maxLength={REASON_MAX}
           placeholder="例）2回目の音声で not until と聞こえたので3番にした"
           aria-label="選んだ理由"
-          className="mt-2 w-full p-3 rounded-lg border border-gray-200 bg-white text-sm leading-relaxed text-gray-800 focus:outline-none focus:border-amber-300"
+          className="mt-2 w-full p-3 rounded-xl border border-[#DFD3BD] bg-white text-sm leading-relaxed text-gray-800 shadow-[inset_0_1px_2px_rgba(60,42,18,0.05)] focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200/50"
         />
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[#7A6A4C]">
           {text.length}/{REASON_MAX}文字 ・ 送った理由だけが「{room.className}」の先生に見えます
         </p>
         <div className="flex items-center justify-end gap-2">
@@ -123,7 +123,7 @@ export function ReasonBox({ chapterId, questionId, correct, qNo }: { chapterId: 
               type="button"
               onClick={handleDelete}
               disabled={busy}
-              className="flex min-h-[44px] items-center gap-1 px-4 rounded-full text-xs font-bold border bg-gray-100 text-gray-500 border-gray-200 disabled:opacity-50"
+              className="flex min-h-[44px] items-center gap-1 px-4 rounded-full text-xs font-bold border bg-[#F6EFE2] text-[#6E5F48] border-[#E3D9C8] disabled:opacity-50 cursor-pointer"
             >
               取り消す
             </button>
@@ -132,7 +132,7 @@ export function ReasonBox({ chapterId, questionId, correct, qNo }: { chapterId: 
             type="button"
             onClick={handleSend}
             disabled={busy || !text.trim()}
-            className="flex min-h-[44px] items-center gap-1 px-4 rounded-full text-xs font-bold border transition-colors bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100 disabled:opacity-50"
+            className="ex-save-btn flex min-h-[44px] items-center gap-1 px-4 rounded-full text-xs font-bold border bg-[#FFF8DF] text-[#8A5A00] border-[#EAD07A] hover:bg-[#FFF2C2] disabled:opacity-50"
           >
             {busy ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             {sent ? '送り直す' : '先生に送る'}

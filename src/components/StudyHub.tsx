@@ -363,7 +363,7 @@ function MasteredShelf({ items, onRemove }: { items: ReviewItem[]; onRemove: (ke
 type Section = 'review' | 'record';
 type ReviewTab = 'today' | 'all' | 'mastered' | 'notes';
 
-export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onRetry, view, onViewChange }: StudyHubProps) {
+export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onPractice, onRetry, view, onViewChange }: StudyHubProps) {
   const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
 
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(() => getAllReviewItems(uid));
@@ -484,17 +484,17 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onRetry, vie
           <ScrollArea key={`${tab}-${subjectTab}`}>
           <div className="rn-panel" role="tabpanel">
             {tab === 'today' && (scopedDueItems.length === 0
-              ? <EmptyState icon={<CheckCircle2 size={28} aria-hidden="true" />} tone="done" title={scopedSubjectLabel ? `${scopedSubjectLabel}の今日の復習は完了` : '今日の復習は完了'} desc={summary.today > 0 ? `今日は${summary.today}問なおしました。よくがんばったね。` : '問題を解いて間違えると、ここに自動で追加されます。'} />
+              ? <EmptyState icon={<CheckCircle2 size={28} aria-hidden="true" />} tone="done" title={scopedSubjectLabel ? `${scopedSubjectLabel}の今日の復習は完了` : '今日の復習は完了'} desc={summary.today > 0 ? `今日は${summary.today}問なおしました。よくがんばったね。` : '問題を解いて間違えると、ここに自動で追加されます。'} action={onPractice ? { label: '演習へ進む', onClick: onPractice, primary: true } : undefined} />
               : <CollapsibleReviewList items={scopedDueItems} now={now} onCorrect={handleCorrect} onWrong={handleWrong} onRemove={handleRemove} onReview={onReview} showSubject={subjectTab === ALL_SUBJECTS} />)}
 
             {tab === 'all' && (weakItems.length === 0
-              ? <EmptyState icon={<Sparkles size={28} aria-hidden="true" />} tone="done" title="苦手はありません" desc="間違えた問題は、忘却曲線にそって自動で並びます。" />
+              ? <EmptyState icon={<Sparkles size={28} aria-hidden="true" />} tone="done" title="苦手はありません" desc="間違えた問題は、忘却曲線にそって自動で並びます。" action={onPractice ? { label: '新しい問題を解く', onClick: onPractice } : undefined} />
               : <CollapsibleReviewList items={weakItems} now={now} onCorrect={handleCorrect} onWrong={handleWrong} onRemove={handleRemove} onReview={onReview} showSubject={subjectTab === ALL_SUBJECTS} />)}
 
             {tab === 'mastered' && <MasteredShelf items={masteredItems} onRemove={handleRemove} />}
 
             {tab === 'notes' && (notes.length === 0
-              ? <EmptyState icon={<BookOpen size={28} aria-hidden="true" />} title="ノートはまだありません" desc="解説ページの「ノートに保存」から、まとめを追加できます。重要マークのノートは上に並びます。" />
+              ? <EmptyState icon={<BookOpen size={28} aria-hidden="true" />} title="ノートはまだありません" desc="解説ページの「ノートに保存」から、まとめを追加できます。重要マークのノートは上に並びます。" action={onPractice ? { label: '演習を解いてみる', onClick: onPractice } : undefined} />
               : <ul className="rn-list">{notes.map(n => <NoteCard key={n.id} note={n} onSelect={onSelectNote} />)}</ul>)}
           </div>
 
@@ -514,13 +514,13 @@ export function StudyHub({ onBack, isGuest, onSelectNote, onReview, onRetry, vie
   );
 }
 
-function EmptyState({ icon, title, desc, action, tone }: { icon: React.ReactNode; title: string; desc: string; action?: { label: string; onClick: () => void }; tone?: 'done' }) {
+function EmptyState({ icon, title, desc, action, tone }: { icon: React.ReactNode; title: string; desc: string; action?: { label: string; onClick: () => void; primary?: boolean }; tone?: 'done' }) {
   return (
     <div className="rn-empty" data-tone={tone}>
       <span className="rn-empty-icon">{icon}</span>
       <p className="rn-empty-title">{title}</p>
       <p className="rn-empty-desc">{desc}</p>
-      {action && <button type="button" className="mt-btn mt-btn-secondary" onClick={action.onClick}><PenLine size={16} aria-hidden="true" />{action.label}</button>}
+      {action && <button type="button" className={action.primary ? 'mt-btn mt-btn-primary' : 'mt-btn mt-btn-secondary'} onClick={action.onClick}><PenLine size={16} aria-hidden="true" />{action.label}</button>}
     </div>
   );
 }

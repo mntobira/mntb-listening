@@ -133,8 +133,34 @@
 .arena-rule-chips li { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 3px 10px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1.5px #e6d7b8; font-size: 12px; font-weight: 800; color: var(--mt-ink-warm, var(--mt-ink-warm)); white-space: nowrap; }
 .arena-rule-chips svg { width: 14px; height: 14px; color: var(--w-gold-deep); }
 
-/* 3つのモード：同じ高さ・同じ幅の3列。AI＝濃い青で最強調、他2つは同格 */
+/* 3つのモード：PC/タブレットは3列、スマホ（〜639px）はAI主役（全幅）＋下2列（フレンド・全国）で文字折れを防ぐ */
 .arena-menu .arena-lobby-grid { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; align-items: stretch !important; gap: 8px !important; margin: 0 !important; }
+@media (max-width: 639px) {
+  .arena-menu .arena-lobby-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .arena-menu .arena-lobby-card[data-tone=ai] {
+    grid-column: 1 / -1;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    min-height: 68px !important;
+    padding: 10px 12px !important;
+    text-align: left !important;
+    transform: none !important;
+  }
+  .arena-menu .arena-lobby-card[data-tone=ai] > strong { flex: 1 1 auto; min-width: 0; font-size: 18px !important; }
+  .arena-menu .arena-lobby-card[data-tone=ai] > small { display: none !important; }
+  .arena-menu .arena-lobby-card[data-tone=ai] .arena-lobby-cta { width: auto !important; min-height: 44px; margin-top: 0 !important; padding: 0 14px; flex-shrink: 0; }
+  .arena-menu .arena-lobby-card[data-tone=friend],
+  .arena-menu .arena-lobby-card[data-tone=national] { min-height: 146px; padding: 10px 10px !important; }
+  .arena-menu .arena-lobby-card .arena-lobby-actions button { white-space: nowrap !important; font-size: 13px; padding: 4px 8px; }
+}
+@media (max-width: 639px) and (max-height: 640px) {
+  .arena-menu .arena-lobby-grid { gap: 6px !important; }
+  .arena-menu .arena-lobby-card[data-tone=ai] { min-height: 54px !important; padding: 6px 10px !important; }
+  .arena-menu .arena-lobby-card[data-tone=friend],
+  .arena-menu .arena-lobby-card[data-tone=national] { min-height: 0 !important; padding: 7px 8px !important; gap: 3px; }
+}
 .arena-menu .arena-lobby-card { --card-bg: #fff; --card-line: #e6d7b8; --card-shadow: #d9c8a3; --card-ink: var(--mt-ink-warm, var(--mt-ink-warm)); --card-sub: #6b5a43;
   position: relative; display: flex !important; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; min-width: 0; width: auto !important; height: auto !important; min-height: 176px; padding: 12px 8px 10px !important;
   border-radius: 20px !important; background: var(--card-bg) !important; box-shadow: inset 0 0 0 2px var(--card-line), 0 4px 0 var(--card-shadow) !important; color: var(--card-ink) !important; text-align: center; }

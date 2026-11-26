@@ -273,6 +273,8 @@ function contextLines(context?: Record<string, unknown>): string[] {
  * ユーザーが自分のメーラーから送れるようにする最後の砦。
  */
 export function buildFeedbackMailto(payload: FeedbackPayload, to: string = getFeedbackEmail()): string {
+  const cleanTo = String(to || '').trim();
+  const safeTo = /^[^\s@\r\n<>?]+@[^\s@\r\n<>?]+\.[^\s@\r\n<>?]+$/.test(cleanTo) ? cleanTo : getFeedbackEmail();
   const subject = `【まなとび】フィードバック（${FEEDBACK_SCREEN_LABELS[payload.screen]}／${FEEDBACK_CATEGORY_LABELS[payload.category]}）`;
   const body = [
     'ご意見・ご感想：',
@@ -293,5 +295,5 @@ export function buildFeedbackMailto(payload: FeedbackPayload, to: string = getFe
     `管理ID: ${payload.id}`,
   ].join('\n');
 
-  return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return `mailto:${encodeURIComponent(safeTo)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

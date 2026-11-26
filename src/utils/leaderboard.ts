@@ -39,6 +39,7 @@ import {
   limit,
   where,
   Timestamp,
+  serverTimestamp,
   type QueryConstraint,
 } from './firestoreMetered';
 import { db, auth } from '../firebase';
@@ -159,7 +160,13 @@ export async function syncRankingNickname(): Promise<void> {
   try {
     const ref = doc(db, 'battle_ranking', user.uid);
     if (!(await getDoc(ref)).exists()) return;
-    await setDoc(ref, { nickname: resolveNickname(), photoURL: user.photoURL || '' }, { merge: true });
+    const rawPhoto = user.photoURL || '';
+    const safePhoto = rawPhoto.length <= 512 && /^https:\/\/[^\s"'<>]{1,504}$/.test(rawPhoto) ? rawPhoto : '';
+    await setDoc(
+      ref,
+      { nickname: resolveNickname(), photoURL: safePhoto, updatedAt: serverTimestamp() },
+      { merge: true },
+    );
   } catch (e) {
     reportError('[Leaderboard] nickname sync failed', e);
   }

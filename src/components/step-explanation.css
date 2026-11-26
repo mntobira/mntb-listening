@@ -1,7 +1,9 @@
 /* 1問ずつ演習の解答と解説（対戦の結果カードと同じ並び・演習らしい紙色） */
 .step-ex { display:flex; flex-direction:column; height:100%; min-height:0; background:#fbf6ec; color:#2c3e50; font-family:var(--mt-font-body, system-ui); }
-.step-ex-head { flex:none; display:grid; grid-template-columns:44px 1fr auto; align-items:center; gap:8px; padding:8px 12px; background:#fffaf0; border-bottom:1px solid #eadfc8; }
-.step-ex-back { width:44px; height:44px; display:grid; place-items:center; border-radius:999px; background:#fff; border:1px solid #e3d6ba; }
+.step-ex-head { flex:none; display:grid; grid-template-columns:44px 1fr auto; align-items:center; gap:8px; padding:8px 12px; background:#fffaf0; border-bottom:1px solid #eadfc8; box-shadow:0 2px 6px rgba(80, 60, 30, .04); }
+.step-ex-back { width:44px; height:44px; display:grid; place-items:center; border-radius:999px; background:#fff; border:1px solid #e3d6ba; box-shadow:0 2px 0 #e6dccb, inset 0 1px 0 rgba(255,255,255,.92); transition:transform .1s ease, border-color .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .step-ex-back:hover:not(:disabled) { border-color:var(--mt-line-strong); } }
+.step-ex-back:active:not(:disabled) { transform:translateY(1.5px); box-shadow:0 0.5px 0 #e6dccb; }
 .step-ex-title { min-width:0; display:flex; flex-direction:column; gap:2px; }
 .step-ex-title strong { font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .step-ex-mode { align-self:flex-start; display:inline-flex; align-items:center; gap:3px; padding:1px 8px; border-radius:999px; background:#f3c64f; color:#5b3d00; font-size:12px; font-weight:800; }
@@ -12,8 +14,8 @@
 .step-ex-dots li[data-state="done"] { background:#c9a75a; }
 .step-ex-dots li[data-state="now"] { background:#2c3e50; }
 .step-ex-body { flex:1; min-height:0; overflow-y:auto; padding:10px 12px 16px; display:flex; flex-direction:column; gap:10px; -webkit-overflow-scrolling:touch; }
-.step-ex-card { flex:none; border-radius:18px; background:#fff; border:1.5px solid #e6dcc6; box-shadow:0 3px 0 #e6dcc6; overflow:hidden; }
-.step-ex-verdict { display:flex; align-items:center; gap:8px; padding:10px 14px; color:#fff; }
+.step-ex-card { flex:none; border-radius:18px; background:#fff; border:1.5px solid #e6dcc6; box-shadow:0 3px 0 #e6dcc6, 0 6px 14px rgba(80, 60, 30, .06); overflow:hidden; }
+.step-ex-verdict { display:flex; align-items:center; gap:8px; padding:10px 14px; color:#fff; box-shadow:inset 0 1px 0 rgba(255, 255, 255, .28); }
 .step-ex-card[data-correct="true"] .step-ex-verdict { background:linear-gradient(90deg,#1e7d46,#2f9a5d); }
 .step-ex-card[data-correct="false"] .step-ex-verdict { background:linear-gradient(90deg,#c0392b,#d4574a); }
 .step-ex-verdict strong { font:900 18px/1 var(--mt-font-display, inherit); }
@@ -31,19 +33,23 @@
 .step-ex-card[data-correct="false"] [data-kind="mine"] dt { color:#c0392b; }
 .step-ex-reason { display:flex; gap:6px; margin:6px 14px 12px; padding:8px 10px; border-radius:10px; background:#fff8e6; border:1px solid #f0dfaf; font-size:13px; font-weight:700; line-height:1.55; }
 .step-ex-reason svg { flex:none; margin-top:3px; color:#b7791f; }
-.step-ex-audio { flex:none; border-radius:16px; background:#fff; border:1px solid #e6dcc6; padding:4px; }
-.step-ex-detail { flex:none; border-radius:18px; background:#fff; border:1px solid #e6dcc6; overflow:hidden; }
-.step-ex-detail-toggle { width:100%; min-height:48px; display:flex; align-items:center; gap:8px; padding:0 14px; font-size:15px; font-weight:800; color:#2c3e50; }
+.step-ex-audio { flex:none; border-radius:16px; background:#fff; border:1px solid #e6dcc6; box-shadow:0 2px 0 #e6dcc6, inset 0 1px 0 rgba(255, 255, 255, .9); padding:4px; }
+.step-ex-detail { flex:none; border-radius:18px; background:#fff; border:1px solid #e6dcc6; box-shadow:0 2.5px 0 #e6dcc6, 0 5px 12px rgba(80, 60, 30, .05); overflow:hidden; }
+.step-ex-detail-toggle { width:100%; min-height:48px; display:flex; align-items:center; gap:8px; padding:0 14px; font-size:15px; font-weight:800; color:#2c3e50; transition:background-color .14s ease; }
+@media (hover: hover) { .step-ex-detail-toggle:hover { background:var(--mt-bg-card); } }
 .step-ex-detail-toggle svg:last-child { margin-left:auto; transition:transform .2s; }
 .step-ex-detail-toggle svg[data-open="true"] { transform:rotate(180deg); }
 .step-ex-detail-body { padding:0 14px 14px; font-size:15px; line-height:1.8; border-top:1px dashed #eadfc8; }
 .step-ex-detail-body > * + * { margin-top:14px; }
 .step-ex-note { font-size:12px; color:#7a6c55; }
 .step-ex-foot { flex:none; display:grid; grid-template-columns:auto 1fr; gap:8px; padding:8px 12px calc(8px + env(safe-area-inset-bottom)); background:#fffaf0; border-top:1px solid #eadfc8; }
-.step-ex-secondary, .step-ex-primary { min-height:48px; display:inline-flex; align-items:center; justify-content:center; gap:6px; border-radius:999px; font-size:14px; font-weight:800; }
-.step-ex-secondary { padding:0 14px; background:#fff; border:1.5px solid #d9cba8; color:#4a5866; }
-.step-ex-primary { background:#2c3e50; color:#fff; box-shadow:0 3px 0 #1b2631; }
-.step-ex-primary:active, .step-ex-secondary:active { transform:translateY(1px); }
+.step-ex-secondary, .step-ex-primary { min-height:48px; display:inline-flex; align-items:center; justify-content:center; gap:6px; border-radius:999px; font-size:14px; font-weight:800; transition:transform .1s ease, box-shadow .15s ease, filter .15s ease, border-color .15s ease; }
+.step-ex-secondary { padding:0 14px; background:#fff; border:1.5px solid #d9cba8; color:#4a5866; box-shadow:0 2px 0 #e6dccb, inset 0 1px 0 rgba(255,255,255,.92); }
+@media (hover: hover) { .step-ex-secondary:hover:not(:disabled) { border-color:var(--mt-line-strong); background:var(--mt-bg-card); } }
+.step-ex-primary { background:linear-gradient(180deg, #354b60, #2c3e50); color:#fff; box-shadow:0 3px 0 #1b2631, inset 0 1px 0 rgba(255,255,255,.22); }
+@media (hover: hover) { .step-ex-primary:hover:not(:disabled) { filter:brightness(1.05); } }
+.step-ex-primary:active:not(:disabled) { transform:translateY(2px); box-shadow:0 1px 0 #1b2631; }
+.step-ex-secondary:active:not(:disabled) { transform:translateY(1.5px); box-shadow:0 0.5px 0 #e6dccb; }
 @media (min-width: 900px) {
   .step-ex-body { width:100%; max-width:760px; margin:0 auto; padding-top:16px; }
   .step-ex-foot { grid-template-columns:auto minmax(0,420px); justify-content:center; }
@@ -69,11 +75,14 @@
 .practice-pager-title { display:flex; justify-content:space-between; align-items:center; margin:0 4px 6px; font-size:12px; font-weight:800; color:#4b5d55; }
 .practice-pager-title b { color:#2c3e50; }
 .practice-pager-row { display:flex; align-items:center; gap:6px; }
-.practice-pager-arrow { flex-shrink:0; width:44px; height:44px; display:grid; place-items:center; border-radius:14px; border:1px solid #d6dfd2; background:#fff; color:#2c3e50; }
-.practice-pager-arrow:disabled { opacity:.35; }
+.practice-pager-arrow { flex-shrink:0; width:44px; height:44px; display:grid; place-items:center; border-radius:14px; border:1px solid #d6dfd2; background:#fff; color:#2c3e50; box-shadow:0 2px 0 #dbe3d7, inset 0 1px 0 rgba(255,255,255,.92); transition:transform .1s ease, border-color .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .practice-pager-arrow:hover:not(:disabled) { border-color:#b8c7b2; } }
+.practice-pager-arrow:active:not(:disabled) { transform:translateY(1.5px); box-shadow:0 0.5px 0 #dbe3d7; }
+.practice-pager-arrow:disabled { opacity:.35; box-shadow:none; }
 .practice-pager-chips { flex:1; min-width:0; display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding:2px; margin:0; list-style:none; }
 .practice-pager-chips::-webkit-scrollbar { display:none; }
-.practice-pager-chips button { min-width:44px; height:44px; border-radius:14px; font-weight:800; font-size:15px; border:2px solid transparent; }
+.practice-pager-chips button { min-width:44px; height:44px; border-radius:14px; font-weight:800; font-size:15px; border:2px solid transparent; box-shadow:0 1.5px 0 rgba(44, 62, 80, .1), inset 0 1px 0 rgba(255, 255, 255, .85); transition:transform .1s ease, box-shadow .15s ease; }
+.practice-pager-chips button:active:not(:disabled) { transform:translateY(1px); }
 .practice-pager-chips button[data-state=ok] { background:#e6f6ec; color:#1f7a4a; border-color:#a8dcbc; }
 .practice-pager-chips button[data-state=ng] { background:#fdecef; color:#c0394f; border-color:#f3b6c1; }
 .practice-pager-chips button[data-state=skip], .practice-pager-chips button[data-state=self] { background:#f2f4f3; color:#6b7772; border-color:#dde3e0; }
@@ -89,8 +98,9 @@
   .practice-pager { max-width: 1180px; margin-inline: auto; }
 }
 /* 結果（1画面目）→ 詳しい結果へ */
-.practice-detail-open { margin-top: 10px; width: 100%; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; background: #f4d03f; color: var(--mt-ink-warm); font-weight: 800; font-size: 15px; box-shadow: 0 4px 0 #c9a227; border: 0; }
-.practice-detail-open:active { transform: translateY(2px); box-shadow: 0 2px 0 #c9a227; }
+.practice-detail-open { margin-top: 10px; width: 100%; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; background: linear-gradient(180deg, #f8db59, #f2cb33); color: var(--mt-ink-warm); font-weight: 800; font-size: 15px; box-shadow: 0 4px 0 #c9a227, 0 6px 14px rgba(180, 130, 20, .18), inset 0 1px 0 rgba(255, 255, 255, .7); border: 0; transition: transform .1s ease, filter .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .practice-detail-open:hover:not(:disabled) { filter: brightness(1.03); } }
+.practice-detail-open:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #c9a227, inset 0 1px 0 rgba(255, 255, 255, .6); }
 .practice-pager-title { gap: 8px; }
 .practice-pager-title span { flex: 1; }
 .practice-pager-back { display: inline-flex; align-items: center; gap: 2px; min-height: 32px; padding: 0 10px 0 6px; border-radius: 999px; border: 1px solid #d6dfd2; background: #fff; color: #2c3e50; font-size: 12px; font-weight: 800; }
@@ -105,17 +115,105 @@
 .practice-bottom-bar .practice-detail-open { margin: 0; max-width: 720px; display: flex; margin-inline: auto; }
 .practice-bottom-bar.is-review { display: grid; gap: 8px; border-top: 1px solid #ece4d3; background: #fffdf8; box-shadow: 0 -6px 18px #2c3e5014; }
 .practice-bottom-bar.is-review > * { max-width: 720px; width: 100%; margin-inline: auto; }
-.pbb-main { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; background: #2c3e50; color: #fff; font-weight: 800; font-size: 15px; border: 0; }
+.pbb-main { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; background: linear-gradient(180deg, #354b60, #2c3e50); color: #fff; font-weight: 800; font-size: 15px; border: 0; box-shadow: 0 3px 0 #1b2631, inset 0 1px 0 rgba(255, 255, 255, .22); transition: transform .1s ease, filter .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .pbb-main:hover:not(:disabled) { filter: brightness(1.05); } }
+.pbb-main:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #1b2631; }
 .pbb-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.pbb-sub button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; border: 1.5px solid #d6dfd2; background: #fff; color: #2c3e50; font-weight: 700; font-size: 13px; }
+.pbb-sub button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; border: 1.5px solid #d6dfd2; background: #fff; color: #2c3e50; font-weight: 700; font-size: 13px; box-shadow: 0 2px 0 #dbe3d7, inset 0 1px 0 rgba(255, 255, 255, .92); transition: transform .1s ease, border-color .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .pbb-sub button:hover:not(:disabled) { border-color: #b8c7b2; background: var(--mt-bg-card); } }
+.pbb-sub button:active:not(:disabled) { transform: translateY(1.5px); box-shadow: 0 0.5px 0 #dbe3d7; }
 .pbb-sub button:only-child { grid-column: 1 / -1; }
 /* 詳しい結果の上：結果へ戻る＋問題の切り替えを1行に */
 .practice-pager.is-review { position: sticky; top: 0; z-index: 56; margin: 0; width: 100%; max-width: none; box-sizing: border-box; flex-shrink: 0; border-radius: 0; border-width: 0 0 1px; padding: calc(6px + env(safe-area-inset-top, 0px)) 8px 6px; box-shadow: 0 2px 10px #2c3e5010; }
 .practice-pager.is-review .practice-pager-row { gap: 4px; }
 .practice-pager.is-review .practice-pager-back { flex-shrink: 0; min-height: 44px; }
-.practice-pager.is-review .practice-pager-arrow { width: 40px; }
-.practice-pager.is-review .practice-pager-chips button { min-width: 40px; height: 40px; font-size: 14px; }
+.practice-pager.is-review .practice-pager-arrow { width: 44px; height: 44px; }
+.practice-pager.is-review .practice-pager-chips button { min-width: 44px; height: 44px; font-size: 14px; }
 @media (min-width: 768px) { .practice-pager.is-review .practice-pager-row { justify-content: center; } .practice-pager.is-review .practice-pager-chips { flex: 0 1 auto; } }
+
+/* ── 解答・解説画面（Explanation.tsx 系）の紙トーン調和・カード立体縁・ボタン押下感 ── */
+.ex-head-bar {
+  background: rgba(255, 250, 240, .96);
+  border-bottom-color: var(--mt-line);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .78), 0 2px 10px rgba(60, 42, 18, .05);
+}
+.ex-save-btn {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 1.5px 0 rgba(217, 168, 42, .35);
+  transition: transform .1s ease, box-shadow .14s ease, background-color .14s ease;
+  cursor: pointer;
+}
+.ex-save-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.ex-nav-primary {
+  background: linear-gradient(180deg, #354b60, #2c3e50);
+  border-color: #2c3e50;
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 2.5px 0 #1b2631, 0 5px 12px rgba(28, 42, 57, .14);
+  transition: transform .1s ease, box-shadow .14s ease, filter .14s ease;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .ex-nav-primary:hover:not(:disabled) { filter: brightness(1.05); }
+}
+.ex-nav-primary:active:not(:disabled) {
+  transform: translateY(1.5px);
+  box-shadow: 0 1px 0 #1b2631;
+}
+.ex-nav-secondary {
+  background: var(--mt-bg-card);
+  border-color: var(--mt-line-strong);
+  color: var(--mt-ink-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 2px 0 #e6dccb;
+  transition: transform .1s ease, box-shadow .14s ease, border-color .14s ease, color .14s ease, background-color .14s ease;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .ex-nav-secondary:hover:not(:disabled) { border-color: var(--mt-ink); color: var(--mt-ink); background: #fff; }
+}
+.ex-nav-secondary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #e6dccb;
+}
+.ex-problem-card {
+  background: #fffdf9;
+  border-color: var(--mt-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 2px 0 #e8dfd0, 0 4px 10px rgba(80, 60, 30, .04);
+}
+.ex-sq-card {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 2.5px 0 rgba(220, 208, 188, .75), 0 5px 12px rgba(80, 60, 30, .05);
+}
+.ex-sq-card[data-verdict="ok"] {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 2.5px 0 #b8e3cb, 0 5px 12px rgba(31, 122, 77, .06);
+}
+.ex-sq-card[data-verdict="ng"] {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 2.5px 0 #efc2be, 0 5px 12px rgba(179, 38, 30, .06);
+}
+.ex-fold-btn {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .88), 0 1.5px 0 rgba(0, 0, 0, .06);
+  transition: transform .1s ease, background-color .14s ease, box-shadow .14s ease;
+  cursor: pointer;
+}
+.ex-fold-btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.ex-chip-btn {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 2px 0 rgba(60, 42, 18, .08);
+  cursor: pointer;
+}
+.ex-chip-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(60, 42, 18, .08);
+}
+.ex-mobile-bottom {
+  background: rgba(255, 252, 245, .95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top-color: var(--mt-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 -4px 18px rgba(60, 42, 18, .09);
+}
 
 /* 下のバーは position:fixed（iOS Safari の sticky が途中で止まる不具合を避ける）。本文の最後にバーの高さぶんの余白を置く */
 .practice-bottom-spacer { flex-shrink: 0; height: calc(84px + env(safe-area-inset-bottom)); }
@@ -136,10 +234,90 @@
 @media (max-height: 700px) { .practice-stage { min-height: 0; } .practice-stage-tobira { width: 100px; } }
 
 
-/* D2（2026-10-30）詳しい解説の下：次の回へ（主）＋単元選択／ホーム＋控えめな「間違えた問題だけ解き直す」 */
+/* D2（2026-10-30）詳しい解説の下：次の回へ（主）＋単元選択／ホーム＋控えめな「間違いだけ復習」
+   3行積みを最大2行に抑え（全ボタン高さ44px以上）、スマホ1画面で問題・選択肢・解説の核心が見える高さを確保する */
+.practice-bottom-bar.is-review { gap: 6px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); }
+.practice-bottom-spacer.is-review { height: calc(116px + env(safe-area-inset-bottom)); }
+.pbb-primary-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; align-items: center; }
+.pbb-retry-btn { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 12px; border-radius: 12px; border: 1.5px solid #e5b93c; background: #fff9e6; color: #7a5200; font-weight: 800; font-size: 13px; white-space: nowrap; box-shadow: 0 2px 0 #ead07a, inset 0 1px 0 rgba(255, 255, 255, .92); cursor: pointer; transition: transform .1s ease, box-shadow .15s ease, background-color .15s ease; }
+@media (hover: hover) { .pbb-retry-btn:hover:not(:disabled) { background: #fff3cc; } }
+.pbb-retry-btn:active:not(:disabled) { transform: translateY(1.5px); box-shadow: 0 0.5px 0 #ead07a; }
+.pbb-primary-row .pbb-main { min-height: 46px; font-size: 14px; padding: 0 12px; }
 .pbb-retry { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; background: transparent; color: var(--mt-ink-3); font-weight: 700; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
-.practice-bottom-bar.is-review:has(.pbb-retry) { gap: 4px; }
-.practice-bottom-spacer.is-review:has(+ .practice-bottom-bar .pbb-retry) { height: calc(186px + env(safe-area-inset-bottom)); }
+
+/* ── 英語対話文（A: ... / B: ...）の話者バッジ＋空所下線（問題画面と同じ視認性） ── */
+.ex-dialogue-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; font-family: var(--font-modern); }
+.ex-dialogue-turn { display: flex; align-items: baseline; gap: 8px; font-size: 15px; font-weight: 700; line-height: 1.7; color: #111827; }
+.ex-speaker-chip { flex-shrink: 0; display: inline-grid; place-items: center; min-width: 28px; height: 24px; padding: 0 6px; border-radius: 6px; background: #eef2fb; border: 1px solid #c3cfea; color: #1f3566; font-size: 12px; font-weight: 800; line-height: 1; }
+.ex-dialogue-text { min-width: 0; overflow-wrap: break-word; }
+.ex-inline-blank { display: inline-block; min-width: 4em; height: 1.35em; margin: 0 3px; border-bottom: 2.5px solid #1f3566; border-radius: 4px 4px 0 0; background: #eef2fb; vertical-align: -3px; }
+
+/* ── TOEIC 解答・解説カード（まなとび英検 EikenClozePageQuiz ＆ 英文法解説と同じ色札・空所対比・音声ボタン・1画面設計） ── */
+.tp-review-stack { display: grid; gap: 6px; font-family: var(--font-modern); }
+.tp-review-stack .tpl-audio-card { margin: 0; padding: 8px 10px; gap: 5px; }
+.tp-review-stack.is-compact .tpl-audio-guide { display: none; }
+.tp-review-doc-fold { border: 1px solid #c3cfea; border-radius: 11px; background: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 1.5px 0 #dce4f3; overflow: hidden; }
+.tp-review-doc-fold > summary { display: flex; min-height: 44px; align-items: center; gap: 6px; padding: 0 10px; font-size: 12.5px; font-weight: 800; color: #1f3566; cursor: pointer; list-style: none; }
+.tp-review-doc-fold > summary::-webkit-details-marker { display: none; }
+.tp-review-doc-fold[open] > summary { border-bottom: 1px solid #e2e8f0; background: #f8faff; }
+.tp-review-doc-fold[open] > summary .tp-ex-chev { transform: rotate(180deg); }
+.tp-review-doc-body { padding: 10px; max-height: 44dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #fbfcff; }
+.tp-review-doc-body .tp-doc,
+.tp-review-doc-body .tp7-docs { margin: 0; }
+
+.tp-review-card { padding: 8px 10px; display: grid; gap: 6px; }
+.tp-review-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; }
+.tp-review-head-left { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 6px; min-width: 0; flex: 1; }
+.tp-review-save { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 44px; min-height: 44px; padding: 0 10px; border-radius: 999px; border: 1px solid #f5d06f; background: #fffbeb; font-size: 12px; font-weight: 800; color: #92400e; white-space: nowrap; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 1px 0 #ead07a; transition: background-color .12s ease, transform .1s ease; }
+.tp-review-save:hover:not(:disabled) { background: #fef3c7; }
+.tp-review-save:active:not(:disabled) { transform: translateY(1px); }
+.tp-review-save[data-saved] { border-color: #e5e7eb; background: #f3f4f6; color: #4b5563; box-shadow: none; cursor: default; }
+
+.tp-review-stem { font-size: 15px; line-height: 1.55; }
+.tp-blank-compare { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 3px; margin: 0 2px; vertical-align: baseline; }
+.tp-blank-compare .tp-blank { min-width: auto; margin: 0; padding: 0 5px; }
+.tp-blank-arrow { font-size: 13px; font-weight: 900; color: #64748b; line-height: 1; }
+.tp-review-choices.tp-choices.is-scored { margin-top: 2px; padding-top: 5px; row-gap: 8px; }
+.tp-review-stack.is-compact .tp-review-choices.is-single .tp-choice { min-height: 40px; padding: 3px 8px 3px 4px; }
+.tp-review-stack.is-compact .tp-review-choices.is-single .tp-bubble { width: 26px; height: 26px; font-size: 12px; }
+.tp-review-stack.is-compact .tp-review-choices.is-single .tp-choice-text { font-size: 13.5px; line-height: 1.32; }
+
+/* まなとび英検 ecp-ex-body ＆ 英文法 styleReasonLine の色札にそろえた高密度解説ボックス */
+.tp-review-ex-box { display: grid; gap: 5px; margin-top: 2px; padding: 7px 9px; border-radius: 10px; background: #f8faf9; border: 1px solid #dce8e4; }
+.tp-review-line { display: flex; align-items: flex-start; gap: 6px; }
+.tp-review-line.is-key { padding: 5px 7px; border-radius: 8px; background: #eef2fb; box-shadow: inset 3.5px 0 0 #1f3566; }
+.tp-review-tag { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 40px; height: 20px; margin-top: 1px; padding: 0 6px; border-radius: 5px; font-size: 12px; font-weight: 800; line-height: 1; color: #fff; background: #5a6573; }
+.tp-review-tag[data-role="key"] { background: #1f3566; }
+.tp-review-tag[data-role="tr"] { background: #e2ece9; color: #264a43; }
+.tp-review-tag[data-role="hint"] { background: #2f7c74; }
+.tp-review-tag[data-role="rule"] { background: #b0464f; }
+.tp-review-tag[data-role="choices"] { background: #5a6573; }
+.tp-review-tag[data-role="tip"] { background: #1f5fa8; }
+
+.tp-review-line-text { margin: 0; flex: 1; min-width: 0; font-size: 13px; font-weight: 600; line-height: 1.5; color: #1f2937; font-family: var(--font-modern); overflow-wrap: break-word; }
+.tp-review-line.is-key .tp-review-line-text { font-size: 13.5px; font-weight: 700; color: #111827; }
+.tp-review-line-text.is-en { font-size: 13.5px; font-weight: 700; color: #111827; line-height: 1.48; }
+.tp-review-line-text.is-tr { color: #334155; }
+.tp-review-line-text.is-tip { font-weight: 700; color: #1f3f6a; }
+
+.tp-review-subtools { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 4px; margin-top: 1px; padding-top: 4px; border-top: 1px dashed #cfe0da; }
+.tp-review-audio-btns { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.tp-review-speak-btn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 44px; min-height: 44px; padding: 0 9px; border-radius: 999px; border: 1px solid #9fd4c4; background: #fff; color: #165b4c; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; transition: background-color .12s ease, border-color .12s ease, color .12s ease; }
+.tp-review-speak-btn:hover { background: #ecfdf5; border-color: #2f7c74; }
+.tp-review-speak-btn.is-slow { padding: 0 8px; color: #475569; border-color: #cbd5e1; font-variant-numeric: tabular-nums; }
+.tp-review-speak-btn[data-speaking] { background: #1f7a52; border-color: #1f7a52; color: #fff; }
+
+.tp-review-more-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 3px; min-height: 44px; padding: 0 6px; border: 0; border-radius: 8px; background: transparent; color: #1f5c53; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.tp-review-more-btn:hover { background: #eef6f4; }
+.tp-review-more-btn .tp-ex-chev.is-open { transform: rotate(180deg); }
+
+.tp-review-more-body { display: grid; gap: 7px; padding-top: 6px; border-top: 1px dashed #cfe0da; }
+.tp-review-choice-reasons { flex: 1; min-width: 0; margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+.tp-review-choice-reasons li { font-size: 13px; line-height: 1.52; color: #334155; }
+.tp-review-vocab-chips { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 2px; }
+.tp-review-vocab-chip { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; padding: 2px 10px; border-radius: 999px; border: 1px solid #d5e3df; background: #fff; font-size: 12.5px; color: #1e293b; }
+.tp-review-vocab-chip strong { font-family: var(--font-modern); font-weight: 800; color: #0f3d3e; }
+.tp-review-vocab-chip span { color: #334155; font-weight: 600; }
 
 /* F1（2026-11-04）結果の下のバー：「詳しい解説を見る」の下に小さな「この問題の不具合を報告する」（文字リンク・押せる高さは44px） */
 .practice-bottom-bar.is-summary { display: grid; gap: 0; padding-top: 8px; }
