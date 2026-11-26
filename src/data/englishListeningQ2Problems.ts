@@ -1718,11 +1718,11 @@ W: No, all the clothes go in the closet. One box, one room.
 Question: Which arrangement matches the woman's instructions?
 選択肢のイラスト：
 ① 本→寝室、服→クローゼット、台所用品→台所（1箱1部屋）
-② 同じ3組だが、矢印が斜めに描かれている図
+② 本→クローゼット、服→寝室、台所用品→台所（本と服の行き先が逆）
 ③ 本→寝室、服はクローゼットと台所の2部屋に分ける
 ④ 服だけを寝室・クローゼット・台所の3部屋に分ける
 正解の選択肢：① 本→寝室、服→クローゼット、台所用品→台所（1箱1部屋）
-Should I split the clothes …? に対する No, all the clothes go in the closet. One box, one room. が決め手。③は服を2部屋、④は服を3部屋に分けており、split を否定した内容に反する。②は同じ対応を斜めの矢印で描いただけなので、One box, one room を最も素直に表した図を選ぶ。`,
+Should I split the clothes …? に対する No, all the clothes go in the closet. One box, one room. が決め手。③は服を2部屋、④は服を3部屋に分けており、split を否定した内容に反する。②は1箱1部屋だが、本と服の行き先が逆（本→クローゼット、服→寝室）になっているため誤り。`,
   surroundingKnowledge: [
     '第2問は2回読み。1回目で候補を2つに絞り、2回目で決め手を確認する二段構えが基本。',
     '「訂正の型」が最頻出。No, actually … / the other one / not A but B の後ろが答えになる。',
@@ -1909,9 +1909,9 @@ W: Students in the back rows.
 Question: Which seating chart is correct?
 選択肢のイラスト：
 ① 前列VIP・中央左メディア・後列学生
-② 前列学生・中央メディア・後列VIP
-③ 前列VIP・後列メディア・中央学生
-④ 前列メディア・中央VIP・後列学生
+② 前列VIP・中央右メディア・後列学生
+③ 前列VIP・中央学生・後列左メディア
+④ 前列メディア・中央左VIP・後列学生
 正解の選択肢：① 前列VIP・中央左メディア・後列学生
 3グループ×3位置の対応関係の把握。会場図と英語表現（front/middle/back rows, left side）の整合。
 

@@ -46,7 +46,7 @@ const EL1_B_SET1_TRACKS: ListeningAudioTrack[] = [
     audioUrl: '/listening_audio/el1B_set1_q2.mp3',
     label: '問2',
     hint: '男性（会社員）',
-    script: '"I\'ll take this shoulder bag with the long strap, please."',
+    script: '"I\'ll take this red shoulder bag with the long strap, please."',
     translation: '',
     keyPhrases: [],
   },
@@ -132,7 +132,7 @@ const EL1_B_SET1: ListeningProblem = {
       imageUrl: '/listening_q1b/el1B_set1_q2.jpg',
       imageCaption: '問2 の選択肢イラスト（①〜④）',
       detailedExplanation: {
-        theme: '種類（shoulder bag）と属性（long strap）の組み合わせ',
+        theme: '色（red）・種類（shoulder bag）・属性（long strap）の3条件の組み合わせ',
         type: 'イラスト選択型',
         difficulty: 2,
         steps: [
@@ -790,9 +790,9 @@ behind と in front of の反転＋not A の否定。動作（waving）の有無
 
 問4　正解は ②
 スクリプト："The large cake is 800 yen, and the small one is 300 yen."
-イラストの内容：① 大300円・中500円・小800円／② 大800円・小300円／③ 全部500円／④ 小800円・大500円・中300円
-正解のイラスト：大800円・小300円
-サイズと価格の対応。「大きい＝高い」という先入観を逆手に取る①が強いひっかけ。`,
+イラストの内容：① 大300円・中500円・小800円／② 大800円・中500円・小300円／③ 全部500円／④ 大500円・中300円・小800円
+正解のイラスト：大800円・中500円・小300円
+サイズと価格の対応。「大きい＝高い」という先入観を逆手に取る①や、大小の価格を入れ替えた④がひっかけ。`,
   surroundingKnowledge: [
     '位置の前置詞：on（接触して上）／over・above（離れて上）／under・below（下）／in front of（前）／behind（後ろ）／between A and B（A と B の間）／next to・beside（隣）。',
     '比較の聞き取り：taller / shorter / bigger / more ~ than。どちらが基準かを取り違えないこと。',
@@ -984,9 +984,9 @@ not rice の否定が核心。A not B 型の基本問題。
 
 問4　正解は ①
 スクリプト："We have two cars. I use the white one, and my wife drives the black one."
-イラストの内容：① 白い車と黒い車の2台（黒に印）／② 赤と白の2台／③ 白い車1台のみ／④ 黒い車2台
-正解のイラスト：白い車と黒い車の2台（黒に印）
-2台の色の組み合わせを聞き取る。誰がどちらを使うかの情報も含むが、絵は車の色の組み合わせ で決まる。`,
+イラストの内容：① 白い車と黒い車の2台／② 白い車とグレー（斜線）の車の2台／③ 白い車1台のみ／④ 黒い車2台
+正解のイラスト：白い車と黒い車の2台
+2台の色の組み合わせを聞き取る。誰がどちらを使うかの情報も含むが、絵は車の色の組み合わせで決まる。`,
   surroundingKnowledge: [
     '位置の前置詞：on（接触して上）／over・above（離れて上）／under・below（下）／in front of（前）／behind（後ろ）／between A and B（A と B の間）／next to・beside（隣）。',
     '比較の聞き取り：taller / shorter / bigger / more ~ than。どちらが基準かを取り違えないこと。',

@@ -129,7 +129,7 @@ FIXES: dict[tuple[int, int], dict] = {
         ),
         'fig': [
             'BOOKS→BEDROOM / CLOTHES→CLOSET / KITCHEN→KITCHEN（矢印は真上）',
-            '同じ3組（矢印が斜めに描かれているだけ）',
+            'BOOKS→CLOSET / CLOTHES→BEDROOM / KITCHEN→KITCHEN（本と服が交差）',
             'BOOKS→BEDROOM / CLOTHES→CLOSET / CLOTHES→KITCHEN',
             'CLOTHES→BEDROOM / CLOTHES→CLOSET / CLOTHES→KITCHEN',
         ],
@@ -144,7 +144,7 @@ FIXES: dict[tuple[int, int], dict] = {
         'question': "Which arrangement matches the woman's instructions?",
         'options': [
             '本→寝室、服→クローゼット、台所用品→台所（1箱1部屋）',
-            '同じ3組だが、矢印が斜めに描かれている図',
+            '本→クローゼット、服→寝室、台所用品→台所（本と服の行き先が逆）',
             '本→寝室、服はクローゼットと台所の2部屋に分ける',
             '服だけを寝室・クローゼット・台所の3部屋に分ける',
         ],
@@ -153,8 +153,8 @@ FIXES: dict[tuple[int, int], dict] = {
             'Should I split the clothes …? に対する '
             'No, all the clothes go in the closet. One box, one room. が決め手。'
             '③は服を2部屋、④は服を3部屋に分けており、split を否定した内容に反する。'
-            '②は同じ対応を斜めの矢印で描いただけなので、'
-            'One box, one room を最も素直に表した図を選ぶ。'
+            '②は1箱1部屋だが、本と服の行き先が逆（本→クローゼット、服→寝室）'
+            'になっているため誤り。'
         ),
     },
     # ===============================================================
