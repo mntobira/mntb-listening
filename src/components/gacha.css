@@ -21,7 +21,7 @@
 /* UR の目玉：通常より大きく・虹のパステル・金の二重縁（でも動かさない） */
 .gacha-hero { display: flex; align-items: center; gap: 10px; min-height: 84px; padding: 8px 10px; border: 2px solid var(--mt-rare-ur-line); border-radius: var(--mt-radius-lg); background: var(--mt-rare-ur-grad); box-shadow: 0 0 0 3px #fff, 0 3px 0 4px #efd28d; }
 .gacha-hero-art { flex-shrink: 0; display: grid; place-items: center; width: 60px; height: 72px; border-radius: 12px; background: rgba(255, 255, 255, .7); overflow: hidden; }
-.gacha-hero-art .gacha-print-thumb { width: 50px !important; height: 70px !important; }
+.gacha-hero-art .gacha-print-thumb { width: 50px; height: 70px; }
 .gacha-hero-body { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .gacha-hero-top { display: flex; align-items: center; gap: 6px; }
 .gacha-hero-top > em { font: 800 13px/1.2 var(--mt-font-display); font-style: normal; color: var(--mt-rare-ur-ink); }
@@ -113,7 +113,7 @@
   .gacha-featured { padding: 8px; gap: 5px; }
   .gacha-hero { min-height: 70px; padding: 6px 8px; }
   .gacha-hero-art { width: 48px; height: 60px; }
-  .gacha-hero-art .gacha-print-thumb { width: 42px !important; height: 58px !important; }
+  .gacha-hero-art .gacha-print-thumb { width: 42px; height: 58px; }
   .gacha-featured-list .mt-item-card { padding: 24px 4px 4px; gap: 2px; }
   .gacha-featured-list .mt-item-art { max-height: 44px; }
   .gacha-featured-list .mt-item-card > small { display: none; }
@@ -146,7 +146,7 @@
   .mana-hub-gacha .gacha-room.is-busy > .gacha-wallet { grid-column: 1 / -1 !important; max-width: 720px; justify-self: center; width: 100%; }
   .gacha-hero { min-height: 120px; }
   .gacha-hero-art { width: 84px; height: 104px; }
-  .gacha-hero-art .gacha-print-thumb { width: 72px !important; height: 100px !important; }
+  .gacha-hero-art .gacha-print-thumb { width: 72px; height: 100px; }
   .gacha-hero-body > strong { font-size: 18px; }
   .gacha-featured-list .mt-item-art { max-height: 110px; }
 }
@@ -412,7 +412,7 @@
 .gacha-banner-hero[data-rarity=LR] { border-color: #7a3fc0; background: linear-gradient(110deg, #fff4fb, #efe6ff 55%, #e2f3ff); }
 .gacha-banner-hero:active { transform: translateY(1px); }
 .gacha-banner-art { flex-shrink: 0; display: grid; place-items: center; width: 72px; height: 84px; border-radius: 12px; background: rgba(255,255,255,.75); overflow: hidden; }
-.gacha-banner-art .gacha-print-thumb { width: 60px !important; height: 82px !important; }
+.gacha-banner-art .gacha-print-thumb { width: 60px; height: 82px; }
 .gacha-banner-body { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .gacha-banner-top { display: flex; align-items: center; gap: 6px; }
 .gacha-banner-top > em { font: 800 13px/1.2 var(--mt-font-display); font-style: normal; color: var(--mt-rare-ur-ink); }
@@ -422,7 +422,7 @@
 .gacha-banner-picks { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
 .gacha-banner-picks button { position: relative; width: 100%; min-height: 64px; display: grid; place-items: center; padding: 4px 2px 16px; border: 1.5px solid #e2c47e; border-radius: 12px; background: rgba(255,255,255,.85); overflow: hidden; }
 .gacha-banner-picks button[data-rarity=LR] { border-color: #a37ad6; background: #fbf7ff; }
-.gacha-banner-picks .gacha-print-thumb { width: 34px !important; height: 46px !important; }
+.gacha-banner-picks .gacha-print-thumb { width: 34px; height: 46px; }
 .gacha-banner-picks .mt-rarity { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); min-height: 16px; padding: 0 5px; font-size: 12px; }
 .gacha-banner-picks .mt-rarity-crown { display: none; }
 .gacha-banner-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
@@ -446,7 +446,7 @@
   .gacha-banner { padding: 6px 8px 8px; gap: 5px; }
   .gacha-banner-hero { min-height: 76px; }
   .gacha-banner-art { width: 56px; height: 66px; }
-  .gacha-banner-art .gacha-print-thumb { width: 46px !important; height: 64px !important; }
+  .gacha-banner-art .gacha-print-thumb { width: 46px; height: 64px; }
   .gacha-banner-picks button { min-height: 54px; }
 }
 /* 2026-10-29 B5：今週の目玉を派手に。光の帯が数秒ごとに走り、キラキラが舞い、枠がゆっくり光る。下にとびら君のひとこと */
@@ -471,6 +471,7 @@
 .gacha-banner-hero .gacha-banner-art { position: relative; z-index: 1; animation: gacha-hero-float 3s ease-in-out infinite; }
 .gacha-banner-hero .gacha-banner-body { position: relative; z-index: 1; }
 @keyframes gacha-hero-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+/* .gacha-banner-buddy { display: none; } */
 .gacha-banner-buddy { display: flex; align-items: center; min-height: 0; }
 .gacha-banner-buddy > * { width: 100%; }
 .gacha-banner-buddy .tb-bubble { padding: 4px 8px; font-size: 12px; line-height: 1.25; }
@@ -479,10 +480,10 @@
   .gacha-banner { padding: 6px 8px 8px; gap: 4px; }
   .gacha-banner-hero { min-height: 78px; padding: 5px 8px; gap: 8px; }
   .gacha-banner-art { width: 54px; height: 64px; }
-  .gacha-banner-art .gacha-print-thumb { width: 46px !important; height: 62px !important; }
+  .gacha-banner-art .gacha-print-thumb { width: 46px; height: 62px; }
   .gacha-banner-picks { gap: 4px; }
   .gacha-banner-picks button { min-height: 52px; padding: 2px 2px 10px; }
-  .gacha-banner-picks .gacha-print-thumb { width: 28px !important; height: 36px !important; }
+  .gacha-banner-picks .gacha-print-thumb { width: 28px; height: 36px; }
   .gacha-banner-buddy .tb-bubble { padding: 4px 8px; font-size: 12px; line-height: 1.25; }
 .gacha-banner-links { gap: 4px; }
 }
@@ -490,18 +491,18 @@
   .gacha-banner { padding: 6px 8px 8px; gap: 4px; }
   .gacha-banner-hero { min-height: 78px; padding: 5px 8px; gap: 8px; }
   .gacha-banner-art { width: 54px; height: 64px; }
-  .gacha-banner-art .gacha-print-thumb { width: 46px !important; height: 62px !important; }
+  .gacha-banner-art .gacha-print-thumb { width: 46px; height: 62px; }
   .gacha-banner-picks { gap: 4px; }
   .gacha-banner-picks button { min-height: 52px; padding: 2px 2px 10px; }
-  .gacha-banner-picks .gacha-print-thumb { width: 28px !important; height: 36px !important; }
+  .gacha-banner-picks .gacha-print-thumb { width: 28px; height: 36px; }
   .gacha-banner-links { gap: 4px; }
 }
 @media (max-width: 699px) and (max-height: 640px) {
   .gacha-banner-hero { min-height: 68px; }
   .gacha-banner-art { width: 46px; height: 56px; }
-  .gacha-banner-art .gacha-print-thumb { width: 40px !important; height: 52px !important; }
+  .gacha-banner-art .gacha-print-thumb { width: 40px; height: 52px; }
   .gacha-banner-picks button { min-height: 46px; padding-bottom: 8px; }
-  .gacha-banner-picks .gacha-print-thumb { width: 24px !important; height: 30px !important; }
+  .gacha-banner-picks .gacha-print-thumb { width: 24px; height: 30px; }
   .gacha-banner-links { display: none; }
   .gacha-swipe-hint { display: none; }
 }

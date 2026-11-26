@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Check, ChevronRight, GraduationCap, ListChecks, Play, RotateCcw, X } from 'lucide-react';
+import { Check, ChevronRight, FileSearch, GraduationCap, ListChecks, Play, RotateCcw, X } from 'lucide-react';
 import { CorrectBurst } from './fx/CorrectBurst';
 import { TobiraBuddy } from './TobiraBuddy';
 import { play, primeAudio } from '../battle/ui/feedback';
@@ -223,7 +223,17 @@ export function ReadingQuiz({ uid }: { uid: string }) {
           </div>
           {answered && <div className="rq-ex" data-reading-explain>
             <p className="rq-ex-judge" data-ok={ok || undefined}>{ok ? '正解！' : <>正解は {'①②③④'[view.answerIndex]}</>}<small>{TYPE_LABEL[q.type]}・第{evPara}段落</small></p>
-            <div className="rq-ex-ev"><p lang="en">{q.evidence}</p><p>{q.evidenceJa}</p></div>
+            <div className="rq-ex-ev">
+              <div className="rq-ex-ev-head">
+                <span className="rq-ex-ev-badge">根拠の一文</span>
+                <button type="button" className="rq-ev-jump" data-reading-show-ev
+                  onClick={() => { setViewPara(evPara === st.para ? null : evPara); setPane('text'); }}
+                  aria-label={`第${evPara}段落の本文で根拠のマーカーを見る`}>
+                  <FileSearch size={14} aria-hidden="true" /><span>本文で根拠を見る</span>
+                </button>
+              </div>
+              <p lang="en">{q.evidence}</p><p>{q.evidenceJa}</p>
+            </div>
             {evJa && <details className="rq-ex-ja" key={`${q.id}-ja`} data-reading-translation>
               <summary>第{evPara}段落を1文ずつ（英文→和訳・構文）</summary>
               <PairedParagraph en={passage.paragraphs[evPara - 1]!} ja={evJa} evidence={q.evidence} evidenceJa={q.evidenceJa} />
@@ -296,11 +306,11 @@ export function ReadingQuiz({ uid }: { uid: string }) {
   const progressed = list.filter(x => Boolean(rec.best[x.id])).length;
   const cleared = list.filter(x => isCleared(rec, x)).length;
   const first = nextOf(level);
-  return <section className="fd-panel vq-setup rq-pick" aria-label="文章を選ぶ" data-reading="pick">
+    return <section className="fd-panel vq-setup rq-pick" aria-label="文章を選ぶ" data-reading="pick">
     <div className="fd-levels" role="tablist" aria-label="レベル">{READING_LEVELS.map(l => {
       const ps = passagesOf(l.level); const got = ps.filter(x => Boolean(rec.best[x.id])).length;
       return <button key={l.level} type="button" role="tab" aria-selected={level === l.level} onClick={() => setLevel(l.level)} data-reading-level={l.level}>
-        <span>{l.name}</span><small>{got}/{ps.length}題</small><i aria-hidden="true" style={{ ['--p' as string]: `${ps.length ? got / ps.length * 100 : 0}%` }} />
+        <span>{l.name}</span><small>{got}/{ps.length}題</small><ProgressMeter pct={ps.length ? Math.round(got / ps.length * 100) : 0} />
       </button>;
     })}</div>
     <p className="rq-target">目安：{meta.target}</p>
@@ -326,6 +336,12 @@ function markJa(full: string, part: string) {
   const at = key ? full.indexOf(key) : -1;
   if (at < 0) return full;
   return <>{full.slice(0, at)}<b>{full.slice(at, at + key.length)}</b>{full.slice(at + key.length)}</>;
+}
+
+function ProgressMeter({ pct }: { pct: number }) {
+  const ref = useRef<HTMLElement>(null);
+  useLayoutEffect(() => { ref.current?.style.setProperty('--p', `${pct}%`); }, [pct]);
+  return <i ref={ref} aria-hidden="true" />;
 }
 
 function streakAt(steps: readonly ReadingStep[], picks: readonly (number | null)[], i: number): number {

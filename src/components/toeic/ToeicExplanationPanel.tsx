@@ -197,7 +197,7 @@ export function ToeicExplanationPanel({ ex, correctText, open, onToggle, disable
                 onClick={() => setMoreOpen((prev) => !prev)}
                 data-toeic-more-toggle
               >
-                <span>{moreOpen ? '選択肢の理由・コツを閉じる' : '他の選択肢の理由・コツを見る'}</span>
+                <span>{moreOpen ? '選択肢の理由・ポイントを閉じる' : '選択肢の理由・ポイント'}</span>
                 <ChevronDown size={15} className={`tp-ex-more-chev${moreOpen ? ' is-open' : ''}`} aria-hidden="true" />
               </button>
             )}
