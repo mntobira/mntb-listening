@@ -1,5 +1,5 @@
 /* 英文法（第1〜20章）専用：問題画面と完全一体型のカード演習＆コンパクト解説・結果UI
-   文字はすべて 12px 以上、色トークンは src/styles/tokens.css（--mt-*）に準拠し、!important は使わない。
+   文字はすべて 12px 以上、色トークンは src/styles/tokens.css（--mt-*）に準拠し、強制優先指定は使わない。
    フォントは var(--mt-font-body)（Inter + ゴシック）に完全統一。 */
 
 .gp-root {

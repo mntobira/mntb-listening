@@ -198,7 +198,7 @@ export function ProblemPane({
       「問題文に上限・解答に残り」のままで、見た目は変わらない。
     */}
     <div className={`
-      lg:w-[58%] flex flex-col bg-white border-b lg:border-b-0 lg:border-r border-gray-200 transition-all duration-300
+      lg:w-[58%] flex flex-col bg-[#FFFDF9] border-b lg:border-b-0 lg:border-r border-[#E6DCCB] transition-all duration-300
       ${listeningMobileSplit && !listeningMobileNoFigure ? 'flex-1 min-h-0' : 'flex-none'}
       ${isDesktop
         ? 'h-full'
@@ -251,11 +251,11 @@ export function ProblemPane({
             Q1 の表示も読む必要がない。浮いた高さは問題文と解答欄に回る。
             「完了」でキーボードが閉じれば元に戻るので、機能は失われない。
             PC（isDesktop）は対象外。 */}
-      <div className={`flex items-center justify-between px-2 py-0 md:p-4 border-b border-gray-100 bg-blue-50/30 ${
+      <div className={`quiz-problem-head flex items-center justify-between px-2 py-0 md:p-4 border-b ${
         !isDesktop && keyboardVisible ? 'hidden' : ''
       }`}>
         <div className="flex items-center gap-2 md:gap-3">
-          <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-[#A9CCE3]/20 text-[#5d8fb0] font-bold flex items-center justify-center text-xs md:text-sm border-2 border-[#A9CCE3]">
+          <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-[#E8F1F8] text-[#2458A6] font-bold flex items-center justify-center text-xs md:text-sm border-2 border-[#A9CCE3] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
             Q{currentQuestionIndex + 1}
           </div>
           <span className="font-bold text-[#2C3E50] text-sm md:text-base">問題文</span>
@@ -278,7 +278,7 @@ export function ProblemPane({
               <button
                 onClick={() => setIsProblemCollapsed(!isProblemCollapsed)}
                 aria-expanded={!isProblemCollapsed}
-                className="flex min-h-11 items-center gap-0.5 rounded-md px-2 text-xs font-bold text-gray-600 hover:bg-gray-50 whitespace-nowrap"
+                className="flex min-h-11 items-center gap-0.5 rounded-md px-2 text-xs font-bold text-[#5A4E3C] hover:bg-[#EFE7D6]/70 active:translate-y-px transition-all whitespace-nowrap cursor-pointer"
               >
                 {isProblemCollapsed ? (
                   <>問題文を表示<ChevronDown size={12} /></>
@@ -292,7 +292,7 @@ export function ProblemPane({
                 setIsProblemExpanded(!isProblemExpanded);
                 setIsProblemCollapsed(false);
               }}
-              className="flex min-h-11 items-center rounded-md px-2 text-xs font-bold text-gray-600 hover:bg-gray-50 whitespace-nowrap"
+              className="flex min-h-11 items-center rounded-md px-2 text-xs font-bold text-[#5A4E3C] hover:bg-[#EFE7D6]/70 active:translate-y-px transition-all whitespace-nowrap cursor-pointer"
             >
               {isProblemExpanded ? '閉じる' : '全画面で読む'}
             </button>
@@ -687,6 +687,9 @@ export function ProblemPane({
                 その場合は設問一覧を出さず、解答カード側に一本化する。 */}
           {(() => {
             if (listeningUnified) return null;
+            /* ★スマホの複数小問では AnswerPane 側の固定バーに現在の設問文（問N＋本文）を
+                 全文表示するため、上ペイン末尾の設問一覧で高さを二重消費しない。 */
+            if (!isDesktop && (currentQuestion.subQuestions?.length || 0) > 1) return null;
             /* ★スマホ：設問一覧が問題文の丸写しなら出さない（ご要望8）
                  「設問一覧と問題が同じなので、同じやつはもう設問一覧いらない」
                数学の (1)〜(4) のように、設問一覧が上の問題文と一字一句

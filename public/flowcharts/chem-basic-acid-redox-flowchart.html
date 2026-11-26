@@ -8081,19 +8081,31 @@ document.querySelectorAll('.toc a').forEach(a => {
       updateProgress();
     });
 
-    // フッター：演習リンク＋次の単元へ
+    // フッター：演習リンク＋次の単元へ（innerHTML を使わず DOM API で安全に構築）
     var footer = document.createElement('div');
     footer.className = 'flow-section-footer';
-    var quizHref = '/quiz/acid-redox?unit=' + encodeURIComponent(unitId);
-    var quizBtn = '<a class="flow-quiz-btn" href="' + quizHref + '">▶ この項目を演習する</a>';
-    var nextBtn = '';
+    var quizLink = document.createElement('a');
+    quizLink.className = 'flow-quiz-btn';
+    quizLink.href = '/quiz/acid-redox?unit=' + encodeURIComponent(unitId);
+    quizLink.textContent = '▶ この項目を演習する';
+    footer.appendChild(quizLink);
     if (idx < sections.length - 1) {
-      var nextId = sections[idx + 1].getAttribute('data-chart-id') || sections[idx + 1].id;
-      nextBtn = '<a class="flow-next-btn" href="#' + nextId + '">次の単元へ →</a>';
+      var nextId = String(sections[idx + 1].getAttribute('data-chart-id') || sections[idx + 1].id || '').replace(/[^A-Za-z0-9_-]/g, '');
+      var nextLink = document.createElement('a');
+      nextLink.className = 'flow-next-btn';
+      nextLink.href = '#' + nextId;
+      nextLink.textContent = '次の単元へ →';
+      footer.appendChild(nextLink);
     } else {
-      nextBtn = '<button type="button" class="flow-next-btn" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">最初に戻る ↑</button>';
+      var topBtn = document.createElement('button');
+      topBtn.type = 'button';
+      topBtn.className = 'flow-next-btn';
+      topBtn.textContent = '最初に戻る ↑';
+      topBtn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      footer.appendChild(topBtn);
     }
-    footer.innerHTML = quizBtn + nextBtn;
     if (body) body.appendChild(footer); else sec.appendChild(footer);
   });
 
@@ -8143,8 +8155,6 @@ document.querySelectorAll('.toc a').forEach(a => {
 })();
 
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script>
 
 /* ===== 埋め込みモード（アプリ内モーダル用） =====================
@@ -8157,11 +8167,12 @@ document.querySelectorAll('.toc a').forEach(a => {
   var embed = params.get('embed') === '1';
   if (!only && !embed) return;
 
+  var safeOnly = only ? only.replace(/[^A-Za-z0-9_-]/g, '') : '';
   var style = document.createElement('style');
   var css = '';
-  if (only) {
+  if (safeOnly) {
     css += '.chart-section { display: none !important; }';
-    css += '.chart-section[data-chart-id="' + only.replace(/["\\]/g, '') + '"] { display: block !important; }';
+    css += '.chart-section[data-chart-id="' + safeOnly + '"] { display: block !important; }';
   }
   if (embed) {
     css += 'header.main-header, .color-legend, nav, .toc, .flow-theme-btn, .flow-quiz-btn, .flow-next-btn, .flow-section-footer, .flow-progress { display: none !important; }';
@@ -8177,8 +8188,8 @@ document.querySelectorAll('.toc a').forEach(a => {
   }
 
   // 対象の章が折りたたみ保存されていても、単独表示時は必ず展開する
-  if (only) {
-    var target = document.querySelector('.chart-section[data-chart-id="' + only.replace(/["\\]/g, '') + '"]');
+  if (safeOnly) {
+    var target = document.querySelector('.chart-section[data-chart-id="' + safeOnly + '"]');
     if (target) target.classList.remove('flow-collapsed');
   }
 })();

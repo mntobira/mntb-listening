@@ -129,7 +129,17 @@ const SAFE_COMMENT_BODY = /^[A-Za-z0-9_:.-]{1,64}$/;
 
 /** style 属性の値に含まれていたら危険と判断するパターン。 */
 const DANGEROUS_STYLE =
-  /(?:expression\s*\(|url\s*\(|javascript\s*:|@import|behaviou?r\s*:|-moz-binding)/i;
+  /(?:\\|expression\s*\(|url\s*\(|image-set\s*\(|javascript\s*:|vbscript\s*:|data\s*:|@import|behaviou?r\s*:|-moz-binding|(?:^|;)\s*--)/i;
+
+/** SVG 属性ごとの安全な値の形式（スクリプト・外部URL・不正文字を遮断） */
+const SAFE_SVG_ATTR_VALUES: Record<string, RegExp> = {
+  d: /^[MmLlHhVvCcSsQqTtAaZz0-9eE.,+\-\s]{1,8192}$/,
+  viewbox: /^[-+0-9.eE\s,]{1,80}$/,
+  width: /^[0-9.]+(?:px|em|ex|%|pt|pc|cm|mm|in|rem)?$/,
+  height: /^[0-9.]+(?:px|em|ex|%|pt|pc|cm|mm|in|rem)?$/,
+  preserveaspectratio: /^[A-Za-z0-9\s]{1,32}$/,
+  xmlns: /^http:\/\/www\.w3\.org\/2000\/svg$/,
+};
 
 /** タグ / コメント / それ以外のテキストに切り分けるための正規表現。 */
 const TOKEN_RE = /(<!--[\s\S]*?-->|<\/?[a-zA-Z][a-zA-Z0-9]*(?:"[^"]*"|'[^']*'|[^>"'])*>?)/g;
@@ -183,6 +193,7 @@ function escapeTextNode(text: string): string {
  */
 export function escapeHtml(text: string): string {
   return text
+    .replace(/\u0000/g, '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
@@ -218,6 +229,10 @@ function sanitizeTag(rawTag: string, tagName: string, isClosing: boolean): strin
     }
 
     if (name === 'style' && DANGEROUS_STYLE.test(rawValue)) continue;
+    if (svgAttrs && SAFE_SVG_ATTR_VALUES[name] && !SAFE_SVG_ATTR_VALUES[name]!.test(rawValue.trim())) continue;
+    if ((name === 'colspan' || name === 'rowspan') && !/^[1-9][0-9]{0,2}$/.test(rawValue.trim())) continue;
+    if (name === 'aria-hidden' && rawValue !== 'true' && rawValue !== 'false') continue;
+    if (name === 'scope' && !/^(?:row|col|rowgroup|colgroup)$/.test(rawValue.trim())) continue;
 
     // 値の中の引用符・山かっこはエスケープしてタグを閉じられないようにする
     const value = rawValue
@@ -246,7 +261,7 @@ function sanitizeTag(rawTag: string, tagName: string, isClosing: boolean): strin
 export function sanitizeInlineHtml(html: string): string {
   if (!html) return '';
 
-  const tokens = html.split(TOKEN_RE);
+  const tokens = html.replace(/\u0000/g, '').split(TOKEN_RE);
   const out: string[] = [];
   /** 中身ごと破棄中のタグ名（ネストを数えるためスタックで持つ） */
   const dropStack: string[] = [];
@@ -275,17 +290,18 @@ export function sanitizeInlineHtml(html: string): string {
 
     const isClosing = tagMatch[1] === '/';
     const tagName = tagMatch[2].toLowerCase();
+    const isSelfClosing = !isClosing && /\/\s*>\s*$/.test(token);
 
     // --- 中身ごと破棄中 ---
     if (dropStack.length > 0) {
       if (isClosing && dropStack[dropStack.length - 1] === tagName) dropStack.pop();
-      else if (!isClosing && DROP_WITH_CONTENT.has(tagName)) dropStack.push(tagName);
+      else if (!isClosing && !isSelfClosing && DROP_WITH_CONTENT.has(tagName)) dropStack.push(tagName);
       continue;
     }
 
-    // --- 中身ごと捨てるタグの開始 ---
+    // --- 中身ごと捨てるタグの開始（自己終了 <animate .../> は後続要素を巻き込まず単体破棄） ---
     if (!isClosing && DROP_WITH_CONTENT.has(tagName)) {
-      dropStack.push(tagName);
+      if (!isSelfClosing) dropStack.push(tagName);
       continue;
     }
     // 対応する開始タグが無い閉じタグは単に無視する
@@ -319,6 +335,7 @@ export function sanitizeInlineHtml(html: string): string {
 export function stripHtmlToText(html: string): string {
   if (!html) return '';
   return html
+    .replace(/\u0000/g, '')
     // コメントを除去
     .replace(/<!--[\s\S]*?-->/g, '')
     // 中身を見せたくない要素は中身ごと除去

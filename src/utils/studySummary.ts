@@ -280,6 +280,7 @@ export function buildStudentSummary(params: {
     solvedTotal: params.solved ? Object.keys(params.solved).length : 0,
     activeDaysIn14: base.activeDaysIn14,
     lastStudiedAt: base.lastStudiedAt,
+    studyDays: base.studyDays,
     review: base.review,
     engagement: base.engagement,
   };

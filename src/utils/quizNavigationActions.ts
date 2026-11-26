@@ -123,7 +123,22 @@ export function createQuizFocusActions({
     }
   };
 
-  return { moveFocus, goMobileAns, isLastNavSub, handleMobileCardKeyDown };
+  const jumpMobileAns = (targetIdx: number) => {
+    if (mobileAnswerSubs.length === 0) return;
+    const next = Math.min(mobileAnswerSubs.length - 1, Math.max(0, targetIdx));
+    if (next === safeMobileAnsIdx) return;
+    setMobileAnsIdx(next);
+    const target = mobileAnswerSubs[next]?.sq;
+    const targetIsText = target && (isShortAnswerType(target) || target.type === 'descriptive');
+    if (focusedSubId && targetIsText) {
+      pendingFocusIdRef.current = target.id;
+      setFocusedSubId(target.id);
+    } else if (focusedSubId) {
+      setFocusedSubId(null);
+    }
+  };
+
+  return { moveFocus, goMobileAns, jumpMobileAns, isLastNavSub, handleMobileCardKeyDown };
 }
 
 /** 次へ／前へに要る値 */

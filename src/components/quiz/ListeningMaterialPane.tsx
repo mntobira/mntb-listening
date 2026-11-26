@@ -34,13 +34,13 @@ export function renderListeningMaterialPane({
 }: ListeningMaterialPaneContext) {
   return (
     <section data-listening-material-pane aria-label="問題の資料"
-      className={`lg:w-[58%] flex min-h-0 flex-col border-b lg:border-r border-gray-200 bg-white ${
+      className={`lg:w-[58%] flex min-h-0 flex-col border-b lg:border-r border-[#E6DCCB] bg-[#FFFDF9] ${
         isDesktop ? 'h-full' : isProblemExpanded ? 'absolute inset-0 z-30' :
         listeningMaterialsMobile ? 'flex-[1_1_0%]' : 'max-h-[50%] flex-none'
       }`}>
       {isDesktop ? (
         <>
-          <div data-listening-audio className="shrink-0 border-b bg-white px-3 py-1">
+          <div data-listening-audio className="shrink-0 border-b border-[#EADFC8] bg-[#FFFAF0] px-3 py-1">
             <ListeningAudioPlayer tracks={listeningTracks} focusSubId={activeStepSub.id}
               variant="inline" orientation="horizontal" mode="practice" tone="light"
               readCount={currentQuestion.readCount || 2} playOnce={!!currentQuestion.playOnce} />
@@ -67,7 +67,7 @@ export function renderListeningMaterialPane({
           ・全画面ボタンは aria-label で従来の名前（全画面で読む／選択肢に戻る）を保つ
           PC（isDesktop）は従来の2段のまま。
         */
-        <div className="flex shrink-0 items-center gap-1.5 border-b bg-white px-2 py-1">
+        <div className="flex shrink-0 items-center gap-1.5 border-b border-[#EADFC8] bg-[#FFFAF0] px-2 py-1">
           <div data-listening-audio className="min-w-0 flex-1">
             <ListeningAudioPlayer tracks={listeningTracks} focusSubId={activeStepSub.id}
               variant="inline" orientation="horizontal" mode="practice" tone="light"
@@ -76,7 +76,7 @@ export function renderListeningMaterialPane({
           <button type="button"
             onClick={() => { setIsProblemExpanded(!isProblemExpanded); setIsProblemCollapsed(false); }}
             aria-label={isProblemExpanded ? '選択肢に戻る' : '全画面で読む'}
-            className="min-h-11 min-w-11 shrink-0 rounded-lg border border-gray-200 bg-white px-1.5 text-xs font-bold text-gray-600">
+            className="quiz-subnav-btn min-h-11 min-w-11 shrink-0 rounded-lg border px-1.5 text-xs font-bold cursor-pointer">
             {isProblemExpanded ? '選択肢へ' : '全画面'}
           </button>
         </div>

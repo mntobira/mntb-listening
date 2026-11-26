@@ -9,7 +9,7 @@ import { subjectTheme } from '../data/subjectTheme';
 import { ListeningAudioPlayer } from './ListeningAudioPlayer';
 import type { Chapter } from '../types/curriculum';
 import { buildListeningRounds } from '../utils/listeningRounds';
-import { TOEIC_DISCLAIMER } from '../data/toeic/toeicPart5Kit';
+import { TOEIC_DISCLAIMER } from '../utils/toeicDisclaimer';
 import { problemKey, readSolvedMap } from '../utils/progress';
 // 章 × モードごとの保存キー名は utils/quizStorageKeys.ts が唯一の定義
 import {
@@ -24,7 +24,7 @@ import { UnitCard } from './UnitCard';
 import { ListeningTechniqueCard } from './ListeningTechniqueCard';
 import './unit-select.css';
 import { accuracyOf, readUnitStats } from '../utils/unitStats';
-import { STAGE_CLEAR_PERFECTS, isStageCleared, readStageRecords, stageKey } from '../utils/stageRecords';
+import { isStageCleared, readStageRecords, stageKey } from '../utils/stageRecords';
 import { safeGetItem, safeParseJson } from '../utils/safeLocalStorage';
 import { getChapterGroups, getGrammarPartGroups, collectAudioSets, splitTabTitle } from '../utils/chapterGroups';
 
@@ -140,9 +140,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
 
   const activeGroup = groups.find(group => group.title === activeGroupTitle) || groups[0];
   const toeicTabs = isToeic && groups.length > 1;
-  const toeicSub = activeGroup?.title === 'リスニング' ? 'リスニング（Part 2〜4）・1回12問'
-    : activeGroup?.title === 'Part 7' ? 'Part 7 読解・1回7セット24問・4択'
-    : activeGroup?.title === 'Part 6' ? 'Part 6 長文穴埋め・1回16問・4択' : 'Part 5 短文穴埋め・1回30問・4択';
+  const toeicSub = activeGroup?.title === 'リスニング' ? 'リスニング（応答・会話・説明文）・1回12問'
+    : activeGroup?.title === 'Part 7' ? 'リーディング（読解）・1回7セット24問・4択'
+    : activeGroup?.title === 'Part 6' ? 'リーディング（長文穴埋め）・1回16問・4択' : 'リーディング（短文穴埋め）・1回30問・4択';
   /** 科目全体での通し番号（①〜⑳ → 01.〜20.）。タブを切り替えても番号が振り直されないようにする。 */
   const chapterNumberById = useMemo(() => {
     const m = new Map<string, number>();
@@ -168,7 +168,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
   }, []);
 
   return (
-    <div className="mtb-page chapter-route flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-0 w-full flex-col overflow-hidden notebook-paper p-3 pb-[calc(5.75rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(5.75rem+env(safe-area-inset-bottom))] md:p-6 md:pb-[calc(5.75rem+env(safe-area-inset-bottom))] relative font-handwriting">
+    <div className="mtb-page chapter-route flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-0 w-full flex-col overflow-hidden notebook-paper p-3 pb-[calc(5.75rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(5.75rem+env(safe-area-inset-bottom))] md:p-6 md:pb-[calc(5.75rem+env(safe-area-inset-bottom))] relative">
       {/* ★見出しは1行・80px以内（UIの決まり）★
           以前は「科目名の小見出し／演習問題／学習したい単元を選択してください／科目を変更」の4段で
           スマホの縦の1/4を使っていた。戻る・科目名・とびら君を1行にまとめる。 */}
@@ -177,13 +177,13 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           <ArrowLeft size={18} aria-hidden="true" /><span>{backLabel}</span>
         </button>
         <div className="unit-head-title">
-          <h2 style={{ color: theme.accent }}>{isListening ? '英語リスニング' : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
-          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '共通テスト大問別・1回ずつ完結' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
+          <h2 style={{ color: theme.accent }}>{isListening ? '英語リスニング' : isGrammar ? '英文法' : isToeic ? 'TOEIC® L&R TEST' : theme.label}</h2>
+          <p>{isToeic ? (toeicTabs ? toeicSub : 'リーディング（短文穴埋め）・1回30問・4択') : mode === 'mini_test' ? '小テスト' : isListening ? '共通テスト大問別・1回ずつ完結' : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
         </div>
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />
       </header>
 
-      <div className="chapter-workspace flex min-h-0 flex-1 flex-col font-handwriting">
+      <div className="chapter-workspace flex min-h-0 flex-1 flex-col">
         {/* ================================================================
             章／大問の一覧
             ================================================================
@@ -199,7 +199,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
               長い章名は途中で省略せず、タブ内で折り返して全文を表示する。
         */}
         {/* TOEIC は「1章 Part 5」のタブ（1枚だけ）を出さない（ご要望：単元選択には TOEIC とだけ書く） */}
-        {(!isToeic || toeicTabs) && <div className="chapter-index mb-3 shrink-0 border-b border-slate-200/80" data-few-tabs={groups.length <= 3 || undefined}>
+        {(!isToeic || toeicTabs) && <div className="chapter-index mb-3 shrink-0 border-b border-[#E5DCCC]" data-few-tabs={groups.length <= 3 || undefined}>
           <div
             role="tablist"
             aria-label="章を選択"
@@ -207,8 +207,12 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           >
             {groups.map((group, index) => {
               const isActive = group.title === activeGroup?.title;
+              const toeicTabTitle = group.title === 'リスニング' ? '応答・会話・説明文'
+                : group.title === 'Part 5' ? '短文穴埋め'
+                : group.title === 'Part 6' ? '長文穴埋め'
+                  : group.title === 'Part 7' ? '読解' : group.title;
               const { kicker: chapterNumber, label: shortTitle } = isToeic
-                ? { kicker: String(group.chapters[0]?.abstractTitle || '').replace(/^(?:Part \d+|リスニング)\s*/, ''), label: group.title }
+                ? { kicker: group.title === 'リスニング' ? 'リスニング' : 'リーディング', label: toeicTabTitle }
                 : group.kicker
                 ? { kicker: `${group.kicker}・${group.chapters.length}単元`, label: group.label as string }
                 : splitTabTitle(group.title, index);
@@ -272,9 +276,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
             aria-labelledby={isToeic && !toeicTabs ? undefined : `chapter-tab-${groups.indexOf(activeGroup)}`}
             aria-label={isToeic && !toeicTabs ? 'TOEIC の回一覧' : undefined}
             tabIndex={0}
-            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain rounded-2xl border border-slate-200/80 bg-white/35 p-3 pb-6 sm:p-4 sm:pb-6 [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable]"
+            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain rounded-2xl border border-[#E5DCCC] bg-[#FFFDF8]/60 p-3 pb-6 sm:p-4 sm:pb-6 [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable]"
           >
-            {!isToeic && <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 pb-3">
+            {!isToeic && <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-[#E5DCCC] pb-3">
               <div>
                 <p className="text-xs font-bold" style={{ color: theme.accent }}>{activeGroup.partTitle}</p>
                 {/* タブと同じ名前をもう一度出さない（UIの決まり：同じものを2つ置かない）。
@@ -315,33 +319,41 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                           回のボタンだけだと「第1問Aって何をするんだっけ」が分からない。 */}
                       <div className="mb-2.5">
                         {chapter.topics && chapter.topics.length > 0 && (
-                          <p className="text-xs font-bold leading-relaxed text-slate-600">
+                          <p className="text-xs font-bold leading-relaxed text-[#5C4F3D]">
                             {chapter.topics.join(' ・ ')}
                           </p>
                         )}
-                        <p className="mt-1 text-xs font-bold text-slate-600">
+                        <p className="mt-1 text-xs font-bold text-[#5C4F3D]">
                           {rounds.length > 0
-                            ? `全${rounds.length}回 ／ 達成 ${rounds.filter((r) => isStageCleared(stageRecords[stageKey(chapter.id, r.questionId)])).length}回（満点${STAGE_CLEAR_PERFECTS}回で達成）`
+                            ? `進捗 ${rounds.filter((r) => !!solvedMap[problemKey(chapter.id, r.questionId)] || !!stageRecords[stageKey(chapter.id, r.questionId)]).length}/${rounds.length}回（全${rounds.length}回）`
                             : 'この大問の問題は準備中です'}
                         </p>
-                        {isToeic && <p className="mt-1 text-xs leading-relaxed text-slate-600" data-toeic-disclaimer>{TOEIC_DISCLAIMER}</p>}
+                        {isToeic && <p className="mt-1 text-xs leading-relaxed text-[#6E604C]" data-toeic-disclaimer>{TOEIC_DISCLAIMER}</p>}
                       </div>
 
-                      {rounds.length > 0 ? (
+                      {rounds.length > 0 ? (() => {
+                        const firstNextRoundId = rounds.find(
+                          (r) => !isStageCleared(stageRecords[stageKey(chapter.id, r.questionId)]),
+                        )?.questionId;
+                        return (
                         <div className="round-grid grid grid-cols-1 gap-1.5 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                           {rounds.map((round) => {
                             const roundStage = stageRecords[stageKey(chapter.id, round.questionId)];
                             const solved = isStageCleared(roundStage);
                             const tried = !!solvedMap[problemKey(chapter.id, round.questionId)] || !!roundStage;
+                            const isNextRound = round.questionId === firstNextRoundId;
                             const audio = audioSets.find((s) => s.id === round.questionId);
                             return (
                               <div
                                 key={round.questionId}
                                 data-round
-                                data-status={solved ? 'done' : 'todo'}
+                                data-status={solved ? 'done' : tried ? 'doing' : 'todo'}
+                                data-next={isNextRound || undefined}
                                 className={`round-card flex items-stretch gap-1.5 rounded-xl border p-1.5 text-left shadow-xs transition-all ${
                                   solved
                                     ? 'border-[#5BC0BE]/60 bg-[#EAF9F6]'
+                                    : isNextRound
+                                    ? 'border-[#F29A1F] bg-[#FFF8E8]'
                                     : 'border-yellow-200/80 bg-[#FFFDF2]/90'
                                 }`}
                               >
@@ -366,20 +378,21 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                                     </span>
                                     {solved ? (
                                       <span className="round-done mt-status shrink-0" data-status="done">
-                                        達成
+                                        完了
                                       </span>
-                                    ) : tried && !isToeic ? (
-                                      // 2026-10-29 TOEIC は「満点 0/3」を出さない（ご要望）。達成の表示はそのまま
+                                    ) : tried ? (
                                       <span className="round-done mt-status shrink-0" data-status="doing">
-                                        満点 {roundStage?.p ?? 0}/{STAGE_CLEAR_PERFECTS}
+                                        {roundStage ? `最高 ${roundStage.b}%` : '解答済'}
                                       </span>
+                                    ) : isNextRound ? (
+                                      <span className="round-next-chip shrink-0">つぎはここ</span>
                                     ) : (
                                       <ChevronRight size={13} className="shrink-0 text-[#A9CCE3]" />
                                     )}
                                   </span>
                                   {/* 2026-10-28 TOEIC は内訳（語彙・品詞・文法の数）を出さない。データの分野ラベルと結果の集計はそのまま */}
                                   {round.detail && !isToeic && (
-                                    <span className="round-detail mt-0.5 line-clamp-1 font-bold leading-snug text-slate-600">
+                                    <span className="round-detail mt-0.5 line-clamp-1 font-bold leading-snug text-[#5C4F3D]">
                                       {round.detail}
                                     </span>
                                   )}
@@ -410,8 +423,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                             );
                           })}
                         </div>
-                      ) : (
-                        <div className="rounded-xl border border-slate-200 bg-white/70 p-4 text-center text-xs font-bold text-slate-400">
+                        );
+                      })() : (
+                        <div className="rounded-xl border border-[#E5DCCC] bg-[#FFFDF8]/85 p-4 text-center text-xs font-bold text-[#7A6A52]">
                           準備中（問題は順次追加しています）
                         </div>
                       )}
@@ -449,9 +463,10 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                 const roundTried = isGrammar && questions.some((q) => stageRecords[stageKey(chapter.id, q.id)]);
                 // D1：英文法で「いまやる回」＝途中保存があればその回、なければ未達成の最初の回
                 const grammarTarget = isGrammar ? Math.min(Math.max(0, questions.length - 1), hasSavedProgress ? savedIndex : nextRound) : 0;
+                const grammarSolvedRounds = isGrammar ? questions.filter((q) => !!solvedMap[problemKey(chapter.id, q.id)] || !!stageRecords[stageKey(chapter.id, q.id)]).length : solvedCount;
                 const status = isGrammar
-                  ? (questions.length > 0 && clearedRounds === questions.length ? 'done' : (solvedCount > 0 || hasSavedProgress || !!stat || roundTried) ? 'doing' : 'todo')
-                  : isStageCleared(stage) ? 'done' : (solvedCount > 0 || hasSavedProgress || !!stat || !!stage) ? 'doing' : 'todo';
+                  ? (questions.length > 0 && grammarSolvedRounds === questions.length ? 'done' : (grammarSolvedRounds > 0 || hasSavedProgress || !!stat || roundTried) ? 'doing' : 'todo')
+                  : (questions.length > 0 && solvedCount === questions.length) || isStageCleared(stage) ? 'done' : (solvedCount > 0 || hasSavedProgress || !!stat || !!stage) ? 'doing' : 'todo';
 
                 // ★見出しつきの小分け（数学の段階・地理の単元演習/模試・準備中）★ src/data/unitSections.ts
                 const section = unitSectionByChapter.get(chapter.id);
@@ -473,10 +488,12 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                     title={chapter.abstractTitle}
                     topics={chapter.topics}
                     questionCount={questions.length}
+                    solvedCount={isGrammar ? grammarSolvedRounds : solvedCount}
                     status={status}
                     accuracy={accuracyOf(stat)}
-                    perfects={isGrammar ? undefined : stage?.p ?? 0}
-                    progressLabel={isGrammar && status === 'doing' ? `達成 ${clearedRounds}/${questions.length}回` : undefined}
+                    progressLabel={isGrammar
+                      ? (status === 'done' ? `全${questions.length}回 完了` : status === 'doing' ? `${grammarSolvedRounds}/${questions.length}回 完了` : `0/${questions.length}回`)
+                      : undefined}
                     hasSavedProgress={hasSavedProgress}
                     expanded={expanded}
                     accent={theme.accent}
@@ -500,10 +517,10 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                       <div className="grammar-rounds" data-grammar-rounds>
                         <p className="grammar-rounds-head">
                           <span>全{questions.length}回（1回5問）</span>
-                          <span className="grammar-rounds-meter" aria-label={`達成 ${clearedRounds}/${questions.length}回`}>
-                            {roundCleared.map((c, i) => <i key={i} data-on={c || undefined} data-next={i === grammarTarget || undefined} />)}
+                          <span className="grammar-rounds-meter" aria-label={`進捗 ${grammarSolvedRounds}/${questions.length}回`}>
+                            {questions.map((q, i) => <i key={i} data-on={(!!solvedMap[problemKey(chapter.id, q.id)] || !!stageRecords[stageKey(chapter.id, q.id)]) || undefined} data-next={i === grammarTarget || undefined} />)}
                           </span>
-                          <b>達成 {clearedRounds}/{questions.length}</b>
+                          <b>{grammarSolvedRounds}/{questions.length}回 完了</b>
                         </p>
                         <ol className="grammar-rounds-list">
                           {questions.map((question, questionIndex: number) => {
@@ -591,9 +608,9 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                           <button
                             type="button"
                             onClick={() => setOpenAudioSetId(null)}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold text-slate-500 transition-colors hover:bg-slate-50 cursor-pointer"
+                            className="inline-flex min-h-[44px] items-center gap-1 rounded-xl border border-[#DFD2BC] bg-[#FFFDF8] px-3 py-1 text-xs font-bold text-[#5C4F3D] shadow-[0_1.5px_0_#E5D9C4] transition-all hover:bg-[#FAF6EC] active:translate-y-[1px] active:shadow-none cursor-pointer"
                           >
-                            <X size={11} />
+                            <X size={13} />
                             閉じる
                           </button>
                         </div>

@@ -15,6 +15,9 @@ on:
       - 'firebase.json'
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 jobs:
   deploy-rules:
     runs-on: ubuntu-latest
@@ -23,7 +26,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Check secret is configured
         env:
@@ -37,12 +40,20 @@ jobs:
       - name: Write service account key
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+        run: |
+          umask 077
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
 
-      - name: Deploy firestore rules
+      - name: Deploy firestore rules and indexes (mntb-listening only)
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
-        run: npx firebase-tools deploy --only firestore:rules --project mntb-4ef06 --non-interactive --force
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID || 'mntb-listening' }}
+        run: |
+          if [ "$FIREBASE_PROJECT_ID" = "mntb-4ef06" ]; then
+            echo "::error::統合版プロジェクト(mntb-4ef06)への誤デプロイを防止しました。リスニング専用プロジェクトを指定してください。"
+            exit 1
+          fi
+          npx firebase-tools deploy --only firestore:rules,firestore:indexes --project "$FIREBASE_PROJECT_ID" --non-interactive --force
 
       - name: Cleanup key
         if: always()

@@ -54,6 +54,25 @@ describe('2026-11-15 モンスト風OPムービー（②横/③縦）＋ ①高�
     }
   });
 
+  it('タイトル専用素材は対戦と分離され、動画と待機モーションの両方で同じ着地フレームを使う', () => {
+    const launch = readFileSync('src/components/LaunchScreen.tsx', 'utf8');
+    const css = readFileSync('src/components/launch-screen.css', 'utf8');
+    for (const filename of ['title_tobira.webm', 'title_tobira-sbs.mp4', 'title_tobira-poster.webp', 'title_tobira-landed.webp', 'title_tobira-blink.webp']) {
+      expect(launch).toContain(`/cinematics/${filename}`);
+      const file = resolve('public/cinematics', filename);
+      expect(statSync(file).size).toBeLessThan(1_000_000);
+      if (filename.endsWith('.webp')) continue;
+      const info = probe(file);
+      if (!info) continue;
+      expect(info.streams.map((s: { codec_type: string }) => s.codec_type)).toEqual(['video']);
+      expect([info.streams[0].width, info.streams[0].height]).toEqual([420, filename.endsWith('.mp4') ? 1472 : 736]);
+      expect(Number(info.format.duration)).toBeCloseTo(124 / 24, 2);
+    }
+    expect(launch).toContain('src={TITLE_TOBIRA_CLIP.endPlate}');
+    expect(css).toContain('animation: launch-idle-blink');
+    expect(css).toContain('@media (prefers-reduced-motion: no-preference)');
+  });
+
   it('タイトル画面が「エンブレム → モンスト風OP（②横/③縦・タップスキップ可）→ 既存タイトル画面で①切り抜き演出 → 待機」を備える', () => {
     const launch = readFileSync('src/components/LaunchScreen.tsx', 'utf8');
     expect(launch).toContain('(orientation: landscape) and (min-width: 768px)');
@@ -63,10 +82,25 @@ describe('2026-11-15 モンスト風OPムービー（②横/③縦）＋ ①高�
     expect(launch).toContain('data-launch-op');
     expect(launch).toContain('タップしてスキップ');
     expect(launch).toContain('TitleBgmMuteButton');
+    // ループ属性を持たず1回完結再生し、0.00s同期再生を行うことを保証
+    expect(launch).not.toMatch(/<audio[^>]*\bloop\b/);
+    expect(launch).toContain('startBgmFromBeginning');
+    expect(launch).toContain('onEnded={markTitleBgmEnded}');
+
+    const bgmControl = readFileSync('src/components/TitleBgmControl.tsx', 'utf8');
+    expect(bgmControl).toContain('audio.loop = false');
+    expect(bgmControl).toContain('endedOnceRef');
+    expect(bgmControl).toContain('audio.currentTime = 0');
 
     const bgmFile = resolve('public', '.' + TITLE_SCREEN_BGM_SRC);
     expect(existsSync(bgmFile)).toBe(true);
     expect(statSync(bgmFile).size).toBeLessThan(500_000);
+    const bgmInfo = probe(bgmFile);
+    if (bgmInfo?.format?.duration) {
+      const dur = Number(bgmInfo.format.duration);
+      expect(dur).toBeGreaterThanOrEqual(14.5);
+      expect(dur).toBeLessThanOrEqual(15.5);
+    }
     expect(TITLE_SCREEN_BGM_SUBTLE_GAIN).toBeGreaterThan(0.1);
     expect(TITLE_SCREEN_BGM_SUBTLE_GAIN).toBeLessThanOrEqual(0.5);
   });

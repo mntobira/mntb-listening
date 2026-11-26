@@ -1,10 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Check, ChevronRight, GraduationCap, ListChecks, Play, RotateCcw, X } from 'lucide-react';
+import { Check, ChevronRight, FileSearch, GraduationCap, ListChecks, Play, RotateCcw, X } from 'lucide-react';
 import { CorrectBurst } from './fx/CorrectBurst';
 import { TobiraBuddy } from './TobiraBuddy';
 import { play, primeAudio } from '../battle/ui/feedback';
 import { recordVocabActivity } from '../battle/data/growthStore';
 import { trackEvent } from '../utils/analytics';
+import { recordOutcomeAttempts } from '../utils/learningOutcomes';
+import { schedulePush } from '../utils/studySync';
 import { safeGetItem } from '../utils/safeLocalStorage';
 import { safeSetItem } from '../utils/storageGuard';
 import {
@@ -118,7 +120,23 @@ export function ReadingQuiz({ uid }: { uid: string }) {
     const quit = () => {
       // 途中でやめたときは「間違えた設問」だけ記録し、最高点は変えない
       const results = steps.flatMap((x, j) => picks[j] === null ? [] : [{ questionId: x.question.id, correct: picks[j] === answerOf(x) }]);
-      if (results.length) { const r = { ...applyReadingResult(rec, passage.id, results), best: rec.best }; writeReadingRecord(uid, r); setRec(r); }
+      if (results.length) {
+        const hadBest = Boolean(rec.best[passage.id]);
+        try {
+          recordOutcomeAttempts(
+            uid,
+            results.map((x) => ({
+              itemKey: `reading::${passage.id}::${x.questionId}`,
+              format: 'reading_comp',
+              correct: x.correct,
+              alreadyKnownSeen: hadBest || missed.has(x.questionId),
+            })),
+          );
+          schedulePush();
+        } catch { /* 成果記録の失敗で演習は止めない */ }
+        const r = { ...applyReadingResult(rec, passage.id, results), best: rec.best };
+        writeReadingRecord(uid, r); setRec(r);
+      }
       setPhase({ kind: 'pick' });
     };
     const choose = (k: number) => {
@@ -140,6 +158,19 @@ export function ReadingQuiz({ uid }: { uid: string }) {
       const all = picks as number[];
       const results = steps.map((x, j) => ({ questionId: x.question.id, correct: all[j] === answerOf(x) }));
       const full = steps.length === passage.questions.length;
+      const hadBest = Boolean(rec.best[passage.id]);
+      try {
+        recordOutcomeAttempts(
+          uid,
+          results.map((x) => ({
+            itemKey: `reading::${passage.id}::${x.questionId}`,
+            format: 'reading_comp',
+            correct: x.correct,
+            alreadyKnownSeen: !full || hadBest || missed.has(x.questionId),
+          })),
+        );
+        schedulePush();
+      } catch { /* 成果記録の失敗で演習は止めない */ }
       // 一部の設問だけ解き直したときは、最高点は更新せず「間違えた設問」だけ直す
       const r0 = applyReadingResult(rec, passage.id, results);
       const r = full ? r0 : { ...r0, best: rec.best };
@@ -192,7 +223,17 @@ export function ReadingQuiz({ uid }: { uid: string }) {
           </div>
           {answered && <div className="rq-ex" data-reading-explain>
             <p className="rq-ex-judge" data-ok={ok || undefined}>{ok ? '正解！' : <>正解は {'①②③④'[view.answerIndex]}</>}<small>{TYPE_LABEL[q.type]}・第{evPara}段落</small></p>
-            <div className="rq-ex-ev"><p lang="en">{q.evidence}</p><p>{q.evidenceJa}</p></div>
+            <div className="rq-ex-ev">
+              <div className="rq-ex-ev-head">
+                <span className="rq-ex-ev-badge">根拠の一文</span>
+                <button type="button" className="rq-ev-jump" data-reading-show-ev
+                  onClick={() => { setViewPara(evPara === st.para ? null : evPara); setPane('text'); }}
+                  aria-label={`第${evPara}段落の本文で根拠のマーカーを見る`}>
+                  <FileSearch size={14} aria-hidden="true" /><span>本文で根拠を見る</span>
+                </button>
+              </div>
+              <p lang="en">{q.evidence}</p><p>{q.evidenceJa}</p>
+            </div>
             {evJa && <details className="rq-ex-ja" key={`${q.id}-ja`} data-reading-translation>
               <summary>第{evPara}段落を1文ずつ（英文→和訳・構文）</summary>
               <PairedParagraph en={passage.paragraphs[evPara - 1]!} ja={evJa} evidence={q.evidence} evidenceJa={q.evidenceJa} />
@@ -262,13 +303,14 @@ export function ReadingQuiz({ uid }: { uid: string }) {
 
   // ---------------- 文章の一覧 ----------------
   const meta = READING_LEVELS[level - 1]!;
+  const progressed = list.filter(x => Boolean(rec.best[x.id])).length;
   const cleared = list.filter(x => isCleared(rec, x)).length;
   const first = nextOf(level);
-  return <section className="fd-panel vq-setup rq-pick" aria-label="文章を選ぶ" data-reading="pick">
+    return <section className="fd-panel vq-setup rq-pick" aria-label="文章を選ぶ" data-reading="pick">
     <div className="fd-levels" role="tablist" aria-label="レベル">{READING_LEVELS.map(l => {
-      const ps = passagesOf(l.level); const got = ps.filter(x => isCleared(rec, x)).length;
+      const ps = passagesOf(l.level); const got = ps.filter(x => Boolean(rec.best[x.id])).length;
       return <button key={l.level} type="button" role="tab" aria-selected={level === l.level} onClick={() => setLevel(l.level)} data-reading-level={l.level}>
-        <span>{l.name}</span><small>{got}/{ps.length}題</small><i aria-hidden="true" style={{ ['--p' as string]: `${ps.length ? got / ps.length * 100 : 0}%` }} />
+        <span>{l.name}</span><small>{got}/{ps.length}題</small><ProgressMeter pct={ps.length ? Math.round(got / ps.length * 100) : 0} />
       </button>;
     })}</div>
     <p className="rq-target">目安：{meta.target}</p>
@@ -278,11 +320,11 @@ export function ReadingQuiz({ uid }: { uid: string }) {
       return <li key={x.id}><button type="button" onClick={() => begin(x)} data-reading-passage={x.id} data-state={done ? 'clear' : b ? 'part' : undefined}>
         <i className="rq-no" aria-hidden="true">{k + 1}</i>
         <span className="rq-item-main"><b lang="en">{x.title}</b><small>{x.topic}・{x.paragraphs.length}段落・{x.questions.length}問</small></span>
-        <span className="rq-item-score">{done ? <><Check size={15} aria-hidden="true" />満点</> : b ? `${b.score}/${b.total}` : 'まだ'}{miss > 0 && <em>×{miss}</em>}</span>
+        <span className="rq-item-score">{done ? <><Check size={15} aria-hidden="true" />{x.questions.length}/{x.questions.length}問</> : b ? `${b.score}/${b.total}問` : `0/${x.questions.length}問`}{miss > 0 && <em>×{miss}</em>}</span>
       </button></li>;
     })}</ul>
     <div className="vq-start-box">
-      <p className="vq-start-sum" aria-live="polite">{meta.name}：満点 <b>{cleared}</b>/{list.length}題{first && <>　・次は「{first.title}」</>}</p>
+      <p className="vq-start-sum" aria-live="polite">{meta.name}：進捗 <b>{progressed}</b>/{list.length}題{first && <>　・次は「{first.title}」</>}</p>
       <button type="button" className="vq-next vq-start" onClick={() => first && begin(first)} disabled={!first} data-reading-start><Play size={18} aria-hidden="true" />{cleared === list.length ? 'もう一度はじめから解く' : '次の文章を解く'}</button>
     </div>
   </section>;
@@ -294,6 +336,12 @@ function markJa(full: string, part: string) {
   const at = key ? full.indexOf(key) : -1;
   if (at < 0) return full;
   return <>{full.slice(0, at)}<b>{full.slice(at, at + key.length)}</b>{full.slice(at + key.length)}</>;
+}
+
+function ProgressMeter({ pct }: { pct: number }) {
+  const ref = useRef<HTMLElement>(null);
+  useLayoutEffect(() => { ref.current?.style.setProperty('--p', `${pct}%`); }, [pct]);
+  return <i ref={ref} aria-hidden="true" />;
 }
 
 function streakAt(steps: readonly ReadingStep[], picks: readonly (number | null)[], i: number): number {

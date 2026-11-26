@@ -1,6 +1,68 @@
 import type React from 'react';
 import { LISTENING_PICTURE_ASPECT } from '../../data/listeningPictureAspect';
+import { isToeicPageChapter } from '../toeic/toeicPageModel';
 import type { AudioTrack, Problem, SubQuestion } from '../../types/curriculum';
+
+/**
+ * 英語の散文として組む単元か（英字を化学式用のセリフ体に化けさせない）。
+ * 音声・完成文トラックを持つ単元に加え、TOEIC・英語リスニング・英文法・英検などの章IDも漏れなく対象にする。
+ */
+export function isEnglishProseChapter(
+  chapterId: string | undefined | null,
+  allQuestions: readonly Pick<Problem, 'audioTracks' | 'explanationTracks'>[],
+): boolean {
+  const id = String(chapterId || '').trim();
+  if (/^(?:tp[l567]_\d+|el\d+(?:_[A-Z])?|eg\d+_\d+|ev_\d+|er_\d+|eiken_)/.test(id)) return true;
+  return allQuestions.some((q) => textTracksOf(q).length > 0);
+}
+
+/**
+ * 金額の「$100 … $15」などが KaTeX の数式として組まれるのを防ぐ単元か（TOEIC・英語単元）。
+ */
+export function isNoMathChapter(chapterId: string | undefined | null): boolean {
+  const id = String(chapterId || '').trim();
+  return isToeicPageChapter(id) || /^(?:el\d+(?:_[A-Z])?|eg\d+_\d+|ev_\d+|er_\d+|eiken_)/.test(id);
+}
+
+export interface DialogueTurnLine {
+  speaker: string;
+  text: string;
+}
+
+/**
+ * `A: ...\nB: ...` 形式の対話文であれば話者ターンの配列に分解する。
+ * 通常の1文（話者ラベルなし）は null を返す。
+ */
+export function splitDialogueTurns(text: string): DialogueTurnLine[] | null {
+  const lines = String(text || '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+  if (lines.length < 2) return null;
+  const turns: DialogueTurnLine[] = [];
+  for (const line of lines) {
+    const m = line.match(/^([A-Za-z][A-Za-z0-9 .]{0,12}):\s*(.+)$/);
+    if (!m) return null;
+    turns.push({ speaker: m[1].trim(), text: m[2].trim() });
+  }
+  return turns.length >= 2 ? turns : null;
+}
+
+/**
+ * 小問の選択肢記号（`1`〜`4` / `①`〜`④` / `(A)`〜`(D)`）から、対応する選択肢本文を返す。
+ */
+export function resolveChoiceOptionText(
+  sq: Pick<SubQuestion, 'options' | 'optionTexts'>,
+  rawMark: string | undefined | null,
+): string {
+  const mark = String(rawMark || '').trim();
+  if (!mark || !Array.isArray(sq.options) || !Array.isArray(sq.optionTexts)) return '';
+  const idx = sq.options.findIndex((o) => String(o).trim() === mark);
+  if (idx < 0) return '';
+  const txt = String(sq.optionTexts[idx] ?? '').trim();
+  if (!txt || txt === mark || txt === '音声を聞いて選ぶ') return '';
+  return txt;
+}
 
 /**
  * 解答・解説画面（Explanation.tsx）で使う、React に依存しない小さな関数。

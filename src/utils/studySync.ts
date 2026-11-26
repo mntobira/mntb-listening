@@ -50,6 +50,7 @@ import { db, auth } from '../firebase';
 
 import { readSolvedMap, SOLVED_KEY_PREFIX } from './progress';
 import { loadReviewList, saveReviewList, type ReviewItem } from './reviewList';
+import { loadOutcomesStore, toSyncedOutcomesSummary } from './learningOutcomes';
 import {
   mergeSolvedMaps,
   mergeReviewLists,
@@ -212,6 +213,7 @@ export async function pushStudyData(immediate = false): Promise<boolean> {
 
   const solved = readSolvedMap(uid);
   const reviews = limitReviewItemsForSync(loadReviewList(uid));
+  const outcomes = toSyncedOutcomesSummary(loadOutcomesStore(uid));
 
   try {
     await setDoc(
@@ -220,6 +222,7 @@ export async function pushStudyData(immediate = false): Promise<boolean> {
         uid,
         solved,
         reviewItems: reviews.map(toSyncableReviewItem),
+        outcomes,
         // 先生画面で並べ替えるための集計値（毎回クライアントで計算するのを避ける）
         solvedTotal: Object.keys(solved).length,
         reviewTotal: reviews.length,

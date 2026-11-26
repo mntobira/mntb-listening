@@ -40,7 +40,7 @@ export function ReminderSettings() {
   </div>;
 }
 
-function Row({ label, sub, checked, onChange, icon }: { label: string; sub?: string; checked: boolean; onChange: () => void; icon?: ReactNode }) {
+function Row({ label, sub, checked, onChange, icon }: { label: string; sub?: ReactNode; checked: boolean; onChange: () => void; icon?: ReactNode }) {
   return <div className="ps-toggle-row">
     {icon && <span className="ps-toggle-icon" data-on={checked || undefined}>{icon}</span>}
     <div className="ps-toggle-text"><p>{label}</p>{sub && <small>{sub}</small>}</div>

@@ -13,11 +13,13 @@ import { ListeningCompactAnswers } from './ListeningCompactAnswers';
 import { MobileResultChips } from './MobileResultChips';
 import { renderSubQuestionCard } from './SubQuestionCard';
 import { ScoreHead } from './ScoreHead';
+import { ToeicReviewCard } from './ToeicReviewCard';
 import { buildExplanationSlices } from './explanationSlices';
 import { isAttempted, textTracksOf } from './helpers';
+import { isToeicPageChapter } from '../toeic/toeicPageModel';
 import { isAnswerCorrect } from '../../utils/answerJudge';
 import { buildListeningOptionTexts } from '../../utils/listeningOptions';
-import type { Problem, SubQuestion } from '../../types/curriculum';
+import type { Chapter, Problem, SubQuestion } from '../../types/curriculum';
 
 export interface ExplanationAnswerItemContext {
   question: Problem;
@@ -29,6 +31,10 @@ export interface ExplanationAnswerItemContext {
   isMobile: boolean;
   isPracticeMode: boolean;
   isEnglishChapter: boolean;
+  noMath?: boolean;
+  chapter?: Pick<Chapter, 'id' | 'abstractTitle' | 'realTitle'>;
+  chapterId?: string;
+  isGuest?: boolean;
   answerBoxBaseClass: string;
   explBodyBaseClass: string;
   explBodyFontClass: string;
@@ -43,10 +49,12 @@ export interface ExplanationAnswerItemContext {
 export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
   const {
     question, answers, allQuestions, reorderMobile, pcListening, focusSubQuestionId,
-    isMobile, isPracticeMode, isEnglishChapter, answerBoxBaseClass, explBodyBaseClass, explBodyFontClass,
+    isMobile, isPracticeMode, isEnglishChapter, noMath, chapter, chapterId, isGuest, answerBoxBaseClass, explBodyBaseClass, explBodyFontClass,
     openExplanationBySq, openThinkingBySq, setOpenExplanationBySq, setOpenThinkingBySq,
     selectedSqId, setSelectedSqId,
   } = ctx;
+  const resolvedChapterId = chapter?.id ?? chapterId;
+  const isToeic = isToeicPageChapter(resolvedChapterId);
   // 小問は「元の並び順（ア→イ→ウ…）」のまま表示する（収録データはすべて選択式）。
   const objectiveSqs = question.subQuestions;
 
@@ -56,7 +64,8 @@ export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
   const listeningTracks = textTracksOf(question);
   const optionTextsBySq = buildListeningOptionTexts(allQuestions.find((q) => q?.id === question?.id) ?? question);
   // 英文法の完成文音声は問題文欄ではなく、答え合わせ・解説欄で聞けるようにする。
-  const grammarReviewPlayerBlock = !question.audioTracks?.length && question.explanationTracks?.length ? (
+  // TOEIC は ToeicReviewCard / ToeicListeningAudioBar が受け持つため、ここには出さない。
+  const grammarReviewPlayerBlock = !isToeic && !question.audioTracks?.length && question.explanationTracks?.length ? (
     <ListeningAudioPlayer
       tracks={question.explanationTracks}
       mode="review"
@@ -114,11 +123,28 @@ export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
   // 小問1つぶんのカード。中身は explanation/SubQuestionCard.tsx（元の JSX のまま）。
   // 呼び出し方（renderSq(sq, isCorrect)）と、開閉などの状態の持ち主（この Explanation）は変えていない。
   const renderSq = (sq: SubQuestion, isCorrect: boolean) => renderSubQuestionCard({
-    question, answers, isMobile, isPracticeMode, isEnglishChapter, listeningTracks,
+    question, answers, isMobile, isPracticeMode, isEnglishChapter, noMath, listeningTracks,
     answerBoxBaseClass, explBodyBaseClass, explBodyFontClass,
     openExplanationBySq, openThinkingBySq, setOpenExplanationBySq, setOpenThinkingBySq,
     sliceForSq,
+    singleObjectiveSq: objectiveSqs.length === 1,
   }, sq, isCorrect);
+
+  if (isToeic && objectiveSqs.length > 0 && resolvedChapterId) {
+    return (
+      <div className={reorderMobile ? 'mt-0 space-y-2' : 'mt-2 space-y-4'}>
+        <ToeicReviewCard
+          chapter={chapter ?? { id: resolvedChapterId, abstractTitle: '', realTitle: '' }}
+          question={question}
+          allQuestions={allQuestions}
+          objectiveSqs={objectiveSqs}
+          answers={answers}
+          isGuest={isGuest}
+          compact={reorderMobile}
+        />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -227,10 +253,18 @@ export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
                 explBodyBaseClass={explBodyBaseClass}
                 explBodyFontClass={explBodyFontClass}
                 isEnglishChapter={isEnglishChapter}
+                noMath={noMath}
                 isPracticeMode={isPracticeMode}
               />
             </>
           ) : reorderMobile ? (
+            objectiveSqs.length === 1 ? (
+              /* 小問が1つだけのときは、重複する問Nチップを省いて最初から解答・解説カードを直接出す（1画面に収める） */
+              <>
+                {renderSq(objectiveSqs[0], isAnswerCorrect(objectiveSqs[0], answers[objectiveSqs[0].id]))}
+                {audioPlayerBlock}
+              </>
+            ) : (
             <>
               <MobileResultChips
                 question={question}
@@ -239,6 +273,8 @@ export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
                 selectedSqId={selectedSqId}
                 setSelectedSqId={setSelectedSqId}
                 setOpenExplanationBySq={setOpenExplanationBySq}
+                isEnglishChapter={isEnglishChapter}
+                noMath={noMath}
               />
               {/* タップした問だけ詳細カード（解答・解説）を出す */}
               {(() => {
@@ -258,6 +294,7 @@ export function renderExplanationAnswerItem(ctx: ExplanationAnswerItemContext) {
                   案内文の「上の正誤ボタン」も、実際に真上を指すようになる。 */}
               {audioPlayerBlock}
             </>
+            )
           ) : (
             /* PC・結果表示：元の並び順（ア→イ→ウ…）のまま、正誤の色分けだけ行って上から表示 */
             objectiveSqs.map(sq => renderSq(sq, isAnswerCorrect(sq, answers[sq.id])))

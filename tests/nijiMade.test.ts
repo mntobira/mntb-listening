@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-// @ts-expect-error 型定義のない .mjs（CLI 用のスクリプト）
 import { parseUniversities } from '../scripts/gacha-prints/niji-made.mjs';
 import { NIJI_UNIVERSITIES } from '../src/data/nijiMockPrints';
 

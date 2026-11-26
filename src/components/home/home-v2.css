@@ -58,7 +58,7 @@
 
 /* ---------- HUD（コイン・ボーナス・レベル） ---------- */
 .home-v2 .game-home-hud { padding: 8px 10px 8px !important; border: 1.5px solid var(--hv-line) !important; border-radius: var(--hv-radius) !important; background: var(--hv-paper) !important; box-shadow: 0 3px 0 #e6d7b8 !important; }
-.home-v2 .game-hud-top { grid-template-columns: 1.15fr 1fr; gap: 10px; }
+.home-v2 .game-hud-top { grid-template-columns: 1.1fr 1fr; gap: 8px; }
 .home-v2 .game-hud-top button { min-height: 48px; border-radius: 13px; padding: 4px 10px; }
 .home-v2 .game-hud-wallet { --edge: #e8b93a; --lift: #d49a17; background: var(--hv-yellow) !important; color: var(--hv-ink) !important; }
 .home-v2 .game-hud-wallet > span { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; min-width: 0; }
@@ -66,11 +66,51 @@
 .home-v2 .game-hud-wallet strong { font: 900 clamp(20px, 5.4vw, 26px)/1 var(--mt-font-display) !important; color: var(--hv-ink) !important; white-space: nowrap; overflow-wrap: normal !important; font-variant-numeric: tabular-nums; }
 .home-v2 .game-hud-wallet .game-hud-label { display: block !important; font: 800 12px/1.1 var(--mt-font-body) !important; color: var(--hv-ink-2); white-space: nowrap; letter-spacing: 0; }
 .home-v2 .game-hud-wallet > svg { color: var(--hv-ink); }
-.home-v2 .game-hud-bonus { background: #fff !important; color: var(--hv-ink) !important; }
-.home-v2 .game-hud-bonus span { font-size: 12px !important; color: var(--hv-ink-2); white-space: nowrap; }
-.home-v2 .game-hud-bonus strong { font-size: 15px !important; color: var(--hv-ink); white-space: nowrap; }
+.home-v2 .game-hud-bonus { background: #fff !important; color: var(--hv-ink) !important; gap: 7px; padding-inline: 8px; }
+.home-v2 .game-hud-bonus > span { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; font-size: 12px !important; color: var(--hv-ink-2); white-space: nowrap; }
+.home-v2 .game-hud-bonus .game-hud-label { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 12px/1.15 var(--mt-font-body) !important; color: var(--hv-ink-2); letter-spacing: -.02em; }
+.home-v2 .game-hud-bonus strong { font: 900 15px/1.1 var(--mt-font-display) !important; color: var(--hv-ink); white-space: nowrap; margin-top: 0; font-variant-numeric: tabular-nums; }
 .home-v2 .game-hud-bonus:disabled { background: #f1ede4 !important; box-shadow: 0 2px 0 var(--hv-lift) !important; }
-.home-v2 .game-hud-xp { margin: 7px 2px 0; }
+
+/* スマホ用：連続学習の小さな扉バッジ（HUD下段に配置・PCでは STUDY DESK があるので隠す） */
+.home-v2 .game-hud-xp { margin: 7px 2px 0; display: flex; align-items: center; gap: 10px; }
+.home-v2 .game-hud-xp > :first-child { flex: 1 1 auto; min-width: 0; }
+.home-mobile-streak {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border: 1px solid #dfd0b2;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--hv-ink, #1f3354);
+  white-space: nowrap;
+}
+.home-mobile-streak-door {
+  width: 9px;
+  height: 13px;
+  border-radius: 4px 4px 1px 1px;
+  background: linear-gradient(90deg, #ffe08a 0 52%, var(--mt-brand, #2458a6) 52%);
+  box-shadow: inset 0 0 0 1px var(--mt-brand, #2458a6);
+}
+.home-mobile-streak b {
+  font: 900 13px/1 var(--mt-font-display);
+  color: var(--mt-brand, #2458a6);
+  font-variant-numeric: tabular-nums;
+}
+.home-mobile-streak small {
+  font: 800 12px/1 var(--mt-font-body);
+  color: var(--hv-ink-2, #3c4f6b);
+}
+@media (max-width: 374px) {
+  .home-v2 .game-hud-top { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .home-v2 .game-hud-bonus > svg { width: 17px; height: 17px; }
+  .home-v2 .game-hud-bonus { gap: 5px; padding-inline: 6px; }
+}
+@media (min-width: 1100px) {
+  .home-mobile-streak { display: none; }
+}
 .home-v2 .game-hud-xp div { color: var(--hv-ink) !important; }
 /* XP バー：加算時にオーバーシュートして戻る */
 .home-v2 .game-hud-xp [role=progressbar] { height: 10px !important; border: 1.5px solid #e3d3b0; background: #fff !important; box-shadow: none !important; }

@@ -31,6 +31,10 @@
   user-select: none;
   -webkit-mask-image: none;
   mask-image: none;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  image-rendering: auto;
 }
 .alpha-cinematic-hidden-video {
   position: absolute;

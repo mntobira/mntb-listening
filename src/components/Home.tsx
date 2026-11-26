@@ -369,7 +369,10 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
       <SakuraPetals count={14} className="home-sakura" />
       <div className="game-home-viewport">
         <header className="game-home-header">
-          <div><h1><img className="game-home-logo" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}><KineticText text={`${greetingName}さんのホーム`} delay={350} step={30} /></p></div>
+          <div className="game-home-brand">
+            <h1><img className="game-home-logo" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" /></h1>
+            <p className="game-home-greeting" title={`${greetingName}さんのホーム`}><KineticText text={`${greetingName}さんのホーム`} delay={350} step={30} /></p>
+          </div>
           {/* ★ロゴの横に本番までの日数（2026-10-11 ご要望）★ 共通テストと2次（前期）の2つ */}
           <dl className="game-home-countdown" aria-label="本番までの日数" data-home-countdown>
             <div title={`共通テスト ${EXAM_DATE_LABEL}`}><dt>共通テスト</dt><dd><b><CountUp value={daysUntilExam} fromZero duration={1100} delay={300} /></b>日</dd></div>
@@ -381,7 +384,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           </div>
         </header>
         {onGrowth && <React.Suspense fallback={<div className="game-hud-placeholder">成長記録を読み込んでいます…</div>}>
-          <GrowthHomeStrip expanded homeLayout onProfile={() => onGrowth('outfit')} onShop={() => onGrowth('gacha-shop')} onGacha={() => onGrowth('gacha')}
+          <GrowthHomeStrip expanded homeLayout studyStreak={streak} onProfile={() => onGrowth('outfit')} onShop={() => onGrowth('gacha-shop')} onGacha={() => onGrowth('gacha')}
             onBadges={() => onGrowth('badges')} onMissions={() => onGrowth('missions')} onWallet={() => onGrowth('overview')} />
         </React.Suspense>}
         {/* D7（2026-10-30）ホームの背景はガチャで当てて、きせかえで選べる（何もつけなければいつもの宇宙） */}

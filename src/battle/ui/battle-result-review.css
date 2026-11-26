@@ -4,12 +4,15 @@
 .result-review-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .result-review-chips { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px; scrollbar-width: none; scroll-behavior: smooth; }
 .result-review-chips::-webkit-scrollbar { display: none; }
-.result-review-chips button { flex: 0 0 44px; height: 44px; border-radius: 12px; border: 2px solid #f0b8b3; background: #fdf0ee; color: var(--mt-danger); font-size: 14px; font-weight: 900; }
-.result-review-chips button[data-ok] { border-color: #9fd8c3; background: #eef9f3; color: var(--mt-done); }
-.result-review-chips button[data-none] { border-color: #ddd5c8; background: #f6f3ee; color: #6b7280; }
+.result-review-chips button { flex: 0 0 44px; height: 44px; border-radius: 12px; border: 2px solid #f0b8b3; background: #fdf0ee; color: var(--mt-danger); font-size: 14px; font-weight: 900; box-shadow: 0 2px 0 #e9c0bc, inset 0 1px 0 rgba(255, 255, 255, .85); transition: transform .1s ease, box-shadow .15s ease; }
+.result-review-chips button[data-ok] { border-color: #9fd8c3; background: #eef9f3; color: var(--mt-done); box-shadow: 0 2px 0 #bce3d3, inset 0 1px 0 rgba(255, 255, 255, .9); }
+.result-review-chips button[data-none] { border-color: #ddd5c8; background: #f6f3ee; color: #6b7280; box-shadow: 0 2px 0 #e3dbd0, inset 0 1px 0 rgba(255, 255, 255, .85); }
+.result-review-chips button:active:not(:disabled) { transform: translateY(1.5px); box-shadow: 0 0.5px 0 rgba(80, 60, 30, .14); }
 .result-review-chips button[aria-current] { outline: 3px solid #E5B93C; outline-offset: 1px; }
-.result-review-arrow { flex: 0 0 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; border: 1.5px solid #d9cdbb; background: var(--mt-bg-card); color: #2c3e50; }
-.result-review-arrow:disabled { opacity: .3; }
+.result-review-arrow { flex: 0 0 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; border: 1.5px solid #d9cdbb; background: var(--mt-bg-card); color: #2c3e50; box-shadow: 0 2px 0 #e3d7c3, inset 0 1px 0 rgba(255, 255, 255, .92); transition: transform .1s ease, border-color .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .result-review-arrow:hover:not(:disabled) { border-color: var(--mt-line-strong); background: #ffffff; } }
+.result-review-arrow:active:not(:disabled) { transform: translateY(1.5px); box-shadow: 0 0.5px 0 #e3d7c3; }
+.result-review-arrow:disabled { opacity: .3; box-shadow: none; }
 .result-review-stage { display: block; touch-action: pan-y; }
 .result-review-card { animation: result-review-in .18s ease-out; }
 @keyframes result-review-in { from { opacity: .4; transform: translateX(6px); } to { opacity: 1; transform: none; } }
@@ -33,7 +36,7 @@
 .result-summary[data-outcome=lose] .result-summary-buddy, .result-summary[data-outcome=draw] .result-summary-buddy { flex: 1 1 auto; min-height: 96px; display: flex; align-items: center; justify-content: center; }
 .result-summary[data-outcome=lose] .result-summary-buddy .tb-figure, .result-summary[data-outcome=draw] .result-summary-buddy .tb-figure { transform: scale(1.25); transform-origin: center; }
 /* 報酬1行 */
-.result-reward-line { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 2px 6px; padding: 8px 12px; border-radius: 16px; background: linear-gradient(#fff8e1, #fdeec4); border: 1.5px solid #ecd28f; font-size: 13px; font-weight: 800; color: #6b4a12; }
+.result-reward-line { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 2px 6px; padding: 8px 12px; border-radius: 16px; background: linear-gradient(180deg, #fff9e6, #fdeec4); border: 1.5px solid #ecd28f; box-shadow: 0 2px 0 #e2c579, inset 0 1px 0 rgba(255, 255, 255, .85); font-size: 13px; font-weight: 800; color: #6b4a12; }
 .result-reward-line b { font-size: 22px; font-weight: 900; color: #b0700f; font-variant-numeric: tabular-nums; }
 .result-reward-line em { font-style: normal; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: #f6b93b; color: #3f2a06; font-size: 12px; }
 /* 点数カードは詰める */
@@ -74,21 +77,27 @@
 
 /* 詳しい結果の見出し：左に「勝敗にもどる」 */
 .result-detail-head { position: relative; display: flex; align-items: center; justify-content: center; min-height: 44px; margin-bottom: 10px; }
-.result-detail-back { position: absolute; left: 0; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; border: 1.5px solid #e2d6bf; background: var(--mt-bg-card); color: #5e5040; }
+.result-detail-back { position: absolute; left: 0; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; border: 1.5px solid #e2d6bf; background: var(--mt-bg-card); color: #5e5040; box-shadow: 0 2px 0 #e4d8c3, inset 0 1px 0 rgba(255, 255, 255, .92); transition: transform .1s ease, border-color .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .result-detail-back:hover:not(:disabled) { border-color: var(--mt-line-strong); background: #ffffff; } }
+.result-detail-back:active:not(:disabled) { transform: translateY(1.5px); box-shadow: 0 0.5px 0 #e4d8c3; }
 
 /* 部屋（教科を選ぶ画面）の「さいきんの対戦」 */
-.battle-recent { padding: 8px 10px; border-radius: 16px; background: #fffaf0; border: 1.5px solid #ecdcb9; }
+.battle-recent { padding: 8px 10px; border-radius: 16px; background: linear-gradient(180deg, var(--mt-bg-card) 0%, #fffaf0 100%); border: 1.5px solid #ecdcb9; box-shadow: 0 2.5px 0 #e6d5b1, inset 0 1px 0 rgba(255, 255, 255, .92); }
 .battle-recent-title { display: flex; align-items: center; gap: 4px; margin: 0 0 6px; font-size: 12px; font-weight: 900; color: #6b5a3a; }
 .battle-recent ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .battle-recent li { display: flex; gap: 6px; }
-.battle-recent-main { flex: 1; min-width: 0; min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 12px; border: 1.5px solid #e6dac3; background: #fff; text-align: left; }
+.battle-recent-main { flex: 1; min-width: 0; min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 12px; border: 1.5px solid #e6dac3; background: #fff; text-align: left; box-shadow: 0 1.5px 0 #e6dac3, inset 0 1px 0 rgba(255, 255, 255, .95); transition: transform .1s ease, border-color .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .battle-recent-main:hover:not(:disabled) { border-color: var(--mt-line-strong); } }
+.battle-recent-main:active:not(:disabled) { transform: translateY(1px); box-shadow: none; }
 .battle-recent-mark { flex-shrink: 0; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; font-size: 12px; font-weight: 900; background: var(--mt-todo-soft); color: #5a6470; }
 .battle-recent-mark[data-outcome=win] { background: #fff1c7; color: #9a6a00; }
 .battle-recent-body { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
 .battle-recent-body b { font-size: 12px; font-weight: 900; }
 .battle-recent-body span { font-size: 13px; font-weight: 800; color: #2c3e50; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.battle-recent-score { flex-shrink: 0; font-size: 13px; font-weight: 900; color: #6b6a66; }
-.battle-recent-retry { flex-shrink: 0; min-height: 44px; display: inline-flex; align-items: center; gap: 3px; padding: 0 10px; border-radius: 12px; border: 1.5px solid #f0c98a; background: #fff6e6; color: #8a5a10; font-size: 12px; font-weight: 900; }
+.battle-recent-score { flex-shrink: 0; font-size: 13px; font-weight: 900; color: #6b6a66; font-variant-numeric: tabular-nums; }
+.battle-recent-retry { flex-shrink: 0; min-height: 44px; display: inline-flex; align-items: center; gap: 3px; padding: 0 10px; border-radius: 12px; border: 1.5px solid #f0c98a; background: linear-gradient(180deg, #fff9ef, #fff3dd); color: #8a5a10; font-size: 12px; font-weight: 900; box-shadow: 0 1.5px 0 #e8be79, inset 0 1px 0 rgba(255, 255, 255, .85); transition: transform .1s ease, filter .15s ease, box-shadow .15s ease; }
+@media (hover: hover) { .battle-recent-retry:hover:not(:disabled) { filter: brightness(1.02); } }
+.battle-recent-retry:active:not(:disabled) { transform: translateY(1px); box-shadow: none; }
 /* 「さいきんの対戦」は横に並べるカード（スマホは横スクロール）。縦に積むと1画面に収まらない */
 .battle-recent ul { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 2px; scrollbar-width: none; }
 .battle-recent ul::-webkit-scrollbar { display: none; }

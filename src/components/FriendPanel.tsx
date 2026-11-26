@@ -139,11 +139,11 @@ export function FriendPanel() {
         ・外枠はスクロールさせず、一覧だけを flex-1 でスクロールさせる
       これで上の部品は約130px になり、残り（約400px＝6人ぶん）を一覧が使う。
     */
-    <div className="bg-white border border-gray-150 p-3 sm:p-4 rounded-2xl shadow-sm gap-2.5 h-full min-h-0 overflow-hidden flex flex-col friend-panel">
-      <div className="flex shrink-0 items-center gap-2 rounded-xl border border-[#F0C7D2]/70 bg-[#FDFBF7] px-2.5 py-1.5"
+    <div className="bg-[#FFFDF8] border border-[#E6DCCB] p-3 sm:p-4 rounded-2xl gap-2.5 h-full min-h-0 overflow-hidden flex flex-col friend-panel">
+      <div className="friend-own-banner flex shrink-0 items-center gap-2 rounded-xl border border-[#EBCDD6]/80 bg-[#FDF8F2] px-2.5 py-1.5"
         title="このコードを友だちに伝えると、相手があなたを追加できます。">
-        <span className="friend-own-label shrink-0 text-xs font-bold leading-tight text-gray-600">あなたの<br />コード</span>
-        <code aria-label="あなたのフレンドコード" className="friend-own-code min-w-0 flex-1 truncate rounded-lg border border-gray-150 bg-white px-2.5 py-2 text-sm font-black tracking-wider text-[#1B2631]">
+        <span className="friend-own-label shrink-0 text-xs font-bold leading-tight text-[#6E5F48]">あなたの<br />コード</span>
+        <code aria-label="あなたのフレンドコード" className="friend-own-code min-w-0 flex-1 truncate rounded-lg border border-[#E2D6C1] bg-white px-2.5 py-2 text-sm font-black tracking-wider text-[#1B2631]">
           {profile ? profile.friendCode : (loading ? '発行中…' : '—')}
         </code>
         <button
@@ -162,7 +162,7 @@ export function FriendPanel() {
             }
           }}
           disabled={!profile?.friendCode}
-          className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl border border-[#A9CCE3]/40 bg-[#A9CCE3]/20 px-2 text-xs font-bold text-[#2C3E50] hover:bg-[#A9CCE3]/35 disabled:opacity-40"
+          className="friend-own-btn inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl border border-[#8FB8D6]/55 bg-[#EAF3FA] px-2 text-xs font-bold text-[#2C3E50] hover:bg-[#DCEBF7] disabled:opacity-40 cursor-pointer"
           aria-label="フレンドコードをコピー"
         >
           {copied ? <Check size={15} aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />}<span className="friend-own-copy-text">{copied ? '済' : 'コピー'}</span>
@@ -171,7 +171,7 @@ export function FriendPanel() {
           type="button"
           onClick={() => void shareOwnCode()}
           disabled={!profile?.friendCode}
-          className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl border border-[#A9CCE3]/40 bg-[#A9CCE3]/20 px-2 text-xs font-bold text-[#2C3E50] hover:bg-[#A9CCE3]/35 disabled:opacity-40"
+          className="friend-own-btn inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl border border-[#8FB8D6]/55 bg-[#EAF3FA] px-2 text-xs font-bold text-[#2C3E50] hover:bg-[#DCEBF7] disabled:opacity-40 cursor-pointer"
           aria-label="フレンドコードを共有"
           title="他のアプリへフレンドコードを共有"
         >
@@ -209,13 +209,13 @@ export function FriendPanel() {
 
       {visibleRequests.length > 0 && (
         <div className="shrink-0 space-y-2 max-h-48 overflow-y-auto pr-1" data-friend-requests>
-          <p className="text-xs text-gray-600 font-bold sticky top-0 bg-white">届いている申請（{visibleRequests.length}件）</p>
+          <p className="text-xs text-[#6E5F48] font-bold sticky top-0 bg-[#FFFDF8]">届いている申請（{visibleRequests.length}件）</p>
           {visibleRequests.map((req) => {
             // E3（2026-10-30）：ランキングと同じ詳しさ（志望校・学習時間・達成・Lv・志）＋「プロフィール」ボタン
             const pp = publicProfiles[req.fromUid];
             const name = displaySafeNickname(req.fromNickname);
             return (
-              <div key={req.id} className="flex items-center gap-2.5 bg-[#F9E79F]/15 border border-[#F9E79F]/50 rounded-2xl px-2.5 py-2" data-friend-request>
+              <div key={req.id} className="friend-req-card flex items-center gap-2.5 bg-[#FFF9E6] border border-[#EBD27B] rounded-2xl px-2.5 py-2" data-friend-request>
                 <Avatar name={req.fromNickname} url={req.fromPhotoURL} />
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-bold text-[#1B2631] truncate">{name}</span>
@@ -224,9 +224,9 @@ export function FriendPanel() {
                       {displaySafePublicText(pp.targetSchool) || '志望校未設定'} · 学習 {formatStudyTime(pp.studySeconds)}{pp.stagesCleared != null ? ` · 達成 ${pp.stagesCleared}` : ''}{pp.level != null ? ` · Lv.${pp.level}` : ''}
                     </span>
                     {pp.motto && <span className="block truncate text-xs font-bold text-[#6b5a3a]">「{displaySafePublicText(pp.motto)}」</span>}
-                  </> : <span className="block text-xs font-bold text-gray-500">プロフィールは非公開です</span>}
+                  </> : <span className="block text-xs font-bold text-[#7A6A4C]">プロフィールは非公開です</span>}
                 </span>
-                <button type="button" className="min-h-11 shrink-0 rounded-xl border border-[#cfd8e3] bg-white px-2.5 text-xs font-bold text-[#2C3E50]"
+                <button type="button" className="friend-mini-btn min-h-11 shrink-0 rounded-xl border border-[#D4C7B0] bg-white px-2.5 text-xs font-bold text-[#2C3E50] cursor-pointer"
                   onClick={() => setOpenProfile({ uid: req.fromUid, nickname: req.fromNickname, where: 'friend' })}
                   aria-label={`${name} さんのプロフィールを表示`} data-friend-request-profile>プロフィール</button>
                 <UserSafetyMenu
@@ -244,14 +244,14 @@ export function FriendPanel() {
 
       {sentRequests.length > 0 && (
         <div className="shrink-0 space-y-2 max-h-24 overflow-y-auto pr-1">
-          <p className="text-xs text-gray-400 font-bold sticky top-0 bg-white">送信済みの申請（承認待ち）</p>
+          <p className="text-xs text-[#7A6A4C] font-bold sticky top-0 bg-[#FFFDF8]">送信済みの申請（承認待ち）</p>
           {sentRequests.map((req) => (
-            <div key={req.id} className="flex items-center gap-3 bg-gray-50 border border-gray-150 rounded-2xl p-3">
-              <span className="flex-1 text-xs font-bold text-gray-500 truncate">相手の承認を待っています</span>
+            <div key={req.id} className="flex items-center gap-3 bg-[#FAF5EB] border border-[#E6DCCB] rounded-2xl p-3">
+              <span className="flex-1 text-xs font-bold text-[#6E5F48] truncate">相手の承認を待っています</span>
               <button
                 disabled={loading}
                 onClick={() => runAction(() => cancelFriendRequest(req), '申請を取り消しました。')}
-                className="text-xs font-bold text-gray-500 hover:underline disabled:opacity-40"
+                className="text-xs font-bold text-[#6E5F48] hover:underline disabled:opacity-40 cursor-pointer"
               >
                 取消
               </button>
@@ -261,12 +261,12 @@ export function FriendPanel() {
       )}
 
       <div data-friend-list className="min-h-[160px] flex-1 space-y-1.5 overflow-y-auto overscroll-contain pr-1" tabIndex={0} aria-label="フレンド一覧">
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-white pb-0.5">
-          <p className="flex items-center gap-1.5 text-xs font-bold text-gray-600"><UserPlus size={14} aria-hidden="true" />フレンド一覧（{loaded ? `${friends.length}人` : '…'}）</p>
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-[#FFFDF8] pb-0.5">
+          <p className="flex items-center gap-1.5 text-xs font-bold text-[#5E503C]"><UserPlus size={14} aria-hidden="true" />フレンド一覧（{loaded ? `${friends.length}人` : '…'}）</p>
           <button
             onClick={load}
             disabled={loading}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-gray-150 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100"
+            className="friend-mini-btn inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-[#E2D6C1] bg-white text-[#5E503C] transition-all hover:bg-[#FAF5EB] cursor-pointer"
             aria-label="フレンド情報を更新"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
@@ -275,13 +275,13 @@ export function FriendPanel() {
         {!loaded ? (
           <ListSkeleton rows={4} rowHeight={52} label="フレンド一覧を読み込み中…" />
         ) : friends.length === 0 ? (
-          <div className="text-xs text-gray-600 bg-gray-50 rounded-2xl p-3 flex items-center gap-2"><DoorMascot showSpeech={false} size="mini" className="w-auto" /><span>まだフレンドはいません。上の「あなたのコード」を友だちに伝えるか、友だちのコードを入れて「申請」しましょう（小文字や「MNTB-」なしでも送れます）。</span></div>
+          <div className="text-xs text-[#5E503C] bg-[#FAF5EB] border border-[#E6DCCB] rounded-2xl p-3 flex items-center gap-2"><DoorMascot showSpeech={false} size="mini" className="w-auto" /><span>まだフレンドはいません。上の「あなたのコード」を友だちに伝えるか、友だちのコードを入れて「申請」しましょう（小文字や「MNTB-」なしでも送れます）。</span></div>
         ) : (
           friends.map((f) => {
             const safeName = displaySafeNickname(f.nickname);
             const openFriendProfile = () => setOpenProfile({ uid: f.uid, nickname: f.nickname, where: 'friend' });
             return (
-              <div key={f.uid} className="flex items-center gap-2.5 bg-gray-50 border border-gray-150 rounded-2xl px-2.5 py-1.5" data-friend-row>
+              <div key={f.uid} className="friend-row-card flex items-center gap-2.5 bg-white border border-[#E6DCCB] rounded-2xl px-2.5 py-1.5" data-friend-row>
                 <Avatar name={f.nickname} url={f.photoURL} />
                 <span className="min-w-0 flex-1">
                   <button
@@ -318,7 +318,7 @@ export function FriendPanel() {
 
 function Avatar({ name, url }: { name: string; url?: string }) {
   return (
-    <div className="w-9 h-9 rounded-full bg-white border border-gray-150 overflow-hidden flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
+    <div className="w-9 h-9 rounded-full bg-[#FAF5EB] border border-[#DFD3BD] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_1px_3px_rgba(60,42,18,0.08)] overflow-hidden flex items-center justify-center text-xs font-bold text-[#6E5F48] shrink-0">
       {safeAvatarUrl(url) ? <img src={safeAvatarUrl(url)} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : name.slice(0, 1)}
     </div>
   );

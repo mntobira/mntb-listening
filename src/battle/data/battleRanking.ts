@@ -86,6 +86,7 @@ import { resolveNickname } from '../../utils/leaderboard';
 import { nextRating, RATING_INITIAL } from '../core/battleCore';
 import type { BattleOutcome } from '../core/types';
 import { COL_RANKING } from './battle';
+import { safeBattlePhotoUrl } from './battleShared';
 
 /** レート1回あたりの変化量の上限（ルール側と必ず同じ値にすること） */
 export const RATING_MAX_DELTA = 60;
@@ -144,7 +145,11 @@ export async function applyRatingResult(
 
   const ref = doc(db, COL_RANKING, user.uid);
   const nickname = resolveNickname();
-  const photoURL = user.photoURL || '';
+  const photoURL = safeBattlePhotoUrl(user.photoURL);
+
+  const safeOpponentRating = Number.isFinite(opponentRating)
+    ? Math.max(800, Math.min(4000, opponentRating))
+    : RATING_INITIAL;
 
   try {
     return await runTransaction(db, async (tx) => {
@@ -157,7 +162,7 @@ export async function applyRatingResult(
         return { before: current, after: current };
       }
 
-      const after = nextRating(current, opponentRating, outcome, forfeit);
+      const after = nextRating(current, safeOpponentRating, outcome, forfeit);
 
       const wins = Number(snap.get('wins') || 0) + (outcome === 'win' ? 1 : 0);
       const losses = Number(snap.get('losses') || 0) + (outcome === 'lose' ? 1 : 0);
@@ -208,7 +213,7 @@ export async function ensureBattleRankingEntry(): Promise<void> {
       tx.set(ref, {
         uid: user.uid,
         nickname: resolveNickname(),
-        photoURL: user.photoURL || '',
+        photoURL: safeBattlePhotoUrl(user.photoURL),
         rating: RATING_INITIAL,
         wins: 0,
         losses: 0,
