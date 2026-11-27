@@ -39,6 +39,9 @@ const TITLE_TOBIRA_CLIP: AlphaClipSpec = {
   sbsMp4: '/cinematics/title_tobira-sbs.mp4',
   poster: '/cinematics/title_tobira-poster.webp',
   endPlate: '/cinematics/title_tobira-landed.webp',
+  width: 420,
+  height: 736,
+  durationSec: 5.16,
 };
 
 function useLandscapeTitle(): boolean {

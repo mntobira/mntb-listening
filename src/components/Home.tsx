@@ -88,7 +88,7 @@ import { UpdateNoticeModal } from './UpdateNoticeModal';
 import { unreadNoticeCount, refreshRemoteNotices } from '../utils/updateNotices';
 import { readJsonArray, requireLocalStorage, setItemOrThrow } from '../utils/safeLocalStorage';
 import { KineticText } from '../motion';
-import { TobiraMotion, claimDailyMotion } from './TobiraMotion';
+import { TobiraMotion, TOBIRA_MOTIONS, claimDailyMotion } from './TobiraMotion';
 
 interface HomeProps {
   onStart: () => void;
@@ -182,6 +182,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
   const [daysAway, setDaysAway] = useState(0);
   // ★とびら君のあいさつ動画（1日1回）★ 3日以上あいたら「起きて手をふる」、それ以外は「手をふる」
   const [greetPlay] = useState(() => claimDailyMotion('home'));
+  const [dailyDone, setDailyDone] = useState(false);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
 
   // ===== 学習進捗（大問ベース） =====
@@ -394,15 +395,31 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           <TobiraBuddy className="game-stage-say" figure={false} bubble="top" input={{ screen: 'home', streak, dueCount: reviewDueCount, solved: solvedQuestions, daysAway: Math.max(0, daysAway), firstVisit: (daysAway < 0 || (streak <= 1 && solvedQuestions === 0 && !completedIds.length)) && growth.loginDays <= 1 && growth.matches === 0 && growth.studySolved === 0 && growth.rushPlays === 0, isGuest, loginDays: growth.loginDays, seed: new Date().getDate() }} />
             <div className="game-stage-floor" aria-hidden="true"><div className="game-equipped-ring" data-frame-pattern={growth ? equippedFramePattern(growth) : 'plain'} style={{borderColor: growth ? equippedFrameColor(growth) : undefined}} /><Swords /></div>
           {/* ★2026-10-01 D：とびら君をドラッグで回せる（モンスト風）★ ちょんと押すと今までどおり着せ替え */}
-          {growth && <div className="game-mascot-button" data-home-mascot>
-            <SpinMascot className="home-mascot-wrap" label="とびら君（左右にドラッグで回す・押すと着せ替え）" onTap={onGrowth ? () => onGrowth('outfit') : undefined}>
-              <TobiraMotion name={daysAway >= 3 ? 'wakeup' : 'greet'} play={greetPlay}>
-                <img className="home-mascot-art" src={equippedPoseSrc(growth)} alt="あなたのとびら君" draggable={false} /><TobiraAccessories progress={growth} />
-              </TobiraMotion>
-            </SpinMascot>
-            {/* 「マイとびら」の札（2026-10-20）：名前とレベルを別の色にし、レベルは金のメダル風に */}
-            <span className="my-tobira-tag"><i className="my-tobira-name">マイとびら</i><b className="my-tobira-lv">Lv.{levelOf(growth.xp).level}</b></span>
-          </div>}
+          {growth && (() => {
+            const poseSrc = equippedPoseSrc(growth);
+            const dailyName = daysAway >= 3 ? 'wakeup' : 'greet';
+            const playDaily = greetPlay && !dailyDone && TOBIRA_MOTIONS[dailyName].ready;
+            const playWalk = poseSrc === '/mascots/basic.webp' || poseSrc === '/mascots/walking.webp';
+            return <div className="game-mascot-button" data-home-mascot>
+              <SpinMascot
+                className="home-mascot-wrap"
+                label="とびら君（左右にドラッグで回す・押すと着せ替え）"
+                onTap={onGrowth ? () => onGrowth('outfit') : undefined}
+                backChildren={<><img className="home-mascot-art" src={poseSrc} alt="" draggable={false} /><TobiraAccessories progress={growth} /></>}
+              >
+                <TobiraMotion
+                  name={playDaily ? dailyName : 'walk'}
+                  play={playDaily || playWalk}
+                  onDone={playDaily ? () => setDailyDone(true) : undefined}
+                >
+                  <img className="home-mascot-art" src={poseSrc} alt="あなたのとびら君" draggable={false} />
+                </TobiraMotion>
+                <TobiraAccessories progress={growth} />
+              </SpinMascot>
+              {/* 「マイとびら」の札（2026-10-20）：名前とレベルを別の色にし、レベルは金のメダル風に */}
+              <span className="my-tobira-tag"><i className="my-tobira-name">マイとびら</i><b className="my-tobira-lv">Lv.{levelOf(growth.xp).level}</b></span>
+            </div>;
+          })()}
           {/* お供（2026-11-03）：とびら君のとなりに、きせかえで選んだお供が並ぶ。押すときせかえへ */}
           {growth && equippedCompanion(growth) && <button type="button" className="home-companion" data-home-companion aria-label="お供（押すと着せ替え）" onClick={onGrowth ? () => onGrowth('outfit') : undefined}>
             <CompanionArt value={equippedCompanion(growth)} size={88} className="home-companion-art" />
