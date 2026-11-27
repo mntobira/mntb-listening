@@ -3501,7 +3501,7 @@
     "subId": "q_el1_B_set1_2",
     "label": "問2",
     "hint": "男性（会社員）",
-    "script": "\"I'll take this shoulder bag with the long strap, please.\"",
+    "script": "\"I'll take this red shoulder bag with the long strap, please.\"",
     "translation": "",
     "keyPhrases": [],
     "source": "src/data/englishListeningQ1BProblems.ts",

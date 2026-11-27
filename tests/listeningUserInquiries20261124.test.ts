@@ -142,6 +142,52 @@ describe('利用者お問い合わせ16件の回帰テスト（2026-11-24）', (
     expect(ra.lines[3].who).toBe('W');
     expect(ra.dur).toBeGreaterThan(10);
   });
+
+  it('問題品質全数監査（2026-11-26）：第1問B 第1回 問2の "red" 復元と第4回・第5回・第2問の解説同期が整合している', () => {
+    // 1. q_el1_B_set1_2: MP3音源・read_along・和訳・カラー図版と一致するよう "red" を復元
+    const q1bSet1 = EL1_B_PROBLEMS.find((p) => p.id === 'q_el1_B_set1')!;
+    const track12 = q1bSet1.audioTracks.find((t) => t.subId === 'q_el1_B_set1_2')!;
+    expect(track12.script).toContain('red shoulder bag with the long strap');
+
+    // 2. q_el1_B_set4_4 & q_el1_B_set5_4: イラスト実態と解説文が一致している
+    const q1bSet4 = EL1_B_PROBLEMS.find((p) => p.id === 'q_el1_B_set4')!;
+    expect(q1bSet4.explanation).toContain('② 大800円・中500円・小300円');
+    expect(q1bSet4.explanation).toContain('④ 大500円・中300円・小800円');
+
+    const q1bSet5 = EL1_B_PROBLEMS.find((p) => p.id === 'q_el1_B_set5')!;
+    expect(q1bSet5.explanation).toContain('① 白い車と黒い車の2台');
+    expect(q1bSet5.explanation).toContain('② 白い車とグレー（斜線）の車の2台');
+
+    // 3. 第2問 第8回 問3・第9回 問2：再描画した図版と選択肢解説が一致している
+    const q2Set8 = EL2_PROBLEMS.find((p) => p.id === 'q_el2_set8')!;
+    expect(q2Set8.explanation).toContain('② 本→クローゼット、服→寝室、台所用品→台所（本と服の行き先が逆）');
+    expect(q2Set8.explanation).not.toContain('矢印が斜めに描かれている図');
+
+    const q2Set9 = EL2_PROBLEMS.find((p) => p.id === 'q_el2_set9')!;
+    expect(q2Set9.explanation).toContain('① 前列VIP・中央左メディア・後列学生');
+    expect(q2Set9.explanation).toContain('② 前列VIP・中央右メディア・後列学生');
+    expect(q2Set9.explanation).toContain('③ 前列VIP・中央学生・後列左メディア');
+    expect(q2Set9.explanation).toContain('④ 前列メディア・中央左VIP・後列学生');
+
+    // 4. 再描画したグラフ・イラスト実ファイルが存在し破損していないこと
+    const updatedImages = [
+      'public/listening_q4/set12_4A_front.png',
+      'public/listening_q4/set09_4A_front.png',
+      'public/listening_q1b/el1B_set10_q1.jpg',
+      'public/listening_q1b/el1B_set5_q4.jpg',
+      'public/listening_q1b/el1B_set14_q3.jpg',
+      'public/listening_q2/el2_set6_q2.jpg',
+      'public/listening_q2/el2_set7_q3.jpg',
+      'public/listening_q2/el2_set8_q3.jpg',
+      'public/listening_q2/el2_set9_q1.jpg',
+      'public/listening_q2/el2_set9_q2.jpg',
+    ];
+    for (const rel of updatedImages) {
+      const full = path.join(ROOT, rel);
+      expect(fs.existsSync(full), `${rel} が存在しない`).toBe(true);
+      expect(fs.statSync(full).size, `${rel} が小さすぎる`).toBeGreaterThan(15000);
+    }
+  });
 });
 
 describe('AdMob 下部バナーの非同期競合防止（adService）', () => {
