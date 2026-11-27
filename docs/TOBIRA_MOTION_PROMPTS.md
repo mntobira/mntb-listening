@@ -64,6 +64,14 @@ Solid pure chroma-key green background (#00FF00), perfectly flat and evenly lit,
 
 ---
 
+## 0-walk. walk（ホーム・常時おさんぽループ）— First / Last：walking
+```
+[キャラクター固定文]
+The character walks cheerfully in place facing the viewer with a rhythmic left-right step, swinging its arms naturally with the yellow pencil and triangle tail, blinking once with a bright friendly smile. Seamless loop: the last frame matches the first frame exactly.
+[背景固定文]
+```
+取り込み：`bash scripts/tobira-motion/import.sh walk.mp4 walk 0.46 1.83`
+
 ## 1. greet（ホーム・その日はじめて）— First / Last：basic
 ```
 [キャラクター固定文]

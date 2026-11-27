@@ -11,6 +11,11 @@
   animation: home-mascot-idle 3.2s ease-in-out 0s infinite;
   will-change: translate, scale, rotate;
 }
+/* 歩行ループ動画再生中は動画自体の自然な足運びを見せ、静止画用の伸縮アニメと二重にならないようにする */
+.game-home .spin-mascot:not([data-spinning]):not([data-settling]) .spin-mascot-front:has(> .tobira-motion[data-tobira-motion="walk"]) {
+  animation: none;
+  will-change: auto;
+}
 .game-home .spin-mascot:not([data-spinning]):not([data-settling]) .spin-mascot-shadow {
   animation: home-mascot-idle-shadow 3.2s ease-in-out 0s infinite;
   will-change: scale, opacity;

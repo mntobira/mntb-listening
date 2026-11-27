@@ -18,7 +18,7 @@ import './tobira-motion.css';
  *   ・読み込めない／再生できないときは黙って静止画に戻る（画面は止めない）
  *   ・音は入れない
  */
-export type TobiraMotionName = 'greet' | 'cheer' | 'encourage' | 'wakeup' | 'think';
+export type TobiraMotionName = 'walk' | 'greet' | 'cheer' | 'encourage' | 'wakeup' | 'think';
 
 export interface TobiraMotionDef {
   /** 長さ（ミリ秒）。WebP（Safari）はこの時間で静止画に戻す */
@@ -32,6 +32,7 @@ export interface TobiraMotionDef {
 }
 
 export const TOBIRA_MOTIONS: Record<TobiraMotionName, TobiraMotionDef> = {
+  walk: { ms: 1833, ready: true, loop: true, note: 'ホーム：ステージの上で元気に足踏み・おさんぽ（くり返し）' },
   greet: { ms: 3000, ready: false, note: 'ホーム：その日はじめて開いたとき、手をふってあいさつ' },
   wakeup: { ms: 3500, ready: false, note: 'ホーム：3日以上あいて開いたとき、目をこすって起きて手をふる' },
   cheer: { ms: 2500, ready: false, note: 'ミッション達成・単語/英文の高得点：ジャンプしてバンザイ' },
@@ -83,14 +84,24 @@ export function TobiraMotion({ name, play = true, children, className = '', labe
   const doneRef = useRef(onDone); doneRef.current = onDone;
 
   useEffect(() => {
-    if (!def.ready || !play || !motionAllowed()) return;
+    if (!def.ready || !play || !motionAllowed()) {
+      setActive(false);
+      return;
+    }
     setActive(true);
     const stop = () => { setActive(false); doneRef.current?.(); };
     // 安全装置：長さ＋1秒で必ず静止画に戻す（くり返しのものは止めない）
     const t = def.loop ? undefined : setTimeout(stop, def.ms + 1000);
-    const hide = () => { if (document.hidden) stop(); };
-    document.addEventListener('visibilitychange', hide);
-    return () => { if (t) clearTimeout(t); document.removeEventListener('visibilitychange', hide); };
+    const onVisibility = () => {
+      if (document.hidden) {
+        if (def.loop) setActive(false);
+        else stop();
+      } else if (def.loop && motionAllowed()) {
+        setActive(true);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => { if (t) clearTimeout(t); document.removeEventListener('visibilitychange', onVisibility); };
   }, [def.ready, def.ms, def.loop, play]);
 
   const finish = () => { setActive(false); doneRef.current?.(); };

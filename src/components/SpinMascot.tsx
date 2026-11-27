@@ -14,7 +14,7 @@ const TAP_PX = 8;
 const FRICTION = 0.94;      // 1フレームごとの減速
 const SNAP_SPEED = 0.6;     // これより遅くなったら正面へ寄せる（度/フレーム）
 
-export function SpinMascot({ children, onTap, label, className = '' }: { children: ReactNode; onTap?: () => void; label: string; className?: string }) {
+export function SpinMascot({ children, backChildren, onTap, label, className = '' }: { children: ReactNode; backChildren?: ReactNode; onTap?: () => void; label: string; className?: string }) {
   const [angle, setAngle] = useState(0);
   const [settling, setSettling] = useState(false);
   const st = useRef({ down: false, x: 0, last: 0, lastT: 0, v: 0, moved: 0, raf: 0, angle: 0 });
@@ -75,7 +75,7 @@ export function SpinMascot({ children, onTap, label, className = '' }: { childre
   >
     <span className="spin-mascot-stage" style={{ transform: `rotateY(${angle}deg)` }}>
       <span className="spin-mascot-face spin-mascot-front">{children}</span>
-      <span className="spin-mascot-face spin-mascot-back" aria-hidden="true">{children}</span>
+      <span className="spin-mascot-face spin-mascot-back" aria-hidden="true">{backChildren ?? children}</span>
     </span>
     <span className="spin-mascot-shadow" aria-hidden="true" style={{ transform: `scaleX(${0.55 + 0.45 * Math.abs(Math.cos(angle * Math.PI / 180))})` }} />
   </div>;
